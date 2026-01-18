@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = "force-dynamic";
 
 import { books } from "@/utils/book";
 import { useStore } from "@/context/StoreContext";
@@ -13,8 +14,10 @@ export default function WishlistPage() {
   const { wishlist, cart } = useStore();
   const router = useRouter();
 
+  // 🧡 Normal wishlist books
   const wishlistBooks = books.filter((b) => wishlist.includes(b.id));
 
+  // 🔗 Shared books from URL
   const sharedBooks = sharedItems
     ? sharedItems
         .split(",")
@@ -26,12 +29,12 @@ export default function WishlistPage() {
         .filter(Boolean)
     : [];
 
+  // ✅ Decide what to show
   const displayBooks = sharedItems ? sharedBooks : wishlistBooks;
 
   const handleShare = async () => {
     if (!wishlistBooks.length) return;
 
-    // Build map of cart qty
     const qtyMap = cart.reduce((acc, item) => {
       acc[item.id] = item.qty;
       return acc;
@@ -46,7 +49,6 @@ export default function WishlistPage() {
     const shareText =
       "📚 Check out these amazing books I’ve shortlisted!\nYou might love them too 💛";
 
-    // Native share (mobile)
     if (navigator.share) {
       await navigator.share({
         title: "My Book Wishlist",
@@ -54,7 +56,6 @@ export default function WishlistPage() {
         url: shareUrl,
       });
     } else {
-      // Fallback (desktop)
       await navigator.clipboard.writeText(shareUrl);
       alert("🔗 Wishlist link copied!");
     }
@@ -71,34 +72,33 @@ export default function WishlistPage() {
             className="cursor-pointer"
           />
           <div className="flex flex-col">
-            <h2 className="font-16 weight-600">Your Wishlist</h2>
-            <span className="font-12 dark-50">Books that you like</span>
+            <h2 className="font-16 weight-600">
+              {sharedItems ? "Shared Wishlist" : "Your Wishlist"}
+            </h2>
+            <span className="font-12 dark-50">
+              {sharedItems ? "Books shared with you" : "Books that you like"}
+            </span>
           </div>
         </div>
 
-        {/* Share Button */}
-        {wishlistBooks.length > 0 && (
+        {!sharedItems && wishlistBooks.length > 0 && (
           <button
             onClick={handleShare}
             aria-label="Share wishlist"
             className="icon-btn"
             style={{ background: "none", border: "none" }}
           >
-            <Share2 size={18} color="#000" />
+            <Share2 size={18} />
           </button>
         )}
       </div>
 
       {/* Books */}
       <div className="grid-2 flex flex-col gap-24">
-        {wishlistBooks.map((b) => (
+        {displayBooks.map((b) => (
           <BookCard key={b.id} book={b} />
         ))}
       </div>
-
-      {/* {displayBooks.map((b) => (
-        <BookCard key={b.id} book={b} />
-      ))} */}
     </section>
   );
 }

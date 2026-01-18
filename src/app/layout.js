@@ -2,7 +2,7 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import { StoreProvider } from "@/context/StoreContext";
 
-/* Load Poppins correctly */
+/* Font */
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
@@ -12,40 +12,79 @@ const poppins = Poppins({
 
 /* SEO Metadata */
 export const metadata = {
+  metadataBase: new URL("https://thebookx.in"), // 🔴 replace with your real domain
+
   title: {
-    default: "TheBookX | Buy Books Online at Best Prices",
+    default: "TheBookX — Buy Books Online at Best Prices in India",
     template: "%s | TheBookX",
   },
+
   description:
-    "TheBookX is an online bookstore offering novels, self-help, business, investment, romance, thriller, children's stories, and classic books at the lowest and most reasonable prices.",
+    "TheBookX is an affordable online bookstore in India. Discover novels, self-help, business, finance, classics and trending books at the best prices.",
+
   keywords: [
     "buy books online",
     "online bookstore india",
+    "cheap books online",
     "novels",
     "self help books",
     "business books",
-    "investment books",
-    "romance books",
-    "thriller books",
-    "children story books",
-    "classic novels",
-    "cheap books online",
+    "finance books",
+    "classic books",
+    "trending books",
     "TheBookX",
   ],
+
   authors: [{ name: "TheBookX" }],
   creator: "TheBookX",
   publisher: "TheBookX",
+
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+    },
   },
+
+  alternates: {
+    canonical: "/",
+  },
+
+  icons: {
+    icon: "/favicon.png", // or "/favicon.png"
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
+  },
+
+  themeColor: "#ffb703",
+
   openGraph: {
-    title: "TheBookX | Affordable Online Bookstore",
+    title: "TheBookX — Affordable Online Bookstore",
     description:
-      "Shop novels, self-help, business, investment, romance, thriller, children's stories and classic books at TheBookX — affordable prices, curated reads.",
+      "Buy novels, self-help, business, finance and classic books online at TheBookX. Curated reads, honest pricing, made for readers.",
+    url: "https://thebookx.in",
     siteName: "TheBookX",
     locale: "en_IN",
     type: "website",
+    images: [
+      {
+        url: "/favicon.png",
+        width: 512,
+        height: 512,
+        alt: "TheBookX Logo",
+      },
+    ],
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "TheBookX — Buy Books Online",
+    description:
+      "Affordable online bookstore for novels, self-help, business & classic books.",
+    images: ["/favicon.png"],
   },
 };
 

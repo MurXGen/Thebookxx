@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { Book, Plus, Minus } from "lucide-react";
 import { useStore } from "@/context/StoreContext";
 import WishlistButton from "./UI/WishListButton";
@@ -15,8 +16,14 @@ export default function BookCard({ book }) {
   const inWishlist = wishlist.includes(book.id);
   const savings = book.originalPrice - book.discountedPrice;
 
+  const bookUrl = `#`; // 🔥 SEO-friendly internal link
+
   return (
-    <div className="trending-card">
+    <article
+      className="trending-card"
+      itemScope
+      itemType="https://schema.org/Product"
+    >
       {/* Image */}
       <div className="book-image-wrapper">
         <WishlistButton
@@ -24,19 +31,21 @@ export default function BookCard({ book }) {
           onClick={() => toggleWishlist(book.id)}
         />
 
-        {/* 🔹 Skeleton / blur placeholder */}
         {!imageLoaded && <div className="image-skeleton" />}
 
         {book.image ? (
-          <Image
-            src={book.image}
-            alt={book.name}
-            fill
-            sizes="(max-width: 768px) 100vw, 240px"
-            className={`book-image ${imageLoaded ? "loaded" : ""}`}
-            onLoadingComplete={() => setImageLoaded(true)}
-            priority={false}
-          />
+          <Link href={bookUrl} aria-label={`View details of ${book.name}`}>
+            <Image
+              src={book.image}
+              alt={`${book.name} book cover`}
+              fill
+              sizes="(max-width: 768px) 100vw, 240px"
+              className={`book-image ${imageLoaded ? "loaded" : ""}`}
+              onLoadingComplete={() => setImageLoaded(true)}
+              loading="lazy"
+              itemProp="image"
+            />
+          </Link>
         ) : (
           <div className="book-image-placeholder">
             <Book size={18} />
@@ -46,14 +55,28 @@ export default function BookCard({ book }) {
 
       {/* Content */}
       <div className="pad_16 flex flex-col gap-12 book-card">
-        <h3 className="font-14 weight-500 dark-50">{book.name}</h3>
+        <h3 className="font-14 weight-500 dark-50" itemProp="name">
+          <Link href={bookUrl} className="book-title-link">
+            {book.name}
+          </Link>
+        </h3>
 
         <div className="flex flex-row gap-24 justify-between">
-          <div className="flex flex-col width100">
+          {/* Price */}
+          <div
+            className="flex flex-col width100"
+            itemProp="offers"
+            itemScope
+            itemType="https://schema.org/Offer"
+          >
             <div className="price-row">
-              <span className="discounted">₹{book.discountedPrice}</span>
+              <span className="discounted" itemProp="price">
+                ₹{book.discountedPrice}
+              </span>
               <span className="original">₹{book.originalPrice}</span>
             </div>
+
+            <meta itemProp="priceCurrency" content="INR" />
 
             {savings > 0 && (
               <span className="green font-10">You save ₹{savings}</span>
@@ -66,6 +89,7 @@ export default function BookCard({ book }) {
               <button
                 className="pri-mid-btn width100"
                 onClick={() => addToCart(book.id)}
+                aria-label={`Add ${book.name} to cart`}
               >
                 Add
               </button>
@@ -73,14 +97,18 @@ export default function BookCard({ book }) {
               <div className="width100 items-center flex flex-row justify-between">
                 <button
                   onClick={() => decreaseQty(book.id)}
-                  className="pri-mid-btn"
+                  className="minus-cart"
+                  aria-label={`Decrease quantity of ${book.name}`}
                 >
                   <Minus size={14} />
                 </button>
+
                 <span className="qty">{qty}</span>
+
                 <button
                   onClick={() => addToCart(book.id)}
-                  className="pri-mid-btn"
+                  className="plus-cart"
+                  aria-label={`Increase quantity of ${book.name}`}
                 >
                   <Plus size={14} />
                 </button>
@@ -89,6 +117,6 @@ export default function BookCard({ book }) {
           </div>
         </div>
       </div>
-    </div>
+    </article>
   );
 }

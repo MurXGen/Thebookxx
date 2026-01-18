@@ -12,7 +12,6 @@ export default function CartBar() {
 
   if (!cart.length) return null;
 
-  // ✅ map cart items with qty
   const cartBooks = cart
     .map((item) => {
       const book = books.find((b) => b.id === item.id);
@@ -21,39 +20,70 @@ export default function CartBar() {
       return {
         ...book,
         qty: item.qty,
-        totalPrice: book.discountedPrice * item.qty,
+        originalTotal: book.originalPrice * item.qty,
+        discountedTotal: book.discountedPrice * item.qty,
       };
     })
     .filter(Boolean);
 
-  const totalAmount = cartBooks.reduce((sum, book) => sum + book.totalPrice, 0);
+  const originalAmount = cartBooks.reduce((s, b) => s + b.originalTotal, 0);
+  const discountedAmount = cartBooks.reduce((s, b) => s + b.discountedTotal, 0);
 
-  const activeOffer = CART_OFFERS.find(
-    (offer) => totalAmount >= offer.min && totalAmount < offer.target
+  /* 🔄 Offer in progress (UI only) */
+  const progressOffer = CART_OFFERS.find(
+    (o) => discountedAmount >= o.min && discountedAmount < o.target,
   );
 
-  if (!activeOffer) return null;
+  /* 🎉 Offer actually applied */
+  const appliedOffer =
+    [...CART_OFFERS].reverse().find((o) => discountedAmount >= o.target) ||
+    null;
 
-  const remaining = Math.max(activeOffer.target - totalAmount, 0);
+  /* 💸 Discount ONLY when target crossed */
+  let offerDiscount = 0;
 
-  const progressPercent = Math.min(
-    (totalAmount / activeOffer.target) * 100,
-    100
-  );
+  if (appliedOffer) {
+    if (appliedOffer.type === "flat") {
+      offerDiscount = appliedOffer.value;
+    }
+
+    if (appliedOffer.type === "percentage") {
+      offerDiscount = Math.round((discountedAmount * appliedOffer.value) / 100);
+    }
+  }
+
+  const finalPayable = discountedAmount - offerDiscount;
+
+  const progressPercent = progressOffer
+    ? Math.min((discountedAmount / progressOffer.target) * 100, 100)
+    : 100;
+
+  const remaining = progressOffer
+    ? Math.max(progressOffer.target - discountedAmount, 0)
+    : 0;
 
   return (
     <div className="cart-bar">
       {/* 🎁 OFFER STRIP */}
       <div className="cart-offer">
         <div className="offer-text">
-          {activeOffer.icon === "gift" ? (
-            <Gift size={16} />
+          {progressOffer ? (
+            <>
+              {progressOffer.icon === "gift" ? (
+                <Gift size={16} />
+              ) : (
+                <Sparkles size={16} />
+              )}
+              <span>
+                {progressOffer.message.replace("{remaining}", `₹${remaining}`)}
+              </span>
+            </>
           ) : (
-            <Sparkles size={16} />
+            <>
+              <Sparkles className="sparkle-animate" size={16} />
+              <span>🎉 Offer unlocked! You’re saving ₹{offerDiscount}</span>
+            </>
           )}
-          <span>
-            {activeOffer.message.replace("{remaining}", `₹${remaining}`)}
-          </span>
         </div>
 
         <div className="offer-progress">
@@ -65,10 +95,16 @@ export default function CartBar() {
       </div>
 
       {/* 🛒 CART CTA */}
-      <div className="cart-bar-main">
-        <span className="font-14">
-          {cart.reduce((s, i) => s + i.qty, 0)} book(s) added
-        </span>
+      <div className="cart-bar-main flex flex-row gap-12">
+        <div className="flex flex-row gap-12 items-center width100 justify-between">
+          <span className="font-14"> Total amount :</span>
+          <div className="cart-price flex flex-row gap-4 items-center">
+            {appliedOffer && (
+              <span className="original strike">₹{discountedAmount}</span>
+            )}
+            <span className="final weight-600">₹{finalPayable}</span>
+          </div>
+        </div>
 
         <button className="pri-big-btn" onClick={() => router.push("/bag")}>
           Checkout

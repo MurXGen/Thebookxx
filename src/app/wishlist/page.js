@@ -4,8 +4,7 @@ import { books } from "@/utils/book";
 import { useStore } from "@/context/StoreContext";
 import BookCard from "@/components/BookCard";
 import { ArrowLeft, Share2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function WishlistPage() {
   const searchParams = useSearchParams();

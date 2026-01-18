@@ -795,7 +795,9 @@ button:hover {
   z-index: 100;
   padding: var(--px-16);
   background: var(--white-100);
-  border-top: 1px solid rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(100px);
+  /* border-top: 1px solid rgba(0, 0, 0, 0.3); */
+  box-shadow: -12px 0 24px rgba(0, 0, 0, 0.4);
 }
 
 .cart-offer {

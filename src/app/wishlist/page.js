@@ -1,4 +1,5 @@
 "use client";
+
 export const dynamic = "force-dynamic";
 
 import { books } from "@/utils/book";
@@ -88,7 +89,7 @@ export default function WishlistPage() {
             className="icon-btn"
             style={{ background: "none", border: "none" }}
           >
-            <Share2 size={18} />
+            <Share2 size={18} color="#000" />
           </button>
         )}
       </div>

@@ -5,7 +5,10 @@ export default function AllBooks() {
   if (!books.length) return null;
 
   return (
-    <section className="catalogue-section-2 trending-section">
+    <section
+      className="catalogue-section-2 trending-section"
+      style={{ marginTop: "24px" }}
+    >
       {/* Section Header */}
       <div className="flex flex-col">
         <h2 className="font-20 weight-500">All Books</h2>

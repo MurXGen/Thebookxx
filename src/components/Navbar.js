@@ -44,7 +44,7 @@ export default function Navbar() {
             rel="noopener noreferrer"
             aria-label="WhatsApp"
           >
-            <FaWhatsapp size={24} />
+            <FaWhatsapp size={24} color="green" />
           </a>
 
           <a className="cursor-pointer" href="/bag">

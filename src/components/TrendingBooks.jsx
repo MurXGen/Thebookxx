@@ -4,16 +4,13 @@ import LabelDivider from "./UI/LineDivider";
 
 export default function TrendingBooks() {
   const trendingBooks = books.filter((book) =>
-    book.catalogue?.includes("trending")
+    book.catalogue?.includes("trending"),
   );
 
   if (!trendingBooks.length) return null;
 
   return (
-    <section
-      className="catalogue-section-2 trending-section"
-      style={{ marginTop: "24px" }}
-    >
+    <section className="catalogue-section-2 trending-section">
       {/* Section Header */}
       <LabelDivider label="Trending books" />
 

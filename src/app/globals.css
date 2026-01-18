@@ -589,8 +589,9 @@ button:hover {
 .catalogue-section-2 {
   background: var(--white-100);
   padding: var(--px-42) var(--px-16);
-  border-radius: var(--px-24) var(--px-24) 0 0;
-  border-top: 1px solid #000;
+  border-radius: var(--px-24);
+  border-top: 1px solid rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
 }
 
 /* Trending books  */
@@ -791,33 +792,55 @@ button:hover {
 .cart-bar {
   position: fixed;
   width: 100%;
-  bottom: 1px;
+  bottom: 0px;
   z-index: 100;
-  padding: var(--px-16);
-  background: var(--white-100);
-  backdrop-filter: blur(100px);
-  /* border-top: 1px solid rgba(0, 0, 0, 0.3); */
-  box-shadow: -12px 0 24px rgba(0, 0, 0, 0.4);
 }
 
 .cart-offer {
-  background: linear-gradient(90deg, #fff7d6, #fff);
+  background: #fff7d6;
   border-radius: 10px;
   padding: 10px 12px;
   margin-bottom: 8px;
+  backdrop-filter: blur(100px);
+  margin: 4px 8px;
+  border: 1px solid #fb8500;
+}
+
+.toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.toggle {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 1.5px solid #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggle.active {
+  background: #111;
+  border-color: #111;
+  color: #fff;
 }
 
 .offer-text {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 13px;
+  font-size: var(--px-12);
   font-weight: 500;
 }
 
 .offer-progress {
-  height: 6px;
-  background: #eee;
+  height: 12px;
+  background: #fff;
   border-radius: 6px;
   margin-top: 6px;
   overflow: hidden;
@@ -833,6 +856,11 @@ button:hover {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background: var(--white-100);
+  backdrop-filter: blur(100px);
+  border-top: 1px solid rgba(0, 0, 0, 0.3);
+  /* box-shadow: -12px 0 24px rgba(0, 0, 0, 0.4); */
+  padding: var(--px-16);
 }
 
 /* Bag */
@@ -904,7 +932,7 @@ button:hover {
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: max-content;
-  grid-template-rows: repeat(2, auto); /* 👈 2 rows */
+  grid-template-rows: repeat(1, auto); /* 👈 2 rows */
   gap: 16px;
   overflow-x: auto;
   padding-top: 0;

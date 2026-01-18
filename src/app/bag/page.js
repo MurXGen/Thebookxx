@@ -48,12 +48,12 @@ export default function BagPage() {
 
   const totalOriginal = cartBooks.reduce(
     (sum, b) => sum + b.originalPrice * b.qty,
-    0
+    0,
   );
 
   const totalDiscounted = cartBooks.reduce(
     (sum, b) => sum + b.discountedPrice * b.qty,
-    0
+    0,
   );
 
   const handleWhatsAppCheckout = () => {
@@ -80,7 +80,7 @@ Really excited to read these soon 🤍
 `;
 
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
-      message
+      message,
     )}`;
 
     window.open(whatsappUrl, "_blank");

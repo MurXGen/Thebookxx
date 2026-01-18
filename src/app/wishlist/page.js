@@ -97,9 +97,9 @@ export default function WishlistPage() {
         ))}
       </div>
 
-      {displayBooks.map((b) => (
+      {/* {displayBooks.map((b) => (
         <BookCard key={b.id} book={b} />
-      ))}
+      ))} */}
     </section>
   );
 }

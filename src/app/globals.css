@@ -434,6 +434,36 @@ button:hover {
   color: var(--white-100);
 }
 
+@media (max-width: 450px) {
+  .book-image-wrapper {
+    height: 100px !important; /* fixed height */
+    background: #ffffff;
+    border-radius: var(--px-8);
+  }
+
+  .trending-card {
+    padding-top: var(--px-8);
+    background: var(--white-80);
+    border-radius: 8px;
+    /* overflow: hidden; */
+    border: 1px solid var(--dark-20);
+    min-width: 150px !important;
+    max-width: 768px !important;
+    transition-duration: 0.3s;
+  }
+
+  .book-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .grid-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--px-12);
+  }
+}
+
 /* Responsive */
 @media (max-width: 767px) {
   :root {

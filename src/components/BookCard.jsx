@@ -61,7 +61,7 @@ export default function BookCard({ book }) {
           </Link>
         </h3>
 
-        <div className="flex flex-row gap-24 justify-between">
+        <div className="flex flex-row gap-24 justify-between book-content">
           {/* Price */}
           <div
             className="flex flex-col width100"

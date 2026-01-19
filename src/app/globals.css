@@ -468,6 +468,26 @@ button:hover {
     border-radius: 0;
     max-height: 100%;
   }
+
+  .search-overlay {
+    padding-top: 0 !important;
+  }
+
+  .search-modal {
+    height: 100vh;
+  }
+
+  .search-overlay .search-modal {
+    width: calc(100%);
+    max-width: 800px;
+    max-height: 100vh !important;
+    background: var(--background);
+    border-radius: 0;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
 }
 
 /* Navbar end */
@@ -586,8 +606,10 @@ button:hover {
 
 /* Offers end */
 
+/* Search overlay */
+
 .catalogue-section-2 {
-  background: var(--white-100);
+  background: var(--dark-10);
   padding: var(--px-42) var(--px-16);
   border-radius: var(--px-24);
   border-top: 1px solid rgba(0, 0, 0, 0.2);
@@ -1022,8 +1044,98 @@ button:hover {
   text-align: center;
   color: var(--dark-50);
   font-size: 14px;
-  padding: 40px 0;
+  display: flex;
+  justify-content: center;
+  height: 60vh;
+  flex-direction: column;
+  gap: 12px;
 }
+
+/* For search */
+
+/* Search Overlay */
+.search-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  z-index: 999;
+  padding-top: 40px;
+}
+
+.search-modal {
+  width: calc(100% - 32px);
+  max-width: 800px;
+  max-height: 600px;
+  background: var(--background);
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.search-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--dark-50);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  color: var(--foreground);
+}
+
+.search-input::placeholder {
+  color: var(--dark-50);
+  font-size: var(--px-16);
+}
+
+.search-body {
+  padding: 16px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.book-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 12px;
+}
+
+/* Optional: Add a clear button for the search input */
+.search-input-container {
+  position: relative;
+  flex: 1;
+}
+
+.clear-button {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--dark-100);
+  padding: 4px;
+  border-radius: 50%;
+}
+
+.clear-button:hover {
+  background: var(--dark-50);
+}
+
+/* For search end */
 
 /* line divider */
 

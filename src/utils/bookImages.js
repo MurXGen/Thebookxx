@@ -55,7 +55,7 @@ export const bookImages = {
   "twisted-game": `${BOOK_IMAGE_BASE_PATH}/twisted-game.png`,
   "twisted-hate": `${BOOK_IMAGE_BASE_PATH}/twisted-hate.png`,
   "twisted-lies": `${BOOK_IMAGE_BASE_PATH}/twisted-lies.png`,
-  "king-of-wrath": `${BOOK_IMAGE_BASE_PATH}/king-of-wrath-1.png`,
+  "king-of-wrath": `${BOOK_IMAGE_BASE_PATH}/king-of-wrath.png`,
   "king-of-pride": `${BOOK_IMAGE_BASE_PATH}/king-of-pride.png`,
   "king-of-greed": `${BOOK_IMAGE_BASE_PATH}/king-of-greed.png`,
   "king-of-sloth": `${BOOK_IMAGE_BASE_PATH}/king-of-sloth.png`,

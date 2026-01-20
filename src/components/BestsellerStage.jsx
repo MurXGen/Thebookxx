@@ -6,7 +6,7 @@ import Image from "next/image";
 import { Star } from "lucide-react";
 import { books } from "@/utils/book";
 
-const SWAP_INTERVAL = 5000;
+const SWAP_INTERVAL = 2000;
 
 export default function BestsellerStage() {
   const bestsellerBooks = useMemo(

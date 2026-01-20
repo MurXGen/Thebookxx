@@ -7,7 +7,8 @@ export default function SearchButton({ onClick }) {
     <button
       onClick={onClick}
       aria-label="Search books"
-      className="sec-mid-btn flex flex-row gap-12"
+      className="sec-mid-btn flex flex-row gap-12 width100 justify-between"
+      style={{ padding: "12px" }}
     >
       <span className="font-14">Search books</span>
       <Search size={18} color="#000" />

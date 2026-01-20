@@ -84,7 +84,10 @@ export default function BookCard({ book }) {
           </div>
 
           {/* Actions */}
-          <div className="flex gap-12 align-center card-button width100">
+          <div
+            className="flex gap-12 align-center card-button width100"
+            style={{ height: "40px" }}
+          >
             {qty === 0 ? (
               <button
                 className="pri-mid-btn width100"

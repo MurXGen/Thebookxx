@@ -1,4 +1,5 @@
 import AllBooks from "@/components/AllBooks";
+import BestsellerStage from "@/components/BestsellerStage";
 import CartBar from "@/components/CartBar";
 import CatalogueSection from "@/components/CatalogueSection";
 import Navbar from "@/components/Navbar";
@@ -12,6 +13,7 @@ export default function HomePage() {
   return (
     <>
       <Navbar />
+      <BestsellerStage />
       <OffersGift />
       <CatalogueSection />
       <TrendingBooks />

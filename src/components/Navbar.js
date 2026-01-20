@@ -1,89 +1,63 @@
 "use client";
 
-import { BaggageClaim, Heart } from "lucide-react";
+import { Heart, Star } from "lucide-react";
 import { useState } from "react";
-import { FiMenu, FiMessageCircle, FiX } from "react-icons/fi";
 import { FaWhatsapp } from "react-icons/fa";
+import { HiOutlineShoppingBag } from "react-icons/hi2";
 import SearchMain from "./UI/SearchMain";
+import { motion } from "framer-motion";
 
 export default function Navbar() {
-  const [open, setOpen] = useState(false);
-
   return (
     <header className="navbar-wrapper">
-      <nav className="flex flex-row justify-between items-center section-1200">
-        {/* Left / Logo */}
-        <div className="leftSection">
-          <span className="font-20 weight-700">TheBookX</span>
+      {/* 🔥 Mobile promo strip */}
+      <div className="mobile-offer-strip">
+        <motion.span
+          className="badge-star"
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 6, ease: "linear" }}
+        >
+          <Star size={14} />
+        </motion.span>
+        <span className="offer-text">
+          Get upto <strong>₹500 OFF</strong> — T&C apply
+        </span>
+      </div>
+
+      <nav className="navbar section-1200">
+        {/* LEFT (mobile: wishlist) */}
+        <div className="nav-left">
+          <a href="/wishlist" aria-label="Wishlist">
+            <Heart fill="red" stroke="none" size={22} />
+          </a>
         </div>
 
-        {/* Desktop Links */}
-        <div className="nav-links-desktop flex flex-row gap-32 items-center">
-          {/* <a href="/wishlist" className="font-14">
-            Wishlist
-          </a>
-          <a href="/bag" className="font-14">
-            Cart
-          </a>
-          <a href="/about" className="font-14">
-            About Us
-          </a>
-          <a href="/contact" className="font-14">
-            Contact
-          </a> */}
-
-          {/* <a href="/help" className="help-btn">
-            Need Help?
-          </a> */}
+        {/* CENTER LOGO */}
+        <div className="nav-center">
+          <span className="logo-text">TheBookX</span>
         </div>
 
-        <div className="flex flex-row gap-16 items-center">
-          <SearchMain />
+        {/* RIGHT ICONS */}
+        <div className="nav-right">
           <a
-            className="cursor-pointer"
             href="https://wa.me/917710892108"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="WhatsApp"
           >
-            <FaWhatsapp size={24} color="green" />
+            <FaWhatsapp size={22} color="#25D366" />
           </a>
 
-          <a className="cursor-pointer" href="/bag">
-            <BaggageClaim size={24} />
+          <a href="/bag" aria-label="Cart">
+            <HiOutlineShoppingBag size={24} />
           </a>
-
-          <a href="/wishlist" className="font-14">
-            <Heart fill="red" stroke="none" size={24} />
-          </a>
-          {/* <button
-            className="nav-toggle"
-            onClick={() => setOpen(!open)}
-            aria-label="Toggle menu"
-          >
-            {open ? <FiX size={24} /> : <FiMenu size={24} />}
-          </button> */}
         </div>
       </nav>
 
-      {/* Mobile Menu */}
-      {/* <div className={`nav-mobile ${open ? "open" : ""}`}>
-        <a href="/wishlist" onClick={() => setOpen(false)}>
-          Wishlist
-        </a>
-        <a href="/bag" onClick={() => setOpen(false)}>
-          Cart
-        </a>
-        <a href="/about" onClick={() => setOpen(false)}>
-          About Us
-        </a>
-        <a href="/contact" onClick={() => setOpen(false)}>
-          Contact
-        </a>
-        <a href="/help" onClick={() => setOpen(false)}>
-          Need Help
-        </a>
-      </div> */}
+      {/* 🔍 Search below navbar (mobile only) */}
+      <div className="mobile-search">
+        <SearchMain />
+      </div>
     </header>
   );
 }

@@ -26,7 +26,7 @@ export const bookImages = {
   "days-at-morisaki-1": `${BOOK_IMAGE_BASE_PATH}/days-at-morisaki-1.jpeg`,
   "days-at-morisaki-2": `${BOOK_IMAGE_BASE_PATH}/days-at-morisaki-2.jpeg`,
   "all-hell-ever-be": `${BOOK_IMAGE_BASE_PATH}/all-hell-ever-be.jpeg`,
-  "was-i-ever-enough": `${BOOK_IMAGE_BASE_PATH}/was-i-ever-enough.jpeg`,
+  "was-i-ever-enough": `${BOOK_IMAGE_BASE_PATH}/was-i-ever-enough.png`,
   "we-are-there-for-each-other": `${BOOK_IMAGE_BASE_PATH}/we-are-there-for-each-other.png`,
   "can-we-be-strangers-again": `${BOOK_IMAGE_BASE_PATH}/can-we-be-strangers-again.jpeg`,
   "thank-you-for-leaving": `${BOOK_IMAGE_BASE_PATH}/thank-you-for-leaving.jpeg`,

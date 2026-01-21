@@ -307,7 +307,7 @@ button:hover {
 .navbar-wrapper {
   width: 100%;
   background: #fff;
-  border-bottom: 1px solid #eee;
+  border-bottom: 2px solid #eee;
 }
 
 .navbar {

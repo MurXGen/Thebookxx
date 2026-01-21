@@ -3,7 +3,7 @@ const BOOK_IMAGE_BASE_PATH = "/books";
 
 export const bookImages = {
   "the-art-of-spending-money": `${BOOK_IMAGE_BASE_PATH}/the-art-of-spending-money.jpeg`,
-  manifest: `${BOOK_IMAGE_BASE_PATH}/manifest.jpg`,
+  manifest: `${BOOK_IMAGE_BASE_PATH}/manifest.png`,
   "dont-sweat-the-small-stuff": `${BOOK_IMAGE_BASE_PATH}/dont-sweat-the-small-stuff.jpeg`,
   "letters-to-the-milena": `${BOOK_IMAGE_BASE_PATH}/letters-to-the-milena.jpeg`,
   "atomic-habits": `${BOOK_IMAGE_BASE_PATH}/atomic-habits.jpeg`,
@@ -27,7 +27,7 @@ export const bookImages = {
   "days-at-morisaki-2": `${BOOK_IMAGE_BASE_PATH}/days-at-morisaki-2.jpeg`,
   "all-hell-ever-be": `${BOOK_IMAGE_BASE_PATH}/all-hell-ever-be.jpeg`,
   "was-i-ever-enough": `${BOOK_IMAGE_BASE_PATH}/was-i-ever-enough.jpeg`,
-  "we-are-there-for-each-other": `${BOOK_IMAGE_BASE_PATH}/we-are-there-for-each-other.jpeg`,
+  "we-are-there-for-each-other": `${BOOK_IMAGE_BASE_PATH}/we-are-there-for-each-other.png`,
   "can-we-be-strangers-again": `${BOOK_IMAGE_BASE_PATH}/can-we-be-strangers-again.jpeg`,
   "thank-you-for-leaving": `${BOOK_IMAGE_BASE_PATH}/thank-you-for-leaving.jpeg`,
   "too-good-to-be-true": `${BOOK_IMAGE_BASE_PATH}/too-good-to-be-true.jpeg`,

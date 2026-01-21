@@ -3,7 +3,7 @@
 import { books } from "@/utils/book";
 import { useStore } from "@/context/StoreContext";
 import { CART_OFFERS } from "@/utils/cartOffers";
-import { Gift, Sparkles } from "lucide-react";
+import { Gift, Sparkles, Truck } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function CartBar() {
@@ -29,26 +29,33 @@ export default function CartBar() {
   const originalAmount = cartBooks.reduce((s, b) => s + b.originalTotal, 0);
   const discountedAmount = cartBooks.reduce((s, b) => s + b.discountedTotal, 0);
 
-  /* 🔄 Offer in progress (UI only) */
+  /* 🔄 Offer in progress */
   const progressOffer = CART_OFFERS.find(
     (o) => discountedAmount >= o.min && discountedAmount < o.target,
   );
 
-  /* 🎉 Offer actually applied */
+  /* 🎉 Applied offer */
   const appliedOffer =
     [...CART_OFFERS].reverse().find((o) => discountedAmount >= o.target) ||
     null;
 
-  /* 💸 Discount ONLY when target crossed */
+  /* 💸 Discount calculation */
   let offerDiscount = 0;
+  let offerLabel = null;
 
   if (appliedOffer) {
     if (appliedOffer.type === "flat") {
       offerDiscount = appliedOffer.value;
+      offerLabel = `₹${appliedOffer.value} OFF availed`;
     }
 
     if (appliedOffer.type === "percentage") {
       offerDiscount = Math.round((discountedAmount * appliedOffer.value) / 100);
+      offerLabel = `${appliedOffer.value}% discount availed`;
+    }
+
+    if (appliedOffer.type === "free_shipping") {
+      offerLabel = "Free delivery availed";
     }
   }
 
@@ -78,12 +85,16 @@ export default function CartBar() {
                 {progressOffer.message.replace("{remaining}", `₹${remaining}`)}
               </span>
             </>
-          ) : (
+          ) : appliedOffer ? (
             <>
-              <Sparkles className="sparkle-animate" size={16} />
-              <span>🎉 Offer unlocked! You’re saving ₹{offerDiscount}</span>
+              {appliedOffer.type === "free_shipping" ? (
+                <Truck size={16} />
+              ) : (
+                <Sparkles className="sparkle-animate" size={16} />
+              )}
+              <span>{offerLabel}</span>
             </>
-          )}
+          ) : null}
         </div>
 
         <div className="offer-progress">
@@ -96,14 +107,24 @@ export default function CartBar() {
 
       {/* 🛒 CART CTA */}
       <div className="cart-bar-main flex flex-row gap-12">
-        <div className="flex flex-row gap-12 items-center width100 justify-between">
-          <span className="font-14"> Total amount :</span>
-          <div className="cart-price flex flex-row gap-4 items-center">
-            {appliedOffer && (
-              <span className="original strike">₹{discountedAmount}</span>
-            )}
-            <span className="final weight-600">₹{finalPayable}</span>
+        <div className="flex flex-col width100 gap-4">
+          <div className="flex flex-row justify-between items-center">
+            <span className="font-14">Total amount</span>
+
+            <div className="flex flex-col">
+              <div className="cart-price flex flex-row gap-8 justify-end items-center">
+                {appliedOffer && offerDiscount > 0 && (
+                  <span className="original strike">₹{discountedAmount}</span>
+                )}
+                <span className="final weight-600">₹{finalPayable}</span>
+              </div>
+              {appliedOffer && (
+                <span className="font-14 green weight-600">{offerLabel}</span>
+              )}
+            </div>
           </div>
+
+          {/* ✅ Discount helper text */}
         </div>
 
         <button className="pri-big-btn" onClick={() => router.push("/bag")}>

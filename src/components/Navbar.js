@@ -1,17 +1,31 @@
 "use client";
 
 import { Heart, Star } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaWhatsapp } from "react-icons/fa";
 import { HiOutlineShoppingBag } from "react-icons/hi2";
 import SearchMain from "./UI/SearchMain";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { CART_OFFERS } from "@/utils/cartOffers";
 
 export default function Navbar() {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIndex((prev) => (prev + 1) % CART_OFFERS.length);
+    }, 3000); // change every 3s
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const currentOffer = CART_OFFERS[index];
+
   return (
     <header className="navbar-wrapper">
       {/* 🔥 Mobile promo strip */}
       <div className="mobile-offer-strip">
+        {/* rotating star */}
         <motion.span
           className="badge-star"
           animate={{ rotate: 360 }}
@@ -19,9 +33,22 @@ export default function Navbar() {
         >
           <Star size={14} />
         </motion.span>
-        <span className="offer-text">
-          Get upto <strong>₹500 OFF</strong> — T&C apply
-        </span>
+
+        {/* sliding text */}
+        <div className="offer-text-wrapper">
+          <AnimatePresence mode="wait">
+            <motion.span
+              key={index}
+              className="offer-text"
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -20, opacity: 0 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+            >
+              {formatOfferMessage(currentOffer)}
+            </motion.span>
+          </AnimatePresence>
+        </div>
       </div>
 
       <nav className="navbar section-1200">
@@ -59,5 +86,33 @@ export default function Navbar() {
         <SearchMain />
       </div>
     </header>
+  );
+}
+
+/* helper */
+function formatOfferMessage(offer) {
+  if (offer.type === "flat") {
+    return (
+      <>
+        Get <strong className="shinny-icon">₹{offer.value} OFF</strong> on
+        orders above {offer.target}
+      </>
+    );
+  }
+
+  if (offer.type === "percentage") {
+    return (
+      <>
+        Get <strong className="shinny-icon">{offer.value}% OFF</strong> on
+        orders above {offer.target}
+      </>
+    );
+  }
+
+  return (
+    <>
+      <strong className="shinny-icon">Free delivery</strong> on orders above{" "}
+      {offer.target}
+    </>
   );
 }

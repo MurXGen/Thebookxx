@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 import { Star } from "lucide-react";
 import { books } from "@/utils/book";
 
@@ -93,7 +94,11 @@ export default function BestsellerStage() {
         >
           <Star size={14} />
         </motion.span>
-        <span className="badge-text">Grab with 7-day return*</span>
+        <Link href="/terms" aria-label="View terms and conditions">
+          <span className="badge-text cursor-pointer">
+            Grab with 7-day return/exchange *
+          </span>
+        </Link>
       </motion.div>
     </section>
   );

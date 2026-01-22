@@ -290,7 +290,7 @@ button:hover {
 .grid-2 {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-  gap: var(--px-12);
+  gap: var(--px-24);
 }
 
 .shinny-icon {
@@ -362,7 +362,7 @@ button:hover {
 
 @media (max-width: 450px) {
   .book-image-wrapper {
-    height: 100px !important; /* fixed height */
+    height: 140px !important; /* fixed height */
     background: #ffffff;
     border-radius: var(--px-8);
   }
@@ -917,7 +917,7 @@ button:hover {
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: max-content;
-  grid-template-rows: repeat(1, auto); /* 👈 2 rows */
+  grid-template-rows: repeat(2, auto); /* 👈 2 rows */
   gap: 16px;
   overflow-x: auto;
   padding-top: 0;

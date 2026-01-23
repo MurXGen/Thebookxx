@@ -71,7 +71,6 @@ export default function OffersGift() {
               animate={{ opacity: 1, scale: 1, x: "-50%", y: "-50%" }}
               exit={{ opacity: 0, scale: 0.9, x: "-50%", y: "-50%" }}
             >
-              {/* Header */}
               {/* <div className="offers-header">
                 <span className="font-16 weight-600">Available Offers</span>
                 <button onClick={() => setOpen(false)}>

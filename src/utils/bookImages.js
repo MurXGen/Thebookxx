@@ -1,5 +1,5 @@
 // 👉 Change this path once if public structure changes
-const BOOK_IMAGE_BASE_PATH = "/books";
+const BOOK_IMAGE_BASE_PATH = "/books1";
 
 export const bookImages = {
   "the-art-of-spending-money": `${BOOK_IMAGE_BASE_PATH}/the-art-of-spending-money.jpeg`,

@@ -3,6 +3,7 @@ import "./globals.css";
 import Script from "next/script";
 import { StoreProvider } from "@/context/StoreContext";
 import AnalyticsTracker from "@/components/AnalyticsTracker";
+import { ToastProvider } from "@/context/ToastContext";
 
 /* Font */
 const poppins = Poppins({
@@ -111,10 +112,12 @@ export default function RootLayout({ children }) {
         </Script>
       </head>
       <body className={poppins.variable}>
-        <StoreProvider>
-          <AnalyticsTracker />
-          {children}
-        </StoreProvider>
+        <ToastProvider>
+          <StoreProvider>
+            <AnalyticsTracker />
+            {children}
+          </StoreProvider>
+        </ToastProvider>
       </body>
     </html>
   );

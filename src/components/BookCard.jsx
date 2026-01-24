@@ -7,6 +7,7 @@ import { useStore } from "@/context/StoreContext";
 import WishlistButton from "./UI/WishListButton";
 import { useState } from "react";
 import { trackAddToCart } from "@/lib/ga";
+import { books } from "@/utils/book";
 
 export default function BookCard({ book }) {
   const { cart, wishlist, addToCart, decreaseQty, toggleWishlist } = useStore();
@@ -16,6 +17,12 @@ export default function BookCard({ book }) {
   const qty = cartItem?.qty || 0;
   const inWishlist = wishlist.includes(book.id);
   const savings = book.originalPrice - book.discountedPrice;
+
+  const isOneRupee = book.discountedPrice === 1;
+  const hasOneRupeeInCart = cart.some((i) => {
+    const b = books.find((x) => x.id === i.id);
+    return b?.discountedPrice === 1;
+  });
 
   const bookUrl = `#`; // 🔥 SEO-friendly internal link
 
@@ -96,6 +103,7 @@ export default function BookCard({ book }) {
                   addToCart(book.id);
                   trackAddToCart({ book, qty: 1 });
                 }}
+                disabled={isOneRupee && hasOneRupeeInCart}
                 aria-label={`Add ${book.name} to cart`}
               >
                 Add
@@ -117,6 +125,7 @@ export default function BookCard({ book }) {
                     addToCart(book.id);
                     trackAddToCart({ book, qty: 1 });
                   }}
+                  disabled={isOneRupee && hasOneRupeeInCart}
                   className="plus-cart"
                   aria-label={`Increase quantity of ${book.name}`}
                 >

@@ -5,20 +5,22 @@ import { createContext, useContext, useEffect, useState } from "react";
 const StoreContext = createContext(null);
 
 export function StoreProvider({ children }) {
-  const [cart, setCart] = useState([]);
-  const [wishlist, setWishlist] = useState([]);
+  const [cart, setCart] = useState(() => {
+    if (typeof window === "undefined") return [];
+    return JSON.parse(localStorage.getItem("cart")) || [];
+  });
 
-  // Load from localStorage
-  useEffect(() => {
-    setCart(JSON.parse(localStorage.getItem("cart")) || []);
-    setWishlist(JSON.parse(localStorage.getItem("wishlist")) || []);
-  }, []);
+  const [wishlist, setWishlist] = useState(() => {
+    if (typeof window === "undefined") return [];
+    return JSON.parse(localStorage.getItem("wishlist")) || [];
+  });
 
-  // Persist
+  // Persist cart
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
+  // Persist wishlist
   useEffect(() => {
     localStorage.setItem("wishlist", JSON.stringify(wishlist));
   }, [wishlist]);
@@ -39,7 +41,7 @@ export function StoreProvider({ children }) {
     setCart((prev) =>
       prev
         .map((i) => (i.id === id ? { ...i, qty: i.qty - 1 } : i))
-        .filter((i) => i.qty > 0)
+        .filter((i) => i.qty > 0),
     );
   };
 
@@ -51,7 +53,7 @@ export function StoreProvider({ children }) {
 
   const toggleWishlist = (id) => {
     setWishlist((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
     );
   };
 

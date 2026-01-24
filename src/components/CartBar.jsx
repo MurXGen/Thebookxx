@@ -3,7 +3,7 @@
 import { books } from "@/utils/book";
 import { useStore } from "@/context/StoreContext";
 import { CART_OFFERS } from "@/utils/cartOffers";
-import { Gift, Sparkles, Truck } from "lucide-react";
+import { Gift, Percent, Sparkles, Truck } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function CartBar() {
@@ -72,36 +72,43 @@ export default function CartBar() {
   return (
     <div className="cart-bar">
       {/* 🎁 OFFER STRIP */}
-      <div className="cart-offer">
-        <div className="offer-text">
-          {progressOffer ? (
-            <>
-              {progressOffer.icon === "gift" ? (
-                <Gift size={16} />
-              ) : (
-                <Sparkles size={16} />
-              )}
-              <span>
-                {progressOffer.message.replace("{remaining}", `₹${remaining}`)}
-              </span>
-            </>
-          ) : appliedOffer ? (
-            <>
-              {appliedOffer.type === "free_shipping" ? (
-                <Truck size={16} />
-              ) : (
-                <Sparkles className="sparkle-animate" size={16} />
-              )}
-              <span>{offerLabel}</span>
-            </>
-          ) : null}
+      <div className="cart-offer flex flex-row gap-12">
+        <div className="greenbox">
+          {progressOffer.icon === "gift" ? (
+            <Percent size={16} />
+          ) : (
+            <Percent size={16} />
+          )}
         </div>
+        <div className="width100">
+          <div className="offer-text">
+            {progressOffer ? (
+              <>
+                <span>
+                  {progressOffer.message.replace(
+                    "{remaining}",
+                    `₹${remaining}`,
+                  )}
+                </span>
+              </>
+            ) : appliedOffer ? (
+              <>
+                {appliedOffer.type === "free_shipping" ? (
+                  <Truck size={16} />
+                ) : (
+                  <Sparkles className="sparkle-animate" size={16} />
+                )}
+                <span>{offerLabel}</span>
+              </>
+            ) : null}
+          </div>
 
-        <div className="offer-progress">
-          <div
-            className="offer-progress-fill"
-            style={{ width: `${progressPercent}%` }}
-          />
+          <div className="offer-progress">
+            <div
+              className="offer-progress-fill"
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
         </div>
       </div>
 

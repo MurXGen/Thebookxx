@@ -10,7 +10,10 @@ export default function TrendingBooks() {
   if (!trendingBooks.length) return null;
 
   return (
-    <section className="catalogue-section-2 trending-section">
+    <section
+      className="catalogue-section-2 trending-section"
+      style={{ marginTop: "24px" }}
+    >
       {/* Section Header */}
       <LabelDivider label="Trending books" />
 

@@ -109,8 +109,8 @@ Really excited to read these soon 🤍
 
       {/* Price Summary */}
       <div className="bag-summary ticket">
-        <div className="ticket-cut top" />
-        <div className="ticket-cut bottom" />
+        {/* <div className="ticket-cut top" />
+        <div className="ticket-cut bottom" /> */}
 
         <div className="summary-row">
           <span>Total MRP</span>

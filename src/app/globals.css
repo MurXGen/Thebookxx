@@ -848,33 +848,27 @@ button:hover {
   padding: var(--px-16);
 }
 
+.greenbox {
+  background: linear-gradient(90deg, #fbbf24, #f59e0b);
+  color: var(--white-100);
+  border-radius: var(--px-12);
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
 /* Bag */
 
-.bag-summary.ticket {
-  position: relative;
-  padding: var(--px-20);
+.bag-summary {
+  position: sticky;
+  bottom: 1px;
+  padding-top: var(--px-24);
+  border-top: 1px dashed grey;
+  /* padding: var(--px-20);
   background: var(--white-100);
   border: 1px solid rgba(0, 0, 0, 0.2);
-  border-radius: var(--px-12);
-}
-
-/* Ticket side cuts */
-.ticket-cut {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  background: #ededed;
-  border-radius: 50%;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.ticket-cut.top {
-  top: -10px;
-}
-
-.ticket-cut.bottom {
-  bottom: -10px;
+  border-radius: var(--px-12); */
 }
 
 /* Rows */
@@ -1452,5 +1446,45 @@ button:hover {
 
   .sort-dropdown {
     width: 180px;
+  }
+}
+
+.toast {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 20px;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 500;
+  z-index: 9999;
+  backdrop-filter: blur(12px);
+  animation: slideDown 0.3s ease;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.toast-warning {
+  background: rgba(255, 183, 3, 0.1);
+  color: #1a1a1a;
+}
+
+.toast-success {
+  background: rgba(34, 197, 94, 0.9);
+  color: white;
+}
+
+button:disabled {
+  opacity: 0.5;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -10px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
   }
 }

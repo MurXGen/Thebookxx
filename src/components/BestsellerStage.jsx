@@ -7,14 +7,14 @@ import Link from "next/link";
 import { Star } from "lucide-react";
 import { books } from "@/utils/book";
 
-const SWAP_INTERVAL = 2000;
+const SWAP_INTERVAL = 3000;
 
 export default function BestsellerStage() {
   const bestsellerBooks = useMemo(
     () =>
       books.filter((b) =>
         b.catalogue?.some((c) =>
-          ["trending", "bestseller"].includes(c.toLowerCase()),
+          ["novel", "bestseller", "trending"].includes(c.toLowerCase()),
         ),
       ),
     [],

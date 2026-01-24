@@ -6,6 +6,7 @@ import { Book, Plus, Minus } from "lucide-react";
 import { useStore } from "@/context/StoreContext";
 import WishlistButton from "./UI/WishListButton";
 import { useState } from "react";
+import { trackAddToCart } from "@/lib/ga";
 
 export default function BookCard({ book }) {
   const { cart, wishlist, addToCart, decreaseQty, toggleWishlist } = useStore();
@@ -91,7 +92,10 @@ export default function BookCard({ book }) {
             {qty === 0 ? (
               <button
                 className="pri-mid-btn width100"
-                onClick={() => addToCart(book.id)}
+                onClick={() => {
+                  addToCart(book.id);
+                  trackAddToCart({ book, qty: 1 });
+                }}
                 aria-label={`Add ${book.name} to cart`}
               >
                 Add
@@ -109,7 +113,10 @@ export default function BookCard({ book }) {
                 <span className="qty">{qty}</span>
 
                 <button
-                  onClick={() => addToCart(book.id)}
+                  onClick={() => {
+                    addToCart(book.id);
+                    trackAddToCart({ book, qty: 1 });
+                  }}
                   className="plus-cart"
                   aria-label={`Increase quantity of ${book.name}`}
                 >

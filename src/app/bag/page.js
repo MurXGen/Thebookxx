@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 export default function BagPage() {
   const { cart } = useStore();
   const router = useRouter();
-  // Merge cart (id + qty) with book data
+
   const cartBooks = cart
     .map((item) => {
       const book = books.find((b) => b.id === item.id);
@@ -59,7 +59,7 @@ export default function BagPage() {
   const generateViewBagLink = () => {
     const items = cart.map((item) => `${item.id}:${item.qty}`).join(",");
 
-    return `${window.location.origin}/view-bag?items=${items}`;
+    return `${window.location.origin}/viewBag?items=${items}`;
   };
 
   const handleWhatsAppCheckout = () => {

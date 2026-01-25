@@ -59,7 +59,7 @@ export default function BagPage() {
   const generateViewBagLink = () => {
     const items = cart.map((item) => `${item.id}:${item.qty}`).join(",");
 
-    return `${window.location.origin}/viewBag?items=${items}`;
+    return `${window.location.origin}/view-bag?items=${items}`;
   };
 
   const handleWhatsAppCheckout = () => {

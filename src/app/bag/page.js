@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useStore } from "@/context/StoreContext";
 import { books } from "@/utils/book";
 import BookCard from "@/components/BookCard";
@@ -9,6 +10,13 @@ import { useRouter } from "next/navigation";
 export default function BagPage() {
   const { cart } = useStore();
   const router = useRouter();
+  const [siteOrigin, setSiteOrigin] = useState("");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setSiteOrigin(window.location.origin);
+    }
+  }, []);
 
   const cartBooks = cart
     .map((item) => {
@@ -57,18 +65,17 @@ export default function BagPage() {
   );
 
   const generateViewBagLink = () => {
+    if (!siteOrigin) return "";
+
     const items = cart.map((item) => `${item.id}:${item.qty}`).join(",");
 
-    return `${window.location.origin}/view-bag?items=${items}`;
+    return `${siteOrigin}/view-bag?items=${encodeURIComponent(items)}`;
   };
 
   const handleWhatsAppCheckout = () => {
-    const phoneNumber = "917710892108"; // your WhatsApp number
-    const siteUrl = window.location.origin;
+    if (!siteOrigin) return;
 
-    const itemsText = cartBooks
-      .map((b, i) => `${i + 1}. ${b.name} × ${b.qty}`)
-      .join("\n");
+    const phoneNumber = "917710892108";
 
     const viewBagLink = generateViewBagLink();
 

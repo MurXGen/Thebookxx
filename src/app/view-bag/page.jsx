@@ -2,6 +2,7 @@
 
 export const dynamic = "force-dynamic";
 
+import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { books } from "@/utils/book";
 import { ArrowLeft } from "lucide-react";
@@ -9,10 +10,15 @@ import { ArrowLeft } from "lucide-react";
 export default function ViewBagPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const [currentUrl, setCurrentUrl] = useState("");
+
+  useEffect(() => {
+    setCurrentUrl(window.location.href);
+  }, []);
 
   const itemsParam = searchParams.get("items");
 
-  // ❌ No items → invalid link
+  /* ❌ Invalid link */
   if (!itemsParam) {
     return (
       <div className="section-1200 flex flex-col gap-12 items-center">
@@ -24,25 +30,29 @@ export default function ViewBagPage() {
     );
   }
 
-  // 🔒 Parse strictly
+  /* 🔒 Strict parsing */
   const cartBooks = itemsParam
     .split(",")
     .map((entry) => {
       const [id, qty] = entry.split(":");
       const book = books.find((b) => b.id === id);
-      if (!book || !qty) return null;
+
+      if (!book || !qty || Number(qty) <= 0) return null;
 
       return {
         ...book,
-        qty: Math.max(1, Number(qty)),
+        qty: Math.min(10, Math.max(1, Number(qty))), // clamp qty
       };
     })
     .filter(Boolean);
 
   if (!cartBooks.length) {
     return (
-      <div className="section-1200">
+      <div className="section-1200 flex flex-col gap-12 items-center">
         <h2>No valid books found</h2>
+        <button onClick={() => router.push("/")} className="pri-big-btn">
+          Browse Books
+        </button>
       </div>
     );
   }
@@ -56,6 +66,16 @@ export default function ViewBagPage() {
     (sum, b) => sum + b.discountedPrice * b.qty,
     0,
   );
+
+  const whatsappMessage = `
+Hi 👋  
+I want to order these books 📚
+
+💰 Total: ₹${totalDiscounted}
+
+🔗 View Bag:
+${currentUrl}
+`;
 
   return (
     <section className="section-1200 flex flex-col gap-24">
@@ -114,9 +134,10 @@ export default function ViewBagPage() {
 
         <a
           href={`https://wa.me/917710892108?text=${encodeURIComponent(
-            `Hi 👋 I want to order these books.\nTotal: ₹${totalDiscounted}\n\n${window.location.href}`,
+            whatsappMessage,
           )}`}
           target="_blank"
+          rel="noopener noreferrer"
           className="pri-big-btn width100 margin-tp-16px"
         >
           Continue on WhatsApp

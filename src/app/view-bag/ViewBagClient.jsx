@@ -77,7 +77,7 @@ export default function ViewBagClient() {
 
       <a
         href={`https://wa.me/917710892108?text=${encodeURIComponent(
-          `Hi 👋 I want to order these books.\nTotal: ₹${totalDiscounted}\n\n${currentUrl}`,
+          `Hi 👋 Here is your order total bill amount.\nTotal: ₹${totalDiscounted}`,
         )}`}
         target="_blank"
         className="pri-big-btn"

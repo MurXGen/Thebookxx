@@ -2,7 +2,7 @@
 export const CART_OFFERS = [
   {
     min: 0,
-    target: 150,
+    target: 151,
     type: "free_shipping",
     message: "Add ₹{remaining} more for FREE delivery",
     icon: "gift",

@@ -56,6 +56,12 @@ export default function BagPage() {
     0,
   );
 
+  const generateViewBagLink = () => {
+    const items = cart.map((item) => `${item.id}:${item.qty}`).join(",");
+
+    return `${window.location.origin}/view-bag?items=${items}`;
+  };
+
   const handleWhatsAppCheckout = () => {
     const phoneNumber = "917710892108"; // your WhatsApp number
     const siteUrl = window.location.origin;
@@ -64,19 +70,17 @@ export default function BagPage() {
       .map((b, i) => `${i + 1}. ${b.name} × ${b.qty}`)
       .join("\n");
 
+    const viewBagLink = generateViewBagLink();
+
     const message = `
 Hey 👋✨  
 
-I’d love to place an order for the following books 📚💛  
+I’d like to order these books 📚  
 
-${itemsText}
+💰 Total: ₹${totalDiscounted}
 
-💰 Total Payable: ₹${totalDiscounted}
-
-Please help me with the checkout process 🙏  
-Really excited to read these soon 🤍  
-
-🔗 ${siteUrl}
+🔗 View Bag:
+${viewBagLink}
 `;
 
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(

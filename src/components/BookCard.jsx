@@ -19,12 +19,13 @@ export default function BookCard({ book }) {
   const savings = book.originalPrice - book.discountedPrice;
 
   const isOneRupee = book.discountedPrice === 1;
+
   const hasOneRupeeInCart = cart.some((i) => {
     const b = books.find((x) => x.id === i.id);
     return b?.discountedPrice === 1;
   });
 
-  const bookUrl = `#`; // 🔥 SEO-friendly internal link
+  const bookUrl = `/books/${book.id}`;
 
   return (
     <article

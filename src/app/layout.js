@@ -41,6 +41,12 @@ export const metadata = {
   authors: [{ name: "TheBookX" }],
   creator: "TheBookX",
   publisher: "TheBookX",
+  manifest: "/manifest.json",
+  themeColor: "#000",
+  icons: {
+    icon: "/favicon.png",
+    apple: "/favicon.png",
+  },
 
   robots: {
     index: true,
@@ -95,6 +101,11 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
+        <meta name="application-name" content="TheBookX" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="TheBookX" />
         {/* Google Analytics */}
         <Script
           strategy="afterInteractive"

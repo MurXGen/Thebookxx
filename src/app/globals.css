@@ -778,8 +778,9 @@ button:hover {
   padding: var(--px-12) var(--px-16);
   border-radius: var(--px-12);
   text-align: center;
-  background: var(--dark-50);
-  color: var(--white-100);
+  background: transparent;
+  border: 1px solid var(--dark) !important;
+  color: var(--dark);
   border: none;
   font-size: var(--px-12);
   font-family: "Poppins";

@@ -3,10 +3,34 @@
 import Image from "next/image";
 import { X, Heart, ShoppingCart, ArrowLeft } from "lucide-react";
 import { useStore } from "@/context/StoreContext";
+import { books } from "@/utils/book";
+import { useRouter } from "next/navigation";
 
 export default function BookDetailsModal({ book, onClose }) {
-  const { addToCart, toggleWishlist, wishlist } = useStore();
+  const { cart, addToCart, toggleWishlist, wishlist } = useStore();
   const inWishlist = wishlist.includes(book.id);
+  const router = useRouter();
+
+  const isOneRupee = book.discountedPrice === 1;
+
+  const hasOneRupeeInCart = cart.some((i) => {
+    const b = books.find((x) => x.id === i.id);
+    return b?.discountedPrice === 1;
+  });
+
+  const handleWishlist = () => {
+    toggleWishlist(book.id);
+
+    // ⏪ Go back after action
+    router.back();
+  };
+
+  const handleAddToCart = () => {
+    addToCart(book.id);
+
+    // ⏪ Go back after action
+    router.back();
+  };
 
   return (
     <div className="book-detail=section">
@@ -64,11 +88,10 @@ export default function BookDetailsModal({ book, onClose }) {
           </div>
         </div>
 
-        {/* 🔒 Fixed bottom CTA */}
         <div className="book-detail-cta section-1200">
           <button
             className="width100 flex flex-row items-center gap-12 justify-center sec-big-btn"
-            onClick={() => toggleWishlist(book.id)}
+            onClick={handleWishlist}
           >
             <Heart size={20} fill={inWishlist ? "red" : "none"} />
             Save for later
@@ -76,7 +99,8 @@ export default function BookDetailsModal({ book, onClose }) {
 
           <button
             className="width100 pri-big-btn flex flex-row items-center gap-12 justify-center"
-            onClick={() => addToCart(book.id)}
+            onClick={handleAddToCart}
+            disabled={isOneRupee && hasOneRupeeInCart}
           >
             <ShoppingCart size={20} />
             Add to Cart

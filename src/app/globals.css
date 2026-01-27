@@ -1573,7 +1573,7 @@ button:disabled {
 }
 
 .view-bill-text {
-  font-size: 12px;
+  font-size: var(--px-12);
   color: #16a34a;
   cursor: pointer;
 }
@@ -1594,18 +1594,22 @@ button:disabled {
   background: #fff;
   padding: 16px;
   border-radius: 16px 16px 0 0;
+  font-size: var(--px-12);
 }
 
 .bill-header {
   display: flex;
   justify-content: space-between;
+  padding-bottom: 12px;
   margin-bottom: 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .bill-row {
   display: flex;
   justify-content: space-between;
   margin-bottom: 8px;
+  padding-bottom: 8px;
 }
 
 .bill-row.total {

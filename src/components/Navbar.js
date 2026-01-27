@@ -103,15 +103,15 @@ function formatOfferMessage(offer) {
   if (offer.type === "percentage") {
     return (
       <>
-        Get <strong className="shinny-icon">{offer.value}% OFF</strong> on
-        orders above {offer.target}
+        Get <strong className="shinny-icon">Free delivery</strong> on orders
+        above {offer.target}
       </>
     );
   }
 
   return (
     <>
-      <strong className="shinny-icon">Free delivery</strong> on orders above{" "}
+      <strong className="shinny-icon">Confirm order</strong> on orders above{" "}
       {offer.target}
     </>
   );

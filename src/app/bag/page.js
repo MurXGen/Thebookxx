@@ -85,7 +85,7 @@ export default function BagPage() {
 
     if (appliedOffer.type === "percentage") {
       offerDiscount = Math.round((totalDiscounted * appliedOffer.value) / 100);
-      offerLabel = `${appliedOffer.value}% OFF`;
+      offerLabel = `Free delivery 🚚`;
     }
   }
 

@@ -8,10 +8,10 @@ export const CART_OFFERS = [
     icon: "gift",
   },
   {
-    min: 150,
+    min: 151,
     target: 300,
     type: "percentage",
-    value: 10,
+    value: 0,
     message: "Add ₹{remaining} more to get free shipping",
     icon: "sparkle",
   },
@@ -20,7 +20,7 @@ export const CART_OFFERS = [
     target: 500,
     type: "flat",
     value: 100,
-    message: "Add ₹{remaining} more & get flat 10% OFF",
+    message: "Add ₹{remaining} more & get flat ₹100 OFF",
     icon: "sparkle",
   },
   {

@@ -44,7 +44,7 @@ export default function CartBar() {
 
     if (appliedOffer.type === "percentage") {
       offerDiscount = Math.round((discountedAmount * appliedOffer.value) / 100);
-      offerLabel = `${appliedOffer.value}% discount availed`;
+      offerLabel = `Free shipping availed`;
     }
   }
 

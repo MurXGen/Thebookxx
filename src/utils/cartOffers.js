@@ -4,7 +4,7 @@ export const CART_OFFERS = [
     min: 0,
     target: 151,
     type: "free_shipping",
-    message: "Add ₹{remaining} more for FREE delivery",
+    message: "Add ₹{remaining} more for checkout",
     icon: "gift",
   },
   {
@@ -12,7 +12,7 @@ export const CART_OFFERS = [
     target: 300,
     type: "percentage",
     value: 10,
-    message: "Add ₹{remaining} more to get FLAT 10% OFF",
+    message: "Add ₹{remaining} more to get free shipping",
     icon: "sparkle",
   },
   {
@@ -20,7 +20,7 @@ export const CART_OFFERS = [
     target: 500,
     type: "flat",
     value: 100,
-    message: "Add ₹{remaining} more & get ₹100 OFF",
+    message: "Add ₹{remaining} more & get flat 10% OFF",
     icon: "sparkle",
   },
   {

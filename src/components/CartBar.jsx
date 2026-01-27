@@ -3,8 +3,8 @@
 import { books } from "@/utils/book";
 import { useStore } from "@/context/StoreContext";
 import { CART_OFFERS } from "@/utils/cartOffers";
-import { Gift, Percent, Sparkles, Truck } from "lucide-react";
 import { useRouter } from "next/navigation";
+import CartOfferStrip from "@/components/UI/CartOfferStrip";
 
 export default function CartBar() {
   const { cart } = useStore();
@@ -26,20 +26,13 @@ export default function CartBar() {
     })
     .filter(Boolean);
 
-  const originalAmount = cartBooks.reduce((s, b) => s + b.originalTotal, 0);
   const discountedAmount = cartBooks.reduce((s, b) => s + b.discountedTotal, 0);
 
-  /* 🔄 Offer in progress */
-  const progressOffer = CART_OFFERS.find(
-    (o) => discountedAmount >= o.min && discountedAmount < o.target,
-  );
-
-  /* 🎉 Applied offer */
+  /* 🎉 Applied offer (needed for pricing only) */
   const appliedOffer =
     [...CART_OFFERS].reverse().find((o) => discountedAmount >= o.target) ||
     null;
 
-  /* 💸 Discount calculation */
   let offerDiscount = 0;
   let offerLabel = null;
 
@@ -53,64 +46,14 @@ export default function CartBar() {
       offerDiscount = Math.round((discountedAmount * appliedOffer.value) / 100);
       offerLabel = `${appliedOffer.value}% discount availed`;
     }
-
-    if (appliedOffer.type === "free_shipping") {
-      offerLabel = "Free delivery availed";
-    }
   }
 
   const finalPayable = discountedAmount - offerDiscount;
 
-  const progressPercent = progressOffer
-    ? Math.min((discountedAmount / progressOffer.target) * 100, 100)
-    : 100;
-
-  const remaining = progressOffer
-    ? Math.max(progressOffer.target - discountedAmount, 0)
-    : 0;
-
   return (
     <div className="cart-bar">
       {/* 🎁 OFFER STRIP */}
-      <div className="cart-offer flex flex-row gap-12">
-        <div className="greenbox">
-          {progressOffer.icon === "gift" ? (
-            <Percent size={16} />
-          ) : (
-            <Percent size={16} />
-          )}
-        </div>
-        <div className="width100">
-          <div className="offer-text">
-            {progressOffer ? (
-              <>
-                <span>
-                  {progressOffer.message.replace(
-                    "{remaining}",
-                    `₹${remaining}`,
-                  )}
-                </span>
-              </>
-            ) : appliedOffer ? (
-              <>
-                {appliedOffer.type === "free_shipping" ? (
-                  <Truck size={16} />
-                ) : (
-                  <Sparkles className="sparkle-animate" size={16} />
-                )}
-                <span>{offerLabel}</span>
-              </>
-            ) : null}
-          </div>
-
-          <div className="offer-progress">
-            <div
-              className="offer-progress-fill"
-              style={{ width: `${progressPercent}%` }}
-            />
-          </div>
-        </div>
-      </div>
+      <CartOfferStrip discountedAmount={discountedAmount} />
 
       {/* 🛒 CART CTA */}
       <div className="cart-bar-main flex flex-row gap-12">
@@ -125,13 +68,12 @@ export default function CartBar() {
                 )}
                 <span className="final weight-600">₹{finalPayable}</span>
               </div>
+
               {appliedOffer && (
                 <span className="font-14 green weight-600">{offerLabel}</span>
               )}
             </div>
           </div>
-
-          {/* ✅ Discount helper text */}
         </div>
 
         <button className="pri-big-btn" onClick={() => router.push("/bag")}>

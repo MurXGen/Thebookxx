@@ -6,11 +6,19 @@ import { books } from "@/utils/book";
 import BookCard from "@/components/BookCard";
 import { ArrowLeft, BaggageClaimIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
+import CartOfferStrip from "@/components/UI/CartOfferStrip";
+import BillModal from "@/components/UI/BillModal";
+import { CART_OFFERS } from "@/utils/cartOffers";
 
 export default function BagPage() {
   const { cart } = useStore();
   const router = useRouter();
   const [siteOrigin, setSiteOrigin] = useState("");
+  const [showBill, setShowBill] = useState(false);
+
+  const getAppliedOffer = (amount) => {
+    return [...CART_OFFERS].reverse().find((o) => amount >= o.target) || null;
+  };
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -64,6 +72,26 @@ export default function BagPage() {
     0,
   );
 
+  const appliedOffer = getAppliedOffer(totalDiscounted);
+
+  let offerDiscount = 0;
+  let offerLabel = null;
+
+  if (appliedOffer) {
+    if (appliedOffer.type === "flat") {
+      offerDiscount = appliedOffer.value;
+      offerLabel = `₹${appliedOffer.value} OFF`;
+    }
+
+    if (appliedOffer.type === "percentage") {
+      offerDiscount = Math.round((totalDiscounted * appliedOffer.value) / 100);
+      offerLabel = `${appliedOffer.value}% OFF`;
+    }
+  }
+
+  const finalPayable = totalDiscounted - offerDiscount;
+  const canCheckout = totalDiscounted >= 151;
+
   const generateViewBagLink = () => {
     if (!siteOrigin) return "";
 
@@ -98,7 +126,10 @@ ${viewBagLink}
   };
 
   return (
-    <section className="section-1200 flex flex-col gap-24">
+    <section
+      className="section-1200 flex flex-col gap-24"
+      style={{ maxWidth: "700px" }}
+    >
       {/* Header */}
 
       <div className="flex flec-row gap-12 items-center">
@@ -111,6 +142,8 @@ ${viewBagLink}
         </div>
       </div>
 
+      <CartOfferStrip discountedAmount={totalDiscounted} />
+
       {/* Book Cards */}
       <div className="grid-2">
         {cartBooks.map((book) => (
@@ -119,32 +152,46 @@ ${viewBagLink}
       </div>
 
       {/* Price Summary */}
-      <div className="bag-summary ticket">
-        {/* <div className="ticket-cut top" />
-        <div className="ticket-cut bottom" /> */}
+      {/* FIXED BOTTOM BAR */}
+      <div className="fixed-bill-bar">
+        <div className="bill-left">
+          <span className="font-12 dark-50">Total payable</span>
+          <div className="flex gap-8 items-center">
+            <span className="font-16 weight-600 discounted">
+              ₹{finalPayable}
+            </span>
+            {offerDiscount > 0 && (
+              <span className="strike dark-50 original">
+                ₹{totalDiscounted}
+              </span>
+            )}{" "}
+            {appliedOffer && (
+              <span className="font-14 green weight-600">{offerLabel}</span>
+            )}
+          </div>
 
-        <div className="summary-row">
-          <span>Total MRP</span>
-          <span>₹{totalOriginal}</span>
-        </div>
-
-        <div className="summary-row discount-row">
-          <span>Discount</span>
-          <span className="green">− ₹{totalOriginal - totalDiscounted}</span>
-        </div>
-
-        <div className="summary-row total">
-          <span>You Pay</span>
-          <span>₹{totalDiscounted}</span>
+          <span className="view-bill-text" onClick={() => setShowBill(true)}>
+            View bill
+          </span>
         </div>
 
         <button
-          className="pri-big-btn width100 margin-tp-16px"
+          className="pri-big-btn"
+          disabled={!canCheckout}
           onClick={handleWhatsAppCheckout}
         >
-          Proceed to Checkout
+          Confirm Order
         </button>
       </div>
+
+      <BillModal
+        open={showBill}
+        onClose={() => setShowBill(false)}
+        totalOriginal={totalOriginal}
+        totalDiscounted={totalDiscounted}
+        offerDiscount={offerDiscount}
+        offerLabel={offerLabel}
+      />
     </section>
   );
 }

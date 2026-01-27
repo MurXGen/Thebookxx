@@ -12,9 +12,6 @@ export default function BagPage() {
   const router = useRouter();
   const [siteOrigin, setSiteOrigin] = useState("");
 
-  const MIN_CHECKOUT_AMOUNT = 151;
-  const isCheckoutDisabled = totalDiscounted < MIN_CHECKOUT_AMOUNT;
-
   useEffect(() => {
     if (typeof window !== "undefined") {
       setSiteOrigin(window.location.origin);
@@ -142,15 +139,10 @@ ${viewBagLink}
         </div>
 
         <button
-          className={`pri-big-btn width100 margin-tp-16px ${
-            isCheckoutDisabled ? "disabled-btn" : ""
-          }`}
+          className="pri-big-btn width100 margin-tp-16px"
           onClick={handleWhatsAppCheckout}
-          disabled={isCheckoutDisabled}
         >
-          {isCheckoutDisabled
-            ? `Add ₹${MIN_CHECKOUT_AMOUNT - totalDiscounted} more to checkout`
-            : "Proceed to Checkout"}
+          Proceed to Checkout
         </button>
       </div>
     </section>

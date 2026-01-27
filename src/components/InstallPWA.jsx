@@ -1,38 +1,40 @@
 "use client";
-import { useEffect, useState } from "react";
-import { Download } from "lucide-react";
 
-export function PWAInstallBanner() {
+import { useEffect, useState } from "react";
+
+export default function InstallPWA() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
-  const [show, setShow] = useState(false);
+  const [showInstall, setShowInstall] = useState(false);
 
   useEffect(() => {
     const handler = (e) => {
       e.preventDefault();
       setDeferredPrompt(e);
-      setShow(true);
+      setShowInstall(true);
     };
 
     window.addEventListener("beforeinstallprompt", handler);
+
     return () => window.removeEventListener("beforeinstallprompt", handler);
   }, []);
 
-  const installApp = async () => {
+  const handleInstall = async () => {
     if (!deferredPrompt) return;
+
     deferredPrompt.prompt();
-    await deferredPrompt.userChoice;
-    setDeferredPrompt(null);
-    setShow(false);
+    const choice = await deferredPrompt.userChoice;
+
+    if (choice.outcome === "accepted") {
+      setShowInstall(false);
+    }
   };
 
-  if (!show) return null;
+  if (!showInstall) return null;
 
   return (
     <div className="pwa-install">
-      <span>📚 Install TheBookX for faster shopping</span>
-      <button onClick={installApp} className="pri-small-btn">
-        <Download size={16} /> Install
-      </button>
+      <span>📱 Install TheBookX App</span>
+      <button onClick={handleInstall}>Download</button>
     </div>
   );
 }

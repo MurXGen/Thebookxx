@@ -4,6 +4,7 @@ import Script from "next/script";
 import { StoreProvider } from "@/context/StoreContext";
 import AnalyticsTracker from "@/components/AnalyticsTracker";
 import { ToastProvider } from "@/context/ToastContext";
+import RegisterSW from "@/components/RegisterSW";
 
 /* Font */
 const poppins = Poppins({
@@ -101,6 +102,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
+        <link rel="manifest" href="/manifest.json" />
         <meta name="application-name" content="TheBookX" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -125,6 +127,7 @@ export default function RootLayout({ children }) {
       <body className={poppins.variable}>
         <ToastProvider>
           <StoreProvider>
+            <RegisterSW />
             <AnalyticsTracker />
             {children}
           </StoreProvider>

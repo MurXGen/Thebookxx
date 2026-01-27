@@ -1536,7 +1536,7 @@ button:disabled {
 
 .pwa-install {
   position: fixed;
-  top: 16px;
+  bottom: 16px;
   left: 50%;
   transform: translateX(-50%);
   background: #000;
@@ -1547,4 +1547,13 @@ button:disabled {
   gap: 12px;
   align-items: center;
   z-index: 9999;
+}
+
+.pwa-install button {
+  background: #ffb703;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
 }

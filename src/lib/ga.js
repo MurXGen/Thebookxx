@@ -17,3 +17,9 @@ export const trackAddToCart = ({ book, qty = 1 }) => {
     ],
   });
 };
+
+export const trackEvent = (event, params = {}) => {
+  if (typeof window === "undefined" || !window.gtag) return;
+
+  window.gtag("event", event, params);
+};

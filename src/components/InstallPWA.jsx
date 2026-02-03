@@ -54,15 +54,20 @@ export default function InstallPWA() {
   if (!showInstall) return null;
 
   return (
-    <div className="pwa-install">
+    <div
+      className="mobile-offer-strip flex flex-row gap-32"
+      style={{ borderBlock: "1px solid grey" }}
+      onClick={handleInstall}
+    >
       <span className="font-14">Install TheBookX App</span>
 
-      <button
-        onClick={handleInstall}
-        className="pri-big-btn flex flex-row gap-12"
+      <div
+        className="flex flex-row gap-4 items-center"
+        style={{ textDecoration: "underline" }}
       >
-        <Download size={16} /> Download
-      </button>
+        <Download size={12} />
+        <span className="shinny-icon">Download</span>
+      </div>
     </div>
   );
 }

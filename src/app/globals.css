@@ -1534,19 +1534,6 @@ button:disabled {
   border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-.pwa-install {
-  background: rgba(0, 0, 0, 1);
-  backdrop-filter: blur(120px);
-  border: 1px solid var(--white-50);
-  color: #fff;
-  padding: 16px;
-  display: flex;
-  gap: var(--px-12);
-  align-items: center;
-  justify-content: space-between;
-  z-index: 9999;
-}
-
 .fixed-bill-bar {
   position: fixed;
   bottom: 0;

@@ -56,18 +56,19 @@ export default function InstallPWA() {
   return (
     <div
       className="mobile-offer-strip flex flex-row gap-32"
-      style={{ borderBlock: "1px solid grey", position: "sticky", top: "0px" }}
-      onClick={handleInstall}
+      style={{
+        borderBlock: "1px solid grey",
+        position: "sticky",
+        top: "0px",
+        cursor: "pointer",
+        zIndex: "9999",
+        boxShadow: "4px 0 12px #000000",
+      }}
     >
-      <span className="font-14">Install TheBookX App</span>
+      <span className="font-14">Click to install app</span>
 
-      <div
-        className="flex flex-row gap-4 items-center"
-        style={{ textDecoration: "underline" }}
-      >
-        <span className="shinny-icon weight-600">
-          Install & Get upto Rs.100 off
-        </span>
+      <div className="flex flex-row gap-4 items-center">
+        <span className="shinny-icon weight-600">Get upto Rs.100 off</span>
       </div>
     </div>
   );

@@ -33,8 +33,10 @@ export default function InstallPWA() {
 
   return (
     <div className="pwa-install">
-      <span>📱 Install TheBookX App</span>
-      <button onClick={handleInstall}>Download</button>
+      <span>Install TheBookX App</span>
+      <button className="pri-mid-btn" onClick={handleInstall}>
+        Download
+      </button>
     </div>
   );
 }

@@ -1535,33 +1535,23 @@ button:disabled {
 }
 
 .pwa-install {
-  width: 100%;
-  min-width: 300px;
-  max-width: 520px;
+  width: 80%;
   position: fixed;
   top: 16px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(52px);
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(120px);
   border: 1px solid var(--white-20);
   color: #fff;
-  padding: 12px 16px;
+  padding: 16px;
   border-radius: var(--px-12);
   display: flex;
   gap: var(--px-12);
   align-items: center;
+  justify-content: space-between;
   z-index: 9999;
   box-shadow: 0 0 12px var(--dark-20);
-}
-
-.pwa-install button {
-  background: var(--dark);
-  border: none;
-  padding: 6px 12px;
-  border-radius: var(--px-24);
-  cursor: pointer;
-  color: var(--white-100);
 }
 
 .fixed-bill-bar {

@@ -10,6 +10,7 @@ import OneRupeeDeals from "@/components/OneRupeeDeals";
 import TrendingBooks from "@/components/TrendingBooks";
 import LabelDivider from "@/components/UI/LineDivider";
 import UrgencyOffer from "@/components/UrgencyOffer";
+import { Download } from "lucide-react";
 
 export default function HomePage() {
   return (

@@ -1535,14 +1535,15 @@ button:disabled {
 }
 
 .pwa-install {
-  width: 80%;
+  width: 90%;
+  max-width: 400px;
   position: fixed;
-  top: 16px;
+  top: 32px;
   left: 50%;
   transform: translateX(-50%);
   background: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(120px);
-  border: 1px solid var(--white-20);
+  border: 1px solid var(--white-50);
   color: #fff;
   padding: 16px;
   border-radius: var(--px-12);
@@ -1551,7 +1552,7 @@ button:disabled {
   align-items: center;
   justify-content: space-between;
   z-index: 9999;
-  box-shadow: 0 0 12px var(--dark-20);
+  box-shadow: 0 0 12px var(--dark-50);
 }
 
 .fixed-bill-bar {

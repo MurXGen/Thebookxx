@@ -1,5 +1,6 @@
 "use client";
 
+import { Download } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function InstallPWA() {
@@ -33,9 +34,12 @@ export default function InstallPWA() {
 
   return (
     <div className="pwa-install">
-      <span>Install TheBookX App</span>
-      <button className="pri-mid-btn" onClick={handleInstall}>
-        Download
+      <span className="font-14 ">Install TheBookX App</span>
+      <button
+        onClick={handleInstall}
+        className="pri-big-btn flex flex-row gap-12"
+      >
+        <Download size={16} /> Download
       </button>
     </div>
   );

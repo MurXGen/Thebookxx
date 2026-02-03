@@ -64,6 +64,7 @@ export default function InstallPWA() {
         zIndex: "9999",
         boxShadow: "4px 0 12px #000000",
       }}
+      onClick={{ handleInstall }}
     >
       <span className="font-14">Click to install app</span>
 

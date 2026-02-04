@@ -21,7 +21,6 @@ export default function HomePage() {
       <CatalogueSection />
       <OneRupeeDeals />
       <TrendingBooks />
-      <InstallPWA />
       {/* <UrgencyOffer /> */}
       <AllBooks />
       <CartBar />

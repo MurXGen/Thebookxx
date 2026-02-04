@@ -36,7 +36,7 @@ export default function CatalogueSection() {
 
   return (
     <div className="flex flex-col gap-12 section-1200">
-      <LabelDivider label="Curated for you" />
+      <LabelDivider label="Categories" />
 
       <div className="catalogue-labels gap-16 flex-wrap">
         {catalogueData.map((cat) => (

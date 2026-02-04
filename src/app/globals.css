@@ -571,11 +571,7 @@ button:hover {
 /* Search overlay */
 
 .catalogue-section-2 {
-  background: var(--dark-10);
   padding: var(--px-42) var(--px-16);
-  border-radius: var(--px-24);
-  border-top: 1px solid rgba(0, 0, 0, 0.2);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
 }
 
 /* Trending books  */
@@ -588,17 +584,17 @@ button:hover {
 
 /* Card */
 .trending-card {
-  background: var(--white-80);
+  background: var(--dark-10);
+  padding: var(--px-12) 4px;
   border-radius: 8px;
-  /* overflow: hidden; */
-  border: 1px solid var(--dark-20);
+  overflow: hidden;
   min-width: 200px;
   max-width: 768px;
   transition-duration: 0.3s;
 }
 
 .trending-card:hover {
-  border: 1px solid var(--dark-50);
+  background: var(--white-100);
   transition: 0.3s;
 }
 

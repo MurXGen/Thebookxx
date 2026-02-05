@@ -11,6 +11,10 @@ export default function BookDetailsModal({ book, onClose }) {
   const inWishlist = wishlist.includes(book.id);
   const router = useRouter();
 
+  useEffect(() => {
+    trackViewBook(book);
+  }, []);
+
   const isOneRupee = book.discountedPrice === 1;
 
   const hasOneRupeeInCart = cart.some((i) => {

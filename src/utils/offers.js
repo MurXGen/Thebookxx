@@ -9,15 +9,7 @@ export const offers = CART_OFFERS.map((offer) => {
         id: offer.type,
         icon: FiTruck,
         title: "Free Delivery",
-        description: `On orders above ₹${offer.target}`,
-      };
-
-    case "percentage":
-      return {
-        id: `${offer.type}-${offer.value}`,
-        icon: FiTag,
-        title: `${offer.value}% OFF`,
-        description: `On orders above ₹${offer.target}`,
+        description: `On orders above ₹300`,
       };
 
     case "flat":

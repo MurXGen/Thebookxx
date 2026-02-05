@@ -1802,4 +1802,14 @@ export const books = [
     discountedPrice: 1,
     size: "Paperback",
   },
+  {
+    id: "bk-173",
+    name: "Art of laziness",
+    image: bookImages["art-of-laziness"],
+    description: "Embracing rest and finding productivity in stillness.",
+    catalogue: ["self-help", "trending"],
+    originalPrice: 139,
+    discountedPrice: 1,
+    size: "Paperback",
+  },
 ];

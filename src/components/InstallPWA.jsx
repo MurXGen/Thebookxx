@@ -3,6 +3,7 @@
 import { Download } from "lucide-react";
 import { useEffect, useState } from "react";
 import { trackEvent } from "@/lib/ga";
+import { motion } from "framer-motion";
 
 export default function InstallPWA() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
@@ -54,7 +55,7 @@ export default function InstallPWA() {
   if (!showInstall) return null;
 
   return (
-    <div
+    <motion.div
       className="mobile-offer-strip flex flex-row gap-32"
       style={{
         borderBlock: "1px solid grey",
@@ -65,12 +66,16 @@ export default function InstallPWA() {
         boxShadow: "4px 0 12px #000000",
       }}
       onClick={handleInstall}
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
     >
       <span className="font-14">Click to install app</span>
 
       <div className="flex flex-row gap-4 items-center">
         <span className="shinny-icon weight-600">Get upto Rs.100 off</span>
       </div>
-    </div>
+    </motion.div>
   );
 }

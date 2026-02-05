@@ -563,7 +563,7 @@ button:hover {
 .offer-content {
   display: flex;
   flex-direction: column;
-  gap: var(--px-8);
+  gap: var(--px-4);
 }
 
 /* Offers end */

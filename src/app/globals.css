@@ -460,6 +460,8 @@ button:hover {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    position: absolute;
+    top: var(--px-42);
   }
 }
 
@@ -571,7 +573,7 @@ button:hover {
 /* Search overlay */
 
 .catalogue-section-2 {
-  padding: var(--px-42) var(--px-16);
+  padding: 0 var(--px-16);
 }
 
 /* Trending books  */
@@ -1400,12 +1402,15 @@ button:hover {
   white-space: nowrap;
   color: var(--dark);
   text-transform: capitalize;
+  transform: none;
+  transition: 0.3s;
 }
 
 .filter-chip.active {
-  background: #000;
-  color: #fff;
+  background: var(--dark);
+  color: var(--white-100);
   border-color: #000;
+  transform: none;
 }
 
 /* SORT */

@@ -11,28 +11,28 @@ export default function CatalogueSection() {
   const [catalogueData, setCatalogueData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Get dynamic catalogue data
-    const data = getCatalogueData();
-    setCatalogueData(data);
-    setLoading(false);
-  }, []);
+  // useEffect(() => {
+  //   // Get dynamic catalogue data
+  //   const data = getCatalogueData();
+  //   setCatalogueData(data);
+  //   setLoading(false);
+  // }, []);
 
-  if (loading) {
-    return (
-      <div className="flex flex-col gap-12 section-1200">
-        <LabelDivider label="Curated for you" />
-        <div className="catalogue-labels gap-16 flex-wrap">
-          {[...Array(6)].map((_, i) => (
-            <div
-              key={i}
-              className="animate-pulse bg-gray-200 h-16 w-32 rounded-lg"
-            ></div>
-          ))}
-        </div>
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="flex flex-col gap-12 section-1200">
+  //       <LabelDivider label="Curated for you" />
+  //       <div className="catalogue-labels gap-16 flex-wrap">
+  //         {[...Array(6)].map((_, i) => (
+  //           <div
+  //             key={i}
+  //             className="animate-pulse bg-gray-200 h-16 w-32 rounded-lg"
+  //           ></div>
+  //         ))}
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="flex flex-col gap-12 section-1200">

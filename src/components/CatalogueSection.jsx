@@ -36,7 +36,7 @@ export default function CatalogueSection() {
 
   return (
     <div className="flex flex-col gap-12 section-1200">
-      <LabelDivider label="Categories" />
+      {/* <LabelDivider label="Categories" />
 
       <div className="catalogue-labels gap-16 flex-wrap">
         {catalogueData.map((cat) => (
@@ -54,7 +54,7 @@ export default function CatalogueSection() {
           category={activeCategory}
           onClose={() => setActiveCategory(null)}
         />
-      )}
+      )} */}
     </div>
   );
 }

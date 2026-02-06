@@ -5,7 +5,6 @@ import { useStore } from "@/context/StoreContext";
 import { CART_OFFERS } from "@/utils/cartOffers";
 import { useRouter } from "next/navigation";
 import CartOfferStrip from "@/components/UI/CartOfferStrip";
-import CheckoutButton from "./UI/CheckoutButton";
 
 export default function CartBar() {
   const { cart } = useStore();
@@ -77,7 +76,9 @@ export default function CartBar() {
           </div>
         </div>
 
-        <CheckoutButton />
+        <button className="pri-big-btn" onClick={() => router.push("/bag")}>
+          Checkout
+        </button>
       </div>
     </div>
   );

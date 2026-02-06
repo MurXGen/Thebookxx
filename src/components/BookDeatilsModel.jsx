@@ -5,6 +5,8 @@ import { X, Heart, ShoppingCart, ArrowLeft } from "lucide-react";
 import { useStore } from "@/context/StoreContext";
 import { books } from "@/utils/book";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { trackViewBook } from "@/lib/ga";
 
 export default function BookDetailsModal({ book, onClose }) {
   const { cart, addToCart, toggleWishlist, wishlist } = useStore();

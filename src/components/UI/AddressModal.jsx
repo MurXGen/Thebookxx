@@ -64,16 +64,13 @@ export default function AddressModal({
   };
 
   const handleSubmit = () => {
-    const totalAmount = finalPayable + extraCharge;
-
-    const note = `
-Hello
-  `;
-
-    const upiUrl = `upi://pay?pa=murthythevar@fifederal&pn=Thebookx&am=${totalAmount}&cu=INR&tn=${encodeURIComponent(note)}`;
-
-    window.location.href = upiUrl;
-
+    handleWhatsAppCheckout({
+      city,
+      pincode,
+      address,
+      quickDelivery,
+      extraCharge,
+    });
     onClose();
   };
 

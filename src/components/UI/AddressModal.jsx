@@ -64,13 +64,21 @@ export default function AddressModal({
   };
 
   const handleSubmit = () => {
-    handleWhatsAppCheckout({
-      city,
-      pincode,
-      address,
-      quickDelivery,
-      extraCharge,
-    });
+    const totalAmount = finalPayable + extraCharge;
+
+    const note = `
+Order from website
+City: ${city}
+Pincode: ${pincode}
+Address: ${address}
+Quick Delivery: ${quickDelivery ? "Yes" : "No"}
+Amount: ₹${totalAmount}
+  `;
+
+    const upiUrl = `upi://pay?pa=murthythevat@fifederal&pn=MurthyStore&am=${totalAmount}&cu=INR&tn=${encodeURIComponent(note)}`;
+
+    window.location.href = upiUrl;
+
     onClose();
   };
 

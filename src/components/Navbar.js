@@ -58,7 +58,7 @@ export default function Navbar() {
           {/* LEFT (mobile: wishlist) */}
           <div className="nav-left">
             <a href="/wishlist" aria-label="Wishlist">
-              <Heart fill="red" stroke="none" size={22} />
+              <Heart fill="red" stroke="none" size={32} />
             </a>
           </div>
 
@@ -75,11 +75,11 @@ export default function Navbar() {
               rel="noopener noreferrer"
               aria-label="WhatsApp"
             >
-              <FaWhatsapp size={22} color="#25D366" />
+              <FaWhatsapp size={32} color="#25D366" />
             </a>
 
             <a href="/bag" aria-label="Cart">
-              <HiOutlineShoppingBag size={24} />
+              <HiOutlineShoppingBag size={32} />
             </a>
           </div>
         </nav>

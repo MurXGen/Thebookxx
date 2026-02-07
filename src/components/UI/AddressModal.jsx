@@ -70,7 +70,7 @@ export default function AddressModal({
 Hello
   `;
 
-    const upiUrl = `upi://pay?pa=murthytheva@fifederal&pn=MurthyStore&am=${totalAmount}&cu=INR&tn=${encodeURIComponent(note)}`;
+    const upiUrl = `upi://pay?pa=murthythevar@fifederal&pn=Thebookx&am=${totalAmount}&cu=INR&tn=${encodeURIComponent(note)}`;
 
     window.location.href = upiUrl;
 

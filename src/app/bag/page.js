@@ -9,12 +9,14 @@ import { useRouter } from "next/navigation";
 import CartOfferStrip from "@/components/UI/CartOfferStrip";
 import BillModal from "@/components/UI/BillModal";
 import { CART_OFFERS } from "@/utils/cartOffers";
+import AddressModal from "@/components/UI/AddressModal";
 
 export default function BagPage() {
   const { cart } = useStore();
   const router = useRouter();
   const [siteOrigin, setSiteOrigin] = useState("");
   const [showBill, setShowBill] = useState(false);
+  const [showAddressModal, setShowAddressModal] = useState(false);
 
   const getAppliedOffer = (amount) => {
     return [...CART_OFFERS].reverse().find((o) => amount >= o.target) || null;
@@ -100,11 +102,8 @@ export default function BagPage() {
     return `${siteOrigin}/view-bag?items=${encodeURIComponent(items)}`;
   };
 
-  const handleWhatsAppCheckout = () => {
-    if (!siteOrigin) return;
-
+  const handleWhatsAppCheckout = (addressData) => {
     const phoneNumber = "917710892108";
-
     const viewBagLink = generateViewBagLink();
 
     const message = `
@@ -112,17 +111,24 @@ Hey 👋✨
 
 I’d like to order these books 📚  
 
-💰 Total: ₹${totalDiscounted}
+💰 Total: ~₹${totalDiscounted}~ ₹${finalPayable + addressData.extraCharge}
+
+📍 Address:
+City: ${addressData.city}
+Pincode: ${addressData.pincode}
+Address: ${addressData.address}
+
+🚀 Quick Delivery: ${addressData.quickDelivery ? "Yes" : "No"}
+Extra Charge: ₹${addressData.extraCharge}
 
 🔗 View Bag:
 ${viewBagLink}
 `;
 
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
-      message,
-    )}`;
-
-    window.open(whatsappUrl, "_blank");
+    window.open(
+      `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`,
+      "_blank",
+    );
   };
 
   return (
@@ -178,11 +184,19 @@ ${viewBagLink}
         <button
           className="pri-big-btn"
           disabled={!canCheckout}
-          onClick={handleWhatsAppCheckout}
+          onClick={() => setShowAddressModal(true)}
         >
           Confirm Order
         </button>
       </div>
+
+      <AddressModal
+        open={showAddressModal}
+        onClose={() => setShowAddressModal(false)}
+        finalPayable={finalPayable}
+        totalDiscounted={totalDiscounted}
+        handleWhatsAppCheckout={handleWhatsAppCheckout}
+      />
 
       <BillModal
         open={showBill}

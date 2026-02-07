@@ -273,6 +273,8 @@ a {
 
 button {
   transition-duration: 0.3s;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 button:hover {
@@ -361,7 +363,7 @@ button:hover {
 
 @media (max-width: 450px) {
   .book-image-wrapper {
-    height: 140px !important; /* fixed height */
+    height: 170px !important; /* fixed height */
     background: #ffffff;
     border-radius: var(--px-8);
   }
@@ -607,6 +609,9 @@ button:hover {
   height: 150px; /* fixed height */
   background: #ffffff;
   border-radius: var(--px-8);
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 }
 
 .book-image {
@@ -1045,7 +1050,6 @@ button:hover {
   padding: 16px 20px;
   border-bottom: 1px solid var(--dark-50);
   display: flex;
-  align-items: center;
   gap: 12px;
 }
 
@@ -1590,4 +1594,47 @@ button:disabled {
 
 .bill-row.total {
   font-weight: 600;
+  padding-top: var(--px-12);
+  border-top: 1px dashed var(--dark-20);
+}
+
+.address-modal {
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.address-modal input {
+  padding: 12px !important;
+  text-align: left;
+}
+
+/* Input group */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 14px;
+}
+
+.input-group label {
+  font-size: var(--px-12);
+  color: var(--dark);
+  margin-bottom: 4px;
+}
+
+.textarea {
+  min-height: 70px;
+  resize: none;
+  text-align: left;
+}
+
+.bill-row input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+}
+
+.viewbag-bill {
+  padding: var(--px-24);
+  border: 1px solid var(--dark-20);
+  font-size: var(--px-16);
 }

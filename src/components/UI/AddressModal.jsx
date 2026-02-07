@@ -75,7 +75,7 @@ Quick Delivery: ${quickDelivery ? "Yes" : "No"}
 Amount: ₹${totalAmount}
   `;
 
-    const upiUrl = `upi://pay?pa=murthythevat@fifederal&pn=MurthyStore&am=${totalAmount}&cu=INR&tn=${encodeURIComponent(note)}`;
+    const upiUrl = `upi://pay?pa=murthythevar@fifederal&pn=MurthyStore&am=${totalAmount}&cu=INR&tn=${encodeURIComponent(note)}`;
 
     window.location.href = upiUrl;
 

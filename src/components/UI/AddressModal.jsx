@@ -67,15 +67,10 @@ export default function AddressModal({
     const totalAmount = finalPayable + extraCharge;
 
     const note = `
-Order from website
-City: ${city}
-Pincode: ${pincode}
-Address: ${address}
-Quick Delivery: ${quickDelivery ? "Yes" : "No"}
-Amount: ₹${totalAmount}
+Hello
   `;
 
-    const upiUrl = `upi://pay?pa=murthythevar@fifederal&pn=MurthyStore&am=${totalAmount}&cu=INR&tn=${encodeURIComponent(note)}`;
+    const upiUrl = `upi://pay?pa=murthytheva@fifederal&pn=MurthyStore&am=${totalAmount}&cu=INR&tn=${encodeURIComponent(note)}`;
 
     window.location.href = upiUrl;
 

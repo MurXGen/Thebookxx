@@ -8,6 +8,7 @@ import WishlistButton from "./UI/WishListButton";
 import { useState } from "react";
 import { trackAddToCart } from "@/lib/ga";
 import { books } from "@/utils/book";
+import LoadingButton from "./UI/LoadingButton";
 
 export default function BookCard({ book }) {
   const { cart, wishlist, addToCart, decreaseQty, toggleWishlist } = useStore();
@@ -98,17 +99,16 @@ export default function BookCard({ book }) {
             style={{ height: "40px" }}
           >
             {qty === 0 ? (
-              <button
+              <LoadingButton
                 className="pri-mid-btn width100"
                 onClick={() => {
                   addToCart(book.id);
                   trackAddToCart({ book, qty: 1 });
                 }}
                 disabled={isOneRupee && hasOneRupeeInCart}
-                aria-label={`Add ${book.name} to cart`}
               >
                 Add
-              </button>
+              </LoadingButton>
             ) : (
               <div className="width100 items-center flex flex-row justify-between">
                 <button

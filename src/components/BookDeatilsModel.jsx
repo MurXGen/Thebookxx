@@ -5,6 +5,7 @@ import { X, Heart, ShoppingCart, ArrowLeft } from "lucide-react";
 import { useStore } from "@/context/StoreContext";
 import { books } from "@/utils/book";
 import { useRouter } from "next/navigation";
+import LoadingButton from "./UI/LoadingButton";
 
 export default function BookDetailsModal({ book, onClose }) {
   const { cart, addToCart, toggleWishlist, wishlist } = useStore();
@@ -89,22 +90,22 @@ export default function BookDetailsModal({ book, onClose }) {
         </div>
 
         <div className="book-detail-cta section-1200">
-          <button
+          <LoadingButton
             className="width100 flex flex-row items-center gap-12 justify-center sec-big-btn"
             onClick={handleWishlist}
+            icon={<Heart size={20} fill={inWishlist ? "red" : "none"} />}
           >
-            <Heart size={20} fill={inWishlist ? "red" : "none"} />
             Save for later
-          </button>
+          </LoadingButton>
 
-          <button
+          <LoadingButton
             className="width100 pri-big-btn flex flex-row items-center gap-12 justify-center"
             onClick={handleAddToCart}
             disabled={isOneRupee && hasOneRupeeInCart}
+            icon={<ShoppingCart size={20} />}
           >
-            <ShoppingCart size={20} />
             Add to Cart
-          </button>
+          </LoadingButton>
         </div>
       </div>
     </div>

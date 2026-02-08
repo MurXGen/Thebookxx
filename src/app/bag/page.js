@@ -10,6 +10,7 @@ import CartOfferStrip from "@/components/UI/CartOfferStrip";
 import BillModal from "@/components/UI/BillModal";
 import { CART_OFFERS } from "@/utils/cartOffers";
 import AddressModal from "@/components/UI/AddressModal";
+import LoadingButton from "@/components/UI/LoadingButton";
 
 export default function BagPage() {
   const { cart } = useStore();
@@ -181,13 +182,13 @@ ${viewBagLink}
           </span>
         </div>
 
-        <button
+        <LoadingButton
           className="pri-big-btn"
           disabled={!canCheckout}
           onClick={() => setShowAddressModal(true)}
         >
           Confirm Order
-        </button>
+        </LoadingButton>
       </div>
 
       <AddressModal

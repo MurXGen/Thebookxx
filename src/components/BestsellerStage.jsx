@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { Star } from "lucide-react";
+import { Star, StarIcon } from "lucide-react";
 import { books } from "@/utils/book";
 
 const SWAP_INTERVAL = 3000;
@@ -38,13 +38,6 @@ export default function BestsellerStage() {
 
   return (
     <section className="bestseller-stage">
-      {/* Confetti */}
-      <div className="confetti-layer">
-        {Array.from({ length: 30 }).map((_, i) => (
-          <span key={i} className="confetti-piece" />
-        ))}
-      </div>
-
       {/* Header */}
       <div className="stage-header">
         <h2 className="stage-title">Bestsellers</h2>
@@ -94,7 +87,7 @@ export default function BestsellerStage() {
         >
           <Star size={14} />
         </motion.span>
-        <Link href="/terms" aria-label="View terms and conditions">
+        <Link href="/terms">
           <span className="badge-text cursor-pointer">
             Grab with 7-day return/exchange *
           </span>

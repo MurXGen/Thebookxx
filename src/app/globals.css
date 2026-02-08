@@ -1200,9 +1200,6 @@ button:hover {
       0 4px 12px rgba(255, 183, 3, 0.2);
   }
 }
-
-/* Bestseller stage  */
-
 /* ================= STAGE ================= */
 .bestseller-stage {
   position: relative;
@@ -1245,6 +1242,7 @@ button:hover {
   background: #fff;
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
   outline: 5px solid white;
+  z-index: 2;
 }
 
 .stage-book img {
@@ -1269,37 +1267,7 @@ button:hover {
   height: 26px;
   background: radial-gradient(ellipse, rgba(0, 0, 0, 0.35), transparent 70%);
   filter: blur(8px);
-  z-index: -1;
-}
-
-/* ================= CONFETTI ================= */
-.confetti-layer {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-.confetti-piece {
-  position: absolute;
-  top: -10px;
-  width: 4px;
-  height: 8px;
-  background: rgba(0, 0, 0, 0.6);
-  left: calc(100% * var(--x));
-  animation: confetti-fall linear infinite;
-  opacity: 0.6;
-}
-
-.confetti-piece:nth-child(n) {
-  --x: calc(random() * 1);
-  animation-duration: calc(5s + random() * 4s);
-}
-
-@keyframes confetti-fall {
-  to {
-    transform: translateY(420px) rotate(180deg);
-    opacity: 0;
-  }
+  z-index: 1;
 }
 
 /* ================= PREMIUM BADGE ================= */

@@ -29,7 +29,7 @@ export default function BookDetailsModal({ book, onClose }) {
     addToCart(book.id);
 
     // ⏪ Go back after action
-    router.back();
+    router.push("/");
   };
 
   return (

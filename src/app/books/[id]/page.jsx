@@ -12,5 +12,5 @@ export default function BookDetailsPage({ params }) {
   const book = books.find((b) => b.id === id);
   if (!book) return null;
 
-  return <BookDetailsModal book={book} onClose={() => router.back()} />;
+  return <BookDetailsModal book={book} onClose={() => router.push("/")} />;
 }

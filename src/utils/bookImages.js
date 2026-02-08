@@ -170,4 +170,5 @@ export const bookImages = {
   "guest-list": `${BOOK_IMAGE_BASE_PATH}/guest-list.png`,
   "the-one-thing": `${BOOK_IMAGE_BASE_PATH}/the-one-thing.png`,
   "why-we-sleep": `${BOOK_IMAGE_BASE_PATH}/why-we-sleep.png`,
+  "diwar-me-ek-khidki-rahti-thi": `${BOOK_IMAGE_BASE_PATH}/diwar-me-ek-khidki-rahti-thi.png`,
 };

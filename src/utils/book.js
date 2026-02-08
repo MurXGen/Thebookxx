@@ -1913,4 +1913,14 @@ export const books = [
     discountedPrice: 1,
     size: "Paperback",
   },
+  {
+    id: "bk-184",
+    name: "Diwar me ek khidki rahti thi",
+    image: bookImages["diwar-me-ek-khidki-rahti-thi"],
+    description: "Classical story",
+    catalogue: ["bestseller", "hindi", "story"],
+    originalPrice: calculateOriginalPrice(139),
+    discountedPrice: 139,
+    size: "Paperback",
+  },
 ];

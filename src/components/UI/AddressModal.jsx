@@ -19,7 +19,12 @@ const CITIES = [
   "Ulhasnagar",
 ];
 
-export default function AddressModal({ open, onClose, finalPayable }) {
+export default function AddressModal({
+  open,
+  onClose,
+  finalPayable,
+  handleWhatsAppCheckout,
+}) {
   const [city, setCity] = useState("");
   const [pincode, setPincode] = useState("");
   const [address, setAddress] = useState("");
@@ -59,42 +64,15 @@ export default function AddressModal({ open, onClose, finalPayable }) {
     localStorage.removeItem("checkoutAddress");
   };
 
-  const handleSubmit = async () => {
-    try {
-      const payload = {
-        amount: finalPayable + extraCharge,
-        city,
-        pincode,
-        address,
-        quickDelivery,
-        cartItems: JSON.parse(localStorage.getItem("cart")) || [],
-      };
-
-      console.log("Sending payload:", payload);
-
-      const res = await fetch(
-        "https://api.journalx.app/api/thebooks/payments/create-order",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        },
-      );
-
-      const data = await res.json();
-      console.log("Backend response:", data);
-
-      if (data.paymentUrl) {
-        window.location.href = data.paymentUrl; // redirect to PhonePe
-      } else {
-        alert("Payment URL not received");
-      }
-    } catch (err) {
-      console.error("Payment error:", err);
-      alert("Payment failed. Check console.");
-    }
+  const handleSubmit = () => {
+    handleWhatsAppCheckout({
+      city,
+      pincode,
+      address,
+      quickDelivery,
+      extraCharge,
+    });
+    onClose();
   };
 
   return (
@@ -113,7 +91,7 @@ export default function AddressModal({ open, onClose, finalPayable }) {
             <div className="bill-header">
               <span className="weight-600">Delivery Details</span>
               <span className="cursor-pointer" onClick={onClose}>
-                ✕
+                x
               </span>
             </div>
 

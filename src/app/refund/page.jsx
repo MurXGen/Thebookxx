@@ -5,9 +5,9 @@ export default function RefundPolicy() {
     <main className="terms-page section-1200">
       <h1 className="font-24 weight-700">Refund, Return & Exchange Policy</h1>
 
-      <p className="font-14 dark-50">
+      {/* <p className="font-14 dark-50">
         Last updated: {new Date().toLocaleDateString()}
-      </p>
+      </p> */}
 
       <section>
         <h2>1. Eligibility for Refund, Return or Exchange</h2>

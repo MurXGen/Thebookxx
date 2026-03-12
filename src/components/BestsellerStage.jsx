@@ -4,8 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { Star, StarIcon } from "lucide-react";
+import { Phone, Star, StarIcon } from "lucide-react";
 import { books } from "@/utils/book";
+import { FileText, Truck, ShieldCheck } from "lucide-react";
 
 const SWAP_INTERVAL = 3000;
 
@@ -91,6 +92,35 @@ export default function BestsellerStage() {
           <span className="badge-text cursor-pointer">
             Grab with 7-day return/exchange *
           </span>
+        </Link>
+      </motion.div>
+
+      <motion.div
+        className="trust-strip"
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6 }}
+      >
+        <Link href="/terms" className="trust-item">
+          <FileText size={14} />
+          <span>Trusted Terms</span>
+        </Link>
+
+        <div className="trust-item">
+          <Truck size={14} />
+          <span>Delhivery / India Post</span>
+        </div>
+        <div className="trust-item">
+          <ShieldCheck size={14} />
+          <span>Secure Checkout</span>
+        </div>
+        <Link
+          href="https://wa.me/917710892108?text=Hey%20hi%20I’m%20looking%20for%20a%20book%20that’s%20not%20listed%20on%20your%20site.%20Could%20you%20please%20help%20me%20find%20it%3F"
+          target="_blank"
+          className="trust-item"
+        >
+          <Phone size={14} />
+          <span>Contact us</span>
         </Link>
       </motion.div>
     </section>

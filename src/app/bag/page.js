@@ -11,6 +11,7 @@ import BillModal from "@/components/UI/BillModal";
 import { CART_OFFERS } from "@/utils/cartOffers";
 import AddressModal from "@/components/UI/AddressModal";
 import LoadingButton from "@/components/UI/LoadingButton";
+import SlideConfirm from "@/components/UI/SlideConfirm";
 
 export default function BagPage() {
   const { cart } = useStore();
@@ -182,13 +183,11 @@ ${viewBagLink}
           </span>
         </div>
 
-        <LoadingButton
-          className="pri-big-btn"
+        <SlideConfirm
           disabled={!canCheckout}
-          onClick={() => setShowAddressModal(true)}
-        >
-          Confirm Order
-        </LoadingButton>
+          onComplete={() => setShowAddressModal(true)}
+          resetTrigger={showAddressModal}
+        />
       </div>
 
       <AddressModal

@@ -9,8 +9,11 @@ import { useState } from "react";
 import { trackAddToCart } from "@/lib/ga";
 import { books } from "@/utils/book";
 import LoadingButton from "./UI/LoadingButton";
+import { FaCartPlus, FaShippingFast } from "react-icons/fa";
+import CartConfetti from "./UI/Confetti";
 
 export default function BookCard({ book }) {
+  const [confetti, setConfetti] = useState(false);
   const { cart, wishlist, addToCart, decreaseQty, toggleWishlist } = useStore();
   const [imageLoaded, setImageLoaded] = useState(false);
 
@@ -31,9 +34,11 @@ export default function BookCard({ book }) {
   return (
     <article
       className="trending-card"
+      style={{ position: "relative" }}
       itemScope
       itemType="https://schema.org/Product"
     >
+      <CartConfetti trigger={confetti} />
       {/* Image */}
       <div className="book-image-wrapper">
         <WishlistButton
@@ -95,22 +100,25 @@ export default function BookCard({ book }) {
 
           {/* Actions */}
           <div
-            className="flex gap-12 align-center card-button width100"
+            className="flex gap-12 align-center card-button "
             style={{ height: "40px" }}
           >
             {qty === 0 ? (
               <LoadingButton
-                className="pri-mid-btn width100"
+                className="sec-mid-btn width100 "
                 onClick={() => {
                   addToCart(book.id);
                   trackAddToCart({ book, qty: 1 });
+
+                  setConfetti(true);
+                  setTimeout(() => setConfetti(false), 50);
                 }}
                 disabled={isOneRupee && hasOneRupeeInCart}
               >
-                Add
+                <FaCartPlus size={16} />
               </LoadingButton>
             ) : (
-              <div className="width100 items-center flex flex-row justify-between">
+              <div className="width100 gap-12 items-center flex flex-row justify-between">
                 <button
                   onClick={() => decreaseQty(book.id)}
                   className="minus-cart"

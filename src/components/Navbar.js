@@ -34,7 +34,6 @@ export default function Navbar() {
 
   return (
     <>
-      <InstallPWA />
       <header className="navbar-wrapper">
         {/* 🔥 Mobile promo strip */}
         <div className="mobile-offer-strip">

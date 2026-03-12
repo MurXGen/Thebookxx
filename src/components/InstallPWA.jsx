@@ -59,8 +59,7 @@ export default function InstallPWA() {
       className="mobile-offer-strip flex flex-row gap-32"
       style={{
         borderBlock: "1px solid grey",
-        position: "sticky",
-        top: "0px",
+
         cursor: "pointer",
         zIndex: "9999",
         boxShadow: "4px 0 12px #000000",
@@ -71,7 +70,7 @@ export default function InstallPWA() {
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
     >
-      <span className="font-14">Click to install app</span>
+      <span className="font-14">Explore app - </span>
 
       <div className="flex flex-row gap-4 items-center">
         <span className="shinny-icon weight-600">Get upto Rs.100 off</span>

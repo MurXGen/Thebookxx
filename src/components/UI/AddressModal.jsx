@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import LoadingButton from "./LoadingButton";
-import { X } from "lucide-react";
+import { Copy, Download, X } from "lucide-react";
 import Image from "next/image";
 
 const FREE_PINCODES = ["400018", "400017", "400020", "400021"];
@@ -200,9 +200,9 @@ export default function AddressModal({
       )}
       <AnimatePresence>
         {showPayment && (
-          <motion.div className="bill-modal-overlay">
+          <motion.div className="pay-online-modal-overlay">
             <motion.div
-              className="bill-modal payment-modal"
+              className="pay-online-bill-modal payment-modal"
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
@@ -224,16 +224,16 @@ export default function AddressModal({
                   transition={{ duration: 0.5 }}
                 >
                   <Image
-                    src="/upi-qr.png"
+                    src="/books1/uskillbook.png"
                     alt="UPI QR"
-                    width={220}
-                    height={220}
+                    width={320}
+                    height={420}
                   />
                 </motion.div>
 
                 {!qrUnlocked && (
                   <button
-                    className="pri-mid-btn"
+                    className="pri-big-btn"
                     onClick={() => setQrUnlocked(true)}
                   >
                     Reveal QR Code
@@ -241,32 +241,33 @@ export default function AddressModal({
                 )}
 
                 {/* UPI ID */}
-                <div className="flex flex-col items-center gap-6">
-                  <span className="font-12 dark-50">UPI ID</span>
-
+                <div className="flex flex-row items-center gap-8">
                   <button
-                    className="sec-mid-btn"
+                    className="sec-mid-btn flex flex-row gap-8"
                     onClick={() => {
                       navigator.clipboard.writeText(UPI_ID);
                       setUpiCopied(true);
                     }}
                   >
+                    <Copy size={16} />
                     {UPI_ID}
                   </button>
+                  {/* Save QR */}
+                  <a
+                    href="/upi-qr.png"
+                    download
+                    className="sec-mid-btn flex flex-row gap-8"
+                  >
+                    <Download size={16} /> Save QR Code
+                  </a>
                 </div>
 
-                {/* Save QR */}
-                <a href="/upi-qr.png" download className="sec-mid-btn">
-                  Save QR Code
-                </a>
-
-                {/* Open UPI */}
                 <LoadingButton
                   className="pri-big-btn"
                   disabled={!upiCopied}
                   onClick={() => {
-                    window.location.href = "upi://pay";
-                    setReturnedFromUpi(true);
+                    window.location.href =
+                      "intent://pay#Intent;scheme=upi;package=com.android.vending;end";
                   }}
                 >
                   Open UPI Apps

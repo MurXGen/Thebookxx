@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
+import LoadingButton from "./LoadingButton";
 
 const FREE_PINCODES = ["400018", "400017", "400020", "400021"];
 
@@ -18,12 +19,7 @@ const CITIES = [
   "Ulhasnagar",
 ];
 
-export default function AddressModal({
-  open,
-  onClose,
-  finalPayable,
-  handleWhatsAppCheckout,
-}) {
+export default function AddressModal({ open, onClose, finalPayable }) {
   const [city, setCity] = useState("");
   const [pincode, setPincode] = useState("");
   const [address, setAddress] = useState("");
@@ -63,15 +59,42 @@ export default function AddressModal({
     localStorage.removeItem("checkoutAddress");
   };
 
-  const handleSubmit = () => {
-    handleWhatsAppCheckout({
-      city,
-      pincode,
-      address,
-      quickDelivery,
-      extraCharge,
-    });
-    onClose();
+  const handleSubmit = async () => {
+    try {
+      const payload = {
+        amount: finalPayable + extraCharge,
+        city,
+        pincode,
+        address,
+        quickDelivery,
+        cartItems: JSON.parse(localStorage.getItem("cart")) || [],
+      };
+
+      console.log("Sending payload:", payload);
+
+      const res = await fetch(
+        "https://api.journalx.app/api/thebooks/payments/create-order",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        },
+      );
+
+      const data = await res.json();
+      console.log("Backend response:", data);
+
+      if (data.paymentUrl) {
+        window.location.href = data.paymentUrl; // redirect to PhonePe
+      } else {
+        alert("Payment URL not received");
+      }
+    } catch (err) {
+      console.error("Payment error:", err);
+      alert("Payment failed. Check console.");
+    }
   };
 
   return (
@@ -157,12 +180,19 @@ export default function AddressModal({
 
               {/* Buttons */}
               <div className="flex flex-row gap-12 items-center">
-                <button className="sec-big-btn width100" onClick={resetForm}>
+                <LoadingButton
+                  className="sec-big-btn width100"
+                  onClick={resetForm}
+                >
                   Reset
-                </button>
-                <button className="pri-big-btn width100" onClick={handleSubmit}>
+                </LoadingButton>
+
+                <LoadingButton
+                  className="pri-big-btn width100"
+                  onClick={handleSubmit}
+                >
                   Submit Order
-                </button>
+                </LoadingButton>
               </div>
             </div>
           </motion.div>

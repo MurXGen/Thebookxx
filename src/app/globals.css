@@ -339,6 +339,97 @@ button:hover {
   justify-content: flex-end;
 }
 
+/* Menu Button */
+.menu-button {
+  cursor: pointer;
+  background: none;
+  color: var(--dark);
+  border: none;
+}
+
+/* Menu Backdrop */
+.menu-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+/* Slide Panel */
+.menu-slide-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 300px;
+  background-color: white;
+  z-index: 1001;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Menu Header */
+.menu-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.menu-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+}
+
+.menu-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+}
+
+.menu-close:hover {
+  color: #333;
+}
+
+/* Menu Links */
+.menu-links {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.menu-link {
+  text-decoration: none;
+  color: #333;
+  font-size: 16px;
+  padding: 8px 0;
+  transition: color 0.2s;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.menu-link:hover {
+  color: #0070f3;
+}
+
+/* Update nav-left to accommodate both icons */
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
 /* =========================
    MOBILE OFFER STRIP
 ========================= */

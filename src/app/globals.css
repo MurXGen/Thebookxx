@@ -1628,7 +1628,7 @@ button:disabled {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 200px;
+  height: 600px;
   background: #fff;
   padding: 16px;
   border-radius: 16px 16px 0 0;
@@ -1759,7 +1759,7 @@ button:disabled {
 
 .slide-confirm {
   position: relative;
-  width: 180px;
+  width: 200px;
   height: 44px;
   border-radius: 999px;
   background: #111;
@@ -1794,4 +1794,11 @@ button:disabled {
   cursor: grab;
   font-size: 14px;
   font-weight: bold;
+}
+
+.qr-wrapper {
+  border-radius: 12px;
+  overflow: hidden;
+  background: white;
+  padding: 12px;
 }

@@ -3,8 +3,17 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import LoadingButton from "./LoadingButton";
-import { Copy, Download, X } from "lucide-react";
+import {
+  Copy,
+  Download,
+  FileText,
+  Phone,
+  ShieldCheck,
+  Truck,
+  X,
+} from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 const FREE_PINCODES = ["400018", "400017", "400020", "400021"];
 
@@ -38,7 +47,30 @@ export default function AddressModal({
   const [upiCopied, setUpiCopied] = useState(false);
   const [returnedFromUpi, setReturnedFromUpi] = useState(false);
 
-  const UPI_ID = "yourupi@upi";
+  const [verifyTimer, setVerifyTimer] = useState(30);
+  const [canVerify, setCanVerify] = useState(false);
+
+  const UPI_ID = "7977960242-1@okbizaxis";
+
+  useEffect(() => {
+    if (!qrUnlocked) return;
+
+    setVerifyTimer(30);
+    setCanVerify(false);
+
+    const interval = setInterval(() => {
+      setVerifyTimer((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          setCanVerify(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [qrUnlocked]);
 
   useEffect(() => {
     const handleFocus = () => {
@@ -226,9 +258,44 @@ export default function AddressModal({
                   <Image
                     src="/books1/uskillbook.png"
                     alt="UPI QR"
-                    width={320}
+                    width={350}
                     height={420}
                   />
+
+                  {/* UPI Actions */}
+                  <div className="flex flex-row items-center justify-center gap-8">
+                    <button
+                      className="sec-mid-btn flex flex-row gap-8"
+                      onClick={() => {
+                        navigator.clipboard.writeText(UPI_ID);
+                        setUpiCopied(true);
+                      }}
+                    >
+                      <Copy size={16} />
+                      {UPI_ID}
+                    </button>
+
+                    <button
+                      className="sec-mid-btn flex flex-row gap-8"
+                      onClick={() => {
+                        const link = document.createElement("a");
+                        link.href = "/books1/uskillbook.png";
+                        link.download = "upi-qr.png";
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                      }}
+                    >
+                      <Download size={16} /> Save QR Code
+                    </button>
+                  </div>
+                  {/* Instructions */}
+                  <div className="qr-instructions flex items-center">
+                    <span className="font-12" style={{ textAlign: "center" }}>
+                      Pay using any UPI app by copying the UPI ID or downloading
+                      the QR image and scanning it.
+                    </span>
+                  </div>
                 </motion.div>
 
                 {!qrUnlocked && (
@@ -240,63 +307,39 @@ export default function AddressModal({
                   </button>
                 )}
 
-                {/* UPI ID */}
-                <div className="flex flex-row items-center gap-8">
-                  <button
-                    className="sec-mid-btn flex flex-row gap-8"
-                    onClick={() => {
-                      navigator.clipboard.writeText(UPI_ID);
-                      setUpiCopied(true);
-                    }}
-                  >
-                    <Copy size={16} />
-                    {UPI_ID}
-                  </button>
-                  {/* Save QR */}
-                  <a
-                    href="/upi-qr.png"
-                    download
-                    className="sec-mid-btn flex flex-row gap-8"
-                  >
-                    <Download size={16} /> Save QR Code
-                  </a>
-                </div>
-
-                <LoadingButton
-                  className="pri-big-btn"
-                  disabled={!upiCopied}
-                  onClick={() => {
-                    window.location.href =
-                      "intent://pay#Intent;scheme=upi;package=com.android.vending;end";
-                  }}
-                >
-                  Open UPI Apps
-                </LoadingButton>
-
-                {/* After return */}
-                {returnedFromUpi && (
-                  <button
-                    className="tertiary-btn"
-                    onClick={() => {
-                      handleWhatsAppCheckout({
-                        city,
-                        pincode,
-                        address,
-                        quickDelivery,
-                        extraCharge,
-                        payment: "UPI",
-                      });
-                    }}
-                  >
-                    Submit Order Details
-                  </button>
+                {qrUnlocked && (
+                  <div className="width100 flex flex-col gap-8 items-center">
+                    <span className="font-12">
+                      Complete payment and wait to verify
+                    </span>
+                    <div className="flex flex-row gap-4">
+                      <button
+                        className={`pri-big-btn width100 ${!canVerify ? "disabled-btn" : ""}`}
+                        disabled={!canVerify}
+                        onClick={() => {
+                          handleWhatsAppCheckout({
+                            city,
+                            pincode,
+                            address,
+                            quickDelivery,
+                            extraCharge,
+                            payment: "UPI",
+                          });
+                        }}
+                      >
+                        {canVerify
+                          ? "Verify after payment"
+                          : `Verify in ${verifyTimer}s`}
+                      </button>
+                      <div className="timer-circle">{verifyTimer}s</div>
+                    </div>
+                  </div>
                 )}
               </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
-      ;
     </AnimatePresence>
   );
 }

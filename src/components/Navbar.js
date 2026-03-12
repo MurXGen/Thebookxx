@@ -1,6 +1,6 @@
 "use client";
 
-import { Heart, Star, Menu, X, MenuIcon } from "lucide-react";
+import { Heart, Star } from "lucide-react";
 import { useState, useEffect } from "react";
 import { FaWhatsapp } from "react-icons/fa";
 import { HiOutlineShoppingBag } from "react-icons/hi2";
@@ -8,11 +8,9 @@ import SearchMain from "./UI/SearchMain";
 import { AnimatePresence, motion } from "framer-motion";
 import { CART_OFFERS } from "@/utils/cartOffers";
 import InstallPWA from "./InstallPWA";
-import Link from "next/link";
 
 export default function Navbar() {
   const [index, setIndex] = useState(0);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -23,14 +21,6 @@ export default function Navbar() {
   }, []);
 
   const currentOffer = CART_OFFERS[index];
-
-  // Menu links data
-  const menuLinks = [
-    { name: "Terms and Conditions", path: "/terms" },
-    { name: "Privacy Policy", path: "/privacy" },
-    { name: "Refund Policy", path: "/refund" },
-    { name: "Shipping Policy", path: "/shipping" },
-  ];
 
   return (
     <>
@@ -65,17 +55,8 @@ export default function Navbar() {
         </div>
 
         <nav className="navbar section-1200">
-          {/* LEFT (mobile: menu + wishlist) */}
+          {/* LEFT (mobile: wishlist) */}
           <div className="nav-left">
-            {/* Menu Icon */}
-            <button
-              onClick={() => setIsMenuOpen(true)}
-              aria-label="Menu"
-              className="menu-button"
-            >
-              <MenuIcon size={32} />
-            </button>
-
             <a href="/wishlist" aria-label="Wishlist">
               <Heart fill="red" stroke="none" size={32} />
             </a>
@@ -108,55 +89,6 @@ export default function Navbar() {
           <SearchMain />
         </div>
       </header>
-
-      {/* Full Screen Menu Component */}
-      <AnimatePresence>
-        {isMenuOpen && (
-          <>
-            {/* Backdrop */}
-            <motion.div
-              className="menu-backdrop"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsMenuOpen(false)}
-            />
-
-            {/* Sliding Menu */}
-            <motion.div
-              className="menu-slide-panel"
-              initial={{ x: "-100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "-100%" }}
-              transition={{ type: "tween", duration: 0.3 }}
-            >
-              <div className="menu-header">
-                <span className="menu-title">Menu</span>
-                <button
-                  onClick={() => setIsMenuOpen(false)}
-                  aria-label="Close menu"
-                  className="menu-close"
-                >
-                  <X size={28} />
-                </button>
-              </div>
-
-              <div className="menu-links">
-                {menuLinks.map((link) => (
-                  <Link
-                    key={link.path}
-                    href={link.path}
-                    className="menu-link"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {link.name}
-                  </Link>
-                ))}
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
     </>
   );
 }

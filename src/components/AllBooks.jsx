@@ -21,6 +21,9 @@ export default function AllBooks() {
   const filteredBooks = useMemo(() => {
     let data = [...books];
 
+    // ❌ Remove ₹1 books
+    data = data.filter((b) => b.discountedPrice !== 1);
+
     if (selectedCategory !== "all") {
       data = data.filter((b) => b.catalogue?.includes(selectedCategory));
     }
@@ -43,7 +46,6 @@ export default function AllBooks() {
 
     return data;
   }, [selectedCategory, sortType]);
-
   if (!books.length) return null;
 
   return (

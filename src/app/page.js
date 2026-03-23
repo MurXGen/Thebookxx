@@ -20,7 +20,7 @@ export default function HomePage() {
       <BestsellerStage />
       <OffersGift />
       <CatalogueSection />
-      <OneRupeeDeals />
+      {/* <OneRupeeDeals /> */}
       <TrendingBooks />
       {/* <UrgencyOffer /> */}
       <AllBooks />

@@ -126,8 +126,10 @@ export default function TermsAndConditions() {
           at:
         </p>
         <p>
-          📧 Email: murthyofficial3@gmail.com <br />
-          📞 Phone: +91 7977960242
+          Legal Name : Murhty Poothapandi Thevar Legal office address : 107, A
+          wing, Thevar apt, Near karumariamman temple, Mumbai, Maharashtra -
+          400017 Email: murthyofficial3@gmail.com <br />
+          Phone: +91 7977960242
         </p>
       </section>
 

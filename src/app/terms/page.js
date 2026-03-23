@@ -125,11 +125,17 @@ export default function TermsAndConditions() {
           For any questions regarding orders or these Terms, you can contact us
           at:
         </p>
+        <p>Legal Name : Murhty Poothapandi Thevar</p>
         <p>
-          Legal Name : Murhty Poothapandi Thevar Legal office address : 107, A
-          wing, Thevar apt, Near karumariamman temple, Mumbai, Maharashtra -
-          400017 Email: murthyofficial3@gmail.com <br />
+          Legal office address : 107, A wing, Thevar apt, Near karumariamman
+          temple, Mumbai, Maharashtra - 400017 Email: murthyofficial3@gmail.com{" "}
+          <br />
           Phone: +91 7977960242
+        </p>
+        <p>
+          TheBookX (thebookx.in) is operated by{" "}
+          <strong>Murthy Poothapandi Thevar</strong>. The platform provides
+          books and educational materials through our online store.
         </p>
       </section>
 

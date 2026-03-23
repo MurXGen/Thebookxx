@@ -125,12 +125,12 @@ export default function TermsAndConditions() {
           For any questions regarding orders or these Terms, you can contact us
           at:
         </p>
-        <p>Legal Name : Murhty Poothapandi Thevar</p>
         <p>
-          Legal office address : 107, A wing, Thevar apt, Near karumariamman
-          temple, Mumbai, Maharashtra - 400017 Email: murthyofficial3@gmail.com{" "}
-          <br />
-          Phone: +91 7977960242
+          – Legal Name: Murthy Poothapandi Thevar <br />
+          – Udyam Registration No: UDYAM-MH-19-0386866
+          <br />- Registered address : Room No 107, A Wing,, Thevar Suryoodaya
+          CHS, UM Thevar Marg, Sion Mahim Link Road, Dharavi, Mumbai,
+          Maharashtra, 400017
         </p>
         <p>
           TheBookX (thebookx.in) is operated by{" "}

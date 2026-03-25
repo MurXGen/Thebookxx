@@ -31,7 +31,7 @@ export default function ReviewClient() {
       setMessage("");
 
       const res = await fetch(
-        `https://api.journalx.app/api/bookxTelegram/review`,
+        "https://api.journalx.app/api/bookxTelegram/review",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

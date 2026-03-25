@@ -1852,3 +1852,63 @@ button:disabled {
   opacity: 0.5;
   pointer-events: none;
 }
+
+/* REVIEW PAGE */
+
+.review-container {
+  max-width: 600px;
+  margin-top: var(--px-56);
+}
+
+/* DROPDOWN */
+.review-dropdown {
+  padding: var(--px-12);
+  border-radius: 10px;
+  border: 1px solid var(--dark-20);
+  background: white;
+  font-size: var(--px-14);
+}
+
+/* CHATGPT STYLE BOX */
+.review-box {
+  background: white;
+  border-radius: 20px;
+  padding: var(--px-16);
+  border: 1px solid var(--dark-10);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+/* IMAGE */
+.review-image-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.review-image {
+  width: 120px;
+  height: auto;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+/* TEXTAREA */
+.review-textarea {
+  border: none;
+  outline: none;
+  resize: none;
+  min-height: 120px;
+  font-size: var(--px-14);
+  font-family: inherit;
+  background: transparent;
+}
+
+/* BUTTON */
+.review-button {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: var(--px-12);
+  border-radius: 12px;
+  font-size: var(--px-14);
+  font-weight: var(--weight-600);
+}

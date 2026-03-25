@@ -1,8 +1,11 @@
 "use client";
 
+export const dynamic = "force-dynamic"; // ✅ FIX
+
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { books } from "@/utils/book";
+import Image from "next/image";
 
 export default function ReviewPage() {
   const searchParams = useSearchParams();
@@ -83,7 +86,12 @@ export default function ReviewPage() {
           {selectedBookData && (
             <div className="book-preview">
               <div className="book-preview-image">
-                <img src={selectedBookData.image} alt={selectedBookData.name} />
+                <Image
+                  src={selectedBookData.image}
+                  alt={selectedBookData.name}
+                  width={120}
+                  height={160}
+                />
               </div>
               <div className="book-preview-info">
                 <h3>{selectedBookData.name}</h3>

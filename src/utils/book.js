@@ -26,11 +26,11 @@ export const books = [
   },
   {
     id: "bk-002",
-    name: "The art of clarity",
+    name: "The Art of Clarity",
     image: bookImages["the-art-of-clarity"],
     description:
       "Strategies to take smart action and make better decisions with less stress",
-    catalogue: ["bestseller", "self-help", "decision-making"],
+    catalogue: ["bestseller", "self-help", "decision-making", "trending"],
     originalPrice: calculateOriginalPrice(149),
     discountedPrice: 149,
     size: "Paperback",

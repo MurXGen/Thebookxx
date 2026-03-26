@@ -6,6 +6,7 @@ import { useStore } from "@/context/StoreContext";
 import { books } from "@/utils/book";
 import { useRouter } from "next/navigation";
 import LoadingButton from "./UI/LoadingButton";
+import { MessageSquare } from "lucide-react";
 
 export default function BookDetailsModal({ book, onClose }) {
   const { cart, addToCart, toggleWishlist, wishlist } = useStore();
@@ -31,6 +32,10 @@ export default function BookDetailsModal({ book, onClose }) {
 
     // ⏪ Go back after action
     router.push("/");
+  };
+
+  const handleReview = () => {
+    router.push(`/review?bk=${book.id}`);
   };
 
   return (
@@ -105,6 +110,14 @@ export default function BookDetailsModal({ book, onClose }) {
             icon={<ShoppingCart size={20} />}
           >
             Add to Cart
+          </LoadingButton>
+
+          <LoadingButton
+            className="width100 flex flex-row items-center gap-12 justify-center sec-big-btn"
+            onClick={handleReview}
+            icon={<MessageSquare size={20} />}
+          >
+            Review
           </LoadingButton>
         </div>
       </div>

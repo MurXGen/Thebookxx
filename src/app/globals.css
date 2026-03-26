@@ -1852,3 +1852,249 @@ button:disabled {
   opacity: 0.5;
   pointer-events: none;
 }
+
+/* review.css - Separate CSS file */
+.review-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.review-container {
+  max-width: 560px;
+  width: 100%;
+  padding: var(--px-12);
+}
+
+/* Dropdown Styles - White, border-radius 12px */
+.book-select {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #000000;
+  background: #ffffff;
+  border: 1.5px solid #e5e5e5;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1rem;
+}
+
+.book-select:hover {
+  border-color: #000000;
+}
+
+.book-select:focus {
+  outline: none;
+  border-color: #000000;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+}
+
+.book-select option {
+  background: #ffffff;
+  color: #000000;
+  padding: 0.75rem;
+}
+
+/* Book Preview Section */
+.book-preview {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1.5rem;
+  background: #fafafa;
+  border-radius: 20px;
+  border: 1px solid #f0f0f0;
+}
+
+.book-preview img {
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  object-fit: cover;
+}
+
+.book-preview h3 {
+  margin-top: 1rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #000000;
+  letter-spacing: -0.3px;
+}
+
+/* Review Textarea */
+.review-textarea {
+  width: 100%;
+  margin-top: 1.5rem;
+  padding: 1rem;
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: #000000;
+  background: #ffffff;
+  border: 1.5px solid #e5e5e5;
+  border-radius: 16px;
+  resize: vertical;
+  min-height: 120px;
+  transition: all 0.2s ease;
+  line-height: 1.5;
+}
+
+.review-textarea:focus {
+  outline: none;
+  border-color: #000000;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+}
+
+.review-textarea::placeholder {
+  color: #aaa;
+  font-weight: 400;
+}
+
+/* Primary Button */
+.primary-btn {
+  width: 100%;
+  margin-top: 1.5rem;
+  padding: 0.875rem 1.5rem;
+  background: #000000;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 40px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  position: relative;
+}
+
+.primary-btn:hover:not(:disabled) {
+  background: #1a1a1a;
+  transform: scale(0.98);
+}
+
+.primary-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  background: #000000;
+}
+
+/* Loader animation on button */
+.loader-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Centered Modal */
+.modal-card {
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 1.75rem 2rem;
+  max-width: 320px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Icon inside modal */
+.modal-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+/* Modal text */
+.modal-message {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #000000;
+  margin-bottom: 1.25rem;
+  line-height: 1.4;
+}
+
+/* Progress bar container */
+.progress-bar-container {
+  width: 100%;
+  height: 4px;
+  background: #e5e5e5;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-top: 0.5rem;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: #000000;
+  border-radius: 20px;
+  transition: width 0.03s linear;
+}
+
+/* Optional extra responsive */
+@media (max-width: 480px) {
+  .review-container {
+    padding: 1.5rem;
+  }
+  .modal-card {
+    padding: 1.5rem;
+    max-width: 280px;
+  }
+}

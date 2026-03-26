@@ -13,13 +13,17 @@ export default function ReviewClient() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
-  const selectedBookData = books.find((b) => b.id === selectedBook);
+  const selectedBookData = books.find(
+    (b) => b.id.trim() === selectedBook.trim(),
+  );
 
   useEffect(() => {
     const bookId = searchParams.get("bk");
-    if (bookId) setSelectedBook(bookId);
-  }, [searchParams]);
 
+    if (bookId) {
+      setSelectedBook(bookId);
+    }
+  }, [searchParams]);
   const handleSubmit = async () => {
     if (!selectedBook || !review) {
       setMessage("Please select a book and write a review.");
@@ -31,7 +35,7 @@ export default function ReviewClient() {
       setMessage("");
 
       const res = await fetch(
-        "https://api.journalx.app/api/bookxTelegram/review",
+        `https://api.journalx.app/api/bookxTelegram/review`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -94,7 +98,11 @@ export default function ReviewClient() {
         />
 
         {/* Button */}
-        <button onClick={handleSubmit} disabled={loading}>
+        <button
+          className="primary-btn"
+          onClick={handleSubmit}
+          disabled={loading}
+        >
           {loading ? "Submitting..." : "Submit Review"}
         </button>
 

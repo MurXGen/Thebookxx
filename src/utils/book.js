@@ -26,13 +26,13 @@ export const books = [
   },
   {
     id: "bk-002",
-    name: "Manifest",
-    image: bookImages["manifest"],
+    name: "The art of clarity",
+    image: bookImages["the-art-of-clarity"],
     description:
-      "A mindset-shifting book focused on belief systems and manifestation.",
-    catalogue: ["self-help", "trending"],
-    originalPrice: calculateOriginalPrice(129),
-    discountedPrice: 129,
+      "Strategies to take smart action and make better decisions with less stress",
+    catalogue: ["bestseller", "self-help", "decision-making"],
+    originalPrice: calculateOriginalPrice(149),
+    discountedPrice: 149,
     size: "Paperback",
   },
   {
@@ -1921,6 +1921,17 @@ export const books = [
     catalogue: ["bestseller", "hindi", "story"],
     originalPrice: calculateOriginalPrice(139),
     discountedPrice: 139,
+    size: "Paperback",
+  },
+  {
+    id: "bk-184",
+    name: "Manifest",
+    image: bookImages["manifest"],
+    description:
+      "A mindset-shifting book focused on belief systems and manifestation.",
+    catalogue: ["self-help", "trending"],
+    originalPrice: calculateOriginalPrice(129),
+    discountedPrice: 129,
     size: "Paperback",
   },
 ];

@@ -69,8 +69,8 @@ export default function BookCard({ book }) {
       </div>
 
       {/* Content */}
-      <div className="pad_16 flex flex-col gap-12 book-card">
-        <h3 className="font-14 weight-500 dark-50" itemProp="name">
+      <div className=" flex flex-col gap-12 book-card margin-tp-24px">
+        <h3 className="font-16 weight-500" itemProp="name">
           <Link href={bookUrl} className="book-title-link">
             {book.name}
           </Link>
@@ -99,13 +99,10 @@ export default function BookCard({ book }) {
           </div>
 
           {/* Actions */}
-          <div
-            className="flex gap-12 align-center card-button "
-            style={{ height: "40px" }}
-          >
+          <div className="flex gap-12 align-center card-button ">
             {qty === 0 ? (
               <LoadingButton
-                className="sec-mid-btn width100 "
+                className="sec-mid-btn width100"
                 onClick={() => {
                   addToCart(book.id);
                   trackAddToCart({ book, qty: 1 });

@@ -4,7 +4,7 @@
 export default function LabelDivider({ label, color }) {
   return (
     <div className="label-divider">
-      <span className="label-text font-20">{label}</span>
+      <span className="label-text font-16">{label}</span>
       <div className="label-line" />
     </div>
   );

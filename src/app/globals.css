@@ -463,7 +463,7 @@ button:hover {
     padding-top: var(--px-8);
     background: var(--white-100);
     border-radius: 16px;
-    min-width: 200px !important;
+    min-width: 160px !important;
     max-width: 768px !important;
     transition-duration: 0.3s;
   }
@@ -663,7 +663,10 @@ button:hover {
 /* Search overlay */
 
 .catalogue-section-2 {
-  padding: 0 var(--px-16);
+  margin: var(--px-12);
+  background: var(--white-100);
+  padding: var(--px-12);
+  border-radius: var(--px-12);
 }
 
 /* Trending books  */
@@ -676,8 +679,8 @@ button:hover {
 
 /* Card */
 .trending-card {
-  background: var(--white-100);
-  padding: var(--px-12) 4px;
+  background: var(--dark-10);
+  padding: var(--px-12) 12px;
   border-radius: 16px;
   overflow: hidden;
   min-width: 200px;
@@ -700,6 +703,7 @@ button:hover {
   display: flex;
   flex-direction: row;
   justify-content: center;
+  border-radius: var(--px-12);
 }
 
 .book-image {
@@ -1200,7 +1204,6 @@ button:hover {
   align-items: center;
   gap: 12px;
   width: 100%;
-  padding: 0 0 var(--px-8) 0;
 }
 
 /* Text */
@@ -1214,16 +1217,14 @@ button:hover {
   flex: 1;
   height: 1px;
 
-  /* Dashed effect */
   background-image: repeating-linear-gradient(
     to right,
-    rgba(0, 0, 0, 0.8) 0,
-    rgba(0, 0, 0, 0.8) 6px,
+    rgba(0, 0, 0, 0.2) 0,
+    rgba(0, 0, 0, 0.2) 6px,
     transparent 6px,
     transparent 12px
   );
 
-  /* Fade gradient towards left */
   mask-image: linear-gradient(
     to right,
     rgba(0, 0, 0, 1) 60%,
@@ -1293,7 +1294,7 @@ button:hover {
 .bestseller-stage {
   position: relative;
   padding: 40px 16px 40px;
-  background: linear-gradient(180deg, #fff, #f6f6f6);
+  /* background: linear-gradient(180deg, #fff, #f6f6f6); */
   overflow: hidden;
 }
 

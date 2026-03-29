@@ -1,6 +1,7 @@
 import { books } from "@/utils/book";
 import ProductCard from "@/components/BookCard";
 import LabelDivider from "./UI/LineDivider";
+import { Percent, Zap } from "lucide-react";
 
 export default function OneRupeeDeals() {
   const oneRupeeBooks = books.filter((book) => book.discountedPrice === 1);
@@ -10,8 +11,16 @@ export default function OneRupeeDeals() {
   return (
     <section className="catalogue-section-2 trending-section">
       {/* Section Header */}
-      <LabelDivider label="₹1 Deals · Limited Stock" />
 
+      <div className="label-divider">
+        <span className="label-text flex flex-row flex-center items-center gap-12 font-20">
+          <div className="greenbox">
+            <Zap size={16} />
+          </div>
+          ₹1 Deals · Limited Stock
+        </span>
+        <div className="label-line" />
+      </div>
       {/* Books Grid */}
       <div className="trending-grid margin-tp-24px">
         {oneRupeeBooks.map((book) => (

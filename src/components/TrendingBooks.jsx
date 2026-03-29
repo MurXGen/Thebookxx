@@ -1,6 +1,7 @@
 import { books } from "@/utils/book";
 import ProductCard from "@/components/BookCard";
 import LabelDivider from "./UI/LineDivider";
+import { TrendingUp } from "lucide-react";
 
 export default function TrendingBooks() {
   const trendingBooks = books.filter((book) =>
@@ -15,7 +16,15 @@ export default function TrendingBooks() {
       style={{ marginTop: "24px" }}
     >
       {/* Section Header */}
-      <LabelDivider label="Trending books" />
+      <div className="label-divider">
+        <span className="label-text flex flex-row flex-center items-center gap-12 font-20">
+          <div className="greenbox">
+            <TrendingUp size={16} />
+          </div>
+          Trending books
+        </span>
+        <div className="label-line" />
+      </div>
 
       {/* Books Grid */}
       <div className="trending-grid margin-tp-24px">

@@ -19,7 +19,7 @@ export default function HomePage() {
       <Navbar />
       <BestsellerStage />
       <OffersGift />
-      <CatalogueSection />
+      {/* <CatalogueSection /> */}
       <OneRupeeDeals />
       <TrendingBooks />
       {/* <UrgencyOffer /> */}

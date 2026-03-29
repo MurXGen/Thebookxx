@@ -1,7 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 
 :root {
-  --background: #f1f1f1;
+  --background: #fff;
   --foreground: #0a0a0a;
 
   --primary: #0a0a0a;
@@ -667,6 +667,7 @@ button:hover {
   background: var(--white-100);
   padding: var(--px-12);
   border-radius: var(--px-12);
+  border: 1px solid var(--dark-20);
 }
 
 /* Trending books  */
@@ -752,8 +753,8 @@ button:hover {
 
 .add-wishlist {
   position: absolute;
-  top: var(--px-4);
-  right: var(--px-4);
+  bottom: 1px;
+  right: 1px;
   width: 36px;
   height: 36px;
   border-radius: 50%;

@@ -39,7 +39,7 @@ export default function WishlistButton({ inWishlist, onClick }) {
       {/* Heart Icon */}
       <Heart
         size={24}
-        fill={inWishlist ? "red" : "grey"}
+        fill={inWishlist ? "red" : "#00000020"}
         style={{ position: "relative", zIndex: 2 }}
       />
     </button>

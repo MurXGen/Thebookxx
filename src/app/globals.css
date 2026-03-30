@@ -1616,6 +1616,12 @@ button:disabled {
   }
 }
 
+.tags {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
 .book-detail-image {
   width: 100%;
   height: 300px;

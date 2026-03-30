@@ -18,7 +18,7 @@ export default function HomePage() {
       <InstallPWA />
       <Navbar />
       <BestsellerStage />
-      <OffersGift />
+      {/* <OffersGift /> */}
       {/* <CatalogueSection /> */}
       <OneRupeeDeals />
       <TrendingBooks />

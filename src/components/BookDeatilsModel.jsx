@@ -113,12 +113,10 @@ export default function BookDetailsModal({ book, onClose }) {
           </LoadingButton>
 
           <LoadingButton
-            className="width100 flex flex-row items-center gap-12 justify-center sec-big-btn"
+            className=" flex flex-row items-center gap-12 justify-center sec-big-btn"
             onClick={handleReview}
             icon={<MessageSquare size={20} />}
-          >
-            Review
-          </LoadingButton>
+          ></LoadingButton>
         </div>
       </div>
     </div>

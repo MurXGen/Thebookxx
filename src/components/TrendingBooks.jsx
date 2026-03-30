@@ -12,15 +12,12 @@ export default function TrendingBooks() {
 
   return (
     <section
-      className="catalogue-section-2 trending-section"
+      className="catalogue-section-2 trending-section sparkleContainer"
       style={{ marginTop: "24px" }}
     >
       {/* Section Header */}
       <div className="label-divider">
-        <span className="label-text flex flex-row flex-center items-center gap-12 font-20">
-          <div className="greenbox">
-            <TrendingUp size={16} />
-          </div>
+        <span className="label-text flex flex-row flex-center items-center gap-12 font-20 weight-500">
           Trending books
         </span>
         <div className="label-line" />

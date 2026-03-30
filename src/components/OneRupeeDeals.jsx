@@ -9,14 +9,11 @@ export default function OneRupeeDeals() {
   if (!oneRupeeBooks.length) return null;
 
   return (
-    <section className="catalogue-section-2 trending-section">
+    <section className="catalogue-section-2 trending-section sparkleContainer">
       {/* Section Header */}
 
       <div className="label-divider">
-        <span className="label-text flex flex-row flex-center items-center gap-12 font-20">
-          <div className="greenbox">
-            <Zap size={16} />
-          </div>
+        <span className="label-text flex flex-row flex-center items-center gap-12 font-20 weight-500">
           ₹1 Deals · Limited Stock
         </span>
         <div className="label-line" />

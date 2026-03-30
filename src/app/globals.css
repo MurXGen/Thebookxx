@@ -963,6 +963,37 @@ button:hover {
   align-items: center;
 }
 
+.sparkleContainer {
+  position: relative;
+}
+
+/* Sparkle */
+.sparkleContainer::before {
+  content: "✦✦✦";
+  position: absolute;
+  top: -16px;
+  left: 12px;
+
+  font-size: 18px;
+  color: #fbbf24;
+
+  text-shadow: 0 0 6px #fbbf24;
+  animation: sparklePulse 2s ease-in-out infinite;
+}
+
+/* Glow animation */
+@keyframes sparklePulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
+}
+
 /* Bag */
 
 .bag-summary {
@@ -1116,6 +1147,30 @@ button:hover {
 /* For search */
 
 /* Search Overlay */
+
+.search-book {
+  background: var(--white-100);
+  color: var(--dark);
+  box-shadow: 1px 1px 12px var(--dark-20);
+  width: 50%;
+  border: 1px solid var(--dark-10);
+  border-radius: var(--px-12);
+  left: 50%;
+  transform: translateX(50%);
+  margin-bottom: 12px;
+}
+
+.search-book:hover {
+  background: var(--white-100);
+  color: var(--dark);
+  box-shadow: 1px 1px 12px var(--dark-20);
+  width: 50%;
+  border: 1px solid var(--dark-10);
+  border-radius: var(--px-12);
+  left: 50%;
+  transform: translateX(50%);
+}
+
 .search-overlay {
   position: fixed;
   inset: 0;

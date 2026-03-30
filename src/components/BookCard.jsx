@@ -112,7 +112,7 @@ export default function BookCard({ book }) {
                 }}
                 disabled={isOneRupee && hasOneRupeeInCart}
               >
-                <FaCartPlus size={16} />
+                <span>Add</span>
               </LoadingButton>
             ) : (
               <div className="width100 gap-12 items-center flex flex-row justify-between">

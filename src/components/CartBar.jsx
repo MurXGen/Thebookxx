@@ -6,12 +6,15 @@ import { CART_OFFERS } from "@/utils/cartOffers";
 import { useRouter } from "next/navigation";
 import CartOfferStrip from "@/components/UI/CartOfferStrip";
 import LoadingButton from "./UI/LoadingButton";
+import SearchMain from "./UI/SearchMain";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function CartBar() {
   const { cart } = useStore();
   const router = useRouter();
 
-  if (!cart.length) return null;
+  // ❌ Do NOT return null → we want search always visible
+  const hasCart = cart.length > 0;
 
   const cartBooks = cart
     .map((item) => {
@@ -29,7 +32,6 @@ export default function CartBar() {
 
   const discountedAmount = cartBooks.reduce((s, b) => s + b.discountedTotal, 0);
 
-  /* 🎉 Applied offer (needed for pricing only) */
   const appliedOffer =
     [...CART_OFFERS].reverse().find((o) => discountedAmount >= o.target) ||
     null;
@@ -53,37 +55,69 @@ export default function CartBar() {
 
   return (
     <div className="cart-bar">
+      {/* 🔍 ALWAYS VISIBLE SEARCH */}
+      <div className="mobile-search">
+        <SearchMain />
+      </div>
+
       {/* 🎁 OFFER STRIP */}
-      <CartOfferStrip discountedAmount={discountedAmount} />
+      <AnimatePresence>
+        {hasCart && (
+          <motion.div
+            key="offer"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+          >
+            <CartOfferStrip discountedAmount={discountedAmount} />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* 🛒 CART CTA */}
-      <div className="cart-bar-main flex flex-row gap-12">
-        <div className="flex flex-col width100 gap-4">
-          <div className="flex flex-row justify-between items-center">
-            <span className="font-14">Total amount</span>
+      <AnimatePresence>
+        {hasCart && (
+          <motion.div
+            key="cart"
+            className="cart-bar-main flex flex-row gap-12"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.35, ease: "easeInOut" }}
+          >
+            <div className="flex flex-col width100 gap-4">
+              <div className="flex flex-row justify-between items-center">
+                <span className="font-14">Total amount</span>
 
-            <div className="flex flex-col">
-              <div className="cart-price flex flex-row gap-8 justify-end items-center">
-                {appliedOffer && offerDiscount > 0 && (
-                  <span className="original strike">₹{discountedAmount}</span>
-                )}
-                <span className="final weight-600">₹{finalPayable}</span>
+                <div className="flex flex-col">
+                  <div className="cart-price flex flex-row gap-8 justify-end items-center">
+                    {appliedOffer && offerDiscount > 0 && (
+                      <span className="original strike">
+                        ₹{discountedAmount}
+                      </span>
+                    )}
+                    <span className="final weight-600">₹{finalPayable}</span>
+                  </div>
+
+                  {appliedOffer && (
+                    <span className="font-14 green weight-600">
+                      {offerLabel}
+                    </span>
+                  )}
+                </div>
               </div>
-
-              {appliedOffer && (
-                <span className="font-14 green weight-600">{offerLabel}</span>
-              )}
             </div>
-          </div>
-        </div>
 
-        <LoadingButton
-          className="pri-big-btn"
-          onClick={() => router.push("/bag")}
-        >
-          Checkout
-        </LoadingButton>
-      </div>
+            <LoadingButton
+              className="pri-big-btn"
+              onClick={() => router.push("/bag")}
+            >
+              Checkout
+            </LoadingButton>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

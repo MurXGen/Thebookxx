@@ -30,15 +30,7 @@ export const books = [
     image: bookImages["the-art-of-clarity"],
     description:
       "A powerful self-help guide by Murthy Thevar that teaches you how to eliminate confusion, think clearly, and make confident decisions without overthinking. Discover proven strategies for mental clarity, focus, and smart action to reduce stress and take control of your life with precision and confidence.",
-    catalogue: [
-      "bestseller",
-      "self-help",
-      "decision-making",
-      "mental clarity",
-      "productivity",
-      "focus",
-      "trending",
-    ],
+    catalogue: ["bestseller", "self-help", "trending"],
     originalPrice: calculateOriginalPrice(149),
     discountedPrice: 149,
     size: "Paperback",

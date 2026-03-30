@@ -26,14 +26,23 @@ export const books = [
   },
   {
     id: "bk-002",
-    name: "The Art of Clarity",
+    name: "The Art of Clarity: Master Decision-Making, Focus & Confident Living",
     image: bookImages["the-art-of-clarity"],
     description:
-      "Strategies to take smart action and make better decisions with less stress",
-    catalogue: ["bestseller", "self-help", "decision-making", "trending"],
+      "A powerful self-help guide by Murthy Thevar that teaches you how to eliminate confusion, think clearly, and make confident decisions without overthinking. Discover proven strategies for mental clarity, focus, and smart action to reduce stress and take control of your life with precision and confidence.",
+    catalogue: [
+      "bestseller",
+      "self-help",
+      "decision-making",
+      "mental clarity",
+      "productivity",
+      "focus",
+      "trending",
+    ],
     originalPrice: calculateOriginalPrice(149),
     discountedPrice: 149,
     size: "Paperback",
+    author: "Murthy Thevar",
   },
   {
     id: "bk-003",

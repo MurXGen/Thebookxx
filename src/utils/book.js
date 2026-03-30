@@ -1915,7 +1915,7 @@ export const books = [
     size: "Paperback",
   },
   {
-    id: "bk-184",
+    id: "bk-185",
     name: "Diwar me ek khidki rahti thi",
     image: bookImages["diwar-me-ek-khidki-rahti-thi"],
     description: "Classical story",

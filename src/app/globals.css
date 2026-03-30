@@ -667,7 +667,8 @@ button:hover {
   background: var(--white-100);
   padding: var(--px-12);
   border-radius: var(--px-12);
-  border: 1px solid var(--dark-20);
+  box-shadow: 1px 1px 12px var(--dark-20);
+  border: 1px solid var(--dark-10);
 }
 
 /* Trending books  */

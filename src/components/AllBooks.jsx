@@ -63,7 +63,7 @@ export default function AllBooks() {
         </div>
 
         {/* Sort Menu */}
-        <div className="sort-wrapper">
+        {/* <div className="sort-wrapper">
           <button
             className="sec-mid-btn flex flex-center"
             onClick={() => setOpenSort((p) => !p)}
@@ -79,11 +79,11 @@ export default function AllBooks() {
               <button onClick={() => setSortType("avg")}>Average price</button>
             </div>
           )}
-        </div>
+        </div> */}
       </div>
 
       {/* Filters */}
-      <div className="filter-row">
+      {/* <div className="filter-row">
         <div className="filter-chips">
           {categories.map((cat) => (
             <button
@@ -97,7 +97,7 @@ export default function AllBooks() {
             </button>
           ))}
         </div>
-      </div>
+      </div> */}
 
       {/* Books Grid */}
       <div className="grid-2 margin-tp-24px">

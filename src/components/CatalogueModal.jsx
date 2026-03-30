@@ -8,7 +8,7 @@ import { useEffect } from "react";
 
 export default function CatalogueModal({ category, onClose }) {
   const filteredBooks = books.filter((book) =>
-    book.catalogue?.includes(category)
+    book.catalogue?.includes(category),
   );
 
   // Capitalize category for heading
@@ -60,7 +60,7 @@ export default function CatalogueModal({ category, onClose }) {
           </div>
 
           {/* Body */}
-          <div className="modal-body grid-2">
+          <div className="modal-body">
             {filteredBooks.length > 0 ? (
               filteredBooks.map((book) => (
                 <BookCard key={book.id} book={book} />

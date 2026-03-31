@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
 import { books } from "@/utils/book";
-import { ArrowLeft, Check } from "lucide-react";
 import { CART_OFFERS } from "@/utils/cartOffers";
+import { ArrowLeft } from "lucide-react";
 import Image from "next/image";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function ViewBagClient() {
   const searchParams = useSearchParams();

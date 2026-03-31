@@ -1,12 +1,11 @@
 "use client";
 
-import Image from "next/image";
-import { X, Heart, ShoppingCart, ArrowLeft } from "lucide-react";
 import { useStore } from "@/context/StoreContext";
 import { books } from "@/utils/book";
+import { ArrowLeft, Heart, MessageSquare, ShoppingCart } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import LoadingButton from "./UI/LoadingButton";
-import { MessageSquare } from "lucide-react";
 
 export default function BookDetailsModal({ book, onClose }) {
   const { cart, addToCart, toggleWishlist, wishlist } = useStore();

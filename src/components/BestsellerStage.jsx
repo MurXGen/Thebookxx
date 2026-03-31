@@ -1,12 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { books } from "@/utils/book";
+import { AnimatePresence, motion } from "framer-motion";
+import { FileText, Phone, ShieldCheck, Star, Truck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { Phone, Star, StarIcon } from "lucide-react";
-import { books } from "@/utils/book";
-import { FileText, Truck, ShieldCheck } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 
 const SWAP_INTERVAL = 3000;
 

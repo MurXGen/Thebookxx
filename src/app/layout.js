@@ -81,7 +81,7 @@ export const metadata = {
     type: "website",
     images: [
       {
-        url: "/favicon.png",
+        url: "/favicon.ico",
         width: 512,
         height: 512,
         alt: "TheBookX Logo",
@@ -94,7 +94,7 @@ export const metadata = {
     title: "TheBookX — Buy Books Online",
     description:
       "Affordable online bookstore for novels, self-help, business & classic books.",
-    images: ["/favicon.png"],
+    images: ["/favicon.ico"],
   },
 };
 

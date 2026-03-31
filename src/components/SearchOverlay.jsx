@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
 import BookCard from "@/components/BookCard";
 import { books } from "@/utils/book";
+import { AnimatePresence, motion } from "framer-motion";
+import { X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 const normalize = (str = "") => str.toLowerCase().trim();
 

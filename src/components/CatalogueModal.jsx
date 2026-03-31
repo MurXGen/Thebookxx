@@ -1,9 +1,9 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
-import { books } from "@/utils/book";
 import BookCard from "@/components/BookCard";
+import { books } from "@/utils/book";
+import { AnimatePresence, motion } from "framer-motion";
+import { X } from "lucide-react";
 import { useEffect } from "react";
 
 export default function CatalogueModal({ category, onClose }) {

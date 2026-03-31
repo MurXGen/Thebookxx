@@ -1,9 +1,9 @@
 "use client";
 
-import { use } from "react";
-import { useRouter } from "next/navigation";
-import { books } from "@/utils/book";
 import BookDetailsModal from "@/components/BookDeatilsModel";
+import { books } from "@/utils/book";
+import { useRouter } from "next/navigation";
+import { use } from "react";
 
 export default function BookDetailsPage({ params }) {
   const { id } = use(params); // ✅ unwrap params

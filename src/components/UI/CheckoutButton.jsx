@@ -2,8 +2,8 @@
 
 import { useStore } from "@/context/StoreContext";
 import { trackBeginCheckout } from "@/lib/ga";
-import { useRouter } from "next/navigation";
 import { books } from "@/utils/book"; // or wherever your book list is
+import { useRouter } from "next/navigation";
 
 export default function CheckoutButton() {
   const router = useRouter();

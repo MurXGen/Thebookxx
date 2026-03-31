@@ -1,21 +1,20 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { books } from "@/utils/book";
 import BookCard from "@/components/BookCard";
-import { SlidersHorizontal, AlignJustify } from "lucide-react";
+import { books } from "@/utils/book";
+import { useMemo, useState } from "react";
 
 export default function AllBooks() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [sortType, setSortType] = useState(null);
   const [openSort, setOpenSort] = useState(false);
 
-  /* 📚 Extract unique categories */
-  const categories = useMemo(() => {
-    const set = new Set();
-    books.forEach((b) => b.catalogue?.forEach((c) => set.add(c)));
-    return ["all", ...Array.from(set)];
-  }, []);
+  // /* 📚 Extract unique categories */
+  // const categories = useMemo(() => {
+  //   const set = new Set();
+  //   books.forEach((b) => b.catalogue?.forEach((c) => set.add(c)));
+  //   return ["all", ...Array.from(set)];
+  // }, []);
 
   /* 🔄 Filter + Sort books */
   const filteredBooks = useMemo(() => {

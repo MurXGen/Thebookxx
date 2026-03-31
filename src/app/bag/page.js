@@ -1,17 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import BookCard from "@/components/BookCard";
+import AddressModal from "@/components/UI/AddressModal";
+import BillModal from "@/components/UI/BillModal";
+import CartOfferStrip from "@/components/UI/CartOfferStrip";
+import SlideConfirm from "@/components/UI/SlideConfirm";
 import { useStore } from "@/context/StoreContext";
 import { books } from "@/utils/book";
-import BookCard from "@/components/BookCard";
-import { ArrowLeft, BaggageClaimIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
-import CartOfferStrip from "@/components/UI/CartOfferStrip";
-import BillModal from "@/components/UI/BillModal";
 import { CART_OFFERS } from "@/utils/cartOffers";
-import AddressModal from "@/components/UI/AddressModal";
-import LoadingButton from "@/components/UI/LoadingButton";
-import SlideConfirm from "@/components/UI/SlideConfirm";
+import { ArrowLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function BagPage() {
   const { cart } = useStore();

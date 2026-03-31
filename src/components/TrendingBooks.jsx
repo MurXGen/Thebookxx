@@ -1,7 +1,5 @@
-import { books } from "@/utils/book";
 import ProductCard from "@/components/BookCard";
-import LabelDivider from "./UI/LineDivider";
-import { TrendingUp } from "lucide-react";
+import { books } from "@/utils/book";
 
 export default function TrendingBooks() {
   const trendingBooks = books.filter((book) =>

@@ -1,7 +1,5 @@
-import { books } from "@/utils/book";
 import ProductCard from "@/components/BookCard";
-import LabelDivider from "./UI/LineDivider";
-import { Percent, Zap } from "lucide-react";
+import { books } from "@/utils/book";
 
 export default function OneRupeeDeals() {
   const oneRupeeBooks = books.filter((book) => book.discountedPrice === 1);

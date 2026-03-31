@@ -30,7 +30,7 @@ export const books = [
   },
   {
     id: "bk-002",
-    name: "The Art of Clarity: Master Decision-Making, Focus & Confident Living",
+    name: "The Art of Clarity",
     image: bookImages["the-art-of-clarity"],
     description:
       "Transform your thinking with this powerful self-help guide from TheBookX.in. Authored by Murthy Thevar, this book teaches you proven strategies to eliminate confusion, think clearly, and make confident decisions without overthinking. TheBookX delivers high-quality books in pristine condition, securely packaged and shipped via Delhivery and Indian Post. Grab your copy today—books starting at just ₹1 for a limited time. Your trusted destination for affordable, authentic books across India.",

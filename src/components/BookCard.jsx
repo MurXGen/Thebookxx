@@ -58,7 +58,6 @@ export default function BookCard({ book }) {
             author: {
               "@type": "Person",
               name: book.author || "Various Authors",
-              url: book.author ? "https://thebookx.in/authors" : undefined,
             },
 
             bookFormat:
@@ -95,7 +94,7 @@ export default function BookCard({ book }) {
 
             offers: {
               "@type": "Offer",
-              url: `https://thebookx.in/book/${book.id}`,
+              url: `https://thebookx.in/books/${book.id}`,
               priceCurrency: "INR",
               price: Number(book.discountedPrice) || 0,
               priceValidUntil: new Date(
@@ -187,14 +186,14 @@ export default function BookCard({ book }) {
 
             mainEntityOfPage: {
               "@type": "WebPage",
-              "@id": `https://thebookx.in/book/${book.id}`,
+              "@id": `https://thebookx.in/books/${book.id}`,
             },
 
             potentialAction: {
               "@type": "BuyAction",
               target: {
                 "@type": "EntryPoint",
-                urlTemplate: `https://thebookx.in/book/${book.id}`,
+                urlTemplate: `https://thebookx.in/books/${book.id}`,
                 actionPlatform: [
                   "http://schema.org/DesktopWebPlatform",
                   "http://schema.org/MobileWebPlatform",
@@ -235,7 +234,7 @@ export default function BookCard({ book }) {
                 position: 3,
                 name: book.name,
                 item: {
-                  "@id": `https://thebookx.in/book/${book.id}`,
+                  "@id": `https://thebookx.in/books/${book.id}`,
                   name: book.name,
                 },
               },

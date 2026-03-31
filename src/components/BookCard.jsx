@@ -216,19 +216,28 @@ export default function BookCard({ book }) {
                 "@type": "ListItem",
                 position: 1,
                 name: "Home",
-                item: "https://thebookx.in",
+                item: {
+                  "@id": "https://thebookx.in",
+                  name: "Home",
+                },
               },
               {
                 "@type": "ListItem",
                 position: 2,
                 name: "Books",
-                item: "https://thebookx.in/books",
+                item: {
+                  "@id": "https://thebookx.in/books",
+                  name: "Books",
+                },
               },
               {
                 "@type": "ListItem",
                 position: 3,
                 name: book.name,
-                item: `https://thebookx.in/book/${book.id}`,
+                item: {
+                  "@id": `https://thebookx.in/book/${book.id}`,
+                  name: book.name,
+                },
               },
             ],
           }),

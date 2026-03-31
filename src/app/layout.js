@@ -45,8 +45,8 @@ export const metadata = {
   manifest: "/manifest.json",
   themeColor: "#000",
   icons: {
-    icon: "/favicon.png",
-    apple: "/favicon.png",
+    icon: "/favicon.ico",
+    apple: "/favicon.ico",
   },
 
   robots: {
@@ -64,9 +64,9 @@ export const metadata = {
   },
 
   icons: {
-    icon: "/favicon.png", // or "/favicon.png"
-    shortcut: "/favicon.png",
-    apple: "/favicon.png",
+    icon: "/favicon.ico", // or "/favicon.ico"
+    shortcut: "/favicon.ico",
+    apple: "/favicon.ico",
   },
 
   themeColor: "#ffb703",

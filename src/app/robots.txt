@@ -1,0 +1,24 @@
+# app/robots.txt
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /checkout/
+Disallow: /_next/
+Disallow: /_static/
+
+# Sitemap location
+Sitemap: https://thebookx.in/sitemap.xml
+
+# Crawl delay (optional - be nice to servers)
+Crawl-delay: 10
+
+# Google-specific rules
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 5
+
+# Bing-specific rules
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 5

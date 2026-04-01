@@ -7,7 +7,6 @@ import {
   Heart,
   MessageSquare,
   ShoppingCart,
-  Star,
   Truck,
   ShieldCheck,
   RotateCcw,
@@ -18,11 +17,24 @@ import LoadingButton from "./UI/LoadingButton";
 import Script from "next/script";
 import { useEffect } from "react";
 
+// Slugify function for consistent URL generation
+function slugify(text) {
+  return text
+    ?.toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
 export default function BookDetailsModal({ book, onClose }) {
   const { cart, addToCart, toggleWishlist, wishlist } = useStore();
   const inWishlist = wishlist.includes(book.id);
   const router = useRouter();
-  const bookUrl = `https://thebookx.in/books/${book.name}`;
+
+  // Generate SEO-friendly slug-based URL
+  const bookSlug = slugify(book.name);
+  const bookUrl = `/books/${bookSlug}`;
+  const canonicalUrl = `https://thebookx.in${bookUrl}`;
 
   const isOneRupee = book.discountedPrice === 1;
   const savings = book.originalPrice - book.discountedPrice;
@@ -63,7 +75,18 @@ export default function BookDetailsModal({ book, onClose }) {
         ],
       });
     }
-  }, [book]);
+
+    // Update canonical link in head
+    if (typeof document !== "undefined") {
+      let canonicalLink = document.querySelector("link[rel='canonical']");
+      if (!canonicalLink) {
+        canonicalLink = document.createElement("link");
+        canonicalLink.setAttribute("rel", "canonical");
+        document.head.appendChild(canonicalLink);
+      }
+      canonicalLink.setAttribute("href", canonicalUrl);
+    }
+  }, [book, canonicalUrl]);
 
   return (
     <>
@@ -75,7 +98,8 @@ export default function BookDetailsModal({ book, onClose }) {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Book",
-            "@id": `https://thebookx.in/books/${book.id}`,
+            "@id": `${canonicalUrl}#book`,
+            url: canonicalUrl,
             name: book.name,
             description: `${book.description} Shop now at TheBookX — India's most trusted online bookstore. Free shipping across India. Limited time ₹1 book sale!`,
             image: book.image,
@@ -87,18 +111,29 @@ export default function BookDetailsModal({ book, onClose }) {
               book.size === "Paperback"
                 ? "https://schema.org/Paperback"
                 : "https://schema.org/Hardcover",
-            numberOfPages: book.pages || 180,
+            numberOfPages: book.pages
+              ? typeof book.pages === "string" && book.pages.includes("-")
+                ? Math.floor(
+                    (parseInt(book.pages.split("-")[0]) +
+                      parseInt(book.pages.split("-")[1])) /
+                      2,
+                  )
+                : book.pages
+              : 180,
             inLanguage: book.language || "English",
             genre: book.catalogue?.join(", ") || "General Fiction",
-            // publisher: {
-            //   "@type": "Organization",
-            //   name: "TheBookX",
-            //   url: "https://thebookx.in",
-            // },
+            keywords: book.catalogue?.join(", ") || "",
+            publisher: {
+              "@type": "Organization",
+              name: "TheBookX",
+              url: "https://thebookx.in",
+              logo: "https://thebookx.in/favicon.ico",
+              sameAs: ["https://www.instagram.com/thebookx.in"],
+            },
             offers: {
               "@type": "Offer",
-              "@id": `https://thebookx.in/books/${book.id}#offer`,
-              url: `https://thebookx.in/books/${book.id}`,
+              "@id": `${canonicalUrl}#offer`,
+              url: canonicalUrl,
               priceCurrency: "INR",
               price: book.discountedPrice,
               priceValidUntil: new Date(
@@ -107,14 +142,32 @@ export default function BookDetailsModal({ book, onClose }) {
                 .toISOString()
                 .split("T")[0],
               availability:
-                book.stock > 0
+                book.stock > 0 && book.discountedPrice > 0
                   ? "https://schema.org/InStock"
-                  : "https://schema.org/OutOfStock",
+                  : book.discountedPrice === 1 && book.stock > 0
+                    ? "https://schema.org/LimitedAvailability"
+                    : "https://schema.org/OutOfStock",
               itemCondition: "https://schema.org/NewCondition",
+              priceSpecification: {
+                "@type": "UnitPriceSpecification",
+                price: Number(book.discountedPrice),
+                priceCurrency: "INR",
+                ...(book.originalPrice > book.discountedPrice && {
+                  priceType: "https://schema.org/SalePrice",
+                }),
+              },
               seller: {
                 "@type": "Organization",
                 name: "TheBookX",
                 url: "https://thebookx.in",
+                logo: "https://thebookx.in/favicon.ico",
+                contactPoint: {
+                  "@type": "ContactPoint",
+                  telephone: "+91-7977960242",
+                  contactType: "customer service",
+                  availableLanguage: ["English", "Hindi"],
+                  areaServed: "IN",
+                },
               },
               shippingDetails: {
                 "@type": "OfferShippingDetails",
@@ -151,23 +204,49 @@ export default function BookDetailsModal({ book, onClose }) {
                 merchantReturnDays: 7,
                 returnMethod: "https://schema.org/ReturnByMail",
                 returnFees: "https://schema.org/FreeReturn",
+                returnPolicyUrl: "https://thebookx.in/refund",
               },
+              availabilityStarts: new Date().toISOString(),
+              availabilityEnds: new Date(
+                new Date().setMonth(new Date().getMonth() + 1),
+              ).toISOString(),
             },
             aggregateRating: {
               "@type": "AggregateRating",
-              ratingValue: 4.5,
-              reviewCount: 29,
+              ratingValue: book.rating || 4.5,
+              reviewCount: book.reviewCount || 28,
               bestRating: 5,
               worstRating: 1,
+              ratingExplanation:
+                "Based on verified customer reviews on TheBookX",
             },
             mainEntityOfPage: {
               "@type": "WebPage",
-              "@id": `https://thebookx.in/books/${book.id}`,
+              "@id": canonicalUrl,
             },
+            potentialAction: {
+              "@type": "BuyAction",
+              target: {
+                "@type": "EntryPoint",
+                urlTemplate: canonicalUrl,
+                actionPlatform: [
+                  "http://schema.org/DesktopWebPlatform",
+                  "http://schema.org/MobileWebPlatform",
+                ],
+              },
+              price: Number(book.discountedPrice),
+              priceCurrency: "INR",
+            },
+            sameAs: [
+              `https://www.goodreads.com/search?q=${encodeURIComponent(book.name)}`,
+            ],
+            datePublished: book.publishedDate || "2024-01-01",
+            copyrightYear: new Date().getFullYear(),
           }),
         }}
       />
 
+      {/* Breadcrumb Schema */}
       <Script
         id={`breadcrumb-${book.id}`}
         type="application/ld+json"
@@ -175,35 +254,72 @@ export default function BookDetailsModal({ book, onClose }) {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
-            "@id": `${bookUrl}`,
-
+            "@id": `${canonicalUrl}#breadcrumb`,
             itemListElement: [
               {
                 "@type": "ListItem",
                 position: 1,
                 name: "Home",
-                item: "https://thebookx.in",
+                item: {
+                  "@id": "https://thebookx.in",
+                  name: "Home",
+                },
               },
               {
                 "@type": "ListItem",
                 position: 2,
                 name: "Books",
-                item: "https://thebookx.in/books",
+                item: {
+                  "@id": "https://thebookx.in/books",
+                  name: "All Books",
+                },
               },
-              {
-                "@type": "ListItem",
-                position: 3,
-                name: book.name,
-                item: bookUrl,
-              },
+              ...(book.catalogue && book.catalogue.length > 0
+                ? [
+                    {
+                      "@type": "ListItem",
+                      position: 3,
+                      name:
+                        book.catalogue[0].charAt(0).toUpperCase() +
+                        book.catalogue[0].slice(1),
+                      item: {
+                        "@id": `https://thebookx.in/category/${slugify(book.catalogue[0])}`,
+                        name:
+                          book.catalogue[0].charAt(0).toUpperCase() +
+                          book.catalogue[0].slice(1),
+                      },
+                    },
+                    {
+                      "@type": "ListItem",
+                      position: 4,
+                      name: book.name,
+                      item: {
+                        "@id": canonicalUrl,
+                        name: book.name,
+                      },
+                    },
+                  ]
+                : [
+                    {
+                      "@type": "ListItem",
+                      position: 3,
+                      name: book.name,
+                      item: {
+                        "@id": canonicalUrl,
+                        name: book.name,
+                      },
+                    },
+                  ]),
             ],
           }),
         }}
       />
+
       <div
         className="book-detail-section"
         itemScope
         itemType="https://schema.org/Book"
+        itemID={`${canonicalUrl}#book`}
       >
         <div className="section-1200 flex flex-col gap-24">
           {/* Header with Back Button */}
@@ -330,6 +446,7 @@ export default function BookDetailsModal({ book, onClose }) {
               itemProp="offers"
               itemScope
               itemType="https://schema.org/Offer"
+              itemID={`${canonicalUrl}#offer`}
             >
               <span className="font-32 weight-600 green">
                 ₹<span itemProp="price">{book.discountedPrice}</span>
@@ -350,9 +467,11 @@ export default function BookDetailsModal({ book, onClose }) {
               <meta
                 itemProp="availability"
                 content={
-                  book.stock > 0
+                  book.stock > 0 && book.discountedPrice > 0
                     ? "https://schema.org/InStock"
-                    : "https://schema.org/OutOfStock"
+                    : book.discountedPrice === 1 && book.stock > 0
+                      ? "https://schema.org/LimitedAvailability"
+                      : "https://schema.org/OutOfStock"
                 }
               />
               <meta
@@ -402,12 +521,17 @@ export default function BookDetailsModal({ book, onClose }) {
               </div>
             </div>
 
-            {/* Category Tags */}
+            {/* Category Tags with Slug-based Links */}
             <div className="flex flex-row flex-wrap gap-12 tags mt-16">
               {book.catalogue?.map((tag) => (
-                <span key={tag} className="sec-mid-btn text-capitalize">
+                <a
+                  key={tag}
+                  href={`/category/${slugify(tag)}`}
+                  className="sec-mid-btn text-capitalize hover:opacity-80 transition-opacity"
+                  aria-label={`Browse more ${tag} books`}
+                >
                   {tag}
-                </span>
+                </a>
               ))}
             </div>
           </div>
@@ -435,7 +559,7 @@ export default function BookDetailsModal({ book, onClose }) {
             </LoadingButton>
 
             <LoadingButton
-              className=" flex-1 pri-big-btn flex flex-row items-center gap-12 justify-center"
+              className="flex-1 pri-big-btn flex flex-row items-center gap-12 justify-center"
               onClick={handleAddToCart}
               disabled={(isOneRupee && hasOneRupeeInCart) || book.stock === 0}
               icon={<ShoppingCart size={20} />}

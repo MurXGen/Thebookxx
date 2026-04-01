@@ -2574,7 +2574,7 @@ export const books = [
   },
   {
     id: "bk-169",
-    name: "Manifest: 7 Steps to Living Your Best Life",
+    name: "Manifest (Price Drop)",
     image: bookImages["manifest"],
     description:
       "Transform your life with this mindset-shifting book focused on belief systems and manifestation from TheBookX.in. Roxie Nafousi's empowering guide reveals the science and spirituality of creating your reality. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop with confidence—books starting at just ₹1 for a limited offer.",
@@ -2589,7 +2589,7 @@ export const books = [
   },
   {
     id: "bk-170",
-    name: "The Psychology of Money",
+    name: "The Psychology of Money (Price Drop)",
     image: bookImages["psychology-of-money"],
     description:
       "Discover timeless lessons on money, greed, and happiness with this modern classic from TheBookX.in. Morgan Housel's insightful book explores the behavioral aspects of personal finance. TheBookX ensures authentic books in excellent condition, securely shipped via Delhivery and Indian Post. Your trusted partner—books starting at just ₹1 for a limited period.",
@@ -2604,7 +2604,7 @@ export const books = [
   },
   {
     id: "bk-171",
-    name: "The Subtle Art of Not Giving a F*ck",
+    name: "The Subtle Art of Not Giving a F*ck (Price Drop)",
     image: bookImages["subtle-art-not-giving-fck"],
     description:
       "Embrace a counterintuitive approach to living a good life with this bold bestseller from TheBookX.in. Mark Manson's no-nonsense guide to happiness has transformed millions of lives. TheBookX provides high-quality books in perfect condition, securely via Delhivery and Indian Post. Contact us anytime—books starting at just ₹1 for a limited time.",
@@ -2619,7 +2619,7 @@ export const books = [
   },
   {
     id: "bk-172",
-    name: "Was I Ever Enough",
+    name: "Was I Ever Enough (Price Drop)",
     image: bookImages["was-i-ever-enough"],
     description:
       "Experience a poignant reflection on self-worth and validation from TheBookX.in. A powerful exploration of healing, acceptance, and finding your true value. TheBookX delivers premium quality books in excellent condition, securely via Delhivery and Indian Post. Shop now—books starting at just ₹1 for a limited offer.",
@@ -2634,7 +2634,7 @@ export const books = [
   },
   {
     id: "bk-173",
-    name: "The Art of Laziness",
+    name: "The Art of Laziness (Price Drop)",
     image: bookImages["art-of-laziness"],
     description:
       "Embrace rest and find productivity in stillness with this refreshing perspective from TheBookX.in. Learn why doing less can help you achieve more in work and life. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Your trusted destination—books starting at just ₹1 for a limited period.",
@@ -2649,7 +2649,7 @@ export const books = [
   },
   {
     id: "bk-174",
-    name: "I Don't Love You Anymore",
+    name: "I Don't Love You Anymore (Price Drop)",
     image: bookImages["i-dont-love-you-anymore"],
     description:
       "Navigate the emotional journey of heartbreak and healing with this deeply moving book from TheBookX.in. A honest exploration of love lost and the path to rediscovering yourself. TheBookX provides high-quality books in perfect condition, securely via Delhivery and Indian Post. Shop with confidence—books starting at just ₹1 for a limited time.",
@@ -2664,7 +2664,7 @@ export const books = [
   },
   {
     id: "bk-175",
-    name: "Don't Believe Everything You Think",
+    name: "Don't Believe Everything You Think (Price Drop)",
     image: bookImages["dont-believe-everything-you-think"],
     description:
       "Learn to quiet your mind and stop overthinking with this transformative guide from TheBookX.in. Joseph Nguyen offers practical wisdom for finding peace in a chaotic mind. TheBookX delivers premium quality books in pristine condition, securely via Delhivery and Indian Post. Contact us anytime—books starting at just ₹1 for a limited offer.",
@@ -2679,7 +2679,7 @@ export const books = [
   },
   {
     id: "bk-176",
-    name: "The Art of Not Overthinking",
+    name: "The Art of Not Overthinking (Price Drop)",
     image: bookImages["art-of-not-overthinking"],
     description:
       "Discover practical tools to control anxious thoughts and find mental clarity with this essential guide from TheBookX.in. Simple strategies for a calmer, more focused mind. TheBookX ensures premium quality books in excellent condition, securely via Delhivery and Indian Post. Your trusted partner—books starting at just ₹1 for a limited period.",
@@ -2694,7 +2694,7 @@ export const books = [
   },
   {
     id: "bk-177",
-    name: "The Metamorphosis",
+    name: "The Metamorphosis (Price Drop)",
     image: bookImages["the-metamorphosis"],
     description:
       "Experience the haunting classic on alienation and identity from TheBookX.in. Franz Kafka's masterpiece explores the boundaries of humanity and isolation. TheBookX provides high-quality books in perfect condition, securely via Delhivery and Indian Post. Discover timeless literature—books starting at just ₹1 for a limited time.",
@@ -2709,7 +2709,7 @@ export const books = [
   },
   {
     id: "bk-178",
-    name: "Notes from Underground",
+    name: "Notes from Underground (Price Drop)",
     image: bookImages["notes-from-underground"],
     description:
       "Take a philosophical dive into human consciousness with this classic from TheBookX.in. Fyodor Dostoevsky's groundbreaking work explores existential alienation and free will. TheBookX delivers premium quality books in pristine condition, securely via Delhivery and Indian Post. Shop now—books starting at just ₹1 for a limited offer.",
@@ -2724,7 +2724,7 @@ export const books = [
   },
   {
     id: "bk-179",
-    name: "White Nights",
+    name: "White Nights (Price Drop)",
     image: bookImages["white-nights"],
     description:
       "Experience this tender story of love, loneliness, and fleeting dreams from TheBookX.in. Fyodor Dostoevsky's poignant novella captures the beauty and pain of unrequited love. TheBookX ensures authentic books in excellent condition, securely via Delhivery and Indian Post. Your trusted destination—books starting at just ₹1 for a limited period.",
@@ -2739,7 +2739,7 @@ export const books = [
   },
   {
     id: "bk-180",
-    name: "The Alchemist",
+    name: "The Alchemist (Price Drop)",
     image: bookImages["alchemist"],
     description:
       "Discover the philosophical tale about destiny, dreams, and self-discovery from TheBookX.in. Paulo Coelho's international bestseller has inspired millions to follow their personal legends. TheBookX provides high-quality books in perfect condition, securely via Delhivery and Indian Post. Shop with confidence—books starting at just ₹1 for a limited time.",
@@ -2754,7 +2754,7 @@ export const books = [
   },
   {
     id: "bk-181",
-    name: "Don't Sweat the Small Stuff",
+    name: "Don't Sweat the Small Stuff (Price Drop)",
     image: bookImages["dont-sweat-the-small-stuff"],
     description:
       "Find peace in chaos with simple practices to reduce stress and live a calmer life from TheBookX.in. Richard Carlson's timeless guide offers practical wisdom for everyday challenges. TheBookX delivers premium quality books in excellent condition, securely via Delhivery and Indian Post. Contact us anytime—books starting at just ₹1 for a limited offer.",
@@ -2769,7 +2769,7 @@ export const books = [
   },
   {
     id: "bk-182",
-    name: "Thank You for Leaving",
+    name: "Thank You for Leaving (Price Drop)",
     image: bookImages["thank-you-for-leaving"],
     description:
       "Find strength and growth after heartbreak with this empowering guide from TheBookX.in. A compassionate journey through letting go, healing, and finding yourself again. TheBookX ensures premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Your trusted partner—books starting at just ₹1 for a limited period.",
@@ -2784,7 +2784,7 @@ export const books = [
   },
   {
     id: "bk-183",
-    name: "The Trial",
+    name: "The Trial (Price Drop)",
     image: bookImages["the-trial"],
     description:
       "Delve into a chilling exploration of justice and bureaucracy from TheBookX.in. Franz Kafka's unfinished masterpiece remains one of literature's most powerful allegories. TheBookX provides high-quality books in perfect condition, securely via Delhivery and Indian Post. Discover timeless classics—books starting at just ₹1 for a limited time.",
@@ -2799,7 +2799,7 @@ export const books = [
   },
   {
     id: "bk-184",
-    name: "Manifest: 7 Steps to Living Your Best Life",
+    name: "Manifest: 7 Steps to Living Your Best Life ",
     image: bookImages["manifest"],
     description:
       "Transform your life with this mindset-shifting book focused on belief systems and manifestation from TheBookX.in. Roxie Nafousi's empowering guide reveals the science and spirituality of creating your reality. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now—books starting at just ₹1 for a limited offer.",

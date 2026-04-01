@@ -12,7 +12,7 @@ export default function OneRupeeDeals() {
 
       <div className="label-divider">
         <span className="label-text flex flex-row flex-center items-center gap-12 font-20 weight-500">
-          ₹1 Deals · Limited Stock
+          ₹1 Deals · Price Drop
         </span>
         <div className="label-line" />
       </div>

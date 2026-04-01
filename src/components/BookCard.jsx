@@ -21,6 +21,15 @@ const getFullUrl = (path) => {
   return `https://thebookx.in${path}`;
 };
 
+// utils/slugify.js
+function slugify(text) {
+  return text
+    ?.toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
 export default function BookCard({ book }) {
   const [confetti, setConfetti] = useState(false);
   const { cart, wishlist, addToCart, decreaseQty, toggleWishlist } = useStore();
@@ -38,7 +47,7 @@ export default function BookCard({ book }) {
     return b?.discountedPrice === 1;
   });
 
-  const bookUrl = `/books/${book.id}`;
+  const bookUrl = `/books/${slugify(book.name)}`;
 
   return (
     <>
@@ -49,7 +58,7 @@ export default function BookCard({ book }) {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Book",
-            "@id": `https://thebookx.in/books/${book.id}#book`,
+            "@id": `https://thebookx.in${bookUrl}#book`,
 
             name: book.name || "",
             description: `${book.description || "Buy this book at TheBookX"} TheBookX delivers premium quality books in pristine condition, securely shipped across India via Delhivery and Indian Post. Shop with confidence at India's most trusted online bookstore. Limited time offer — books starting at just ₹1!`,
@@ -104,8 +113,8 @@ export default function BookCard({ book }) {
 
             offers: {
               "@type": "Offer",
-              "@id": `https://thebookx.in/books/${book.id}`,
-              url: `https://thebookx.in/books/${book.id}`,
+              "@id": `https://thebookx.in${bookUrl}#offer`,
+              url: `https://thebookx.in${bookUrl}`,
               priceCurrency: "INR",
               price: Number(book.discountedPrice) || 0,
               priceValidUntil: new Date(
@@ -204,7 +213,7 @@ export default function BookCard({ book }) {
             review: book.featuredReview
               ? {
                   "@type": "Review",
-                  "@id": `https://thebookx.in/books/${book.id}`,
+                  "@id": `https://thebookx.in${bookUrl}#review`,
                   reviewRating: {
                     "@type": "Rating",
                     ratingValue: book.featuredReview.rating || 5,
@@ -237,14 +246,14 @@ export default function BookCard({ book }) {
 
             mainEntityOfPage: {
               "@type": "WebPage",
-              "@id": `https://thebookx.in/books/${book.id}`,
+              "@id": `https://thebookx.in${bookUrl}`,
             },
 
             potentialAction: {
               "@type": "BuyAction",
               target: {
                 "@type": "EntryPoint",
-                urlTemplate: `https://thebookx.in/books/${book.id}`,
+                urlTemplate: `https://thebookx.in${bookUrl}`,
                 actionPlatform: [
                   "http://schema.org/DesktopWebPlatform",
                   "http://schema.org/MobileWebPlatform",
@@ -271,7 +280,7 @@ export default function BookCard({ book }) {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
-            "@id": `https://thebookx.in/books/${book.id}#breadcrumb`,
+            "@id": `https://thebookx.in${bookUrl}#breadcrumb`,
             itemListElement: [
               {
                 "@type": "ListItem",
@@ -300,7 +309,7 @@ export default function BookCard({ book }) {
                         book.catalogue[0].charAt(0).toUpperCase() +
                         book.catalogue[0].slice(1),
                       item: {
-                        "@id": `https://thebookx.in/category/${book.catalogue[0]}`,
+                        "@id": `https://thebookx.in/category/${slugify(book.catalogue[0])}`,
                         name:
                           book.catalogue[0].charAt(0).toUpperCase() +
                           book.catalogue[0].slice(1),
@@ -311,7 +320,7 @@ export default function BookCard({ book }) {
                       position: 4,
                       name: book.name,
                       item: {
-                        "@id": `https://thebookx.in/books/${book.id}`,
+                        "@id": `https://thebookx.in${bookUrl}`,
                         name: book.name,
                       },
                     },
@@ -322,7 +331,7 @@ export default function BookCard({ book }) {
                       position: 3,
                       name: book.name,
                       item: {
-                        "@id": `https://thebookx.in/books/${book.id}`,
+                        "@id": `https://thebookx.in${bookUrl}`,
                         name: book.name,
                       },
                     },
@@ -337,9 +346,17 @@ export default function BookCard({ book }) {
         style={{ position: "relative" }}
         itemScope
         itemType="https://schema.org/Book"
-        itemID={`https://thebookx.in/books/${book.id}`}
+        itemID={`https://thebookx.in${bookUrl}#book`}
+        onClick={() => router.push(bookUrl)}
       >
         <CartConfetti trigger={confetti} />
+
+        {book.discountedPrice === 1 && book.stock > 0 && (
+          <span className="font-10 font-weight-500 flex flex-row flex-center items-center justify-center">
+            🔥 Limited Time Offer!
+            <meta itemProp="specialPrice" content="₹1 Limited Offer" />
+          </span>
+        )}
 
         {/* Image */}
         <div className="book-image-wrapper">
@@ -354,7 +371,7 @@ export default function BookCard({ book }) {
             <Link href={bookUrl} aria-label={`View details of ${book.name}`}>
               <Image
                 src={book.image}
-                alt={`${book.name} book cover — Buy online at TheBookX`}
+                alt={`${book.name} book cover — Buy online at TheBookX, India's trusted bookstore`}
                 fill
                 sizes="(max-width: 768px) 100vw, 240px"
                 className={`book-image ${imageLoaded ? "loaded" : ""}`}
@@ -379,10 +396,10 @@ export default function BookCard({ book }) {
             <Link href={bookUrl} className="book-title-link" itemProp="url">
               {book.name}
             </Link>
-            {/* Author Display (Optional - add to increase visibility) */}
+            {/* Author Display */}
             {book.author && (
               <div
-                className="font-10 dark-50"
+                className="font-10 dark-50 mt-4"
                 itemProp="author"
                 itemScope
                 itemType="https://schema.org/Person"
@@ -411,7 +428,7 @@ export default function BookCard({ book }) {
               itemProp="offers"
               itemScope
               itemType="https://schema.org/Offer"
-              itemID={`https://thebookx.in/books/${book.id}#offer`}
+              itemID={`https://thebookx.in${bookUrl}#offer`}
             >
               <div className="price-row">
                 <span className="discounted">
@@ -462,13 +479,6 @@ export default function BookCard({ book }) {
                   />
                 </span>
               )}
-
-              {/* {book.discountedPrice === 1 && book.stock > 0 && (
-                <span className="red font-10 font-weight-500">
-                  🔥 Limited Time Offer! Books starting at ₹1
-                  <meta itemProp="specialPrice" content="₹1 Limited Offer" />
-                </span>
-              )} */}
             </div>
 
             {/* Actions */}
@@ -517,8 +527,8 @@ export default function BookCard({ book }) {
             </div>
           </div>
 
-          {/* Stock Status Display (Optional - improves transparency) */}
-          {/* {book.stock && book.stock < 10 && book.stock > 0 && (
+          {/* Stock Status Display */}
+          {book.stock && book.stock < 10 && book.stock > 0 && (
             <div className="font-10 orange">
               ⚡ Only {book.stock} left in stock — order soon!
             </div>
@@ -528,7 +538,7 @@ export default function BookCard({ book }) {
             <div className="font-10 red">
               ❌ Out of Stock — Check back soon!
             </div>
-          )} */}
+          )}
         </div>
       </article>
     </>

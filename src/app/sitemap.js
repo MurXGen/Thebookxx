@@ -19,17 +19,13 @@ function getFullImageUrl(imagePath, baseUrl) {
     return imagePath;
   }
 
-  // Remove any leading slash to avoid double slashes
-  const cleanPath = imagePath.startsWith("/") ? imagePath.slice(1) : imagePath;
-
-  // If the path already includes 'bookImages' or 'images', use as is
-  if (cleanPath.includes("bookImages") || cleanPath.includes("images")) {
-    return `${baseUrl}/${cleanPath}`;
+  // If path starts with / (relative path)
+  if (imagePath.startsWith("/")) {
+    return `${baseUrl}${imagePath}`;
   }
 
-  // Default: assume images are in the bookImages directory
-  // Adjust this based on your actual image folder structure
-  return `${baseUrl}/bookImages/${cleanPath}`;
+  // If just filename, construct path to /books/
+  return `${baseUrl}/books/${imagePath}`;
 }
 
 export default async function sitemap() {
@@ -93,10 +89,9 @@ export default async function sitemap() {
     },
   ];
 
-  // Dynamic routes for all books with corrected image URLs
+  // Dynamic routes for all books
   const bookRoutes = books.map((book) => {
     const bookSlug = slugify(book.name);
-    const fullImageUrl = getFullImageUrl(book.image, baseUrl);
 
     const route = {
       url: `${baseUrl}/books/${bookSlug}`,
@@ -105,13 +100,11 @@ export default async function sitemap() {
       priority: 0.8,
     };
 
-    // Only add images property if image exists
-    if (fullImageUrl) {
+    // Add image if book.image exists
+    // book.image should already be like "/books/the-art-of-spending-money.jpeg"
+    if (book.image) {
+      const fullImageUrl = getFullImageUrl(book.image, baseUrl);
       route.images = [fullImageUrl];
-
-      // Optional: Add image title and caption for better SEO
-      route.imageTitle = `${book.name} book cover - Buy at TheBookX`;
-      route.imageCaption = `Shop ${book.name} by ${book.author || "Various Authors"} online at TheBookX. Free shipping across India.`;
     }
 
     return route;

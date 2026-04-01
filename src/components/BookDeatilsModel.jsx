@@ -22,6 +22,7 @@ export default function BookDetailsModal({ book, onClose }) {
   const { cart, addToCart, toggleWishlist, wishlist } = useStore();
   const inWishlist = wishlist.includes(book.id);
   const router = useRouter();
+  const bookUrl = `https://thebookx.in/books/${book.name}`;
 
   const isOneRupee = book.discountedPrice === 1;
   const savings = book.originalPrice - book.discountedPrice;
@@ -74,7 +75,7 @@ export default function BookDetailsModal({ book, onClose }) {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Book",
-            "@id": `https://thebookx.in/books/${book.id}#book`,
+            "@id": `https://thebookx.in/books/${book.id}`,
             name: book.name,
             description: `${book.description} Shop now at TheBookX — India's most trusted online bookstore. Free shipping across India. Limited time ₹1 book sale!`,
             image: book.image,
@@ -89,12 +90,11 @@ export default function BookDetailsModal({ book, onClose }) {
             numberOfPages: book.pages || 180,
             inLanguage: book.language || "English",
             genre: book.catalogue?.join(", ") || "General Fiction",
-            publisher: {
-              "@type": "Organization",
-              name: "TheBookX",
-              url: "https://thebookx.in",
-              logo: "https://thebookx.in/logo.png",
-            },
+            // publisher: {
+            //   "@type": "Organization",
+            //   name: "TheBookX",
+            //   url: "https://thebookx.in",
+            // },
             offers: {
               "@type": "Offer",
               "@id": `https://thebookx.in/books/${book.id}#offer`,
@@ -156,7 +156,7 @@ export default function BookDetailsModal({ book, onClose }) {
             aggregateRating: {
               "@type": "AggregateRating",
               ratingValue: 4.5,
-              reviewCount: 1250,
+              reviewCount: 29,
               bestRating: 5,
               worstRating: 1,
             },
@@ -168,14 +168,15 @@ export default function BookDetailsModal({ book, onClose }) {
         }}
       />
 
-      {/* Breadcrumb Schema */}
       <Script
-        id={`breadcrumb-detail-${book.id}`}
+        id={`breadcrumb-${book.id}`}
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
+            "@id": `${bookUrl}`,
+
             itemListElement: [
               {
                 "@type": "ListItem",
@@ -189,36 +190,16 @@ export default function BookDetailsModal({ book, onClose }) {
                 name: "Books",
                 item: "https://thebookx.in/books",
               },
-              ...(book.catalogue && book.catalogue.length > 0
-                ? [
-                    {
-                      "@type": "ListItem",
-                      position: 3,
-                      name:
-                        book.catalogue[0].charAt(0).toUpperCase() +
-                        book.catalogue[0].slice(1),
-                      item: `https://thebookx.in/category/${book.catalogue[0]}`,
-                    },
-                    {
-                      "@type": "ListItem",
-                      position: 4,
-                      name: book.name,
-                      item: `https://thebookx.in/books/${book.id}`,
-                    },
-                  ]
-                : [
-                    {
-                      "@type": "ListItem",
-                      position: 3,
-                      name: book.name,
-                      item: `https://thebookx.in/books/${book.id}`,
-                    },
-                  ]),
+              {
+                "@type": "ListItem",
+                position: 3,
+                name: book.name,
+                item: bookUrl,
+              },
             ],
           }),
         }}
       />
-
       <div
         className="book-detail-section"
         itemScope

@@ -1,7 +1,7 @@
 // app/sitemap.js
 import { books } from "@/utils/book";
 
-// Helper function to slugify book names (same as in your components)
+// Helper function to slugify book names
 function slugify(text) {
   return text
     ?.toLowerCase()
@@ -10,10 +10,32 @@ function slugify(text) {
     .replace(/(^-|-$)/g, "");
 }
 
+// Helper function to get full image URL
+function getFullImageUrl(imagePath, baseUrl) {
+  if (!imagePath) return null;
+
+  // If already absolute URL
+  if (imagePath.startsWith("http")) {
+    return imagePath;
+  }
+
+  // Remove any leading slash to avoid double slashes
+  const cleanPath = imagePath.startsWith("/") ? imagePath.slice(1) : imagePath;
+
+  // If the path already includes 'bookImages' or 'images', use as is
+  if (cleanPath.includes("bookImages") || cleanPath.includes("images")) {
+    return `${baseUrl}/${cleanPath}`;
+  }
+
+  // Default: assume images are in the bookImages directory
+  // Adjust this based on your actual image folder structure
+  return `${baseUrl}/bookImages/${cleanPath}`;
+}
+
 export default async function sitemap() {
   const baseUrl = "https://thebookx.in";
 
-  // Static routes (pages that don't change)
+  // Static routes
   const staticRoutes = [
     {
       url: baseUrl,
@@ -21,18 +43,6 @@ export default async function sitemap() {
       changeFrequency: "daily",
       priority: 1.0,
     },
-    // {
-    //   url: `${baseUrl}/books`,
-    //   lastModified: new Date(),
-    //   changeFrequency: "daily",
-    //   priority: 0.9,
-    // },
-    // {
-    //   url: `${baseUrl}/categories`,
-    //   lastModified: new Date(),
-    //   changeFrequency: "weekly",
-    //   priority: 0.8,
-    // },
     {
       url: `${baseUrl}/wishlist`,
       lastModified: new Date(),
@@ -63,22 +73,51 @@ export default async function sitemap() {
       changeFrequency: "monthly",
       priority: 0.5,
     },
+    {
+      url: `${baseUrl}/about`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    {
+      url: `${baseUrl}/contact`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    {
+      url: `${baseUrl}/privacy`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
   ];
 
-  // Dynamic routes for all books
+  // Dynamic routes for all books with corrected image URLs
   const bookRoutes = books.map((book) => {
     const bookSlug = slugify(book.name);
-    return {
+    const fullImageUrl = getFullImageUrl(book.image, baseUrl);
+
+    const route = {
       url: `${baseUrl}/books/${bookSlug}`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.8,
-      // Optional: Add images for Google Image Search
-      images: book.image ? [book.image] : [],
     };
+
+    // Only add images property if image exists
+    if (fullImageUrl) {
+      route.images = [fullImageUrl];
+
+      // Optional: Add image title and caption for better SEO
+      route.imageTitle = `${book.name} book cover - Buy at TheBookX`;
+      route.imageCaption = `Shop ${book.name} by ${book.author || "Various Authors"} online at TheBookX. Free shipping across India.`;
+    }
+
+    return route;
   });
 
-  // Get unique categories from all books for category pages
+  // Get unique categories
   const allCategories = [
     ...new Set(books.flatMap((book) => book.catalogue || [])),
   ];

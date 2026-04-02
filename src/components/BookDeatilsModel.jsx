@@ -87,7 +87,7 @@ export default function BookDetailsModal({ book }) {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Book",
-            "@id": `${canonicalUrl}#book`,
+            "@id": `${canonicalUrl}`,
             url: canonicalUrl,
             name: book.name,
             description: `${book.description} Shop now at TheBookX — India's most trusted online bookstore. Free shipping across India.`,
@@ -323,7 +323,10 @@ export default function BookDetailsModal({ book }) {
           </div>
 
           {/* Buttons */}
-          <div className="book-detail-cta section-1200 flex flex-row gap-16 flex-wrap">
+          <div
+            className="book-detail-cta section-1200 flex flex-row gap-16 flex-wrap"
+            style={{ backdropFilter: "blur(12px)" }}
+          >
             <LoadingButton
               className="flex flex-row items-center gap-12 justify-center sec-mid-btn"
               onClick={handleWishlist}

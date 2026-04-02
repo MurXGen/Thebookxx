@@ -1,3 +1,4 @@
+// components/BookDeatilsModel.js
 "use client";
 
 import { useStore } from "@/context/StoreContext";
@@ -86,6 +87,21 @@ export default function BookDetailsModal({ book, onClose }) {
       }
       canonicalLink.setAttribute("href", canonicalUrl);
     }
+
+    // Update page title dynamically (fallback)
+    document.title = `${book.name} by ${book.author || "Various Authors"} | Buy Online at Best Price | TheBookX`;
+
+    // Update meta description dynamically (fallback)
+    let metaDescription = document.querySelector('meta[name="description"]');
+    if (!metaDescription) {
+      metaDescription = document.createElement("meta");
+      metaDescription.setAttribute("name", "description");
+      document.head.appendChild(metaDescription);
+    }
+    metaDescription.setAttribute(
+      "content",
+      `${book.description.substring(0, 155)} Shop now at TheBookX — India's most trusted online bookstore. Free shipping across India.`,
+    );
   }, [book, canonicalUrl]);
 
   return (
@@ -331,7 +347,7 @@ export default function BookDetailsModal({ book, onClose }) {
               aria-label="Go back to books"
             />
             <div className="flex flex-col">
-              <h1 className="font-16 weight-600" itemProp="name">
+              <h1 className="font-20 weight-600" itemProp="name">
                 {book.name}
               </h1>
               {book.author && (
@@ -347,7 +363,7 @@ export default function BookDetailsModal({ book, onClose }) {
             </div>
           </div>
 
-          {/* Image Gallery */}
+          {/* Image Gallery - FIXED: Single image with proper dimensions */}
           <div className="book-detail-image flex flex-row gap-24 justify-center">
             <div className="book-detail-image">
               <Image

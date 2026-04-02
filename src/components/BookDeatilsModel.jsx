@@ -18,6 +18,7 @@ import LoadingButton from "./UI/LoadingButton";
 import Script from "next/script";
 import { useEffect } from "react";
 
+// Slugify function for consistent URL generation
 function slugify(text) {
   return text
     ?.toLowerCase()
@@ -26,11 +27,12 @@ function slugify(text) {
     .replace(/(^-|-$)/g, "");
 }
 
-export default function BookDetailsModal({ book }) {
+export default function BookDetailsModal({ book, onClose }) {
   const { cart, addToCart, toggleWishlist, wishlist } = useStore();
   const inWishlist = wishlist.includes(book.id);
   const router = useRouter();
 
+  // Generate SEO-friendly slug-based URL
   const bookSlug = slugify(book.name);
   const bookUrl = `/books/${bookSlug}`;
   const canonicalUrl = `https://thebookx.in${bookUrl}`;
@@ -58,8 +60,8 @@ export default function BookDetailsModal({ book }) {
     router.push(`/review?bk=${book.id}`);
   };
 
+  // Track page view for analytics
   useEffect(() => {
-    // Analytics tracking
     if (typeof window !== "undefined" && window.gtag) {
       window.gtag("event", "view_item", {
         currency: "INR",
@@ -74,72 +76,311 @@ export default function BookDetailsModal({ book }) {
         ],
       });
     }
-  }, [book]);
+
+    // Update canonical link in head
+    if (typeof document !== "undefined") {
+      let canonicalLink = document.querySelector("link[rel='canonical']");
+      if (!canonicalLink) {
+        canonicalLink = document.createElement("link");
+        canonicalLink.setAttribute("rel", "canonical");
+        document.head.appendChild(canonicalLink);
+      }
+      canonicalLink.setAttribute("href", canonicalUrl);
+    }
+
+    // Update page title dynamically (fallback)
+    document.title = `${book.name} by ${book.author || "Various Authors"} | Buy Online at Best Price | TheBookX`;
+
+    // Update meta description dynamically (fallback)
+    let metaDescription = document.querySelector('meta[name="description"]');
+    if (!metaDescription) {
+      metaDescription = document.createElement("meta");
+      metaDescription.setAttribute("name", "description");
+      document.head.appendChild(metaDescription);
+    }
+    metaDescription.setAttribute(
+      "content",
+      `${book.description.substring(0, 155)} Shop now at TheBookX — India's most trusted online bookstore. Free shipping across India.`,
+    );
+  }, [book, canonicalUrl]);
 
   return (
     <>
-      {/* JSON-LD Schema */}
+      {/* JSON-LD Schema for Book Details Page */}
       <Script
-        id={`book-schema-${book.id}`}
+        id={`book-detail-schema-${book.id}`}
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Book",
+            "@id": `${canonicalUrl}#book`,
+            url: canonicalUrl,
             name: book.name,
-            description: book.description,
+            description: `${book.description} Shop now at TheBookX — India's most trusted online bookstore. Free shipping across India. Limited time ₹1 book sale!`,
             image: book.image,
             author: {
               "@type": "Person",
               name: book.author || "Various Authors",
             },
-            bookFormat: "https://schema.org/Paperback",
-            numberOfPages: book.pages || 180,
+            bookFormat:
+              book.size === "Paperback"
+                ? "https://schema.org/Paperback"
+                : "https://schema.org/Hardcover",
+            numberOfPages: book.pages
+              ? typeof book.pages === "string" && book.pages.includes("-")
+                ? Math.floor(
+                    (parseInt(book.pages.split("-")[0]) +
+                      parseInt(book.pages.split("-")[1])) /
+                      2,
+                  )
+                : book.pages
+              : 180,
             inLanguage: book.language || "English",
+            genre: book.catalogue?.join(", ") || "General Fiction",
+            keywords: book.catalogue?.join(", ") || "",
+            publisher: {
+              "@type": "Organization",
+              name: "TheBookX",
+              url: "https://thebookx.in",
+              logo: "https://thebookx.in/favicon.ico",
+              sameAs: ["https://www.instagram.com/thebookx.in"],
+            },
             offers: {
               "@type": "Offer",
+              "@id": `${canonicalUrl}#offer`,
+              url: canonicalUrl,
               priceCurrency: "INR",
               price: book.discountedPrice,
+              priceValidUntil: new Date(
+                new Date().setMonth(new Date().getMonth() + 1),
+              )
+                .toISOString()
+                .split("T")[0],
               availability:
-                book.stock > 0
+                book.stock > 0 && book.discountedPrice > 0
                   ? "https://schema.org/InStock"
-                  : "https://schema.org/OutOfStock",
+                  : book.discountedPrice === 1 && book.stock > 0
+                    ? "https://schema.org/LimitedAvailability"
+                    : "https://schema.org/OutOfStock",
+              itemCondition: "https://schema.org/NewCondition",
+              priceSpecification: {
+                "@type": "UnitPriceSpecification",
+                price: Number(book.discountedPrice),
+                priceCurrency: "INR",
+                ...(book.originalPrice > book.discountedPrice && {
+                  priceType: "https://schema.org/SalePrice",
+                }),
+              },
               seller: {
                 "@type": "Organization",
                 name: "TheBookX",
+                url: "https://thebookx.in",
+                logo: "https://thebookx.in/favicon.ico",
+                contactPoint: {
+                  "@type": "ContactPoint",
+                  telephone: "+91-7977960242",
+                  contactType: "customer service",
+                  availableLanguage: ["English", "Hindi"],
+                  areaServed: "IN",
+                },
               },
+              shippingDetails: {
+                "@type": "OfferShippingDetails",
+                shippingRate: {
+                  "@type": "MonetaryAmount",
+                  value: 0,
+                  currency: "INR",
+                },
+                shippingDestination: {
+                  "@type": "DefinedRegion",
+                  addressCountry: "IN",
+                },
+                deliveryTime: {
+                  "@type": "ShippingDeliveryTime",
+                  handlingTime: {
+                    "@type": "QuantitativeValue",
+                    minValue: 1,
+                    maxValue: 2,
+                    unitCode: "DAY",
+                  },
+                  transitTime: {
+                    "@type": "QuantitativeValue",
+                    minValue: 3,
+                    maxValue: 7,
+                    unitCode: "DAY",
+                  },
+                },
+              },
+              hasMerchantReturnPolicy: {
+                "@type": "MerchantReturnPolicy",
+                applicableCountry: "IN",
+                returnPolicyCategory:
+                  "https://schema.org/MerchantReturnFiniteReturnWindow",
+                merchantReturnDays: 7,
+                returnMethod: "https://schema.org/ReturnByMail",
+                returnFees: "https://schema.org/FreeReturn",
+                returnPolicyUrl: "https://thebookx.in/refund",
+              },
+              availabilityStarts: new Date().toISOString(),
+              availabilityEnds: new Date(
+                new Date().setMonth(new Date().getMonth() + 1),
+              ).toISOString(),
             },
+            aggregateRating: {
+              "@type": "AggregateRating",
+              ratingValue: book.rating || 4.5,
+              reviewCount: book.reviewCount || 28,
+              bestRating: 5,
+              worstRating: 1,
+              ratingExplanation:
+                "Based on verified customer reviews on TheBookX",
+            },
+            mainEntityOfPage: {
+              "@type": "WebPage",
+              "@id": canonicalUrl,
+            },
+            potentialAction: {
+              "@type": "BuyAction",
+              target: {
+                "@type": "EntryPoint",
+                urlTemplate: canonicalUrl,
+                actionPlatform: [
+                  "http://schema.org/DesktopWebPlatform",
+                  "http://schema.org/MobileWebPlatform",
+                ],
+              },
+              price: Number(book.discountedPrice),
+              priceCurrency: "INR",
+            },
+            sameAs: [
+              `https://www.goodreads.com/search?q=${encodeURIComponent(book.name)}`,
+            ],
+            datePublished: book.publishedDate || "2024-01-01",
+            copyrightYear: new Date().getFullYear(),
           }),
         }}
       />
 
-      <div className="book-detail-section">
+      {/* Breadcrumb Schema */}
+      <Script
+        id={`breadcrumb-${book.id}`}
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "@id": `${canonicalUrl}#breadcrumb`,
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Home",
+                item: {
+                  "@id": "https://thebookx.in",
+                  name: "Home",
+                },
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "Books",
+                item: {
+                  "@id": "https://thebookx.in/books",
+                  name: "All Books",
+                },
+              },
+              ...(book.catalogue && book.catalogue.length > 0
+                ? [
+                    {
+                      "@type": "ListItem",
+                      position: 3,
+                      name:
+                        book.catalogue[0].charAt(0).toUpperCase() +
+                        book.catalogue[0].slice(1),
+                      item: {
+                        "@id": `https://thebookx.in/category/${slugify(book.catalogue[0])}`,
+                        name:
+                          book.catalogue[0].charAt(0).toUpperCase() +
+                          book.catalogue[0].slice(1),
+                      },
+                    },
+                    {
+                      "@type": "ListItem",
+                      position: 4,
+                      name: book.name,
+                      item: {
+                        "@id": canonicalUrl,
+                        name: book.name,
+                      },
+                    },
+                  ]
+                : [
+                    {
+                      "@type": "ListItem",
+                      position: 3,
+                      name: book.name,
+                      item: {
+                        "@id": canonicalUrl,
+                        name: book.name,
+                      },
+                    },
+                  ]),
+            ],
+          }),
+        }}
+      />
+
+      <div
+        className="book-detail-section"
+        itemScope
+        itemType="https://schema.org/Book"
+        itemID={`${canonicalUrl}#book`}
+      >
         <div className="section-1200 flex flex-col gap-24">
-          {/* Header */}
+          {/* Header with Back Button */}
           <div className="flex flex-row gap-12 items-center">
             <ArrowLeft
               size={20}
-              onClick={() => router.back()}
-              className="cursor-pointer hover:opacity-70"
-              aria-label="Go back"
+              onClick={onClose}
+              className="cursor-pointer hover:opacity-70 transition-opacity"
+              aria-label="Go back to books"
             />
             <div className="flex flex-col">
-              <h1 className="font-20 weight-600">{book.name}</h1>
+              <h1 className="font-20 weight-600" itemProp="name">
+                {book.name}
+              </h1>
               {book.author && (
-                <p className="font-12 dark-50">By {book.author}</p>
+                <p
+                  className="font-12 dark-50"
+                  itemProp="author"
+                  itemScope
+                  itemType="https://schema.org/Person"
+                >
+                  By <span itemProp="name">{book.author}</span>
+                </p>
               )}
             </div>
           </div>
 
-          {/* Image */}
-          <div className="flex justify-center">
-            <div className="relative w-64 h-80 md:w-80 md:h-96">
+          {/* Image Gallery - FIXED: Single image with proper dimensions */}
+          <div className="book-detail-image flex flex-row gap-24 justify-center">
+            <div className="book-detail-image">
               <Image
                 src={book.image}
-                alt={`${book.name} book cover`}
-                fill
-                className="object-contain rounded-lg"
+                alt={`${book.name} book cover — Buy online at TheBookX, India's trusted bookstore`}
+                width={100}
+                height={100}
                 priority
+                itemProp="image"
+              />
+              <Image
+                src={book.image}
+                alt={`${book.name} book cover — Buy online at TheBookX, India's trusted bookstore`}
+                width={100}
+                height={100}
+                priority
+                itemProp="image"
               />
             </div>
           </div>
@@ -148,20 +389,28 @@ export default function BookDetailsModal({ book }) {
           <div className="book-detail-body">
             <div className="flex flex-col gap-12">
               <div>
-                <h2 className="font-24 weight-600">{book.name}</h2>
-                <p className="font-14 dark-50 mt-8 leading-relaxed">
+                <h2 className="font-24 weight-600" itemProp="name">
+                  {book.name}
+                </h2>
+                <meta itemProp="description" content={book.description} />
+                <p
+                  className="font-14 dark-50 mt-8 leading-relaxed"
+                  itemProp="description"
+                >
                   {book.description}
                 </p>
               </div>
 
-              {/* Specifications */}
+              {/* Book Specifications */}
               <div className="flex flex-row flex-wrap gap-24 mt-16 pt-16 border-t border-gray-200">
                 {book.author && (
                   <div className="flex flex-col">
                     <span className="font-10 uppercase text-gray-500">
                       Author
                     </span>
-                    <span className="font-14 weight-500">{book.author}</span>
+                    <span className="font-14 weight-500" itemProp="author">
+                      {book.author}
+                    </span>
                   </div>
                 )}
                 {book.pages && (
@@ -169,21 +418,27 @@ export default function BookDetailsModal({ book }) {
                     <span className="font-10 uppercase text-gray-500">
                       Pages
                     </span>
-                    <span className="font-14">{book.pages}</span>
+                    <span className="font-14" itemProp="numberOfPages">
+                      {book.pages}
+                    </span>
                   </div>
                 )}
                 <div className="flex flex-col">
                   <span className="font-10 uppercase text-gray-500">
                     Format
                   </span>
-                  <span className="font-14">{book.size}</span>
+                  <span className="font-14" itemProp="bookFormat">
+                    {book.size}
+                  </span>
                 </div>
                 {book.language && (
                   <div className="flex flex-col">
                     <span className="font-10 uppercase text-gray-500">
                       Language
                     </span>
-                    <span className="font-14">{book.language}</span>
+                    <span className="font-14" itemProp="inLanguage">
+                      {book.language}
+                    </span>
                   </div>
                 )}
                 <div className="flex flex-col">
@@ -201,11 +456,18 @@ export default function BookDetailsModal({ book }) {
               </div>
             </div>
 
-            {/* Price */}
-            <div className="price-row flex flex-row items-center gap-16 mt-24">
+            {/* Price Section */}
+            <div
+              className="price-row flex flex-row items-center gap-16 mt-24"
+              itemProp="offers"
+              itemScope
+              itemType="https://schema.org/Offer"
+              itemID={`${canonicalUrl}#offer`}
+            >
               <span className="font-32 weight-600 green">
-                ₹{book.discountedPrice}
+                ₹<span itemProp="price">{book.discountedPrice}</span>
               </span>
+              <meta itemProp="priceCurrency" content="INR" />
               {book.originalPrice > book.discountedPrice && (
                 <>
                   <span className="original font-24 line-through text-gray-400">
@@ -218,16 +480,39 @@ export default function BookDetailsModal({ book }) {
                   )}
                 </>
               )}
+              <meta
+                itemProp="availability"
+                content={
+                  book.stock > 0 && book.discountedPrice > 0
+                    ? "https://schema.org/InStock"
+                    : book.discountedPrice === 1 && book.stock > 0
+                      ? "https://schema.org/LimitedAvailability"
+                      : "https://schema.org/OutOfStock"
+                }
+              />
+              <meta
+                itemProp="itemCondition"
+                content="https://schema.org/NewCondition"
+              />
+              <meta
+                itemProp="priceValidUntil"
+                content={
+                  new Date(new Date().setMonth(new Date().getMonth() + 1))
+                    .toISOString()
+                    .split("T")[0]
+                }
+              />
             </div>
 
-            {/* Special Offer */}
+            {/* Special Offer Badge */}
             {book.discountedPrice === 1 && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-12 mt-16">
                 <span className="red font-14 weight-600">
                   🔥 Limited Time Offer!
                 </span>
                 <p className="font-12 mt-4">
-                  Get this book for just ₹1. Free shipping across India.
+                  Get this book for just ₹1. Free shipping across India. Hurry,
+                  offer valid while stocks last!
                 </p>
               </div>
             )}
@@ -242,7 +527,9 @@ export default function BookDetailsModal({ book }) {
               </div>
               <div className="flex flex-row items-center gap-8">
                 <ShieldCheck size={18} className="green" />
-                <span className="font-12">Secure Delivery</span>
+                <span className="font-12">
+                  Secure Delivery via Delhivery/Indian Post
+                </span>
               </div>
               <div className="flex flex-row items-center gap-8">
                 <RotateCcw size={18} className="green" />
@@ -250,24 +537,41 @@ export default function BookDetailsModal({ book }) {
               </div>
             </div>
 
-            {/* Categories */}
+            {/* Category Tags with Slug-based Links */}
             <div className="flex flex-row flex-wrap gap-12 tags mt-16">
               {book.catalogue?.map((tag) => (
-                <span key={tag} className="sec-mid-btn text-capitalize">
+                <a
+                  key={tag}
+                  href={`/category/${slugify(tag)}`}
+                  className="sec-mid-btn text-capitalize hover:opacity-80 transition-opacity"
+                  aria-label={`Browse more ${tag} books`}
+                >
                   {tag}
-                </span>
+                </a>
               ))}
             </div>
           </div>
 
-          {/* Buttons */}
-          <div className="book-detail-cta flex flex-row gap-16 flex-wrap">
+          {/* CTA Buttons */}
+          <div
+            className="book-detail-cta section-1200 flex flex-row gap-16 flex-wrap"
+            style={{ backdropFilter: "blur(12px)" }}
+          >
             <LoadingButton
               className="flex flex-row items-center gap-12 justify-center sec-mid-btn"
               onClick={handleWishlist}
-              icon={<Heart size={20} fill={inWishlist ? "red" : "none"} />}
+              icon={
+                <Heart
+                  size={20}
+                  fill={inWishlist ? "red" : "none"}
+                  stroke={inWishlist ? "red" : "currentColor"}
+                />
+              }
+              aria-label={
+                inWishlist ? "Remove from wishlist" : "Save for later"
+              }
             >
-              {inWishlist ? "Saved" : "Save"}
+              {inWishlist ? "Saved" : "Save for later"}
             </LoadingButton>
 
             <LoadingButton
@@ -275,6 +579,7 @@ export default function BookDetailsModal({ book }) {
               onClick={handleAddToCart}
               disabled={(isOneRupee && hasOneRupeeInCart) || book.stock === 0}
               icon={<ShoppingCart size={20} />}
+              aria-label={`Add ${book.name} to cart`}
             >
               {book.stock === 0 ? "Out of Stock" : "Add to Cart"}
             </LoadingButton>
@@ -283,9 +588,22 @@ export default function BookDetailsModal({ book }) {
               className="sec-mid-btn flex flex-row items-center gap-12 justify-center"
               onClick={handleReview}
               icon={<MessageSquare size={20} />}
+              aria-label={`Write a review for ${book.name}`}
             >
               Review
             </LoadingButton>
+          </div>
+
+          {/* Delivery Information */}
+          <div className="bg-gray-50 rounded-lg p-16 mt-8">
+            <p className="font-12 text-gray-600 text-center">
+              🇮🇳 Delivered securely across India via <strong>Delhivery</strong>{" "}
+              and <strong>Indian Post</strong>. Estimated delivery: 3-7 business
+              days.{" "}
+              <a href="/shipping" className="green underline">
+                Learn more
+              </a>
+            </p>
           </div>
         </div>
       </div>

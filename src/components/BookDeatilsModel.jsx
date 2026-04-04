@@ -160,8 +160,8 @@ export default function BookDetailsModal({ book }) {
           {/* Header */}
           <div className="flex flex-row gap-12 items-center">
             <ArrowLeft
-              size={20}
-              onClick={() => router.back()}
+              size={24}
+              onClick={() => router.push("/")}
               className="cursor-pointer hover:opacity-70"
               aria-label="Go back"
             />

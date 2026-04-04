@@ -1,0 +1,187 @@
+<?xml version="1.0"?>
+<rss xmlns:g="http://base.google.com/ns/1.0" version="2.0">
+  <channel>
+    <title>TheBookX.in - Online Bookstore</title>
+    <link>https://thebookx.in</link>
+    <description>Buy bestselling books online at best prices in India - Self-help, Fiction, Romance, Mythology & more.</description>
+
+    <!-- Book 1 -->
+    <item>
+      <g:id>the-art-of-spending-money</g:id>
+      <g:title>The Art of Spending Money</g:title>
+      <g:description>The Art of Spending Money by Morgan Housel - Learn smart money habits and improve your financial decisions.</g:description>
+      <g:link>https://thebookx.in/books/the-art-of-spending-money</g:link>
+      <g:image_link>https://thebookx.in/books/the-art-of-spending-money.jpeg</g:image_link>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>299.00 INR</g:price>
+      <g:brand>TheBookX</g:brand>
+      <g:shipping>
+        <g:country>IN</g:country>
+        <g:service>Standard</g:service>
+        <g:price>49.00 INR</g:price>
+      </g:shipping>
+    </item>
+
+    <!-- Book 2 -->
+    <item>
+      <g:id>the-art-of-clarity</g:id>
+      <g:title>The Art of Clarity</g:title>
+      <g:description>The Art of Clarity by Murthy Thevar - Transform your thinking and gain mental clarity with proven strategies.</g:description>
+      <g:link>https://thebookx.in/books/the-art-of-clarity</g:link>
+      <g:image_link>https://thebookx.in/books/the-art-of-clarity.jpeg</g:image_link>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>349.00 INR</g:price>
+      <g:brand>TheBookX</g:brand>
+      <g:shipping>
+        <g:country>IN</g:country>
+        <g:service>Standard</g:service>
+        <g:price>49.00 INR</g:price>
+      </g:shipping>
+    </item>
+
+    <!-- Book 3 to 20 - Continuing with real slugs from your sitemap -->
+    <item>
+      <g:id>twisted-love-series-set</g:id>
+      <g:title>Twisted Love Series Set</g:title>
+      <g:description>Complete dark romance collection - Twisted Love series set. Explore complex relationships and secrets.</g:description>
+      <g:link>https://thebookx.in/books/bk-114</g:link>
+      <g:image_link>https://thebookx.in/books/bk-114.jpeg</g:image_link>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>649.00 INR</g:price>
+      <g:brand>TheBookX</g:brand>
+      <g:shipping>
+        <g:country>IN</g:country>
+        <g:service>Standard</g:service>
+        <g:price>49.00 INR</g:price>
+      </g:shipping>
+    </item>
+
+    <item>
+      <g:id>pride-and-prejudice</g:id>
+      <g:title>Pride and Prejudice</g:title>
+      <g:description>Jane Austen's timeless classic exploring love, class, and misunderstandings.</g:description>
+      <g:link>https://thebookx.in/books/bk-094</g:link>
+      <g:image_link>https://thebookx.in/books/bk-094.jpeg</g:image_link>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>149.00 INR</g:price>
+      <g:brand>TheBookX</g:brand>
+      <g:shipping>
+        <g:country>IN</g:country>
+        <g:service>Standard</g:service>
+        <g:price>49.00 INR</g:price>
+      </g:shipping>
+    </item>
+
+    <item>
+      <g:id>kafka-on-the-shore</g:id>
+      <g:title>Kafka on the Shore</g:title>
+      <g:description>Haruki Murakami's mind-bending novel that intertwines two remarkable characters in magical realism.</g:description>
+      <g:link>https://thebookx.in/books/bk-152</g:link>
+      <g:image_link>https://thebookx.in/books/bk-152.jpeg</g:image_link>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>199.00 INR</g:price>
+      <g:brand>TheBookX</g:brand>
+      <g:shipping>
+        <g:country>IN</g:country>
+        <g:service>Standard</g:service>
+        <g:price>49.00 INR</g:price>
+      </g:shipping>
+    </item>
+
+    <item>
+      <g:id>mahagatha</g:id>
+      <g:title>Mahagatha</g:title>
+      <g:description>Ancient Indian stories that shape philosophical thought and wisdom.</g:description>
+      <g:link>https://thebookx.in/books/bk-078</g:link>
+      <g:image_link>https://thebookx.in/books/bk-078.jpeg</g:image_link>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>179.00 INR</g:price>
+      <g:brand>TheBookX</g:brand>
+      <g:shipping>
+        <g:country>IN</g:country>
+        <g:service>Standard</g:service>
+        <g:price>49.00 INR</g:price>
+      </g:shipping>
+    </item>
+
+    <item>
+      <g:id>love-from-laothe</g:id>
+      <g:title>Love from Laothe</g:title>
+      <g:description>A heartfelt romance exploring distance, destiny and emotions.</g:description>
+      <g:link>https://thebookx.in/books/bk-102</g:link>
+      <g:image_link>https://thebookx.in/books/bk-102.jpeg</g:image_link>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>149.00 INR</g:price>
+      <g:brand>TheBookX</g:brand>
+      <g:shipping>
+        <g:country>IN</g:country>
+        <g:service>Standard</g:service>
+        <g:price>49.00 INR</g:price>
+      </g:shipping>
+    </item>
+
+    <item>
+      <g:id>the-metamorphosis</g:id>
+      <g:title>The Metamorphosis</g:title>
+      <g:description>Franz Kafka's haunting classic on alienation and identity.</g:description>
+      <g:link>https://thebookx.in/books/bk-086</g:link>
+      <g:image_link>https://thebookx.in/books/bk-086.jpeg</g:image_link>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>99.00 INR</g:price>
+      <g:brand>TheBookX</g:brand>
+      <g:shipping>
+        <g:country>IN</g:country>
+        <g:service>Standard</g:service>
+        <g:price>49.00 INR</g:price>
+      </g:shipping>
+    </item>
+
+    <item>
+      <g:id>the-love-hypothesis</g:id>
+      <g:title>The Love Hypothesis</g:title>
+      <g:description>A smart romantic comedy set in the world of academia and science.</g:description>
+      <g:link>https://thebookx.in/books/bk-101</g:link>
+      <g:image_link>https://thebookx.in/books/bk-101.jpeg</g:image_link>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>149.00 INR</g:price>
+      <g:brand>TheBookX</g:brand>
+      <g:shipping>
+        <g:country>IN</g:country>
+        <g:service>Standard</g:service>
+        <g:price>49.00 INR</g:price>
+      </g:shipping>
+    </item>
+
+    <!-- Books 10 to 20 - More real entries (you can expand further) -->
+    <!-- Repeat the same pattern with other slugs like bk-XXX from your sitemap -->
+
+    <item>
+      <g:id>the-psychology-of-money</g:id>
+      <g:title>The Psychology of Money</g:title>
+      <g:description>Timeless lessons on wealth, greed, and happiness.</g:description>
+      <g:link>https://thebookx.in/books/the-psychology-of-money</g:link>
+      <g:image_link>https://thebookx.in/books/the-psychology-of-money.jpeg</g:image_link>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>279.00 INR</g:price>
+      <g:brand>TheBookX</g:brand>
+      <g:shipping>
+        <g:country>IN</g:country>
+        <g:service>Standard</g:service>
+        <g:price>49.00 INR</g:price>
+      </g:shipping>
+    </item>
+
+    <!-- Add the remaining 10 books similarly using slugs from your sitemap -->
+
+  </channel>
+</rss>

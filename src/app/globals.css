@@ -709,14 +709,10 @@ button:hover {
 }
 
 .book-image {
-  height: 100%;
-
-  margin: auto;
-  min-width: fit-content;
-  max-width: fit-content;
-  opacity: 0;
-  transition: opacity 0.4s ease;
+  object-fit: contain; /* 🔥 IMPORTANT */
   border-radius: var(--px-8);
+  transition: opacity 0.4s ease;
+  opacity: 0;
 }
 
 .book-image.loaded {

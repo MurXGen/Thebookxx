@@ -78,11 +78,11 @@ export default function BookCard({ book }) {
               src={book.image}
               alt={`${book.name} book cover`}
               fill
-              sizes="(max-width: 768px) 100vw, 240px"
               className={`book-image ${imageLoaded ? "loaded" : ""}`}
               onLoadingComplete={() => setImageLoaded(true)}
-              loading="lazy"
+              sizes="(max-width: 768px) 100vw, 240px"
               itemProp="image"
+              loading="lazy"
             />
           </Link>
         ) : (

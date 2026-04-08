@@ -2,19 +2,18 @@
 
 import BookCard from "@/components/BookCard";
 import { books } from "@/utils/book";
-import { useMemo, useState } from "react";
+import { ArrowRight } from "lucide-react";
+import { useMemo, useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 
 export default function AllBooks() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [sortType, setSortType] = useState(null);
   const [openSort, setOpenSort] = useState(false);
-
-  // /* 📚 Extract unique categories */
-  // const categories = useMemo(() => {
-  //   const set = new Set();
-  //   books.forEach((b) => b.catalogue?.forEach((c) => set.add(c)));
-  //   return ["all", ...Array.from(set)];
-  // }, []);
+  const [visibleCount, setVisibleCount] = useState(10);
+  const [isLoading, setIsLoading] = useState(false);
+  const loadMoreRef = useRef(null);
+  const router = useRouter();
 
   /* 🔄 Filter + Sort books */
   const filteredBooks = useMemo(() => {
@@ -45,6 +44,54 @@ export default function AllBooks() {
 
     return data;
   }, [selectedCategory, sortType]);
+
+  // Get visible books
+  const visibleBooks = useMemo(() => {
+    return filteredBooks.slice(0, visibleCount);
+  }, [filteredBooks, visibleCount]);
+
+  // Check if there are more books to load
+  const hasMore = visibleCount < filteredBooks.length;
+
+  // Load more books
+  const loadMore = () => {
+    if (isLoading) return;
+
+    setIsLoading(true);
+    // Simulate loading delay for smooth UX
+    setTimeout(() => {
+      setVisibleCount((prev) => Math.min(prev + 10, filteredBooks.length));
+      setIsLoading(false);
+    }, 300);
+  };
+
+  // Intersection Observer for infinite scroll
+  useEffect(() => {
+    if (!loadMoreRef.current || !hasMore) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !isLoading) {
+          loadMore();
+        }
+      },
+      { threshold: 0.1, rootMargin: "100px" },
+    );
+
+    observer.observe(loadMoreRef.current);
+
+    return () => {
+      if (loadMoreRef.current) {
+        observer.unobserve(loadMoreRef.current);
+      }
+    };
+  }, [hasMore, isLoading, visibleCount]);
+
+  // Reset visible count when filters change
+  useEffect(() => {
+    setVisibleCount(10);
+  }, [selectedCategory, sortType]);
+
   if (!books.length) return null;
 
   return (
@@ -53,57 +100,89 @@ export default function AllBooks() {
       style={{ marginTop: "24px" }}
     >
       {/* Header */}
-      <div className="flex flex-row justify-between items-start gap-16">
+      <div className="flex flex-row justify-between flex-center gap-16">
         <div>
           <h2 className="font-20 weight-500">All Books</h2>
           <span className="font-14 dark-50">
             Explore novels, self-help, business & more
           </span>
         </div>
-
-        {/* Sort Menu */}
-        {/* <div className="sort-wrapper">
-          <button
-            className="sec-mid-btn flex flex-center"
-            onClick={() => setOpenSort((p) => !p)}
-            aria-label="Sort books"
-          >
-            <AlignJustify size={18} />
-          </button>
-
-          {openSort && (
-            <div className="sort-dropdown">
-              <button onClick={() => setSortType("low")}>Lowest price</button>
-              <button onClick={() => setSortType("high")}>Highest price</button>
-              <button onClick={() => setSortType("avg")}>Average price</button>
-            </div>
-          )}
-        </div> */}
+        <button
+          className="flex flex-row flex-center items-center sec-mid-btn"
+          onClick={() => router.push("/books")}
+          style={{ padding: "4px 12px" }}
+        >
+          <ArrowRight size={16} />
+        </button>
       </div>
-
-      {/* Filters */}
-      {/* <div className="filter-row">
-        <div className="filter-chips">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              className={`filter-chip ${
-                selectedCategory === cat ? "active" : ""
-              }`}
-              onClick={() => setSelectedCategory(cat)}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-      </div> */}
 
       {/* Books Grid */}
       <div className="grid-2 margin-tp-24px">
-        {filteredBooks.map((book) => (
+        {visibleBooks.map((book) => (
           <BookCard key={book.id} book={book} />
         ))}
       </div>
+
+      {/* Loading indicator and trigger */}
+      {hasMore && (
+        <div
+          ref={loadMoreRef}
+          className="load-more-trigger"
+          style={{
+            textAlign: "center",
+            padding: "40px 0",
+            marginTop: "20px",
+          }}
+        >
+          {isLoading ? (
+            <div className="loading-spinner">
+              <span>Loading more books...</span>
+            </div>
+          ) : (
+            <button
+              onClick={loadMore}
+              className="sec-mid-btn"
+              style={{ padding: "12px 24px" }}
+            >
+              Load More Books
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* End message */}
+      {!hasMore && visibleBooks.length > 0 && (
+        <div
+          className="end-message"
+          style={{
+            textAlign: "center",
+            padding: "40px 0",
+            color: "#666",
+          }}
+        >
+          ✨ You've seen all {visibleBooks.length} books ✨
+        </div>
+      )}
+
+      <style jsx>{`
+        .loading-spinner {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 12px;
+          color: #666;
+        }
+
+        .load-more-trigger button {
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        .load-more-trigger button:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+      `}</style>
     </section>
   );
 }

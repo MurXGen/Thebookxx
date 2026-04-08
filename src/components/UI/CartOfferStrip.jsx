@@ -1,7 +1,7 @@
 "use client";
 
 import { CART_OFFERS } from "@/utils/cartOffers";
-import { Percent, Sparkles, Truck } from "lucide-react";
+import { Percent, Sparkles, Truck, Gift, Star, Flame } from "lucide-react";
 
 export default function CartOfferStrip({ discountedAmount }) {
   if (!discountedAmount) return null;
@@ -18,18 +18,25 @@ export default function CartOfferStrip({ discountedAmount }) {
 
   /* 💸 Discount label */
   let offerLabel = null;
+  let highlightAmount = null;
+  let highlightFeature = null;
 
   if (appliedOffer) {
     if (appliedOffer.type === "flat") {
       offerLabel = `₹${appliedOffer.value} OFF availed`;
+      highlightAmount = `₹${appliedOffer.value}`;
+      highlightFeature = "Flat Discount";
     }
 
     if (appliedOffer.type === "percentage") {
       offerLabel = `${appliedOffer.value}% discount availed`;
+      highlightAmount = `${appliedOffer.value}%`;
+      highlightFeature = "Percentage Discount";
     }
 
     if (appliedOffer.type === "free_shipping") {
       offerLabel = "Free delivery availed";
+      highlightFeature = "Free Shipping";
     }
   }
 
@@ -50,17 +57,35 @@ export default function CartOfferStrip({ discountedAmount }) {
       <div className="width100">
         <div className="offer-text">
           {progressOffer ? (
-            <span>
-              {progressOffer.message.replace("{remaining}", `₹${remaining}`)}
+            <span className="progress-offer-message">
+              {progressOffer.message.split("{remaining}")[0]}
+              <strong className="highlight-amount">{remaining}</strong>
+              {progressOffer.message.split("{remaining}")[1]}
             </span>
           ) : appliedOffer ? (
             <>
               {appliedOffer.type === "free_shipping" ? (
-                <Truck size={16} />
+                <Truck size={16} className="highlight-icon" />
               ) : (
-                <Sparkles className="sparkle-animate" size={16} />
+                <Sparkles
+                  className="sparkle-animate highlight-icon"
+                  size={16}
+                />
               )}
-              <span>{offerLabel}</span>
+              <span className="applied-offer-message">
+                <span className="highlight-feature">{highlightFeature}</span>
+                {highlightAmount && (
+                  <>
+                    <strong className="highlight-amount">
+                      {highlightAmount}
+                    </strong>
+                  </>
+                )}
+                {" " +
+                  offerLabel
+                    ?.replace(highlightAmount || "", "")
+                    .replace(highlightFeature || "", "")}
+              </span>
             </>
           ) : null}
         </div>

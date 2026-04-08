@@ -1,13 +1,13 @@
 "use client";
 
-import CartOfferStrip from "@/components/UI/CartOfferStrip";
-import { useStore } from "@/context/StoreContext";
 import { books } from "@/utils/book";
+import { useStore } from "@/context/StoreContext";
 import { CART_OFFERS } from "@/utils/cartOffers";
-import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import CartOfferStrip from "@/components/UI/CartOfferStrip";
 import LoadingButton from "./UI/LoadingButton";
 import SearchMain from "./UI/SearchMain";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function CartBar() {
   const { cart } = useStore();

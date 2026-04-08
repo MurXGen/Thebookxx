@@ -59,7 +59,7 @@ export default function BookCard({ book }) {
       {/* Limited Time Offer Badge */}
       {book.discountedPrice === 1 && book.stock > 0 && (
         <span className="flex flex-row justify-center font-10">
-          🔥 Price Drop - Limited time
+          🔥 Price Drop
         </span>
       )}
 

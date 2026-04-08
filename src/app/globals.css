@@ -2300,10 +2300,11 @@ button:disabled {
   display: flex;
   gap: 8px;
   align-items: center;
+  width: 100%;
 }
 
 .price-input {
-  flex: 1;
+  width: 100%;
   padding: var(--px-12);
   border: 1px solid var(--dark-20);
   border-radius: var(--px-12);

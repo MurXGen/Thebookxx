@@ -251,6 +251,18 @@ a {
   color: var(--dark-50);
 }
 
+.white-20 {
+  color: var(--white-20);
+}
+
+.white-50 {
+  color: var(--white-50);
+}
+
+.white-80 {
+  color: var(--white-80);
+}
+
 .margin-tp-24px {
   margin-top: var(--px-24);
 }
@@ -269,6 +281,10 @@ a {
 
 .green {
   color: #008f0c;
+}
+
+.red {
+  color: rgb(255, 103, 103);
 }
 
 button {
@@ -840,19 +856,25 @@ button:hover {
 }
 
 .plus-cart {
-  padding: var(--px-4) var(--px-4);
+  padding: var(--px-8);
   border-radius: var(--px-32);
   text-align: center;
   background: #008f0c;
   border: none;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 }
 
 .minus-cart {
-  padding: var(--px-4) var(--px-4);
+  padding: var(--px-8);
   border-radius: var(--px-32);
   text-align: center;
   background: #0a0a0a;
   border: none;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 }
 
 .pri-big-btn {
@@ -1708,6 +1730,7 @@ button:disabled {
   padding: 16px;
   border-radius: 16px 16px 0 0;
   font-size: var(--px-12);
+  overflow-y: scroll;
 }
 
 .bill-modal {
@@ -1744,7 +1767,7 @@ button:disabled {
 }
 
 .address-modal {
-  min-height: 70vh;
+  min-height: 80vh;
   display: flex;
   flex-direction: column;
 }
@@ -1754,11 +1777,19 @@ button:disabled {
   text-align: left;
 }
 
+.infoMessage {
+  margin: 12px 0;
+  padding: var(--px-4);
+  border-radius: var(--px-12);
+  background: var(--dark-10);
+}
+
 /* Input group */
 .input-group {
   display: flex;
   flex-direction: column;
   margin-bottom: 14px;
+  width: 100%;
 }
 
 .input-group label {

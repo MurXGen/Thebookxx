@@ -18,6 +18,7 @@ export default function BagPage() {
   const [siteOrigin, setSiteOrigin] = useState("");
   const [showBill, setShowBill] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState(null);
 
   const getAppliedOffer = (amount) => {
     return [...CART_OFFERS].reverse().find((o) => amount >= o.target) || null;
@@ -103,33 +104,78 @@ export default function BagPage() {
     return `${siteOrigin}/view-bag?items=${encodeURIComponent(items)}`;
   };
 
-  const handleWhatsAppCheckout = (addressData) => {
+  const formatBookList = () => {
+    return cartBooks
+      .map((book, index) => {
+        return `${index + 1}. ${book.name} × ${book.qty} = ₹${book.discountedPrice * book.qty}`;
+      })
+      .join("\n");
+  };
+
+  const handleWhatsAppCheckout = (addressData, paymentType = null) => {
     const phoneNumber = "917710892108";
     const viewBagLink = generateViewBagLink();
+    const payment = paymentType || paymentMethod || "Not specified";
+
+    const bookList = formatBookList();
 
     const message = `
-Hey 👋✨  
+*📚 NEW ORDER - THEBOOKX*
 
-I’d like to order these books 📚  
+*👤 MY DETAILS*
+━━━━━━━━━━━━━━━━━━━━
+Name: ${addressData.name || "Customer"}
+Phone: ${addressData.phone || "Not provided"}
 
-💰 Total: ~₹${totalDiscounted}~ ₹${finalPayable + addressData.extraCharge}
-
-📍 Address:
+*📍 DELIVERY ADDRESS*
+━━━━━━━━━━━━━━━━━━━━
+${addressData.address}
+Area/Locality: ${addressData.area || "Not specified"}
 City: ${addressData.city}
+District: ${addressData.district}
+State: ${addressData.state}
 Pincode: ${addressData.pincode}
-Address: ${addressData.address}
 
-🚀 Quick Delivery: ${addressData.quickDelivery ? "Yes" : "No"}
-Extra Charge: ₹${addressData.extraCharge}
+*🚚 DELIVERY OPTIONS*
+━━━━━━━━━━━━━━━━━━━━
+Quick Delivery: ${addressData.quickDelivery ? "✅ Yes (30-60 mins)" : "❌ No"}
+Extra Delivery Charge: ₹${addressData.extraCharge || 0}
 
-🔗 View Bag:
+*💰 PAYMENT DETAILS*
+━━━━━━━━━━━━━━━━━━━━
+Payment Method: ${payment === "COD" ? "💵 Cash on Delivery" : payment === "UPI" ? "📱 UPI Payment" : payment}
+${payment === "COD" ? "Advance Payment: 50% of total" : "Payment Status: To be verified"}
+
+*💵 PRICE BREAKDOWN*
+━━━━━━━━━━━━━━━━━━━━
+Subtotal: ₹${totalDiscounted}
+Offer Discount: -₹${offerDiscount}
+Delivery Charge: +₹${addressData.extraCharge || 0}
+━━━━━━━━━━━━━━━━━━━━
+*TOTAL PAYABLE: ₹${finalPayable + (addressData.extraCharge || 0)}*
+
+${offerDiscount > 0 ? `✨ Offer Applied: ${offerLabel}` : ""}
+
+🔗 *VIEW FULL BAG*
 ${viewBagLink}
+
+━━━━━━━━━━━━━━━━━━━━
+_I want to confirm my order! 📚✨_
 `;
 
     window.open(
       `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`,
       "_blank",
     );
+
+    // Close modals after sending
+    setShowAddressModal(false);
+    setShowBill(false);
+  };
+
+  const handleCODCheckout = (addressData) => {
+    setPaymentMethod("COD");
+    handleWhatsAppCheckout(addressData, "COD");
   };
 
   return (
@@ -138,7 +184,6 @@ ${viewBagLink}
       style={{ maxWidth: "700px" }}
     >
       {/* Header */}
-
       <div className="flex flec-row gap-12 items-center">
         <ArrowLeft size={20} onClick={() => router.push("/")} />
         <div className="flex flex-col">
@@ -158,7 +203,6 @@ ${viewBagLink}
         ))}
       </div>
 
-      {/* Price Summary */}
       {/* FIXED BOTTOM BAR */}
       <div className="fixed-bill-bar">
         <div className="bill-left">
@@ -195,6 +239,7 @@ ${viewBagLink}
         finalPayable={finalPayable}
         totalDiscounted={totalDiscounted}
         handleWhatsAppCheckout={handleWhatsAppCheckout}
+        handleCODCheckout={handleCODCheckout}
       />
 
       <BillModal
@@ -204,6 +249,7 @@ ${viewBagLink}
         totalDiscounted={totalDiscounted}
         offerDiscount={offerDiscount}
         offerLabel={offerLabel}
+        cartBooks={cartBooks}
       />
     </section>
   );

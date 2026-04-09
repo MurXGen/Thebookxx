@@ -358,7 +358,7 @@ export default function AddressModal({
 
               {/* Location Details Grid */}
               <div className="flex flex-row justify-between gap-12">
-                <div className="input-group">
+                <div className="input-group width100">
                   <label>City / District</label>
                   <input
                     list="cities"
@@ -375,7 +375,7 @@ export default function AddressModal({
                 </div>
 
                 {state && (
-                  <div className="input-group">
+                  <div className="input-group width100">
                     <label>State</label>
                     <input
                       className="sec-mid-btn gray-bg"
@@ -412,7 +412,7 @@ export default function AddressModal({
                     transition={{ duration: 0.3 }}
                   >
                     <div className="flex flex-row justify-between gap-12">
-                      <div className="input-group">
+                      <div className="input-group width100">
                         <label className="flex flex-row gap-4 flex-center items-center">
                           <User size={14} />
                           Full Name <span className="red">*</span>
@@ -425,7 +425,7 @@ export default function AddressModal({
                         />
                       </div>
 
-                      <div className="input-group">
+                      <div className="input-group width100">
                         <label className="flex flex-row gap-4 flex-center items-center">
                           <Phone size={14} />
                           Phone Number <span className="red">*</span>

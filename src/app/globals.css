@@ -1768,7 +1768,9 @@ button:disabled {
 }
 
 .address-modal {
-  min-height: 90vh;
+  position: absolute;
+  top: 1px;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
 }

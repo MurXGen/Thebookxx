@@ -2400,7 +2400,7 @@ button:disabled {
 .books-grid {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 20px;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 24px;
@@ -2517,4 +2517,115 @@ button:disabled {
   .filter-toggle-btn span {
     display: none;
   }
+}
+
+/* Category Navigation */
+.category-navigation {
+  padding: 0 20px;
+  border-radius: 12px;
+  margin: 16px 0;
+}
+
+.category-nav-header {
+  margin-bottom: 12px;
+}
+
+.category-links {
+  display: flex;
+  overflow-x: scroll;
+  gap: 12px;
+}
+
+.category-nav-link {
+  padding: 6px 14px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  font-size: 13px;
+  color: #374151;
+  text-decoration: none;
+  transition: all 0.2s;
+  min-width: fit-content;
+}
+
+.category-nav-link:hover {
+  background: #ffb703;
+  color: #1a1a1a;
+  border-color: #ffb703;
+}
+
+/* Internal Linking Section */
+.internal-linking-section {
+  margin-top: 48px;
+  padding: 24px;
+  background: #f8f9fa;
+  border-radius: 16px;
+  text-align: center;
+}
+
+.popular-categories {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.popular-category-link {
+  padding: 8px 18px;
+  background: white;
+  border-radius: 30px;
+  font-size: 13px;
+  color: #374151;
+  text-decoration: none;
+  border: 1px solid #e5e7eb;
+  transition: all 0.2s;
+}
+
+.popular-category-link:hover {
+  background: #ffb703;
+  color: #1a1a1a;
+  border-color: #ffb703;
+}
+
+/* Category Page Styles */
+.category-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.category-header {
+  margin-bottom: 32px;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 16px;
+  color: #ffb703;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+.category-title {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.category-description {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.mb-12 {
+  margin-bottom: 12px;
+}
+
+.gray-500 {
+  color: #6b7280;
 }

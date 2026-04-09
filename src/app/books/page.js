@@ -1,12 +1,22 @@
 // app/books/page.js
 "use client";
 
-import { useState, useEffect, useMemo, useRef, Suspense } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { books } from "@/utils/book";
 import BookCard from "@/components/BookCard";
 import SearchOverlay from "@/components/SearchOverlay";
 import { Filter, X, ChevronDown, ChevronUp, Search } from "lucide-react";
-import SearchMain from "@/components/UI/SearchMain";
+import Script from "next/script";
+import Link from "next/link";
+
+// Slugify function for URLs
+function slugify(text) {
+  return text
+    ?.toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
 
 export default function BooksPage() {
   const [searchOpen, setSearchOpen] = useState(false);
@@ -29,19 +39,16 @@ export default function BooksPage() {
   const filteredBooks = useMemo(() => {
     let data = [...books];
 
-    // Filter by category
     if (selectedCategory !== "all") {
       data = data.filter((b) => b.catalogue?.includes(selectedCategory));
     }
 
-    // Filter by price range
     data = data.filter(
       (b) =>
         b.discountedPrice >= priceRange.min &&
         b.discountedPrice <= priceRange.max,
     );
 
-    // Sort
     if (sortType === "low") {
       data.sort((a, b) => a.discountedPrice - b.discountedPrice);
     } else if (sortType === "high") {
@@ -53,18 +60,14 @@ export default function BooksPage() {
     return data;
   }, [selectedCategory, sortType, priceRange]);
 
-  // Get visible books
   const visibleBooks = useMemo(() => {
     return filteredBooks.slice(0, visibleCount);
   }, [filteredBooks, visibleCount]);
 
-  // Check if there are more books to load
   const hasMore = visibleCount < filteredBooks.length;
 
-  // Load more books
   const loadMore = () => {
     if (isLoading) return;
-
     setIsLoading(true);
     setTimeout(() => {
       setVisibleCount((prev) => Math.min(prev + 10, filteredBooks.length));
@@ -72,7 +75,6 @@ export default function BooksPage() {
     }, 300);
   };
 
-  // Intersection Observer for infinite scroll
   useEffect(() => {
     if (!loadMoreRef.current || !hasMore) return;
 
@@ -86,7 +88,6 @@ export default function BooksPage() {
     );
 
     observer.observe(loadMoreRef.current);
-
     return () => {
       if (loadMoreRef.current) {
         observer.unobserve(loadMoreRef.current);
@@ -94,7 +95,6 @@ export default function BooksPage() {
     };
   }, [hasMore, isLoading, visibleCount]);
 
-  // Reset visible count when filters change
   useEffect(() => {
     setVisibleCount(10);
   }, [selectedCategory, sortType, priceRange]);
@@ -103,6 +103,86 @@ export default function BooksPage() {
 
   return (
     <>
+      {/* Main CollectionPage Schema */}
+      <Script
+        id="books-collection-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "@id": "https://thebookx.in/books",
+            name: "All Books | TheBookX Online Bookstore",
+            description:
+              "Browse our complete collection of 300+ books including novels, self-help, business, finance, classics, and trending books. Shop online at best prices with free shipping across India.",
+            url: "https://thebookx.in/books",
+            publisher: {
+              "@type": "Organization",
+              name: "TheBookX",
+              url: "https://thebookx.in",
+            },
+            mainEntity: {
+              "@type": "ItemList",
+              itemListElement: books.slice(0, 30).map((book, index) => ({
+                "@type": "ListItem",
+                position: index + 1,
+                url: `https://thebookx.in/books/${slugify(book.name)}`,
+                name: book.name,
+              })),
+            },
+            numberOfItems: books.length,
+          }),
+        }}
+      />
+
+      {/* Breadcrumb Schema */}
+      <Script
+        id="books-breadcrumb-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Home",
+                item: "https://thebookx.in",
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "Books",
+                item: "https://thebookx.in/books",
+              },
+            ],
+          }),
+        }}
+      />
+
+      {/* Category Listing Schema - Helps Google crawl category pages */}
+      <Script
+        id="category-listing-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            name: "Book Categories",
+            description: "Browse books by category at TheBookX",
+            itemListElement: categories
+              .filter((c) => c !== "all")
+              .map((category, index) => ({
+                "@type": "ListItem",
+                position: index + 1,
+                name: category.charAt(0).toUpperCase() + category.slice(1),
+                url: `https://thebookx.in/category/${slugify(category)}`,
+              })),
+          }),
+        }}
+      />
+
       <header className="books-page-header">
         <div className="header-content">
           <h1 className="page-title">All Books</h1>
@@ -126,12 +206,36 @@ export default function BooksPage() {
         </div>
       </header>
 
+      {/* Category Navigation - SEO Friendly Links to Category Pages */}
+      <div className="category-navigation">
+        <div className="category-nav-header">
+          <span className="font-12 gray-500">Browse by Category:</span>
+        </div>
+        <div className="category-links">
+          {categories
+            .filter((c) => c !== "all")
+            .map((category) => (
+              <Link
+                key={category}
+                href={`/category/${slugify(category)}`}
+                className="category-nav-link"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setSelectedCategory(category);
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
+              >
+                {category.charAt(0).toUpperCase() + category.slice(1)}
+              </Link>
+            ))}
+        </div>
+      </div>
+
       {/* Filters Panel */}
       {showFilters && (
         <div className="filters-panel">
           <div className="filters-content">
-            {/* Category Filter */}
-            <div className="filter-group">
+            {/* <div className="filter-group">
               <label className="filter-label">Category</label>
               <div className="category-chips">
                 {categories.map((cat) => (
@@ -146,9 +250,8 @@ export default function BooksPage() {
                   </button>
                 ))}
               </div>
-            </div>
+            </div> */}
 
-            {/* Price Range Filter */}
             <div className="filter-group">
               <label className="filter-label">Price Range</label>
               <div className="price-range">
@@ -195,7 +298,6 @@ export default function BooksPage() {
               </div>
             </div>
 
-            {/* Sort Options */}
             <div className="filter-group">
               <label className="filter-label">Sort By</label>
               <div className="sort-options">
@@ -224,7 +326,6 @@ export default function BooksPage() {
               </div>
             </div>
 
-            {/* Clear Filters */}
             {(selectedCategory !== "all" ||
               sortType ||
               priceRange.min > 0 ||
@@ -259,7 +360,7 @@ export default function BooksPage() {
         ))}
       </div>
 
-      {/* Loading indicator and trigger */}
+      {/* Load More */}
       {hasMore && (
         <div ref={loadMoreRef} className="load-more-trigger">
           {isLoading ? (
@@ -275,14 +376,12 @@ export default function BooksPage() {
         </div>
       )}
 
-      {/* End message */}
       {!hasMore && visibleBooks.length > 0 && (
         <div className="end-message">
           ✨ You've seen all {visibleBooks.length} books ✨
         </div>
       )}
 
-      {/* No results */}
       {filteredBooks.length === 0 && (
         <div className="no-results">
           <div className="no-results-content">
@@ -302,6 +401,39 @@ export default function BooksPage() {
           </div>
         </div>
       )}
+
+      {/* Internal Linking Section - Helps Google discover all pages */}
+      <div className="internal-linking-section">
+        <h3 className="font-14 weight-600 mb-12">Popular Categories</h3>
+        <div className="popular-categories">
+          {[
+            "self-help",
+            "fiction",
+            "romance",
+            "thriller",
+            "mythology",
+            "finance",
+            "biography",
+            "classic",
+          ].map((cat) => {
+            const bookCount = books.filter((b) =>
+              b.catalogue?.includes(cat),
+            ).length;
+            if (bookCount > 0) {
+              return (
+                <Link
+                  key={cat}
+                  href={`/category/${cat}`}
+                  className="popular-category-link"
+                >
+                  {cat.charAt(0).toUpperCase() + cat.slice(1)} ({bookCount})
+                </Link>
+              );
+            }
+            return null;
+          })}
+        </div>
+      </div>
 
       <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
     </>

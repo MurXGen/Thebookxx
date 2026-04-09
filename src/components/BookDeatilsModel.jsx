@@ -120,11 +120,12 @@ export default function BookDetailsModal({ book }) {
               name: book.author || "Various Authors",
             },
 
+            // Inside your BookDetailsModal component, update the offers schema:
+
             offers: {
               "@type": "Offer",
               "@id": `${canonicalUrl}#offer`,
               url: canonicalUrl,
-
               priceCurrency: "INR",
               price: book.discountedPrice,
               priceValidUntil: "2027-12-31",
@@ -140,6 +141,47 @@ export default function BookDetailsModal({ book }) {
                 "@type": "Organization",
                 name: "TheBookX",
                 url: "https://thebookx.in",
+              },
+
+              // ✅ Add this - Required for Google Rich Results
+              hasMerchantReturnPolicy: {
+                "@type": "MerchantReturnPolicy",
+                applicableCountry: "IN",
+                returnPolicyCategory:
+                  "https://schema.org/MerchantReturnFiniteReturnWindow",
+                merchantReturnDays: 7,
+                returnMethod: "https://schema.org/ReturnByMail",
+                returnFees: "https://schema.org/FreeReturn",
+                returnPolicyUrl: "https://thebookx.in/refund",
+              },
+
+              // ✅ Add this - Required for Google Rich Results
+              shippingDetails: {
+                "@type": "OfferShippingDetails",
+                shippingRate: {
+                  "@type": "MonetaryAmount",
+                  value: 0,
+                  currency: "INR",
+                },
+                shippingDestination: {
+                  "@type": "DefinedRegion",
+                  addressCountry: "IN",
+                },
+                deliveryTime: {
+                  "@type": "ShippingDeliveryTime",
+                  handlingTime: {
+                    "@type": "QuantitativeValue",
+                    minValue: 0,
+                    maxValue: 1,
+                    unitCode: "DAY",
+                  },
+                  transitTime: {
+                    "@type": "QuantitativeValue",
+                    minValue: 3,
+                    maxValue: 7,
+                    unitCode: "DAY",
+                  },
+                },
               },
             },
 

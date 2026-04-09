@@ -47,6 +47,12 @@ export default function BookCard({ book }) {
   const bookUrl = `/books/${slugify(book.name)}`;
   const fullUrl = `https://thebookx.in${bookUrl}`;
 
+  // Get category links for internal linking
+  const primaryCategory = book.catalogue?.[0] || "";
+  const categoryUrl = primaryCategory
+    ? `/category/${slugify(primaryCategory)}`
+    : "";
+
   return (
     <article
       className="trending-card"
@@ -58,8 +64,8 @@ export default function BookCard({ book }) {
 
       {/* Limited Time Offer Badge */}
       {book.discountedPrice === 1 && book.stock > 0 && (
-        <span className="flex flex-row justify-center font-10">
-          🔥 Price Drop
+        <span className="flex flex-row justify-center font-10 price-drop-badge">
+          🔥 Price Drop - Just ₹1
         </span>
       )}
 
@@ -76,7 +82,7 @@ export default function BookCard({ book }) {
           <Link href={bookUrl} aria-label={`View details of ${book.name}`}>
             <Image
               src={book.image}
-              alt={`${book.name} book cover`}
+              alt={`${book.name} book cover - Buy online at TheBookX`}
               fill
               className={`book-image ${imageLoaded ? "loaded" : ""}`}
               onLoadingComplete={() => setImageLoaded(true)}
@@ -103,7 +109,7 @@ export default function BookCard({ book }) {
           </Link>
 
           {/* Author Display */}
-          {book.author && (
+          {/* {book.author && (
             <div
               className="font-10 dark-50 mt-4"
               itemProp="author"
@@ -112,6 +118,21 @@ export default function BookCard({ book }) {
             >
               <span>By </span>
               <span itemProp="name">{book.author}</span>
+            </div>
+          )} */}
+
+          {/* Category Link - Internal Backlink for SEO */}
+          {primaryCategory && (
+            <div className="font-10 gray-500 mt-4">
+              <span>in </span>
+              <Link
+                href={categoryUrl}
+                className="category-link"
+                aria-label={`Browse more ${primaryCategory} books`}
+              >
+                {primaryCategory.charAt(0).toUpperCase() +
+                  primaryCategory.slice(1)}
+              </Link>
             </div>
           )}
 
@@ -122,6 +143,9 @@ export default function BookCard({ book }) {
           )}
           {book.language && (
             <meta itemProp="inLanguage" content={book.language} />
+          )}
+          {book.catalogue && (
+            <meta itemProp="genre" content={book.catalogue.join(", ")} />
           )}
         </h3>
 
@@ -163,9 +187,20 @@ export default function BookCard({ book }) {
                   .split("T")[0]
               }
             />
+            <meta itemProp="seller" content="TheBookX" />
+
+            {/* Add return policy and shipping details for better SEO */}
+            <meta
+              itemProp="hasMerchantReturnPolicy"
+              content="7-day return policy"
+            />
+            <meta
+              itemProp="shippingDetails"
+              content="Free shipping across India"
+            />
 
             {savings > 0 && (
-              <span className="green font-10">You save ₹{savings}</span>
+              <span className="green font-10">Save ₹{savings}</span>
             )}
           </div>
 
@@ -183,7 +218,7 @@ export default function BookCard({ book }) {
                 disabled={isOneRupee && hasOneRupeeInCart}
                 aria-label={`Add ${book.name} to cart`}
               >
-                <span>Add</span>
+                <span>Add to Cart</span>
               </LoadingButton>
             ) : (
               <div className="width100 gap-12 items-center flex flex-row justify-between">

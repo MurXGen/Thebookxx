@@ -356,9 +356,9 @@ export default function AddressModal({
                   )}
               </div>
 
-              {/* Location Details Grid - Fixed for mobile */}
-              <div className="location-grid">
-                <div className="input-group">
+              {/* Location Details Grid */}
+              <div className="flex flex-row justify-between gap-12">
+                <div className="input-group width100">
                   <label>City / District</label>
                   <input
                     list="cities"
@@ -375,7 +375,7 @@ export default function AddressModal({
                 </div>
 
                 {state && (
-                  <div className="input-group">
+                  <div className="input-group width100">
                     <label>State</label>
                     <input
                       className="sec-mid-btn gray-bg"
@@ -411,8 +411,8 @@ export default function AddressModal({
                     exit={{ opacity: 0, height: 0, y: -20 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <div className="contact-grid">
-                      <div className="input-group">
+                    <div className="flex flex-row justify-between gap-12">
+                      <div className="input-group width100">
                         <label className="flex flex-row gap-4 flex-center items-center">
                           <User size={14} />
                           Full Name <span className="red">*</span>
@@ -425,7 +425,7 @@ export default function AddressModal({
                         />
                       </div>
 
-                      <div className="input-group">
+                      <div className="input-group width100">
                         <label className="flex flex-row gap-4 flex-center items-center">
                           <Phone size={14} />
                           Phone Number <span className="red">*</span>
@@ -481,9 +481,9 @@ export default function AddressModal({
 
               {/* Buttons - Only shown after contact fields are filled */}
               {showContactFields && (
-                <div className="payment-buttons">
+                <div className="flex flex-row gap-12 items-start mt-16">
                   <LoadingButton
-                    className="pri-big-btn"
+                    className="pri-big-btn width100"
                     onClick={handleUPIPayment}
                     disabled={!isFormValid()}
                   >
@@ -492,7 +492,7 @@ export default function AddressModal({
                   </LoadingButton>
 
                   <LoadingButton
-                    className="sec-big-btn"
+                    className="sec-big-btn width100 flex flex-col"
                     onClick={handleCODSubmit}
                     disabled={!isFormValid()}
                   >

@@ -218,7 +218,7 @@ export default function BookCard({ book }) {
                 disabled={isOneRupee && hasOneRupeeInCart}
                 aria-label={`Add ${book.name} to cart`}
               >
-                <span>Add to Cart</span>
+                <span>Add </span>
               </LoadingButton>
             ) : (
               <div className="width100 gap-12 items-center flex flex-row justify-between">

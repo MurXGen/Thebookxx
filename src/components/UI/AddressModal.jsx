@@ -314,7 +314,7 @@ export default function AddressModal({
           >
             {/* Header */}
             <div className="bill-header">
-              <span className="weight-600">Delivery Details</span>
+              <span className="weight-600 font-16">Delivery Details</span>
               <span className="cursor-pointer" onClick={onClose}>
                 <X size={16} />
               </span>

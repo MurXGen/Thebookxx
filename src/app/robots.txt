@@ -2,23 +2,21 @@
 User-agent: *
 Allow: /
 Disallow: /api/
-Disallow: /admin/
-Disallow: /checkout/
 Disallow: /_next/
-Disallow: /_static/
+Disallow: /admin/
 
 # Sitemap location
 Sitemap: https://thebookx.in/sitemap.xml
 
-# Crawl delay (optional - be nice to servers)
-Crawl-delay: 10
+# Crawl delay - be nice to the server
+Crawl-delay: 1
 
-# Google-specific rules
+# Google-specific
 User-agent: Googlebot
 Allow: /
-Crawl-delay: 5
+Crawl-delay: 1
 
-# Bing-specific rules
+# Bing-specific
 User-agent: Bingbot
 Allow: /
-Crawl-delay: 5
+Crawl-delay: 1

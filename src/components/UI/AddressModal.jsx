@@ -546,7 +546,7 @@ export default function AddressModal({
                   transition={{ duration: 0.5 }}
                 >
                   <Image
-                    src="/books1/uskillbook.png"
+                    src="/books/uskillbook.png"
                     alt="UPI QR Code for payment"
                     width={350}
                     height={420}

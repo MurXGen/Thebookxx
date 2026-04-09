@@ -1723,6 +1723,7 @@ button:disabled {
 .pay-online-bill-modal {
   position: absolute;
   bottom: 0;
+  top: 0;
   left: 0;
   right: 0;
   height: 100vh;
@@ -1767,7 +1768,7 @@ button:disabled {
 }
 
 .address-modal {
-  min-height: 80vh;
+  min-height: 90vh;
   display: flex;
   flex-direction: column;
 }

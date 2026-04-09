@@ -1,6 +1,6 @@
 "use client";
 
-import { Download } from "lucide-react";
+import { Download, DownloadIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { trackEvent } from "@/lib/ga";
 import { motion } from "framer-motion";
@@ -58,8 +58,6 @@ export default function InstallPWA() {
     <motion.div
       className="mobile-offer-strip flex flex-row gap-32"
       style={{
-        borderBlock: "1px solid grey",
-
         cursor: "pointer",
         zIndex: "9999",
         boxShadow: "4px 0 12px #000000",
@@ -70,7 +68,8 @@ export default function InstallPWA() {
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
     >
-      <span className="font-14">Explore app - </span>
+      <DownloadIcon size={14} />
+      <span className="font-14">Download app - </span>
 
       <div className="flex flex-row gap-4 items-center">
         <span className="shinny-icon weight-600">Get upto Rs.100 off</span>

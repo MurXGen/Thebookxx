@@ -15,7 +15,6 @@ import { Download } from "lucide-react";
 export default function HomePage() {
   return (
     <>
-      {/* <InstallPWA /> */}
       <Navbar />
       <BestsellerStage />
       {/* <OffersGift /> */}

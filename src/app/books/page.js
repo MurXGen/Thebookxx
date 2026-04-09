@@ -5,9 +5,17 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import { books } from "@/utils/book";
 import BookCard from "@/components/BookCard";
 import SearchOverlay from "@/components/SearchOverlay";
-import { Filter, X, ChevronDown, ChevronUp, Search } from "lucide-react";
+import {
+  Filter,
+  X,
+  ChevronDown,
+  ChevronUp,
+  Search,
+  ArrowLeft,
+} from "lucide-react";
 import Script from "next/script";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 // Slugify function for URLs
 function slugify(text) {
@@ -19,6 +27,7 @@ function slugify(text) {
 }
 
 export default function BooksPage() {
+  const router = useRouter();
   const [searchOpen, setSearchOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [sortType, setSortType] = useState(null);
@@ -185,7 +194,11 @@ export default function BooksPage() {
 
       <header className="books-page-header">
         <div className="header-content">
-          <h1 className="page-title">All Books</h1>
+          <h1 className="page-title flex flex-row items-center">
+            {" "}
+            <ArrowLeft size={20} onClick={() => router.push("/")} />
+            All Books
+          </h1>
           <div className="header-actions">
             <button
               className="sec-big-btn flex flex-row flex-center"
@@ -206,51 +219,34 @@ export default function BooksPage() {
         </div>
       </header>
 
-      {/* Category Navigation - SEO Friendly Links to Category Pages */}
-      <div className="category-navigation">
-        <div className="category-nav-header">
-          <span className="font-12 gray-500">Browse by Category:</span>
-        </div>
-        <div className="category-links">
-          {categories
-            .filter((c) => c !== "all")
-            .map((category) => (
-              <Link
-                key={category}
-                href={`/category/${slugify(category)}`}
-                className="category-nav-link"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setSelectedCategory(category);
-                  window.scrollTo({ top: 0, behavior: "smooth" });
-                }}
-              >
-                {category.charAt(0).toUpperCase() + category.slice(1)}
-              </Link>
-            ))}
-        </div>
-      </div>
-
       {/* Filters Panel */}
       {showFilters && (
         <div className="filters-panel">
           <div className="filters-content">
-            {/* <div className="filter-group">
-              <label className="filter-label">Category</label>
-              <div className="category-chips">
-                {categories.map((cat) => (
-                  <button
-                    key={cat}
-                    className={`category-chip ${
-                      selectedCategory === cat ? "active" : ""
-                    }`}
-                    onClick={() => setSelectedCategory(cat)}
-                  >
-                    {cat.charAt(0).toUpperCase() + cat.slice(1)}
-                  </button>
-                ))}
+            {/* Category Navigation - SEO Friendly Links to Category Pages */}
+            <div className="category-navigation">
+              <div className="category-nav-header">
+                <span className="font-12 gray-500">Browse by Category:</span>
               </div>
-            </div> */}
+              <div className="category-links">
+                {categories
+                  .filter((c) => c !== "all")
+                  .map((category) => (
+                    <Link
+                      key={category}
+                      href={`/category/${slugify(category)}`}
+                      className="category-nav-link"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setSelectedCategory(category);
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }}
+                    >
+                      {category.charAt(0).toUpperCase() + category.slice(1)}
+                    </Link>
+                  ))}
+              </div>
+            </div>
 
             <div className="filter-group">
               <label className="filter-label">Price Range</label>

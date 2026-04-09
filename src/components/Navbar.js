@@ -75,31 +75,32 @@ export default function Navbar() {
             </a>
           </div>
         </nav>
+        <div className="flex flex-row justify-between">
+          <div className="mobile-offer-strip width100">
+            {/* rotating star */}
+            <motion.span
+              className="badge-star"
+              animate={{ rotate: 360 }}
+              transition={{ repeat: Infinity, duration: 6, ease: "linear" }}
+            >
+              <Star size={14} />
+            </motion.span>
 
-        <div className="mobile-offer-strip">
-          {/* rotating star */}
-          <motion.span
-            className="badge-star"
-            animate={{ rotate: 360 }}
-            transition={{ repeat: Infinity, duration: 6, ease: "linear" }}
-          >
-            <Star size={14} />
-          </motion.span>
-
-          {/* sliding text */}
-          <div className="offer-text-wrapper">
-            <AnimatePresence mode="wait">
-              <motion.span
-                key={index}
-                className="offer-text"
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: -20, opacity: 0 }}
-                transition={{ duration: 0.35, ease: "easeOut" }}
-              >
-                {formatOfferMessage(currentOffer)}
-              </motion.span>
-            </AnimatePresence>
+            {/* sliding text */}
+            <div className="offer-text-wrapper">
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={index}
+                  className="offer-text"
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: -20, opacity: 0 }}
+                  transition={{ duration: 0.35, ease: "easeOut" }}
+                >
+                  {formatOfferMessage(currentOffer)}
+                </motion.span>
+              </AnimatePresence>
+            </div>
           </div>
         </div>
 
@@ -152,6 +153,7 @@ export default function Navbar() {
                     {link.name}
                   </Link>
                 ))}
+                <InstallPWA />
               </div>
             </motion.div>
           </>

@@ -8,6 +8,7 @@ import CartOfferStrip from "@/components/UI/CartOfferStrip";
 import LoadingButton from "./UI/LoadingButton";
 import SearchMain from "./UI/SearchMain";
 import { motion, AnimatePresence } from "framer-motion";
+import InstallPWA from "./InstallPWA";
 
 export default function CartBar() {
   const { cart } = useStore();
@@ -118,6 +119,8 @@ export default function CartBar() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <InstallPWA />
     </div>
   );
 }

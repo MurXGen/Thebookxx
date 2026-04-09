@@ -1791,7 +1791,6 @@ button:disabled {
   display: flex;
   flex-direction: column;
   margin-bottom: 14px;
-  width: 100%;
 }
 
 .input-group label {
@@ -2499,7 +2498,6 @@ button:disabled {
   .books-grid {
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 16px;
-    padding: 0 16px;
   }
 
   .filters-content {
@@ -2521,9 +2519,7 @@ button:disabled {
 
 /* Category Navigation */
 .category-navigation {
-  padding: 0 20px;
   border-radius: 12px;
-  margin: 16px 0;
 }
 
 .category-nav-header {
@@ -2592,11 +2588,12 @@ button:disabled {
 .category-page {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 24px;
+  /* padding: 24px; */
 }
 
 .category-header {
   margin-bottom: 32px;
+  padding: 24px;
 }
 
 .back-link {

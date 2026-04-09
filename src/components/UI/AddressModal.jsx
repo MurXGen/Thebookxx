@@ -56,6 +56,7 @@ export default function AddressModal({
   const [isFetchingLocation, setIsFetchingLocation] = useState(false);
   const [pincodeError, setPincodeError] = useState("");
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
+  const [showContactFields, setShowContactFields] = useState(false);
 
   const [showPayment, setShowPayment] = useState(false);
   const [qrUnlocked, setQrUnlocked] = useState(false);
@@ -120,6 +121,15 @@ export default function AddressModal({
     }
   }, [pincode]);
 
+  // Show contact fields only when address and pincode are verified
+  useEffect(() => {
+    if (isValidPincode && pincode.length === 6 && city && address) {
+      setShowContactFields(true);
+    } else {
+      setShowContactFields(false);
+    }
+  }, [isValidPincode, pincode, city, address]);
+
   // Quick delivery eligibility check
   const isQuickDeliveryAvailable = QUICK_DELIVERY_PINCODES.includes(pincode);
 
@@ -176,20 +186,22 @@ export default function AddressModal({
   }, []);
 
   useEffect(() => {
-    localStorage.setItem(
-      "checkoutAddress",
-      JSON.stringify({
-        name,
-        phone,
-        city,
-        pincode,
-        address,
-        state,
-        district,
-        area,
-        quickDelivery,
-      }),
-    );
+    if (showContactFields) {
+      localStorage.setItem(
+        "checkoutAddress",
+        JSON.stringify({
+          name,
+          phone,
+          city,
+          pincode,
+          address,
+          state,
+          district,
+          area,
+          quickDelivery,
+        }),
+      );
+    }
   }, [
     name,
     phone,
@@ -200,6 +212,7 @@ export default function AddressModal({
     district,
     area,
     quickDelivery,
+    showContactFields,
   ]);
 
   const resetForm = () => {
@@ -212,6 +225,7 @@ export default function AddressModal({
     setDistrict("");
     setArea("");
     setQuickDelivery(false);
+    setShowContactFields(false);
     localStorage.removeItem("checkoutAddress");
   };
 
@@ -278,10 +292,12 @@ export default function AddressModal({
     onClose();
   };
 
+  const isAddressValid = () => {
+    return city && pincode.length === 6 && address && isValidPincode;
+  };
+
   const isFormValid = () => {
-    return (
-      name && phone && city && pincode.length === 6 && address && isValidPincode
-    );
+    return name && phone && isAddressValid();
   };
 
   return (
@@ -305,38 +321,6 @@ export default function AddressModal({
             </div>
 
             <div className="address-form-content">
-              {/* Name and Phone - New Fields */}
-              <div className="flex flex-row justify-between gap-12">
-                <div className="input-group">
-                  <label className="flex flex-row gap-4 flex-center items-center">
-                    <User size={14} />
-                    Full Name <span className="red">*</span>
-                  </label>
-                  <input
-                    className="sec-mid-btn"
-                    placeholder="Enter your full name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                  />
-                </div>
-
-                <div className="input-group">
-                  <label className="flex flex-row gap-4 flex-center items-center">
-                    <Phone size={14} />
-                    Phone Number <span className="red">*</span>
-                  </label>
-                  <input
-                    className="sec-mid-btn"
-                    placeholder="10-digit mobile number"
-                    value={phone}
-                    maxLength={10}
-                    onChange={(e) =>
-                      setPhone(e.target.value.replace(/\D/g, ""))
-                    }
-                  />
-                </div>
-              </div>
-
               {/* Pincode */}
               <div className="input-group">
                 <label className="flex flex-row gap-4 flex-center items-center">
@@ -374,7 +358,7 @@ export default function AddressModal({
 
               {/* Location Details Grid */}
               <div className="flex flex-row justify-between gap-12">
-                <div className="input-group">
+                <div className="input-group width100">
                   <label>City / District</label>
                   <input
                     list="cities"
@@ -391,7 +375,7 @@ export default function AddressModal({
                 </div>
 
                 {state && (
-                  <div className="input-group">
+                  <div className="input-group width100">
                     <label>State</label>
                     <input
                       className="sec-mid-btn gray-bg"
@@ -402,25 +386,6 @@ export default function AddressModal({
                   </div>
                 )}
               </div>
-
-              {/* Area Display */}
-              {/* {area && (
-                <div className="input-group">
-                  <label className="flex items-center gap-2">
-                    <MapPin size={12} />
-                    Area / Locality
-                  </label>
-                  <input
-                    className="sec-mid-btn highlight-area"
-                    value={area}
-                    readOnly
-                    disabled
-                  />
-                  <span className="font-10 green mt-4 block">
-                    ✓ Delivery available in this area
-                  </span>
-                </div>
-              )} */}
 
               {/* Full Address */}
               <div className="input-group">
@@ -435,6 +400,50 @@ export default function AddressModal({
                   rows={3}
                 />
               </div>
+
+              {/* Name and Phone - Only shown after address is verified */}
+              <AnimatePresence>
+                {showContactFields && (
+                  <motion.div
+                    className="contact-fields-container"
+                    initial={{ opacity: 0, height: 0, y: -20 }}
+                    animate={{ opacity: 1, height: "auto", y: 0 }}
+                    exit={{ opacity: 0, height: 0, y: -20 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <div className="flex flex-row justify-between gap-12">
+                      <div className="input-group width100">
+                        <label className="flex flex-row gap-4 flex-center items-center">
+                          <User size={14} />
+                          Full Name <span className="red">*</span>
+                        </label>
+                        <input
+                          className="sec-mid-btn"
+                          placeholder="Enter your full name"
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                        />
+                      </div>
+
+                      <div className="input-group width100">
+                        <label className="flex flex-row gap-4 flex-center items-center">
+                          <Phone size={14} />
+                          Phone Number <span className="red">*</span>
+                        </label>
+                        <input
+                          className="sec-mid-btn"
+                          placeholder="10-digit mobile number"
+                          value={phone}
+                          maxLength={10}
+                          onChange={(e) =>
+                            setPhone(e.target.value.replace(/\D/g, ""))
+                          }
+                        />
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               {/* Quick Delivery */}
               {isQuickDeliveryAvailable && pincode.length === 6 && (
@@ -470,33 +479,47 @@ export default function AddressModal({
                 </span>
               </div>
 
-              {/* Buttons */}
-              <div className="flex flex-row gap-12 items-start mt-16">
-                <LoadingButton
-                  className="pri-big-btn width100"
-                  onClick={handleUPIPayment}
-                  disabled={!isFormValid()}
-                >
-                  <p className="weight-600">Pay with UPI</p>
-                  <span className="font-10">No extra charges</span>
-                </LoadingButton>
+              {/* Buttons - Only shown after contact fields are filled */}
+              {showContactFields && (
+                <div className="flex flex-row gap-12 items-start mt-16">
+                  <LoadingButton
+                    className="pri-big-btn width100"
+                    onClick={handleUPIPayment}
+                    disabled={!isFormValid()}
+                  >
+                    <p className="weight-600">Pay with UPI</p>
+                    <span className="font-10">No extra charges</span>
+                  </LoadingButton>
 
-                <LoadingButton
-                  className="sec-big-btn width100 flex flex-col"
-                  onClick={handleCODSubmit}
-                  disabled={!isFormValid()}
-                >
-                  <p className="weight-600">Cash on Delivery</p>
-                  <span className="font-10">Pay 50% now + 50% on delivery</span>
-                </LoadingButton>
-              </div>
+                  <LoadingButton
+                    className="sec-big-btn width100 flex flex-col"
+                    onClick={handleCODSubmit}
+                    disabled={!isFormValid()}
+                  >
+                    <p className="weight-600">Cash on Delivery</p>
+                    <span className="font-10">
+                      Pay 50% now + 50% on delivery
+                    </span>
+                  </LoadingButton>
+                </div>
+              )}
+
+              {/* Address completion reminder */}
+              {!isAddressValid() && (
+                <div className="flex flex-row flex-center gap-4 orange items-center infoMessage mt-12">
+                  <AlertCircle size={14} />
+                  <span className="font-12">
+                    Please fill your pincode, city, and full address first
+                  </span>
+                </div>
+              )}
 
               {/* Form completion reminder */}
-              {!isFormValid() && (
+              {showContactFields && !isFormValid() && (
                 <div className="flex flex-row flex-center gap-4 red items-center infoMessage mt-12">
                   <AlertCircle size={14} />
                   <span className="font-12">
-                    Please fill all required fields to proceed
+                    Please enter your name and phone number to proceed
                   </span>
                 </div>
               )}

@@ -1776,6 +1776,7 @@ button:disabled {
 .address-modal input {
   padding: 12px !important;
   text-align: left;
+  flex: 1;
 }
 
 .infoMessage {

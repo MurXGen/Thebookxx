@@ -101,19 +101,22 @@ export default function AllBooks() {
     >
       {/* Header */}
       <div className="flex flex-row justify-between flex-center gap-16">
-        <div>
-          <h2 className="font-20 weight-500">All Books</h2>
+        <div className="width100">
+          <div className="flex flex-row gap-4 items-center justify-between">
+            <h2 className="font-20 weight-500">All Books</h2>
+            <span
+              className="flex flex-row gap-4 items-center tertiary-btn"
+              onClick={() => router.push("/books")}
+            >
+              View all books
+              <ArrowRight size={16} />
+            </span>
+          </div>
+
           <span className="font-14 dark-50">
             Explore novels, self-help, business & more
           </span>
         </div>
-        <button
-          className="flex flex-row flex-center items-center sec-mid-btn"
-          onClick={() => router.push("/books")}
-          style={{ padding: "4px 12px" }}
-        >
-          <ArrowRight size={16} />
-        </button>
       </div>
 
       {/* Books Grid */}

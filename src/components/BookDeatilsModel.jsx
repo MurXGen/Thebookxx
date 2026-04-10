@@ -376,14 +376,23 @@ export default function BookDetailsModal({ book }) {
             className="book-detail-cta section-1200 flex flex-row gap-16 flex-wrap"
             style={{ backdropFilter: "blur(12px)" }}
           >
-            <LoadingButton
+            <button
               className="flex flex-row items-center gap-12 justify-center sec-mid-btn"
               onClick={handleWishlist}
-              icon={<Heart size={20} fill={inWishlist ? "red" : "none"} />}
             >
-              {inWishlist ? "Saved" : "Save for later"}
-            </LoadingButton>
+              <Heart
+                size={20}
+                stroke="none"
+                fill={inWishlist ? "red" : "none"}
+              />
+            </button>
 
+            <button
+              className="sec-mid-btn flex flex-row gap-12"
+              onClick={handleReview}
+            >
+              <MessageSquare size={20} />
+            </button>
             <LoadingButton
               className="flex-1 pri-big-btn flex flex-row items-center gap-12 justify-center"
               onClick={handleAddToCart}
@@ -391,14 +400,6 @@ export default function BookDetailsModal({ book }) {
               icon={<ShoppingCart size={20} />}
             >
               {book.stock === 0 ? "Out of Stock" : "Add to Cart"}
-            </LoadingButton>
-
-            <LoadingButton
-              className="sec-mid-btn flex flex-row items-center gap-12 justify-center"
-              onClick={handleReview}
-              icon={<MessageSquare size={20} />}
-            >
-              Review
             </LoadingButton>
           </div>
 

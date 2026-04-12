@@ -382,7 +382,7 @@ export default function BookDetailsModal({ book }) {
             >
               <Heart
                 size={20}
-                stroke="none"
+                stroke="gray"
                 fill={inWishlist ? "red" : "none"}
               />
             </button>

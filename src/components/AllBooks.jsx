@@ -5,6 +5,7 @@ import { books } from "@/utils/book";
 import { ArrowRight } from "lucide-react";
 import { useMemo, useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import CartBar from "./CartBar";
 
 export default function AllBooks() {
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -163,29 +164,9 @@ export default function AllBooks() {
             color: "#666",
           }}
         >
-          ✨ You've seen all {visibleBooks.length} books ✨
+          ✨ You{"'"}ve seen all {visibleBooks.length} books ✨
         </div>
       )}
-
-      <style jsx>{`
-        .loading-spinner {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          gap: 12px;
-          color: #666;
-        }
-
-        .load-more-trigger button {
-          cursor: pointer;
-          transition: all 0.3s ease;
-        }
-
-        .load-more-trigger button:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-      `}</style>
     </section>
   );
 }

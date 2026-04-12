@@ -272,6 +272,16 @@ export default function BookDetailsModal({ book }) {
                 height={100}
                 priority
                 itemProp="image"
+                style={{ border: "1px solid #00000020" }}
+              />
+              <Image
+                src={book.image}
+                alt={`${book.name} book cover — Buy online at TheBookX, India's trusted bookstore`}
+                width={100}
+                height={100}
+                priority
+                style={{ border: "1px solid #00000020" }}
+                itemProp="image"
               />
             </div>
           </div>
@@ -364,8 +374,6 @@ export default function BookDetailsModal({ book }) {
               </div>
             )}
 
-            <div className="dashed-border my-20"></div>
-
             {/* Trust Badges */}
             <div className="flex flex-row flex-wrap gap-24 justify-between py-16">
               <div className="flex flex-row items-center gap-8">
@@ -442,6 +450,8 @@ export default function BookDetailsModal({ book }) {
             </p>
           </div>
 
+          <div className="dashed-border my-20"></div>
+
           {/* You May Also Like Section - SEO Internal Linking */}
           {relatedBooks.length > 0 && (
             <div className="related-books-section mt-32">
@@ -463,11 +473,14 @@ export default function BookDetailsModal({ book }) {
 
               {/* Lazy Load More Button */}
               {hasMoreRelated && (
-                <div className="load-more-container flex justify-center mt-24">
+                <div
+                  className="load-more-container flex justify-center width100"
+                  style={{ marginTop: "12px" }}
+                >
                   <button
                     onClick={loadMoreRelated}
                     disabled={isLoadingRelated}
-                    className="sec-mid-btn px-24 py-12"
+                    className="sec-mid-btn"
                   >
                     {isLoadingRelated
                       ? "Loading..."

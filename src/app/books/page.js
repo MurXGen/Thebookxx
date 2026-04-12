@@ -16,6 +16,7 @@ import {
 import Script from "next/script";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import CartBar from "@/components/CartBar";
 
 // Slugify function for URLs
 function slugify(text) {
@@ -430,7 +431,7 @@ export default function BooksPage() {
           })}
         </div>
       </div>
-
+      <CartBar />
       <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
     </>
   );

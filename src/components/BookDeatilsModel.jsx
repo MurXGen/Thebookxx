@@ -16,7 +16,8 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import LoadingButton from "./UI/LoadingButton";
 import Script from "next/script";
-import { useEffect } from "react";
+import { useEffect, useState, useMemo } from "react";
+import BookCard from "./BookCard";
 
 // Slugify function
 function slugify(text) {
@@ -28,16 +29,12 @@ function slugify(text) {
 }
 
 function getStableReviewCount(bookId) {
-  // convert id to number hash
   let hash = 0;
   for (let i = 0; i < bookId.length; i++) {
     hash = bookId.charCodeAt(i) + ((hash << 5) - hash);
   }
-
-  // map hash → range 20–300
   const min = 20;
   const max = 300;
-
   return Math.abs(hash % (max - min + 1)) + min;
 }
 
@@ -45,6 +42,10 @@ export default function BookDetailsModal({ book }) {
   const { cart, addToCart, toggleWishlist, wishlist } = useStore();
   const inWishlist = wishlist.includes(book.id);
   const router = useRouter();
+
+  // Lazy loading state for related books
+  const [visibleRelatedCount, setVisibleRelatedCount] = useState(6);
+  const [isLoadingRelated, setIsLoadingRelated] = useState(false);
 
   const bookSlug = slugify(book.name);
   const bookUrl = `/books/${bookSlug}`;
@@ -58,6 +59,32 @@ export default function BookDetailsModal({ book }) {
     const b = books.find((x) => x.id === i.id);
     return b?.discountedPrice === 1;
   });
+
+  // Get related books based on same category
+  const relatedBooks = useMemo(() => {
+    if (!book.catalogue || book.catalogue.length === 0) return [];
+
+    return books
+      .filter(
+        (b) =>
+          b.id !== book.id &&
+          b.catalogue?.some((cat) => book.catalogue.includes(cat)),
+      )
+      .slice(0, 30);
+  }, [book.id, book.catalogue]);
+
+  // Lazy load more related books
+  const loadMoreRelated = () => {
+    if (isLoadingRelated) return;
+    setIsLoadingRelated(true);
+    setTimeout(() => {
+      setVisibleRelatedCount((prev) => Math.min(prev + 6, relatedBooks.length));
+      setIsLoadingRelated(false);
+    }, 300);
+  };
+
+  const visibleRelatedBooks = relatedBooks.slice(0, visibleRelatedCount);
+  const hasMoreRelated = visibleRelatedCount < relatedBooks.length;
 
   const handleWishlist = () => {
     toggleWishlist(book.id);
@@ -73,7 +100,6 @@ export default function BookDetailsModal({ book }) {
     router.push(`/review?bk=${book.id}`);
   };
 
-  // Analytics only - no title/meta changes here
   useEffect(() => {
     if (typeof window !== "undefined" && window.gtag) {
       window.gtag("event", "view_item", {
@@ -103,25 +129,18 @@ export default function BookDetailsModal({ book }) {
             "@type": "Product",
             "@id": canonicalUrl,
             url: canonicalUrl,
-
             name: book.name,
             description: `${book.description} Shop now at TheBookX — India's most trusted online bookstore.`,
             image: book.image,
-
             brand: {
               "@type": "Brand",
               name: "TheBookX",
             },
-
             sku: book.id,
-
             author: {
               "@type": "Person",
               name: book.author || "Various Authors",
             },
-
-            // Inside your BookDetailsModal component, update the offers schema:
-
             offers: {
               "@type": "Offer",
               "@id": `${canonicalUrl}#offer`,
@@ -129,21 +148,16 @@ export default function BookDetailsModal({ book }) {
               priceCurrency: "INR",
               price: book.discountedPrice,
               priceValidUntil: "2027-12-31",
-
               availability:
                 book.stock > 0
                   ? "https://schema.org/InStock"
                   : "https://schema.org/OutOfStock",
-
               itemCondition: "https://schema.org/NewCondition",
-
               seller: {
                 "@type": "Organization",
                 name: "TheBookX",
                 url: "https://thebookx.in",
               },
-
-              // ✅ Add this - Required for Google Rich Results
               hasMerchantReturnPolicy: {
                 "@type": "MerchantReturnPolicy",
                 applicableCountry: "IN",
@@ -154,8 +168,6 @@ export default function BookDetailsModal({ book }) {
                 returnFees: "https://schema.org/FreeReturn",
                 returnPolicyUrl: "https://thebookx.in/refund",
               },
-
-              // ✅ Add this - Required for Google Rich Results
               shippingDetails: {
                 "@type": "OfferShippingDetails",
                 shippingRate: {
@@ -184,7 +196,6 @@ export default function BookDetailsModal({ book }) {
                 },
               },
             },
-
             aggregateRating: {
               "@type": "AggregateRating",
               ratingValue:
@@ -199,6 +210,31 @@ export default function BookDetailsModal({ book }) {
           }),
         }}
       />
+
+      {/* JSON-LD for Related Items (Internal Linking SEO) */}
+      {relatedBooks.length > 0 && (
+        <Script
+          id={`related-items-schema-${book.id}`}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "ItemList",
+              name: `You may also like similar to ${book.name}`,
+              description: `Related books similar to ${book.name}`,
+              numberOfItems: relatedBooks.length,
+              itemListElement: relatedBooks
+                .slice(0, 10)
+                .map((relatedBook, index) => ({
+                  "@type": "ListItem",
+                  position: index + 1,
+                  url: `https://thebookx.in/books/${slugify(relatedBook.name)}`,
+                  name: relatedBook.name,
+                })),
+            }),
+          }}
+        />
+      )}
 
       <div
         className="book-detail-section"
@@ -227,17 +263,8 @@ export default function BookDetailsModal({ book }) {
           </div>
 
           {/* Image */}
-          {/* Image Gallery - FIXED: Single image with proper dimensions */}
           <div className="book-detail-image flex flex-row gap-24 justify-center">
             <div className="book-detail-image">
-              <Image
-                src={book.image}
-                alt={`${book.name} book cover — Buy online at TheBookX, India's trusted bookstore`}
-                width={100}
-                height={100}
-                priority
-                itemProp="image"
-              />
               <Image
                 src={book.image}
                 alt={`${book.name} book cover — Buy online at TheBookX, India's trusted bookstore`}
@@ -357,13 +384,14 @@ export default function BookDetailsModal({ book }) {
               </div>
             </div>
 
-            {/* Category Tags */}
+            {/* Category Tags - Internal Links */}
             <div className="flex flex-row flex-wrap gap-12 tags mt-16">
               {book.catalogue?.map((tag) => (
                 <a
                   key={tag}
                   href={`/category/${slugify(tag)}`}
                   className="sec-mid-btn text-capitalize hover:opacity-80"
+                  aria-label={`Browse more ${tag} books`}
                 >
                   {tag}
                 </a>
@@ -374,7 +402,7 @@ export default function BookDetailsModal({ book }) {
           {/* Buttons */}
           <div
             className="book-detail-cta section-1200 flex flex-row gap-16 flex-wrap"
-            style={{ backdropFilter: "blur(12px)" }}
+            style={{ backdropFilter: "blur(12px)", zIndex: "1000" }}
           >
             <button
               className="flex flex-row items-center gap-12 justify-center sec-mid-btn"
@@ -386,7 +414,6 @@ export default function BookDetailsModal({ book }) {
                 fill={inWishlist ? "red" : "none"}
               />
             </button>
-
             <button
               className="sec-mid-btn flex flex-row gap-12"
               onClick={handleReview}
@@ -413,6 +440,72 @@ export default function BookDetailsModal({ book }) {
                 Learn more
               </a>
             </p>
+          </div>
+
+          {/* You May Also Like Section - SEO Internal Linking */}
+          {relatedBooks.length > 0 && (
+            <div className="related-books-section mt-32">
+              <div className="section-header mb-24">
+                <h3 className="font-20 weight-600">You May Also Like</h3>
+                <p className="font-12 dark-50">
+                  Discover more books similar to {book.name}
+                </p>
+              </div>
+
+              <div
+                className="books-grid"
+                style={{ padding: "0", marginTop: "12px" }}
+              >
+                {visibleRelatedBooks.map((relatedBook) => (
+                  <BookCard key={relatedBook.id} book={relatedBook} />
+                ))}
+              </div>
+
+              {/* Lazy Load More Button */}
+              {hasMoreRelated && (
+                <div className="load-more-container flex justify-center mt-24">
+                  <button
+                    onClick={loadMoreRelated}
+                    disabled={isLoadingRelated}
+                    className="sec-mid-btn px-24 py-12"
+                  >
+                    {isLoadingRelated
+                      ? "Loading..."
+                      : `Load More Related Books (${visibleRelatedCount}/${relatedBooks.length})`}
+                  </button>
+                </div>
+              )}
+
+              {/* SEO Internal Links List (Hidden but crawlable) */}
+              <div className="seo-internal-links" style={{ display: "none" }}>
+                {relatedBooks.map((relatedBook) => (
+                  <a
+                    key={relatedBook.id}
+                    href={`/books/${slugify(relatedBook.name)}`}
+                  >
+                    {relatedBook.name}
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Browse More Categories - Footer Links */}
+          <div className="browse-categories-footer mt-24 pt-24 border-t border-gray-200">
+            <h4 className="font-14 weight-600 mb-12">Browse More Categories</h4>
+            <div className="flex flex-row flex-wrap gap-12">
+              {[...new Set(books.flatMap((b) => b.catalogue || []))]
+                .slice(0, 15)
+                .map((category) => (
+                  <a
+                    key={category}
+                    href={`/category/${slugify(category)}`}
+                    className="font-12 sec-mid-btn px-12 py-6"
+                  >
+                    {category.charAt(0).toUpperCase() + category.slice(1)}
+                  </a>
+                ))}
+            </div>
           </div>
         </div>
       </div>

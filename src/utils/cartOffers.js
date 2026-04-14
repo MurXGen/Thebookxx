@@ -40,3 +40,9 @@ export const CART_OFFERS = [
     icon: "sparkle",
   },
 ];
+
+// Get extra delivery charge based on order amount
+export const getExtraDeliveryCharge = (orderAmount) => {
+  if (orderAmount >= 400) return 0;
+  return 100;
+};

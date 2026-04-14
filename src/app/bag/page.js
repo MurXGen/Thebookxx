@@ -7,7 +7,7 @@ import CartOfferStrip from "@/components/UI/CartOfferStrip";
 import SlideConfirm from "@/components/UI/SlideConfirm";
 import { useStore } from "@/context/StoreContext";
 import { books } from "@/utils/book";
-import { CART_OFFERS } from "@/utils/cartOffers";
+import { CART_OFFERS, getExtraDeliveryCharge } from "@/utils/cartOffers";
 import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -96,6 +96,10 @@ export default function BagPage() {
   const finalPayable = totalDiscounted - offerDiscount;
   const canCheckout = totalDiscounted >= 151;
 
+  // Calculate extra delivery charge
+  const extraDeliveryCharge = getExtraDeliveryCharge(totalDiscounted);
+  const totalWithDelivery = finalPayable + extraDeliveryCharge;
+
   const generateViewBagLink = () => {
     if (!siteOrigin) return "";
 
@@ -139,7 +143,7 @@ Pincode: ${addressData.pincode}
 *🚚 DELIVERY OPTIONS*
 ━━━━━━━━━━━━━━━━━━━━
 Quick Delivery: ${addressData.quickDelivery ? "✅ Yes (30-60 mins)" : "❌ No"}
-Extra Delivery Charge: ₹${addressData.extraCharge || 0}
+Extra Delivery Charge: ₹${addressData.extraCharge || extraDeliveryCharge || 0}
 
 *💰 PAYMENT DETAILS*
 ━━━━━━━━━━━━━━━━━━━━
@@ -150,11 +154,12 @@ ${payment === "COD" ? "Advance Payment: 50% of total" : "Payment Status: To be v
 ━━━━━━━━━━━━━━━━━━━━
 Subtotal: ₹${totalDiscounted}
 Offer Discount: -₹${offerDiscount}
-Delivery Charge: +₹${addressData.extraCharge || 0}
+Delivery Charge: +₹${addressData.extraCharge || extraDeliveryCharge || 0}
 ━━━━━━━━━━━━━━━━━━━━
-*TOTAL PAYABLE: ₹${finalPayable + (addressData.extraCharge || 0)}*
+*TOTAL PAYABLE: ₹${finalPayable + (addressData.extraCharge || extraDeliveryCharge || 0)}*
 
 ${offerDiscount > 0 ? `✨ Offer Applied: ${offerLabel}` : ""}
+${extraDeliveryCharge > 0 ? `⚠️ Extra delivery charge of ₹100 applied (order below ₹400)` : ""}
 
 🔗 *VIEW FULL BAG*
 ${viewBagLink}
@@ -168,7 +173,6 @@ _I want to confirm my order! 📚✨_
       "_blank",
     );
 
-    // Close modals after sending
     setShowAddressModal(false);
     setShowBill(false);
   };
@@ -209,13 +213,19 @@ _I want to confirm my order! 📚✨_
           <span className="font-12 dark-50">Total payable</span>
           <div className="flex gap-8 items-center">
             <span className="font-16 weight-600 discounted">
-              ₹{finalPayable}
+              ₹{totalWithDelivery}
             </span>
             {offerDiscount > 0 && (
               <span className="strike dark-50 original">
-                ₹{totalDiscounted}
+                ₹{totalDiscounted} |
               </span>
-            )}{" "}
+            )}
+            {extraDeliveryCharge > 0 && (
+              <span className="font-10 red">
+                +₹{extraDeliveryCharge} delivery
+              </span>
+            )}
+
             {appliedOffer && (
               <span className="font-14 green weight-600">{offerLabel}</span>
             )}
@@ -238,6 +248,8 @@ _I want to confirm my order! 📚✨_
         onClose={() => setShowAddressModal(false)}
         finalPayable={finalPayable}
         totalDiscounted={totalDiscounted}
+        extraDeliveryCharge={extraDeliveryCharge}
+        totalWithDelivery={totalWithDelivery}
         handleWhatsAppCheckout={handleWhatsAppCheckout}
         handleCODCheckout={handleCODCheckout}
       />
@@ -249,6 +261,8 @@ _I want to confirm my order! 📚✨_
         totalDiscounted={totalDiscounted}
         offerDiscount={offerDiscount}
         offerLabel={offerLabel}
+        extraDeliveryCharge={extraDeliveryCharge}
+        totalWithDelivery={totalWithDelivery}
         cartBooks={cartBooks}
       />
     </section>

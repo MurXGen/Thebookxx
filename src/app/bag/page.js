@@ -220,11 +220,11 @@ _I want to confirm my order! 📚✨_
                 ₹{totalDiscounted} |
               </span>
             )}
-            {extraDeliveryCharge > 0 && (
+            {/* {extraDeliveryCharge > 0 && (
               <span className="font-10 red">
                 +₹{extraDeliveryCharge} delivery
               </span>
-            )}
+            )} */}
 
             {appliedOffer && (
               <span className="font-14 green weight-600">{offerLabel}</span>

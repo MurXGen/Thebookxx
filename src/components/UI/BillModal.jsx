@@ -7,8 +7,16 @@ export default function BillModal({
   totalDiscounted,
   offerLabel,
   offerDiscount,
+  extraDeliveryCharge = 0,
+  totalWithDelivery = null,
 }) {
   if (!open) return null;
+
+  const finalPayable = totalDiscounted - offerDiscount;
+  const finalTotal =
+    totalWithDelivery !== null
+      ? totalWithDelivery
+      : finalPayable + extraDeliveryCharge;
 
   return (
     <div className="bill-modal-overlay" onClick={onClose}>
@@ -37,10 +45,28 @@ export default function BillModal({
           </div>
         )}
 
+        {extraDeliveryCharge > 0 && (
+          <div className="bill-row">
+            <span>Delivery Charges</span>
+            <span className="red">+ ₹{extraDeliveryCharge}</span>
+          </div>
+        )}
+
+        <div className="dashed-border my-12"></div>
+
         <div className="bill-row total">
           <span>You Pay</span>
-          <span>₹{totalDiscounted - offerDiscount}</span>
+          <span>₹{finalTotal}</span>
         </div>
+
+        {extraDeliveryCharge > 0 && (
+          <div className="bill-note">
+            <span className="font-10 red">
+              ⚠️ Extra delivery charge of ₹{extraDeliveryCharge} applied for
+              orders below ₹400
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );

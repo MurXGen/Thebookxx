@@ -1858,8 +1858,8 @@ button:disabled {
   inset: 0;
   background: rgba(0, 0, 0, 0.4);
   z-index: 200;
-  min-width: 375px;
-  max-width: 600px;
+  /* min-width: 375px;
+  max-width: 600px; */
 }
 
 .pay-online-modal-overlay {
@@ -1918,16 +1918,17 @@ button:disabled {
 
 .address-modal {
   position: absolute;
-  top: 1px;
-  min-height: 100vh;
+  bottom: 0px;
+  min-height: 80vh;
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 
 .address-modal input {
   padding: 12px !important;
   text-align: left;
-  flex: 1;
+  width: 100%;
 }
 
 .infoMessage {
@@ -1960,6 +1961,7 @@ button:disabled {
   display: flex;
   flex-direction: column;
   margin-bottom: 14px;
+  width: 100%;
 }
 
 .input-group label {

@@ -375,7 +375,7 @@ export default function AddressModal({
                 </div>
 
                 {state && (
-                  <div className="input-group width100">
+                  <div className="input-group">
                     <label>State</label>
                     <input
                       className="sec-mid-btn gray-bg"
@@ -425,7 +425,7 @@ export default function AddressModal({
                         />
                       </div>
 
-                      <div className="input-group width100">
+                      <div className="input-group">
                         <label className="flex flex-row gap-4 flex-center items-center">
                           <Phone size={14} />
                           Phone Number <span className="red">*</span>

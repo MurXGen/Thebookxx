@@ -143,14 +143,6 @@ export default function BagPage() {
     }
   };
 
-  const formatBookList = () => {
-    return cartBooks
-      .map((book, index) => {
-        return `${index + 1}. ${book.name} × ${book.qty} = ₹${book.discountedPrice * book.qty}`;
-      })
-      .join("\n");
-  };
-
   const handleWhatsAppCheckout = async (addressData, paymentType = null) => {
     const phoneNumber = "917710892108";
     const payment = paymentType || paymentMethod || "Not specified";
@@ -166,51 +158,24 @@ export default function BagPage() {
     const shortLink = await shortenUrl(viewBagLinkWithDetails);
     setIsShortening(false);
 
-    const bookList = formatBookList();
-
+    // Short and clean WhatsApp message
     const message = `
-*📚 NEW ORDER - THEBOOKX*
+*CONFIRM MY ORDER*
 
-*👤 MY DETAILS*
-━━━━━━━━━━━━━━━━━━━━
-Name: ${addressData.name || "Customer"}
-Phone: ${addressData.phone || "Not provided"}
+Hey hi, I want to confirm my order.
 
-*📍 DELIVERY ADDRESS*
-━━━━━━━━━━━━━━━━━━━━
-${addressData.address}
-Area/Locality: ${addressData.area || "Not specified"}
-City: ${addressData.city}
-District: ${addressData.district}
-State: ${addressData.state}
-Pincode: ${addressData.pincode}
+👤 *Name:* ${addressData.name || "Customer"}
+📞 *Phone:* ${addressData.phone || "Not provided"}
 
-*🚚 DELIVERY OPTIONS*
-━━━━━━━━━━━━━━━━━━━━
-Quick Delivery: ${addressData.quickDelivery ? "✅ Yes (30-60 mins)" : "❌ No"}
-Extra Delivery Charge: ₹${addressData.extraCharge || extraDeliveryCharge || 0}
+📍 *Delivery:* ${addressData.city || "Not specified"} - ${addressData.pincode || "Not specified"}
 
-*💰 PAYMENT DETAILS*
-━━━━━━━━━━━━━━━━━━━━
-Payment Method: ${payment === "COD" ? "💵 Cash on Delivery" : payment === "UPI" ? "📱 UPI Payment" : payment}
-${payment === "COD" ? "Advance Payment: 50% of total" : "Payment Status: To be verified"}
+💰 *Total Amount:* ₹${totalWithDelivery}
+💳 *Payment:* ${payment === "COD" ? "Cash on Delivery" : "UPI Payment"}
 
-*💵 PRICE BREAKDOWN*
-━━━━━━━━━━━━━━━━━━━━
-Subtotal: ₹${totalDiscounted}
-Offer Discount: -₹${offerDiscount}
-Delivery Charge: +₹${addressData.extraCharge || extraDeliveryCharge || 0}
-━━━━━━━━━━━━━━━━━━━━
-*TOTAL PAYABLE: ₹${finalPayable + (addressData.extraCharge || extraDeliveryCharge || 0)}*
-
-${offerDiscount > 0 ? `✨ Offer Applied: ${offerLabel}` : ""}
-${extraDeliveryCharge > 0 ? `⚠️ Extra delivery charge of ₹100 applied (order below ₹400)` : ""}
-
-🔗 *VIEW FULL BAG*
+🔗 *View Full Order Details:*
 ${shortLink}
 
-━━━━━━━━━━━━━━━━━━━━
-_I want to confirm my order! 📚✨_
+Thank you! 🙏
 `;
 
     window.open(
@@ -245,17 +210,6 @@ _I want to confirm my order! 📚✨_
 
       <CartOfferStrip discountedAmount={totalDiscounted} />
 
-      {/* Extra Delivery Charge Warning */}
-      {/* {extraDeliveryCharge > 0 && (
-        <div className="bg-orange-50 border border-orange-200 rounded-lg p-12 flex flex-row gap-8 items-center">
-          <span className="font-14">⚠️</span>
-          <span className="font-12">
-            Extra delivery charge of ₹{extraDeliveryCharge} applies for orders
-            below ₹400. Add more books to avoid this charge.
-          </span>
-        </div>
-      )} */}
-
       {/* Book Cards */}
       <div className="grid-2">
         {cartBooks.map((book) => (
@@ -281,11 +235,6 @@ _I want to confirm my order! 📚✨_
               <span className="font-14 green weight-600">{offerLabel}</span>
             )}
           </div>
-          {/* {extraDeliveryCharge > 0 && (
-            <span className="font-10 red">
-              +₹{extraDeliveryCharge} delivery
-            </span>
-          )} */}
 
           <span className="view-bill-text" onClick={() => setShowBill(true)}>
             View bill

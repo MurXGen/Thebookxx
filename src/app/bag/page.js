@@ -19,6 +19,7 @@ export default function BagPage() {
   const [showBill, setShowBill] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState(null);
+  const [isShortening, setIsShortening] = useState(false);
 
   const getAppliedOffer = (amount) => {
     return [...CART_OFFERS].reverse().find((o) => amount >= o.target) || null;
@@ -100,12 +101,46 @@ export default function BagPage() {
   const extraDeliveryCharge = getExtraDeliveryCharge(totalDiscounted);
   const totalWithDelivery = finalPayable + extraDeliveryCharge;
 
-  const generateViewBagLink = () => {
+  // Generate view bag link with user details
+  const generateViewBagLinkWithDetails = (addressData, paymentType) => {
     if (!siteOrigin) return "";
 
     const items = cart.map((item) => `${item.id}:${item.qty}`).join(",");
+    const orderId = `ORD${Date.now()}`;
 
-    return `${siteOrigin}/view-bag?items=${encodeURIComponent(items)}`;
+    const orderDetails = {
+      orderId: orderId,
+      name: addressData.name || "",
+      phone: addressData.phone || "",
+      address: addressData.address || "",
+      area: addressData.area || "",
+      city: addressData.city || "",
+      district: addressData.district || "",
+      state: addressData.state || "",
+      pincode: addressData.pincode || "",
+      paymentMethod: paymentType,
+      quickDelivery: addressData.quickDelivery || false,
+      orderDate: new Date().toISOString(),
+      totalAmount: totalWithDelivery,
+    };
+
+    const encodedDetails = encodeURIComponent(JSON.stringify(orderDetails));
+
+    return `${siteOrigin}/view-bag?items=${encodeURIComponent(items)}&order=${encodedDetails}`;
+  };
+
+  // Shorten URL using TinyURL API
+  const shortenUrl = async (longUrl) => {
+    try {
+      const response = await fetch(
+        `https://tinyurl.com/api-create.php?url=${encodeURIComponent(longUrl)}`,
+      );
+      const shortUrl = await response.text();
+      return shortUrl;
+    } catch (error) {
+      console.error("Error shortening URL:", error);
+      return longUrl;
+    }
   };
 
   const formatBookList = () => {
@@ -116,10 +151,20 @@ export default function BagPage() {
       .join("\n");
   };
 
-  const handleWhatsAppCheckout = (addressData, paymentType = null) => {
+  const handleWhatsAppCheckout = async (addressData, paymentType = null) => {
     const phoneNumber = "917710892108";
-    const viewBagLink = generateViewBagLink();
     const payment = paymentType || paymentMethod || "Not specified";
+
+    // Generate link with user details
+    const viewBagLinkWithDetails = generateViewBagLinkWithDetails(
+      addressData,
+      payment,
+    );
+
+    // Shorten the URL
+    setIsShortening(true);
+    const shortLink = await shortenUrl(viewBagLinkWithDetails);
+    setIsShortening(false);
 
     const bookList = formatBookList();
 
@@ -162,7 +207,7 @@ ${offerDiscount > 0 ? `✨ Offer Applied: ${offerLabel}` : ""}
 ${extraDeliveryCharge > 0 ? `⚠️ Extra delivery charge of ₹100 applied (order below ₹400)` : ""}
 
 🔗 *VIEW FULL BAG*
-${viewBagLink}
+${shortLink}
 
 ━━━━━━━━━━━━━━━━━━━━
 _I want to confirm my order! 📚✨_
@@ -200,6 +245,17 @@ _I want to confirm my order! 📚✨_
 
       <CartOfferStrip discountedAmount={totalDiscounted} />
 
+      {/* Extra Delivery Charge Warning */}
+      {/* {extraDeliveryCharge > 0 && (
+        <div className="bg-orange-50 border border-orange-200 rounded-lg p-12 flex flex-row gap-8 items-center">
+          <span className="font-14">⚠️</span>
+          <span className="font-12">
+            Extra delivery charge of ₹{extraDeliveryCharge} applies for orders
+            below ₹400. Add more books to avoid this charge.
+          </span>
+        </div>
+      )} */}
+
       {/* Book Cards */}
       <div className="grid-2">
         {cartBooks.map((book) => (
@@ -220,16 +276,16 @@ _I want to confirm my order! 📚✨_
                 ₹{totalDiscounted} |
               </span>
             )}
-            {/* {extraDeliveryCharge > 0 && (
-              <span className="font-10 red">
-                +₹{extraDeliveryCharge} delivery
-              </span>
-            )} */}
 
             {appliedOffer && (
               <span className="font-14 green weight-600">{offerLabel}</span>
             )}
           </div>
+          {/* {extraDeliveryCharge > 0 && (
+            <span className="font-10 red">
+              +₹{extraDeliveryCharge} delivery
+            </span>
+          )} */}
 
           <span className="view-bill-text" onClick={() => setShowBill(true)}>
             View bill
@@ -237,7 +293,7 @@ _I want to confirm my order! 📚✨_
         </div>
 
         <SlideConfirm
-          disabled={!canCheckout}
+          disabled={!canCheckout || isShortening}
           onComplete={() => setShowAddressModal(true)}
           resetTrigger={showAddressModal}
         />

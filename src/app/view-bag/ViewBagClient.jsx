@@ -1,8 +1,8 @@
 "use client";
 
 import { books } from "@/utils/book";
-import { CART_OFFERS } from "@/utils/cartOffers";
-import { ArrowLeft } from "lucide-react";
+import { CART_OFFERS, getExtraDeliveryCharge } from "@/utils/cartOffers";
+import { ArrowLeft, CheckCircle, Package, Truck, Clock } from "lucide-react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -11,10 +11,35 @@ export default function ViewBagClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [currentUrl, setCurrentUrl] = useState("");
+  const [orderData, setOrderData] = useState(null);
+  const [orderStatus, setOrderStatus] = useState({
+    isShipped: false,
+    isDelivered: false,
+    advancePaid: false,
+  });
 
   useEffect(() => {
     setCurrentUrl(window.location.href);
-  }, []);
+
+    // Get order data from URL
+    const orderParam = searchParams.get("order");
+    if (orderParam) {
+      try {
+        const decodedOrder = JSON.parse(decodeURIComponent(orderParam));
+        setOrderData(decodedOrder);
+
+        // Load saved status from localStorage
+        const savedStatus = localStorage.getItem(
+          `order_status_${decodedOrder.orderId}`,
+        );
+        if (savedStatus) {
+          setOrderStatus(JSON.parse(savedStatus));
+        }
+      } catch (e) {
+        console.error("Failed to parse order data", e);
+      }
+    }
+  }, [searchParams]);
 
   const itemsParam = searchParams.get("items");
 
@@ -83,7 +108,22 @@ export default function ViewBagClient() {
   }
 
   const finalPayable = totalDiscounted - offerDiscount;
-  const totalSaved = totalOriginal - finalPayable;
+  const extraDeliveryCharge = getExtraDeliveryCharge(totalDiscounted);
+  const totalWithDelivery = finalPayable + extraDeliveryCharge;
+
+  const handleStatusUpdate = (field, value) => {
+    const newStatus = { ...orderStatus, [field]: value };
+    setOrderStatus(newStatus);
+    if (orderData) {
+      localStorage.setItem(
+        `order_status_${orderData.orderId}`,
+        JSON.stringify(newStatus),
+      );
+    }
+  };
+
+  const isCOD = orderData?.paymentMethod === "COD";
+  const isUPI = orderData?.paymentMethod === "UPI";
 
   return (
     <section className="section-1200 flex flex-col gap-24">
@@ -93,8 +133,156 @@ export default function ViewBagClient() {
           onClick={() => router.push("/")}
           className="cursor-pointer"
         />
-        <h2 className="font-16 weight-600">Shared Bag</h2>
+        <h2 className="font-16 weight-600">Order Details</h2>
       </div>
+
+      {/* User Details Section */}
+
+      {orderData && (
+        <div className="flex flex-col gap-16">
+          <h3 className="font-16 weight-600 mb-16">Customer Details</h3>
+
+          <div className="grid-2 gap-12">
+            <div>
+              <span className="font-12 gray-500">Name</span>
+              <p className="font-14 weight-500">
+                {orderData.name || "Not provided"}
+              </p>
+            </div>
+            <div>
+              <span className="font-12 gray-500">Phone</span>
+              <p className="font-14 weight-500">
+                {orderData.phone || "Not provided"}
+              </p>
+            </div>
+            <div className="col-span-2">
+              <span className="font-12 gray-500">Address</span>
+              <p className="font-14">{orderData.address}</p>
+            </div>
+            <div>
+              <span className="font-12 gray-500">City</span>
+              <p className="font-14">{orderData.city}</p>
+            </div>
+            <div>
+              <span className="font-12 gray-500">District</span>
+              <p className="font-14">{orderData.district}</p>
+            </div>
+            <div>
+              <span className="font-12 gray-500">State</span>
+              <p className="font-14">{orderData.state}</p>
+            </div>
+            <div>
+              <span className="font-12 gray-500">Pincode</span>
+              <p className="font-14">{orderData.pincode}</p>
+            </div>
+          </div>
+
+          <div className="dashed-border my-16"></div>
+
+          <div className="flex flex-col">
+            <h3 className="font-16 weight-600 mb-16">Payment & Delivery</h3>
+
+            <div className="flex flex-col gap-12">
+              <div className="flex justify-between items-center">
+                <span className="font-14">Payment Method</span>
+                <span className="font-14 weight-500">
+                  {isCOD
+                    ? "💵 Cash on Delivery"
+                    : isUPI
+                      ? "📱 UPI Payment"
+                      : orderData.paymentMethod}
+                </span>
+              </div>
+
+              {/* COD Section */}
+              {isCOD && (
+                <div className="cod-section">
+                  <label className="flex items-center gap-8 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={orderStatus.advancePaid}
+                      onChange={(e) =>
+                        handleStatusUpdate("advancePaid", e.target.checked)
+                      }
+                      className="cursor-pointer"
+                    />
+                    <span className="font-14">50% Advance Paid</span>
+                  </label>
+                </div>
+              )}
+
+              {/* Shipping Status - Common for both COD and UPI */}
+              <div className="shipping-status-section mt-12">
+                <label className="flex items-center gap-8 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={orderStatus.isShipped}
+                    onChange={(e) =>
+                      handleStatusUpdate("isShipped", e.target.checked)
+                    }
+                    className="cursor-pointer"
+                  />
+                  <span className="font-14">Item Shipped</span>
+                </label>
+
+                {orderStatus.isShipped && (
+                  <label className="flex items-center gap-8 mt-8 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={orderStatus.isDelivered}
+                      onChange={(e) =>
+                        handleStatusUpdate("isDelivered", e.target.checked)
+                      }
+                      className="cursor-pointer"
+                    />
+                    <span className="font-14">Item Delivered</span>
+                  </label>
+                )}
+              </div>
+
+              {/* Status Timeline */}
+              <div className="status-timeline mt-16">
+                <div className="flex items-center gap-8">
+                  {orderStatus.advancePaid || isUPI ? (
+                    <CheckCircle size={16} className="green" />
+                  ) : (
+                    <Clock size={16} className="gray-400" />
+                  )}
+                  <span className="font-12">
+                    Payment{" "}
+                    {orderStatus.advancePaid || isUPI ? "Received" : "Pending"}
+                  </span>
+                </div>
+                <div className="flex items-center gap-8 mt-8">
+                  {orderStatus.isShipped ? (
+                    <Truck size={16} className="green" />
+                  ) : (
+                    <Clock size={16} className="gray-400" />
+                  )}
+                  <span className="font-12">
+                    Order {orderStatus.isShipped ? "Shipped" : "Processing"}
+                  </span>
+                </div>
+                <div className="flex items-center gap-8 mt-8">
+                  {orderStatus.isDelivered ? (
+                    <Package size={16} className="green" />
+                  ) : (
+                    <Clock size={16} className="gray-400" />
+                  )}
+                  <span className="font-12">
+                    Order {orderStatus.isDelivered ? "Delivered" : "In Transit"}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Books Section */}
+      <h3 className="font-16 weight-600 mt-16">
+        Order Items ({cartBooks.length} books)
+      </h3>
 
       <div className="grid-2">
         {cartBooks.map((book) => {
@@ -108,7 +296,6 @@ export default function ViewBagClient() {
               itemScope
               itemType="https://schema.org/Product"
             >
-              {/* Image */}
               <div className="book-image-wrapper">
                 {book.image ? (
                   <Image
@@ -125,16 +312,14 @@ export default function ViewBagClient() {
                 )}
               </div>
 
-              {/* Content */}
               <div className="pad_16 flex flex-col gap-12 book-card">
                 <h3 className="font-14 weight-500 dark-50" itemProp="name">
                   {book.name}
                 </h3>
 
-                <p className="font-12 dark-50">Qty: {book.qty}</p>
+                <p className="font-12 dark-50">Quantity: {book.qty}</p>
 
                 <div className="flex flex-row gap-24 justify-between book-content">
-                  {/* Price */}
                   <div
                     className="flex flex-col width100"
                     itemProp="offers"
@@ -145,14 +330,11 @@ export default function ViewBagClient() {
                       <span className="discounted" itemProp="price">
                         ₹{book.discountedPrice * book.qty}
                       </span>
-
                       <span className="original">
                         ₹{book.originalPrice * book.qty}
                       </span>
                     </div>
-
                     <meta itemProp="priceCurrency" content="INR" />
-
                     {savings > 0 && (
                       <span className="green font-10">You save ₹{savings}</span>
                     )}
@@ -164,6 +346,7 @@ export default function ViewBagClient() {
         })}
       </div>
 
+      {/* Bill Summary */}
       <div className="viewbag-bill flex flex-col gap-8">
         <div className="flex justify-between">
           <span>Subtotal</span>
@@ -182,17 +365,24 @@ export default function ViewBagClient() {
           </div>
         )}
 
+        {extraDeliveryCharge > 0 && (
+          <div className="flex justify-between red">
+            <span>Delivery Charges</span>
+            <span>+ ₹{extraDeliveryCharge}</span>
+          </div>
+        )}
+
         <hr />
 
         <div className="flex justify-between weight-600 font-16">
           <span>Total Payable</span>
-          <span>₹{finalPayable}</span>
+          <span>₹{totalWithDelivery}</span>
         </div>
       </div>
 
       <a
         href={`https://wa.me/917710892108?text=${encodeURIComponent(
-          `Hi 👋 Here is your order total bill amount.\nTotal: ₹${finalPayable}`,
+          `Hi 👋 Here is my order details.\nOrder ID: ${orderData?.orderId || "N/A"}\nTotal: ₹${totalWithDelivery}`,
         )}`}
         target="_blank"
         className="pri-big-btn"

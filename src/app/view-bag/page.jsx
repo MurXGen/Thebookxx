@@ -24,7 +24,7 @@ export const metadata = {
   twitter: {
     card: "summary",
     title: "Order Details | TheBookX",
-    description: "View your complete order details from TheBookX.",
+    description: "View my complete order details.",
   },
   icons: {
     icon: "/view-bag.ico",

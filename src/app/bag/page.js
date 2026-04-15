@@ -162,7 +162,7 @@ export default function BagPage() {
     const message = `
 *CONFIRM MY ORDER*
 
-Hey hi, I want to confirm my order.
+✨👋Hey hi, I want to confirm my order👋✨.
 
 👤 *Name:* ${addressData.name || "Customer"}
 📞 *Phone:* ${addressData.phone || "Not provided"}

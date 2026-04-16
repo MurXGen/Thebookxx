@@ -7,11 +7,6 @@ import {
   MessageCircle,
   Sparkles,
   ArrowRight,
-  ChevronRight,
-  User,
-  Heart,
-  BookOpen,
-  Clock,
   ArrowLeft,
 } from "lucide-react";
 import { books } from "@/utils/book";
@@ -19,39 +14,213 @@ import { useRouter } from "next/navigation";
 import LoadingButton from "./UI/LoadingButton";
 import BookCard from "./BookCard";
 
-// Get unique categories from books
-const getAllCategories = () => {
-  const categories = new Set();
+// Get all unique categories from books with their frequency
+const getAllCategoriesWithFrequency = () => {
+  const categoryMap = new Map();
   books.forEach((book) => {
-    book.catalogue?.forEach((cat) => categories.add(cat));
+    book.catalogue?.forEach((cat) => {
+      categoryMap.set(cat, (categoryMap.get(cat) || 0) + 1);
+    });
   });
-  return Array.from(categories).slice(0, 15);
+
+  // Sort by frequency and return top categories
+  return Array.from(categoryMap.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 20)
+    .map(([category]) => category);
 };
 
-const GENRES = getAllCategories();
+const GENRES = getAllCategoriesWithFrequency();
 
 const AGE_GROUPS = [
-  { id: "0-12", label: "Children (0-12 years)" },
-  { id: "13-17", label: "Teen (13-17 years)" },
-  { id: "18-25", label: "Young Adult (18-25 years)" },
-  { id: "26-35", label: "Adult (26-35 years)" },
-  { id: "36-50", label: "Mature (36-50 years)" },
-  { id: "50+", label: "Senior (50+ years)" },
-  { id: "any", label: "Any age" },
-];
-
-const GENDERS = [
-  { id: "male", label: "Male" },
-  { id: "female", label: "Female" },
-  { id: "prefer-not", label: "Prefer not to say" },
+  {
+    id: "0-12",
+    label: "Children (0-12 years)",
+    keywords: ["children", "kids", "picture", "young"],
+  },
+  {
+    id: "13-17",
+    label: "Teen (13-17 years)",
+    keywords: ["young-adult", "teen", "ya"],
+  },
+  {
+    id: "18-25",
+    label: "Young Adult (18-25 years)",
+    keywords: ["new-adult", "college", "campus"],
+  },
+  {
+    id: "26-35",
+    label: "Adult (26-35 years)",
+    keywords: ["adult", "contemporary", "romance"],
+  },
+  {
+    id: "36-50",
+    label: "Mature (36-50 years)",
+    keywords: ["classic", "literary", "historical"],
+  },
+  {
+    id: "50+",
+    label: "Senior (50+ years)",
+    keywords: ["classic", "biography", "history"],
+  },
+  { id: "any", label: "Any age", keywords: [] },
 ];
 
 const READING_PREFERENCES = [
-  { id: "entertainment", label: "Entertainment & Fun" },
-  { id: "knowledge", label: "Knowledge & Learning" },
-  { id: "self-improvement", label: "Self Improvement" },
-  { id: "career", label: "Career & Business" },
+  {
+    id: "entertainment",
+    label: "Entertainment & Fun",
+    keywords: [
+      "romance",
+      "fiction",
+      "fantasy",
+      "thriller",
+      "mystery",
+      "horror",
+      "adventure",
+      "comedy",
+      "humor",
+    ],
+    weight: 1.5,
+  },
+  {
+    id: "knowledge",
+    label: "Knowledge & Learning",
+    keywords: [
+      "educational",
+      "science",
+      "history",
+      "philosophy",
+      "academic",
+      "reference",
+      "textbook",
+    ],
+    weight: 1.5,
+  },
+  {
+    id: "self-improvement",
+    label: "Self Improvement",
+    keywords: [
+      "self-help",
+      "motivation",
+      "psychology",
+      "health",
+      "wellness",
+      "mindfulness",
+      "productivity",
+    ],
+    weight: 1.5,
+  },
+  {
+    id: "career",
+    label: "Career & Business",
+    keywords: [
+      "business",
+      "entrepreneurship",
+      "finance",
+      "management",
+      "leadership",
+      "marketing",
+      "economics",
+    ],
+    weight: 1.5,
+  },
 ];
+
+// Calculate book score based on multiple factors
+const calculateBookScore = (book, formData) => {
+  let score = 0;
+  let matchDetails = [];
+
+  // 1. Genre matching (40% weight)
+  if (formData.genres.length > 0) {
+    const matchingGenres =
+      book.catalogue?.filter((cat) => formData.genres.includes(cat)).length ||
+      0;
+    const genreScore = (matchingGenres / formData.genres.length) * 40;
+    score += genreScore;
+    if (matchingGenres > 0) {
+      matchDetails.push(`${matchingGenres} genre matches`);
+    }
+  }
+
+  // 2. Reading preference matching (30% weight)
+  if (formData.preference) {
+    const preference = READING_PREFERENCES.find(
+      (p) => p.id === formData.preference,
+    );
+    if (preference) {
+      const matchingKeywords =
+        book.catalogue?.filter((cat) =>
+          preference.keywords.some((keyword) =>
+            cat.toLowerCase().includes(keyword.toLowerCase()),
+          ),
+        ).length || 0;
+
+      const preferenceScore = Math.min((matchingKeywords / 3) * 30, 30);
+      score += preferenceScore;
+      if (matchingKeywords > 0) {
+        matchDetails.push(`${matchingKeywords} preference matches`);
+      }
+    }
+  }
+
+  // 3. Age group matching (15% weight)
+  if (formData.ageGroup && formData.ageGroup !== "any") {
+    const ageGroup = AGE_GROUPS.find((a) => a.id === formData.ageGroup);
+    if (ageGroup && ageGroup.keywords.length > 0) {
+      const ageMatches =
+        book.catalogue?.filter((cat) =>
+          ageGroup.keywords.some((keyword) =>
+            cat.toLowerCase().includes(keyword.toLowerCase()),
+          ),
+        ).length || 0;
+
+      const ageScore = Math.min(ageMatches * 7.5, 15);
+      score += ageScore;
+      if (ageMatches > 0) {
+        matchDetails.push(`age-appropriate`);
+      }
+    } else {
+      // If no age restrictions or "any" selected, give partial score
+      score += 7.5;
+    }
+  } else {
+    score += 7.5; // Partial score for not specifying age
+  }
+
+  // 4. Popularity & trends (10% weight)
+  if (book.catalogue?.includes("bestseller")) {
+    score += 5;
+    matchDetails.push("bestseller");
+  }
+  if (book.catalogue?.includes("trending")) {
+    score += 5;
+    matchDetails.push("trending");
+  }
+
+  // 5. Value for money (5% weight)
+  const discountPercent =
+    ((book.originalPrice - book.discountedPrice) / book.originalPrice) * 100;
+  if (discountPercent > 50) {
+    score += 5;
+    matchDetails.push("great discount");
+  } else if (discountPercent > 30) {
+    score += 3;
+    matchDetails.push("good discount");
+  } else if (book.discountedPrice === 1) {
+    score += 5;
+    matchDetails.push("₹1 special");
+  }
+
+  // 6. Stock availability boost
+  if (book.stock > 0 && book.stock < 10) {
+    score += 2; // Limited stock - urgency
+    matchDetails.push("limited stock");
+  }
+
+  return { score, matchDetails };
+};
 
 export default function RecommendationModal() {
   const [isOpen, setIsOpen] = useState(false);
@@ -63,10 +232,7 @@ export default function RecommendationModal() {
     ageGroup: "",
     preference: "",
   });
-  const [recommendations, setRecommendations] = useState({
-    categories: [],
-    books: [],
-  });
+  const [recommendations, setRecommendations] = useState([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -86,10 +252,27 @@ export default function RecommendationModal() {
   };
 
   const handleWhatsAppRedirect = () => {
+    const preferences = [];
+    if (formData.genres.length > 0) {
+      preferences.push(`genres: ${formData.genres.join(", ")}`);
+    }
+    if (formData.ageGroup && formData.ageGroup !== "any") {
+      const ageLabel = AGE_GROUPS.find(
+        (a) => a.id === formData.ageGroup,
+      )?.label;
+      preferences.push(`age: ${ageLabel}`);
+    }
+    if (formData.preference) {
+      const prefLabel = READING_PREFERENCES.find(
+        (p) => p.id === formData.preference,
+      )?.label;
+      preferences.push(`goal: ${prefLabel}`);
+    }
+
     const message = encodeURIComponent(
-      "Hi! I'm looking for book recommendations. Can you help me?",
+      `Hi! I'm looking for book recommendations. My preferences: ${preferences.join(", ")}. Can you help me?`,
     );
-    window.open(`https://wa.me/91771089108?text=${message}`, "_blank");
+    window.open(`https://wa.me/917710892108?text=${message}`, "_blank");
     handleClose();
   };
 
@@ -106,91 +289,35 @@ export default function RecommendationModal() {
     }));
   };
 
-  // Improved recommendation algorithm
   const generateRecommendations = () => {
     setIsLoading(true);
 
     setTimeout(() => {
-      let filteredBooks = [...books];
-
-      // 1. Filter by selected genres
-      if (formData.genres.length > 0) {
-        filteredBooks = filteredBooks.filter((book) =>
-          book.catalogue?.some((cat) => formData.genres.includes(cat)),
-        );
-      }
-
-      // 2. Score each book based on multiple factors
-      const scoredBooks = filteredBooks.map((book) => {
-        let score = 0;
-
-        // Genre match score (multiple genres = higher score)
-        if (formData.genres.length > 0) {
-          const matchingGenres =
-            book.catalogue?.filter((cat) => formData.genres.includes(cat))
-              .length || 0;
-          score += (matchingGenres / formData.genres.length) * 40;
-        }
-
-        // Reading preference matching
-        if (formData.preference) {
-          // You can add specific logic based on book metadata
-          // For example, if preference is "entertainment", give higher score to fiction
-          // If preference is "self-improvement", give higher score to self-help books
-          const isFiction = book.catalogue?.some((cat) =>
-            [
-              "fiction",
-              "novel",
-              "story",
-              "romance",
-              "thriller",
-              "mystery",
-            ].includes(cat.toLowerCase()),
-          );
-          const isSelfHelp = book.catalogue?.some((cat) =>
-            ["self-help", "motivation", "business", "psychology"].includes(
-              cat.toLowerCase(),
-            ),
-          );
-
-          if (formData.preference === "entertainment" && isFiction) score += 30;
-          if (formData.preference === "self-improvement" && isSelfHelp)
-            score += 30;
-          if (formData.preference === "knowledge" && !isFiction) score += 30;
-          if (formData.preference === "career" && isSelfHelp) score += 30;
-        }
-
-        // Price factor (give preference to books with good discounts)
-        const discountPercent =
-          ((book.originalPrice - book.discountedPrice) / book.originalPrice) *
-          100;
-        if (discountPercent > 30) score += 10;
-        if (book.discountedPrice === 1) score += 5;
-
-        // Stock availability
-        if (book.stock > 0 && book.stock < 50) score += 5; // Limited stock - urgency
-
-        // Randomization factor to avoid always showing same books (±5 points)
-        score += Math.random() * 10;
-
-        return { ...book, score };
+      // Calculate scores for all books
+      const scoredBooks = books.map((book) => {
+        const { score, matchDetails } = calculateBookScore(book, formData);
+        return { ...book, score, matchDetails };
       });
 
       // Sort by score (highest first)
       scoredBooks.sort((a, b) => b.score - a.score);
 
-      // Get top 8 books
-      const recommendedBooks = scoredBooks.slice(0, 8);
+      // Get top 30 books (or all if less than 30)
+      const topRecommendations = scoredBooks.slice(0, 30);
 
-      // Get unique categories from recommended books
-      const recommendedCategories = [
-        ...new Set(recommendedBooks.flatMap((book) => book.catalogue || [])),
-      ].slice(0, 4);
+      // Add variety by including some books from different genres if needed
+      if (
+        topRecommendations.length < 30 &&
+        books.length > topRecommendations.length
+      ) {
+        const remainingBooks = scoredBooks.slice(30);
+        const additionalBooks = remainingBooks
+          .filter((book) => book.score > 10) // Only include books with at least some relevance
+          .slice(0, 30 - topRecommendations.length);
+        topRecommendations.push(...additionalBooks);
+      }
 
-      setRecommendations({
-        categories: recommendedCategories,
-        books: recommendedBooks,
-      });
+      setRecommendations(topRecommendations);
       setStep(4);
       setIsLoading(false);
     }, 1500);
@@ -198,25 +325,6 @@ export default function RecommendationModal() {
 
   const handleSubmit = () => {
     generateRecommendations();
-  };
-
-  const handleCategoryClick = (category) => {
-    handleClose();
-    router.push(`/category/${category.toLowerCase().replace(/\s+/g, "-")}`);
-  };
-
-  const handleBookClick = (bookId, bookName) => {
-    handleClose();
-    // Add to recently viewed
-    const recentlyViewed = JSON.parse(
-      localStorage.getItem("recentlyViewed") || "[]",
-    );
-    const filtered = recentlyViewed.filter((id) => id !== bookId);
-    const updated = [bookId, ...filtered].slice(0, 10);
-    localStorage.setItem("recentlyViewed", JSON.stringify(updated));
-    window.dispatchEvent(new CustomEvent("bookViewed", { detail: { bookId } }));
-
-    router.push(`/books/${bookName.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`);
   };
 
   return (
@@ -312,13 +420,14 @@ export default function RecommendationModal() {
 
                     <div
                       className="chips-container flex flex-row flex-wrap gap-8"
-                      style={{ maxHeight: "200px", overflowY: "auto" }}
+                      style={{ maxHeight: "250px", overflowY: "auto" }}
                     >
                       {GENRES.map((genre) => (
                         <button
                           key={genre}
                           className={`sec-mid-btn ${formData.genres.includes(genre) ? "active" : ""}`}
                           onClick={() => toggleGenre(genre)}
+                          style={{ fontSize: "12px" }}
                         >
                           {genre}
                         </button>
@@ -336,27 +445,9 @@ export default function RecommendationModal() {
                           key={age.id}
                           className={`sec-mid-btn ${formData.ageGroup === age.id ? "active" : ""}`}
                           onClick={() => updateFormData("ageGroup", age.id)}
-                          style={{ padding: "8px 16px" }}
+                          style={{ padding: "8px 16px", fontSize: "12px" }}
                         >
                           {age.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="font-16 weight-600 mb-8">
-                      Gender (Optional)
-                    </h3>
-                    <div className="flex flex-wrap gap-8">
-                      {GENDERS.map((gender) => (
-                        <button
-                          key={gender.id}
-                          className={`sec-mid-btn ${formData.gender === gender.id ? "active" : ""}`}
-                          onClick={() => updateFormData("gender", gender.id)}
-                          style={{ padding: "8px 16px" }}
-                        >
-                          {gender.label}
                         </button>
                       ))}
                     </div>
@@ -440,7 +531,7 @@ export default function RecommendationModal() {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   className="flex flex-col gap-16"
-                  style={{ maxHeight: "70vh", overflowY: "auto" }}
+                  style={{ maxHeight: "75vh", overflowY: "auto" }}
                 >
                   {isLoading ? (
                     <div className="text-center py-32">
@@ -451,35 +542,53 @@ export default function RecommendationModal() {
                     </div>
                   ) : (
                     <>
-                      {recommendations.books?.length > 0 && (
+                      {recommendations.length > 0 && (
                         <div>
-                          <h3 className="font-16 weight-600 mb-12">
-                            Books You Might Love
-                          </h3>
+                          <div className="text-center mb-16">
+                            <div
+                              className="price-drop-badge"
+                              style={{
+                                width: "auto",
+                                padding: "8px 16px",
+                                margin: "0 auto",
+                                display: "inline-flex",
+                              }}
+                            >
+                              <Sparkles size={16} />
+                              <span className="weight-600">
+                                Recommended just for you ✨
+                              </span>
+                            </div>
+                            <p className="font-12 dark-50 mt-8">
+                              Found {recommendations.length} books matching your
+                              preferences
+                            </p>
+                          </div>
+
                           <div className="grid-2 margin-tp-12px">
-                            {recommendations.books.map((book) => (
+                            {recommendations.map((book) => (
                               <BookCard key={book.id} book={book} />
                             ))}
                           </div>
-
-                          {recommendations.books.length === 0 && (
-                            <div className="text-center py-32">
-                              <p className="font-14 dark-50">
-                                No books found matching your preferences. Try
-                                different genres!
-                              </p>
-                              <button
-                                className="sec-mid-btn mt-16"
-                                onClick={() => setStep(2)}
-                              >
-                                Go back and select different genres
-                              </button>
-                            </div>
-                          )}
                         </div>
                       )}
 
-                      {recommendations.books.length > 0 && (
+                      {recommendations.length === 0 && (
+                        <div className="text-center py-32">
+                          <p className="font-14 dark-50">
+                            No books found matching your preferences. Try
+                            different genres!
+                          </p>
+                          <button
+                            className="sec-mid-btn mt-16"
+                            onClick={() => setStep(2)}
+                          >
+                            Go back and select different genres
+                          </button>
+                        </div>
+                      )}
+
+                      {recommendations.length > 0 && (
                         <button
                           className="pri-big-btn flex flex-row gap-4 items-center justify-center width100"
                           onClick={handleClose}

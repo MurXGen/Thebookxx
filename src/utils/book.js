@@ -2830,7 +2830,7 @@ export const books = [
   {
     id: "bk-186",
     name: "Wise and Otherwise: A Salute to Life",
-    image: bookImages["wise-and-otherwise"],
+    image: bookImages["wise-and-otherwise-a-salute-to-life"],
     description:
       "Discover 51 eye-opening stories about human nature from India's most beloved author, Sudha Murthy, available at TheBookX.in. This bestselling non-fiction collection explores the fine line between wisdom and foolishness in everyday life. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now—books starting at just ₹1 for a limited offer.",
     author: "Sudha Murthy",
@@ -3055,7 +3055,7 @@ export const books = [
   {
     id: "bk-201",
     name: "The Gopi Diaries (Series)",
-    image: bookImages["the-gopi-diaries"],
+    image: bookImages["the-gopi-diaries-series"],
     description:
       "Fall in love with a mischievous dog in Sudha Murthy's 'The Gopi Diaries' series at TheBookX.in. This trending children's fiction is told from a pet's perspective, celebrating the bond between humans and animals through heartwarming adventures. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Sudha Murthy",
@@ -3099,7 +3099,7 @@ export const books = [
   },
   {
     id: "bk-204",
-    name: "The Magic Drum and Other Favourite Stories",
+    name: "The Magic Drum",
     image: bookImages["the-magic-drum"],
     description:
       "Discover timeless folk tales with Sudha Murthy's 'The Magic Drum and Other Favourite Stories' from TheBookX.in. This bestselling children's collection brings ancient Indian folk tales to life with humor, wisdom, and unforgettable characters. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
@@ -3250,7 +3250,7 @@ export const books = [
   {
     id: "bk-214",
     name: "The Diary of a Young Girl",
-    image: bookImages["the-diary-of-a-young-girl"],
+    image: bookImages["the-diary-of-a-young-girl-anne-frank"],
     description:
       "Step into history with Anne Frank's timeless 'The Diary of a Young Girl' at TheBookX.in. This powerful autobiography captures the raw emotions, hopes, and fears of a Jewish teenager hiding from the Nazis during World War II, becoming one of the most poignant non-fiction works ever written. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Your trusted destination for classics—books starting at just ₹1.",
     author: "Anne Frank",
@@ -3265,7 +3265,7 @@ export const books = [
   {
     id: "bk-215",
     name: "Autobiography of a Yogi",
-    image: bookImages["autobiography-of-a-yogi"],
+    image: bookImages["autobiography-of-a-yogi-paramahansa-yogananda"],
     description:
       "Embark on a spiritual journey with Paramahansa Yogananda's 'Autobiography of a Yogi' from TheBookX.in. This beloved non-fiction classic introduces millions to the science of meditation, Eastern spirituality, and the fascinating lives of modern saints. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1—grab your copy today.",
     author: "Paramahansa Yogananda",
@@ -3280,7 +3280,7 @@ export const books = [
   {
     id: "bk-216",
     name: "Becoming",
-    image: bookImages["becoming"],
+    image: bookImages["becoming-michelle-obama"],
     description:
       "Be inspired by former First Lady Michelle Obama's intimate memoir 'Becoming' at TheBookX.in. This bestselling autobiography chronicles her journey from the South Side of Chicago to the White House, offering a deeply personal look at her triumphs, struggles, and enduring hope. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Trending worldwide—books starting at just ₹1.",
     author: "Michelle Obama",
@@ -3295,7 +3295,7 @@ export const books = [
   {
     id: "bk-217",
     name: "Shoe Dog",
-    image: bookImages["shoe-dog"],
+    image: bookImages["shoe-dog-phil-knight"],
     description:
       "Uncover the story behind Nike's empire with Phil Knight's 'Shoe Dog' from TheBookX.in. This gripping business autobiography reveals the risks, failures, and relentless determination that transformed a crazy idea into a global brand. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now—books starting at just ₹1 for a limited period.",
     author: "Phil Knight",
@@ -3310,7 +3310,7 @@ export const books = [
   {
     id: "bk-218",
     name: "I Am Malala",
-    image: bookImages["i-am-malala"],
+    image: bookImages["i-am-malala-malala-yousafzai"],
     description:
       "Witness the courage of the youngest Nobel laureate with Malala Yousafzai's 'I Am Malala' at TheBookX.in. This powerful autobiography tells the story of a girl who stood up for education against the Taliban, surviving an assassination attempt to become a global symbol of resilience. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1—order now.",
     author: "Malala Yousafzai",
@@ -3325,7 +3325,7 @@ export const books = [
   {
     id: "bk-219",
     name: "When Breath Becomes Air",
-    image: bookImages["when-breath-becomes-air"],
+    image: bookImages["when-breath-becomes-air-paul-kalanithi"],
     description:
       "Experience the profound journey of a neurosurgeon facing mortality with Paul Kalanithi's 'When Breath Becomes Air' from TheBookX.in. This heartbreaking yet uplifting memoir explores what makes life meaningful when time is running out, becoming a modern non-fiction classic. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Limited offer—books starting at just ₹1.",
     author: "Paul Kalanithi",
@@ -3340,7 +3340,7 @@ export const books = [
   {
     id: "bk-220",
     name: "Steve Jobs",
-    image: bookImages["steve-jobs"],
+    image: bookImages["steve-jobs-walter-isaacson"],
     description:
       "Explore the genius and madness of Apple's visionary with Walter Isaacson's 'Steve Jobs' at TheBookX.in. This definitive biography draws from exclusive interviews to reveal the real Steve Jobs—his perfectionism, creativity, and relentless drive that changed technology forever. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Walter Isaacson",
@@ -3355,7 +3355,7 @@ export const books = [
   {
     id: "bk-221",
     name: "Elon Musk",
-    image: bookImages["elon-musk"],
+    image: bookImages["elon-musk-walter-isaacson"],
     description:
       "Dive into the mind of the world's most controversial entrepreneur with Walter Isaacson's 'Elon Musk' from TheBookX.in. This explosive biography reveals the hidden story behind Tesla, SpaceX, and Twitter/X, capturing Musk's complex personality and audacious ambitions. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Trending now—books starting at just ₹1.",
     author: "Walter Isaacson",
@@ -3370,7 +3370,7 @@ export const books = [
   {
     id: "bk-222",
     name: "Mother Mary Comes to Me",
-    image: bookImages["mother-mary-comes-to-me"],
+    image: bookImages["mother-mary-comes-to-me-arundhati-roy"],
     description:
       "Discover Booker Prize winner Arundhati Roy's deeply personal memoir 'Mother Mary Comes to Me' at TheBookX.in. This literary non-fiction work weaves together memory, grief, and love as she reflects on her mother's life and their complicated relationship. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1—grab your copy today.",
     author: "Arundhati Roy",
@@ -3411,36 +3411,6 @@ export const books = [
     catalogue: ["thriller", "fiction", "trending", "adult", "medical"],
     originalPrice: calculateOriginalPrice(129),
     discountedPrice: 129,
-  },
-  {
-    id: "bk-225",
-    name: "The Inmate",
-    image: bookImages["the-inmate"],
-    description:
-      "Question everyone you trust with Freida McFadden's bestselling thriller 'The Inmate' from TheBookX.in. A gripping psychological suspense about a nurse returning to work at a maximum-security prison where her ex-boyfriend—a convicted killer—is held. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1—order now.",
-    author: "Freida McFadden",
-    pages: "336",
-    language: "English",
-    size: "Paperback",
-    stock: 20,
-    catalogue: ["thriller", "fiction", "bestseller", "adult", "psychological"],
-    originalPrice: calculateOriginalPrice(139),
-    discountedPrice: 139,
-  },
-  {
-    id: "bk-226",
-    name: "The Housemaid",
-    image: bookImages["the-housemaid"],
-    description:
-      "Discover the global phenomenon 'The Housemaid' by Freida McFadden at TheBookX.in. This bestselling thriller follows a young woman who takes a job in a wealthy family's home—only to realize she's trapped in a nightmare of secrets, lies, and deadly obsession. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now—books starting at just ₹1.",
-    author: "Freida McFadden",
-    pages: "352",
-    language: "English",
-    size: "Paperback",
-    stock: 20,
-    catalogue: ["thriller", "fiction", "bestseller", "adult", "trending"],
-    originalPrice: calculateOriginalPrice(139),
-    discountedPrice: 139,
   },
   {
     id: "bk-227",
@@ -3681,21 +3651,6 @@ export const books = [
     catalogue: ["fiction", "romance", "adult", "trending", "contemporary"],
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
-  },
-  {
-    id: "bk-243",
-    name: "The Hard Thing About Hard Things",
-    image: bookImages["the-hard-thing-about-hard-things"],
-    description:
-      "Master the art of CEO leadership with Ben Horowitz's 'The Hard Thing About Hard Things' at TheBookX.in. This bestselling business non-fiction offers raw, unfiltered advice on building and running a startup when there are no easy answers. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now—books starting at just ₹1 for a limited offer.",
-    author: "Ben Horowitz",
-    pages: "304",
-    language: "English",
-    size: "Paperback",
-    stock: 20,
-    catalogue: ["non-fiction", "business", "bestseller", "adult", "leadership"],
-    originalPrice: calculateOriginalPrice(179),
-    discountedPrice: 179,
   },
   {
     id: "bk-244",
@@ -4165,7 +4120,7 @@ export const books = [
   {
     id: "bk-273",
     name: "Two Can Play",
-    image: bookImages["two-can-play"],
+    image: bookImages["two-can-play-by-ali-hazelwood"],
     description:
       "Enjoy Ali Hazelwood's witty romance 'Two Can Play' at TheBookX.in. A trending contemporary love story about rivals who discover that the line between hate and love is dangerously thin—and oh so fun to cross. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now—books starting at just ₹1 for a limited offer.",
     author: "Ali Hazelwood",
@@ -4195,7 +4150,7 @@ export const books = [
   {
     id: "bk-275",
     name: "The Intelligent Investor",
-    image: bookImages["the-intelligent-investor"],
+    image: bookImages["the-intelligent-investor-finance-classic"],
     description:
       "Learn value investing from the master with Benjamin Graham's 'The Intelligent Investor' at TheBookX.in. This classic finance non-fiction has guided generations of investors with its timeless principles of risk management, margin of safety, and long-term wealth building. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Benjamin Graham",

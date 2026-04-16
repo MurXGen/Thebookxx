@@ -545,20 +545,6 @@ export default function RecommendationModal() {
                       {recommendations.length > 0 && (
                         <div>
                           <div className="text-center mb-16">
-                            <div
-                              className="price-drop-badge"
-                              style={{
-                                width: "auto",
-                                padding: "8px 16px",
-                                margin: "0 auto",
-                                display: "inline-flex",
-                              }}
-                            >
-                              <Sparkles size={16} />
-                              <span className="weight-600">
-                                Recommended just for you ✨
-                              </span>
-                            </div>
                             <p className="font-12 dark-50 mt-8">
                               Found {recommendations.length} books matching your
                               preferences

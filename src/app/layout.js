@@ -9,9 +9,11 @@ import RegisterSW from "@/components/RegisterSW";
 /* Font */
 const poppins = Poppins({
   subsets: ["latin"],
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  weight: ["400", "500", "600", "700"], // Only load weights you actually use
   variable: "--font-poppins",
-  display: "swap",
+  display: "swap", // Critical - prevents FOIT
+  preload: true, // Preload font for faster rendering
+  fallback: ["system-ui", "Arial", "sans-serif"],
 });
 
 /* SEO Metadata - Essential Only */
@@ -100,21 +102,30 @@ export default function RootLayout({ children }) {
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="TheBookX" />
-
-        {/* Google Analytics */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link rel="preload" as="image" href="/favicon.ico" />
         <Script
-          strategy="afterInteractive"
+          strategy="lazyOnload" // Changed from afterInteractive to lazyOnload
           src={`https://www.googletagmanager.com/gtag/js?id=G-VZX7GSTR9Z`}
         />
-        <Script strategy="afterInteractive" id="ga-init">
+        <Script
+          id="ga-init"
+          strategy="lazyOnload" // Changed from afterInteractive to lazyOnload
+        >
           {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-VZX7GSTR9Z', {
-              page_path: window.location.pathname,
-            });
-          `}
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-VZX7GSTR9Z', {
+      page_path: window.location.pathname,
+      send_page_view: false // Defer page view until page is interactive
+    });
+  `}
         </Script>
       </head>
       <body className={poppins.variable}>

@@ -6,7 +6,7 @@ import { books } from "@/utils/book";
 import { Book, Minus, Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import CartConfetti from "./UI/Confetti";
 import LoadingButton from "./UI/LoadingButton";
 import WishlistButton from "./UI/WishListButton";
@@ -26,6 +26,34 @@ function slugify(text) {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 }
+
+const addToRecentlyViewed = (bookId) => {
+  try {
+    const recentlyViewed = JSON.parse(
+      localStorage.getItem("recentlyViewed") || "[]",
+    );
+
+    // Remove if already exists
+    const filtered = recentlyViewed.filter((id) => id !== bookId);
+
+    // Add to beginning
+    const updated = [bookId, ...filtered];
+
+    // Keep only last 10 items
+    const trimmed = updated.slice(0, 10);
+
+    localStorage.setItem("recentlyViewed", JSON.stringify(trimmed));
+
+    // Dispatch custom event to notify other components
+    window.dispatchEvent(
+      new CustomEvent("bookViewed", {
+        detail: { bookId },
+      }),
+    );
+  } catch (error) {
+    console.error("Error updating recently viewed:", error);
+  }
+};
 
 export default function BookCard({ book }) {
   const [confetti, setConfetti] = useState(false);
@@ -53,6 +81,11 @@ export default function BookCard({ book }) {
     ? `/category/${slugify(primaryCategory)}`
     : "";
 
+  // Handle book click to track recently viewed
+  const handleBookClick = () => {
+    addToRecentlyViewed(book.id);
+  };
+
   return (
     <article
       className="trending-card"
@@ -79,7 +112,11 @@ export default function BookCard({ book }) {
         {!imageLoaded && <div className="image-skeleton" />}
 
         {book.image ? (
-          <Link href={bookUrl} aria-label={`View details of ${book.name}`}>
+          <Link
+            href={bookUrl}
+            onClick={handleBookClick}
+            aria-label={`View details of ${book.name}`}
+          >
             <Image
               src={book.image}
               alt={`${book.name} book cover - Buy online at TheBookX`}
@@ -104,22 +141,14 @@ export default function BookCard({ book }) {
       {/* Content */}
       <div className="flex flex-col gap-12 book-card margin-tp-24px">
         <h3 className="font-16 weight-500" itemProp="name">
-          <Link href={bookUrl} className="book-title-link" itemProp="url">
+          <Link
+            href={bookUrl}
+            onClick={handleBookClick}
+            className="book-title-link"
+            itemProp="url"
+          >
             {book.name}
           </Link>
-
-          {/* Author Display */}
-          {/* {book.author && (
-            <div
-              className="font-10 dark-50 mt-4"
-              itemProp="author"
-              itemScope
-              itemType="https://schema.org/Person"
-            >
-              <span>By </span>
-              <span itemProp="name">{book.author}</span>
-            </div>
-          )} */}
 
           {/* Category Link - Internal Backlink for SEO */}
           {primaryCategory && (

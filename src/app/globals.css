@@ -470,9 +470,11 @@ button:hover {
 
 @media (max-width: 450px) {
   .book-image-wrapper {
-    height: 170px !important; /* fixed height */
+    position: relative; /* ✅ REQUIRED for Image fill */
+    height: 170px !important;
     background: #ffffff;
     border-radius: var(--px-8);
+    overflow: hidden; /* ✅ prevents image overflow */
   }
 
   .trending-card {

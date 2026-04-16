@@ -914,6 +914,11 @@ button:hover {
   font-family: "Poppins";
 }
 
+.sec-mid-btn.active {
+  background: var(--dark);
+  color: var(--white-100);
+}
+
 .cart-bar {
   position: fixed;
   width: 100%;
@@ -1895,6 +1900,10 @@ button:disabled {
   padding: 16px;
   border-radius: 16px 16px 0 0;
   font-size: var(--px-12);
+}
+
+.recommendation-modal {
+  height: 700px;
 }
 
 .bill-header {

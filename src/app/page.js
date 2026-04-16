@@ -8,6 +8,7 @@ import OffersGift from "@/components/OffersGift";
 import Offers from "@/components/OffersGift";
 import OneRupeeDeals from "@/components/OneRupeeDeals";
 import RecentlyViewed from "@/components/RecentlyViewed";
+import RecommendationModal from "@/components/RecommendationModal";
 import TrendingBooks from "@/components/TrendingBooks";
 import LabelDivider from "@/components/UI/LineDivider";
 import UrgencyOffer from "@/components/UrgencyOffer";
@@ -18,7 +19,7 @@ export default function HomePage() {
     <>
       <Navbar />
       <BestsellerStage />
-
+      <RecommendationModal />
       {/* <OffersGift /> */}
       <CatalogueSection />
       <RecentlyViewed />

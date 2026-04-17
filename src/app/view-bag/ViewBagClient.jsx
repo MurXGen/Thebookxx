@@ -2,7 +2,17 @@
 
 import { books } from "@/utils/book";
 import { CART_OFFERS, getExtraDeliveryCharge } from "@/utils/cartOffers";
-import { ArrowLeft, CheckCircle, Package, Truck, Clock } from "lucide-react";
+import {
+  ArrowLeft,
+  CheckCircle,
+  Package,
+  Truck,
+  Clock,
+  Bell,
+  Send,
+  MapPin,
+  Calendar,
+} from "lucide-react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -17,6 +27,9 @@ export default function ViewBagClient() {
     isDelivered: false,
     advancePaid: false,
   });
+  const [trackingId, setTrackingId] = useState("");
+  const [showTrackingInput, setShowTrackingInput] = useState(false);
+  const [savedTrackingId, setSavedTrackingId] = useState("");
 
   useEffect(() => {
     setCurrentUrl(window.location.href);
@@ -34,6 +47,14 @@ export default function ViewBagClient() {
         );
         if (savedStatus) {
           setOrderStatus(JSON.parse(savedStatus));
+        }
+
+        // Load saved tracking ID
+        const savedTracking = localStorage.getItem(
+          `tracking_id_${decodedOrder.orderId}`,
+        );
+        if (savedTracking) {
+          setSavedTrackingId(savedTracking);
         }
       } catch (e) {
         console.error("Failed to parse order data", e);
@@ -120,6 +141,47 @@ export default function ViewBagClient() {
         JSON.stringify(newStatus),
       );
     }
+  };
+
+  const handleSaveTrackingId = () => {
+    if (trackingId.trim()) {
+      setSavedTrackingId(trackingId);
+      localStorage.setItem(`tracking_id_${orderData?.orderId}`, trackingId);
+      setShowTrackingInput(false);
+      setTrackingId("");
+    }
+  };
+
+  const handleRemindCustomer = () => {
+    const customerPhone = orderData?.phone;
+    if (!customerPhone) return;
+
+    const message = encodeURIComponent(
+      `📚 *Order Update from TheBookX*\n\n` +
+        `Dear ${orderData?.name || "Customer"},\n\n` +
+        `Your order #${orderData?.orderId} has been shipped and will be delivered in 3-5 business days.\n\n` +
+        `📦 Tracking ID: ${savedTrackingId || "Not available"}\n\n` +
+        `Thank you for shopping with TheBookX! Happy reading! 📖✨\n\n` +
+        `For any queries, feel free to reach out to us.`,
+    );
+
+    window.open(`https://wa.me/${customerPhone}?text=${message}`, "_blank");
+  };
+
+  const handleRemindShipping = () => {
+    const customerPhone = orderData?.phone;
+    if (!customerPhone) return;
+
+    const message = encodeURIComponent(
+      `📚 *Order Update from TheBookX*\n\n` +
+        `Dear ${orderData?.name || "Customer"},\n\n` +
+        `Your order #${orderData?.orderId} is confirmed and will be shipped within 1-2 business days.\n\n` +
+        `You will receive a tracking ID once shipped.\n\n` +
+        `Thank you for your patience! 📖✨\n\n` +
+        `For any queries, feel free to reach out to us.`,
+    );
+
+    window.open(`https://wa.me/${customerPhone}?text=${message}`, "_blank");
   };
 
   const isCOD = orderData?.paymentMethod === "COD";
@@ -238,6 +300,81 @@ export default function ViewBagClient() {
                     <span className="font-14">Item Delivered</span>
                   </label>
                 )}
+              </div>
+
+              {/* Tracking ID Section */}
+              {orderStatus.isShipped && (
+                <div className="tracking-section mt-16">
+                  <div className="flex flex-col gap-12">
+                    <div className="flex justify-between items-center">
+                      <span className="font-14 weight-500">Tracking ID</span>
+                      {!savedTrackingId && (
+                        <button
+                          onClick={() =>
+                            setShowTrackingInput(!showTrackingInput)
+                          }
+                          className="sec-mid-btn font-12"
+                          style={{ padding: "4px 12px" }}
+                        >
+                          Add Tracking ID
+                        </button>
+                      )}
+                    </div>
+
+                    {savedTrackingId ? (
+                      <div className="flex items-center gap-8 p-12 bg-gray-50 rounded-8">
+                        <MapPin size={16} className="green" />
+                        <span className="font-14">{savedTrackingId}</span>
+                      </div>
+                    ) : showTrackingInput ? (
+                      <div className="flex flex-col gap-8">
+                        <div className="flex gap-8">
+                          <input
+                            type="text"
+                            className="sec-mid-btn flex-grow"
+                            placeholder="Enter tracking ID (e.g., SBK123456789)"
+                            value={trackingId}
+                            onChange={(e) => setTrackingId(e.target.value)}
+                            style={{ flex: 1 }}
+                          />
+                          <button
+                            onClick={handleSaveTrackingId}
+                            className="pri-big-btn"
+                            style={{ padding: "8px 16px" }}
+                            disabled={!trackingId.trim()}
+                          >
+                            Save
+                          </button>
+                        </div>
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+              )}
+
+              {/* Reminder Buttons */}
+              <div className="reminder-buttons-section mt-16">
+                {orderStatus.isShipped && savedTrackingId ? (
+                  <button
+                    onClick={handleRemindCustomer}
+                    className="pri-big-btn width100 flex items-center justify-center gap-8"
+                    style={{ background: "#25D366" }}
+                  >
+                    <Bell size={16} />
+                    Remind Customer (Order Shipped)
+                    <Send size={14} />
+                  </button>
+                ) : !orderStatus.isShipped ? (
+                  <button
+                    onClick={handleRemindShipping}
+                    className="pri-big-btn width100 flex items-center justify-center gap-8"
+                    style={{ background: "#FF9800" }}
+                  >
+                    <Calendar size={16} />
+                    Remind Customer (Shipping in 1-2 days)
+                    <Send size={14} />
+                  </button>
+                ) : null}
               </div>
 
               {/* Status Timeline */}

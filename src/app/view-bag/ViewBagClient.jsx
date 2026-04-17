@@ -12,6 +12,8 @@ import {
   Send,
   MapPin,
   Calendar,
+  Plus,
+  X,
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -30,6 +32,9 @@ export default function ViewBagClient() {
   const [trackingId, setTrackingId] = useState("");
   const [showTrackingInput, setShowTrackingInput] = useState(false);
   const [savedTrackingId, setSavedTrackingId] = useState("");
+  const [shipmentNumber, setShipmentNumber] = useState("");
+  const [showShipmentInput, setShowShipmentInput] = useState(false);
+  const [savedShipmentNumber, setSavedShipmentNumber] = useState("");
 
   useEffect(() => {
     setCurrentUrl(window.location.href);
@@ -55,6 +60,14 @@ export default function ViewBagClient() {
         );
         if (savedTracking) {
           setSavedTrackingId(savedTracking);
+        }
+
+        // Load saved shipment number
+        const savedShipment = localStorage.getItem(
+          `shipment_number_${decodedOrder.orderId}`,
+        );
+        if (savedShipment) {
+          setSavedShipmentNumber(savedShipment);
         }
       } catch (e) {
         console.error("Failed to parse order data", e);
@@ -152,10 +165,51 @@ export default function ViewBagClient() {
     }
   };
 
-  const handleRemindCustomer = () => {
-    const customerPhone = orderData?.phone;
-    if (!customerPhone) return;
+  const handleSaveShipmentNumber = () => {
+    if (shipmentNumber.trim()) {
+      setSavedShipmentNumber(shipmentNumber);
+      localStorage.setItem(
+        `shipment_number_${orderData?.orderId}`,
+        shipmentNumber,
+      );
+      setShowShipmentInput(false);
+      setShipmentNumber("");
+    }
+  };
 
+  // Get the primary WhatsApp number (customer's number)
+  const getPrimaryWhatsAppNumber = () => {
+    return orderData?.phone;
+  };
+
+  // Get the secondary WhatsApp number (shipment number if exists)
+  const getSecondaryWhatsAppNumber = () => {
+    return savedShipmentNumber || null;
+  };
+
+  // Send message to single or multiple numbers
+  const sendWhatsAppMessage = (message, sendToBoth = false) => {
+    const primaryNumber = getPrimaryWhatsAppNumber();
+    const secondaryNumber = getSecondaryWhatsAppNumber();
+
+    if (sendToBoth && secondaryNumber) {
+      // Send to both numbers
+      window.open(`https://wa.me/${primaryNumber}?text=${message}`, "_blank");
+      setTimeout(() => {
+        window.open(
+          `https://wa.me/${secondaryNumber}?text=${message}`,
+          "_blank",
+        );
+      }, 500);
+    } else {
+      // Send to primary number only
+      if (primaryNumber) {
+        window.open(`https://wa.me/${primaryNumber}?text=${message}`, "_blank");
+      }
+    }
+  };
+
+  const handleRemindCustomer = (sendToBoth = false) => {
     const message = encodeURIComponent(
       `📚 *Order Update from TheBookX*\n\n` +
         `Dear ${orderData?.name || "Customer"},\n\n` +
@@ -165,13 +219,10 @@ export default function ViewBagClient() {
         `For any queries, feel free to reach out to us.`,
     );
 
-    window.open(`https://wa.me/${customerPhone}?text=${message}`, "_blank");
+    sendWhatsAppMessage(message, sendToBoth);
   };
 
-  const handleRemindShipping = () => {
-    const customerPhone = orderData?.phone;
-    if (!customerPhone) return;
-
+  const handleRemindShipping = (sendToBoth = false) => {
     const message = encodeURIComponent(
       `📚 *Order Update from TheBookX*\n\n` +
         `Dear ${orderData?.name || "Customer"},\n\n` +
@@ -181,7 +232,7 @@ export default function ViewBagClient() {
         `For any queries, feel free to reach out to us.`,
     );
 
-    window.open(`https://wa.me/${customerPhone}?text=${message}`, "_blank");
+    sendWhatsAppMessage(message, sendToBoth);
   };
 
   const isCOD = orderData?.paymentMethod === "COD";
@@ -273,7 +324,75 @@ export default function ViewBagClient() {
                 </div>
               )}
 
-              {/* Shipping Status - Common for both COD and UPI */}
+              {/* Shipment Number Section - Secondary WhatsApp Number */}
+              <div className="shipment-number-section mt-12">
+                <div className="flex justify-between items-center">
+                  <span className="font-14 weight-500">
+                    Secondary WhatsApp Number (Shipment Updates)
+                  </span>
+                  {!savedShipmentNumber && (
+                    <button
+                      onClick={() => setShowShipmentInput(!showShipmentInput)}
+                      className="sec-mid-btn font-12 flex items-center gap-4"
+                      style={{ padding: "4px 12px" }}
+                    >
+                      <Plus size={12} />
+                      Add Number
+                    </button>
+                  )}
+                </div>
+
+                {savedShipmentNumber ? (
+                  <div className="flex items-center justify-between gap-8 p-12 bg-gray-50 rounded-8 mt-8">
+                    <div className="flex items-center gap-8">
+                      <Send size={16} className="blue" />
+                      <span className="font-14">{savedShipmentNumber}</span>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setSavedShipmentNumber("");
+                        localStorage.removeItem(
+                          `shipment_number_${orderData?.orderId}`,
+                        );
+                      }}
+                      className="text-red-500"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                ) : showShipmentInput ? (
+                  <div className="flex flex-col gap-8 mt-8">
+                    <div className="flex gap-8">
+                      <input
+                        type="tel"
+                        className="sec-mid-btn flex-grow"
+                        placeholder="Enter WhatsApp number with country code (e.g., 919876543210)"
+                        value={shipmentNumber}
+                        onChange={(e) =>
+                          setShipmentNumber(e.target.value.replace(/\D/g, ""))
+                        }
+                        style={{ flex: 1 }}
+                      />
+                      <button
+                        onClick={handleSaveShipmentNumber}
+                        className="pri-big-btn"
+                        style={{ padding: "8px 16px" }}
+                        disabled={
+                          !shipmentNumber.trim() || shipmentNumber.length < 10
+                        }
+                      >
+                        Save
+                      </button>
+                    </div>
+                    <span className="font-10 gray-500">
+                      This number will receive shipment updates along with the
+                      customer
+                    </span>
+                  </div>
+                ) : null}
+              </div>
+
+              {/* Shipping Status */}
               <div className="shipping-status-section mt-12">
                 <label className="flex items-center gap-8 cursor-pointer">
                   <input
@@ -355,25 +474,55 @@ export default function ViewBagClient() {
               {/* Reminder Buttons */}
               <div className="reminder-buttons-section mt-16">
                 {orderStatus.isShipped && savedTrackingId ? (
-                  <button
-                    onClick={handleRemindCustomer}
-                    className="pri-big-btn width100 flex items-center justify-center gap-8"
-                    style={{ background: "#25D366" }}
-                  >
-                    <Bell size={16} />
-                    Remind Customer (Order Shipped)
-                    <Send size={14} />
-                  </button>
+                  <div className="flex flex-col gap-8">
+                    <button
+                      onClick={() => handleRemindCustomer(false)}
+                      className="pri-big-btn width100 flex items-center justify-center gap-8"
+                      style={{ background: "#25D366" }}
+                    >
+                      <Bell size={16} />
+                      Remind Customer (Order Shipped)
+                      <Send size={14} />
+                    </button>
+                    {savedShipmentNumber && (
+                      <button
+                        onClick={() => handleRemindCustomer(true)}
+                        className="sec-big-btn width100 flex items-center justify-center gap-8"
+                        style={{
+                          border: "2px solid #25D366",
+                          color: "#25D366",
+                        }}
+                      >
+                        <Send size={16} />
+                        Remind Both (Customer + Shipment)
+                      </button>
+                    )}
+                  </div>
                 ) : !orderStatus.isShipped ? (
-                  <button
-                    onClick={handleRemindShipping}
-                    className="pri-big-btn width100 flex items-center justify-center gap-8"
-                    style={{ background: "#FF9800" }}
-                  >
-                    <Calendar size={16} />
-                    Remind Customer (Shipping in 1-2 days)
-                    <Send size={14} />
-                  </button>
+                  <div className="flex flex-col gap-8">
+                    <button
+                      onClick={() => handleRemindShipping(false)}
+                      className="pri-big-btn width100 flex items-center justify-center gap-8"
+                      style={{ background: "#FF9800" }}
+                    >
+                      <Calendar size={16} />
+                      Remind Customer (Shipping in 1-2 days)
+                      <Send size={14} />
+                    </button>
+                    {savedShipmentNumber && (
+                      <button
+                        onClick={() => handleRemindShipping(true)}
+                        className="sec-big-btn width100 flex items-center justify-center gap-8"
+                        style={{
+                          border: "2px solid #FF9800",
+                          color: "#FF9800",
+                        }}
+                      >
+                        <Send size={16} />
+                        Remind Both (Customer + Shipment)
+                      </button>
+                    )}
+                  </div>
                 ) : null}
               </div>
 

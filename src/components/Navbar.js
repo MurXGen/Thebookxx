@@ -55,8 +55,9 @@ export default function Navbar() {
           </div>
 
           {/* CENTER LOGO */}
-          <div className="nav-center">
+          <div className="nav-center flex flex-col justify-center items-center">
             <span className="logo-text">TheBookX</span>
+            <span className="font-10">Formerly Uskillbook</span>
           </div>
 
           {/* RIGHT ICONS */}

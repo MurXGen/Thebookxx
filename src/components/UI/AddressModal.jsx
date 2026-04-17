@@ -41,6 +41,7 @@ export default function AddressModal({
   totalDiscounted,
   handleWhatsAppCheckout,
   handleCODCheckout,
+  extraDeliveryCharge,
 }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -550,15 +551,17 @@ export default function AddressModal({
                   <span>Books Total</span>
                   <span>₹{finalPayable}</span>
                 </div>
-                {extraCharge > 0 && (
+                {extraDeliveryCharge > 0 && (
                   <div className="flex justify-between">
                     <span>Delivery Charge</span>
-                    <span>₹{extraCharge}</span>
+                    <span>₹{extraDeliveryCharge}</span>
                   </div>
                 )}
                 <div className="flex justify-between weight-600">
                   <span>Total to Pay</span>
-                  <span className="green">₹{finalPayable + extraCharge}</span>
+                  <span className="green">
+                    ₹{finalPayable + extraDeliveryCharge}
+                  </span>
                 </div>
               </div>
 
@@ -592,7 +595,7 @@ export default function AddressModal({
                       className="pri-big-btn flex flex-row gap-8"
                       onClick={() => {
                         const link = document.createElement("a");
-                        link.href = "/books1/uskillbook.png";
+                        link.href = "/books/uskillbook.png";
                         link.download = "thebookx-upi-qr.png";
                         document.body.appendChild(link);
                         link.click();

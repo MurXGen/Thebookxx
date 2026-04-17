@@ -8,11 +8,13 @@ import {
   Sparkles,
   ArrowRight,
   ArrowLeft,
+  Cross,
 } from "lucide-react";
 import { books } from "@/utils/book";
 import { useRouter } from "next/navigation";
 import LoadingButton from "./UI/LoadingButton";
 import BookCard from "./BookCard";
+import { FaWhatsapp } from "react-icons/fa";
 
 // Get all unique categories from books with their frequency
 const getAllCategoriesWithFrequency = () => {
@@ -222,8 +224,11 @@ const calculateBookScore = (book, formData) => {
   return { score, matchDetails };
 };
 
-export default function RecommendationModal() {
-  const [isOpen, setIsOpen] = useState(false);
+export default function RecommendationModal({
+  isOpen: externalIsOpen,
+  onClose: externalOnClose,
+}) {
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -235,21 +240,41 @@ export default function RecommendationModal() {
   const [recommendations, setRecommendations] = useState([]);
   const router = useRouter();
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      const hasSeenModal = sessionStorage.getItem("recommendationModalSeen");
-      if (!hasSeenModal) {
-        setIsOpen(true);
-      }
-    }, 5000);
-
-    return () => clearTimeout(timer);
-  }, []);
+  // Use external isOpen if provided, otherwise use internal state
+  const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
 
   const handleClose = () => {
-    setIsOpen(false);
-    sessionStorage.setItem("recommendationModalSeen", "true");
+    if (externalOnClose) {
+      externalOnClose();
+    } else {
+      setInternalIsOpen(false);
+      sessionStorage.setItem("recommendationModalSeen", "true");
+    }
+    // Reset to first step when closing
+    setTimeout(() => {
+      setStep(1);
+      setFormData({
+        genres: [],
+        gender: "",
+        ageGroup: "",
+        preference: "",
+      });
+    }, 300);
   };
+
+  // Auto-show modal after 30 seconds only if not controlled externally
+  //   useEffect(() => {
+  //     if (externalIsOpen !== undefined) return; // Skip auto-show if controlled externally
+
+  //     const timer = setTimeout(() => {
+  //       const hasSeenModal = sessionStorage.getItem("recommendationModalSeen");
+  //       if (!hasSeenModal) {
+  //         setInternalIsOpen(true);
+  //       }
+  //     }, 30000);
+
+  //     return () => clearTimeout(timer);
+  //   }, [externalIsOpen]);
 
   const handleWhatsAppRedirect = () => {
     const preferences = [];
@@ -270,7 +295,7 @@ export default function RecommendationModal() {
     }
 
     const message = encodeURIComponent(
-      `Hi! I'm looking for book recommendations. My preferences: ${preferences.join(", ")}. Can you help me?`,
+      `Hi! I'm looking for book. Can you help me?`,
     );
     window.open(`https://wa.me/917710892108?text=${message}`, "_blank");
     handleClose();
@@ -377,21 +402,34 @@ export default function RecommendationModal() {
                         </span>
                       </div>
                     </LoadingButton>
-
                     <LoadingButton
+                      className="sec-big-btn width100"
+                      onClick={handleWhatsAppRedirect}
+                    >
+                      <div className="flex flex-row gap-8">
+                        <FaWhatsapp size={24} color="#25D366" />
+                        <p className="weight-600 flex items-center gap-8 justify-center">
+                          Chat with us
+                        </p>
+                        {/* <span className="font-10">
+                          Chat with us on WhatsApp
+                        </span> */}
+                      </div>
+                    </LoadingButton>
+
+                    {/* <LoadingButton
                       className="sec-big-btn width100"
                       onClick={handleWhatsAppRedirect}
                     >
                       <div className="flex flex-col">
                         <p className="weight-600 flex items-center gap-8 justify-center">
-                          <MessageCircle size={16} />
-                          Looking for some book?
+                          No Thanks, i'll explore by myself!
                         </p>
                         <span className="font-10">
                           Chat with us on WhatsApp
                         </span>
                       </div>
-                    </LoadingButton>
+                    </LoadingButton> */}
                   </div>
                 </motion.div>
               )}

@@ -301,6 +301,13 @@ export default function RecommendationModal({
     handleClose();
   };
 
+  const handleWhatsAppCommunity = () => {
+    window.open(
+      `https://chat.whatsapp.com/Lk3okPbq21s8kJeoM3UA4c?mode=gi_t`,
+      "_blank",
+    );
+  };
+
   const updateFormData = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
@@ -357,7 +364,7 @@ export default function RecommendationModal({
       {isOpen && (
         <motion.div className="bill-modal-overlay" onClick={handleClose}>
           <motion.div
-            className="bill-modal recommendation-modal"
+            className="bill-modal"
             onClick={(e) => e.stopPropagation()}
             initial={{ y: "100%" }}
             animate={{ y: 0 }}
@@ -402,20 +409,38 @@ export default function RecommendationModal({
                         </span>
                       </div>
                     </LoadingButton>
-                    <LoadingButton
-                      className="sec-big-btn width100"
-                      onClick={handleWhatsAppRedirect}
-                    >
-                      <div className="flex flex-row gap-8">
-                        <FaWhatsapp size={24} color="#25D366" />
-                        <p className="weight-600 flex items-center gap-8 justify-center">
-                          Chat with us
-                        </p>
-                        {/* <span className="font-10">
+
+                    <div className="flex flex-row gap-12">
+                      <LoadingButton
+                        className="sec-big-btn width100"
+                        onClick={handleWhatsAppRedirect}
+                      >
+                        <div className="flex flex-row gap-8">
+                          <FaWhatsapp size={20} color="#25D366" />
+                          <p className="weight-600 flex items-center gap-8 justify-center">
+                            Chat with us
+                          </p>
+                          {/* <span className="font-10">
                           Chat with us on WhatsApp
                         </span> */}
-                      </div>
-                    </LoadingButton>
+                        </div>
+                      </LoadingButton>
+
+                      <LoadingButton
+                        className="sec-big-btn width100"
+                        onClick={handleWhatsAppCommunity}
+                      >
+                        <div className="flex flex-row gap-8">
+                          <FaWhatsapp size={20} color="#25D366" />
+                          <p className="weight-600 flex items-center gap-8 justify-center">
+                            Join community
+                          </p>
+                          {/* <span className="font-10">
+                          Chat with us on WhatsApp
+                        </span> */}
+                        </div>
+                      </LoadingButton>
+                    </div>
 
                     {/* <LoadingButton
                       className="sec-big-btn width100"
@@ -440,7 +465,7 @@ export default function RecommendationModal({
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="flex flex-col gap-16"
+                  className="flex flex-col gap-16 recommendation-modal"
                 >
                   <div>
                     <div className="flex justify-between items-center mb-12">
@@ -555,7 +580,7 @@ export default function RecommendationModal({
                       onClick={handleSubmit}
                       disabled={!formData.preference}
                     >
-                      Get Recommendations
+                      Submit
                       <ArrowRight size={16} />
                     </button>
                   </div>
@@ -613,13 +638,22 @@ export default function RecommendationModal({
                       )}
 
                       {recommendations.length > 0 && (
-                        <button
-                          className="pri-big-btn flex flex-row gap-4 items-center justify-center width100"
-                          onClick={handleClose}
-                        >
-                          Start Exploring
-                          <ArrowRight size={16} />
-                        </button>
+                        <div className="flex flex-row gap-12">
+                          <button
+                            className="sec-big-btn flex flex-row gap-4 items-center justify-center width100"
+                            onClick={handleWhatsAppRedirect}
+                          >
+                            <FaWhatsapp size={20} color="#25d366" />
+                            Confused? Chat.
+                          </button>
+                          <button
+                            className="pri-big-btn flex flex-row gap-4 items-center justify-center width100"
+                            onClick={handleClose}
+                          >
+                            Start Exploring
+                            <ArrowRight size={16} />
+                          </button>
+                        </div>
                       )}
                     </>
                   )}

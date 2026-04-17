@@ -14,6 +14,7 @@ import {
   Calendar,
   Plus,
   X,
+  Phone,
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -32,9 +33,11 @@ export default function ViewBagClient() {
   const [trackingId, setTrackingId] = useState("");
   const [showTrackingInput, setShowTrackingInput] = useState(false);
   const [savedTrackingId, setSavedTrackingId] = useState("");
-  const [shipmentNumber, setShipmentNumber] = useState("");
-  const [showShipmentInput, setShowShipmentInput] = useState(false);
-  const [savedShipmentNumber, setSavedShipmentNumber] = useState("");
+  const [alternativeNumbers, setAlternativeNumbers] = useState([]);
+  const [showAlternativeInput, setShowAlternativeInput] = useState(false);
+  const [newAlternativeNumber, setNewAlternativeNumber] = useState("");
+  const [showNumberSelection, setShowNumberSelection] = useState(false);
+  const [pendingMessageType, setPendingMessageType] = useState(null);
 
   useEffect(() => {
     setCurrentUrl(window.location.href);
@@ -62,12 +65,12 @@ export default function ViewBagClient() {
           setSavedTrackingId(savedTracking);
         }
 
-        // Load saved shipment number
-        const savedShipment = localStorage.getItem(
-          `shipment_number_${decodedOrder.orderId}`,
+        // Load saved alternative numbers
+        const savedNumbers = localStorage.getItem(
+          `alternative_numbers_${decodedOrder.orderId}`,
         );
-        if (savedShipment) {
-          setSavedShipmentNumber(savedShipment);
+        if (savedNumbers) {
+          setAlternativeNumbers(JSON.parse(savedNumbers));
         }
       } catch (e) {
         console.error("Failed to parse order data", e);
@@ -165,74 +168,69 @@ export default function ViewBagClient() {
     }
   };
 
-  const handleSaveShipmentNumber = () => {
-    if (shipmentNumber.trim()) {
-      setSavedShipmentNumber(shipmentNumber);
+  const handleSaveAlternativeNumber = () => {
+    if (
+      newAlternativeNumber.trim() &&
+      /^\d{10}$/.test(newAlternativeNumber.trim())
+    ) {
+      const updatedNumbers = [
+        ...alternativeNumbers,
+        newAlternativeNumber.trim(),
+      ];
+      setAlternativeNumbers(updatedNumbers);
       localStorage.setItem(
-        `shipment_number_${orderData?.orderId}`,
-        shipmentNumber,
+        `alternative_numbers_${orderData?.orderId}`,
+        JSON.stringify(updatedNumbers),
       );
-      setShowShipmentInput(false);
-      setShipmentNumber("");
-    }
-  };
-
-  // Get the primary WhatsApp number (customer's number)
-  const getPrimaryWhatsAppNumber = () => {
-    return orderData?.phone;
-  };
-
-  // Get the secondary WhatsApp number (shipment number if exists)
-  const getSecondaryWhatsAppNumber = () => {
-    return savedShipmentNumber || null;
-  };
-
-  // Send message to single or multiple numbers
-  const sendWhatsAppMessage = (message, sendToBoth = false) => {
-    const primaryNumber = getPrimaryWhatsAppNumber();
-    const secondaryNumber = getSecondaryWhatsAppNumber();
-
-    if (sendToBoth && secondaryNumber) {
-      // Send to both numbers
-      window.open(`https://wa.me/${primaryNumber}?text=${message}`, "_blank");
-      setTimeout(() => {
-        window.open(
-          `https://wa.me/${secondaryNumber}?text=${message}`,
-          "_blank",
-        );
-      }, 500);
+      setNewAlternativeNumber("");
+      setShowAlternativeInput(false);
     } else {
-      // Send to primary number only
-      if (primaryNumber) {
-        window.open(`https://wa.me/${primaryNumber}?text=${message}`, "_blank");
-      }
+      alert("Please enter a valid 10-digit mobile number");
     }
   };
 
-  const handleRemindCustomer = (sendToBoth = false) => {
-    const message = encodeURIComponent(
-      `📚 *Order Update from TheBookX*\n\n` +
-        `Dear ${orderData?.name || "Customer"},\n\n` +
-        `Your order #${orderData?.orderId} has been shipped and will be delivered in 3-5 business days.\n\n` +
-        `📦 Tracking ID: ${savedTrackingId || "Not available"}\n\n` +
-        `Thank you for shopping with TheBookX! Happy reading! 📖✨\n\n` +
-        `For any queries, feel free to reach out to us.`,
+  const handleDeleteAlternativeNumber = (indexToDelete) => {
+    const updatedNumbers = alternativeNumbers.filter(
+      (_, index) => index !== indexToDelete,
     );
-
-    sendWhatsAppMessage(message, sendToBoth);
+    setAlternativeNumbers(updatedNumbers);
+    localStorage.setItem(
+      `alternative_numbers_${orderData?.orderId}`,
+      JSON.stringify(updatedNumbers),
+    );
   };
 
-  const handleRemindShipping = (sendToBoth = false) => {
-    const message = encodeURIComponent(
-      `📚 *Order Update from TheBookX*\n\n` +
-        `Dear ${orderData?.name || "Customer"},\n\n` +
-        `Your order #${orderData?.orderId} is confirmed and will be shipped within 1-2 business days.\n\n` +
-        `You will receive a tracking ID once shipped.\n\n` +
-        `Thank you for your patience! 📖✨\n\n` +
-        `For any queries, feel free to reach out to us.`,
-    );
+  const handleRemindClick = (messageType) => {
+    setPendingMessageType(messageType);
+    setShowNumberSelection(true);
+  };
 
-    sendWhatsAppMessage(message, sendToBoth);
+  const sendWhatsAppMessage = (phoneNumber, messageType) => {
+    let message = "";
+
+    if (messageType === "shipped") {
+      message = encodeURIComponent(
+        `📚 *Order Update from TheBookX*\n\n` +
+          `Dear ${orderData?.name || "Customer"},\n\n` +
+          `Your order #${orderData?.orderId} has been shipped and will be delivered in 3-5 business days.\n\n` +
+          `📦 Tracking ID: ${savedTrackingId || "Not available"}\n\n` +
+          `Thank you for shopping with TheBookX! Happy reading! 📖✨\n\n` +
+          `For any queries, feel free to reach out to us.`,
+      );
+    } else if (messageType === "shipping") {
+      message = encodeURIComponent(
+        `📚 *Order Update from TheBookX*\n\n` +
+          `Dear ${orderData?.name || "Customer"},\n\n` +
+          `Your order #${orderData?.orderId} is confirmed and will be shipped within 1-2 business days.\n\n` +
+          `You will receive a tracking ID once shipped.\n\n` +
+          `Thank you for your patience! 📖✨\n\n` +
+          `For any queries, feel free to reach out to us.`,
+      );
+    }
+
+    window.open(`https://wa.me/${phoneNumber}?text=${message}`, "_blank");
+    setShowNumberSelection(false);
+    setPendingMessageType(null);
   };
 
   const isCOD = orderData?.paymentMethod === "COD";
@@ -250,7 +248,6 @@ export default function ViewBagClient() {
       </div>
 
       {/* User Details Section */}
-
       {orderData && (
         <div className="flex flex-col gap-16">
           <h3 className="font-16 weight-600 mb-16">Customer Details</h3>
@@ -262,12 +259,85 @@ export default function ViewBagClient() {
                 {orderData.name || "Not provided"}
               </p>
             </div>
+
             <div>
-              <span className="font-12 gray-500">Phone</span>
-              <p className="font-14 weight-500">
-                {orderData.phone || "Not provided"}
+              <div className="flex justify-between items-center mb-4">
+                <span className="font-12 gray-500">Phone Number</span>
+                {!showAlternativeInput && (
+                  <button
+                    onClick={() => setShowAlternativeInput(true)}
+                    className="sec-mid-btn flex items-center gap-4"
+                    style={{ padding: "4px 8px", fontSize: "11px" }}
+                  >
+                    <Plus size={12} />
+                    Add Alternative
+                  </button>
+                )}
+              </div>
+              <p className="font-14 weight-500 mb-8">
+                {orderData.phone || "Not provided"} (Primary)
               </p>
+
+              {/* Alternative Numbers */}
+              {alternativeNumbers.length > 0 && (
+                <div className="mt-8">
+                  {alternativeNumbers.map((number, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between gap-8 mb-4 p-8 bg-gray-50 rounded-8"
+                    >
+                      <div className="flex items-center gap-8">
+                        <Phone size={14} className="gray-500" />
+                        <span className="font-14">{number}</span>
+                      </div>
+                      <button
+                        onClick={() => handleDeleteAlternativeNumber(index)}
+                        className="cursor-pointer"
+                        style={{ color: "#dc2626" }}
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Add Alternative Input */}
+              {showAlternativeInput && (
+                <div className="flex gap-8 mt-8">
+                  <input
+                    type="tel"
+                    className="sec-mid-btn flex-grow"
+                    placeholder="Enter 10-digit mobile number"
+                    value={newAlternativeNumber}
+                    maxLength={10}
+                    onChange={(e) =>
+                      setNewAlternativeNumber(e.target.value.replace(/\D/g, ""))
+                    }
+                    style={{ flex: 1 }}
+                  />
+                  <button
+                    onClick={handleSaveAlternativeNumber}
+                    className="pri-big-btn"
+                    style={{ padding: "8px 16px" }}
+                    disabled={!newAlternativeNumber.trim()}
+                  >
+                    Save
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowAlternativeInput(false);
+                      setNewAlternativeNumber("");
+                    }}
+                    className="sec-mid-btn"
+                    style={{ padding: "8px 16px" }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              )}
             </div>
+
             <div className="col-span-2">
               <span className="font-12 gray-500">Address</span>
               <p className="font-14">{orderData.address}</p>
@@ -324,75 +394,7 @@ export default function ViewBagClient() {
                 </div>
               )}
 
-              {/* Shipment Number Section - Secondary WhatsApp Number */}
-              <div className="shipment-number-section mt-12">
-                <div className="flex justify-between items-center">
-                  <span className="font-14 weight-500">
-                    Secondary WhatsApp Number (Shipment Updates)
-                  </span>
-                  {!savedShipmentNumber && (
-                    <button
-                      onClick={() => setShowShipmentInput(!showShipmentInput)}
-                      className="sec-mid-btn font-12 flex items-center gap-4"
-                      style={{ padding: "4px 12px" }}
-                    >
-                      <Plus size={12} />
-                      Add Number
-                    </button>
-                  )}
-                </div>
-
-                {savedShipmentNumber ? (
-                  <div className="flex items-center justify-between gap-8 p-12 bg-gray-50 rounded-8 mt-8">
-                    <div className="flex items-center gap-8">
-                      <Send size={16} className="blue" />
-                      <span className="font-14">{savedShipmentNumber}</span>
-                    </div>
-                    <button
-                      onClick={() => {
-                        setSavedShipmentNumber("");
-                        localStorage.removeItem(
-                          `shipment_number_${orderData?.orderId}`,
-                        );
-                      }}
-                      className="text-red-500"
-                    >
-                      <X size={14} />
-                    </button>
-                  </div>
-                ) : showShipmentInput ? (
-                  <div className="flex flex-col gap-8 mt-8">
-                    <div className="flex gap-8">
-                      <input
-                        type="tel"
-                        className="sec-mid-btn flex-grow"
-                        placeholder="Enter WhatsApp number with country code (e.g., 919876543210)"
-                        value={shipmentNumber}
-                        onChange={(e) =>
-                          setShipmentNumber(e.target.value.replace(/\D/g, ""))
-                        }
-                        style={{ flex: 1 }}
-                      />
-                      <button
-                        onClick={handleSaveShipmentNumber}
-                        className="pri-big-btn"
-                        style={{ padding: "8px 16px" }}
-                        disabled={
-                          !shipmentNumber.trim() || shipmentNumber.length < 10
-                        }
-                      >
-                        Save
-                      </button>
-                    </div>
-                    <span className="font-10 gray-500">
-                      This number will receive shipment updates along with the
-                      customer
-                    </span>
-                  </div>
-                ) : null}
-              </div>
-
-              {/* Shipping Status */}
+              {/* Shipping Status - Common for both COD and UPI */}
               <div className="shipping-status-section mt-12">
                 <label className="flex items-center gap-8 cursor-pointer">
                   <input
@@ -474,55 +476,25 @@ export default function ViewBagClient() {
               {/* Reminder Buttons */}
               <div className="reminder-buttons-section mt-16">
                 {orderStatus.isShipped && savedTrackingId ? (
-                  <div className="flex flex-col gap-8">
-                    <button
-                      onClick={() => handleRemindCustomer(false)}
-                      className="pri-big-btn width100 flex items-center justify-center gap-8"
-                      style={{ background: "#25D366" }}
-                    >
-                      <Bell size={16} />
-                      Remind Customer (Order Shipped)
-                      <Send size={14} />
-                    </button>
-                    {savedShipmentNumber && (
-                      <button
-                        onClick={() => handleRemindCustomer(true)}
-                        className="sec-big-btn width100 flex items-center justify-center gap-8"
-                        style={{
-                          border: "2px solid #25D366",
-                          color: "#25D366",
-                        }}
-                      >
-                        <Send size={16} />
-                        Remind Both (Customer + Shipment)
-                      </button>
-                    )}
-                  </div>
+                  <button
+                    onClick={() => handleRemindClick("shipped")}
+                    className="pri-big-btn width100 flex items-center justify-center gap-8"
+                    style={{ background: "#25D366" }}
+                  >
+                    <Bell size={16} />
+                    Remind Customer (Order Shipped)
+                    <Send size={14} />
+                  </button>
                 ) : !orderStatus.isShipped ? (
-                  <div className="flex flex-col gap-8">
-                    <button
-                      onClick={() => handleRemindShipping(false)}
-                      className="pri-big-btn width100 flex items-center justify-center gap-8"
-                      style={{ background: "#FF9800" }}
-                    >
-                      <Calendar size={16} />
-                      Remind Customer (Shipping in 1-2 days)
-                      <Send size={14} />
-                    </button>
-                    {savedShipmentNumber && (
-                      <button
-                        onClick={() => handleRemindShipping(true)}
-                        className="sec-big-btn width100 flex items-center justify-center gap-8"
-                        style={{
-                          border: "2px solid #FF9800",
-                          color: "#FF9800",
-                        }}
-                      >
-                        <Send size={16} />
-                        Remind Both (Customer + Shipment)
-                      </button>
-                    )}
-                  </div>
+                  <button
+                    onClick={() => handleRemindClick("shipping")}
+                    className="pri-big-btn width100 flex items-center justify-center gap-8"
+                    style={{ background: "#FF9800" }}
+                  >
+                    <Calendar size={16} />
+                    Remind Customer (Shipping in 1-2 days)
+                    <Send size={14} />
+                  </button>
                 ) : null}
               </div>
 
@@ -560,6 +532,68 @@ export default function ViewBagClient() {
                   </span>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Number Selection Modal */}
+      {showNumberSelection && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0 }}
+        >
+          <div
+            className="bg-white rounded-16 p-24 max-w-md width100"
+            style={{ maxWidth: "400px", margin: "16px" }}
+          >
+            <div className="flex justify-between items-center mb-16">
+              <h3 className="font-18 weight-600">Select Phone Number</h3>
+              <button
+                onClick={() => setShowNumberSelection(false)}
+                className="cursor-pointer"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <p className="font-14 gray-500 mb-16">
+              Choose which number to send the reminder to:
+            </p>
+
+            <div className="flex flex-col gap-8">
+              {/* Primary Number */}
+              <button
+                onClick={() =>
+                  sendWhatsAppMessage(orderData?.phone, pendingMessageType)
+                }
+                className="flex items-center gap-12 p-12 border rounded-8 hover:bg-gray-50 transition-all"
+                style={{ textAlign: "left" }}
+              >
+                <Phone size={18} className="green" />
+                <div>
+                  <div className="font-14 weight-500">{orderData?.phone}</div>
+                  <div className="font-12 gray-500">Primary Number</div>
+                </div>
+              </button>
+
+              {/* Alternative Numbers */}
+              {alternativeNumbers.map((number, index) => (
+                <button
+                  key={index}
+                  onClick={() =>
+                    sendWhatsAppMessage(number, pendingMessageType)
+                  }
+                  className="flex items-center gap-12 p-12 border rounded-8 hover:bg-gray-50 transition-all"
+                  style={{ textAlign: "left" }}
+                >
+                  <Phone size={18} className="blue" />
+                  <div>
+                    <div className="font-14 weight-500">{number}</div>
+                    <div className="font-12 gray-500">Alternative Number</div>
+                  </div>
+                </button>
+              ))}
             </div>
           </div>
         </div>

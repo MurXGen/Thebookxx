@@ -1895,17 +1895,12 @@ button:disabled {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 250px;
+  height: auto;
   background: #fff;
   padding: 16px;
   border-radius: 16px 16px 0 0;
   font-size: var(--px-12);
 }
-
-.recommendation-modal {
-  height: 700px;
-}
-
 .bill-header {
   display: flex;
   justify-content: space-between;

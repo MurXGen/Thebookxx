@@ -208,6 +208,22 @@ export default function ViewBagClient() {
   const sendWhatsAppMessage = (phoneNumber, messageType) => {
     let message = "";
 
+    // Add country code +91 for India
+    let formattedNumber = phoneNumber;
+    if (phoneNumber && !phoneNumber.startsWith("+")) {
+      // Remove any non-digit characters and add +91
+      const cleanNumber = phoneNumber.replace(/\D/g, "");
+      if (cleanNumber.length === 10) {
+        formattedNumber = `+91${cleanNumber}`;
+      } else if (cleanNumber.length === 12 && cleanNumber.startsWith("91")) {
+        formattedNumber = `+${cleanNumber}`;
+      } else if (cleanNumber.length === 13 && cleanNumber.startsWith("91")) {
+        formattedNumber = `+${cleanNumber}`;
+      } else {
+        formattedNumber = `+91${cleanNumber.slice(-10)}`; // Take last 10 digits
+      }
+    }
+
     if (messageType === "shipped") {
       message = encodeURIComponent(
         `📚 *Order Update from TheBookX*\n\n` +
@@ -228,7 +244,7 @@ export default function ViewBagClient() {
       );
     }
 
-    window.open(`https://wa.me/${phoneNumber}?text=${message}`, "_blank");
+    window.open(`https://wa.me/${formattedNumber}?text=${message}`, "_blank");
     setShowNumberSelection(false);
     setPendingMessageType(null);
   };
@@ -260,84 +276,6 @@ export default function ViewBagClient() {
               </p>
             </div>
 
-            <div>
-              <div className="flex justify-between items-center mb-4">
-                <span className="font-12 gray-500">Phone Number</span>
-                {!showAlternativeInput && (
-                  <button
-                    onClick={() => setShowAlternativeInput(true)}
-                    className="sec-mid-btn flex items-center gap-4"
-                    style={{ padding: "4px 8px", fontSize: "11px" }}
-                  >
-                    <Plus size={12} />
-                    Add Alternative
-                  </button>
-                )}
-              </div>
-              <p className="font-14 weight-500 mb-8">
-                {orderData.phone || "Not provided"} (Primary)
-              </p>
-
-              {/* Alternative Numbers */}
-              {alternativeNumbers.length > 0 && (
-                <div className="mt-8">
-                  {alternativeNumbers.map((number, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between gap-8 mb-4 p-8 bg-gray-50 rounded-8"
-                    >
-                      <div className="flex items-center gap-8">
-                        <Phone size={14} className="gray-500" />
-                        <span className="font-14">{number}</span>
-                      </div>
-                      <button
-                        onClick={() => handleDeleteAlternativeNumber(index)}
-                        className="cursor-pointer"
-                        style={{ color: "#dc2626" }}
-                      >
-                        <X size={14} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Add Alternative Input */}
-              {showAlternativeInput && (
-                <div className="flex gap-8 mt-8">
-                  <input
-                    type="tel"
-                    className="sec-mid-btn flex-grow"
-                    placeholder="Enter 10-digit mobile number"
-                    value={newAlternativeNumber}
-                    maxLength={10}
-                    onChange={(e) =>
-                      setNewAlternativeNumber(e.target.value.replace(/\D/g, ""))
-                    }
-                    style={{ flex: 1 }}
-                  />
-                  <button
-                    onClick={handleSaveAlternativeNumber}
-                    className="pri-big-btn"
-                    style={{ padding: "8px 16px" }}
-                    disabled={!newAlternativeNumber.trim()}
-                  >
-                    Save
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowAlternativeInput(false);
-                      setNewAlternativeNumber("");
-                    }}
-                    className="sec-mid-btn"
-                    style={{ padding: "8px 16px" }}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              )}
-            </div>
-
             <div className="col-span-2">
               <span className="font-12 gray-500">Address</span>
               <p className="font-14">{orderData.address}</p>
@@ -358,6 +296,86 @@ export default function ViewBagClient() {
               <span className="font-12 gray-500">Pincode</span>
               <p className="font-14">{orderData.pincode}</p>
             </div>
+          </div>
+
+          <div className="flex flex-col">
+            <div className="flex justify-between items-center mb-4">
+              <span className="font-12 gray-500">Phone Number</span>
+              {!showAlternativeInput && (
+                <button
+                  onClick={() => setShowAlternativeInput(true)}
+                  className="sec-mid-btn flex items-center gap-4"
+                  style={{ padding: "4px 8px", fontSize: "11px" }}
+                >
+                  <Plus size={12} />
+                  Add Alternative
+                </button>
+              )}
+            </div>
+            <p className="font-14 flex items-center gap-8 weight-500 mb-8">
+              <Phone size={14} className="gray-500" />
+              {orderData.phone ? `+91${orderData.phone}` : "Not provided"}{" "}
+              (Primary)
+            </p>
+
+            {/* Alternative Numbers */}
+            {alternativeNumbers.length > 0 && (
+              <div className="mt-8">
+                {alternativeNumbers.map((number, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between gap-8 mb-4 p-8 bg-gray-50 rounded-8"
+                  >
+                    <div className="flex items-center gap-8">
+                      <Phone size={14} className="gray-500" />
+                      <span className="font-14">+91{number}</span>
+                    </div>
+                    <button
+                      onClick={() => handleDeleteAlternativeNumber(index)}
+                      className="sec-mid-btn flex flex-row items-center"
+                      style={{ color: "#dc2626" }}
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Add Alternative Input */}
+            {showAlternativeInput && (
+              <div className="flex gap-8 mt-8">
+                <input
+                  type="tel"
+                  className="sec-mid-btn flex-grow"
+                  placeholder="Enter 10-digit mobile number"
+                  value={newAlternativeNumber}
+                  maxLength={10}
+                  onChange={(e) =>
+                    setNewAlternativeNumber(e.target.value.replace(/\D/g, ""))
+                  }
+                  style={{ flex: 1 }}
+                />
+                <button
+                  onClick={handleSaveAlternativeNumber}
+                  className="pri-big-btn"
+                  style={{ padding: "8px 16px" }}
+                  disabled={!newAlternativeNumber.trim()}
+                >
+                  Save
+                </button>
+                <button
+                  onClick={() => {
+                    setShowAlternativeInput(false);
+                    setNewAlternativeNumber("");
+                  }}
+                  className="sec-mid-btn"
+                  style={{ padding: "8px 16px" }}
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
           </div>
 
           <div className="dashed-border my-16"></div>
@@ -539,22 +557,16 @@ export default function ViewBagClient() {
 
       {/* Number Selection Modal */}
       {showNumberSelection && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-          style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0 }}
-        >
-          <div
-            className="bg-white rounded-16 p-24 max-w-md width100"
-            style={{ maxWidth: "400px", margin: "16px" }}
-          >
-            <div className="flex justify-between items-center mb-16">
+        <div className="bill-modal-overlay">
+          <div className="bill-modal">
+            <div className="bill-header">
               <h3 className="font-18 weight-600">Select Phone Number</h3>
-              <button
+              <span
                 onClick={() => setShowNumberSelection(false)}
                 className="cursor-pointer"
               >
                 <X size={20} />
-              </button>
+              </span>
             </div>
 
             <p className="font-14 gray-500 mb-16">
@@ -567,7 +579,7 @@ export default function ViewBagClient() {
                 onClick={() =>
                   sendWhatsAppMessage(orderData?.phone, pendingMessageType)
                 }
-                className="flex items-center gap-12 p-12 border rounded-8 hover:bg-gray-50 transition-all"
+                className="sec-mid-btn"
                 style={{ textAlign: "left" }}
               >
                 <Phone size={18} className="green" />
@@ -584,7 +596,7 @@ export default function ViewBagClient() {
                   onClick={() =>
                     sendWhatsAppMessage(number, pendingMessageType)
                   }
-                  className="flex items-center gap-12 p-12 border rounded-8 hover:bg-gray-50 transition-all"
+                  className="sec-mid-btn"
                   style={{ textAlign: "left" }}
                 >
                   <Phone size={18} className="blue" />

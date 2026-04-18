@@ -233,7 +233,7 @@ export default function ReviewClient() {
               Your Feedback
             </label>
             <textarea
-              className="sec-mid-btn"
+              className="review-textarea"
               placeholder="Tell us about your experience with TheBookX..."
               value={storeReview}
               onChange={(e) => setStoreReview(e.target.value)}
@@ -412,7 +412,7 @@ export default function ReviewClient() {
               Your Review
             </label>
             <textarea
-              className="sec-mid-btn"
+              className="review-textarea"
               placeholder="What did you think about this book? Share your honest opinion..."
               value={bookReview}
               onChange={(e) => setBookReview(e.target.value)}

@@ -52,15 +52,18 @@ export default function ReviewClient() {
       setLoading(true);
       setMessage("");
 
-      const res = await fetch(`/api/review/store`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          review: storeReview,
-          rating: storeRating,
-          phoneNumber: phoneSubmitted ? phoneNumber : null,
-        }),
-      });
+      const res = await fetch(
+        `https://api.journalx.app/api/bookxTelegram/store-review`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            review: storeReview,
+            rating: storeRating,
+            phoneNumber: phoneSubmitted ? phoneNumber : null,
+          }),
+        },
+      );
 
       const data = await res.json();
 
@@ -89,16 +92,19 @@ export default function ReviewClient() {
       setLoading(true);
       setMessage("");
 
-      const res = await fetch(`/api/review/book`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          bookId: selectedBook,
-          review: bookReview,
-          rating: bookRating,
-          phoneNumber: phoneSubmitted ? phoneNumber : null,
-        }),
-      });
+      const res = await fetch(
+        `https://api.journalx.app/api/bookxTelegram/review`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            bookId: selectedBook,
+            review: bookReview,
+            rating: bookRating,
+            phoneNumber: phoneSubmitted ? phoneNumber : null,
+          }),
+        },
+      );
 
       const data = await res.json();
 
@@ -125,11 +131,14 @@ export default function ReviewClient() {
 
     try {
       setLoading(true);
-      const res = await fetch(`/api/review/phone`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phoneNumber, type: activeTab }),
-      });
+      const res = await fetch(
+        `https://api.journalx.app/api/bookxTelegram/phone`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ phoneNumber, type: activeTab }),
+        },
+      );
 
       if (res.ok) {
         setPhoneSubmitted(true);
@@ -197,7 +206,10 @@ export default function ReviewClient() {
 
       {/* Store Review Tab */}
       {activeTab === "store" && (
-        <div className="review-container">
+        <div
+          className="review-container"
+          style={{ maxWidth: "600px", margin: "0 auto" }}
+        >
           <div className="text-center margin-btm-24px">
             <h2 className="font-24 weight-600 margin-btm-8px">
               How was your experience?
@@ -221,7 +233,7 @@ export default function ReviewClient() {
               Your Feedback
             </label>
             <textarea
-              className="review-textarea"
+              className="sec-mid-btn"
               placeholder="Tell us about your experience with TheBookX..."
               value={storeReview}
               onChange={(e) => setStoreReview(e.target.value)}
@@ -275,10 +287,10 @@ export default function ReviewClient() {
                   Submit
                 </button>
               </div>
-              <divv className="font-12 gray-500 margin-tp-8px flex flex-row gap-12 items-center">
+              <div className="font-12 gray-500 margin-tp-8px flex flex-row gap-12 items-center">
                 <Instagram size={32} />
                 Follow us on Instagram @thebookx for winner announcements
-              </divv>
+              </div>
             </div>
           ) : (
             <div
@@ -400,7 +412,7 @@ export default function ReviewClient() {
               Your Review
             </label>
             <textarea
-              className="review-textarea"
+              className="sec-mid-btn"
               placeholder="What did you think about this book? Share your honest opinion..."
               value={bookReview}
               onChange={(e) => setBookReview(e.target.value)}
@@ -454,10 +466,10 @@ export default function ReviewClient() {
                   Submit
                 </button>
               </div>
-              <divv className="font-12 gray-500 margin-tp-8px flex flex-row gap-12 items-center">
+              <div className="font-12 gray-500 margin-tp-8px flex flex-row gap-12 items-center">
                 <Instagram size={32} />
                 Follow us on Instagram @thebookx for winner announcements
-              </divv>
+              </div>
             </div>
           ) : (
             <div

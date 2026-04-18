@@ -2138,12 +2138,6 @@ button:disabled {
   justify-content: center;
 }
 
-.review-container {
-  max-width: 560px;
-  width: 100%;
-  padding: var(--px-12);
-}
-
 /* Dropdown Styles - White, border-radius 12px */
 .book-select {
   width: 100%;
@@ -2207,12 +2201,37 @@ button:disabled {
   letter-spacing: -0.3px;
 }
 
+.tab-button {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--px-12);
+  width: 150px;
+  border: none;
+  border-bottom: 2px solid var(--dark-20);
+  background: none;
+  color: var(--dark);
+  padding: var(--px-12);
+  font-family: "poppins";
+}
+
+.tab-button.active {
+  border-bottom: 2px solid var(--dark);
+}
+
+.review-container {
+  padding-top: var(--px-12);
+  display: flex;
+  flex-direction: column;
+  gap: var(--px-24);
+}
+
 /* Review Textarea */
 .review-textarea {
   width: 100%;
-  margin-top: 1.5rem;
-  padding: 1rem;
-  font-size: 0.95rem;
+  padding: var(--px-12);
+  font-size: var(--px-12);
   font-family: inherit;
   color: #000000;
   background: #ffffff;
@@ -2367,9 +2386,6 @@ button:disabled {
 
 /* Optional extra responsive */
 @media (max-width: 480px) {
-  .review-container {
-    padding: 1.5rem;
-  }
   .modal-card {
     padding: 1.5rem;
     max-width: 280px;

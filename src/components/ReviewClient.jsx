@@ -6,27 +6,27 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   Star,
-  MessageSquare,
+  BookOpen,
+  Store,
   Gift,
   Phone,
-  Send,
   Award,
   Instagram,
-  ChevronDown,
+  ChevronRight,
   CheckCircle,
-  AlertCircle,
 } from "lucide-react";
 
 export default function ReviewClient() {
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState("store"); // "store" or "book"
   const [selectedBook, setSelectedBook] = useState("");
-  const [review, setReview] = useState("");
-  const [storeFeedback, setStoreFeedback] = useState("");
+  const [storeReview, setStoreReview] = useState("");
+  const [bookReview, setBookReview] = useState("");
+  const [storeRating, setStoreRating] = useState(0);
+  const [bookRating, setBookRating] = useState(0);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState(""); // "success" or "error"
   const [showPhoneInput, setShowPhoneInput] = useState(false);
   const [phoneSubmitted, setPhoneSubmitted] = useState(false);
 
@@ -42,11 +42,9 @@ export default function ReviewClient() {
     }
   }, [searchParams]);
 
-  const handleStoreReviewSubmit = async () => {
-    if (!storeFeedback) {
-      setMessageType("error");
-      setMessage("Please share your experience with us.");
-      setTimeout(() => setMessage(""), 3000);
+  const handleStoreSubmit = async () => {
+    if (!storeReview || storeRating === 0) {
+      setMessage("Please provide a rating and write your feedback.");
       return;
     }
 
@@ -54,40 +52,36 @@ export default function ReviewClient() {
       setLoading(true);
       setMessage("");
 
-      const res = await fetch(`/api/storeReview`, {
+      const res = await fetch(`/api/review/store`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          feedback: storeFeedback,
+          review: storeReview,
+          rating: storeRating,
           phoneNumber: phoneSubmitted ? phoneNumber : null,
-          type: "store",
         }),
       });
 
       const data = await res.json();
 
       if (res.ok) {
-        setMessageType("success");
         setMessage("✅ Thank you for your feedback!");
-        setStoreFeedback("");
+        setStoreReview("");
+        setStoreRating(0);
         setTimeout(() => setMessage(""), 3000);
       } else {
-        setMessageType("error");
         setMessage(data.message || "Something went wrong");
       }
     } catch (err) {
-      setMessageType("error");
       setMessage("Server error. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleBookReviewSubmit = async () => {
-    if (!selectedBook || !review) {
-      setMessageType("error");
-      setMessage("Please select a book and write a review.");
-      setTimeout(() => setMessage(""), 3000);
+  const handleBookSubmit = async () => {
+    if (!selectedBook || !bookReview || bookRating === 0) {
+      setMessage("Please select a book, rate it, and write a review.");
       return;
     }
 
@@ -95,30 +89,28 @@ export default function ReviewClient() {
       setLoading(true);
       setMessage("");
 
-      const res = await fetch(`/api/bookReview`, {
+      const res = await fetch(`/api/review/book`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           bookId: selectedBook,
-          review,
+          review: bookReview,
+          rating: bookRating,
           phoneNumber: phoneSubmitted ? phoneNumber : null,
-          type: "book",
         }),
       });
 
       const data = await res.json();
 
       if (res.ok) {
-        setMessageType("success");
-        setMessage("✅ Review submitted successfully!");
-        setReview("");
+        setMessage("✅ Book review submitted successfully!");
+        setBookReview("");
+        setBookRating(0);
         setTimeout(() => setMessage(""), 3000);
       } else {
-        setMessageType("error");
         setMessage(data.message || "Something went wrong");
       }
     } catch (err) {
-      setMessageType("error");
       setMessage("Server error. Please try again.");
     } finally {
       setLoading(false);
@@ -127,467 +119,385 @@ export default function ReviewClient() {
 
   const handlePhoneSubmit = async () => {
     if (!phoneNumber || !/^\d{10}$/.test(phoneNumber)) {
-      setMessageType("error");
-      setMessage("Please enter a valid 10-digit mobile number.");
-      setTimeout(() => setMessage(""), 3000);
+      setMessage("Please enter a valid 10-digit mobile number");
       return;
     }
 
     try {
       setLoading(true);
-      const res = await fetch(`/api/contestEntry`, {
+      const res = await fetch(`/api/review/phone`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          phoneNumber,
-          reviewType: activeTab === "store" ? storeFeedback : review,
-          bookId: activeTab === "book" ? selectedBook : null,
-        }),
+        body: JSON.stringify({ phoneNumber, type: activeTab }),
       });
 
       if (res.ok) {
         setPhoneSubmitted(true);
-        setMessageType("success");
         setMessage(
-          "🎉 Great! You're now entered in the contest. Winners announced every week on Instagram!",
+          "🎉 Great! You're now eligible to win! We'll notify you on WhatsApp.",
         );
-        setTimeout(() => setMessage(""), 5000);
+        setTimeout(() => setMessage(""), 4000);
       }
     } catch (err) {
-      setMessageType("error");
-      setMessage("Failed to register. Please try again.");
+      setMessage("Failed to save number. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
+  const StarRating = ({ rating, onRatingChange }) => {
+    return (
+      <div className="flex gap-4">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <button
+            key={star}
+            onClick={() => onRatingChange(star)}
+            className="star-button"
+            style={{ background: "none", border: "none", cursor: "pointer" }}
+          >
+            <Star
+              size={28}
+              fill={star <= rating ? "#FFB800" : "none"}
+              color={star <= rating ? "#FFB800" : "#D1D5DB"}
+              style={{ transition: "all 0.2s" }}
+            />
+          </button>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="section-1200" style={{ padding: "40px 20px" }}>
-      <div className="review-header text-center mb-32">
-        <h1 className="font-28 weight-600 mb-8">Share Your Thoughts</h1>
-        <p className="font-14 dark-50">
-          Your feedback helps us grow and serve you better
-        </p>
-      </div>
-
       {/* Tabs */}
-      <div
-        className="review-tabs flex flex-row gap-8 mb-32"
-        style={{ borderBottom: "1px solid #e5e7eb" }}
-      >
+      <div className="flex flex-row gap-12 margin-btm-32px justify-center">
         <button
-          className={`review-tab ${activeTab === "store" ? "active" : ""}`}
-          onClick={() => setActiveTab("store")}
-          style={{
-            padding: "12px 24px",
-            fontSize: "16px",
-            fontWeight: "500",
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            position: "relative",
-            color: activeTab === "store" ? "#8b5cf6" : "#6b7280",
-            transition: "all 0.2s",
+          className={`tab-button ${activeTab === "store" ? "active" : ""}`}
+          onClick={() => {
+            setActiveTab("store");
+            setMessage("");
+            setShowPhoneInput(false);
           }}
         >
-          <div className="flex items-center gap-8">
-            <MessageSquare size={18} />
-            Store Experience
-          </div>
-          {activeTab === "store" && (
-            <div
-              style={{
-                position: "absolute",
-                bottom: "-1px",
-                left: 0,
-                right: 0,
-                height: "2px",
-                background: "#8b5cf6",
-                borderRadius: "2px",
-              }}
-            />
-          )}
+          <Store size={18} />
+          Store Review
         </button>
-
         <button
-          className={`review-tab ${activeTab === "book" ? "active" : ""}`}
-          onClick={() => setActiveTab("book")}
-          style={{
-            padding: "12px 24px",
-            fontSize: "16px",
-            fontWeight: "500",
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            position: "relative",
-            color: activeTab === "book" ? "#8b5cf6" : "#6b7280",
-            transition: "all 0.2s",
+          className={`tab-button ${activeTab === "book" ? "active" : ""}`}
+          onClick={() => {
+            setActiveTab("book");
+            setMessage("");
+            setShowPhoneInput(false);
           }}
         >
-          <div className="flex items-center gap-8">
-            <Star size={18} />
-            Book Review
-          </div>
-          {activeTab === "book" && (
-            <div
-              style={{
-                position: "absolute",
-                bottom: "-1px",
-                left: 0,
-                right: 0,
-                height: "2px",
-                background: "#8b5cf6",
-                borderRadius: "2px",
-              }}
-            />
-          )}
+          <BookOpen size={18} />
+          Book Review
         </button>
       </div>
 
       {/* Store Review Tab */}
       {activeTab === "store" && (
-        <div className="review-content">
-          <div
-            className="review-card"
-            style={{
-              background: "#fff",
-              borderRadius: "16px",
-              padding: "32px",
-              boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-            }}
-          >
-            <div className="text-center mb-24">
-              <div
-                className="price-drop-badge"
-                style={{
-                  width: "auto",
-                  display: "inline-flex",
-                  marginBottom: "16px",
-                }}
-              >
-                <MessageSquare size={16} />
-                <span className="weight-600">How was your experience?</span>
-              </div>
-              <p className="font-14 dark-50">
-                We'd love to hear your honest feedback about our store
-              </p>
-            </div>
+        <div className="review-container">
+          <div className="text-center margin-btm-24px">
+            <h2 className="font-24 weight-600 margin-btm-8px">
+              How was your experience?
+            </h2>
+            <p className="font-14 gray-500">
+              Your feedback helps us serve you better
+            </p>
+          </div>
 
+          {/* Rating Stars */}
+          <div className="margin-btm-24px text-center">
+            <label className="font-14 weight-500 margin-btm-12px block">
+              Rate your experience
+            </label>
+            <StarRating rating={storeRating} onRatingChange={setStoreRating} />
+          </div>
+
+          {/* Review Input */}
+          <div className="margin-btm-24px">
+            <label className="font-14 weight-500 margin-btm-12px block">
+              Your Feedback
+            </label>
             <textarea
               className="review-textarea"
-              placeholder="Share your experience with TheBookX... (e.g., delivery speed, packaging, customer support, etc.)"
-              value={storeFeedback}
-              onChange={(e) => setStoreFeedback(e.target.value)}
-              rows={6}
-              style={{
-                width: "100%",
-                padding: "16px",
-                border: "1px solid #e5e7eb",
-                borderRadius: "12px",
-                fontSize: "14px",
-                fontFamily: "inherit",
-                resize: "vertical",
-                marginBottom: "24px",
-              }}
+              placeholder="Tell us about your experience with TheBookX..."
+              value={storeReview}
+              onChange={(e) => setStoreReview(e.target.value)}
+              rows={5}
+              style={{ width: "100%", resize: "vertical" }}
             />
-
-            <button
-              className="pri-big-btn width100"
-              onClick={handleStoreReviewSubmit}
-              disabled={loading}
-              style={{ marginBottom: "24px" }}
-            >
-              {loading ? "Submitting..." : "Submit Feedback"}
-              <Send size={16} />
-            </button>
           </div>
+
+          {/* Prize Info Banner */}
+          <div
+            className="prize-banner"
+            style={{
+              background: "linear-gradient(135deg, #fb8500, #ffb703)",
+              borderRadius: "12px",
+              padding: "16px",
+              marginBottom: "24px",
+              color: "white",
+            }}
+          >
+            <div className="flex flex-col gap-12 margin-btm-12px">
+              <Gift size={32} />
+              <span className="weight-600">Win Books Set Worth ₹499! 🎁</span>
+            </div>
+            <p className="font-14" style={{ opacity: 0.9 }}>
+              Share your phone number to participate in our weekly lucky draw.
+              Winners announced every Monday on Instagram!
+            </p>
+          </div>
+
+          {/* Phone Number Input */}
+          {!phoneSubmitted ? (
+            <div className="flex flex-col gap-12">
+              <div className="flex gap-12">
+                <input
+                  type="tel"
+                  className="sec-mid-btn"
+                  placeholder="Enter 10-digit mobile number"
+                  value={phoneNumber}
+                  maxLength={10}
+                  onChange={(e) =>
+                    setPhoneNumber(e.target.value.replace(/\D/g, ""))
+                  }
+                  style={{ flex: 1 }}
+                />
+                <button
+                  onClick={handlePhoneSubmit}
+                  className="pri-big-btn"
+                  disabled={loading}
+                  style={{ padding: "0 24px" }}
+                >
+                  Submit
+                </button>
+              </div>
+              <divv className="font-12 gray-500 margin-tp-8px flex flex-row gap-12 items-center">
+                <Instagram size={32} />
+                Follow us on Instagram @thebookx for winner announcements
+              </divv>
+            </div>
+          ) : (
+            <div
+              className="success-message"
+              style={{
+                background: "#D1FAE5",
+                padding: "12px",
+                borderRadius: "8px",
+                marginBottom: "24px",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+              }}
+            >
+              <CheckCircle size={18} color="#10B981" />
+              <span className="font-12">
+                Number saved! You're in the lucky draw 🎉
+              </span>
+            </div>
+          )}
+
+          {/* Submit Button */}
+          <button
+            className="pri-big-btn width100"
+            onClick={handleStoreSubmit}
+            disabled={loading || !storeReview || storeRating === 0}
+            style={{ padding: "14px" }}
+          >
+            {loading ? "Submitting..." : "Submit Review"}
+          </button>
+
+          {message && (
+            <div
+              className={`margin-tp-16px text-center ${message.includes("✅") ? "green" : "red"}`}
+            >
+              {message}
+            </div>
+          )}
         </div>
       )}
 
       {/* Book Review Tab */}
       {activeTab === "book" && (
-        <div className="review-content">
-          <div
-            className="review-card"
-            style={{
-              background: "#fff",
-              borderRadius: "16px",
-              padding: "32px",
-              boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-            }}
-          >
-            <div className="text-center mb-24">
-              <div
-                className="price-drop-badge"
-                style={{
-                  width: "auto",
-                  display: "inline-flex",
-                  marginBottom: "16px",
-                }}
-              >
-                <Star size={16} />
-                <span className="weight-600">Review a Book</span>
-              </div>
-              <p className="font-14 dark-50">
-                Help others discover great reads with your honest review
-              </p>
-            </div>
+        <div
+          className="review-container"
+          style={{ maxWidth: "600px", margin: "0 auto" }}
+        >
+          <div className="text-center margin-btm-24px">
+            <h2 className="font-24 weight-600 margin-btm-8px">Review a Book</h2>
+            <p className="font-14 gray-500">
+              Share your thoughts about your favorite read
+            </p>
+          </div>
 
-            {/* Book Selection Dropdown */}
-            <div className="form-group mb-20">
-              <label className="font-14 weight-500 mb-8 block">
-                Select Book
-              </label>
-              <div className="relative">
-                <select
-                  className="book-select"
-                  value={selectedBook}
-                  onChange={(e) => setSelectedBook(e.target.value)}
-                  style={{
-                    width: "100%",
-                    padding: "12px 16px",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "12px",
-                    fontSize: "14px",
-                    background: "#fff",
-                    cursor: "pointer",
-                    appearance: "none",
-                  }}
-                >
-                  <option value="">Choose a book...</option>
-                  {books.map((book) => (
-                    <option key={book.id} value={book.id}>
-                      {book.name}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown
-                  size={18}
-                  style={{
-                    position: "absolute",
-                    right: "12px",
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    pointerEvents: "none",
-                    color: "#9ca3af",
-                  }}
-                />
-              </div>
-            </div>
+          {/* Book Selection */}
+          <div className="margin-btm-24px">
+            <label className="font-14 weight-500 margin-btm-12px block">
+              Select Book
+            </label>
+            <select
+              className="sec-mid-btn"
+              value={selectedBook}
+              onChange={(e) => setSelectedBook(e.target.value)}
+              style={{ width: "100%", padding: "12px" }}
+            >
+              <option value="">Choose a book...</option>
+              {books.map((book) => (
+                <option key={book.id} value={book.id}>
+                  {book.name}
+                </option>
+              ))}
+            </select>
+          </div>
 
-            {/* Book Preview */}
-            {selectedBookData && (
-              <div
-                className="book-preview mb-24"
-                style={{
-                  display: "flex",
-                  gap: "16px",
-                  padding: "16px",
-                  background: "#f9fafb",
-                  borderRadius: "12px",
-                  alignItems: "center",
-                }}
-              >
-                {selectedBookData.image && (
-                  <Image
-                    src={selectedBookData.image}
-                    alt={selectedBookData.name}
-                    width={60}
-                    height={80}
-                    style={{ objectFit: "cover", borderRadius: "8px" }}
-                  />
-                )}
-                <div>
-                  <h3 className="font-16 weight-600">
-                    {selectedBookData.name}
-                  </h3>
-                  <p className="font-12 dark-50 mt-4">
-                    by {selectedBookData.author || "Unknown Author"}
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Review Textarea */}
-            <textarea
-              className="review-textarea"
-              placeholder="Write your honest review... What did you like? What could be better?"
-              value={review}
-              onChange={(e) => setReview(e.target.value)}
-              rows={6}
+          {/* Book Preview */}
+          {selectedBookData && (
+            <div
+              className="book-preview"
               style={{
-                width: "100%",
+                display: "flex",
+                gap: "16px",
                 padding: "16px",
-                border: "1px solid #e5e7eb",
+                background: "#F9FAFB",
                 borderRadius: "12px",
-                fontSize: "14px",
-                fontFamily: "inherit",
-                resize: "vertical",
                 marginBottom: "24px",
               }}
-            />
-
-            <button
-              className="pri-big-btn width100"
-              onClick={handleBookReviewSubmit}
-              disabled={loading}
-              style={{ marginBottom: "24px" }}
             >
-              {loading ? "Submitting..." : "Submit Review"}
-              <Send size={16} />
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Contest Section */}
-      {!phoneSubmitted ? (
-        <div
-          className="contest-section mt-32"
-          style={{
-            background: "linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%)",
-            borderRadius: "16px",
-            padding: "32px",
-            border: "1px solid #e9d5ff",
-          }}
-        >
-          <div className="flex flex-col md:flex-row items-center gap-24">
-            <div className="flex-shrink-0">
-              <div
-                className="gift-icon"
-                style={{
-                  width: "80px",
-                  height: "80px",
-                  background:
-                    "linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)",
-                  borderRadius: "50%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Gift size={40} color="white" />
-              </div>
-            </div>
-
-            <div className="flex-grow text-center md:text-left">
-              <h3 className="font-20 weight-600 mb-8 flex items-center justify-center md:justify-start gap-8">
-                <Award size={20} className="purple" />
-                Win a ₹499 Books Gift Set!
-              </h3>
-              <p className="font-14 dark-50 mb-12">
-                Share your review and get a chance to win exciting book sets
-                worth ₹499 with FREE shipping!
-              </p>
-              <div className="flex flex-col gap-8">
-                <div className="flex items-center gap-8 justify-center md:justify-start">
-                  <CheckCircle size={14} className="green" />
-                  <span className="font-12">Weekly winners announced</span>
-                </div>
-                <div className="flex items-center gap-8 justify-center md:justify-start">
-                  <Instagram size={14} className="purple" />
-                  <span className="font-12">
-                    Follow us on Instagram for winner announcements
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex-shrink-0 width100 md:width-auto">
-              {!showPhoneInput ? (
-                <button
-                  className="pri-big-btn width100"
-                  onClick={() => setShowPhoneInput(true)}
-                  style={{ whiteSpace: "nowrap" }}
-                >
-                  <Phone size={16} />
-                  Enter to Win
-                </button>
-              ) : (
-                <div className="flex flex-col gap-8">
-                  <div className="flex gap-8">
-                    <input
-                      type="tel"
-                      className="sec-mid-btn"
-                      placeholder="Enter 10-digit mobile number"
-                      value={phoneNumber}
-                      maxLength={10}
-                      onChange={(e) =>
-                        setPhoneNumber(e.target.value.replace(/\D/g, ""))
-                      }
-                      style={{ flex: 1 }}
-                    />
-                    <button
-                      className="pri-big-btn"
-                      onClick={handlePhoneSubmit}
-                      disabled={loading}
-                      style={{ padding: "12px 24px" }}
-                    >
-                      Submit
-                    </button>
-                  </div>
-                  <p className="font-10 dark-50 text-center">
-                    Winners announced every week on our Instagram page
-                  </p>
-                </div>
+              {selectedBookData.image && (
+                <Image
+                  src={selectedBookData.image}
+                  alt={selectedBookData.name}
+                  width={80}
+                  height={100}
+                  style={{ objectFit: "cover", borderRadius: "8px" }}
+                />
               )}
+              <div>
+                <h3 className="font-16 weight-600 margin-btm-4px">
+                  {selectedBookData.name}
+                </h3>
+                <p className="font-12 gray-500">
+                  by {selectedBookData.author || "Unknown Author"}
+                </p>
+              </div>
             </div>
-          </div>
-        </div>
-      ) : (
-        <div
-          className="contest-success mt-32"
-          style={{
-            background: "#ecfdf5",
-            borderRadius: "16px",
-            padding: "24px",
-            border: "1px solid #a7f3d0",
-            textAlign: "center",
-          }}
-        >
-          <CheckCircle
-            size={40}
-            className="green"
-            style={{ marginBottom: "12px" }}
-          />
-          <h3 className="font-18 weight-600 mb-8">You're in the Contest! 🎉</h3>
-          <p className="font-14 dark-50 mb-12">
-            Your number {phoneNumber} has been registered. Winners are announced
-            every week on our Instagram page.
-          </p>
-          <a
-            href="https://instagram.com/thebookx.in"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="pri-big-btn inline-flex"
-            style={{ width: "auto", padding: "10px 24px" }}
-          >
-            <Instagram size={16} />
-            Follow us on Instagram
-          </a>
-        </div>
-      )}
-
-      {/* Message Display */}
-      {message && (
-        <div
-          className={`message-display mt-20 p-16 rounded-12 flex items-center gap-8 justify-center ${
-            messageType === "success"
-              ? "bg-green-50 text-green-700"
-              : "bg-red-50 text-red-700"
-          }`}
-          style={{
-            background: messageType === "success" ? "#ecfdf5" : "#fef2f2",
-            color: messageType === "success" ? "#065f46" : "#991b1b",
-            borderRadius: "12px",
-          }}
-        >
-          {messageType === "success" ? (
-            <CheckCircle size={16} />
-          ) : (
-            <AlertCircle size={16} />
           )}
-          <span className="font-14">{message}</span>
+
+          {/* Rating Stars */}
+          <div className="margin-btm-24px text-center">
+            <label className="font-14 weight-500 margin-btm-12px block">
+              Rate this book
+            </label>
+            <StarRating rating={bookRating} onRatingChange={setBookRating} />
+          </div>
+
+          {/* Review Input */}
+          <div className="margin-btm-24px">
+            <label className="font-14 weight-500 margin-btm-12px block">
+              Your Review
+            </label>
+            <textarea
+              className="review-textarea"
+              placeholder="What did you think about this book? Share your honest opinion..."
+              value={bookReview}
+              onChange={(e) => setBookReview(e.target.value)}
+              rows={5}
+              style={{ width: "100%", resize: "vertical" }}
+            />
+          </div>
+
+          {/* Prize Info Banner */}
+          <div
+            className="prize-banner"
+            style={{
+              background: "linear-gradient(135deg, #fb8500, #ffb703)",
+              borderRadius: "12px",
+              padding: "16px",
+              marginBottom: "24px",
+              color: "white",
+            }}
+          >
+            <div className="flex flex-col gap-12 margin-btm-12px">
+              <Gift size={32} />
+              <span className="weight-600">Win Books Set Worth ₹499! 🎁</span>
+            </div>
+            <p className="font-14" style={{ opacity: 0.9 }}>
+              Share your phone number to participate in our weekly lucky draw.
+              Winners announced every Monday on Instagram!
+            </p>
+          </div>
+
+          {/* Phone Number Input */}
+          {!phoneSubmitted ? (
+            <div className="flex flex-col gap-12">
+              <div className="flex gap-12">
+                <input
+                  type="tel"
+                  className="sec-mid-btn"
+                  placeholder="Enter 10-digit mobile number"
+                  value={phoneNumber}
+                  maxLength={10}
+                  onChange={(e) =>
+                    setPhoneNumber(e.target.value.replace(/\D/g, ""))
+                  }
+                  style={{ flex: 1 }}
+                />
+                <button
+                  onClick={handlePhoneSubmit}
+                  className="pri-big-btn"
+                  disabled={loading}
+                  style={{ padding: "0 24px" }}
+                >
+                  Submit
+                </button>
+              </div>
+              <divv className="font-12 gray-500 margin-tp-8px flex flex-row gap-12 items-center">
+                <Instagram size={32} />
+                Follow us on Instagram @thebookx for winner announcements
+              </divv>
+            </div>
+          ) : (
+            <div
+              className="success-message"
+              style={{
+                background: "#D1FAE5",
+                padding: "12px",
+                borderRadius: "8px",
+                marginBottom: "24px",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+              }}
+            >
+              <CheckCircle size={18} color="#10B981" />
+              <span className="font-12">
+                Number saved! You're in the lucky draw 🎉
+              </span>
+            </div>
+          )}
+
+          {/* Submit Button */}
+          <button
+            className="pri-big-btn width100"
+            onClick={handleBookSubmit}
+            disabled={
+              loading || !selectedBook || !bookReview || bookRating === 0
+            }
+            style={{ padding: "14px" }}
+          >
+            {loading ? "Submitting..." : "Submit Review"}
+          </button>
+
+          {message && (
+            <div
+              className={`margin-tp-16px text-center ${message.includes("✅") ? "green" : "red"}`}
+            >
+              {message}
+            </div>
+          )}
         </div>
       )}
     </div>

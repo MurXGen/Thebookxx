@@ -227,7 +227,7 @@ Thank you! 🙏
             </span>
             {offerDiscount > 0 && (
               <span className="strike dark-50 original">
-                ₹{totalDiscounted} |
+                ₹{totalDiscounted}
               </span>
             )}
 

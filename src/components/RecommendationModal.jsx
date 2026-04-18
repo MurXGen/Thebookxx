@@ -8,13 +8,15 @@ import {
   Sparkles,
   ArrowRight,
   ArrowLeft,
-  Cross,
+  ShoppingCart,
+  Heart,
 } from "lucide-react";
 import { books } from "@/utils/book";
 import { useRouter } from "next/navigation";
 import LoadingButton from "./UI/LoadingButton";
 import BookCard from "./BookCard";
 import { FaWhatsapp } from "react-icons/fa";
+import { useStore } from "@/context/StoreContext";
 
 // Get all unique categories from books with their frequency
 const getAllCategoriesWithFrequency = () => {
@@ -25,7 +27,6 @@ const getAllCategoriesWithFrequency = () => {
     });
   });
 
-  // Sort by frequency and return top categories
   return Array.from(categoryMap.entries())
     .sort((a, b) => b[1] - a[1])
     .slice(0, 20)
@@ -132,7 +133,6 @@ const READING_PREFERENCES = [
 // Calculate book score based on multiple factors
 const calculateBookScore = (book, formData) => {
   let score = 0;
-  let matchDetails = [];
 
   // 1. Genre matching (40% weight)
   if (formData.genres.length > 0) {
@@ -141,9 +141,6 @@ const calculateBookScore = (book, formData) => {
       0;
     const genreScore = (matchingGenres / formData.genres.length) * 40;
     score += genreScore;
-    if (matchingGenres > 0) {
-      matchDetails.push(`${matchingGenres} genre matches`);
-    }
   }
 
   // 2. Reading preference matching (30% weight)
@@ -158,12 +155,8 @@ const calculateBookScore = (book, formData) => {
             cat.toLowerCase().includes(keyword.toLowerCase()),
           ),
         ).length || 0;
-
       const preferenceScore = Math.min((matchingKeywords / 3) * 30, 30);
       score += preferenceScore;
-      if (matchingKeywords > 0) {
-        matchDetails.push(`${matchingKeywords} preference matches`);
-      }
     }
   }
 
@@ -177,57 +170,37 @@ const calculateBookScore = (book, formData) => {
             cat.toLowerCase().includes(keyword.toLowerCase()),
           ),
         ).length || 0;
-
       const ageScore = Math.min(ageMatches * 7.5, 15);
       score += ageScore;
-      if (ageMatches > 0) {
-        matchDetails.push(`age-appropriate`);
-      }
     } else {
-      // If no age restrictions or "any" selected, give partial score
       score += 7.5;
     }
   } else {
-    score += 7.5; // Partial score for not specifying age
+    score += 7.5;
   }
 
   // 4. Popularity & trends (10% weight)
-  if (book.catalogue?.includes("bestseller")) {
-    score += 5;
-    matchDetails.push("bestseller");
-  }
-  if (book.catalogue?.includes("trending")) {
-    score += 5;
-    matchDetails.push("trending");
-  }
+  if (book.catalogue?.includes("bestseller")) score += 5;
+  if (book.catalogue?.includes("trending")) score += 5;
 
   // 5. Value for money (5% weight)
   const discountPercent =
     ((book.originalPrice - book.discountedPrice) / book.originalPrice) * 100;
-  if (discountPercent > 50) {
-    score += 5;
-    matchDetails.push("great discount");
-  } else if (discountPercent > 30) {
-    score += 3;
-    matchDetails.push("good discount");
-  } else if (book.discountedPrice === 1) {
-    score += 5;
-    matchDetails.push("₹1 special");
-  }
+  if (discountPercent > 50) score += 5;
+  else if (discountPercent > 30) score += 3;
+  else if (book.discountedPrice === 1) score += 5;
 
   // 6. Stock availability boost
-  if (book.stock > 0 && book.stock < 10) {
-    score += 2; // Limited stock - urgency
-    matchDetails.push("limited stock");
-  }
+  if (book.stock > 0 && book.stock < 10) score += 2;
 
-  return { score, matchDetails };
+  return { score };
 };
 
 export default function RecommendationModal({
   isOpen: externalIsOpen,
   onClose: externalOnClose,
 }) {
+  const { addToCart, toggleWishlist } = useStore();
   const [internalIsOpen, setInternalIsOpen] = useState(false);
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
@@ -238,19 +211,63 @@ export default function RecommendationModal({
     preference: "",
   });
   const [recommendations, setRecommendations] = useState([]);
+  const [savedRecommendations, setSavedRecommendations] = useState([]);
   const router = useRouter();
 
-  // Use external isOpen if provided, otherwise use internal state
   const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
 
+  // Load saved state from localStorage on mount
+  useEffect(() => {
+    const savedModalState = localStorage.getItem("recommendationModalState");
+    if (savedModalState) {
+      const parsed = JSON.parse(savedModalState);
+      if (parsed.isOpen && !parsed.isClosed) {
+        setInternalIsOpen(true);
+        if (parsed.step === 4 && parsed.recommendations?.length > 0) {
+          setStep(4);
+          setRecommendations(parsed.recommendations);
+          setSavedRecommendations(parsed.recommendations);
+          if (parsed.formData) {
+            setFormData(parsed.formData);
+          }
+        }
+      }
+    }
+  }, []);
+
+  // Save modal state to localStorage
+  const saveModalState = (open, currentStep, recs, formDataState) => {
+    const state = {
+      isOpen: open,
+      isClosed: false,
+      step: currentStep,
+      recommendations: recs,
+      formData: formDataState,
+      timestamp: Date.now(),
+    };
+    localStorage.setItem("recommendationModalState", JSON.stringify(state));
+  };
+
   const handleClose = () => {
+    // Save that modal is closed
+    const closedState = {
+      isOpen: false,
+      isClosed: true,
+      step: 1,
+      recommendations: [],
+      timestamp: Date.now(),
+    };
+    localStorage.setItem(
+      "recommendationModalState",
+      JSON.stringify(closedState),
+    );
+
     if (externalOnClose) {
       externalOnClose();
     } else {
       setInternalIsOpen(false);
-      sessionStorage.setItem("recommendationModalSeen", "true");
     }
-    // Reset to first step when closing
+
     setTimeout(() => {
       setStep(1);
       setFormData({
@@ -259,46 +276,15 @@ export default function RecommendationModal({
         ageGroup: "",
         preference: "",
       });
+      setRecommendations([]);
     }, 300);
   };
 
-  // Auto-show modal after 30 seconds only if not controlled externally
-  //   useEffect(() => {
-  //     if (externalIsOpen !== undefined) return; // Skip auto-show if controlled externally
-
-  //     const timer = setTimeout(() => {
-  //       const hasSeenModal = sessionStorage.getItem("recommendationModalSeen");
-  //       if (!hasSeenModal) {
-  //         setInternalIsOpen(true);
-  //       }
-  //     }, 30000);
-
-  //     return () => clearTimeout(timer);
-  //   }, [externalIsOpen]);
-
   const handleWhatsAppRedirect = () => {
-    const preferences = [];
-    if (formData.genres.length > 0) {
-      preferences.push(`genres: ${formData.genres.join(", ")}`);
-    }
-    if (formData.ageGroup && formData.ageGroup !== "any") {
-      const ageLabel = AGE_GROUPS.find(
-        (a) => a.id === formData.ageGroup,
-      )?.label;
-      preferences.push(`age: ${ageLabel}`);
-    }
-    if (formData.preference) {
-      const prefLabel = READING_PREFERENCES.find(
-        (p) => p.id === formData.preference,
-      )?.label;
-      preferences.push(`goal: ${prefLabel}`);
-    }
-
     const message = encodeURIComponent(
-      `Hi! I'm looking for book. Can you help me?`,
+      `Hi! I'm looking for a book. Can you help me?`,
     );
     window.open(`https://wa.me/917710892108?text=${message}`, "_blank");
-    handleClose();
   };
 
   const handleWhatsAppCommunity = () => {
@@ -325,38 +311,38 @@ export default function RecommendationModal({
     setIsLoading(true);
 
     setTimeout(() => {
-      // Calculate scores for all books
       const scoredBooks = books.map((book) => {
-        const { score, matchDetails } = calculateBookScore(book, formData);
-        return { ...book, score, matchDetails };
+        const { score } = calculateBookScore(book, formData);
+        return { ...book, score };
       });
 
-      // Sort by score (highest first)
       scoredBooks.sort((a, b) => b.score - a.score);
-
-      // Get top 30 books (or all if less than 30)
       const topRecommendations = scoredBooks.slice(0, 30);
 
-      // Add variety by including some books from different genres if needed
-      if (
-        topRecommendations.length < 30 &&
-        books.length > topRecommendations.length
-      ) {
-        const remainingBooks = scoredBooks.slice(30);
-        const additionalBooks = remainingBooks
-          .filter((book) => book.score > 10) // Only include books with at least some relevance
-          .slice(0, 30 - topRecommendations.length);
-        topRecommendations.push(...additionalBooks);
-      }
-
       setRecommendations(topRecommendations);
+      setSavedRecommendations(topRecommendations);
       setStep(4);
       setIsLoading(false);
+
+      // Save recommendations to localStorage
+      saveModalState(true, 4, topRecommendations, formData);
     }, 1500);
   };
 
   const handleSubmit = () => {
     generateRecommendations();
+  };
+
+  const handleAddAllToCart = () => {
+    recommendations.forEach((book) => {
+      addToCart(book.id);
+    });
+  };
+
+  const handleAddAllToWishlist = () => {
+    recommendations.forEach((book) => {
+      toggleWishlist(book.id);
+    });
   };
 
   return (
@@ -417,12 +403,7 @@ export default function RecommendationModal({
                       >
                         <div className="flex flex-row gap-8">
                           <FaWhatsapp size={20} color="#25D366" />
-                          <p className="weight-600 flex items-center gap-8 justify-center">
-                            Chat with us
-                          </p>
-                          {/* <span className="font-10">
-                          Chat with us on WhatsApp
-                        </span> */}
+                          <p className="weight-600">Chat with us</p>
                         </div>
                       </LoadingButton>
 
@@ -432,29 +413,10 @@ export default function RecommendationModal({
                       >
                         <div className="flex flex-row gap-8">
                           <FaWhatsapp size={20} color="#25D366" />
-                          <p className="weight-600 flex items-center gap-8 justify-center">
-                            Join community
-                          </p>
-                          {/* <span className="font-10">
-                          Chat with us on WhatsApp
-                        </span> */}
+                          <p className="weight-600">Join community</p>
                         </div>
                       </LoadingButton>
                     </div>
-
-                    {/* <LoadingButton
-                      className="sec-big-btn width100"
-                      onClick={handleWhatsAppRedirect}
-                    >
-                      <div className="flex flex-col">
-                        <p className="weight-600 flex items-center gap-8 justify-center">
-                          No Thanks, i'll explore by myself!
-                        </p>
-                        <span className="font-10">
-                          Chat with us on WhatsApp
-                        </span>
-                      </div>
-                    </LoadingButton> */}
                   </div>
                 </motion.div>
               )}
@@ -612,6 +574,26 @@ export default function RecommendationModal({
                               Found {recommendations.length} books matching your
                               preferences
                             </p>
+                          </div>
+
+                          {/* Add All Buttons */}
+                          <div className="flex flex-row gap-12 mb-16">
+                            <button
+                              onClick={handleAddAllToCart}
+                              className="pri-big-btn flex flex-row gap-4 items-center justify-center"
+                              style={{ flex: 1, background: "#10B981" }}
+                            >
+                              <ShoppingCart size={16} />
+                              Add All to Cart
+                            </button>
+                            <button
+                              onClick={handleAddAllToWishlist}
+                              className="sec-big-btn flex flex-row gap-4 items-center justify-center"
+                              style={{ flex: 1 }}
+                            >
+                              <Heart size={16} />
+                              Add All to Wishlist
+                            </button>
                           </div>
 
                           <div className="grid-2 margin-tp-12px">

@@ -492,14 +492,14 @@ export default function AddressModal({
               <div className="dashed-border my-12"></div>
 
               {/* Delivery Charge Breakdown */}
-              <div className="flex flex-col gap-8">
+              {/* <div className="flex flex-col gap-8">
                 {extraDeliveryCharge > 0 && (
                   <div className="flex justify-between">
                     <span className="font-14">Standard Delivery</span>
                     <span className="font-14">₹{extraDeliveryCharge}</span>
                   </div>
                 )}
-              </div>
+              </div> */}
 
               <div className="bill-row total">
                 <span className="font-16 weight-600">Total Payable</span>

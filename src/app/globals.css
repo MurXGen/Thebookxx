@@ -321,7 +321,7 @@ button:hover {
     transform: rotate(0deg);
   }
 
-  20% {
+  20% {f
     transform: rotate(25deg);
   }
 
@@ -2003,7 +2003,7 @@ button:disabled {
 }
 
 input {
-  padding: var(--px-16) !important;
+  /* padding: var(--px-16) !important; */
   text-align: left !important;
 }
 

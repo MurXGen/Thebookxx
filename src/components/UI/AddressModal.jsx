@@ -15,6 +15,8 @@ import {
   AlertCircle,
   User,
   Zap,
+  Clock,
+  Package,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -59,6 +61,8 @@ export default function AddressModal({
   const [pincodeError, setPincodeError] = useState("");
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
   const [showContactFields, setShowContactFields] = useState(false);
+  const [showFasterDeliveryModal, setShowFasterDeliveryModal] = useState(false);
+  const [tempPaymentMethod, setTempPaymentMethod] = useState(null);
 
   const [showPayment, setShowPayment] = useState(false);
   const [qrUnlocked, setQrUnlocked] = useState(false);
@@ -137,12 +141,12 @@ export default function AddressModal({
 
   // Calculate extra charge based on faster delivery selection
   useEffect(() => {
-    if (fasterDelivery && pincode.length === 6) {
-      setExtraCharge(100); // ₹100 extra for faster delivery
+    if (fasterDelivery && pincode.length === 6 && isFasterDeliveryAvailable) {
+      setExtraCharge(100);
     } else {
       setExtraCharge(0);
     }
-  }, [fasterDelivery, pincode]);
+  }, [fasterDelivery, pincode, isFasterDeliveryAvailable]);
 
   // Calculate total with all charges
   const totalWithAllCharges = finalPayable + extraDeliveryCharge + extraCharge;
@@ -235,7 +239,29 @@ export default function AddressModal({
     localStorage.removeItem("checkoutAddress");
   };
 
-  const handleCODSubmit = () => {
+  const handleProceedWithFasterDelivery = () => {
+    setFasterDelivery(true);
+    setShowFasterDeliveryModal(false);
+
+    if (tempPaymentMethod === "COD") {
+      proceedWithCOD();
+    } else if (tempPaymentMethod === "UPI") {
+      proceedWithUPI();
+    }
+  };
+
+  const handleProceedWithoutFasterDelivery = () => {
+    setFasterDelivery(false);
+    setShowFasterDeliveryModal(false);
+
+    if (tempPaymentMethod === "COD") {
+      proceedWithCOD();
+    } else if (tempPaymentMethod === "UPI") {
+      proceedWithUPI();
+    }
+  };
+
+  const proceedWithCOD = () => {
     if (!isValidPincode || pincode.length !== 6) {
       setPincodeError("Please enter a valid 6-digit pincode");
       return;
@@ -264,7 +290,7 @@ export default function AddressModal({
     onClose();
   };
 
-  const handleUPIPayment = () => {
+  const proceedWithUPI = () => {
     if (!isValidPincode || pincode.length !== 6) {
       setPincodeError("Please enter a valid 6-digit pincode");
       return;
@@ -276,6 +302,18 @@ export default function AddressModal({
     }
 
     setShowPayment(true);
+  };
+
+  const handleCODClick = () => {
+    if (!isFormValid()) return;
+    setTempPaymentMethod("COD");
+    setShowFasterDeliveryModal(true);
+  };
+
+  const handleUPIClick = () => {
+    if (!isFormValid()) return;
+    setTempPaymentMethod("UPI");
+    setShowFasterDeliveryModal(true);
   };
 
   const handleVerifyPayment = () => {
@@ -451,56 +489,6 @@ export default function AddressModal({
                 )}
               </AnimatePresence>
 
-              {/* Faster Delivery Section - Always shown when pincode is entered */}
-              {pincode.length === 6 && (
-                <div className="bill-row faster-delivery-section">
-                  <label className="flex gap-12 items-start cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={fasterDelivery}
-                      onChange={(e) => setFasterDelivery(e.target.checked)}
-                      className="mt-2"
-                    />
-                    <div className="flex flex-col gap-4">
-                      <div className="flex items-center gap-8">
-                        <Zap size={16} className="orange" />
-                        <span className="weight-600">Faster Delivery</span>
-                        {isFasterDeliveryAvailable && (
-                          <span className="font-10 green">
-                            ✓ Available in your area
-                          </span>
-                        )}
-                        {!isFasterDeliveryAvailable && (
-                          <span className="font-10 red">
-                            ⚠️ Not available in your area
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex flex-col gap-4">
-                        <span className="font-12 dark-50">
-                          Get your order delivered in 2-3 business days instead
-                          of 5-7 days.
-                        </span>
-                        {isFasterDeliveryAvailable && (
-                          <span className="font-12 green">
-                            🚚 Priority shipping with real-time tracking
-                          </span>
-                        )}
-                        {!isFasterDeliveryAvailable && (
-                          <span className="font-12 red">
-                            Currently not available for your location. We're
-                            working on expanding!
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </label>
-                  {fasterDelivery && isFasterDeliveryAvailable && (
-                    <span className="orange font-16 weight-600">+₹100</span>
-                  )}
-                </div>
-              )}
-
               <div className="dashed-border my-12"></div>
 
               {/* Delivery Charge Breakdown */}
@@ -509,12 +497,6 @@ export default function AddressModal({
                   <div className="flex justify-between">
                     <span className="font-14">Standard Delivery</span>
                     <span className="font-14">₹{extraDeliveryCharge}</span>
-                  </div>
-                )}
-                {fasterDelivery && isFasterDeliveryAvailable && (
-                  <div className="flex justify-between">
-                    <span className="font-14">Faster Delivery (Express)</span>
-                    <span className="font-14 orange">+₹{extraCharge}</span>
                   </div>
                 )}
               </div>
@@ -531,7 +513,7 @@ export default function AddressModal({
                 <div className="flex flex-row gap-12 items-start mt-16">
                   <LoadingButton
                     className="pri-big-btn width100"
-                    onClick={handleUPIPayment}
+                    onClick={handleUPIClick}
                     disabled={!isFormValid()}
                   >
                     <p className="weight-600">Pay with UPI</p>
@@ -540,7 +522,7 @@ export default function AddressModal({
 
                   <LoadingButton
                     className="sec-big-btn width100 flex flex-col"
-                    onClick={handleCODSubmit}
+                    onClick={handleCODClick}
                     disabled={!isFormValid()}
                   >
                     <p className="weight-600">Cash on Delivery</p>
@@ -575,6 +557,122 @@ export default function AddressModal({
         </motion.div>
       )}
 
+      {/* Faster Delivery Confirmation Modal */}
+      <AnimatePresence>
+        {showFasterDeliveryModal && (
+          <motion.div
+            className="bill-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowFasterDeliveryModal(false)}
+          >
+            <motion.div
+              className="bill-modal"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="bill-header">
+                <span className="weight-600 font-16">
+                  Choose Delivery Speed
+                </span>
+                <span
+                  className="cursor-pointer"
+                  onClick={() => setShowFasterDeliveryModal(false)}
+                >
+                  <X size={16} />
+                </span>
+              </div>
+
+              <div className="faster-delivery-content flex flex-col gap-32">
+                <div className="delivery-option-card standard flex flex-col gap-12">
+                  <div className="flex justify-between items-start">
+                    <div className="flex gap-12">
+                      <Clock size={24} className="gray-500" />
+                      <div className="flex flex-col gap-4">
+                        <h4 className="weight-600">Standard Delivery</h4>
+                        <p className="font-12 dark-50 mt-4">
+                          Get your order delivered in 5-7 business days
+                        </p>
+                        <div className="flex items-center gap-4 mt-8">
+                          <ShieldCheck size={14} className="green" />
+                          <span className="font-10 green">Free tracking</span>
+                        </div>
+                      </div>
+                    </div>
+                    <span className="font-16 weight-600 green">FREE</span>
+                  </div>
+                  <button
+                    className="sec-mid-btn width100 mt-16"
+                    onClick={handleProceedWithoutFasterDelivery}
+                  >
+                    Choose Standard Delivery
+                  </button>
+                </div>
+
+                {isFasterDeliveryAvailable && (
+                  <div className="delivery-option-card faster flex flex-col gap-12">
+                    <div className="flex justify-between items-start">
+                      <div className="flex gap-12">
+                        <Zap size={24} className="orange" />
+                        <div className="flex flex-col gap-4">
+                          <h4 className="weight-600">Faster Delivery</h4>
+                          <p className="font-12 dark-50 mt-4">
+                            Get your order delivered in 2-5 business days
+                          </p>
+                          <div className="flex flex-row gap-12">
+                            <div className="flex items-center gap-4 mt-8">
+                              <Truck size={14} className="orange" />
+                              <span className="font-10 orange">
+                                Priority shipping
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-4 mt-8">
+                              <ShieldCheck size={14} className="green" />
+                              <span className="font-10 green">
+                                Free tracking
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <span className="font-16 weight-600 orange">+₹100</span>
+                    </div>
+                    <button
+                      className="pri-big-btn width100 mt-16"
+                      onClick={handleProceedWithFasterDelivery}
+                    >
+                      Choose Faster Delivery
+                    </button>
+                  </div>
+                )}
+
+                {!isFasterDeliveryAvailable && (
+                  <div className="delivery-option-card unavailable flex flex-col gap-12">
+                    <div className="flex gap-12">
+                      <AlertCircle size={24} className="red" />
+                      <div>
+                        <h4 className="weight-600">
+                          Faster Delivery Not Available
+                        </h4>
+                        <p className="font-12 dark-50 mt-4">
+                          Unfortunately, faster delivery is not available for
+                          your pincode. We're working on expanding our service
+                          area!
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* UPI Payment Modal */}
       <AnimatePresence>
         {showPayment && (
           <motion.div className="pay-online-modal-overlay">

@@ -1971,6 +1971,7 @@ button:disabled {
 }
 
 input {
+  padding: var(--px-16) !important;
   text-align: left !important;
 }
 
@@ -2141,7 +2142,6 @@ input {
   align-items: center;
   justify-content: center;
 }
-
 
 /* Dropdown Styles - White, border-radius 12px */
 .book-select {

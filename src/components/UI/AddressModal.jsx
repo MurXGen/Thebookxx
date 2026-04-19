@@ -14,6 +14,7 @@ import {
   MapPin,
   AlertCircle,
   User,
+  Zap,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -41,7 +42,7 @@ export default function AddressModal({
   totalDiscounted,
   handleWhatsAppCheckout,
   handleCODCheckout,
-  extraDeliveryCharge,
+  extraDeliveryCharge = 0,
 }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -51,7 +52,7 @@ export default function AddressModal({
   const [state, setState] = useState("");
   const [district, setDistrict] = useState("");
   const [area, setArea] = useState("");
-  const [quickDelivery, setQuickDelivery] = useState(false);
+  const [fasterDelivery, setFasterDelivery] = useState(false);
   const [extraCharge, setExtraCharge] = useState(0);
   const [isValidPincode, setIsValidPincode] = useState(true);
   const [isFetchingLocation, setIsFetchingLocation] = useState(false);
@@ -131,16 +132,20 @@ export default function AddressModal({
     }
   }, [isValidPincode, pincode, city, address]);
 
-  // Quick delivery eligibility check
-  const isQuickDeliveryAvailable = QUICK_DELIVERY_PINCODES.includes(pincode);
+  // Check if faster delivery is available for this pincode
+  const isFasterDeliveryAvailable = true;
 
+  // Calculate extra charge based on faster delivery selection
   useEffect(() => {
-    if (quickDelivery && pincode.length === 6) {
-      setExtraCharge(isQuickDeliveryAvailable ? 0 : 100);
+    if (fasterDelivery && pincode.length === 6) {
+      setExtraCharge(100); // ₹100 extra for faster delivery
     } else {
       setExtraCharge(0);
     }
-  }, [quickDelivery, pincode, isQuickDeliveryAvailable]);
+  }, [fasterDelivery, pincode]);
+
+  // Calculate total with all charges
+  const totalWithAllCharges = finalPayable + extraDeliveryCharge + extraCharge;
 
   useEffect(() => {
     if (!qrUnlocked) return;
@@ -182,7 +187,7 @@ export default function AddressModal({
       setState(saved.state || "");
       setDistrict(saved.district || "");
       setArea(saved.area || "");
-      setQuickDelivery(saved.quickDelivery || false);
+      setFasterDelivery(saved.fasterDelivery || false);
     }
   }, []);
 
@@ -199,7 +204,7 @@ export default function AddressModal({
           state,
           district,
           area,
-          quickDelivery,
+          fasterDelivery,
         }),
       );
     }
@@ -212,7 +217,7 @@ export default function AddressModal({
     state,
     district,
     area,
-    quickDelivery,
+    fasterDelivery,
     showContactFields,
   ]);
 
@@ -225,7 +230,7 @@ export default function AddressModal({
     setState("");
     setDistrict("");
     setArea("");
-    setQuickDelivery(false);
+    setFasterDelivery(false);
     setShowContactFields(false);
     localStorage.removeItem("checkoutAddress");
   };
@@ -251,7 +256,7 @@ export default function AddressModal({
         state,
         district,
         area,
-        quickDelivery: quickDelivery && isQuickDeliveryAvailable,
+        fasterDelivery: fasterDelivery && isFasterDeliveryAvailable,
         extraCharge,
         paymentMethod: "COD",
       });
@@ -284,7 +289,7 @@ export default function AddressModal({
         state,
         district,
         area,
-        quickDelivery: quickDelivery && isQuickDeliveryAvailable,
+        fasterDelivery: fasterDelivery && isFasterDeliveryAvailable,
         extraCharge,
         paymentMethod: "UPI",
       });
@@ -306,7 +311,7 @@ export default function AddressModal({
       {open && (
         <motion.div className="bill-modal-overlay" onClick={onClose}>
           <motion.div
-            className="bill-modal address-modal"
+            className="bill-modal"
             onClick={(e) => e.stopPropagation()}
             initial={{ y: "100%" }}
             animate={{ y: 0 }}
@@ -446,37 +451,78 @@ export default function AddressModal({
                 )}
               </AnimatePresence>
 
-              {/* Quick Delivery */}
-              {isQuickDeliveryAvailable && pincode.length === 6 && (
-                <div className="bill-row quick-delivery-section">
-                  <label className="flex gap-8 items-center">
+              {/* Faster Delivery Section - Always shown when pincode is entered */}
+              {pincode.length === 6 && (
+                <div className="bill-row faster-delivery-section">
+                  <label className="flex gap-12 items-start cursor-pointer">
                     <input
                       type="checkbox"
-                      checked={quickDelivery}
-                      onChange={(e) => setQuickDelivery(e.target.checked)}
-                      disabled={!isQuickDeliveryAvailable}
+                      checked={fasterDelivery}
+                      onChange={(e) => setFasterDelivery(e.target.checked)}
+                      className="mt-2"
                     />
-                    <div className="flex flex-col">
-                      <span>Quick Delivery (30 - 60 mins)</span>
-                      <span className="font-10 green block">
-                        ✓ Available in your area
-                      </span>
+                    <div className="flex flex-col gap-4">
+                      <div className="flex items-center gap-8">
+                        <Zap size={16} className="orange" />
+                        <span className="weight-600">Faster Delivery</span>
+                        {isFasterDeliveryAvailable && (
+                          <span className="font-10 green">
+                            ✓ Available in your area
+                          </span>
+                        )}
+                        {!isFasterDeliveryAvailable && (
+                          <span className="font-10 red">
+                            ⚠️ Not available in your area
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex flex-col gap-4">
+                        <span className="font-12 dark-50">
+                          Get your order delivered in 2-3 business days instead
+                          of 5-7 days.
+                        </span>
+                        {isFasterDeliveryAvailable && (
+                          <span className="font-12 green">
+                            🚚 Priority shipping with real-time tracking
+                          </span>
+                        )}
+                        {!isFasterDeliveryAvailable && (
+                          <span className="font-12 red">
+                            Currently not available for your location. We're
+                            working on expanding!
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </label>
-                  {quickDelivery && isQuickDeliveryAvailable && (
-                    <span className="green font-16 weight-600">
-                      +₹{extraCharge}
-                    </span>
+                  {fasterDelivery && isFasterDeliveryAvailable && (
+                    <span className="orange font-16 weight-600">+₹100</span>
                   )}
                 </div>
               )}
 
               <div className="dashed-border my-12"></div>
 
+              {/* Delivery Charge Breakdown */}
+              <div className="flex flex-col gap-8">
+                {extraDeliveryCharge > 0 && (
+                  <div className="flex justify-between">
+                    <span className="font-14">Standard Delivery</span>
+                    <span className="font-14">₹{extraDeliveryCharge}</span>
+                  </div>
+                )}
+                {fasterDelivery && isFasterDeliveryAvailable && (
+                  <div className="flex justify-between">
+                    <span className="font-14">Faster Delivery (Express)</span>
+                    <span className="font-14 orange">+₹{extraCharge}</span>
+                  </div>
+                )}
+              </div>
+
               <div className="bill-row total">
                 <span className="font-16 weight-600">Total Payable</span>
                 <span className="font-20 weight-700 green">
-                  ₹{finalPayable + extraCharge}
+                  ₹{totalWithAllCharges}
                 </span>
               </div>
 
@@ -553,15 +599,19 @@ export default function AddressModal({
                 </div>
                 {extraDeliveryCharge > 0 && (
                   <div className="flex justify-between">
-                    <span>Delivery Charge</span>
+                    <span>Standard Delivery</span>
                     <span>₹{extraDeliveryCharge}</span>
+                  </div>
+                )}
+                {fasterDelivery && isFasterDeliveryAvailable && (
+                  <div className="flex justify-between orange">
+                    <span>Faster Delivery (Express)</span>
+                    <span>+₹{extraCharge}</span>
                   </div>
                 )}
                 <div className="flex justify-between weight-600">
                   <span>Total to Pay</span>
-                  <span className="green">
-                    ₹{finalPayable + extraDeliveryCharge}
-                  </span>
+                  <span className="green">₹{totalWithAllCharges}</span>
                 </div>
               </div>
 

@@ -108,6 +108,10 @@ export default function BagPage() {
     const items = cart.map((item) => `${item.id}:${item.qty}`).join(",");
     const orderId = `ORD${Date.now()}`;
 
+    // Calculate total with faster delivery charge
+    const fasterDeliveryCharge = addressData.fasterDelivery ? 100 : 0;
+    const totalWithFasterDelivery = totalWithDelivery + fasterDeliveryCharge;
+
     const orderDetails = {
       orderId: orderId,
       name: addressData.name || "",
@@ -119,16 +123,17 @@ export default function BagPage() {
       state: addressData.state || "",
       pincode: addressData.pincode || "",
       paymentMethod: paymentType,
-      quickDelivery: addressData.quickDelivery || false,
+      fasterDelivery: addressData.fasterDelivery || false,
+      fasterDeliveryCharge: fasterDeliveryCharge,
       orderDate: new Date().toISOString(),
-      totalAmount: totalWithDelivery,
+      totalAmount: totalWithFasterDelivery,
+      originalTotal: totalWithDelivery,
     };
 
     const encodedDetails = encodeURIComponent(JSON.stringify(orderDetails));
 
     return `${siteOrigin}/view-bag?items=${encodeURIComponent(items)}&order=${encodedDetails}`;
   };
-
   // Shorten URL using TinyURL API
   const shortenUrl = async (longUrl) => {
     try {
@@ -147,6 +152,10 @@ export default function BagPage() {
     const phoneNumber = "917710892108";
     const payment = paymentType || paymentMethod || "Not specified";
 
+    // Calculate total with faster delivery charge
+    const fasterDeliveryCharge = addressData.fasterDelivery ? 100 : 0;
+    const totalWithFasterDelivery = totalWithDelivery + fasterDeliveryCharge;
+
     // Generate link with user details
     const viewBagLinkWithDetails = generateViewBagLinkWithDetails(
       addressData,
@@ -158,18 +167,24 @@ export default function BagPage() {
     const shortLink = await shortenUrl(viewBagLinkWithDetails);
     setIsShortening(false);
 
+    // Create delivery info string
+    let deliveryInfo = `${addressData.city || "Not specified"} - ${addressData.pincode || "Not specified"}`;
+    if (addressData.fasterDelivery) {
+      deliveryInfo += ` 🚀 (Faster Delivery +₹100)`;
+    }
+
     // Short and clean WhatsApp message
     const message = `
 *CONFIRM MY ORDER*
 
-✨👋Hey hi, I want to confirm my order👋✨.
+✨👋 Hey hi, I want to confirm my order! 👋✨
 
 👤 *Name:* ${addressData.name || "Customer"}
 📞 *Phone:* ${addressData.phone || "Not provided"}
 
-📍 *Delivery:* ${addressData.city || "Not specified"} - ${addressData.pincode || "Not specified"}
+📍 *Delivery:* ${deliveryInfo}
 
-💰 *Total Amount:* ₹${totalWithDelivery}
+💰 *Total Amount:* ₹${totalWithFasterDelivery}
 💳 *Payment:* ${payment === "COD" ? "Cash on Delivery" : "UPI Payment"}
 
 🔗 *View Full Order Details:*

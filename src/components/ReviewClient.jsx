@@ -238,7 +238,7 @@ export default function ReviewClient() {
               value={storeReview}
               onChange={(e) => setStoreReview(e.target.value)}
               rows={5}
-              style={{ width: "100%", resize: "vertical" }}
+              style={{ width: "100%", resize: "vertical", textAlign: "left" }}
             />
           </div>
 
@@ -382,8 +382,8 @@ export default function ReviewClient() {
                 <Image
                   src={selectedBookData.image}
                   alt={selectedBookData.name}
-                  width={80}
-                  height={100}
+                  width={150}
+                  height={200}
                   style={{ objectFit: "cover", borderRadius: "8px" }}
                 />
               )}
@@ -417,7 +417,7 @@ export default function ReviewClient() {
               value={bookReview}
               onChange={(e) => setBookReview(e.target.value)}
               rows={5}
-              style={{ width: "100%", resize: "vertical" }}
+              style={{ width: "100%", resize: "vertical", textAlign: "left" }}
             />
           </div>
 

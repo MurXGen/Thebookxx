@@ -1,0 +1,298 @@
+// utils/reviews.js
+export const reviewsData = [
+  // 20 reviews for The Art of Clarity book with Murthy Thevar mentions
+  {
+    id: "review-1",
+    reviewerName: "Priya Sharma",
+    reviewerImage: "/review/reviewers/reviewer1.jpeg",
+    rating: 5,
+    comment:
+      "Murthy Thevar's 'The Art of Clarity' completely transformed my thinking! The practical exercises helped me overcome my indecision. A must-read for anyone feeling stuck in life.",
+    bookId: "bk-002",
+    bookName: "The Art of Clarity",
+    authorName: "Murthy Thevar",
+    date: "April 15, 2026",
+    verified: true,
+    helpful: 127,
+  },
+  {
+    id: "review-2",
+    reviewerName: "Rajesh Kumar",
+    reviewerImage: "/review/reviewers/reviewer2.jpeg",
+    rating: 5,
+    comment:
+      "Finally, a self-help book that delivers! Murthy Thevar's insights are game-changing. The clarity framework he provides is simple yet powerful. Highly recommended!",
+    bookId: "bk-002",
+    bookName: "The Art of Clarity",
+    authorName: "Murthy Thevar",
+    date: "April 12, 2026",
+    verified: true,
+    helpful: 89,
+  },
+  {
+    id: "review-3",
+    reviewerName: "Anita Desai",
+    reviewerImage: "/review/reviewers/reviewer3.jpeg",
+    rating: 5,
+    comment:
+      "As a business owner, Murthy Thevar's book helped me make better decisions. The Art of Clarity should be on every entrepreneur's bookshelf. Brilliant work!",
+    bookId: "bk-002",
+    bookName: "The Art of Clarity",
+    authorName: "Murthy Thevar",
+    date: "April 10, 2026",
+    verified: true,
+    helpful: 156,
+  },
+  {
+    id: "review-4",
+    reviewerName: "Vikram Singh",
+    reviewerImage: "/review/reviewers/reviewer4.jpeg",
+    rating: 4,
+    comment:
+      "Murthy Thevar has a unique way of explaining complex concepts. The Art of Clarity is practical, actionable, and life-changing. One of the best investments I've made.",
+    bookId: "bk-002",
+    bookName: "The Art of Clarity",
+    authorName: "Murthy Thevar",
+    date: "April 8, 2026",
+    verified: true,
+    helpful: 67,
+  },
+  {
+    id: "review-5",
+    reviewerName: "Neha Gupta",
+    reviewerImage: "/review/reviewers/reviewer5.jpeg",
+    rating: 5,
+    comment:
+      "I've read many self-help books, but Murthy Thevar's The Art of Clarity stands out. The clarity exercises have helped me reduce anxiety and make better life choices.",
+    bookId: "bk-002",
+    bookName: "The Art of Clarity",
+    authorName: "Murthy Thevar",
+    date: "April 5, 2026",
+    verified: true,
+    helpful: 203,
+  },
+  {
+    id: "review-6",
+    reviewerName: "Amit Patel",
+    reviewerImage: "/review/reviewers/reviewer6.jpeg",
+    rating: 5,
+    comment:
+      "Murthy Thevar is a genius! The Art of Clarity helped me clear mental fog and focus on what truly matters. This book is a treasure trove of wisdom.",
+    bookId: "bk-002",
+    bookName: "The Art of Clarity",
+    authorName: "Murthy Thevar",
+    date: "April 3, 2026",
+    verified: true,
+    helpful: 112,
+  },
+  {
+    id: "review-7",
+    reviewerName: "Sunita Reddy",
+    reviewerImage: "/review/reviewers/reviewer7.jpeg",
+    rating: 5,
+    comment:
+      "The Art of Clarity by Murthy Thevar is exactly what I needed. The step-by-step approach to clear thinking has improved my productivity and decision-making at work.",
+    bookId: "bk-002",
+    bookName: "The Art of Clarity",
+    authorName: "Murthy Thevar",
+    date: "April 1, 2026",
+    verified: true,
+    helpful: 78,
+  },
+  {
+    id: "review-8",
+    reviewerName: "Rahul Mehta",
+    reviewerImage: "/review/reviewers/reviewer8.jpeg",
+    rating: 4,
+    comment:
+      "Murthy Thevar's writing style is engaging and relatable. The Art of Clarity offers practical tools that I use daily. Highly recommend for anyone feeling overwhelmed.",
+    bookId: "bk-002",
+    bookName: "The Art of Clarity",
+    authorName: "Murthy Thevar",
+    date: "March 28, 2026",
+    verified: true,
+    helpful: 94,
+  },
+  {
+    id: "review-9",
+    reviewerName: "Kavita Nair",
+    reviewerImage: "/review/reviewers/reviewer9.jpeg",
+    rating: 5,
+    comment:
+      "Finally, a book that delivers on its promise! Murthy Thevar's The Art of Clarity has helped me transform my thinking and achieve mental clarity like never before.",
+    bookId: "bk-002",
+    bookName: "The Art of Clarity",
+    authorName: "Murthy Thevar",
+    date: "March 25, 2026",
+    verified: true,
+    helpful: 145,
+  },
+  {
+    id: "review-10",
+    reviewerName: "Deepak Joshi",
+    reviewerImage: "/review/reviewers/reviewer10.jpeg",
+    rating: 5,
+    comment:
+      "As a student, I struggled with clarity in my career choices. Murthy Thevar's book provided the framework I needed. The Art of Clarity is now my go-to recommendation.",
+    bookId: "bk-002",
+    bookName: "The Art of Clarity",
+    authorName: "Murthy Thevar",
+    date: "March 22, 2026",
+    verified: true,
+    helpful: 188,
+  },
+  {
+    id: "review-11",
+    reviewerName: "Meera Krishnamurthy",
+    reviewerImage: "/review/reviewers/reviewer11.jpeg",
+    rating: 5,
+    comment:
+      "Murthy Thevar has written a masterpiece! The Art of Clarity combines ancient wisdom with modern psychology. Every chapter offers valuable insights.",
+    bookId: "bk-002",
+    bookName: "The Art of Clarity",
+    authorName: "Murthy Thevar",
+    date: "March 20, 2026",
+    verified: true,
+    helpful: 167,
+  },
+  {
+    id: "review-12",
+    reviewerName: "Arjun Nair",
+    reviewerImage: "/review/reviewers/reviewer12.jpeg",
+    rating: 4,
+    comment:
+      "The practical exercises in Murthy Thevar's book are gold. The Art of Clarity helped me overcome analysis paralysis and take action. Great read!",
+    bookId: "bk-002",
+    bookName: "The Art of Clarity",
+    authorName: "Murthy Thevar",
+    date: "March 18, 2026",
+    verified: true,
+    helpful: 56,
+  },
+  {
+    id: "review-13",
+    reviewerName: "Shweta Malhotra",
+    reviewerImage: "/review/reviewers/reviewer13.jpeg",
+    rating: 5,
+    comment:
+      "Murthy Thevar's insights are profound yet practical. The Art of Clarity helped me find direction in my personal and professional life. Highly recommend!",
+    bookId: "bk-002",
+    bookName: "The Art of Clarity",
+    authorName: "Murthy Thevar",
+    date: "March 15, 2026",
+    verified: true,
+    helpful: 134,
+  },
+  {
+    id: "review-14",
+    reviewerName: "Sanjay Verma",
+    reviewerImage: "/review/reviewers/reviewer14.jpeg",
+    rating: 5,
+    comment:
+      "This book by Murthy Thevar is a game-changer! The Art of Clarity provides a clear roadmap to better thinking and decision-making. Worth every rupee.",
+    bookId: "bk-002",
+    bookName: "The Art of Clarity",
+    authorName: "Murthy Thevar",
+    date: "March 12, 2026",
+    verified: true,
+    helpful: 92,
+  },
+  {
+    id: "review-15",
+    reviewerName: "Pooja Bhatia",
+    reviewerImage: "/review/reviewers/reviewer15.jpeg",
+    rating: 5,
+    comment:
+      "Murthy Thevar's writing is transformative. The Art of Clarity helped me break free from mental blocks and achieve more clarity in my relationships and career.",
+    bookId: "bk-002",
+    bookName: "The Art of Clarity",
+    authorName: "Murthy Thevar",
+    date: "March 10, 2026",
+    verified: true,
+    helpful: 176,
+  },
+  {
+    id: "review-16",
+    reviewerName: "Rohit Sharma",
+    reviewerImage: "/review/reviewers/reviewer16.jpeg",
+    rating: 4,
+    comment:
+      "The Art of Clarity by Murthy Thevar is a must-read for anyone feeling stuck. The actionable strategies have helped me make better decisions in my business.",
+    bookId: "bk-002",
+    bookName: "The Art of Clarity",
+    authorName: "Murthy Thevar",
+    date: "March 8, 2026",
+    verified: true,
+    helpful: 71,
+  },
+  {
+    id: "review-17",
+    reviewerName: "Lakshmi Iyer",
+    reviewerImage: "/review/reviewers/reviewer17.jpeg",
+    rating: 5,
+    comment:
+      "Murthy Thevar has created a masterpiece! The Art of Clarity is practical, insightful, and life-changing. I've already recommended it to 10 friends!",
+    bookId: "bk-002",
+    bookName: "The Art of Clarity",
+    authorName: "Murthy Thevar",
+    date: "March 5, 2026",
+    verified: true,
+    helpful: 219,
+  },
+  {
+    id: "review-18",
+    reviewerName: "Vivek Choudhary",
+    reviewerImage: "/review/reviewers/reviewer18.jpeg",
+    rating: 5,
+    comment:
+      "Finally, a self-help book that actually works! Murthy Thevar's The Art of Clarity provided me with the tools to overcome procrastination and think clearly.",
+    bookId: "bk-002",
+    bookName: "The Art of Clarity",
+    authorName: "Murthy Thevar",
+    date: "March 3, 2026",
+    verified: true,
+    helpful: 108,
+  },
+  {
+    id: "review-19",
+    reviewerName: "Anjali Kapoor",
+    reviewerImage: "/review/reviewers/reviewer19.jpeg",
+    rating: 5,
+    comment:
+      "Murthy Thevar is a brilliant author. The Art of Clarity helped me find mental peace and clarity during a difficult time. Forever grateful for this book!",
+    bookId: "bk-002",
+    bookName: "The Art of Clarity",
+    authorName: "Murthy Thevar",
+    date: "March 1, 2026",
+    verified: true,
+    helpful: 198,
+  },
+  {
+    id: "review-20",
+    reviewerName: "Karthik Rajan",
+    reviewerImage: "/review/reviewers/reviewer20.jpeg",
+    rating: 5,
+    comment:
+      "The Art of Clarity by Murthy Thevar exceeded my expectations. The practical framework for clear thinking has transformed how I approach problems. Highly recommended!",
+    bookId: "bk-002",
+    bookName: "The Art of Clarity",
+    authorName: "Murthy Thevar",
+    date: "February 28, 2026",
+    verified: true,
+    helpful: 154,
+  },
+];
+
+export const getReviewsByAuthor = (authorName) => {
+  return reviewsData.filter((review) => review.authorName === authorName);
+};
+
+export const getReviewsByBook = (bookId) => {
+  return reviewsData.filter((review) => review.bookId === bookId);
+};
+
+export const getAverageRating = (reviews) => {
+  if (!reviews.length) return 0;
+  const sum = reviews.reduce((acc, review) => acc + review.rating, 0);
+  return (sum / reviews.length).toFixed(1);
+};

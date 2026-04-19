@@ -12,6 +12,14 @@ const calculateOriginalPrice = (discountedPrice) => {
   return Math.round(calculatedPrice / 10) * 10;
 };
 
+function slugify(text) {
+  return text
+    ?.toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
 export const books = [
   {
     id: "bk-001",
@@ -39,6 +47,7 @@ export const books = [
     discountedPrice: 149,
     size: "Paperback",
     author: "Murthy Thevar",
+    authorSlug: "murthy-thevar", // Add this
     pages: "190-210",
     language: "English",
     stock: 27,

@@ -12,6 +12,7 @@
     "@fullhuman/postcss-purgecss": "^8.0.0",
     "axios": "^1.13.4",
     "canvas-confetti": "^1.9.4",
+    "critters": "^0.0.23",
     "framer-motion": "^12.33.0",
     "install": "^0.13.0",
     "lucide-react": "^0.562.0",

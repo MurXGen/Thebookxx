@@ -15,6 +15,7 @@ import {
   Plus,
   X,
   Phone,
+  Zap,
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -38,6 +39,7 @@ export default function ViewBagClient() {
   const [newAlternativeNumber, setNewAlternativeNumber] = useState("");
   const [showNumberSelection, setShowNumberSelection] = useState(false);
   const [pendingMessageType, setPendingMessageType] = useState(null);
+  const [fasterDeliveryCharge, setFasterDeliveryCharge] = useState(0);
 
   useEffect(() => {
     setCurrentUrl(window.location.href);
@@ -48,6 +50,13 @@ export default function ViewBagClient() {
       try {
         const decodedOrder = JSON.parse(decodeURIComponent(orderParam));
         setOrderData(decodedOrder);
+
+        // Set faster delivery charge from order data
+        if (decodedOrder.fasterDeliveryCharge) {
+          setFasterDeliveryCharge(decodedOrder.fasterDeliveryCharge);
+        } else if (decodedOrder.fasterDelivery) {
+          setFasterDeliveryCharge(100);
+        }
 
         // Load saved status from localStorage
         const savedStatus = localStorage.getItem(
@@ -146,7 +155,14 @@ export default function ViewBagClient() {
 
   const finalPayable = totalDiscounted - offerDiscount;
   const extraDeliveryCharge = getExtraDeliveryCharge(totalDiscounted);
-  const totalWithDelivery = finalPayable + extraDeliveryCharge;
+
+  // Use faster delivery charge from order data or calculate
+  const finalFasterDeliveryCharge =
+    orderData?.fasterDeliveryCharge ||
+    fasterDeliveryCharge ||
+    (orderData?.fasterDelivery ? 100 : 0);
+  const totalWithDelivery =
+    finalPayable + extraDeliveryCharge + finalFasterDeliveryCharge;
 
   const handleStatusUpdate = (field, value) => {
     const newStatus = { ...orderStatus, [field]: value };

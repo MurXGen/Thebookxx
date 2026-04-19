@@ -337,12 +337,14 @@ export default function RecommendationModal({
     recommendations.forEach((book) => {
       addToCart(book.id);
     });
+    handleClose();
   };
 
   const handleAddAllToWishlist = () => {
     recommendations.forEach((book) => {
       toggleWishlist(book.id);
     });
+    handleClose();
   };
 
   return (

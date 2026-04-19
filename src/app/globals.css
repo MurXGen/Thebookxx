@@ -1970,6 +1970,10 @@ button:disabled {
   width: 100%;
 }
 
+input {
+  text-align: left !important;
+}
+
 .input-group label {
   font-size: var(--px-12);
   color: var(--dark);
@@ -2137,6 +2141,7 @@ button:disabled {
   align-items: center;
   justify-content: center;
 }
+
 
 /* Dropdown Styles - White, border-radius 12px */
 .book-select {

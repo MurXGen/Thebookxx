@@ -310,6 +310,38 @@ button:hover {
   gap: var(--px-24);
 }
 
+.rotate-icon {
+  display: inline-block;
+  animation: smoothRotate 3s ease-in-out infinite;
+}
+
+/* Keyframes */
+@keyframes smoothRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  20% {
+    transform: rotate(25deg);
+  }
+
+  40% {
+    transform: rotate(-15deg);
+  }
+
+  60% {
+    transform: rotate(10deg);
+  }
+
+  80% {
+    transform: rotate(-5deg);
+  }
+
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
 .shinny-icon {
   background: linear-gradient(135deg, #fb8500, #ffb703);
   -webkit-background-clip: text;

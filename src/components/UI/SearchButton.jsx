@@ -1,6 +1,6 @@
 "use client";
 
-import { Search } from "lucide-react";
+import { Search, StarsIcon } from "lucide-react";
 import { useState } from "react";
 import { FaWhatsapp } from "react-icons/fa";
 import RecommendationModal from "../RecommendationModal";
@@ -32,10 +32,10 @@ export default function SearchButton({ onClick }) {
             <div
               onClick={handleWhatsAppClick}
               aria-label="Get book recommendations"
-              className="cursor-pointer"
-              style={{ borderLeft: "1px solid ", paddingLeft: "8px" }}
+              className="cursor-pointer icon-rotate-wrapper"
+              style={{ borderLeft: "1px solid", paddingLeft: "8px" }}
             >
-              <FaWhatsapp size={20} color="#25D366" />
+              <StarsIcon className="rotate-icon" size={20} color="#fb8500" />
             </div>
           </div>
         </button>

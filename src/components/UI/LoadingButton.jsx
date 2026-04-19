@@ -13,15 +13,32 @@ export default function LoadingButton({
 }) {
   const [loading, setLoading] = useState(false);
 
+  // 🔥 HAPTIC FUNCTION
+  const triggerHaptic = () => {
+    if (typeof window !== "undefined" && navigator.vibrate) {
+      navigator.vibrate([10, 20, 10]); // nice subtle pattern
+    }
+  };
+
   const handleClick = async (e) => {
     if (loading || disabled) return;
+
+    // ✅ HAPTIC FEEDBACK
+    triggerHaptic();
+
+    // ✅ VISUAL VIBRATION
+    const btn = e.currentTarget;
+    btn.classList.add("button-vibrate");
+
+    setTimeout(() => {
+      btn.classList.remove("button-vibrate");
+    }, 250);
 
     setLoading(true);
 
     try {
       await onClick?.(e);
     } finally {
-      // allow UI transition before enabling again
       setTimeout(() => setLoading(false), 300);
     }
   };

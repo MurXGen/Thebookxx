@@ -2003,7 +2003,7 @@ button:disabled {
 }
 
 input {
-  /* padding: var(--px-16) !important; */
+  padding: var(--px-16) !important;
   text-align: left !important;
 }
 

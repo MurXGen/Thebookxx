@@ -406,7 +406,7 @@ export default function AddressModal({
                   <label>City / District</label>
                   <input
                     list="cities"
-                    className="sec-mid-btn"
+                    className="sec-mid-btn width100"
                     placeholder="Auto-filled from pincode"
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
@@ -422,7 +422,7 @@ export default function AddressModal({
                   <div className="input-group">
                     <label>State</label>
                     <input
-                      className="sec-mid-btn gray-bg"
+                      className="sec-mid-btn width100 gray-bg"
                       value={state}
                       readOnly
                       disabled
@@ -462,7 +462,7 @@ export default function AddressModal({
                           Name <span className="red">*</span>
                         </label>
                         <input
-                          className="sec-mid-btn"
+                          className="sec-mid-btn width100"
                           placeholder="Enter your full name"
                           value={name}
                           onChange={(e) => setName(e.target.value)}
@@ -475,7 +475,7 @@ export default function AddressModal({
                           Phone Number <span className="red">*</span>
                         </label>
                         <input
-                          className="sec-mid-btn"
+                          className="sec-mid-btn width100"
                           placeholder="10-digit mobile number"
                           value={phone}
                           maxLength={10}

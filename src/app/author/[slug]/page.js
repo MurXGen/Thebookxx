@@ -240,7 +240,7 @@ export default async function AuthorPage({ params }) {
             Home
           </Link>
           <span> / </span>
-          <Link href="/authors" style={{ color: "#fb8500" }}>
+          <Link href="/author" style={{ color: "#fb8500" }}>
             Authors
           </Link>
           <span> / </span>
@@ -252,7 +252,6 @@ export default async function AuthorPage({ params }) {
           className="author-header"
           style={{
             borderRadius: "12px",
-            background: "linear-gradient(135deg, #fb850020, #ffb70320)",
           }}
         >
           <div className="flex flex-row gap-32 items-center flex-wrap">

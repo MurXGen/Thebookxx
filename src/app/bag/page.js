@@ -90,27 +90,44 @@ export default function BagPage() {
 
     if (appliedOffer.type === "percentage") {
       offerDiscount = Math.round((totalDiscounted * appliedOffer.value) / 100);
-      offerLabel = `Free delivery 🚚`;
+      offerLabel = `Free delivery`;
     }
   }
 
   const finalPayable = totalDiscounted - offerDiscount;
   const canCheckout = totalDiscounted >= 151;
 
-  // Calculate extra delivery charge
-  const extraDeliveryCharge = getExtraDeliveryCharge(totalDiscounted);
-  const totalWithDelivery = finalPayable + extraDeliveryCharge;
+  // Calculate standard delivery charge (0 if order >= 400, else 100)
+  const standardDeliveryCharge = getExtraDeliveryCharge(totalDiscounted);
+
+  // Faster delivery charge is fixed at ₹119
+  const FASTER_DELIVERY_CHARGE = 119;
+
+  // Function to get delivery charge based on choice
+  const getDeliveryCharge = (isFasterDelivery) => {
+    if (isFasterDelivery) {
+      return FASTER_DELIVERY_CHARGE;
+    }
+    return standardDeliveryCharge;
+  };
+
+  // Calculate total with standard delivery (for display)
+  const totalWithStandardDelivery = finalPayable + standardDeliveryCharge;
 
   // Generate view bag link with user details
-  const generateViewBagLinkWithDetails = (addressData, paymentType) => {
+  const generateViewBagLinkWithDetails = (
+    addressData,
+    paymentType,
+    fasterDeliveryChoice,
+  ) => {
     if (!siteOrigin) return "";
 
     const items = cart.map((item) => `${item.id}:${item.qty}`).join(",");
     const orderId = `ORD${Date.now()}`;
 
-    // Calculate total with faster delivery charge
-    const fasterDeliveryCharge = addressData.fasterDelivery ? 100 : 0;
-    const totalWithFasterDelivery = totalWithDelivery + fasterDeliveryCharge;
+    // Calculate delivery charge based on user's choice (override, not add)
+    const deliveryCharge = getDeliveryCharge(fasterDeliveryChoice);
+    const totalWithDelivery = finalPayable + deliveryCharge;
 
     const orderDetails = {
       orderId: orderId,
@@ -123,17 +140,17 @@ export default function BagPage() {
       state: addressData.state || "",
       pincode: addressData.pincode || "",
       paymentMethod: paymentType,
-      fasterDelivery: addressData.fasterDelivery || false,
-      fasterDeliveryCharge: fasterDeliveryCharge,
+      fasterDelivery: fasterDeliveryChoice,
+      deliveryCharge: deliveryCharge,
       orderDate: new Date().toISOString(),
-      totalAmount: totalWithFasterDelivery,
-      originalTotal: totalWithDelivery,
+      totalAmount: totalWithDelivery,
     };
 
     const encodedDetails = encodeURIComponent(JSON.stringify(orderDetails));
 
     return `${siteOrigin}/view-bag?items=${encodeURIComponent(items)}&order=${encodedDetails}`;
   };
+
   // Shorten URL using TinyURL API
   const shortenUrl = async (longUrl) => {
     try {
@@ -148,18 +165,22 @@ export default function BagPage() {
     }
   };
 
-  const handleWhatsAppCheckout = async (addressData, paymentType = null) => {
+  const sendWhatsAppMessage = async (
+    addressData,
+    paymentType,
+    fasterDeliveryChoice,
+  ) => {
     const phoneNumber = "917710892108";
-    const payment = paymentType || paymentMethod || "Not specified";
 
-    // Calculate total with faster delivery charge
-    const fasterDeliveryCharge = addressData.fasterDelivery ? 100 : 0;
-    const totalWithFasterDelivery = totalWithDelivery + fasterDeliveryCharge;
+    // Calculate delivery charge based on user's choice
+    const deliveryCharge = getDeliveryCharge(fasterDeliveryChoice);
+    const totalWithDelivery = finalPayable + deliveryCharge;
 
     // Generate link with user details
     const viewBagLinkWithDetails = generateViewBagLinkWithDetails(
       addressData,
-      payment,
+      paymentType,
+      fasterDeliveryChoice,
     );
 
     // Shorten the URL
@@ -169,8 +190,12 @@ export default function BagPage() {
 
     // Create delivery info string
     let deliveryInfo = `${addressData.city || "Not specified"} - ${addressData.pincode || "Not specified"}`;
-    if (addressData.fasterDelivery) {
-      deliveryInfo += ` 🚀 (Faster Delivery +₹100)`;
+    if (fasterDeliveryChoice) {
+      deliveryInfo += ` 🚀 (Faster Delivery +₹${FASTER_DELIVERY_CHARGE})`;
+    } else if (deliveryCharge > 0) {
+      deliveryInfo += ` 📦 (Standard Delivery +₹${deliveryCharge})`;
+    } else {
+      deliveryInfo += ` 📦 (Free Delivery)`;
     }
 
     // Short and clean WhatsApp message
@@ -184,8 +209,8 @@ export default function BagPage() {
 
 📍 *Delivery:* ${deliveryInfo}
 
-💰 *Total Amount:* ₹${totalWithFasterDelivery}
-💳 *Payment:* ${payment === "COD" ? "Cash on Delivery" : "UPI Payment"}
+💰 *Total Amount:* ₹${totalWithDelivery}
+💳 *Payment:* ${paymentType === "COD" ? "Cash on Delivery" : "UPI Payment"}
 
 🔗 *View Full Order Details:*
 ${shortLink}
@@ -202,9 +227,14 @@ Thank you! 🙏
     setShowBill(false);
   };
 
-  const handleCODCheckout = (addressData) => {
+  const handleCODCheckout = (addressData, fasterDeliveryChoice) => {
     setPaymentMethod("COD");
-    handleWhatsAppCheckout(addressData, "COD");
+    sendWhatsAppMessage(addressData, "COD", fasterDeliveryChoice);
+  };
+
+  const handleUPICheckout = (addressData, fasterDeliveryChoice) => {
+    setPaymentMethod("UPI");
+    sendWhatsAppMessage(addressData, "UPI", fasterDeliveryChoice);
   };
 
   return (
@@ -238,7 +268,7 @@ Thank you! 🙏
           <span className="font-12 dark-50">Total payable</span>
           <div className="flex gap-8 items-center">
             <span className="font-16 weight-600 discounted">
-              ₹{totalWithDelivery}
+              ₹{totalWithStandardDelivery}
             </span>
             {offerDiscount > 0 && (
               <span className="strike dark-50 original">
@@ -250,6 +280,11 @@ Thank you! 🙏
               <span className="font-14 green weight-600">{offerLabel}</span>
             )}
           </div>
+          {/* {standardDeliveryCharge > 0 && (
+            <span className="font-10 red">
+              +₹{standardDeliveryCharge} delivery
+            </span>
+          )} */}
 
           <span className="view-bill-text" onClick={() => setShowBill(true)}>
             View bill
@@ -268,10 +303,11 @@ Thank you! 🙏
         onClose={() => setShowAddressModal(false)}
         finalPayable={finalPayable}
         totalDiscounted={totalDiscounted}
-        extraDeliveryCharge={extraDeliveryCharge}
-        totalWithDelivery={totalWithDelivery}
-        handleWhatsAppCheckout={handleWhatsAppCheckout}
+        standardDeliveryCharge={standardDeliveryCharge}
+        fasterDeliveryCharge={FASTER_DELIVERY_CHARGE}
+        totalWithStandardDelivery={totalWithStandardDelivery}
         handleCODCheckout={handleCODCheckout}
+        handleUPICheckout={handleUPICheckout}
       />
 
       <BillModal
@@ -281,9 +317,11 @@ Thank you! 🙏
         totalDiscounted={totalDiscounted}
         offerDiscount={offerDiscount}
         offerLabel={offerLabel}
-        extraDeliveryCharge={extraDeliveryCharge}
-        totalWithDelivery={totalWithDelivery}
+        standardDeliveryCharge={standardDeliveryCharge}
+        fasterDeliveryCharge={FASTER_DELIVERY_CHARGE}
+        totalWithStandardDelivery={totalWithStandardDelivery}
         cartBooks={cartBooks}
+        isFasterDelivery={false} // Pass the actual faster delivery state from your address modal
       />
     </section>
   );

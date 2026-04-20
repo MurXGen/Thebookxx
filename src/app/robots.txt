@@ -7,6 +7,7 @@ Disallow: /admin/
 
 # Sitemap location
 Sitemap: https://thebookx.in/sitemap.xml
+Sitemap: https://thebookx.in/image-sitemap.xml
 
 # Crawl delay - be nice to the server
 Crawl-delay: 1

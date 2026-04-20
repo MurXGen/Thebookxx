@@ -1,10 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  trailingSlash: false,
   async redirects() {
     return [
       {
         source: "/books/bk-002",
         destination: "/books/the-art-of-clarity",
+        permanent: true,
+      },
+      {
+        source: "/authors/murthy-thevar/",
+        destination: "/authors/murthy-thevar",
         permanent: true,
       },
     ];

@@ -28,6 +28,7 @@ export const books = [
     description:
       "Discover the secrets to mindful spending and financial freedom with this practical guide from TheBookX.in. Learn to build a healthier relationship with money, spend intentionally, and make smart financial decisions. TheBookX provides premium quality books delivered securely via Delhivery and Indian Post, ensuring your reading journey begins safely. Shop now at TheBookX.in, where books start as low as ₹1 for a limited time. Contact us anytime for queries—your trusted book partner across India.",
     author: "Morgan Housel",
+    authorSlug: "morgan-housel",
     pages: "210-230",
     language: "English",
     size: "Paperback",

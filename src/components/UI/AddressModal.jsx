@@ -44,7 +44,10 @@ export default function AddressModal({
   totalDiscounted,
   handleWhatsAppCheckout,
   handleCODCheckout,
-  extraDeliveryCharge = 0,
+  handleUPICheckout,
+  standardDeliveryCharge = 0,
+  fasterDeliveryCharge = 119,
+  totalWithStandardDelivery = 0,
 }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -55,11 +58,9 @@ export default function AddressModal({
   const [district, setDistrict] = useState("");
   const [area, setArea] = useState("");
   const [fasterDelivery, setFasterDelivery] = useState(false);
-  const [extraCharge, setExtraCharge] = useState(0);
   const [isValidPincode, setIsValidPincode] = useState(true);
   const [isFetchingLocation, setIsFetchingLocation] = useState(false);
   const [pincodeError, setPincodeError] = useState("");
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
   const [showContactFields, setShowContactFields] = useState(false);
   const [showFasterDeliveryModal, setShowFasterDeliveryModal] = useState(false);
   const [tempPaymentMethod, setTempPaymentMethod] = useState(null);
@@ -73,6 +74,21 @@ export default function AddressModal({
   const [canVerify, setCanVerify] = useState(false);
 
   const UPI_ID = "7977960242-1@okbizaxis";
+
+  // Calculate delivery charge based on selection
+  const getDeliveryCharge = (isFaster) => {
+    if (isFaster) {
+      return fasterDeliveryCharge;
+    }
+    return standardDeliveryCharge;
+  };
+
+  // Calculate total with current delivery selection
+  const getTotalWithDelivery = (isFaster) => {
+    return finalPayable + getDeliveryCharge(isFaster);
+  };
+
+  const totalWithCurrentSelection = getTotalWithDelivery(fasterDelivery);
 
   // Fetch location details based on pincode
   const fetchLocationByPincode = async (pincodeValue) => {
@@ -138,18 +154,6 @@ export default function AddressModal({
 
   // Check if faster delivery is available for this pincode
   const isFasterDeliveryAvailable = true;
-
-  // Calculate extra charge based on faster delivery selection
-  useEffect(() => {
-    if (fasterDelivery && pincode.length === 6 && isFasterDeliveryAvailable) {
-      setExtraCharge(100);
-    } else {
-      setExtraCharge(0);
-    }
-  }, [fasterDelivery, pincode, isFasterDeliveryAvailable]);
-
-  // Calculate total with all charges
-  const totalWithAllCharges = finalPayable + extraDeliveryCharge + extraCharge;
 
   useEffect(() => {
     if (!qrUnlocked) return;
@@ -225,28 +229,14 @@ export default function AddressModal({
     showContactFields,
   ]);
 
-  const resetForm = () => {
-    setName("");
-    setPhone("");
-    setCity("");
-    setPincode("");
-    setAddress("");
-    setState("");
-    setDistrict("");
-    setArea("");
-    setFasterDelivery(false);
-    setShowContactFields(false);
-    localStorage.removeItem("checkoutAddress");
-  };
-
   const handleProceedWithFasterDelivery = () => {
     setFasterDelivery(true);
     setShowFasterDeliveryModal(false);
 
     if (tempPaymentMethod === "COD") {
-      proceedWithCOD();
+      proceedWithCOD(true);
     } else if (tempPaymentMethod === "UPI") {
-      proceedWithUPI();
+      proceedWithUPI(true);
     }
   };
 
@@ -255,13 +245,13 @@ export default function AddressModal({
     setShowFasterDeliveryModal(false);
 
     if (tempPaymentMethod === "COD") {
-      proceedWithCOD();
+      proceedWithCOD(false);
     } else if (tempPaymentMethod === "UPI") {
-      proceedWithUPI();
+      proceedWithUPI(false);
     }
   };
 
-  const proceedWithCOD = () => {
+  const proceedWithCOD = (isFasterDeliverySelected) => {
     if (!isValidPincode || pincode.length !== 6) {
       setPincodeError("Please enter a valid 6-digit pincode");
       return;
@@ -273,24 +263,25 @@ export default function AddressModal({
     }
 
     if (handleCODCheckout) {
-      handleCODCheckout({
-        name,
-        phone,
-        city,
-        pincode,
-        address,
-        state,
-        district,
-        area,
-        fasterDelivery: fasterDelivery && isFasterDeliveryAvailable,
-        extraCharge,
-        paymentMethod: "COD",
-      });
+      handleCODCheckout(
+        {
+          name,
+          phone,
+          city,
+          pincode,
+          address,
+          state,
+          district,
+          area,
+          fasterDelivery: isFasterDeliverySelected && isFasterDeliveryAvailable,
+        },
+        isFasterDeliverySelected && isFasterDeliveryAvailable,
+      );
     }
     onClose();
   };
 
-  const proceedWithUPI = () => {
+  const proceedWithUPI = (isFasterDeliverySelected) => {
     if (!isValidPincode || pincode.length !== 6) {
       setPincodeError("Please enter a valid 6-digit pincode");
       return;
@@ -301,6 +292,7 @@ export default function AddressModal({
       return;
     }
 
+    setFasterDelivery(isFasterDeliverySelected);
     setShowPayment(true);
   };
 
@@ -317,20 +309,23 @@ export default function AddressModal({
   };
 
   const handleVerifyPayment = () => {
-    if (handleWhatsAppCheckout) {
-      handleWhatsAppCheckout({
-        name,
-        phone,
-        city,
-        pincode,
-        address,
-        state,
-        district,
-        area,
-        fasterDelivery: fasterDelivery && isFasterDeliveryAvailable,
-        extraCharge,
-        paymentMethod: "UPI",
-      });
+    const isFasterDeliverySelected = fasterDelivery;
+
+    if (handleUPICheckout) {
+      handleUPICheckout(
+        {
+          name,
+          phone,
+          city,
+          pincode,
+          address,
+          state,
+          district,
+          area,
+          fasterDelivery: isFasterDeliverySelected && isFasterDeliveryAvailable,
+        },
+        isFasterDeliverySelected && isFasterDeliveryAvailable,
+      );
     }
     setShowPayment(false);
     onClose();
@@ -356,7 +351,6 @@ export default function AddressModal({
             exit={{ y: "100%" }}
             transition={{ duration: 0.4, ease: "easeOut" }}
           >
-            {/* Header */}
             <div className="bill-header">
               <span className="weight-600 font-16">Delivery Details</span>
               <span className="cursor-pointer" onClick={onClose}>
@@ -445,7 +439,7 @@ export default function AddressModal({
                 />
               </div>
 
-              {/* Name and Phone - Only shown after address is verified */}
+              {/* Name and Phone */}
               <AnimatePresence>
                 {showContactFields && (
                   <motion.div
@@ -491,24 +485,14 @@ export default function AddressModal({
 
               <div className="dashed-border my-12"></div>
 
-              {/* Delivery Charge Breakdown */}
-              {/* <div className="flex flex-col gap-8">
-                {extraDeliveryCharge > 0 && (
-                  <div className="flex justify-between">
-                    <span className="font-14">Standard Delivery</span>
-                    <span className="font-14">₹{extraDeliveryCharge}</span>
-                  </div>
-                )}
-              </div> */}
-
               <div className="bill-row total">
                 <span className="font-16 weight-600">Total Payable</span>
                 <span className="font-20 weight-700 green">
-                  ₹{totalWithAllCharges}
+                  ₹{totalWithStandardDelivery}
                 </span>
               </div>
 
-              {/* Buttons - Only shown after contact fields are filled */}
+              {/* Buttons */}
               {showContactFields && (
                 <div className="flex flex-row gap-12 items-start mt-16">
                   <LoadingButton
@@ -533,7 +517,7 @@ export default function AddressModal({
                 </div>
               )}
 
-              {/* Address completion reminder */}
+              {/* Reminders */}
               {!isAddressValid() && (
                 <div className="flex flex-row flex-center gap-4 orange items-center infoMessage mt-12">
                   <AlertCircle size={14} />
@@ -543,7 +527,6 @@ export default function AddressModal({
                 </div>
               )}
 
-              {/* Form completion reminder */}
               {showContactFields && !isFormValid() && (
                 <div className="flex flex-row flex-center gap-4 red items-center infoMessage mt-12">
                   <AlertCircle size={14} />
@@ -592,8 +575,10 @@ export default function AddressModal({
                     <div className="flex gap-12">
                       <Clock size={24} className="gray-500" />
                       <div className="flex flex-col gap-4">
-                        <h4 className="weight-600">Standard Delivery</h4>
-                        <p className="font-12 dark-50 mt-4">
+                        <h4 className=" font-16 weight-600">
+                          Standard Delivery
+                        </h4>
+                        <p className="font-12 dark-50">
                           Get your order delivered in 5-7 business days
                         </p>
                         <div className="flex items-center gap-4 mt-8">
@@ -602,13 +587,20 @@ export default function AddressModal({
                         </div>
                       </div>
                     </div>
-                    <span className="font-16 weight-600 green">FREE</span>
+                    <span
+                      className="font-16 weight-600"
+                      style={{ color: "#fb8500" }}
+                    >
+                      {standardDeliveryCharge > 0
+                        ? `₹${standardDeliveryCharge}`
+                        : "FREE"}
+                    </span>
                   </div>
                   <button
                     className="sec-mid-btn width100 mt-16"
                     onClick={handleProceedWithoutFasterDelivery}
                   >
-                    Choose Standard Delivery
+                    I'll continue with this
                   </button>
                 </div>
 
@@ -618,8 +610,10 @@ export default function AddressModal({
                       <div className="flex gap-12">
                         <Zap size={24} className="orange" />
                         <div className="flex flex-col gap-4">
-                          <h4 className="weight-600">Faster Delivery</h4>
-                          <p className="font-12 dark-50 mt-4">
+                          <h4 className="font-16 weight-600">
+                            Faster Delivery
+                          </h4>
+                          <p className="font-12 dark-50">
                             Get your order delivered in 2-5 business days
                           </p>
                           <div className="flex flex-row gap-12">
@@ -632,19 +626,21 @@ export default function AddressModal({
                             <div className="flex items-center gap-4 mt-8">
                               <ShieldCheck size={14} className="green" />
                               <span className="font-10 green">
-                                Free tracking
+                                Real-time tracking
                               </span>
                             </div>
                           </div>
                         </div>
                       </div>
-                      <span className="font-16 weight-600 orange">+₹100</span>
+                      <span className="font-16 weight-600 green">
+                        +₹{fasterDeliveryCharge}
+                      </span>
                     </div>
                     <button
                       className="pri-big-btn width100 mt-16"
                       onClick={handleProceedWithFasterDelivery}
                     >
-                      Choose Faster Delivery
+                      Continue with Faster Delivery
                     </button>
                   </div>
                 )}
@@ -695,21 +691,27 @@ export default function AddressModal({
                   <span>Books Total</span>
                   <span>₹{finalPayable}</span>
                 </div>
-                {extraDeliveryCharge > 0 && (
-                  <div className="flex justify-between">
-                    <span>Standard Delivery</span>
-                    <span>₹{extraDeliveryCharge}</span>
-                  </div>
-                )}
-                {fasterDelivery && isFasterDeliveryAvailable && (
-                  <div className="flex justify-between orange">
-                    <span>Faster Delivery (Express)</span>
-                    <span>+₹{extraCharge}</span>
+                <div className="flex justify-between">
+                  <span>Delivery Charge</span>
+                  <span className={fasterDelivery ? "orange" : ""}>
+                    {fasterDelivery
+                      ? `+₹${fasterDeliveryCharge}`
+                      : standardDeliveryCharge > 0
+                        ? `+₹${standardDeliveryCharge}`
+                        : "FREE"}
+                  </span>
+                </div>
+                {fasterDelivery && (
+                  <div className="flex justify-between green">
+                    <span>⚡ Faster Delivery</span>
+                    <span>Priority shipping</span>
                   </div>
                 )}
                 <div className="flex justify-between weight-600">
                   <span>Total to Pay</span>
-                  <span className="green">₹{totalWithAllCharges}</span>
+                  <span className="green">
+                    ₹{getTotalWithDelivery(fasterDelivery)}
+                  </span>
                 </div>
               </div>
 

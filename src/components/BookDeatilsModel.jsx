@@ -18,6 +18,7 @@ import LoadingButton from "./UI/LoadingButton";
 import Script from "next/script";
 import { useEffect, useState, useMemo } from "react";
 import BookCard from "./BookCard";
+import Link from "next/link";
 
 // Slugify function
 function slugify(text) {
@@ -256,7 +257,17 @@ export default function BookDetailsModal({ book }) {
               </h1>
               {book.author && (
                 <p className="font-12 dark-50" itemProp="author">
-                  By {book.author}
+                  By{" "}
+                  <Link
+                    href={`/authors/${book.authorSlug || slugify(book.author)}`}
+                    style={{
+                      textDecoration: "none",
+                      fontWeight: "500",
+                    }}
+                    itemProp="url"
+                  >
+                    <span itemProp="name">{book.author}</span>
+                  </Link>
                 </p>
               )}
             </div>
@@ -307,7 +318,17 @@ export default function BookDetailsModal({ book }) {
                   <span className="font-10 uppercase text-gray-500">
                     Author
                   </span>
-                  <span className="font-14 weight-500">{book.author}</span>
+                  <span className="font-14 weight-500">
+                    <Link
+                      href={`/author/${book.authorSlug || slugify(book.author)}`}
+                      style={{
+                        textDecoration: "underline",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {book.author}
+                    </Link>
+                  </span>
                 </div>
               )}
               {book.pages && (

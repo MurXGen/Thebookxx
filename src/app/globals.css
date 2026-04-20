@@ -321,7 +321,7 @@ button:hover {
     transform: rotate(0deg);
   }
 
-  20% {f
+  20% {
     transform: rotate(25deg);
   }
 
@@ -2856,3 +2856,4 @@ input {
 .gray-500 {
   color: #6b7280;
 }
+

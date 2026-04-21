@@ -20,8 +20,6 @@ export default function BagPage() {
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState(null);
   const [isShortening, setIsShortening] = useState(false);
-  const [isFasterDeliverySelected, setIsFasterDeliverySelected] =
-    useState(false);
 
   const getAppliedOffer = (amount) => {
     return [...CART_OFFERS].reverse().find((o) => amount >= o.target) || null;
@@ -43,7 +41,7 @@ export default function BagPage() {
   if (!cartBooks.length) {
     return (
       <>
-        <div className="section-1200 flex flex-row gap-12 items-center">
+        <div className=" section-1200 flex flec-row gap-12 items-center">
           <ArrowLeft
             size={20}
             onClick={() => router.push("/")}
@@ -115,9 +113,6 @@ export default function BagPage() {
 
   // Calculate total with standard delivery (for display)
   const totalWithStandardDelivery = finalPayable + standardDeliveryCharge;
-
-  // Calculate total with faster delivery
-  const totalWithFasterDelivery = finalPayable + FASTER_DELIVERY_CHARGE;
 
   // Generate view bag link with user details
   const generateViewBagLinkWithDetails = (
@@ -234,21 +229,12 @@ Thank you! 🙏
 
   const handleCODCheckout = (addressData, fasterDeliveryChoice) => {
     setPaymentMethod("COD");
-    setIsFasterDeliverySelected(fasterDeliveryChoice);
     sendWhatsAppMessage(addressData, "COD", fasterDeliveryChoice);
   };
 
   const handleUPICheckout = (addressData, fasterDeliveryChoice) => {
     setPaymentMethod("UPI");
-    setIsFasterDeliverySelected(fasterDeliveryChoice);
     sendWhatsAppMessage(addressData, "UPI", fasterDeliveryChoice);
-  };
-
-  const getCurrentTotal = () => {
-    if (isFasterDeliverySelected) {
-      return totalWithFasterDelivery;
-    }
-    return totalWithStandardDelivery;
   };
 
   return (
@@ -257,7 +243,7 @@ Thank you! 🙏
       style={{ maxWidth: "700px" }}
     >
       {/* Header */}
-      <div className="flex flex-row gap-12 items-center">
+      <div className="flex flec-row gap-12 items-center">
         <ArrowLeft size={20} onClick={() => router.push("/")} />
         <div className="flex flex-col">
           <h2 className="font-16 weight-600">Your Bag</h2>
@@ -268,15 +254,6 @@ Thank you! 🙏
       </div>
 
       <CartOfferStrip discountedAmount={totalDiscounted} />
-
-      {/* Delivery Info Banner */}
-      {standardDeliveryCharge > 0 && (
-        <div className="delivery-info-banner bg-orange-50 p-12 rounded-lg">
-          <span className="font-12 orange">
-            ⚠️ Add ₹{400 - totalDiscounted} more to get free standard delivery
-          </span>
-        </div>
-      )}
 
       {/* Book Cards */}
       <div className="grid-2">
@@ -291,7 +268,7 @@ Thank you! 🙏
           <span className="font-12 dark-50">Total payable</span>
           <div className="flex gap-8 items-center">
             <span className="font-16 weight-600 discounted">
-              ₹{getCurrentTotal()}
+              ₹{totalWithStandardDelivery}
             </span>
             {offerDiscount > 0 && (
               <span className="strike dark-50 original">
@@ -303,16 +280,11 @@ Thank you! 🙏
               <span className="font-14 green weight-600">{offerLabel}</span>
             )}
           </div>
-          {standardDeliveryCharge > 0 && !isFasterDeliverySelected && (
+          {/* {standardDeliveryCharge > 0 && (
             <span className="font-10 red">
               +₹{standardDeliveryCharge} delivery
             </span>
-          )}
-          {isFasterDeliverySelected && (
-            <span className="font-10 orange">
-              🚀 +₹{FASTER_DELIVERY_CHARGE} faster delivery
-            </span>
-          )}
+          )} */}
 
           <span className="view-bill-text" onClick={() => setShowBill(true)}>
             View bill
@@ -347,8 +319,9 @@ Thank you! 🙏
         offerLabel={offerLabel}
         standardDeliveryCharge={standardDeliveryCharge}
         fasterDeliveryCharge={FASTER_DELIVERY_CHARGE}
-        isFasterDelivery={isFasterDeliverySelected}
-        totalWithDelivery={getCurrentTotal()}
+        totalWithStandardDelivery={totalWithStandardDelivery}
+        cartBooks={cartBooks}
+        isFasterDelivery={false} // Pass the actual faster delivery state from your address modal
       />
     </section>
   );

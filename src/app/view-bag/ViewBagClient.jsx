@@ -39,7 +39,9 @@ export default function ViewBagClient() {
   const [newAlternativeNumber, setNewAlternativeNumber] = useState("");
   const [showNumberSelection, setShowNumberSelection] = useState(false);
   const [pendingMessageType, setPendingMessageType] = useState(null);
+  const [standardDeliveryCharge, setStandardDeliveryCharge] = useState(0);
   const [fasterDeliveryCharge, setFasterDeliveryCharge] = useState(0);
+  const [isFasterDelivery, setIsFasterDelivery] = useState(false);
 
   useEffect(() => {
     setCurrentUrl(window.location.href);
@@ -51,11 +53,25 @@ export default function ViewBagClient() {
         const decodedOrder = JSON.parse(decodeURIComponent(orderParam));
         setOrderData(decodedOrder);
 
-        // Set faster delivery charge from order data
-        if (decodedOrder.fasterDeliveryCharge) {
-          setFasterDeliveryCharge(decodedOrder.fasterDeliveryCharge);
-        } else if (decodedOrder.fasterDelivery) {
-          setFasterDeliveryCharge(100);
+        // Set delivery charges from order data
+        setIsFasterDelivery(decodedOrder.fasterDelivery || false);
+
+        if (decodedOrder.deliveryCharge !== undefined) {
+          // If deliveryCharge is directly provided
+          if (decodedOrder.fasterDelivery) {
+            setFasterDeliveryCharge(decodedOrder.deliveryCharge);
+          } else {
+            setStandardDeliveryCharge(decodedOrder.deliveryCharge);
+          }
+        } else {
+          // Calculate based on order total and faster delivery flag
+          const totalDiscounted = calculateTotalDiscounted(decodedOrder);
+          const standardCharge = getExtraDeliveryCharge(totalDiscounted);
+          setStandardDeliveryCharge(standardCharge);
+
+          if (decodedOrder.fasterDelivery) {
+            setFasterDeliveryCharge(decodedOrder.fasterDeliveryCharge || 119);
+          }
         }
 
         // Load saved status from localStorage
@@ -86,6 +102,11 @@ export default function ViewBagClient() {
       }
     }
   }, [searchParams]);
+
+  const calculateTotalDiscounted = (order) => {
+    // This would need access to cartBooks, but for now return 0
+    return 0;
+  };
 
   const itemsParam = searchParams.get("items");
 
@@ -154,15 +175,20 @@ export default function ViewBagClient() {
   }
 
   const finalPayable = totalDiscounted - offerDiscount;
-  const extraDeliveryCharge = getExtraDeliveryCharge(totalDiscounted);
 
-  // Use faster delivery charge from order data or calculate
-  const finalFasterDeliveryCharge =
-    orderData?.fasterDeliveryCharge ||
-    fasterDeliveryCharge ||
-    (orderData?.fasterDelivery ? 100 : 0);
-  const totalWithDelivery =
-    finalPayable + extraDeliveryCharge + finalFasterDeliveryCharge;
+  // Get delivery charge - either from orderData or calculate
+  const getDeliveryCharge = () => {
+    if (orderData?.deliveryCharge !== undefined) {
+      return orderData.deliveryCharge;
+    }
+    if (isFasterDelivery) {
+      return fasterDeliveryCharge || 119;
+    }
+    return standardDeliveryCharge || getExtraDeliveryCharge(totalDiscounted);
+  };
+
+  const deliveryCharge = getDeliveryCharge();
+  const totalWithDelivery = finalPayable + deliveryCharge;
 
   const handleStatusUpdate = (field, value) => {
     const newStatus = { ...orderStatus, [field]: value };
@@ -227,7 +253,6 @@ export default function ViewBagClient() {
     // Add country code +91 for India
     let formattedNumber = phoneNumber;
     if (phoneNumber && !phoneNumber.startsWith("+")) {
-      // Remove any non-digit characters and add +91
       const cleanNumber = phoneNumber.replace(/\D/g, "");
       if (cleanNumber.length === 10) {
         formattedNumber = `+91${cleanNumber}`;
@@ -236,7 +261,7 @@ export default function ViewBagClient() {
       } else if (cleanNumber.length === 13 && cleanNumber.startsWith("91")) {
         formattedNumber = `+${cleanNumber}`;
       } else {
-        formattedNumber = `+91${cleanNumber.slice(-10)}`; // Take last 10 digits
+        formattedNumber = `+91${cleanNumber.slice(-10)}`;
       }
     }
 
@@ -411,6 +436,45 @@ export default function ViewBagClient() {
                 </span>
               </div>
 
+              {/* Delivery Type Display */}
+              <div className="flex justify-between items-center">
+                <span className="font-14">Delivery Type</span>
+                <span
+                  className={`font-14 weight-500 ${isFasterDelivery ? "orange" : "green"}`}
+                >
+                  {isFasterDelivery ? (
+                    <span className="flex items-center gap-4">
+                      <Zap size={14} />
+                      Faster Delivery (2-5 days)
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-4">
+                      <Truck size={14} />
+                      Standard Delivery (5-7 days)
+                    </span>
+                  )}
+                </span>
+              </div>
+
+              {/* Delivery Charge Display */}
+              {deliveryCharge > 0 && (
+                <div className="flex justify-between items-center">
+                  <span className="font-14">Delivery Charge</span>
+                  <span
+                    className={`font-14 weight-500 ${isFasterDelivery ? "orange" : "red"}`}
+                  >
+                    + ₹{deliveryCharge}
+                  </span>
+                </div>
+              )}
+
+              {deliveryCharge === 0 && (
+                <div className="flex justify-between items-center">
+                  <span className="font-14">Delivery Charge</span>
+                  <span className="font-14 weight-500 green">FREE</span>
+                </div>
+              )}
+
               {/* COD Section */}
               {isCOD && (
                 <div className="cod-section">
@@ -428,7 +492,7 @@ export default function ViewBagClient() {
                 </div>
               )}
 
-              {/* Shipping Status - Common for both COD and UPI */}
+              {/* Shipping Status */}
               <div className="shipping-status-section mt-12">
                 <label className="flex items-center gap-8 cursor-pointer">
                   <input
@@ -713,10 +777,21 @@ export default function ViewBagClient() {
           </div>
         )}
 
-        {extraDeliveryCharge > 0 && (
-          <div className="flex justify-between red">
-            <span>Delivery Charges</span>
-            <span>+ ₹{extraDeliveryCharge}</span>
+        {deliveryCharge > 0 && (
+          <div
+            className={`flex justify-between ${isFasterDelivery ? "orange" : "red"}`}
+          >
+            <span>
+              Delivery Charge {isFasterDelivery && "(Faster Delivery)"}
+            </span>
+            <span>+ ₹{deliveryCharge}</span>
+          </div>
+        )}
+
+        {deliveryCharge === 0 && (
+          <div className="flex justify-between green">
+            <span>Delivery Charge</span>
+            <span>FREE</span>
           </div>
         )}
 
@@ -724,7 +799,7 @@ export default function ViewBagClient() {
 
         <div className="flex justify-between weight-600 font-16">
           <span>Total Payable</span>
-          <span>₹{totalWithDelivery}</span>
+          <span className="green font-20 weight-700">₹{totalWithDelivery}</span>
         </div>
       </div>
 

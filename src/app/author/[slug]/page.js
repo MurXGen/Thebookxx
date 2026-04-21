@@ -109,9 +109,43 @@ export async function generateMetadata({ params }) {
 }
 
 // Enhanced structured data for better Google visibility
-const generateStructuredData = (author, book, reviews, avgRating) => {
-  const imageUrls = author.authorImages.map((img) => img.url);
+// Combined Structured Data (Person + Book + FAQPage)
+const generateStructuredData = (author, book, reviews, avgRating, slug) => {
+  const imageUrls = author.authorImages?.map((img) => img.url) || [];
 
+  const faqs = [
+    {
+      question: "How can I stop overthinking and finally make clear decisions?",
+      answer:
+        "The Art of Clarity gives you proven, step-by-step techniques to quiet mental noise and trust your inner guidance. Thousands have moved from confusion to confident action after reading it.",
+    },
+    {
+      question: "Is The Art of Clarity really effective for decision making?",
+      answer:
+        "Yes — with 319+ verified 5-star reviews, readers report dramatic improvements in mental clarity, reduced anxiety, and faster, better decisions in career, relationships, and life.",
+    },
+    {
+      question: "Who is Murthy Thevar and why should I trust his methods?",
+      answer:
+        "Murthy Thevar is a bestselling clarity coach who has helped over 50,000 people break free from overthinking. His practical system is rooted in real-world results and delivers fast, lasting transformation.",
+    },
+    {
+      question: "What if I've tried other self-help books and nothing worked?",
+      answer:
+        "Unlike generic advice, The Art of Clarity focuses on the root cause of overthinking and gives you simple, actionable tools that create immediate clarity. Most readers see results within the first few chapters.",
+    },
+    {
+      question:
+        "How quickly can I expect to see results after reading the book?",
+      answer:
+        "Many readers experience a powerful shift in mental clarity within days. The book is designed for fast implementation — you'll start making calmer, sharper decisions almost immediately.",
+    },
+    {
+      question: "Is this book worth buying if I'm stuck in analysis paralysis?",
+      answer:
+        "Absolutely. If overthinking is holding you back from the life you want, this is one of the highest-ROI investments you'll make. Join 50,000+ readers who finally broke free and started living with confidence.",
+    },
+  ];
   return {
     "@context": "https://schema.org",
     "@graph": [
@@ -196,6 +230,17 @@ const generateStructuredData = (author, book, reviews, avgRating) => {
           },
           reviewBody: review.comment,
           datePublished: review.date,
+        })),
+      },
+      {
+        "@type": "FAQPage",
+        mainEntity: faqs.map((faq) => ({
+          "@type": "Question",
+          name: faq.question,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: faq.answer,
+          },
         })),
       },
     ],
@@ -604,6 +649,61 @@ export default async function AuthorPage({ params }) {
             </Link>
           </div>
         )}
+        {/* NEW: Powerful FAQ Section for SEO & Conversion */}
+        <div className="faqs-section flex flex-col gap-24">
+          <h2 className="font-28 weight-600 text-center">
+            Frequently Asked Questions
+          </h2>
+          <div
+            className="flex flex-col gap-24 gap-8"
+            style={{
+              gridTemplateColumns: "repeat(auto-fill, minmax(600px, 1fr))",
+            }}
+          >
+            {[
+              {
+                q: "How can I stop overthinking and finally make clear decisions?",
+                a: "The Art of Clarity gives you proven, step-by-step techniques to quiet mental noise and trust your inner guidance. Thousands have moved from confusion to confident action after reading it.",
+              },
+              {
+                q: "Is The Art of Clarity really effective for decision making?",
+                a: "Yes — with 319+ verified 5-star reviews, readers report dramatic improvements in mental clarity, reduced anxiety, and faster, better decisions in career, relationships, and life.",
+              },
+              {
+                q: "Who is Murthy Thevar and why should I trust his methods?",
+                a: "Murthy Thevar is a bestselling clarity coach who has helped over 50,000 people break free from overthinking. His practical system is rooted in real-world results and delivers fast, lasting transformation.",
+              },
+              {
+                q: "What if I've tried other self-help books and nothing worked?",
+                a: "Unlike generic advice, The Art of Clarity focuses on the root cause of overthinking and gives you simple, actionable tools that create immediate clarity. Most readers see results within the first few chapters.",
+              },
+              {
+                q: "How quickly can I expect to see results after reading the book?",
+                a: "Many readers experience a powerful shift in mental clarity within days. The book is designed for fast implementation — you'll start making calmer, sharper decisions almost immediately.",
+              },
+              {
+                q: "Is this book worth buying if I'm stuck in analysis paralysis?",
+                a: "Absolutely. If overthinking is holding you back from the life you want, this is one of the highest-ROI investments you'll make. Join 50,000+ readers who finally broke free and started living with confidence.",
+              },
+            ].map((faq, index) => (
+              <div
+                key={index}
+                className="faq-item"
+                style={{
+                  background: "white",
+                  padding: "12px",
+                  borderRadius: "16px",
+                  border: "1px solid #e5e7eb",
+                }}
+              >
+                <h3 className="font-18 weight-600 margin-btm-12px">{faq.q}</h3>
+                <p className="font-16 dark-50" style={{ lineHeight: "1.7" }}>
+                  {faq.a}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </>
   );

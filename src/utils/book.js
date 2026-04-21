@@ -4499,7 +4499,7 @@ export const books = [
     size: "Paperback",
     stock: 20,
     catalogue: ["thriller", "fiction", "bestseller", "adult", "mystery"],
-    originalPrice: calculateOriginalPrice(129),
-    discountedPrice: 129,
+    originalPrice: calculateOriginalPrice(169),
+    discountedPrice: 169,
   },
 ];

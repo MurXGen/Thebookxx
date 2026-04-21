@@ -283,4 +283,5 @@ export const bookImages = {
   "hot-mess": `${BOOK_IMAGE_BASE_PATH}/hot-mess.jpeg`,
   partypooper: `${BOOK_IMAGE_BASE_PATH}/partypooper.jpeg`,
   "fight-or-flight": `${BOOK_IMAGE_BASE_PATH}/fight-or-flight.jpeg`,
+  "the-girl-on-the-train": `${BOOK_IMAGE_BASE_PATH}/the-girl-on-the-train.jpeg`,
 };

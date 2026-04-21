@@ -4487,4 +4487,19 @@ export const books = [
     originalPrice: calculateOriginalPrice(129),
     discountedPrice: 129,
   },
+  {
+    id: "bk-297",
+    name: "The Girl on the Train",
+    image: bookImages["the-girl-on-the-train"],
+    description:
+      "Unravel the gripping psychological thriller 'The Girl on the Train' by Paula Hawkins at TheBookX.in. Rachel takes the same commuter train every day, watching a seemingly perfect couple from afar—until she witnesses something shocking and becomes entangled in a missing person investigation. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now—books starting at just ₹1 for a limited offer.",
+    author: "Paula Hawkins",
+    pages: "336",
+    language: "English",
+    size: "Paperback",
+    stock: 20,
+    catalogue: ["thriller", "fiction", "bestseller", "adult", "mystery"],
+    originalPrice: calculateOriginalPrice(129),
+    discountedPrice: 129,
+  },
 ];

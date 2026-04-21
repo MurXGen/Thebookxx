@@ -49,7 +49,8 @@ export async function generateMetadata({ params }) {
 
   const book = author.publishedBooks?.[0];
   const reviews = reviewsData.filter((r) => r.authorName === author.name);
-  const canonicalUrl = `https://thebookx.in/author/murthy-thevar`;
+  // ✅ FIXED: Dynamic canonical URL based on current slug
+  const canonicalUrl = `https://thebookx.in/author/${slug}`;
 
   return {
     title: `${author.name} - Author of "${book?.name}" | Bestselling Self-Help Author | TheBookX`,
@@ -227,10 +228,7 @@ export default async function AuthorPage({ params }) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
 
-      <div
-        className="section-1200 flex flex-col gap-32"
-        style={{ padding: "40px 20px" }}
-      >
+      <div className="section-1200 flex flex-col gap-32">
         {/* Breadcrumbs */}
         <nav
           className="breadcrumbs"
@@ -258,8 +256,8 @@ export default async function AuthorPage({ params }) {
             <div
               className="author-avatar"
               style={{
-                width: "400px",
-                height: "600px",
+                width: "500px",
+                height: "550px",
                 borderRadius: "12px",
                 background: "white",
                 display: "flex",

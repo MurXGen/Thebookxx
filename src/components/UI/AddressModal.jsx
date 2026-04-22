@@ -65,7 +65,8 @@ export default function AddressModal({
   const [showFasterDeliveryModal, setShowFasterDeliveryModal] = useState(false);
   const [tempPaymentMethod, setTempPaymentMethod] = useState(null);
 
-  const [showPayment, setShowPayment] = useState(false);
+  const [showUPIPayment, setShowUPIPayment] = useState(false);
+  const [showCODPayment, setShowCODPayment] = useState(false);
   const [qrUnlocked, setQrUnlocked] = useState(false);
   const [upiCopied, setUpiCopied] = useState(false);
   const [returnedFromUpi, setReturnedFromUpi] = useState(false);
@@ -75,11 +76,17 @@ export default function AddressModal({
 
   const UPI_ID = "7977960242-1@okbizaxis";
 
+  // Calculate 50% advance for COD
+
+  // Check if cart value is below 450
+  const isCartBelow450 = totalDiscounted < 450;
+
   // Calculate delivery charge based on selection
   const getDeliveryCharge = (isFaster) => {
     if (isFaster) {
       return fasterDeliveryCharge;
     }
+    // Still charge standard delivery charge even when cart below 450
     return standardDeliveryCharge;
   };
 
@@ -87,6 +94,10 @@ export default function AddressModal({
   const getTotalWithDelivery = (isFaster) => {
     return finalPayable + getDeliveryCharge(isFaster);
   };
+
+  const totalWithDelivery = getTotalWithDelivery(fasterDelivery);
+  const codAdvanceAmount = Math.round(totalWithDelivery / 2);
+  const codRemainingAmount = totalWithDelivery - codAdvanceAmount;
 
   const totalWithCurrentSelection = getTotalWithDelivery(fasterDelivery);
 
@@ -155,6 +166,7 @@ export default function AddressModal({
   // Check if faster delivery is available for this pincode
   const isFasterDeliveryAvailable = true;
 
+  // Timer for UPI verification
   useEffect(() => {
     if (!qrUnlocked) return;
 
@@ -262,23 +274,8 @@ export default function AddressModal({
       return;
     }
 
-    if (handleCODCheckout) {
-      handleCODCheckout(
-        {
-          name,
-          phone,
-          city,
-          pincode,
-          address,
-          state,
-          district,
-          area,
-          fasterDelivery: isFasterDeliverySelected && isFasterDeliveryAvailable,
-        },
-        isFasterDeliverySelected && isFasterDeliveryAvailable,
-      );
-    }
-    onClose();
+    setFasterDelivery(isFasterDeliverySelected);
+    setShowCODPayment(true);
   };
 
   const proceedWithUPI = (isFasterDeliverySelected) => {
@@ -293,7 +290,7 @@ export default function AddressModal({
     }
 
     setFasterDelivery(isFasterDeliverySelected);
-    setShowPayment(true);
+    setShowUPIPayment(true);
   };
 
   const handleCODClick = () => {
@@ -308,9 +305,28 @@ export default function AddressModal({
     setShowFasterDeliveryModal(true);
   };
 
-  const handleVerifyPayment = () => {
-    const isFasterDeliverySelected = fasterDelivery;
+  const handleVerifyCODPayment = () => {
+    if (handleCODCheckout) {
+      handleCODCheckout(
+        {
+          name,
+          phone,
+          city,
+          pincode,
+          address,
+          state,
+          district,
+          area,
+          fasterDelivery: fasterDelivery && isFasterDeliveryAvailable,
+        },
+        fasterDelivery && isFasterDeliveryAvailable,
+      );
+    }
+    setShowCODPayment(false);
+    onClose();
+  };
 
+  const handleVerifyUPIPayment = () => {
     if (handleUPICheckout) {
       handleUPICheckout(
         {
@@ -322,12 +338,12 @@ export default function AddressModal({
           state,
           district,
           area,
-          fasterDelivery: isFasterDeliverySelected && isFasterDeliveryAvailable,
+          fasterDelivery: fasterDelivery && isFasterDeliveryAvailable,
         },
-        isFasterDeliverySelected && isFasterDeliveryAvailable,
+        fasterDelivery && isFasterDeliveryAvailable,
       );
     }
-    setShowPayment(false);
+    setShowUPIPayment(false);
     onClose();
   };
 
@@ -575,7 +591,7 @@ export default function AddressModal({
                     <div className="flex gap-12">
                       <Clock size={24} className="gray-500" />
                       <div className="flex flex-col gap-4">
-                        <h4 className=" font-16 weight-600">
+                        <h4 className="font-16 weight-600">
                           Standard Delivery
                         </h4>
                         <p className="font-12 dark-50">
@@ -587,20 +603,25 @@ export default function AddressModal({
                         </div>
                       </div>
                     </div>
-                    <span
-                      className="font-16 weight-600"
-                      style={{ color: "#fb8500" }}
-                    >
-                      {standardDeliveryCharge > 0
-                        ? `₹${standardDeliveryCharge}`
-                        : "FREE"}
-                    </span>
+                    {/* Hide price when cart is below 450 */}
+                    {!isCartBelow450 && (
+                      <span
+                        className="font-16 weight-600"
+                        style={{ color: "#fb8500" }}
+                      >
+                        {standardDeliveryCharge > 0
+                          ? `₹${standardDeliveryCharge}`
+                          : "FREE"}
+                      </span>
+                    )}
                   </div>
                   <button
                     className="sec-mid-btn width100 mt-16"
                     onClick={handleProceedWithoutFasterDelivery}
                   >
-                    I'll continue with this
+                    {isCartBelow450
+                      ? "No fine, continue with standard delivery"
+                      : "I'll continue with this"}
                   </button>
                 </div>
 
@@ -670,7 +691,7 @@ export default function AddressModal({
 
       {/* UPI Payment Modal */}
       <AnimatePresence>
-        {showPayment && (
+        {showUPIPayment && (
           <motion.div className="pay-online-modal-overlay">
             <motion.div
               className="pay-online-bill-modal payment-modal"
@@ -681,7 +702,7 @@ export default function AddressModal({
             >
               <div className="bill-header">
                 <span className="weight-600">Pay via UPI</span>
-                <span onClick={() => setShowPayment(false)}>
+                <span onClick={() => setShowUPIPayment(false)}>
                   <X size={16} />
                 </span>
               </div>
@@ -782,10 +803,165 @@ export default function AddressModal({
                       <button
                         className={`pri-big-btn width100 ${!canVerify ? "disabled-btn" : ""}`}
                         disabled={!canVerify}
-                        onClick={handleVerifyPayment}
+                        onClick={handleVerifyUPIPayment}
                       >
                         {canVerify
                           ? "✅ Verify Payment"
+                          : `Wait ${verifyTimer}s to verify`}
+                      </button>
+                    </div>
+                    <span className="font-10 gray-500">
+                      Payment verification takes ~30 seconds
+                    </span>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* COD Advance Payment Modal */}
+      <AnimatePresence>
+        {showCODPayment && (
+          <motion.div className="pay-online-modal-overlay">
+            <motion.div
+              className="pay-online-bill-modal payment-modal"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.4 }}
+            >
+              <div className="bill-header">
+                <span className="weight-600">
+                  Cash on Delivery - 50% Advance
+                </span>
+                <span onClick={() => setShowCODPayment(false)}>
+                  <X size={16} />
+                </span>
+              </div>
+
+              <div className="payment-order-summary">
+                <div className="flex justify-between">
+                  <span>Books Total</span>
+                  <span>₹{finalPayable}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Delivery Charge</span>
+                  <span className={fasterDelivery ? "orange" : ""}>
+                    {fasterDelivery
+                      ? `+₹${fasterDeliveryCharge}`
+                      : standardDeliveryCharge > 0
+                        ? `+₹${standardDeliveryCharge}`
+                        : "FREE"}
+                  </span>
+                </div>
+                {fasterDelivery && (
+                  <div className="flex justify-between green">
+                    <span>⚡ Faster Delivery</span>
+                    <span>Priority shipping</span>
+                  </div>
+                )}
+                <div className="dashed-border my-8"></div>
+                <div className="flex justify-between">
+                  <span>Total Amount</span>
+                  <span className="weight-600">₹{totalWithDelivery}</span>
+                </div>
+                <div className="flex justify-between orange">
+                  <span>💳 Advance Payment (50%)</span>
+                  <span className="weight-600">₹{codAdvanceAmount}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>💰 Remaining at Delivery (50%)</span>
+                  <span className="weight-600">₹{codRemainingAmount}</span>
+                </div>
+                <div className="dashed-border my-8"></div>
+                <div className="flex justify-between weight-600">
+                  <span>Total to Pay Now</span>
+                  <span className="green weight-700 font-20">
+                    ₹{codAdvanceAmount}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center gap-16">
+                <div className="payment-info-message">
+                  <p className="font-12 text-center dark-50">
+                    Pay 50% advance to confirm your COD order. Remaining 50%
+                    will be collected at delivery.
+                  </p>
+                </div>
+
+                <motion.div
+                  className="qr-wrapper"
+                  animate={{ filter: qrUnlocked ? "blur(0px)" : "blur(12px)" }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <Image
+                    src="/books/uskillbook.png"
+                    alt="UPI QR Code for 50% advance payment"
+                    width={350}
+                    height={420}
+                  />
+
+                  <div className="flex flex-row items-center justify-center gap-8 mt-12">
+                    <button
+                      className="sec-mid-btn flex flex-row gap-8"
+                      onClick={() => {
+                        navigator.clipboard.writeText(UPI_ID);
+                        setUpiCopied(true);
+                        setTimeout(() => setUpiCopied(false), 3000);
+                      }}
+                    >
+                      <Copy size={16} />
+                      {upiCopied ? "Copied!" : UPI_ID}
+                    </button>
+
+                    <button
+                      className="pri-big-btn flex flex-row gap-8"
+                      onClick={() => {
+                        const link = document.createElement("a");
+                        link.href = "/books/uskillbook.png";
+                        link.download = "thebookx-upi-qr.png";
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                      }}
+                    >
+                      <Download size={16} /> Save QR
+                    </button>
+                  </div>
+
+                  <div className="qr-instructions flex items-center mt-12">
+                    <span className="font-12 text-center">
+                      Pay ₹{codAdvanceAmount} using any UPI app by scanning the
+                      QR code or copying the UPI ID.
+                    </span>
+                  </div>
+                </motion.div>
+
+                {!qrUnlocked && (
+                  <button
+                    className="pri-big-btn"
+                    onClick={() => setQrUnlocked(true)}
+                  >
+                    Reveal QR Code to Pay 50% Advance
+                  </button>
+                )}
+
+                {qrUnlocked && (
+                  <div className="width100 flex flex-col gap-8 items-center">
+                    <span className="font-12">
+                      After completing payment, click verify
+                    </span>
+                    <div className="flex flex-row gap-4 width100">
+                      <button
+                        className={`pri-big-btn width100 ${!canVerify ? "disabled-btn" : ""}`}
+                        disabled={!canVerify}
+                        onClick={handleVerifyCODPayment}
+                      >
+                        {canVerify
+                          ? "✅ Verify Payment & Confirm Order"
                           : `Wait ${verifyTimer}s to verify`}
                       </button>
                     </div>

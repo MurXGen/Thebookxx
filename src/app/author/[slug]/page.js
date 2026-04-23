@@ -15,11 +15,9 @@ import {
   Linkedin,
   ThumbsUp,
   Quote,
-  Facebook,
-  Youtube,
   MapPin,
   Users,
-  TrendingUp,
+  Camera,
 } from "lucide-react";
 
 function slugify(text) {
@@ -49,13 +47,12 @@ export async function generateMetadata({ params }) {
 
   const book = author.publishedBooks?.[0];
   const reviews = reviewsData.filter((r) => r.authorName === author.name);
-  // ✅ FIXED: Dynamic canonical URL based on current slug
   const canonicalUrl = `https://thebookx.in/author/${slug}`;
 
   return {
     title: `${author.name} - Author of "${book?.name}" | Bestselling Self-Help Author | TheBookX`,
-    description: `Discover ${author.name}, the clarity coach and bestselling author of "${book?.name}". Read 20+ verified reader reviews, see author photos, and get your copy today. ${author.name} has helped 50,000+ readers achieve mental clarity.`,
-    keywords: `${author.name}, Murthy Thevar, Murthy Thevar author, The Art of Clarity, clarity coach, self-help books India, mental clarity, best self-help books 2026, Murthy Thevar book, The Art of Clarity review, Indian author, clarity workshop, decision making books, overthinking solutions`,
+    description: `Discover ${author.name}, the clarity coach and bestselling author of "${book?.name}". Read verified reader reviews, see author photos, and get your copy today.`,
+    keywords: `${author.name}, Murthy Thevar, The Art of Clarity, clarity coach, self-help books India, mental clarity`,
     robots: {
       index: true,
       follow: true,
@@ -63,54 +60,36 @@ export async function generateMetadata({ params }) {
         index: true,
         follow: true,
         "max-image-preview": "large",
-        "max-snippet": -1,
-        "max-video-preview": -1,
       },
     },
-    alternates: {
-      canonical: canonicalUrl,
-    },
+    alternates: { canonical: canonicalUrl },
     openGraph: {
       title: `${author.name} - Author of "${book?.name}" | TheBookX`,
-      description: `Meet ${author.name}, India's leading clarity coach. Read reviews, see photos, and discover "The Art of Clarity" - the #1 self-help book that has transformed 50,000+ lives.`,
+      description: `Meet ${author.name}, India's leading clarity coach. Read reviews and discover "The Art of Clarity".`,
       url: canonicalUrl,
       siteName: "TheBookX",
       locale: "en_IN",
       type: "profile",
       images: [
-        {
-          url: author.authorImages[0]?.url,
-          width: 1200,
-          height: 630,
-          alt: `${author.name} - Official author photo`,
-        },
-        {
-          url: book?.image,
-          width: 800,
-          height: 800,
-          alt: `${book?.name} by ${author.name}`,
-        },
+        { url: author.authorImages[0]?.url, width: 1200, height: 630 },
+        { url: book?.image, width: 800, height: 800 },
       ],
     },
     twitter: {
       card: "summary_large_image",
-      title: `${author.name} - Bestselling Author of "The Art of Clarity"`,
-      description: `Read 20+ verified reviews of ${author.name}'s transformative book. Get your copy at TheBookX.in`,
+      title: `${author.name} - Bestselling Author`,
+      description: `Read verified reviews of ${author.name}'s transformative book.`,
       images: [author.authorImages[0]?.url, book?.image],
-      site: "@thebookx",
-      creator: "@murthythevar",
     },
-    verification: {
-      google: "your-google-verification-code", // Add your Google Search Console code
-    },
-    category: "books",
-    authors: [{ name: author.name, url: canonicalUrl }],
   };
 }
 
-// Enhanced structured data for better Google visibility
+// Structured data for Google
 const generateStructuredData = (author, book, reviews, avgRating) => {
-  const imageUrls = author.authorImages.map((img) => img.url);
+  const allImages = [
+    ...author.authorImages.map((img) => img.url),
+    ...reviews.slice(0, 6).map((r) => r.reviewerImage),
+  ];
 
   return {
     "@context": "https://schema.org",
@@ -119,33 +98,12 @@ const generateStructuredData = (author, book, reviews, avgRating) => {
         "@type": "Person",
         "@id": `https://thebookx.in/author/${author.slug}#person`,
         name: author.name,
-        alternateName: author.alternativeNames || [author.name],
         description: author.bio,
         url: `https://thebookx.in/author/${author.slug}`,
-        sameAs: Object.values(author.socialLinks).filter(
-          (link) => link && link !== "#",
-        ),
-        worksFor: {
-          "@type": "Organization",
-          name: "TheBookX",
-        },
+        sameAs: Object.values(author.socialLinks).filter((l) => l && l !== "#"),
         jobTitle: "Author, Clarity Coach, Speaker",
-        knowsAbout: author.genres || [
-          "Self-Help",
-          "Personal Development",
-          "Mental Clarity",
-        ],
-        award: author.achievements,
-        image: imageUrls,
-        birthDate: "2004-01-03",
-        birthPlace: {
-          "@type": "Place",
-          name: "Mumbai, India",
-        },
-        nationality: {
-          "@type": "Country",
-          name: "India",
-        },
+        award: author.achievements?.slice(0, 5),
+        image: allImages.slice(0, 10),
         mainEntityOfPage: {
           "@type": "WebPage",
           "@id": `https://thebookx.in/author/${author.slug}`,
@@ -155,51 +113,45 @@ const generateStructuredData = (author, book, reviews, avgRating) => {
         "@type": "Book",
         "@id": `https://thebookx.in/books/${book?.slug}#book`,
         name: book?.name,
-        author: {
-          "@type": "Person",
-          name: author.name,
-        },
+        author: { "@type": "Person", name: author.name },
         description: book?.description,
-        isbn: book?.isbn || "978-93-12345-01-2",
-        numberOfPages: book?.pages || 210,
-        inLanguage: book?.language || "English",
-        datePublished: book?.publishDate || "2026-04-01",
         image: book?.image,
-        offers: {
-          "@type": "Offer",
-          price: book?.price,
-          priceCurrency: "INR",
-          availability: "https://schema.org/InStock",
-          seller: {
-            "@type": "Organization",
-            name: "TheBookX",
-          },
-          url: book?.buyLink,
-        },
         aggregateRating: {
           "@type": "AggregateRating",
           ratingValue: avgRating || 4.8,
-          reviewCount: reviews.length || 20,
+          reviewCount: Math.min(reviews.length, 50),
           bestRating: "5",
-          worstRating: "1",
         },
-        review: reviews.slice(0, 15).map((review) => ({
+        review: reviews.slice(0, 10).map((review) => ({
           "@type": "Review",
           reviewRating: {
             "@type": "Rating",
             ratingValue: review.rating,
             bestRating: "5",
           },
-          author: {
-            "@type": "Person",
-            name: review.reviewerName,
-          },
-          reviewBody: review.comment,
+          author: { "@type": "Person", name: review.reviewerName },
+          reviewBody: review.comment.substring(0, 200),
           datePublished: review.date,
         })),
       },
     ],
   };
+};
+
+// Get unique reviewer images (avoid duplicates)
+const getUniqueReviewerImages = (reviews) => {
+  const unique = new Map();
+  reviews.forEach((review) => {
+    if (!unique.has(review.reviewerName)) {
+      unique.set(review.reviewerName, {
+        url: review.reviewerImage,
+        name: review.reviewerName,
+        rating: review.rating,
+        comment: review.comment.substring(0, 100),
+      });
+    }
+  });
+  return Array.from(unique.values()).slice(0, 20);
 };
 
 export default async function AuthorPage({ params }) {
@@ -219,16 +171,35 @@ export default async function AuthorPage({ params }) {
     reviews,
     avgRating,
   );
+  const reviewerImages = getUniqueReviewerImages(reviews);
+
+  // Combine author images and reviewer images for gallery
+  const galleryImages = [
+    ...author.authorImages.map((img) => ({
+      ...img,
+      type: "author",
+      category: "Author Photos",
+    })),
+    ...reviewerImages.map((reviewer, idx) => ({
+      url: reviewer.url,
+      alt: `${reviewer.name} reviewing ${book?.name} by ${author.name}`,
+      caption: `${reviewer.name} - ${reviewer.rating}-star review`,
+      type: "reviewer",
+      category: "Reader Reviews",
+    })),
+  ];
 
   return (
     <>
-      {/* Structured Data Script */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
 
-      <div className="section-1200 flex flex-col gap-32">
+      <div
+        className="section-1200 flex flex-col gap-32"
+        style={{ padding: "40px 20px" }}
+      >
         {/* Breadcrumbs */}
         <nav
           className="breadcrumbs"
@@ -238,26 +209,22 @@ export default async function AuthorPage({ params }) {
             Home
           </Link>
           <span> / </span>
-          <Link href="/author" style={{ color: "#fb8500" }}>
+          <Link href="/authors" style={{ color: "#fb8500" }}>
             Authors
           </Link>
           <span> / </span>
           <span style={{ color: "#374151" }}>{author.name}</span>
         </nav>
 
-        {/* Author Header Section - Enhanced */}
-        <div
-          className="author-header"
-          style={{
-            borderRadius: "12px",
-          }}
-        >
+        {/* Author Header Section */}
+        <div className="author-header" style={{ borderRadius: "12px" }}>
           <div className="flex flex-row gap-32 items-center flex-wrap">
             <div
               className="author-avatar"
               style={{
-                width: "500px",
-                height: "550px",
+                width: "100%",
+                maxWidth: "500px",
+                height: "auto",
                 borderRadius: "12px",
                 background: "white",
                 display: "flex",
@@ -270,9 +237,9 @@ export default async function AuthorPage({ params }) {
               <Image
                 src={author.authorImages[0]?.url || "/default-author.jpg"}
                 alt={author.authorImages[0]?.alt || author.name}
-                width={400}
+                width={500}
                 height={600}
-                style={{ objectFit: "cover" }}
+                style={{ objectFit: "cover", width: "100%", height: "500px" }}
                 priority
               />
               <div
@@ -280,29 +247,23 @@ export default async function AuthorPage({ params }) {
                   position: "absolute",
                   inset: 0,
                   background:
-                    "linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 40%, rgba(0,0,0,0) 100%)",
+                    "linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0) 100%)",
                   zIndex: 1,
                 }}
               />
-
-              {/* ✅ Content ABOVE gradient */}
               <div
                 className="author-info flex flex-col gap-12"
                 style={{
                   position: "absolute",
-                  top: "12px",
-                  left: "12px",
-                  padding: "12px",
+                  top: "24px",
+                  left: "24px",
                   zIndex: 2,
                   color: "white",
                 }}
               >
                 <h1 className="font-32 weight-700">{author.name}</h1>
                 <p className="font-16">{author.occupation}</p>
-                <div className="flex flex-row gap-8 flex-wrap font-16">
-                  {/* <span className="flex items-center gap-4">
-                    <Calendar size={16} /> Born: {author.born}
-                  </span> */}
+                <div className="flex flex-row gap-16 flex-wrap">
                   <span className="flex items-center gap-4">
                     <MapPin size={16} /> {author.birthplace}
                   </span>
@@ -341,7 +302,7 @@ export default async function AuthorPage({ params }) {
           </div>
         </div>
 
-        {/* Author Bio Section - Enhanced */}
+        {/* Author Bio Section */}
         <div className="author-bio">
           <h2 className="font-24 weight-600 margin-btm-16px">
             About {author.name}
@@ -351,35 +312,84 @@ export default async function AuthorPage({ params }) {
           </p>
         </div>
 
-        {/* Author Images Gallery - Enhanced for SEO */}
-        {author.authorImages && author.authorImages.length > 0 && (
+        {/* Combined Gallery Section - Author Photos + Reviewer Photos */}
+        {galleryImages.length > 0 && (
           <div className="author-gallery flex flex-col gap-24">
-            <h2 className="font-24 weight-600">Photos of {author.name}</h2>
+            <div className="flex items-center gap-8">
+              {/* <Camera size={24} className="orange" /> */}
+              <h2 className="font-24 weight-600">Gallery of {author.name}</h2>
+            </div>
+            <p className="font-14 dark-50 margin-btm-8px">
+              Explore photos of {author.name} and verified readers who reviewed
+              "{book?.name}"
+            </p>
+
+            {/* Gallery Grid */}
             <div
-              className=" flex flex-row gap-16"
-              style={{ overflow: "scroll" }}
+              className="gallery-grid"
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+                gap: "20px",
+              }}
             >
-              {author.authorImages.map((img, index) => (
-                <div key={index} className="gallery-image">
-                  <Image
-                    src={img.url}
-                    alt={img.alt}
-                    width={220}
-                    height={200}
-                    style={{
-                      minWidth: "100%",
-                      height: "300px",
-                      objectFit: "cover",
-                      borderRadius: "12px",
-                    }}
-                    loading="lazy"
-                  />
-                  <p
-                    className="font-12 text-center"
-                    style={{ color: "#ffffff" }}
-                  >
-                    {img.caption}
-                  </p>
+              {galleryImages.map((img, index) => (
+                <div
+                  key={index}
+                  className="gallery-item"
+                  style={{
+                    borderRadius: "12px",
+                    overflow: "hidden",
+                    background: "#f9fafb",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                    transition: "transform 0.3s ease",
+                  }}
+                >
+                  <div style={{ position: "relative", paddingBottom: "100%" }}>
+                    <Image
+                      src={img.url}
+                      alt={img.alt}
+                      fill
+                      style={{ objectFit: "cover" }}
+                      loading="lazy"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    />
+                  </div>
+                  <div style={{ padding: "12px" }}>
+                    {img.type === "author" ? (
+                      <>
+                        <span
+                          className="font-10 orange"
+                          style={{
+                            background: "#fb850020",
+                            padding: "2px 8px",
+                            borderRadius: "100px",
+                          }}
+                        >
+                          📸 Author Photo
+                        </span>
+                        <p className="font-12 weight-500 margin-tp-8px">
+                          {img.caption}
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <span
+                          className="font-10 green"
+                          style={{
+                            background: "#10b98120",
+                            padding: "2px 8px",
+                            borderRadius: "100px",
+                          }}
+                        >
+                          ⭐ Reader Review
+                        </span>
+                        <p className="font-12 weight-500 margin-tp-8px">
+                          {img.caption}
+                        </p>
+                      </>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -396,7 +406,7 @@ export default async function AuthorPage({ params }) {
               <div className="book-cover" style={{ width: "220px" }}>
                 <Image
                   src={book.image}
-                  alt={`${book.name} by ${author.name} - Bestselling self-help book`}
+                  alt={`${book.name} by ${author.name}`}
                   width={220}
                   height={300}
                   style={{
@@ -425,11 +435,11 @@ export default async function AuthorPage({ params }) {
                     {avgRating || "4.8"}/5
                   </span>
                   <span className="font-12 gray-500">
-                    ({reviews.length}+ verified reviews)
+                    ({Math.min(reviews.length, 50)}+ reviews)
                   </span>
                 </div>
                 <p className="font-14 dark-50">{book.description}</p>
-                <div className="flex flex-row gap-12">
+                <div className="flex flex-row gap-12 flex-wrap">
                   <Link href={`/books/${book.slug}`} className="pri-big-btn">
                     Buy Now - ₹{book.price}
                   </Link>
@@ -442,18 +452,18 @@ export default async function AuthorPage({ params }) {
           </div>
         )}
 
-        {/* Achievements */}
+        {/* Awards Section - Limited to 6 for optimal display */}
         {author.achievements && author.achievements.length > 0 && (
           <div className="achievements flex flex-col gap-24">
             <h2 className="font-24 weight-600">Awards & Recognition</h2>
             <div className="flex flex-row gap-16 flex-wrap">
-              {author.achievements.map((achievement, index) => (
+              {author.achievements.slice(0, 20).map((achievement, index) => (
                 <div
                   key={index}
                   className="achievement-badge"
                   style={{
-                    background: "linear-gradient(135deg, #fb850050, #ffb70350)",
-                    padding: "10px 20px",
+                    background: "linear-gradient(135deg, #fb850020, #ffb70320)",
+                    padding: "8px 20px",
                     borderRadius: "100px",
                     display: "flex",
                     alignItems: "center",
@@ -461,14 +471,14 @@ export default async function AuthorPage({ params }) {
                   }}
                 >
                   <Award size={16} color="#fb8500" />
-                  <span className="font-12 weight-500">{achievement}</span>
+                  <span className="font-13 weight-500">{achievement}</span>
                 </div>
               ))}
             </div>
           </div>
         )}
 
-        {/* Reviews Section */}
+        {/* Reviews Section - Display top 12 reviews for optimal performance */}
         {reviews.length > 0 && (
           <div className="reviews-section flex flex-col gap-24">
             <h2 className="font-24 flex flex-col">
@@ -476,7 +486,7 @@ export default async function AuthorPage({ params }) {
                 Reader Reviews for "{book?.name}"
               </span>
               <span className="font-12 dark-50">
-                ({reviews.length}+ verified reviews with photos)
+                {Math.min(reviews.length, 50)}+ verified reviews with photos
               </span>
             </h2>
 
@@ -484,11 +494,11 @@ export default async function AuthorPage({ params }) {
               className="reviews-grid"
               style={{
                 display: "grid",
-                gap: "24px",
-                gridTemplateColumns: "repeat(auto-fill, minmax(350px, 1fr))",
+                gap: "20px",
+                gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))",
               }}
             >
-              {reviews.slice(0, 21).map((review) => (
+              {reviews.slice(0, 12).map((review) => (
                 <div
                   key={review.id}
                   className="review-card"
@@ -496,12 +506,12 @@ export default async function AuthorPage({ params }) {
                     background: "white",
                     border: "1px solid #e5e7eb",
                     borderRadius: "16px",
-                    padding: "24px",
+                    padding: "20px",
                     transition: "all 0.3s",
                   }}
                 >
                   <div
-                    className="review-header flex flex-row gap-16 items-start"
+                    className="review-header flex flex-row gap-14 items-start"
                     style={{
                       borderBottom: "1px solid #e5e7eb",
                       paddingBottom: "12px",
@@ -510,24 +520,37 @@ export default async function AuthorPage({ params }) {
                     <div
                       className="reviewer-image"
                       style={{
-                        width: "60px",
-                        height: "60px",
+                        width: "52px",
+                        height: "52px",
                         borderRadius: "50%",
                         overflow: "hidden",
                         flexShrink: 0,
+                        background: "#f3e8ff",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
                       }}
                     >
-                      <Image
-                        src={review.reviewerImage}
-                        alt={`${review.reviewerName} review for ${book?.name} by ${author.name}`}
-                        width={60}
-                        height={60}
-                        style={{ objectFit: "cover" }}
-                      />
+                      {review.reviewerImage ? (
+                        <Image
+                          src={review.reviewerImage}
+                          alt={review.reviewerName}
+                          width={52}
+                          height={52}
+                          style={{ objectFit: "cover" }}
+                        />
+                      ) : (
+                        <span className="font-20">
+                          {review.reviewerName.charAt(0)}
+                        </span>
+                      )}
                     </div>
-                    <div className="reviewer-info flex flex-col gap-8">
-                      <div className="flex justify-between items-center flex-wrap gap-8">
-                        <h3 className="font-16 weight-600">
+                    <div
+                      className="reviewer-info flex flex-col gap-6"
+                      style={{ flex: 1 }}
+                    >
+                      <div className="flex justify-between items-center flex-wrap gap-6">
+                        <h3 className="font-15 weight-600">
                           {review.reviewerName}
                         </h3>
                         {review.verified && (
@@ -539,48 +562,43 @@ export default async function AuthorPage({ params }) {
                               borderRadius: "100px",
                             }}
                           >
-                            ✓ Verified Purchase
+                            ✓ Verified
                           </span>
                         )}
                       </div>
-                      <div className="flex justify-between items-center flex-wrap gap-8">
+                      <div className="flex justify-between items-center flex-wrap gap-6">
                         <div className="flex gap-1">
                           {[1, 2, 3, 4, 5].map((star) => (
                             <Star
                               key={star}
-                              size={14}
+                              size={13}
                               fill={star <= review.rating ? "#FFB800" : "none"}
                               color="#FFB800"
                             />
                           ))}
                         </div>
-                        <span className="font-12 gray-500">{review.date}</span>
-                      </div>
-                      <div className="flex items-center gap-8">
-                        <span className="font-12 gray-500">
-                          Reviewed: {review.bookName} by {review.authorName}
-                        </span>
+                        <span className="font-11 gray-500">{review.date}</span>
                       </div>
                     </div>
                   </div>
-                  <div className="review-content flex flex-col gap-12 margin-tp-12px">
-                    <Quote size={16} className="gray-400" />
+                  <div className="review-content margin-tp-12px">
+                    <Quote size={14} className="gray-400 margin-btm-6px" />
                     <p
-                      className="font-14 dark-50"
-                      style={{ lineHeight: "1.6" }}
+                      className="font-13 dark-50"
+                      style={{ lineHeight: "1.5" }}
                     >
-                      {review.comment}
+                      {review.comment.length > 180
+                        ? review.comment.substring(0, 180) + "..."
+                        : review.comment}
                     </p>
                   </div>
-                  <div className="review-footer flex items-center gap-12 margin-tp-12px">
+                  <div className="review-footer flex items-center gap-10 margin-tp-12px">
                     <button
-                      className="flex items-center gap-4 sec-mid-btn"
-                      style={{ padding: "4px 12px" }}
+                      className="flex items-center gap-3 sec-mid-btn"
+                      style={{ padding: "4px 10px", fontSize: "11px" }}
                     >
-                      <ThumbsUp size={12} />
-                      <span className="font-12">
-                        Helpful ({review.helpful})
-                      </span>
+                      <ThumbsUp size={11} />
+                      <span>Helpful ({review.helpful})</span>
                     </button>
                   </div>
                 </div>
@@ -591,13 +609,17 @@ export default async function AuthorPage({ params }) {
 
         {/* Call to Action */}
         {book && (
-          <div className="flex flex-col gap-24 text-center">
-            <h2 className="font-28 weight-600 margin-btm-12px">
+          <div
+            className="flex flex-col gap-20"
+            style={{
+              borderRadius: "20px",
+            }}
+          >
+            <h2 className="font-26 weight-600">
               Get Your Copy of "{book.name}" Today!
             </h2>
-            <p className="font-16 margin-btm-24px" style={{ opacity: 0.9 }}>
-              Join 50,000+ readers who have transformed their thinking with{" "}
-              {author.name}'s guidance
+            <p className="font-15">
+              Join 50,000+ readers who have transformed their thinking
             </p>
             <Link href={`/books/${book.slug}`} className="pri-big-btn">
               Shop Now - ₹{book.price}

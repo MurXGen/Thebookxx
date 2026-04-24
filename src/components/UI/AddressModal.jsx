@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { FaWhatsapp } from "react-icons/fa";
 
 // Quick delivery eligible pincodes
 const QUICK_DELIVERY_PINCODES = ["400019", "400017"];
@@ -510,25 +511,41 @@ export default function AddressModal({
 
               {/* Buttons */}
               {showContactFields && (
-                <div className="flex flex-row gap-12 items-start mt-16">
-                  <LoadingButton
-                    className="pri-big-btn width100"
-                    onClick={handleUPIClick}
-                    disabled={!isFormValid()}
-                  >
-                    <p className="weight-600">Pay with UPI</p>
-                    <span className="font-10">No extra charges</span>
-                  </LoadingButton>
+                <div className="flex flex-col gap-12 items-start mt-16">
+                  <div className="flex flex-row gap-12">
+                    <LoadingButton
+                      className="pri-big-btn width100"
+                      onClick={handleUPIClick}
+                      disabled={!isFormValid()}
+                    >
+                      <p className="weight-600">Pay with UPI</p>
+                      <span className="font-10">No extra charges</span>
+                    </LoadingButton>
+
+                    <LoadingButton
+                      className="sec-big-btn width100 flex flex-col"
+                      onClick={handleCODClick}
+                      disabled={!isFormValid()}
+                    >
+                      <p className="weight-600">Cash on Delivery</p>
+                      <span className="font-10">
+                        Pay 50% now + 50% on delivery
+                      </span>
+                    </LoadingButton>
+                  </div>
 
                   <LoadingButton
                     className="sec-big-btn width100 flex flex-col"
-                    onClick={handleCODClick}
+                    onClick={handleVerifyCODPayment}
                     disabled={!isFormValid()}
                   >
-                    <p className="weight-600">Cash on Delivery</p>
-                    <span className="font-10">
-                      Pay 50% now + 50% on delivery
-                    </span>
+                    <div className="flex flex-row gap-12">
+                      <FaWhatsapp size={32} color="#25D366" />
+                      <div className="flex flex-col">
+                        <p className="weight-600">Whatsapp</p>
+                        <span className="font-10">Chat & Order</span>
+                      </div>
+                    </div>
                   </LoadingButton>
                 </div>
               )}
@@ -694,7 +711,7 @@ export default function AddressModal({
         {showUPIPayment && (
           <motion.div className="pay-online-modal-overlay">
             <motion.div
-              className="pay-online-bill-modal payment-modal"
+              className="pay-online-bill-modal payment-modal flex flex-col gap-12"
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
@@ -737,61 +754,77 @@ export default function AddressModal({
               </div>
 
               <div className="flex flex-col items-center gap-16">
-                <motion.div
-                  className="qr-wrapper"
-                  animate={{ filter: qrUnlocked ? "blur(0px)" : "blur(12px)" }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <Image
-                    src="/books/uskillbook.png"
-                    alt="UPI QR Code for payment"
-                    width={350}
-                    height={420}
-                  />
+                {qrUnlocked && (
+                  <motion.div
+                    className="qr-wrapper"
+                    animate={{
+                      filter: qrUnlocked ? "blur(0px)" : "blur(12px)",
+                    }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <Image
+                      src="/books/uskillbook.png"
+                      alt="UPI QR Code for payment"
+                      width={350}
+                      height={420}
+                    />
 
-                  <div className="flex flex-row items-center justify-center gap-8 mt-12">
-                    <button
-                      className="sec-mid-btn flex flex-row gap-8"
-                      onClick={() => {
-                        navigator.clipboard.writeText(UPI_ID);
-                        setUpiCopied(true);
-                        setTimeout(() => setUpiCopied(false), 3000);
-                      }}
-                    >
-                      <Copy size={16} />
-                      {upiCopied ? "Copied!" : UPI_ID}
-                    </button>
+                    <div className="flex flex-row items-center justify-center gap-8 mt-12">
+                      <button
+                        className="sec-mid-btn flex flex-row gap-8"
+                        onClick={() => {
+                          navigator.clipboard.writeText(UPI_ID);
+                          setUpiCopied(true);
+                          setTimeout(() => setUpiCopied(false), 3000);
+                        }}
+                      >
+                        <Copy size={16} />
+                        {upiCopied ? "Copied!" : UPI_ID}
+                      </button>
 
-                    <button
-                      className="pri-big-btn flex flex-row gap-8"
-                      onClick={() => {
-                        const link = document.createElement("a");
-                        link.href = "/books/uskillbook.png";
-                        link.download = "thebookx-upi-qr.png";
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                      }}
-                    >
-                      <Download size={16} /> Save QR
-                    </button>
-                  </div>
+                      <button
+                        className="pri-big-btn flex flex-row gap-8"
+                        onClick={() => {
+                          const link = document.createElement("a");
+                          link.href = "/books/uskillbook.png";
+                          link.download = "thebookx-upi-qr.png";
+                          document.body.appendChild(link);
+                          link.click();
+                          document.body.removeChild(link);
+                        }}
+                      >
+                        <Download size={16} /> Save QR
+                      </button>
+                    </div>
 
-                  <div className="qr-instructions flex items-center mt-12">
-                    <span className="font-12 text-center">
-                      Pay using any UPI app (Google Pay, PhonePe, Paytm, etc.)
-                      by scanning the QR code or copying the UPI ID.
-                    </span>
-                  </div>
-                </motion.div>
+                    <div className="qr-instructions flex items-center mt-12">
+                      <span className="font-12 text-center">
+                        Pay using any UPI app (Google Pay, PhonePe, Paytm, etc.)
+                        by scanning the QR code or copying the UPI ID.
+                      </span>
+                    </div>
+                  </motion.div>
+                )}
 
                 {!qrUnlocked && (
-                  <button
-                    className="pri-big-btn"
-                    onClick={() => setQrUnlocked(true)}
-                  >
-                    Reveal QR Code to Pay
-                  </button>
+                  <div className="flex flex-row justify-between width100 gap-12">
+                    <LoadingButton
+                      className="sec-big-btn width100 flex flex-col"
+                      onClick={handleVerifyCODPayment}
+                      disabled={!isFormValid()}
+                    >
+                      <div className="flex flex-row gap-12">
+                        <FaWhatsapp size={16} color="#25D366" />
+                        <span>Chat & Order</span>
+                      </div>
+                    </LoadingButton>
+                    <button
+                      className="pri-big-btn width100"
+                      onClick={() => setQrUnlocked(true)}
+                    >
+                      Make UPI Payment
+                    </button>
+                  </div>
                 )}
 
                 {qrUnlocked && (
@@ -892,61 +925,77 @@ export default function AddressModal({
                   </p>
                 </div>
 
-                <motion.div
-                  className="qr-wrapper"
-                  animate={{ filter: qrUnlocked ? "blur(0px)" : "blur(12px)" }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <Image
-                    src="/books/uskillbook.png"
-                    alt="UPI QR Code for 50% advance payment"
-                    width={350}
-                    height={420}
-                  />
+                {qrUnlocked && (
+                  <motion.div
+                    className="qr-wrapper"
+                    animate={{
+                      filter: qrUnlocked ? "blur(0px)" : "blur(12px)",
+                    }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <Image
+                      src="/books/uskillbook.png"
+                      alt="UPI QR Code for 50% advance payment"
+                      width={350}
+                      height={420}
+                    />
 
-                  <div className="flex flex-row items-center justify-center gap-8 mt-12">
-                    <button
-                      className="sec-mid-btn flex flex-row gap-8"
-                      onClick={() => {
-                        navigator.clipboard.writeText(UPI_ID);
-                        setUpiCopied(true);
-                        setTimeout(() => setUpiCopied(false), 3000);
-                      }}
-                    >
-                      <Copy size={16} />
-                      {upiCopied ? "Copied!" : UPI_ID}
-                    </button>
+                    <div className="flex flex-row items-center justify-center gap-8 mt-12">
+                      <button
+                        className="sec-mid-btn flex flex-row gap-8"
+                        onClick={() => {
+                          navigator.clipboard.writeText(UPI_ID);
+                          setUpiCopied(true);
+                          setTimeout(() => setUpiCopied(false), 3000);
+                        }}
+                      >
+                        <Copy size={16} />
+                        {upiCopied ? "Copied!" : UPI_ID}
+                      </button>
 
-                    <button
-                      className="pri-big-btn flex flex-row gap-8"
-                      onClick={() => {
-                        const link = document.createElement("a");
-                        link.href = "/books/uskillbook.png";
-                        link.download = "thebookx-upi-qr.png";
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                      }}
-                    >
-                      <Download size={16} /> Save QR
-                    </button>
-                  </div>
+                      <button
+                        className="pri-big-btn flex flex-row gap-8"
+                        onClick={() => {
+                          const link = document.createElement("a");
+                          link.href = "/books/uskillbook.png";
+                          link.download = "thebookx-upi-qr.png";
+                          document.body.appendChild(link);
+                          link.click();
+                          document.body.removeChild(link);
+                        }}
+                      >
+                        <Download size={16} /> Save QR
+                      </button>
+                    </div>
 
-                  <div className="qr-instructions flex items-center mt-12">
-                    <span className="font-12 text-center">
-                      Pay ₹{codAdvanceAmount} using any UPI app by scanning the
-                      QR code or copying the UPI ID.
-                    </span>
-                  </div>
-                </motion.div>
+                    <div className="qr-instructions flex items-center mt-12">
+                      <span className="font-12 text-center">
+                        Pay ₹{codAdvanceAmount} using any UPI app by scanning
+                        the QR code or copying the UPI ID.
+                      </span>
+                    </div>
+                  </motion.div>
+                )}
 
                 {!qrUnlocked && (
-                  <button
-                    className="pri-big-btn"
-                    onClick={() => setQrUnlocked(true)}
-                  >
-                    Reveal QR Code to Pay 50% Advance
-                  </button>
+                  <div className="flex flex-row justify-between width100 gap-12">
+                    <LoadingButton
+                      className="sec-big-btn width100 flex flex-col"
+                      onClick={handleVerifyCODPayment}
+                      disabled={!isFormValid()}
+                    >
+                      <div className="flex flex-row gap-12">
+                        <FaWhatsapp size={16} color="#25D366" />
+                        <span>Chat & Order</span>
+                      </div>
+                    </LoadingButton>
+                    <button
+                      className="pri-big-btn width100"
+                      onClick={() => setQrUnlocked(true)}
+                    >
+                      Make 50% Advance
+                    </button>
+                  </div>
                 )}
 
                 {qrUnlocked && (

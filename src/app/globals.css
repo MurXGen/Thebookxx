@@ -1925,15 +1925,17 @@ button:disabled {
 }
 
 .bill-modal {
+  overflow: scroll;
+  height: 500px;
+  font-size: var(--px-12);
+  background: #fff;
+  border-radius: 16px 16px 0 0;
+  padding: 16px;
   position: absolute;
+  /* top: auto; */
   bottom: 0;
   left: 0;
   right: 0;
-  height: auto;
-  background: #fff;
-  padding: 16px;
-  border-radius: 16px 16px 0 0;
-  font-size: var(--px-12);
 }
 .bill-header {
   display: flex;

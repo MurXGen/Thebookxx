@@ -196,10 +196,7 @@ export default async function AuthorPage({ params }) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
 
-      <div
-        className="section-1200 flex flex-col gap-32"
-        style={{ padding: "40px 20px" }}
-      >
+      <div className="section-1200 flex flex-col gap-32">
         {/* Breadcrumbs */}
         <nav
           className="breadcrumbs"
@@ -209,7 +206,7 @@ export default async function AuthorPage({ params }) {
             Home
           </Link>
           <span> / </span>
-          <Link href="/authors" style={{ color: "#fb8500" }}>
+          <Link href="/author" style={{ color: "#fb8500" }}>
             Authors
           </Link>
           <span> / </span>
@@ -241,13 +238,15 @@ export default async function AuthorPage({ params }) {
                 height={600}
                 style={{ objectFit: "cover", width: "100%", height: "500px" }}
                 priority
+                loading="eager"
+                fetchPriority="high"
               />
               <div
                 style={{
                   position: "absolute",
                   inset: 0,
                   background:
-                    "linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0) 100%)",
+                    "linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0) 100%)",
                   zIndex: 1,
                 }}
               />
@@ -255,7 +254,7 @@ export default async function AuthorPage({ params }) {
                 className="author-info flex flex-col gap-12"
                 style={{
                   position: "absolute",
-                  top: "24px",
+                  bottom: "24px",
                   left: "24px",
                   zIndex: 2,
                   color: "white",
@@ -316,7 +315,6 @@ export default async function AuthorPage({ params }) {
         {galleryImages.length > 0 && (
           <div className="author-gallery flex flex-col gap-24">
             <div className="flex items-center gap-8">
-              {/* <Camera size={24} className="orange" /> */}
               <h2 className="font-24 weight-600">Gallery of {author.name}</h2>
             </div>
             <p className="font-14 dark-50 margin-btm-8px">
@@ -351,7 +349,8 @@ export default async function AuthorPage({ params }) {
                       alt={img.alt}
                       fill
                       style={{ objectFit: "cover" }}
-                      loading="lazy"
+                      loading="eager"
+                      fetchPriority={index < 6 ? "high" : "auto"}
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
                   </div>
@@ -414,6 +413,8 @@ export default async function AuthorPage({ params }) {
                     width: "100%",
                     height: "auto",
                   }}
+                  loading="eager"
+                  fetchPriority="high"
                 />
               </div>
               <div
@@ -538,6 +539,8 @@ export default async function AuthorPage({ params }) {
                           width={52}
                           height={52}
                           style={{ objectFit: "cover" }}
+                          loading="eager"
+                          fetchPriority="auto"
                         />
                       ) : (
                         <span className="font-20">
@@ -549,6 +552,7 @@ export default async function AuthorPage({ params }) {
                       className="reviewer-info flex flex-col gap-6"
                       style={{ flex: 1 }}
                     >
+                      {/* ... existing reviewer-info JSX ... */}
                       <div className="flex justify-between items-center flex-wrap gap-6">
                         <h3 className="font-15 weight-600">
                           {review.reviewerName}
@@ -581,6 +585,7 @@ export default async function AuthorPage({ params }) {
                       </div>
                     </div>
                   </div>
+                  {/* ... existing review content and footer JSX ... */}
                   <div className="review-content margin-tp-12px">
                     <Quote size={14} className="gray-400 margin-btm-6px" />
                     <p

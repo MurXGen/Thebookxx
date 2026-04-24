@@ -1902,10 +1902,12 @@ button:disabled {
 }
 
 .pay-online-modal-overlay {
+  z-index: 200;
+  background: #0006;
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  z-index: 200;
+  top: 0px;
+  overflow-y: scroll;
 }
 
 .pay-online-bill-modal {
@@ -2856,4 +2858,3 @@ input {
 .gray-500 {
   color: #6b7280;
 }
-

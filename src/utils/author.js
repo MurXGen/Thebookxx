@@ -58,116 +58,116 @@ export const authorData = {
   // Enhanced author images with descriptive alt text
   authorImages: [
     {
-      url: "/review/author/murthy-thevar-1.jpeg",
+      url: "/review/author/murthy-thevar-holding-the-art-of-clarity-book-at-launch.jpeg",
       alt: "Murthy Thevar holding The Art of Clarity book - Official author portrait at book launch event",
       caption:
         "Murthy Thevar proudly presenting his bestselling book 'The Art of Clarity' at the grand book launch ceremony",
       priority: true,
     },
     {
-      url: "/review/author/murthy-thevar-2.jpeg",
+      url: "/review/author/murthy-thevar-speaking-at-clarity-workshop-seminar.jpeg",
       alt: "Murthy Thevar speaking at clarity workshop seminar - Teaching mental clarity techniques",
       caption:
         "Author Murthy Thevar conducting an interactive mental clarity workshop for aspiring writers and professionals",
-      priority: false,
+      priority: true,
     },
     {
-      url: "/review/author/murthy-thevar-3.jpeg",
+      url: "/review/author/murthy-thevar-signing-books-for-fans-and-readers.jpeg",
       alt: "Murthy Thevar signing books for fans and readers - Book signing session",
       caption:
         "Murthy Thevar personally signing copies of 'The Art of Clarity' for enthusiastic readers at the book signing event",
-      priority: false,
+      priority: true,
     },
     {
-      url: "/review/author/murthy-thevar-4.jpeg",
+      url: "/review/author/murthy-thevar-interacting-with-readers-and-book-fans.jpeg",
       alt: "Murthy Thevar interacting with readers and book fans - Connecting with audience",
       caption:
         "Murthy Thevar engaging in meaningful conversation with readers about clarity, decision making, and personal growth",
-      priority: false,
+      priority: true,
     },
     {
-      url: "/review/author/murthy-thevar-5.jpeg",
+      url: "/review/author/murthy-thevar-at-international-book-fair-2026.jpeg",
       alt: "Murthy Thevar at International Book Fair 2026 - Promoting The Art of Clarity",
       caption:
         "Murthy Thevar representing his bestselling book at the prestigious International Book Fair 2026 in New Delhi",
-      priority: false,
+      priority: true,
     },
     {
-      url: "/review/author/murthy-thevar-6.jpeg",
+      url: "/review/author/murthy-thevar-receiving-best-debut-author-award.jpeg",
       alt: "Murthy Thevar receiving Best Debut Author Award - Recognition for The Art of Clarity",
       caption:
         "Murthy Thevar accepting the prestigious 'Best Debut Author Award 2026' for his transformative book 'The Art of Clarity'",
-      priority: false,
+      priority: true,
     },
     {
-      url: "/review/author/murthy-thevar-7.jpeg",
+      url: "/review/author/murthy-thevar-media-interview-about-the-art-of-clarity.jpeg",
       alt: "Murthy Thevar interview with leading media about The Art of Clarity - Television interview",
       caption:
         "Murthy Thevar sharing insights about clarity, overthinking solutions, and his writing journey in an exclusive media interview",
-      priority: false,
+      priority: true,
     },
     {
-      url: "/review/author/murthy-thevar-8.jpeg",
+      url: "/review/author/murthy-thevar-conducting-clarity-workshop-for-students.jpeg",
       alt: "Murthy Thevar conducting clarity workshop for students - Teaching young minds",
       caption:
         "Murthy Thevar empowering students with practical clarity techniques and decision-making strategies at educational seminar",
-      priority: false,
+      priority: true,
     },
     {
-      url: "/review/author/murthy-thevar-9.jpeg",
+      url: "/review/author/murthy-thevar-reading-the-art-of-clarity-at-book-reading-session.jpeg",
       alt: "Murthy Thevar reading The Art of Clarity at book reading session - Live reading event",
       caption:
         "Murthy Thevar reading excerpts from his bestselling book 'The Art of Clarity' at a packed book reading session",
-      priority: false,
+      priority: true,
     },
     {
-      url: "/review/author/murthy-thevar-10.jpeg",
+      url: "/review/author/murthy-thevar-official-portrait-headshot.jpeg",
       alt: "Murthy Thevar official portrait - Professional author headshot for media",
       caption:
         "Official high-resolution portrait of Murthy Thevar, acclaimed author and clarity coach",
-      priority: false,
+      priority: true,
     },
     {
-      url: "/review/author/murthy-thevar-11.jpeg",
+      url: "/review/author/murthy-thevar-writing-the-art-of-clarity-in-home-office.jpeg",
       alt: "Murthy Thevar writing The Art of Clarity - Author at work in his home office",
       caption:
         "Behind the scenes: Murthy Thevar meticulously crafting the chapters of 'The Art of Clarity' in his personal library",
-      priority: false,
+      priority: true,
     },
     {
-      url: "/review/author/murthy-thevar-12.jpeg",
+      url: "/review/author/murthy-thevar-celebrating-10000-copies-sold-with-team.jpeg",
       alt: "Murthy Thevar celebrating book success with team - Victory moment after 10,000 copies sold",
       caption:
         "Murthy Thevar celebrating the milestone achievement of selling 10,000+ copies of 'The Art of Clarity' with his dedicated team",
-      priority: false,
+      priority: true,
     },
     {
-      url: "/review/author/murthy-thevar-13.jpeg",
+      url: "/review/author/murthy-thevar-keynote-speaker-at-clarity-summit-2026.jpeg",
       alt: "Murthy Thevar keynote speaker at clarity summit 2026 - Main stage presentation",
       caption:
         "Murthy Thevar delivering the keynote address at the National Clarity Summit 2026 to an audience of 500+ attendees",
-      priority: false,
+      priority: true,
     },
     {
-      url: "/review/author/murthy-thevar-14.jpeg",
+      url: "/review/author/murthy-thevar-receiving-standing-ovation-from-readers.jpeg",
       alt: "Murthy Thevar receiving standing ovation from readers - Emotional moment post book reading",
       caption:
         "Heartwarming moment: Murthy Thevar receiving a standing ovation from grateful readers after sharing his personal clarity journey",
-      priority: false,
+      priority: true,
     },
     {
-      url: "/review/author/murthy-thevar-15.jpeg",
+      url: "/review/author/murthy-thevar-planning-next-book-in-library.jpeg",
       alt: "Murthy Thevar planning next book - Author brainstorming future projects",
       caption:
         "Murthy Thevar thoughtfully planning his upcoming book while surrounded by research notes and inspirational materials",
-      priority: false,
+      priority: true,
     },
     {
-      url: "/review/author/murthy-thevar-16.jpeg",
+      url: "/review/author/murthy-thevar-thanking-50000-readers.jpeg",
       alt: "Murthy Thevar gratitude post towards readers - Thanking 50,000+ community members",
       caption:
         "Murthy Thevar expressing heartfelt gratitude to his 50,000+ readers who made 'The Art of Clarity' a nationwide bestseller",
-      priority: false,
+      priority: true,
     },
   ],
 

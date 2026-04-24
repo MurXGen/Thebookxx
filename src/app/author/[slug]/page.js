@@ -350,7 +350,8 @@ export default async function AuthorPage({ params }) {
                       fill
                       style={{ objectFit: "cover" }}
                       loading="eager"
-                      fetchPriority={index < 6 ? "high" : "auto"}
+                      priority
+                      fetchPriority={index < 25 ? "high" : "auto"}
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
                   </div>
@@ -414,6 +415,7 @@ export default async function AuthorPage({ params }) {
                     height: "auto",
                   }}
                   loading="eager"
+                  priority
                   fetchPriority="high"
                 />
               </div>
@@ -540,7 +542,8 @@ export default async function AuthorPage({ params }) {
                           height={52}
                           style={{ objectFit: "cover" }}
                           loading="eager"
-                          fetchPriority="auto"
+                          priority
+                          fetchPriority="high"
                         />
                       ) : (
                         <span className="font-20">

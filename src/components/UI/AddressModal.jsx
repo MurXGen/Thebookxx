@@ -826,7 +826,7 @@ export default function AddressModal({
         {showCODPayment && (
           <motion.div className="pay-online-modal-overlay">
             <motion.div
-              className="pay-online-bill-modal payment-modal"
+              className="pay-online-bill-modal"
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}

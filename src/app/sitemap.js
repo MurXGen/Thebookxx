@@ -1,6 +1,7 @@
 // app/sitemap.js
 import { books } from "@/utils/book";
 import { authorData, getAllAuthors } from "@/utils/author";
+import { reviewsData } from "@/utils/reviews";
 
 // Helper function to slugify book names
 function slugify(text) {
@@ -29,7 +30,7 @@ function getAllAuthorsFromBooks() {
       authorMap.set(book.author, {
         name: book.author,
         slug: slugify(book.author),
-        hasDetailedPage: book.author === "Murthy Thevar", // Only Murthy has detailed page
+        hasDetailedPage: book.author === "Murthy Thevar",
       });
     }
   });
@@ -48,6 +49,26 @@ function getAllAuthorsFromBooks() {
   return Array.from(authorMap.values());
 }
 
+// Get all unique reviewer images for sitemap
+function getAllReviewerImages(baseUrl) {
+  const reviewerImages = [];
+  const uniqueImages = new Map();
+
+  reviewsData.forEach((review) => {
+    if (review.reviewerImage && !uniqueImages.has(review.reviewerImage)) {
+      uniqueImages.set(review.reviewerImage, {
+        url: review.reviewerImage.startsWith("http")
+          ? review.reviewerImage
+          : `${baseUrl}${review.reviewerImage}`,
+        reviewerName: review.reviewerName,
+        rating: review.rating,
+      });
+    }
+  });
+
+  return Array.from(uniqueImages.values());
+}
+
 // Get last modified date
 const getLastModified = () => {
   return new Date();
@@ -64,6 +85,9 @@ export default async function sitemap() {
 
   // Get all authors
   const allAuthors = getAllAuthorsFromBooks();
+
+  // Get all reviewer images
+  const allReviewerImages = getAllReviewerImages(baseUrl);
 
   // Static routes with higher priority for main pages
   const staticRoutes = [
@@ -151,7 +175,6 @@ export default async function sitemap() {
       priority: 0.9,
     };
 
-    // Add image if book.image exists
     if (book.image) {
       const fullImageUrl = getFullImageUrl(book.image, baseUrl);
       route.images = [fullImageUrl];
@@ -169,7 +192,6 @@ export default async function sitemap() {
       priority: author.hasDetailedPage ? 0.9 : 0.7,
     };
 
-    // Add author images for detailed pages
     if (author.hasDetailedPage && author.images && author.images.length > 0) {
       route.images = author.images.map((img) =>
         img.url.startsWith("http") ? img.url : `${baseUrl}${img.url}`,
@@ -205,19 +227,28 @@ export default async function sitemap() {
     });
   }
 
-  // Add image sitemap entries for author images (for Google Images)
+  // Author image routes with new descriptive filenames
   const authorImageRoutes = [];
   if (authorData && authorData.authorImages) {
-    authorData.authorImages.forEach((img, index) => {
+    authorData.authorImages.forEach((img) => {
       authorImageRoutes.push({
         url: `${baseUrl}/author/${authorData.slug}`,
         lastModified: now,
         changeFrequency: "monthly",
-        priority: 0.5,
+        priority: 0.6,
         images: [`${baseUrl}${img.url}`],
       });
     });
   }
+
+  // Reviewer image routes for Google Image Search
+  const reviewerImageRoutes = allReviewerImages.map((reviewer) => ({
+    url: `${baseUrl}/author/${authorData?.slug || "murthy-thevar"}`,
+    lastModified: now,
+    changeFrequency: "weekly",
+    priority: 0.5,
+    images: [reviewer.url],
+  }));
 
   return [
     ...staticRoutes,
@@ -226,5 +257,6 @@ export default async function sitemap() {
     ...categoryRoutes,
     ...paginatedRoutes,
     ...authorImageRoutes,
+    ...reviewerImageRoutes,
   ];
 }

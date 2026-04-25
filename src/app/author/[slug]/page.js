@@ -232,7 +232,7 @@ export default async function AuthorPage({ params }) {
               }}
             >
               <Image
-                src={author.authorImages[0]?.url || "/default-author.jpg"}
+                src={author.authorImages[1]?.url || "/default-author.jpg"}
                 alt={author.authorImages[0]?.alt || author.name}
                 width={500}
                 height={600}
@@ -262,12 +262,12 @@ export default async function AuthorPage({ params }) {
               >
                 <h1 className="font-32 weight-700">{author.name}</h1>
                 <p className="font-16">{author.occupation}</p>
-                <div className="flex flex-row gap-16 flex-wrap">
+                <div className="flex flex-row gap-16 flex-wrap font-16">
                   <span className="flex items-center gap-4">
                     <MapPin size={16} /> {author.birthplace}
                   </span>
                   <span className="flex items-center gap-4">
-                    <Users size={16} /> 50,000+ Readers
+                    <Users size={16} /> Inspired Readers
                   </span>
                 </div>
                 <div className="flex flex-row gap-12">

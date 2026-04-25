@@ -232,7 +232,7 @@ export default async function AuthorPage({ params }) {
               }}
             >
               <Image
-                src={author.authorImages[1]?.url || "/default-author.jpg"}
+                src={author.authorImages[0]?.url || "/default-author.jpg"}
                 alt={author.authorImages[0]?.alt || author.name}
                 width={500}
                 height={600}

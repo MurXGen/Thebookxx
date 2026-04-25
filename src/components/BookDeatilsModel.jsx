@@ -1,548 +1,362 @@
-// components/BookDeatilsModel.js
-"use client";
-
-import { useStore } from "@/context/StoreContext";
-import { books } from "@/utils/book";
-import {
-  ArrowLeft,
-  Heart,
-  MessageSquare,
-  ShoppingCart,
-  Truck,
-  ShieldCheck,
-  RotateCcw,
-} from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import LoadingButton from "./UI/LoadingButton";
-import Script from "next/script";
-import { useEffect, useState, useMemo } from "react";
-import BookCard from "./BookCard";
 import Link from "next/link";
+import { blogData } from "@/utils/blogs";
 
-// Slugify function
-function slugify(text) {
-  return text
-    ?.toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
+// Generate metadata for SEO
+export async function generateMetadata() {
+  const { blog } = blogData;
+
+  return {
+    title: blog.title,
+    description: blog.excerpt,
+    keywords: blog.keywords.join(", "),
+    authors: [
+      {
+        name: blog.author,
+        url: "https://www.thebookx.in/author/murthy-thevar",
+      },
+    ],
+    openGraph: {
+      title: blog.title,
+      description: blog.excerpt,
+      type: "article",
+      publishedTime: blog.publishDate,
+      modifiedTime: blog.lastModified,
+      authors: [blog.author],
+      images: [
+        {
+          url: blog.images[0]?.url || blog.coverImage,
+          width: 1200,
+          height: 630,
+          alt: blog.title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: blog.title,
+      description: blog.excerpt,
+      images: [blog.images[0]?.url || blog.coverImage],
+      creator: "@murthythevar",
+    },
+    alternates: {
+      canonical: `https://www.thebookx.in/blogs/the-art-of-clarity`,
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-video-preview": -1,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+      },
+    },
+  };
 }
 
-function getStableReviewCount(bookId) {
-  let hash = 0;
-  for (let i = 0; i < bookId.length; i++) {
-    hash = bookId.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  const min = 20;
-  const max = 300;
-  return Math.abs(hash % (max - min + 1)) + min;
+// Generate structured data for SEO
+function generateStructuredData() {
+  const { blog } = blogData;
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: blog.title,
+    description: blog.excerpt,
+    image: blog.images.map((img) => `https://www.thebookx.in${img.url}`),
+    datePublished: blog.publishDate,
+    dateModified: blog.lastModified,
+    author: {
+      "@type": "Person",
+      name: blog.author,
+      url: "https://www.thebookx.in/author/murthy-thevar",
+      sameAs: ["https://www.thebookx.in/author/murthy-thevar"],
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "The Book X",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://www.thebookx.in/logo.png",
+      },
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `https://www.thebookx.in/blogs/the-art-of-clarity`,
+    },
+    keywords: blog.keywords.join(", "),
+    articleSection: blog.categories.join(", "),
+  };
+
+  return JSON.stringify(structuredData);
 }
 
-export default function BookDetailsModal({ book }) {
-  const { cart, addToCart, toggleWishlist, wishlist } = useStore();
-  const inWishlist = wishlist.includes(book.id);
-  const router = useRouter();
+// Generate FAQ structured data
+function generateFAQStructuredData() {
+  const { blog } = blogData;
 
-  // Lazy loading state for related books
-  const [visibleRelatedCount, setVisibleRelatedCount] = useState(6);
-  const [isLoadingRelated, setIsLoadingRelated] = useState(false);
-
-  const bookSlug = slugify(book.name);
-  const bookUrl = `/books/${bookSlug}`;
-  const canonicalUrl = `https://thebookx.in${bookUrl}`;
-
-  const isOneRupee = book.discountedPrice === 1;
-  const savings = book.originalPrice - book.discountedPrice;
-  const savingsPercentage = Math.round((savings / book.originalPrice) * 100);
-
-  const hasOneRupeeInCart = cart.some((i) => {
-    const b = books.find((x) => x.id === i.id);
-    return b?.discountedPrice === 1;
-  });
-
-  // Get related books based on same category
-  const relatedBooks = useMemo(() => {
-    if (!book.catalogue || book.catalogue.length === 0) return [];
-
-    return books
-      .filter(
-        (b) =>
-          b.id !== book.id &&
-          b.catalogue?.some((cat) => book.catalogue.includes(cat)),
-      )
-      .slice(0, 30);
-  }, [book.id, book.catalogue]);
-
-  // Lazy load more related books
-  const loadMoreRelated = () => {
-    if (isLoadingRelated) return;
-    setIsLoadingRelated(true);
-    setTimeout(() => {
-      setVisibleRelatedCount((prev) => Math.min(prev + 6, relatedBooks.length));
-      setIsLoadingRelated(false);
-    }, 300);
+  const faqData = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: blog.faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer,
+      },
+    })),
   };
 
-  const visibleRelatedBooks = relatedBooks.slice(0, visibleRelatedCount);
-  const hasMoreRelated = visibleRelatedCount < relatedBooks.length;
+  return JSON.stringify(faqData);
+}
 
-  const handleWishlist = () => {
-    toggleWishlist(book.id);
-    router.back();
-  };
-
-  const handleAddToCart = () => {
-    addToCart(book.id);
-    router.push("/");
-  };
-
-  const handleReview = () => {
-    router.push(`/review?bk=${book.id}`);
-  };
-
-  useEffect(() => {
-    if (typeof window !== "undefined" && window.gtag) {
-      window.gtag("event", "view_item", {
-        currency: "INR",
-        value: book.discountedPrice,
-        items: [
-          {
-            item_id: book.id,
-            item_name: book.name,
-            price: book.discountedPrice,
-            item_category: book.catalogue?.[0] || "books",
-          },
-        ],
-      });
-    }
-  }, [book]);
+export default function BlogPost() {
+  const { blog } = blogData;
 
   return (
     <>
-      {/* JSON-LD Schema for Book Details */}
-      <Script
-        id={`book-detail-schema-${book.id}`}
+      {/* Structured Data Scripts */}
+      <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Product",
-            "@id": canonicalUrl,
-            url: canonicalUrl,
-            name: book.name,
-            description: `${book.description} Shop now at TheBookX — India's most trusted online bookstore.`,
-            image: book.image,
-            brand: {
-              "@type": "Brand",
-              name: "TheBookX",
-            },
-            sku: book.id,
-            author: {
-              "@type": "Person",
-              name: book.author || "Various Authors",
-            },
-            offers: {
-              "@type": "Offer",
-              "@id": `${canonicalUrl}#offer`,
-              url: canonicalUrl,
-              priceCurrency: "INR",
-              price: book.discountedPrice,
-              priceValidUntil: "2027-12-31",
-              availability:
-                book.stock > 0
-                  ? "https://schema.org/InStock"
-                  : "https://schema.org/OutOfStock",
-              itemCondition: "https://schema.org/NewCondition",
-              seller: {
-                "@type": "Organization",
-                name: "TheBookX",
-                url: "https://thebookx.in",
-              },
-              hasMerchantReturnPolicy: {
-                "@type": "MerchantReturnPolicy",
-                applicableCountry: "IN",
-                returnPolicyCategory:
-                  "https://schema.org/MerchantReturnFiniteReturnWindow",
-                merchantReturnDays: 7,
-                returnMethod: "https://schema.org/ReturnByMail",
-                returnFees: "https://schema.org/FreeReturn",
-                returnPolicyUrl: "https://thebookx.in/refund",
-              },
-              shippingDetails: {
-                "@type": "OfferShippingDetails",
-                shippingRate: {
-                  "@type": "MonetaryAmount",
-                  value: 0,
-                  currency: "INR",
-                },
-                shippingDestination: {
-                  "@type": "DefinedRegion",
-                  addressCountry: "IN",
-                },
-                deliveryTime: {
-                  "@type": "ShippingDeliveryTime",
-                  handlingTime: {
-                    "@type": "QuantitativeValue",
-                    minValue: 0,
-                    maxValue: 1,
-                    unitCode: "DAY",
-                  },
-                  transitTime: {
-                    "@type": "QuantitativeValue",
-                    minValue: 3,
-                    maxValue: 7,
-                    unitCode: "DAY",
-                  },
-                },
-              },
-            },
-            aggregateRating: {
-              "@type": "AggregateRating",
-              ratingValue:
-                book.rating ||
-                Number(
-                  (4 + (getStableReviewCount(book.id) % 10) / 10).toFixed(1),
-                ),
-              reviewCount: book.reviewCount || getStableReviewCount(book.id),
-              bestRating: 5,
-              worstRating: 1,
-            },
-          }),
-        }}
+        dangerouslySetInnerHTML={{ __html: generateStructuredData() }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: generateFAQStructuredData() }}
       />
 
-      {/* JSON-LD for Related Items (Internal Linking SEO) */}
-      {relatedBooks.length > 0 && (
-        <Script
-          id={`related-items-schema-${book.id}`}
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "ItemList",
-              name: `You may also like similar to ${book.name}`,
-              description: `Related books similar to ${book.name}`,
-              numberOfItems: relatedBooks.length,
-              itemListElement: relatedBooks
-                .slice(0, 10)
-                .map((relatedBook, index) => ({
-                  "@type": "ListItem",
-                  position: index + 1,
-                  url: `https://thebookx.in/books/${slugify(relatedBook.name)}`,
-                  name: relatedBook.name,
-                })),
-            }),
-          }}
-        />
-      )}
-
-      <div
-        className="book-detail-section"
+      <article
+        className="blog-detail-section"
         itemScope
-        itemType="https://schema.org/Book"
+        itemType="https://schema.org/BlogPosting"
       >
         <div className="section-1200 flex flex-col gap-24">
-          {/* Header */}
-          <div className="flex flex-row gap-12 items-center">
-            <ArrowLeft
-              size={24}
-              onClick={() => router.push("/")}
-              className="cursor-pointer hover:opacity-70"
-              aria-label="Go back"
-            />
-            <div className="flex flex-col">
-              <h1 className="font-20 weight-600" itemProp="name">
-                {book.name}
-              </h1>
-              {book.author && (
-                <p className="font-12 dark-50" itemProp="author">
-                  By{" "}
-                  <Link
-                    href={`/authors/${book.authorSlug || slugify(book.author)}`}
-                    style={{
-                      textDecoration: "none",
-                      fontWeight: "500",
-                    }}
-                    itemProp="url"
-                  >
-                    <span itemProp="name">{book.author}</span>
-                  </Link>
-                </p>
-              )}
+          <meta itemProp="datePublished" content={blog.publishDate} />
+          <meta itemProp="dateModified" content={blog.lastModified} />
+          <meta itemProp="author" content={blog.author} />
+
+          {/* Hero Section */}
+          <div className="blog-hero-section">
+            <div className="blog-hero-image-container">
+              <Image
+                src={blog.images[0].url}
+                alt={blog.images[0].alt}
+                priority
+                className="blog-hero-image"
+                width={1200}
+                height={630}
+                quality={90}
+              />
+              <div className="blog-hero-overlay">
+                <div className="blog-hero-content">
+                  <h1 className="font-32 weight-600" itemProp="headline">
+                    {blog.title}
+                  </h1>
+                  <div className="flex flex-row gap-12 mt-16 justify-center">
+                    <span className="font-14 dark-50">By</span>
+                    <Link
+                      href="https://www.thebookx.in/author/murthy-thevar"
+                      target="_blank"
+                      rel="author noopener noreferrer"
+                      className="font-14 weight-500 green"
+                      itemProp="author"
+                    >
+                      {blog.author}
+                    </Link>
+                    <span className="font-14 dark-50">
+                      {new Date(blog.publishDate).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Image */}
-          <div className="book-detail-image flex flex-row gap-24 justify-center">
-            <div className="book-detail-image">
-              <Image
-                src={book.image}
-                alt={`${book.name} book cover — Buy online at TheBookX, India's trusted bookstore`}
-                width={100}
-                height={100}
-                priority
-                itemProp="image"
-                style={{ border: "1px solid #00000020" }}
-              />
-              <Image
-                src={book.image}
-                alt={`${book.name} book cover — Buy online at TheBookX, India's trusted bookstore`}
-                width={100}
-                height={100}
-                priority
-                style={{ border: "1px solid #00000020" }}
-                itemProp="image"
-              />
-            </div>
+          {/* Resource Links */}
+          <div className="flex flex-row flex-wrap gap-16 resource-links mt-24">
+            <Link
+              href="https://www.thebookx.in/author/murthy-thevar"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="sec-mid-btn flex-1 text-center"
+            >
+              About the Author: Murthy Thevar →
+            </Link>
+            <Link
+              href="https://www.thebookx.in/books/the-art-of-clarity"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="pri-mid-btn flex-1 text-center"
+            >
+              Get Your Copy of The Art of Clarity →
+            </Link>
           </div>
 
-          {/* Content */}
-          <div className="book-detail-body">
-            <div>
-              <h2 className="font-24 weight-600" itemProp="name">
-                {book.name}
-              </h2>
-              <p
-                className="font-14 dark-50 mt-8 leading-relaxed"
-                itemProp="description"
-              >
-                {book.description}
+          {/* Blog Content */}
+          <div
+            className="blog-content-body font-16 dark-50 leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: blog.content }}
+            itemProp="articleBody"
+          />
+
+          {/* Sources of Murthy Thevar - Horizontal Scrollable Gallery */}
+          <div className="scrollable-gallery-section mt-32">
+            <div className="section-header mb-24 text-center">
+              <h2 className="font-24 weight-600">Sources of Murthy Thevar</h2>
+              <p className="font-14 dark-50 mt-8">
+                Explore visual insights from Murthy Thevar's journey and wisdom
               </p>
             </div>
 
-            {/* Specifications */}
-            <div className="flex flex-row flex-wrap gap-24 mt-16 pt-16 border-t border-gray-200">
-              {book.author && (
-                <div className="flex flex-col">
-                  <span className="font-10 uppercase text-gray-500">
-                    Author
-                  </span>
-                  <span className="font-14 weight-500">
+            <div className="scrollable-container">
+              <div className="scrollable-wrapper flex flex-row gap-16">
+                {blog.images.map((image, index) => (
+                  <div key={index} className="scrollable-card">
+                    <div className="scrollable-card-image">
+                      <Image
+                        src={image.url}
+                        alt={image.alt}
+                        width={400}
+                        height={300}
+                        className="width100"
+                        loading={index === 0 ? "eager" : "lazy"}
+                      />
+                    </div>
+                    <div className="scrollable-card-content p-16">
+                      <p className="font-12 dark-70">{image.caption}</p>
+                      {index === 0 && (
+                        <span className="pri-mid-badge mt-8 inline-block">
+                          Murthy Thevar
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+
+                {/* CTA Card */}
+                <div className="scrollable-card cta-card">
+                  <div className="scrollable-card-image bg-primary flex flex-col items-center justify-center text-center p-24">
+                    <h3 className="font-20 weight-600 white mb-12">
+                      Get Your Copy
+                    </h3>
+                    <p className="font-14 white-80 mb-16">
+                      The Art of Clarity by Murthy Thevar
+                    </p>
                     <Link
-                      href={`/author/${book.authorSlug || slugify(book.author)}`}
-                      style={{
-                        textDecoration: "underline",
-                        cursor: "pointer",
-                      }}
+                      href="https://www.thebookx.in/books/the-art-of-clarity"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="pri-small-btn"
                     >
-                      {book.author}
+                      Buy Now →
                     </Link>
-                  </span>
+                  </div>
                 </div>
-              )}
-              {book.pages && (
-                <div className="flex flex-col">
-                  <span className="font-10 uppercase text-gray-500">Pages</span>
-                  <span className="font-14">{book.pages}</span>
-                </div>
-              )}
-              <div className="flex flex-col">
-                <span className="font-10 uppercase text-gray-500">Format</span>
-                <span className="font-14">{book.size}</span>
-              </div>
-              {book.language && (
-                <div className="flex flex-col">
-                  <span className="font-10 uppercase text-gray-500">
-                    Language
-                  </span>
-                  <span className="font-14">{book.language}</span>
-                </div>
-              )}
-              <div className="flex flex-col">
-                <span className="font-10 uppercase text-gray-500">Stock</span>
-                <span className="font-14">
-                  {book.stock > 0 ? (
-                    <span className="green">
-                      In Stock ({book.stock} available)
-                    </span>
-                  ) : (
-                    <span className="red">Out of Stock</span>
-                  )}
-                </span>
               </div>
             </div>
 
-            {/* Price */}
-            <div className="price-row flex flex-row items-center gap-16 mt-24">
-              <span className="font-32 weight-600 green">
-                ₹{book.discountedPrice}
+            <div className="scroll-indicator text-center mt-16">
+              <span className="font-12 dark-50">
+                ← Scroll to explore more →
               </span>
-              {book.originalPrice > book.discountedPrice && (
-                <>
-                  <span className="original font-24 line-through text-gray-400">
-                    ₹{book.originalPrice}
-                  </span>
-                  {savings > 0 && (
-                    <span className="green font-14 weight-500 bg-green-50 px-8 py-4 rounded-full">
-                      Save ₹{savings} ({savingsPercentage}% OFF)
-                    </span>
-                  )}
-                </>
-              )}
             </div>
+          </div>
 
-            {/* Limited Offer Badge */}
-            {book.discountedPrice === 1 && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-12 mt-16">
-                <span className="red font-14 weight-600">
-                  🔥 Limited Time Offer!
-                </span>
-                <p className="font-12 mt-4">
-                  Get this book for just ₹1. Free shipping across India. Hurry,
-                  offer valid while stocks last!
-                </p>
-              </div>
-            )}
-
-            {/* Trust Badges */}
-            <div className="flex flex-row flex-wrap gap-24 justify-between py-16">
-              <div className="flex flex-row items-center gap-8">
-                <Truck size={18} className="green" />
-                <span className="font-12">Free Shipping</span>
-              </div>
-              <div className="flex flex-row items-center gap-8">
-                <ShieldCheck size={18} className="green" />
-                <span className="font-12">
-                  Secure Delivery via Delhivery/Indian Post
-                </span>
-              </div>
-              <div className="flex flex-row items-center gap-8">
-                <RotateCcw size={18} className="green" />
-                <span className="font-12">7-Day Returns</span>
-              </div>
+          {/* Author Bio Section */}
+          <div className="author-bio-section bg-gray-50 rounded-lg p-24 mt-32 flex flex-row flex-wrap gap-24 items-center">
+            <div className="author-bio-avatar">
+              <Image
+                src="/blogs/the-art-of-clarity/murthy-thevar-author.jpg"
+                alt="Murthy Thevar"
+                width={100}
+                height={100}
+                className="author-bio-image rounded-full"
+              />
             </div>
-
-            {/* Category Tags - Internal Links */}
-            <div className="flex flex-row flex-wrap gap-12 tags mt-16">
-              {book.catalogue?.map((tag) => (
-                <a
-                  key={tag}
-                  href={`/category/${slugify(tag)}`}
-                  className="sec-mid-btn text-capitalize hover:opacity-80"
-                  aria-label={`Browse more ${tag} books`}
+            <div className="author-bio-details flex-1">
+              <h3 className="font-18 weight-600 mb-8">
+                About the Author: Murthy Thevar
+              </h3>
+              <p className="font-14 dark-70 mb-16">
+                Murthy Thevar is a distinguished author and communication
+                expert. His book <strong>The Art of Clarity</strong> is
+                transforming how people communicate.
+              </p>
+              <div className="flex flex-row flex-wrap gap-12">
+                <Link
+                  href="https://www.thebookx.in/author/murthy-thevar"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="sec-mid-btn"
                 >
-                  {tag}
-                </a>
+                  View Author Page →
+                </Link>
+                <Link
+                  href="https://www.thebookx.in/books/the-art-of-clarity"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="pri-mid-btn"
+                >
+                  Buy The Art of Clarity →
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* FAQ Section */}
+          <div className="faq-section mt-32">
+            <div className="section-header mb-24">
+              <h2 className="font-20 weight-600">Frequently Asked Questions</h2>
+            </div>
+            <div className="faq-list flex flex-col gap-16">
+              {blog.faqs.map((faq, index) => (
+                <div
+                  key={index}
+                  className="faq-item border-b border-gray-200 pb-16"
+                  itemScope
+                  itemType="https://schema.org/Question"
+                >
+                  <h3 className="font-16 weight-600 mb-8" itemProp="name">
+                    {faq.question}
+                  </h3>
+                  <div
+                    itemProp="acceptedAnswer"
+                    itemScope
+                    itemType="https://schema.org/Answer"
+                  >
+                    <p className="font-14 dark-70" itemProp="text">
+                      {faq.answer}
+                    </p>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
-
-          {/* Buttons */}
-          <div
-            className="book-detail-cta section-1200 flex flex-row gap-16 flex-wrap"
-            style={{ backdropFilter: "blur(12px)", zIndex: "1000" }}
-          >
-            <button
-              className="flex flex-row items-center gap-12 justify-center sec-mid-btn"
-              onClick={handleWishlist}
-            >
-              <Heart
-                size={20}
-                stroke="gray"
-                fill={inWishlist ? "red" : "none"}
-              />
-            </button>
-            <button
-              className="sec-mid-btn flex flex-row gap-12"
-              onClick={handleReview}
-            >
-              <MessageSquare size={20} />
-            </button>
-            <LoadingButton
-              className="flex-1 pri-big-btn flex flex-row items-center gap-12 justify-center"
-              onClick={handleAddToCart}
-              disabled={(isOneRupee && hasOneRupeeInCart) || book.stock === 0}
-              icon={<ShoppingCart size={20} />}
-            >
-              {book.stock === 0 ? "Out of Stock" : "Add to Cart"}
-            </LoadingButton>
-          </div>
-
-          {/* Delivery Info */}
-          <div className="bg-gray-50 rounded-lg p-16 mt-8">
-            <p className="font-12 text-gray-600 text-center">
-              🇮🇳 Delivered securely across India via <strong>Delhivery</strong>{" "}
-              and <strong>Indian Post</strong>. Estimated delivery: 3-7 business
-              days.{" "}
-              <a href="/shipping" className="green underline">
-                Learn more
-              </a>
-            </p>
-          </div>
-
-          <div className="dashed-border my-20"></div>
-
-          {/* You May Also Like Section - SEO Internal Linking */}
-          {relatedBooks.length > 0 && (
-            <div className="related-books-section mt-32">
-              <div className="section-header mb-24">
-                <h3 className="font-20 weight-600">You May Also Like</h3>
-                <p className="font-12 dark-50">
-                  Discover more books similar to {book.name}
-                </p>
-              </div>
-
-              <div
-                className="books-grid"
-                style={{ padding: "0", marginTop: "12px" }}
-              >
-                {visibleRelatedBooks.map((relatedBook) => (
-                  <BookCard key={relatedBook.id} book={relatedBook} />
-                ))}
-              </div>
-
-              {/* Lazy Load More Button */}
-              {hasMoreRelated && (
-                <div
-                  className="load-more-container flex justify-center width100"
-                  style={{ marginTop: "12px" }}
-                >
-                  <button
-                    onClick={loadMoreRelated}
-                    disabled={isLoadingRelated}
-                    className="sec-mid-btn"
-                  >
-                    {isLoadingRelated
-                      ? "Loading..."
-                      : `Load More Related Books (${visibleRelatedCount}/${relatedBooks.length})`}
-                  </button>
-                </div>
-              )}
-
-              {/* SEO Internal Links List (Hidden but crawlable) */}
-              <div className="seo-internal-links" style={{ display: "none" }}>
-                {relatedBooks.map((relatedBook) => (
-                  <a
-                    key={relatedBook.id}
-                    href={`/books/${slugify(relatedBook.name)}`}
-                  >
-                    {relatedBook.name}
-                  </a>
-                ))}
-              </div>
-            </div>
-          )}
 
           {/* Browse More Categories - Footer Links */}
           <div className="browse-categories-footer mt-24 pt-24 border-t border-gray-200">
             <h4 className="font-14 weight-600 mb-12">Browse More Categories</h4>
             <div className="flex flex-row flex-wrap gap-12">
-              {[...new Set(books.flatMap((b) => b.catalogue || []))]
-                .slice(0, 15)
-                .map((category) => (
-                  <a
-                    key={category}
-                    href={`/category/${slugify(category)}`}
-                    className="font-12 sec-mid-btn px-12 py-6"
-                  >
-                    {category.charAt(0).toUpperCase() + category.slice(1)}
-                  </a>
-                ))}
+              {blog.categories.map((category) => (
+                <a
+                  key={category}
+                  href={`/category/${category.toLowerCase().replace(/\s+/g, "-")}`}
+                  className="font-12 sec-mid-btn px-12 py-6"
+                >
+                  {category}
+                </a>
+              ))}
             </div>
           </div>
         </div>
-      </div>
+      </article>
     </>
   );
 }

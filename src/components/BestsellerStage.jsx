@@ -3,6 +3,7 @@
 import { books } from "@/utils/book";
 import { AnimatePresence, motion } from "framer-motion";
 import {
+  Book,
   FileText,
   Pause,
   Phone,
@@ -188,12 +189,17 @@ export default function BestsellerStage() {
 
         <div className="trust-item">
           <Truck size={14} />
-          <span>Delhivery / India Post</span>
+          <span>Free Delivery*</span>
         </div>
-        <div className="trust-item">
-          <ShieldCheck size={14} />
-          <span>Secure Checkout</span>
-        </div>
+
+        <Link
+          href="/blogs"
+          className="trust-item"
+          style={{ textDecoration: "underline" }}
+        >
+          <Book size={14} />
+          <span>Read blog</span>
+        </Link>
         <Link
           href="https://wa.me/917710892108?text=Hey%20hi%20I'm%20looking%20for%20a%20book%20that's%20not%20listed%20on%20your%20site.%20Could%20you%20please%20help%20me%20find%20it%3F"
           target="_blank"

@@ -1,9 +1,9 @@
-// app/sitemap.js
 import { books } from "@/utils/book";
 import { authorData, getAllAuthors } from "@/utils/author";
 import { reviewsData } from "@/utils/reviews";
+import { getAllBlogs } from "@/utils/blogs";
 
-// Helper function to slugify book names
+// Helper function to slugify text
 function slugify(text) {
   return text
     ?.toLowerCase()
@@ -69,6 +69,40 @@ function getAllReviewerImages(baseUrl) {
   return Array.from(uniqueImages.values());
 }
 
+// Get all blog images for sitemap
+function getAllBlogImages(blogs, baseUrl) {
+  const blogImages = [];
+
+  blogs.forEach((blog) => {
+    // Add cover image
+    if (blog.coverImage) {
+      blogImages.push({
+        url: blog.coverImage.startsWith("http")
+          ? blog.coverImage
+          : `${baseUrl}${blog.coverImage}`,
+        blogTitle: blog.title,
+        blogSlug: blog.slug,
+      });
+    }
+
+    // Add all images from the blog gallery
+    if (blog.images && blog.images.length > 0) {
+      blog.images.forEach((img) => {
+        if (img.url) {
+          blogImages.push({
+            url: img.url.startsWith("http") ? img.url : `${baseUrl}${img.url}`,
+            blogTitle: blog.title,
+            blogSlug: blog.slug,
+            altText: img.alt,
+          });
+        }
+      });
+    }
+  });
+
+  return blogImages;
+}
+
 // Get last modified date
 const getLastModified = () => {
   return new Date();
@@ -77,6 +111,9 @@ const getLastModified = () => {
 export default async function sitemap() {
   const baseUrl = "https://thebookx.in";
   const now = getLastModified();
+
+  // Get all blogs
+  const allBlogs = getAllBlogs();
 
   // Get unique categories
   const allCategories = [
@@ -88,6 +125,9 @@ export default async function sitemap() {
 
   // Get all reviewer images
   const allReviewerImages = getAllReviewerImages(baseUrl);
+
+  // Get all blog images
+  const allBlogImages = getAllBlogImages(allBlogs, baseUrl);
 
   // Static routes with higher priority for main pages
   const staticRoutes = [
@@ -108,6 +148,12 @@ export default async function sitemap() {
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/blogs`,
+      lastModified: now,
+      changeFrequency: "daily",
+      priority: 0.85,
     },
     {
       url: `${baseUrl}/wishlist`,
@@ -183,6 +229,43 @@ export default async function sitemap() {
     return route;
   });
 
+  // Dynamic routes for all blogs with enhanced metadata
+  const blogRoutes = allBlogs.map((blog) => {
+    const route = {
+      url: `${baseUrl}/blogs/${blog.slug}`,
+      lastModified: new Date(blog.lastModified || blog.publishDate),
+      changeFrequency: "daily",
+      priority: 0.85,
+    };
+
+    // Add all images from the blog to the sitemap for better image indexing
+    const blogImageUrls = [];
+
+    if (blog.coverImage) {
+      blogImageUrls.push(
+        blog.coverImage.startsWith("http")
+          ? blog.coverImage
+          : `${baseUrl}${blog.coverImage}`,
+      );
+    }
+
+    if (blog.images && blog.images.length > 0) {
+      blog.images.slice(0, 10).forEach((img) => {
+        if (img.url) {
+          blogImageUrls.push(
+            img.url.startsWith("http") ? img.url : `${baseUrl}${img.url}`,
+          );
+        }
+      });
+    }
+
+    if (blogImageUrls.length > 0) {
+      route.images = blogImageUrls;
+    }
+
+    return route;
+  });
+
   // Author routes with enhanced metadata
   const authorRoutes = allAuthors.map((author) => {
     const route = {
@@ -227,6 +310,21 @@ export default async function sitemap() {
     });
   }
 
+  // Add paginated routes for blogs (if you plan to add pagination later)
+  const totalBlogs = allBlogs.length;
+  const blogsPerPage = 12;
+  const totalBlogPages = Math.ceil(totalBlogs / blogsPerPage);
+
+  const blogPaginatedRoutes = [];
+  for (let i = 1; i <= totalBlogPages; i++) {
+    blogPaginatedRoutes.push({
+      url: `${baseUrl}/blogs?page=${i}`,
+      lastModified: now,
+      changeFrequency: "daily",
+      priority: 0.7,
+    });
+  }
+
   // Author image routes with new descriptive filenames
   const authorImageRoutes = [];
   if (authorData && authorData.authorImages) {
@@ -250,13 +348,25 @@ export default async function sitemap() {
     images: [reviewer.url],
   }));
 
+  // Blog image routes for Google Image Search (dedicated entries)
+  const blogImageRoutes = allBlogImages.map((blogImage) => ({
+    url: `${baseUrl}/blogs/${blogImage.blogSlug}`,
+    lastModified: now,
+    changeFrequency: "weekly",
+    priority: 0.6,
+    images: [blogImage.url],
+  }));
+
   return [
     ...staticRoutes,
     ...bookRoutes,
+    ...blogRoutes,
     ...authorRoutes,
     ...categoryRoutes,
     ...paginatedRoutes,
+    ...blogPaginatedRoutes,
     ...authorImageRoutes,
     ...reviewerImageRoutes,
+    ...blogImageRoutes,
   ];
 }

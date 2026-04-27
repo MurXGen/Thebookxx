@@ -353,6 +353,7 @@ export default function RecommendationModal({
         <motion.div className="bill-modal-overlay" onClick={handleClose}>
           <motion.div
             className="bill-modal"
+            style={{ maxHeight: "800px" }}
             onClick={(e) => e.stopPropagation()}
             initial={{ y: "100%" }}
             animate={{ y: 0 }}

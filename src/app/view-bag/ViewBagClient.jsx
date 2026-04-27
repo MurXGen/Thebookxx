@@ -265,12 +265,19 @@ export default function ViewBagClient() {
       }
     }
 
+    // Determine delivery days based on faster delivery
+    const deliveryDays = isFasterDelivery ? "3-5" : "5-7";
+    const deliveryText = isFasterDelivery
+      ? `delivered in ${deliveryDays} business days (Priority Shipping)`
+      : `delivered in ${deliveryDays} business days`;
+
     if (messageType === "shipped") {
       message = encodeURIComponent(
         `📚 *Order Update from TheBookX*\n\n` +
           `Dear ${orderData?.name || "Customer"},\n\n` +
-          `Your order #${orderData?.orderId} has been shipped and will be delivered in 3-5 business days.\n\n` +
+          `Your order #${orderData?.orderId} has been shipped and will be ${deliveryText}.\n\n` +
           `📦 Tracking ID: ${savedTrackingId || "Not available"}\n\n` +
+          `Here is the link to track : https://www.indiapost.gov.in \n\n` +
           `Thank you for shopping with TheBookX! Happy reading! 📖✨\n\n` +
           `For any queries, feel free to reach out to us.`,
       );
@@ -279,6 +286,7 @@ export default function ViewBagClient() {
         `📚 *Order Update from TheBookX*\n\n` +
           `Dear ${orderData?.name || "Customer"},\n\n` +
           `Your order #${orderData?.orderId} is confirmed and will be shipped within 1-2 business days.\n\n` +
+          `Expected delivery: ${deliveryDays} business days after shipping.\n\n` +
           `You will receive a tracking ID once shipped.\n\n` +
           `Thank you for your patience! 📖✨\n\n` +
           `For any queries, feel free to reach out to us.`,
@@ -289,7 +297,6 @@ export default function ViewBagClient() {
     setShowNumberSelection(false);
     setPendingMessageType(null);
   };
-
   const isCOD = orderData?.paymentMethod === "COD";
   const isUPI = orderData?.paymentMethod === "UPI";
 

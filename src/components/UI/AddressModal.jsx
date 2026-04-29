@@ -97,7 +97,7 @@ export default function AddressModal({
   };
 
   const totalWithDelivery = getTotalWithDelivery(fasterDelivery);
-  const codAdvanceAmount = Math.round(totalWithDelivery / 2);
+  const codAdvanceAmount = 99;
   const codRemainingAmount = totalWithDelivery - codAdvanceAmount;
 
   const totalWithCurrentSelection = getTotalWithDelivery(fasterDelivery);
@@ -528,9 +528,7 @@ export default function AddressModal({
                       disabled={!isFormValid()}
                     >
                       <p className="weight-600">Cash on Delivery</p>
-                      <span className="font-10">
-                        Pay 50% now + 50% on delivery
-                      </span>
+                      <span className="font-10">Now Rs.99 + At Delivery</span>
                     </LoadingButton>
                   </div>
 
@@ -901,11 +899,11 @@ export default function AddressModal({
                   <span className="weight-600">₹{totalWithDelivery}</span>
                 </div>
                 <div className="flex justify-between orange">
-                  <span>💳 Advance Payment (50%)</span>
+                  <span>💳 Advance Payment (₹ 99)</span>
                   <span className="weight-600">₹{codAdvanceAmount}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>💰 Remaining at Delivery (50%)</span>
+                  <span>💰 Remaining at Delivery</span>
                   <span className="weight-600">₹{codRemainingAmount}</span>
                 </div>
                 <div className="dashed-border my-8"></div>
@@ -920,8 +918,9 @@ export default function AddressModal({
               <div className="flex flex-col items-center gap-16">
                 <div className="payment-info-message">
                   <p className="font-12 text-center dark-50">
-                    Pay 50% advance to confirm your COD order. Remaining 50%
-                    will be collected at delivery.
+                    Pay just ₹{codAdvanceAmount} and pay rest of the amount at
+                    the time of delivery and get live tracking id once shipped
+                    successfully
                   </p>
                 </div>
 
@@ -993,7 +992,7 @@ export default function AddressModal({
                       className="pri-big-btn width100"
                       onClick={() => setQrUnlocked(true)}
                     >
-                      Make 50% Advance
+                      Make Partial Payment
                     </button>
                   </div>
                 )}

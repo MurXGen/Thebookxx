@@ -141,19 +141,19 @@ export const authorData = {
       priority: true,
     },
     {
-      url: "/review/author/the-art-clarity-book-by-murthy-thevar-1.jpeg",
+      url: "/review/author/the-art-clarity-book-by-murthy-thevar-on-readers-table.jpeg",
       alt: "The Art of Clarity book cover alternate view - Murthy Thevar",
       caption: "Alternate angle of 'The Art of Clarity' book cover",
       priority: true,
     },
     {
-      url: "/review/author/the-art-clarity-book-by-murthy-thevar-holding-book.jpeg",
+      url: "/review/author/murthy-thevar-holding-book.jpeg",
       alt: "The Art of Clarity book spine and back cover - Murthy Thevar",
       caption: "Spine and back cover of 'The Art of Clarity'",
       priority: true,
     },
     {
-      url: "/review/author/the-art-clarity-book-by-murthy-thevar-distributing-book-the-art-of-clairty.jpeg",
+      url: "/review/author/murthy-thevar-distributing-book-the-art-of-clairty.jpeg",
       alt: "The Art of Clarity book with author signature - Murthy Thevar",
       caption: "Signed copy of 'The Art of Clarity' by Murthy Thevar",
       priority: true,

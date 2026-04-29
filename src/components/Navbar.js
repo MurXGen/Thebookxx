@@ -35,6 +35,34 @@ export default function Navbar() {
   return (
     <>
       <header className="navbar-wrapper">
+        <div className="flex flex-row justify-between">
+          <div className="mobile-offer-strip width100">
+            {/* rotating star */}
+            <motion.span
+              className="badge-star"
+              animate={{ rotate: 360 }}
+              transition={{ repeat: Infinity, duration: 6, ease: "linear" }}
+            >
+              <Star size={14} />
+            </motion.span>
+
+            {/* sliding text */}
+            <div className="offer-text-wrapper">
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={index}
+                  className="offer-text"
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: -20, opacity: 0 }}
+                  transition={{ duration: 0.35, ease: "easeOut" }}
+                >
+                  {formatOfferMessage(currentOffer)}
+                </motion.span>
+              </AnimatePresence>
+            </div>
+          </div>
+        </div>
         {/* 🔥 Mobile promo strip */}
 
         <nav className="navbar section-1200">
@@ -76,39 +104,10 @@ export default function Navbar() {
             </a>
           </div>
         </nav>
-        <div className="flex flex-row justify-between">
-          <div className="mobile-offer-strip width100">
-            {/* rotating star */}
-            <motion.span
-              className="badge-star"
-              animate={{ rotate: 360 }}
-              transition={{ repeat: Infinity, duration: 6, ease: "linear" }}
-            >
-              <Star size={14} />
-            </motion.span>
-
-            {/* sliding text */}
-            <div className="offer-text-wrapper">
-              <AnimatePresence mode="wait">
-                <motion.span
-                  key={index}
-                  className="offer-text"
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: -20, opacity: 0 }}
-                  transition={{ duration: 0.35, ease: "easeOut" }}
-                >
-                  {formatOfferMessage(currentOffer)}
-                </motion.span>
-              </AnimatePresence>
-            </div>
-          </div>
-        </div>
-
         {/* 🔍 Search below navbar (mobile only) */}
-        {/* <div className="mobile-search">
+        <div className="mobile-search">
           <SearchMain />
-        </div> */}
+        </div>
       </header>
 
       {/* Full Screen Menu Component */}
@@ -170,7 +169,7 @@ function formatOfferMessage(offer) {
     return (
       <>
         Get <strong className="shinny-icon">₹{offer.value} OFF</strong> on
-        orders above {offer.target}
+        orders above ₹{offer.target}
       </>
     );
   }
@@ -179,14 +178,14 @@ function formatOfferMessage(offer) {
     return (
       <>
         Get <strong className="shinny-icon">Free delivery</strong> on orders
-        above {offer.target}
+        above ₹{offer.target}
       </>
     );
   }
 
   return (
     <>
-      <strong className="shinny-icon">Confirm order</strong> on orders above{" "}
+      <strong className="shinny-icon">Confirm order</strong> on orders above ₹
       {offer.target}
     </>
   );

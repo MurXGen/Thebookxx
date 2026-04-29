@@ -56,11 +56,6 @@ export default function CartBar() {
 
   return (
     <div className="cart-bar">
-      {/* 🔍 ALWAYS VISIBLE SEARCH */}
-      <div className="mobile-search">
-        <SearchMain />
-      </div>
-
       {/* 🎁 OFFER STRIP */}
       <AnimatePresence>
         {hasCart && (

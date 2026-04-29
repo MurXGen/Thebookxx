@@ -32,9 +32,14 @@ export default function SearchButton({ onClick }) {
             <div
               onClick={handleWhatsAppClick}
               aria-label="Get book recommendations"
-              className="cursor-pointer icon-rotate-wrapper"
-              style={{ borderLeft: "1px solid", paddingLeft: "8px" }}
+              className="cursor-pointer icon-rotate-wrapper font-14 flex flex-row gap-12 items-center"
+              style={{
+                borderLeft: "1px solid",
+                paddingLeft: "8px",
+                fontFamily: "poppins",
+              }}
             >
+              Suggest mode
               <StarsIcon className="rotate-icon" size={20} color="#fb8500" />
             </div>
           </div>

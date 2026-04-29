@@ -308,9 +308,9 @@ button {
 }
 
 button:hover {
-  transform: scale(0.9);
+  transform: scale(0.99);
   transition: 0.3s;
-
+  outline: 1px solid var(--dark-50);
   cursor: pointer;
 }
 
@@ -510,7 +510,7 @@ button:hover {
    MOBILE SEARCH
 ========================= */
 .mobile-search {
-  padding: 10px 16px;
+  padding: 0 16px;
   border-bottom: 1px solid #eee;
 }
 
@@ -1240,27 +1240,10 @@ button:hover {
 .search-book {
   background: var(--white-100);
   color: var(--dark);
-  box-shadow: 1px 1px 12px var(--dark-20);
-  border: 1px solid var(--dark-10);
+  border: 1px solid var(--dark-20);
   border-radius: var(--px-12);
-  width: 60%;
+  width: 100%;
   margin-bottom: 12px;
-  position: relative;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.search-book:hover {
-  background: var(--white-100);
-  color: var(--dark);
-  box-shadow: 1px 1px 12px var(--dark-20);
-  border: 1px solid var(--dark-10);
-  border-radius: var(--px-12);
-  width: 60%;
-  margin-bottom: 12px;
-  position: relative;
-  left: 50%;
-  transform: translateX(-50%);
 }
 
 .search-overlay {
@@ -1481,7 +1464,7 @@ button:hover {
   color: white;
   padding: 6px 14px;
   border-radius: 40px;
-  font-size: 12px;
+  font-size: var(--px-16);
   font-weight: 600;
   letter-spacing: 0.3px;
   box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
@@ -1680,7 +1663,7 @@ button:hover {
   .trust-badge,
   .green-check {
     padding: 4px 10px;
-    font-size: 10px;
+    font-size: var(--px-16);
   }
 
   .play-pause-btn {

@@ -15,6 +15,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { BsCash } from "react-icons/bs";
 
 const SWAP_INTERVAL = 3000;
 const STATS_ROTATION_INTERVAL = 5000;
@@ -113,8 +114,8 @@ export default function BestsellerStage() {
         </div> */}
         <div className="flex flex-row gap-12">
           <div className="green-check">
-            <Star size={14} fill="#22c55e" stroke="#22c55e" />
-            <span>Verified Orders</span>
+            <BsCash size={16} fill="#22c55e" stroke="#22c55e" />
+            <span>COD Available</span>
           </div>
           <div className="trust-badge">
             <ShieldCheck size={16} />

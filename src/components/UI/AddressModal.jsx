@@ -80,7 +80,7 @@ export default function AddressModal({
   // Calculate 50% advance for COD
 
   // Check if cart value is below 450
-  const isCartBelow450 = totalDiscounted < 450;
+  const isCartBelow450 = totalDiscounted < 599;
 
   // Calculate delivery charge based on selection
   const getDeliveryCharge = (isFaster) => {

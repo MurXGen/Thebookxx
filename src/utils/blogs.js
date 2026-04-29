@@ -179,25 +179,25 @@ export const blogsData = {
       },
     ],
 
-    coverImage: "/review/author/murthy-thevar-4.jpeg",
+    coverImage: "/review/author/murthy-thevar-author-portrait.jpeg",
 
     images: [
       {
-        url: "/review/author/murthy-thevar-4.jpeg",
+        url: "/review/author/murthy-thevar-author-portrait.jpeg",
         alt: "Murthy Thevar official author portrait - India's leading clarity coach",
         caption:
           "Official portrait of Murthy Thevar, acclaimed author of 'The Art of Clarity'",
         category: "Author Photo",
       },
       {
-        url: "/review/author/murthy-thevar-2.jpeg",
+        url: "/review/author/murthy-thevar-holding-book.jpeg",
         alt: "Murthy Thevar speaking at Clarity Summit 2026",
         caption:
           "Murthy Thevar delivering keynote at National Clarity Summit 2026",
         category: "Speaking Event",
       },
       {
-        url: "/review/author/murthy-thevar-3.jpeg",
+        url: "/review/author/murthy-thevar-distributing-book-the-art-of-clairty.jpeg",
         alt: "Murthy Thevar celebrating book milestone",
         caption: "Celebrating 10,000+ copies sold of 'The Art of Clarity'",
         category: "Milestone",
@@ -634,11 +634,11 @@ export const blogsData = {
       },
     ],
 
-    coverImage: "/review/author/the-art-of-clarity-2.jpeg",
+    coverImage: "/review/author/the-art-of-clarity-front-cover.jpeg",
 
     images: [
       {
-        url: "/review/author/the-art-of-clarity-2.jpeg",
+        url: "/review/author/the-art-of-clarity-front-cover.jpeg",
         alt: "Murthy Thevar demonstrating speech clarity techniques at workshop",
         caption:
           "Murthy Thevar teaching articulation exercises to an engaged audience",
@@ -1279,7 +1279,8 @@ export const blogsData = {
       },
     ],
 
-    coverImage: "/review/author/the-art-clarity-book-by-murthy-thevar-1.jpeg",
+    coverImage:
+      "/review/author/the-art-clarity-book-by-murthy-thevar-on-readers-table.jpeg",
 
     images: [
       {
@@ -1302,7 +1303,7 @@ export const blogsData = {
         category: "Media Appearance",
       },
       {
-        url: "/review/author/the-art-clarity-book-by-murthy-thevar-3.jpeg",
+        url: "/review/author/the-art-clarity-book-by-murthy-thevar-distributing-book-the-art-of-clairty.jpeg",
         alt: "The Art of Clarity - Chapter 7 on overcoming overthinking",
         caption:
           "Chapter 7 provides a complete 60-day overthinking transformation program",
@@ -1392,6 +1393,678 @@ export const blogsData = {
         question: "How does sleep affect overthinking?",
         answer:
           "Significantly. Sleep deprivation increases overthinking by 60%. Prioritize 7-8 hours of sleep. If you overthink at night, use Strategy #7 (worry period) before bed to offload concerns. Chapter 8 of 'The Art of Clarity' covers the sleep-clarity connection in depth.",
+      },
+    ],
+  },
+  // Add this to your blogsData object in utils/blogs.js
+
+  "how-to-filter-right-information-in-age-of-overload": {
+    id: "blog-005",
+    title:
+      "How to Filter the Right Information: 10 Strategies to Stop Information Overload",
+    slug: "how-to-filter-right-information-in-age-of-overload",
+    author: "Murthy Thevar",
+    authorSlug: "murthy-thevar",
+    publishDate: "2026-05-29",
+    lastModified: "2026-05-29",
+
+    excerpt:
+      "We consume 74GB of information daily—but retain almost nothing. Murthy Thevar reveals 10 proven strategies from 'The Art of Clarity' to filter noise, focus on what matters, and make better decisions with less information.",
+
+    content: [
+      {
+        type: "paragraph",
+        content:
+          "Every day, you're exposed to the equivalent of 74 gigabytes of information—enough to fill 16 novels. Your social media feed. News alerts. Work emails. Podcasts. Group chats. Push notifications. By some estimates, we process more information in a single day than our grandparents did in an entire year.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Here's the problem: Your brain wasn't designed for this. Despite consuming all this information, studies show we retain less than 10% of what we read online. We're drowning in data but starving for wisdom.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "In <strong>'The Art of Clarity'</strong>, Murthy Thevar dedicates an entire section to information filtering. As he writes: <em>'The most important skill of the 21st century isn't finding information—it's knowing what to ignore. Clarity isn't about having more data. It's about having the right data.'</em>",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Here are 10 actionable strategies to filter the right information and reclaim your mental clarity.",
+      },
+
+      {
+        type: "heading",
+        level: 2,
+        content: "The True Cost of Information Overload",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Before we dive into solutions, let's understand what information overload is costing you:",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<strong>Decision fatigue</strong> - Each piece of information consumes mental energy, leaving less for important choices",
+          "<strong>Analysis paralysis</strong> - Too many options and opinions make even simple decisions feel impossible",
+          "<strong>Reduced focus</strong> - The average person switches tasks every 3 minutes, and it takes 23 minutes to refocus",
+          "<strong>Increased anxiety</strong> - Constant exposure to negative news and opinions heightens stress responses",
+          "<strong>Shallower thinking</strong> - Surface-level scanning replaces deep reading and comprehension",
+          "<strong>Lost productivity</strong> - Knowledge workers spend 60% of their day processing information, not creating value",
+        ],
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "📊 The 74GB Reality",
+        content:
+          "Researchers estimate we consume 74GB of information daily—that's equivalent to watching 16 movies. But here's the kicker: We actively remember less than 1% of it by the next day. Most of what you consume is instantly forgotten, yet it still drains your mental energy.",
+      },
+
+      {
+        type: "heading",
+        level: 2,
+        content: "10 Proven Strategies to Filter the Right Information",
+      },
+      {
+        type: "paragraph",
+        content:
+          "These strategies come directly from Murthy Thevar's clarity coaching methodology. Start with the first three today, then gradually add more as each becomes a habit.",
+      },
+
+      {
+        type: "heading",
+        level: 3,
+        content: "Strategy #1: The 3-Question Filter (Before You Consume)",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "🔍 How It Works",
+        content:
+          "Before reading, watching, or listening to anything, ask three questions: <strong>1) Does this serve my current goal? 2) Is this the best use of my time right now? 3) Will I remember this tomorrow?</strong> If you answer 'no' to any question, skip it.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<strong>Example:</strong> You see a 'breaking news' notification. Does it serve your current goal (finishing a work report)? No. Skip it. The news will still be there in an hour, but your focus won't.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "💡 <strong>Practice today:</strong> Apply this filter to everything you consume for one day. You'll be shocked at how much you skip—and how much time you save.",
+      },
+
+      {
+        type: "heading",
+        level: 3,
+        content: "Strategy #2: The 80/20 Information Diet (Pareto Principle)",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "📚 How It Works",
+        content:
+          "Apply the Pareto Principle to your information consumption: <strong>80% of valuable insights come from 20% of your sources.</strong> Identify that 20%—your top sources that provide real value—and eliminate or drastically reduce the rest.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "From 'The Art of Clarity': <em>'Most people spend 80% of their reading time on information that provides 20% of their insights. Flip that equation. Spend 80% of your time on the 20% of sources that truly matter.'</em>",
+      },
+      {
+        type: "paragraph",
+        content:
+          "💡 <strong>Practice today:</strong> List all your information sources (newsletters, podcasts, YouTube channels, social media accounts, websites). Circle your top 3-5 that provide the most value. Unsubscribe from the rest.",
+      },
+
+      {
+        type: "heading",
+        level: 3,
+        content: "Strategy #3: The 'So What?' Test (Relevance Filter)",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "❓ How It Works",
+        content:
+          "For every piece of information, ask: <strong>'So what? How does this affect me or my work today?'</strong> If you can't articulate a concrete impact within 10 seconds, the information isn't relevant. Discard it.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<strong>Example:</strong> A celebrity breakup trends on Twitter. So what? Unless you're their publicist or therapist, this information is entertainment, not useful. Treat it accordingly—consume intentionally, not automatically.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "💡 <strong>Practice today:</strong> Every time you feel the urge to check news or social media, ask 'So what?' first. You'll find most information fails this simple test.",
+      },
+
+      {
+        type: "heading",
+        level: 3,
+        content: "Strategy #4: The Information Expiration Date",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "⏰ How It Works",
+        content:
+          "Assign an expiration date to every piece of information you consume. News expires in 24 hours. Social media posts in 1 hour. Research articles in 1 year. Books in 5-10 years. <strong>When information expires, stop revisiting it.</strong>",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Most people treat all information as equally valuable forever. They don't. Yesterday's news doesn't help today's decisions. Last week's gossip won't improve your skills. Let expired information go.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "💡 <strong>Practice today:</strong> Go through your saved articles, bookmarks, and 'read later' lists. Anything older than its expiration date? Delete it. You were never going to read it anyway.",
+      },
+
+      {
+        type: "heading",
+        level: 3,
+        content: "Strategy #5: The One-In-One-Out Rule",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "🔄 How It Works",
+        content:
+          "For every new information source you add, remove an existing one. Want to subscribe to a new newsletter? Unsubscribe from one you rarely read. Found a new podcast? Delete one you haven't listened to in months.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "This rule prevents information hoarding. Most people accumulate sources endlessly without removing anything, leading to overwhelm and decision fatigue when choosing what to consume.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "💡 <strong>Practice today:</strong> Audit your email subscriptions. Unsubscribe from 10 newsletters. You won't miss them. Promise.",
+      },
+
+      {
+        type: "heading",
+        level: 3,
+        content: "Strategy #6: The 10-10-10 Information Filter",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "🔮 How It Works",
+        content:
+          "Ask yourself: <strong>'Will this information matter in 10 minutes? 10 months? 10 years?'</strong> If it won't matter in 10 months, it's probably not worth deep attention. If it won't matter in 10 minutes, it's definitely not worth breaking focus for.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "From Murthy Thevar: <em>'Most urgent information isn't important. And most important information isn't urgent. Learn to distinguish them, and you'll regain control of your attention.'</em>",
+      },
+      {
+        type: "paragraph",
+        content:
+          "💡 <strong>Practice today:</strong> The next time you get a notification, apply the 10-10-10 test. You'll start ignoring 90% of them.",
+      },
+
+      {
+        type: "heading",
+        level: 3,
+        content: "Strategy #7: The Curated Source Method (Experts Only)",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "🎓 How It Works",
+        content:
+          "Instead of consuming raw information directly, follow trusted curators who filter for you. Identify 3-5 experts in each area you care about. <strong>Only consume information they personally recommend or create.</strong>",
+      },
+      {
+        type: "paragraph",
+        content:
+          "This leverages the expertise of others to filter noise. A single trusted recommendation saves hours of searching and vetting.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "💡 <strong>Practice today:</strong> For each interest (productivity, health, business, etc.), identify one primary expert you trust. Unfollow everyone else in that space.",
+      },
+
+      {
+        type: "heading",
+        level: 3,
+        content: "Strategy #8: The Weekly Information Fast",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "🚫 How It Works",
+        content:
+          "Designate one day per week (Sundays work well) as an 'information fast.' No news. No social media. No emails. No podcasts. No YouTube. <strong>Just you, your thoughts, and any deep work or creative projects.</strong>",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Information fasting resets your dopamine response to novelty and forces you to generate ideas instead of consuming them. Most of Murthy Thevar's clients report their best insights come during these fasts.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "💡 <strong>Practice today:</strong> Schedule your information fast for this Sunday. Tell someone about it for accountability. Start with a half-day if a full day feels overwhelming.",
+      },
+
+      {
+        type: "heading",
+        level: 3,
+        content: "Strategy #9: The Clarity Folder System",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "📁 How It Works",
+        content:
+          "Create three folders: <strong>Now (what you'll read today), Next (this week), and Later (maybe ever).</strong> When you encounter information, immediately file it. Process the Now folder daily, Next weekly, Later monthly. Anything that stays in Later for 2 months gets deleted.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "This system prevents the 'saved forever, never read' trap. It creates clear boundaries and forces prioritization.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "💡 <strong>Practice today:</strong> Set up these three folders in your browser bookmarks, email, or note-taking app. Move everything from your current 'read later' list into one of them.",
+      },
+
+      {
+        type: "heading",
+        level: 3,
+        content:
+          "Strategy #10: The Reverse Time Budget (Intentional Consumption)",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "⏳ How It Works",
+        content:
+          "At the start of each day, budget your information consumption time: <strong>30 minutes for news, 20 minutes for social media, 45 minutes for professional reading.</strong> Set timers. When time runs out, stop—even if you haven't finished. The unfinished material was probably unimportant.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "From 'The Art of Clarity': <em>'Your attention is your most valuable asset. Spend it like money—with intention, limits, and awareness. Would you hand your credit card to a stranger? Then why hand your attention to algorithms?'</em>",
+      },
+      {
+        type: "paragraph",
+        content:
+          "💡 <strong>Practice today:</strong> Use your phone's screen time settings to cap social media and news apps at 30 minutes daily. Let the app be the bad guy when time runs out.",
+      },
+
+      {
+        type: "heading",
+        level: 2,
+        content: "The Information Funnel: A Visual Framework",
+      },
+      {
+        type: "paragraph",
+        content: "Think of information filtering as a funnel with four stages:",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "🔝 Stage 1: ALL Information (100%)",
+        content:
+          "Everything available—news, social media, emails, podcasts, articles, videos, books.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "⬇️ Stage 2: Filtered (20%)",
+        content:
+          "Apply Strategies #1-3 to eliminate obviously irrelevant information.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "⬇️ Stage 3: Prioritized (5%)",
+        content:
+          "Apply Strategies #4-7 to focus on high-value sources and timely information.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "🔽 Stage 4: Consumed (1%)",
+        content:
+          "What you actually read/watch/listen to with full attention. Make this count.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The goal isn't to consume everything in Stage 1. The goal is to move only the most valuable 1% through the funnel. Everything else? Let it go.",
+      },
+
+      {
+        type: "heading",
+        level: 2,
+        content: "The 7-Day Information Reset Plan",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Based on Murthy Thevar's 'Clarity Cleanse' program from 'The Art of Clarity':",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "📆 Day 1: Audit",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "List every information source you check regularly",
+          "Track your consumption for one full day (use your phone's screen time)",
+          "At day's end, ask: 'What did I actually learn today?'",
+          "Goal: Awareness without judgment",
+        ],
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "📆 Day 2-3: Elimination",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "Use Strategy #2 (80/20) to identify your top 20% of sources",
+          "Unsubscribe, unfollow, and delete everything else",
+          "Uninstall social media apps from your phone",
+          "Goal: Reduce sources by 60-80%",
+        ],
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "📆 Day 4-5: Implementation",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "Implement the 3-Question Filter (Strategy #1) religiously",
+          "Set up the Clarity Folder System (Strategy #9)",
+          "Create your Reverse Time Budget (Strategy #10)",
+          "Goal: New consumption habits feel automatic",
+        ],
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "📆 Day 6: Information Fast",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "Complete 24-hour information fast",
+          "No news, social media, or passive consumption",
+          "Read a physical book if you need information",
+          "Notice how quiet your mind becomes",
+        ],
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "📆 Day 7: Integration",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "Review what you learned during the fast",
+          "Decide which strategies you'll maintain",
+          "Schedule monthly information fasts going forward",
+          "Goal: Sustainable information diet for clarity",
+        ],
+      },
+
+      {
+        type: "heading",
+        level: 2,
+        content: "The 'Clarity First' Manifesto",
+      },
+      {
+        type: "paragraph",
+        content: "From 'The Art of Clarity,' post this somewhere visible:",
+      },
+      {
+        type: "blockquote",
+        content:
+          "I will not check notifications before I complete my most important task.\n\nI will ask 'So what?' before consuming anything.\n\nI will unsubscribe, unfollow, and delete without guilt.\n\nI will remember that my attention is my property.\n\nI will choose clarity over curiosity.\n\nI will be informed enough, not overwhelmed.\n\nI will filter first, read second.\n\nI will protect my focus like the precious resource it is.\n\n— Murthy Thevar, The Art of Clarity",
+      },
+
+      {
+        type: "heading",
+        level: 2,
+        content: "Quick-Reference: Information Filtering Emergency Kit",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Save this on your phone for when information feels overwhelming:",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "🚨 WHEN OVERWHELMED, DO THIS:",
+        content:
+          "1️⃣ Close all open tabs and apps immediately<br/>2️⃣ Take 3 deep breaths (in for 4, hold for 4, out for 6)<br/>3️⃣ Ask: 'What's the ONE thing I need to know right now?'<br/>4️⃣ Search only for that specific answer<br/>5️⃣ When you find it, stop. Close everything again.<br/>6️⃣ Say aloud: 'I can consume it later. I don't need it now.'",
+      },
+
+      {
+        type: "heading",
+        level: 2,
+        content: "5 Signs You're Still Consuming Too Much Information",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "You feel anxious or behind when you miss your daily news/social media check",
+          "You have 50+ tabs open 'to read later'",
+          "You can't remember what you read yesterday",
+          "You check your phone within 10 minutes of waking up",
+          "You feel decision fatigue about what to consume next",
+        ],
+      },
+      {
+        type: "paragraph",
+        content:
+          "If you recognize any of these signs, go back to Strategy #8 (Weekly Information Fast) immediately. Your brain needs a reset.",
+      },
+
+      {
+        type: "heading",
+        level: 2,
+        content: "Real Results: Before and After Information Filtering",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Here's what readers of 'The Art of Clarity' report after implementing these strategies:",
+      },
+      {
+        type: "blockquote",
+        content:
+          "I used to spend 3 hours daily on news and Twitter. After applying the 80/20 filter, I identified that 80% of value came from just 3 sources. I unsubscribed from 47 newsletters. I now spend 30 minutes daily on information. My productivity doubled. — Vikram, Product Manager",
+      },
+      {
+        type: "blockquote",
+        content:
+          "The weekly information fast changed my relationship with my phone. I used to check it unconsciously 100+ times daily. Now I check intentionally 2-3 times. My anxiety is down 70%. — Sneha, Entrepreneur",
+      },
+      {
+        type: "blockquote",
+        content:
+          "I was drowning in saved articles—over 2000 bookmarks. The expiration date strategy helped me delete 1800 of them. I haven't missed a single one. The clarity folder system ensures I actually read what matters. — Raj, Student",
+      },
+
+      {
+        type: "heading",
+        level: 2,
+        content: "Final Words from Murthy Thevar",
+      },
+      {
+        type: "paragraph",
+        content:
+          "As Murthy Thevar concludes in <strong>'The Art of Clarity'</strong>: <em>'Information is not wisdom. Data is not insight. The most successful people aren't the best-informed—they're the best-filtered. They know what to ignore as much as what to know. This week, I challenge you to consume 50% less information. Then 50% less next week. Notice how much clearer your thinking becomes. Notice how much more time you have for deep work and real relationships. Notice how decisions that once took hours now take minutes. That's the power of filtering. That's the art of clarity.'</em>",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Your first filter starts now. Close this tab. Yes, right now. Come back tomorrow for the next strategy. But for now, take everything you've learned and apply one thing. Just one. Today. Because clarity isn't knowing more—it's doing more with less.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "📚 Ready for Deeper Clarity?",
+        content:
+          "These information filtering strategies are fully explored in Chapter 4 of <strong>'The Art of Clarity'</strong> by Murthy Thevar. The chapter includes a complete 30-day information detox, worksheets for identifying your valuable sources, and advanced techniques for deep focus. Get your copy today at https://www.thebookx.in/books/the-art-of-clarity",
+      },
+    ],
+
+    coverImage: "/review/author/the-art-clarity-book-by-murthy-thevar.jpeg",
+
+    images: [
+      {
+        url: "/review/author/the-art-clarity-book-by-murthy-thevar.jpeg",
+        alt: "The Art of Clarity front cover - Information filtering strategies",
+        caption:
+          "Chapter 4 of 'The Art of Clarity' covers advanced information filtering techniques",
+        category: "Book Cover",
+      },
+      {
+        url: "/review/author/the-art-clarity-book-by-murthy-thevar-1.jpeg",
+        alt: "The Art of Clarity front cover portrait view",
+        caption:
+          "The Art of Clarity - Your guide to filtering information and finding clarity",
+        category: "Book Cover",
+      },
+      {
+        url: "/review/author/the-art-clarity-book-by-murthy-thevar-2.jpeg",
+        alt: "The Art of Clarity hardcover edition",
+        caption:
+          "Hardcover edition available now - Includes the complete Information Clarity Framework",
+        category: "Book Cover",
+      },
+      {
+        url: "/review/author/murthy-thevar.jpeg",
+        alt: "Murthy Thevar - Author portrait for clarity coaching",
+        caption:
+          "Murthy Thevar, author of 'The Art of Clarity' and expert on information filtering",
+        category: "Author Photo",
+      },
+      {
+        url: "/review/author/murthy-thevar-media-interview-about-the-art-of-clarity.jpeg",
+        alt: "Murthy Thevar media interview discussing information overload solutions",
+        caption:
+          "Murthy Thevar sharing information filtering strategies during national media interview",
+        category: "Media Appearance",
+      },
+      {
+        url: "/review/author/the-art-clarity-book-by-murthy-thevar-3.jpeg",
+        alt: "The Art of Clarity book with information filtering framework",
+        caption:
+          "The complete Information Clarity Framework inside 'The Art of Clarity'",
+        category: "Book Content",
+      },
+    ],
+
+    keywords: [
+      "how to filter information",
+      "information overload solutions",
+      "stop information overload",
+      "filter right information",
+      "information diet",
+      "Murthy Thevar clarity",
+      "decision making tips",
+      "reduce information consumption",
+      "information detox",
+      "attention management",
+      "digital minimalism",
+      "information filtering strategies",
+      "stop information anxiety",
+      "clarity in information age",
+    ],
+
+    categories: [
+      "Productivity",
+      "Personal Development",
+      "Digital Wellness",
+      "Focus",
+      "Decision Making",
+    ],
+
+    faqs: [
+      {
+        question: "How do I know which information sources to keep?",
+        answer:
+          "Use the Value Test: After consuming a source, ask 'Did this help me make a better decision, learn a useful skill, or improve my life?' If yes for 3 consecutive times, keep it. If no for 3 consecutive times, eliminate it. 'The Art of Clarity' includes a worksheet for this exact evaluation.",
+      },
+      {
+        question: "Won't I miss important news if I filter aggressively?",
+        answer:
+          "Here's the truth: If news is truly important, you'll hear about it through conversations, not notifications. Major events break through filters naturally. Everything else? It can wait—or it wasn't important. Murthy Thevar calls this 'Trusting the information ecosystem.' Try it for a week. You won't miss what matters.",
+      },
+      {
+        question:
+          "How do I filter information for work when I need to stay updated?",
+        answer:
+          "Create a 'work filter' using Strategy #7 (Curated Source Method). Identify 2-3 industry experts or newsletters that aggregate the most important updates. Subscribe only to them. Set 15 minutes daily to scan their content. This covers 90% of what you need without the overwhelm.",
+      },
+      {
+        question: "What about emergencies or breaking news?",
+        answer:
+          "For genuine emergencies, your phone has built-in alerts for Amber Alerts, weather warnings, etc. For everything else, ask: 'Can I do anything about this right now?' If no (usually the case), schedule 5 minutes at 6 PM to catch up. The 5-minute check satisfies curiosity without consuming your day.",
+      },
+      {
+        question: "Is it okay to unfollow friends on social media?",
+        answer:
+          "Absolutely. Unfollowing isn't unfriending. You can maintain relationships while muting their content. Your social media feed is for YOUR benefit, not others'. Use the 'Snooze for 30 days' feature first. If you don't miss them, unfollow permanently. 'The Art of Clarity' calls this 'Curating your environment for clarity.'",
+      },
+      {
+        question:
+          "How does information filtering relate to 'The Art of Clarity'?",
+        answer:
+          "Information filtering is a core pillar of the clarity framework. Chapter 4 of 'The Art of Clarity' (40+ pages) covers this topic in depth, including the Clarity Information Funnel, the 30-day Information Detox program, and advanced techniques for professionals. The book is available at https://www.thebookx.in/books/the-art-of-clarity",
+      },
+      {
+        question:
+          "What if my job requires me to monitor news and social media?",
+        answer:
+          "If you're a social media manager, journalist, or marketer, adapt these strategies for work: (1) Use separate accounts/devices for work vs. personal. (2) Schedule specific 'monitoring blocks' rather than constant checking. (3) Apply the 3-Question Filter to work information too. (4) Use tools like Feedly to aggregate, not scroll infinitely. Even professionals don't need 24/7 consumption.",
+      },
+      {
+        question: "How long does the information detox take?",
+        answer:
+          "Most people feel withdrawal symptoms (anxiety, FOMO, urge to check) for 3-5 days. By Day 7, the urge diminishes significantly. By Day 30, new habits are formed. Schedule your detox during a low-stress week. Use the 7-Day Reset Plan above as your guide.",
+      },
+      {
+        question:
+          "What about educational content? Isn't more knowledge better?",
+        answer:
+          "Not when it prevents action. Educational content becomes a trap when you consume endlessly without applying. Use the 10-10-10 test: 'Will this knowledge still matter in 10 months?' If yes, schedule dedicated learning time. If no, skip it. Remember: Applied knowledge from one book > unapplied knowledge from 100 books.",
+      },
+      {
+        question: "How do I stop the urge to check my phone constantly?",
+        answer:
+          "Use the 'Phone Foyer Method': Keep your phone in a different room while working. Turn off all non-essential notifications. Use grayscale mode (makes the phone less stimulating). Set 3 specific 'check-in times' daily (e.g., 10 AM, 1 PM, 4 PM). Delete addictive apps from your home screen. Murthy Thevar's 'Clarity Phone Setup' in Chapter 4 provides a complete system.",
       },
     ],
   },

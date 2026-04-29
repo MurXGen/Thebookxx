@@ -27,7 +27,7 @@ export const authorData = {
   socialLinks: {
     instagram: "https://instagram.com/itz_murthy",
     twitter: "https://twitter.com/murthythevar",
-    linkedin: "https://in.linkedin.com/in/murthy-thevar-288b31262",
+    linkedin: "https://in.linkedin.com/in/murthy-thevar-holding-book88b31262",
     youtube: "https://youtube.com/@murthythevar",
   },
 
@@ -65,21 +65,21 @@ export const authorData = {
       priority: true,
     },
     {
-      url: "/review/author/murthy-thevar-2.jpeg",
+      url: "/review/author/murthy-thevar-holding-book.jpeg",
       alt: "Murthy Thevar speaking at event - Author sharing insights about clarity",
       caption:
         "Murthy Thevar speaking at an event, sharing his journey and insights on mental clarity",
       priority: true,
     },
     {
-      url: "/review/author/murthy-thevar-3.jpeg",
+      url: "/review/author/murthy-thevar-distributing-book-the-art-of-clairty.jpeg",
       alt: "Murthy Thevar interacting with audience - Connecting with readers",
       caption:
         "Murthy Thevar engaging with his audience and readers at a book event",
       priority: true,
     },
     {
-      url: "/review/author/murthy-thevar-4.jpeg",
+      url: "/review/author/murthy-thevar-author-portrait.jpeg",
       alt: "Murthy Thevar at book signing event - Signing copies for fans",
       caption:
         "Murthy Thevar signing copies of 'The Art of Clarity' for enthusiastic readers",
@@ -147,13 +147,13 @@ export const authorData = {
       priority: true,
     },
     {
-      url: "/review/author/the-art-clarity-book-by-murthy-thevar-2.jpeg",
+      url: "/review/author/the-art-clarity-book-by-murthy-thevar-holding-book.jpeg",
       alt: "The Art of Clarity book spine and back cover - Murthy Thevar",
       caption: "Spine and back cover of 'The Art of Clarity'",
       priority: true,
     },
     {
-      url: "/review/author/the-art-clarity-book-by-murthy-thevar-3.jpeg",
+      url: "/review/author/the-art-clarity-book-by-murthy-thevar-distributing-book-the-art-of-clairty.jpeg",
       alt: "The Art of Clarity book with author signature - Murthy Thevar",
       caption: "Signed copy of 'The Art of Clarity' by Murthy Thevar",
       priority: true,

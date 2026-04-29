@@ -12,7 +12,7 @@ import {
   Heart,
 } from "lucide-react";
 import { books } from "@/utils/book";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import LoadingButton from "./UI/LoadingButton";
 import BookCard from "./BookCard";
 import { FaWhatsapp } from "react-icons/fa";
@@ -201,6 +201,8 @@ export default function RecommendationModal({
   onClose: externalOnClose,
 }) {
   const { addToCart, toggleWishlist } = useStore();
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [internalIsOpen, setInternalIsOpen] = useState(false);
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
@@ -212,7 +214,21 @@ export default function RecommendationModal({
   });
   const [recommendations, setRecommendations] = useState([]);
   const [savedRecommendations, setSavedRecommendations] = useState([]);
-  const router = useRouter();
+
+  // Check if URL has ?suggest parameter
+  useEffect(() => {
+    const hasSuggestParam = searchParams?.has("suggest");
+
+    if (hasSuggestParam && externalIsOpen === undefined) {
+      // Open modal automatically if ?suggest is in URL
+      setInternalIsOpen(true);
+
+      // Remove the suggest parameter from URL without page reload
+      const url = new URL(window.location.href);
+      url.searchParams.delete("suggest");
+      window.history.replaceState({}, "", url.toString());
+    }
+  }, [searchParams, externalIsOpen]);
 
   const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
 
@@ -249,7 +265,6 @@ export default function RecommendationModal({
   };
 
   const handleClose = () => {
-    // Save that modal is closed
     const closedState = {
       isOpen: false,
       isClosed: true,

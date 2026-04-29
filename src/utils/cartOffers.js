@@ -43,6 +43,6 @@ export const CART_OFFERS = [
 
 // Get extra delivery charge based on order amount
 export const getExtraDeliveryCharge = (orderAmount) => {
-  if (orderAmount >= 400) return 0;
+  if (orderAmount >= 599) return 0;
   return 100;
 };

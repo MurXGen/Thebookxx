@@ -94,6 +94,10 @@ export default function SearchOverlay({ open, onClose }) {
     return nameMatch || catalogueMatch || priceMatch;
   });
 
+  // Encode search term for WhatsApp
+  const encodedSearchTerm = encodeURIComponent(query);
+  const whatsappMessage = `Hey hi! I'm looking for a book related to "${query}" but couldn't find it on TheBookX. Could you please help me find it?`;
+
   return (
     <AnimatePresence>
       {open && (
@@ -141,33 +145,36 @@ export default function SearchOverlay({ open, onClose }) {
                       <span className="font-16 weight-500">
                         Can’t find the book you’re looking for?
                       </span>
-                      {/* 
-                      <span
-                        className="font-12 dark-20"
-                        style={{
-                          textAlign: "center",
-                          width: "300px",
-                          margin: "1px auto",
-                        }}
-                      >
-                        No worries — we can help you get it. Just message us and
-                        we’ll check availability for you.
-                      </span> */}
-
-                      <a
-                        href="https://wa.me/917710892108?text=Hey%20hi%20I’m%20looking%20for%20a%20book%20that’s%20not%20listed%20on%20your%20site.%20Could%20you%20please%20help%20me%20find%20it%3F"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label="Chat with us on WhatsApp"
-                        className="cursor-pointer pri-big-btn"
-                        style={{
-                          minWidth: "fit-content",
-                          maxWidth: "fit-content",
-                          margin: "8px auto",
-                        }}
-                      >
-                        Ask on WhatsApp
-                      </a>
+                      <div className="flex flex-col width100 gap-12">
+                        <a
+                          href={`https://wa.me/917710892108?text=${encodeURIComponent(whatsappMessage)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label="Chat with us on WhatsApp"
+                          className="cursor-pointer pri-big-btn"
+                          style={{
+                            minWidth: "fit-content",
+                            maxWidth: "fit-content",
+                            margin: "8px auto",
+                          }}
+                        >
+                          Ask on WhatsApp
+                        </a>
+                        <a
+                          href="https://thebookx.in?suggest"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label="Chat with us on WhatsApp"
+                          className="cursor-pointer sec-big-btn"
+                          style={{
+                            minWidth: "fit-content",
+                            maxWidth: "fit-content",
+                            margin: "8px auto",
+                          }}
+                        >
+                          or Need suggestion?
+                        </a>
+                      </div>
                     </div>
                   ) : (
                     <div className="book-grid">

@@ -865,7 +865,7 @@ export default function AddressModal({
             >
               <div className="bill-header">
                 <span className="weight-600">
-                  Cash on Delivery - 50% Advance
+                  Cash on Delivery - Just ₹{codAdvanceAmount}
                 </span>
                 <span onClick={() => setShowCODPayment(false)}>
                   <X size={16} />

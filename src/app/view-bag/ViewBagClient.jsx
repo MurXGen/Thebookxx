@@ -494,7 +494,7 @@ export default function ViewBagClient() {
                       }
                       className="cursor-pointer"
                     />
-                    <span className="font-14">50% Advance Paid</span>
+                    <span className="font-14">Advance Paid</span>
                   </label>
                 </div>
               )}

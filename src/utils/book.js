@@ -4542,6 +4542,6 @@ export const books = [
       "business",
     ],
     originalPrice: calculateOriginalPrice(179),
-    discountedPrice: 179,
+    discountedPrice: 149,
   },
 ];

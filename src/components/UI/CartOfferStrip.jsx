@@ -116,7 +116,7 @@ export default function CartOfferStrip({ discountedAmount }) {
     }
 
     if (progressOffer.type === "flat") {
-      rewardText = `₹${progressOffer.value} OFF`;
+      rewardText = `upto ₹${progressOffer.value} OFF`;
     }
 
     return (

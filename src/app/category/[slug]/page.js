@@ -61,7 +61,7 @@ export default async function CategoryPage({ params }) {
                 "@type": "ListItem",
                 position: 2,
                 name: "Books",
-                item: "https://thebookx.in/books",
+                item: "https://thebookx.in/category",
               },
               {
                 "@type": "ListItem",
@@ -76,7 +76,7 @@ export default async function CategoryPage({ params }) {
 
       <div className="category-page">
         <div className="category-header">
-          <Link href="/books" className="back-link">
+          <Link href="/category" className="back-link">
             ← Back to All Books
           </Link>
           <h1 className="category-title">{displayName} Books</h1>

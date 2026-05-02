@@ -39,10 +39,11 @@ export default function BestsellerStage() {
     [],
   );
 
-  const [index, setIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [currentStatIndex, setCurrentStatIndex] = useState(0);
   const [isStatTransitioning, setIsStatTransitioning] = useState(false);
+  const [direction, setDirection] = useState(1);
 
   // Rotate order stats with smooth transition
   useEffect(() => {
@@ -59,10 +60,10 @@ export default function BestsellerStage() {
   // Auto-rotate books with pause/resume support
   useEffect(() => {
     if (bestsellerBooks.length < 2 || !isPlaying) return;
-    const timer = setInterval(
-      () => setIndex((i) => (i + 1) % bestsellerBooks.length),
-      SWAP_INTERVAL,
-    );
+    const timer = setInterval(() => {
+      setDirection(1);
+      setCurrentIndex((i) => (i + 1) % bestsellerBooks.length);
+    }, SWAP_INTERVAL);
     return () => clearInterval(timer);
   }, [bestsellerBooks.length, isPlaying]);
 
@@ -76,8 +77,19 @@ export default function BestsellerStage() {
 
   if (bestsellerBooks.length < 2) return null;
 
-  const leftBook = bestsellerBooks[index];
-  const rightBook = bestsellerBooks[(index + 1) % bestsellerBooks.length];
+  // Get books for the carousel (current + neighbors)
+  const getVisibleBooks = () => {
+    const books = [];
+    const total = bestsellerBooks.length;
+
+    for (let i = -2; i <= 2; i++) {
+      let idx = (currentIndex + i + total) % total;
+      books.push({ ...bestsellerBooks[idx], position: i });
+    }
+    return books;
+  };
+
+  const visibleBooks = getVisibleBooks();
   const currentStat = orderStats[currentStatIndex];
 
   return (
@@ -88,30 +100,13 @@ export default function BestsellerStage() {
         <p className="stage-subtitle">Loved by readers across India</p>
       </div>
 
-      {/* Order Stats Section - Above the carousel */}
+      {/* Order Stats Section */}
       <motion.div
         className="order-stats-section"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        {/* <div className="stats-rotator">
-          <motion.div
-            className="stats-content"
-            animate={{
-              opacity: isStatTransitioning ? 0 : 1,
-              y: isStatTransitioning ? -10 : 0,
-            }}
-            transition={{ duration: 0.25 }}
-          >
-            <span className="stats-icon">{currentStat.icon}</span>
-            <span className="stats-number">
-              {currentStat.value.toLocaleString()}
-              {currentStat.suffix}
-            </span>
-            <span className="stats-label">{currentStat.label}</span>
-          </motion.div>
-        </div> */}
         <div className="flex flex-row gap-12">
           <div className="green-check">
             <BsCash size={16} fill="#22c55e" stroke="#22c55e" />
@@ -124,38 +119,96 @@ export default function BestsellerStage() {
         </div>
       </motion.div>
 
-      {/* Stage - Original sliding cards */}
-      <div className="stage-floor">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={leftBook.id + "-left"}
-            className="stage-book left"
-            initial={{ opacity: 0, x: -60, rotate: -15, scale: 0.85 }}
-            animate={{ opacity: 1, x: 0, rotate: -8, scale: 1 }}
-            exit={{ opacity: 0, x: -80, rotate: -20, scale: 0.8 }}
-            transition={{ duration: 0.5, ease: "easeInOut" }}
-            onClick={() => handleBookClick(leftBook.id)}
-          >
-            <Image src={leftBook.image} alt={leftBook.name} fill />
-          </motion.div>
+      {/* Horizontal Carousel */}
+      <div className="carousel-container">
+        <div className="carousel-track">
+          {visibleBooks.map((book) => {
+            // Calculate position styles
+            let opacity = 0.5;
+            let scale = 0.85;
+            let zIndex = 1;
+            let translateX = 0;
 
-          <motion.div
-            key={rightBook.id + "-right"}
-            className="stage-book right"
-            initial={{ opacity: 0, x: 80, rotate: 15, scale: 0.85 }}
-            animate={{ opacity: 1, x: 0, rotate: 8, scale: 1 }}
-            exit={{ opacity: 0, x: 100, rotate: 25, scale: 0.8 }}
-            transition={{ duration: 0.5, ease: "easeInOut" }}
-            onClick={() => handleBookClick(rightBook.id)}
-          >
-            <Image src={rightBook.image} alt={rightBook.name} fill />
-          </motion.div>
-        </AnimatePresence>
+            if (book.position === 0) {
+              opacity = 1;
+              scale = 1;
+              zIndex = 10;
+              translateX = 0;
+            } else if (book.position === 1) {
+              opacity = 0.5;
+              scale = 0.92;
+              zIndex = 5;
+              translateX = 150;
+            } else if (book.position === -1) {
+              opacity = 0.5;
+              scale = 0.92;
+              zIndex = 5;
+              translateX = -150;
+            } else if (book.position === 2) {
+              opacity = 0.1;
+              scale = 0.85;
+              zIndex = 2;
+              translateX = 240;
+            } else if (book.position === -2) {
+              opacity = 0.1;
+              scale = 0.85;
+              zIndex = 2;
+              translateX = -240;
+            }
 
-        <div className="stage-shadow" />
+            return (
+              <div
+                key={book.id}
+                className="carousel-book"
+                style={{
+                  position: "absolute",
+                  width: "180px",
+                  height: "270px",
+                  left: "50%",
+                  marginLeft: "-90px",
+                  opacity: opacity,
+                  transform: `scale(${scale}) translateX(${translateX}px)`,
+                  zIndex: zIndex,
+                  transition: "all 0.5s ease-in-out",
+                  cursor: "pointer",
+                }}
+                onClick={() => handleBookClick(book.id)}
+              >
+                <div className="book-cover">
+                  <Image
+                    src={book.image}
+                    alt={book.name}
+                    fill
+                    style={{ objectFit: "cover" }}
+                    sizes="(max-width: 768px) 130px, 180px"
+                  />
+                </div>
+                {book.position === 0 && (
+                  <div className="book-info">
+                    <h3 className="book-title">{book.name}</h3>
+                    {/* {book.author && (
+                      <p className="book-author">by {book.author}</p>
+                    )} */}
+                    <div className="book-price">
+                      <span className="discounted">
+                        ₹{book.discountedPrice}
+                      </span>
+                      {book.originalPrice > book.discountedPrice && (
+                        <span className="original">₹{book.originalPrice}</span>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Shadow beneath carousel */}
+        <div className="carousel-shadow" />
       </div>
 
-      {/* Pause/Resume Button - Below the carousel */}
+      {/* Pause/Resume Button */}
       <motion.div
         className="controls-section"
         initial={{ opacity: 0, y: 12 }}
@@ -168,7 +221,6 @@ export default function BestsellerStage() {
           whileTap={{ scale: 0.95 }}
         >
           {isPlaying ? <Pause size={16} /> : <Play size={16} />}
-          {/* <span>{isPlaying ? "Pause" : "Resume"} Carousel</span> */}
         </motion.button>
       </motion.div>
 
@@ -179,11 +231,7 @@ export default function BestsellerStage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6 }}
       >
-        <Link
-          href="/terms"
-          className="trust-item"
-          style={{ textDecoration: "underline" }}
-        >
+        <Link href="/terms" className="trust-item">
           <FileText size={14} />
           <span>Trusted Terms</span>
         </Link>
@@ -193,11 +241,7 @@ export default function BestsellerStage() {
           <span>Free Delivery*</span>
         </div>
 
-        <Link
-          href="/blogs"
-          className="trust-item"
-          style={{ textDecoration: "underline" }}
-        >
+        <Link href="/blogs" className="trust-item">
           <Book size={14} />
           <span>Read blog</span>
         </Link>
@@ -205,7 +249,6 @@ export default function BestsellerStage() {
           href="https://wa.me/917710892108?text=Hey%20hi%20I'm%20looking%20for%20a%20book%20that's%20not%20listed%20on%20your%20site.%20Could%20you%20please%20help%20me%20find%20it%3F"
           target="_blank"
           className="trust-item"
-          style={{ textDecoration: "underline" }}
         >
           <Phone size={14} />
           <span>Contact us</span>

@@ -1,6 +1,8 @@
 "use client";
 
 import BookCard from "@/components/BookCard";
+import RecentlyViewed from "@/components/RecentlyViewed";
+import RecommendationModal from "@/components/RecommendationModal";
 import AddressModal from "@/components/UI/AddressModal";
 import BillModal from "@/components/UI/BillModal";
 import CartOfferStrip from "@/components/UI/CartOfferStrip";
@@ -268,23 +270,21 @@ Thank you! 🙏
           <span className="font-12 dark-50">Total payable</span>
           <div className="flex gap-8 items-center">
             <span className="font-16 weight-600 discounted">
-              ₹{totalWithStandardDelivery}
+              ₹{finalPayable}
             </span>
             {offerDiscount > 0 && (
               <span className="strike dark-50 original">
                 ₹{totalDiscounted}
               </span>
             )}
+            {standardDeliveryCharge > 0 && (
+              <span className="font-10">+ standard charges</span>
+            )}
 
             {appliedOffer && (
               <span className="font-14 green weight-600">{offerLabel}</span>
             )}
           </div>
-          {/* {standardDeliveryCharge > 0 && (
-            <span className="font-10 red">
-              +₹{standardDeliveryCharge} delivery
-            </span>
-          )} */}
 
           <span className="view-bill-text" onClick={() => setShowBill(true)}>
             View bill

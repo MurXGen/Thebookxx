@@ -242,7 +242,10 @@ export default function BookDetailsModal({ book }) {
         itemScope
         itemType="https://schema.org/Book"
       >
-        <div className="section-1200 flex flex-col gap-24">
+        <div
+          className="section-1200 flex flex-col gap-24"
+          style={{ maxWidth: "680px" }}
+        >
           {/* Header */}
           <div className="flex flex-row gap-12 items-center">
             <ArrowLeft
@@ -303,12 +306,24 @@ export default function BookDetailsModal({ book }) {
               <h2 className="font-24 weight-600" itemProp="name">
                 {book.name}
               </h2>
-              <p
-                className="font-14 dark-50 mt-8 leading-relaxed"
-                itemProp="description"
-              >
-                {book.description}
-              </p>
+              {/* Price */}
+              <div className="price-row flex flex-row items-center gap-16 mt-24">
+                <span className="font-32 weight-600 green">
+                  ₹{book.discountedPrice}
+                </span>
+                {book.originalPrice > book.discountedPrice && (
+                  <>
+                    <span className="original font-24 line-through text-gray-400">
+                      ₹{book.originalPrice}
+                    </span>
+                    {savings > 0 && (
+                      <span className="green font-14 weight-500 bg-green-50 px-8 py-4 rounded-full">
+                        Save ₹{savings} ({savingsPercentage}% OFF)
+                      </span>
+                    )}
+                  </>
+                )}
+              </div>
             </div>
 
             {/* Specifications */}
@@ -362,25 +377,32 @@ export default function BookDetailsModal({ book }) {
                 </span>
               </div>
             </div>
-
-            {/* Price */}
-            <div className="price-row flex flex-row items-center gap-16 mt-24">
-              <span className="font-32 weight-600 green">
-                ₹{book.discountedPrice}
-              </span>
-              {book.originalPrice > book.discountedPrice && (
-                <>
-                  <span className="original font-24 line-through text-gray-400">
-                    ₹{book.originalPrice}
-                  </span>
-                  {savings > 0 && (
-                    <span className="green font-14 weight-500 bg-green-50 px-8 py-4 rounded-full">
-                      Save ₹{savings} ({savingsPercentage}% OFF)
-                    </span>
-                  )}
-                </>
-              )}
+            <div className="dashed-border my-20"></div>
+            <div className="flex flex-col gap-4">
+              <p className="font-16 weight-600">Book Description</p>
+              <p
+                className="font-14"
+                itemProp="description"
+                style={{ lineHeight: "1.7", textAlign: "justify" }}
+              >
+                {book.description}
+              </p>
+              {/* Category Tags - Internal Links */}
+              <div className="flex flex-row flex-wrap gap-12 tags mt-16">
+                {book.catalogue?.map((tag) => (
+                  <a
+                    key={tag}
+                    href={`/category/${slugify(tag)}`}
+                    className="font-12 text-capitalize hover:opacity-80"
+                    aria-label={`Browse more #${tag} books`}
+                  >
+                    #{tag}
+                  </a>
+                ))}
+              </div>
             </div>
+
+            <div className="dashed-border my-20"></div>
 
             {/* Limited Offer Badge */}
             {book.discountedPrice === 1 && (
@@ -412,26 +434,12 @@ export default function BookDetailsModal({ book }) {
                 <span className="font-12">7-Day Returns</span>
               </div>
             </div>
-
-            {/* Category Tags - Internal Links */}
-            <div className="flex flex-row flex-wrap gap-12 tags mt-16">
-              {book.catalogue?.map((tag) => (
-                <a
-                  key={tag}
-                  href={`/category/${slugify(tag)}`}
-                  className="sec-mid-btn text-capitalize hover:opacity-80"
-                  aria-label={`Browse more ${tag} books`}
-                >
-                  {tag}
-                </a>
-              ))}
-            </div>
           </div>
 
           {/* Buttons */}
           <div
             className="book-detail-cta section-1200 flex flex-row gap-16 flex-wrap"
-            style={{ backdropFilter: "blur(12px)", zIndex: "1000" }}
+            style={{ zIndex: "1000" }}
           >
             <button
               className="flex flex-row items-center gap-12 justify-center sec-mid-btn"

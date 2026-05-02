@@ -2184,6 +2184,12 @@ button:disabled {
   display: flex;
   flex-direction: row;
   gap: 12px;
+  background: var(--background);
+  border-top: 1px solid var(--dark-20);
+  padding: var(--px-8);
+  max-width: 680px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .book-detail-body {

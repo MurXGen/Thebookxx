@@ -73,12 +73,12 @@ export default function CartOfferStrip({ discountedAmount }) {
 
   /* 🧠 Message */
   const message = useMemo(() => {
-    /* 🎉 Applied state */
+    /* 🎉 Applied offer (final state) */
     if (!progressOffer && appliedOffer) {
       if (appliedOffer.type === "free_shipping") {
         return (
           <>
-            <span className="success-text">FREE DELIVERY</span> unlocked 🎉
+            <span className="success-text">Free Delivery</span> availed 🎉
           </>
         );
       }
@@ -87,7 +87,7 @@ export default function CartOfferStrip({ discountedAmount }) {
         return (
           <>
             <span className="success-text">₹{appliedOffer.value} OFF</span>{" "}
-            unlocked 🎉
+            availed 🎉
           </>
         );
       }
@@ -96,33 +96,29 @@ export default function CartOfferStrip({ discountedAmount }) {
         return (
           <>
             <span className="success-text">{appliedOffer.value}% OFF</span>{" "}
-            unlocked 🎉
+            availed 🎉
           </>
         );
       }
     }
 
-    /* 🚀 Progress state */
+    /* 🚀 Progress state (USE CONFIG MESSAGE) */
     if (!progressOffer) return "";
 
-    let rewardText = "";
+    const parts = progressOffer.message.split("{remaining}");
 
-    if (progressOffer.type === "free_shipping") {
-      rewardText = "FREE DELIVERY";
-    }
+    /* Extract reward (upto ₹250 OFF etc.) */
+    const rewardMatch = progressOffer.message.match(/₹\d+ OFF|free delivery/i);
 
-    if (progressOffer.type === "percentage") {
-      rewardText = "FREE DELIVERY";
-    }
-
-    if (progressOffer.type === "flat") {
-      rewardText = `upto ₹${progressOffer.value} OFF`;
-    }
+    const rewardText = rewardMatch ? rewardMatch[0] : "";
 
     return (
       <>
-        Add <span className="highlight-amount">₹{remaining}</span> more to
-        unlock <span className="highlight-reward">{rewardText}</span>
+        {parts[0]}
+        <span className="highlight-amount">₹{remaining}</span>
+        {parts[1].replace(rewardText, "")}
+
+        {rewardText && <span className="highlight-reward">{rewardText}</span>}
       </>
     );
   }, [progressOffer, appliedOffer, remaining]);

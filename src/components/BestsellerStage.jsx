@@ -131,7 +131,7 @@ export default function BestsellerStage() {
 
             if (book.position === 0) {
               opacity = 1;
-              scale = 1;
+              scale = 1.1;
               zIndex = 10;
               translateX = 0;
             } else if (book.position === 1) {
@@ -146,12 +146,12 @@ export default function BestsellerStage() {
               translateX = -150;
             } else if (book.position === 2) {
               opacity = 0.1;
-              scale = 0.85;
+              scale = 0.75;
               zIndex = 2;
               translateX = 240;
             } else if (book.position === -2) {
               opacity = 0.1;
-              scale = 0.85;
+              scale = 0.75;
               zIndex = 2;
               translateX = -240;
             }

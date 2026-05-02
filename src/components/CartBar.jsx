@@ -65,6 +65,9 @@ export default function CartBar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3 }}
+            style={{
+              margin: "16px 12px",
+            }}
           >
             <CartOfferStrip discountedAmount={discountedAmount} />
           </motion.div>
@@ -72,7 +75,7 @@ export default function CartBar() {
       </AnimatePresence>
 
       {/* 🛒 CART CTA */}
-      <AnimatePresence>
+      {/* <AnimatePresence>
         {hasCart && (
           <motion.div
             key="cart"
@@ -113,7 +116,7 @@ export default function CartBar() {
             </LoadingButton>
           </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence> */}
 
       <InstallPWA />
     </div>

@@ -1811,7 +1811,8 @@ button:hover {
   position: absolute;
   cursor: pointer;
   transition: all 0.5s ease-in-out;
-  border-radius: var(--px-4);
+  border-radius: var(--px-8);
+  border: 1px solid var(--dark-10);
 }
 
 .book-cover {
@@ -1894,7 +1895,7 @@ button:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 80px auto 0;
+  margin: 90px auto 0;
 }
 
 .play-pause-btn {
@@ -1963,11 +1964,11 @@ button:hover {
   }
 
   .book-title {
-    font-size: 11px;
+    font-size: 12px;
   }
 
   .book-author {
-    font-size: 9px;
+    font-size: 10px;
   }
 
   .book-price .discounted {
@@ -3350,6 +3351,167 @@ input {
   }
 }
 
-/* Cart apply  */
+/* Cart offer stripe  */
 
-/* Cart apply ends */
+.offer-strip {
+  position: sticky;
+  bottom: 16px;
+
+  padding: 14px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--px-12);
+
+  border-radius: 8px;
+  background: linear-gradient(135deg, #fb8500, #ffb703);
+  color: white;
+
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+}
+
+/* LEFT */
+.offer-left {
+  flex: 1;
+}
+
+.offer-message {
+  font-size: var(--px-12);
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+/* PROGRESS BAR */
+.progress-bar {
+  position: relative;
+  width: 90%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+/* gradient fill */
+.progress-fill {
+  height: 100%;
+  border-radius: 999px;
+
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.4),
+    rgba(255, 255, 255, 1)
+  );
+
+  transition: width 0.4s ease;
+}
+
+/* shooting glowing dot */
+.progress-dot {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: white;
+
+  box-shadow:
+    0 0 10px rgba(255, 255, 255, 1),
+    0 0 20px rgba(255, 255, 255, 0.8);
+
+  pointer-events: none;
+}
+
+/* RIGHT */
+.offer-cart {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* preview stack */
+.cart-preview {
+  display: flex;
+  align-items: center;
+}
+
+.cart-card {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  overflow: hidden;
+
+  border: 2px solid white;
+  margin-left: -8px;
+  background: white;
+
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.cart-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* +X card */
+.cart-card.extra {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  background: black;
+  color: white;
+}
+
+/* text */
+.cart-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.cart-label {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.cart-count {
+  font-size: 11px;
+  opacity: 0.9;
+}
+
+/* 🎉 simple confetti burst */
+.confetti {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.confetti::after {
+  content: "✨✨✨✨✨✨";
+  position: absolute;
+  top: -10px;
+  left: 20%;
+  font-size: 14px;
+  animation: confetti-burst 1s ease forwards;
+}
+
+@keyframes confetti-burst {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+}
+
+/* stripe ends */

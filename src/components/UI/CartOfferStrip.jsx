@@ -115,7 +115,7 @@ export default function CartOfferStrip({ discountedAmount }) {
     return (
       <>
         {parts[0]}
-        <span className="highlight-amount">₹{remaining}</span>
+        <span className="highlight-amount">{remaining}</span>
         {parts[1].replace(rewardText, "")}
 
         {rewardText && <span className="highlight-reward">{rewardText}</span>}

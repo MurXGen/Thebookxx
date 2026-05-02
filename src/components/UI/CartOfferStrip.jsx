@@ -73,24 +73,56 @@ export default function CartOfferStrip({ discountedAmount }) {
 
   /* 🧠 Message */
   const message = useMemo(() => {
+    /* 🎉 Applied state */
     if (!progressOffer && appliedOffer) {
-      if (appliedOffer.type === "free_shipping")
-        return "Free Delivery Unlocked 🎉";
-      if (appliedOffer.type === "flat")
-        return `₹${appliedOffer.value} OFF unlocked 🎉`;
-      if (appliedOffer.type === "percentage")
-        return `${appliedOffer.value}% OFF unlocked 🎉`;
+      if (appliedOffer.type === "free_shipping") {
+        return (
+          <>
+            <span className="success-text">FREE DELIVERY</span> unlocked 🎉
+          </>
+        );
+      }
+
+      if (appliedOffer.type === "flat") {
+        return (
+          <>
+            <span className="success-text">₹{appliedOffer.value} OFF</span>{" "}
+            unlocked 🎉
+          </>
+        );
+      }
+
+      if (appliedOffer.type === "percentage") {
+        return (
+          <>
+            <span className="success-text">{appliedOffer.value}% OFF</span>{" "}
+            unlocked 🎉
+          </>
+        );
+      }
     }
 
+    /* 🚀 Progress state */
     if (!progressOffer) return "";
 
-    const parts = progressOffer.message.split("{remaining}");
+    let rewardText = "";
+
+    if (progressOffer.type === "free_shipping") {
+      rewardText = "FREE DELIVERY";
+    }
+
+    if (progressOffer.type === "percentage") {
+      rewardText = "FREE DELIVERY";
+    }
+
+    if (progressOffer.type === "flat") {
+      rewardText = `₹${progressOffer.value} OFF`;
+    }
 
     return (
       <>
-        {parts[0]}
-        <strong>₹{remaining}</strong>
-        {parts[1]}
+        Add <span className="highlight-amount">₹{remaining}</span> more to
+        unlock <span className="highlight-reward">{rewardText}</span>
       </>
     );
   }, [progressOffer, appliedOffer, remaining]);
@@ -137,14 +169,11 @@ export default function CartOfferStrip({ discountedAmount }) {
           })}
         </div>
         {!isBagPage && (
-          <Link href="/bag" className="cart-cta">
-            <div className="cart-info">
-              <span className="cart-count">{cartCount} ITEMS</span>
-            </div>
-
-            <div className="arrow-box">
-              <ArrowRight size={24} />
-            </div>
+          <Link
+            href="/bag"
+            className="cart-cta flex flex-row gap-4 items-center"
+          >
+            <ArrowRight size={24} />
           </Link>
         )}
       </div>

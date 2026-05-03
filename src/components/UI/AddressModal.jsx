@@ -17,7 +17,6 @@ import {
   Zap,
   Clock,
   Package,
-  Gift,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -50,8 +49,8 @@ export default function AddressModal({
   standardDeliveryCharge = 0,
   fasterDeliveryCharge = 119,
   totalWithStandardDelivery = 0,
-  giftWrapCharge = 0,
-  giftWrapSelected = false,
+  giftWrapCharge = 0, // NEW
+  giftWrapSelected = false, // NEW
 }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -78,17 +77,11 @@ export default function AddressModal({
   const [verifyTimer, setVerifyTimer] = useState(30);
   const [canVerify, setCanVerify] = useState(false);
 
+  const [giftWrap, setGiftWrap] = useState(giftWrapSelected);
+
   const UPI_ID = "7977960242-1@okbizaxis";
 
   // Calculate 50% advance for COD
-  const totalWithDelivery =
-    finalPayable +
-    (fasterDelivery ? fasterDeliveryCharge : standardDeliveryCharge);
-  const codAdvanceAmount = 99;
-  const codRemainingAmount = totalWithDelivery - codAdvanceAmount;
-
-  const totalWithCurrentSelection =
-    totalWithDelivery + (giftWrapSelected ? giftWrapCharge : 0);
 
   // Check if cart value is below 450
   const isCartBelow450 = totalDiscounted < 399;
@@ -98,6 +91,7 @@ export default function AddressModal({
     if (isFaster) {
       return fasterDeliveryCharge;
     }
+    // Still charge standard delivery charge even when cart below 450
     return standardDeliveryCharge;
   };
 
@@ -105,6 +99,12 @@ export default function AddressModal({
   const getTotalWithDelivery = (isFaster) => {
     return finalPayable + getDeliveryCharge(isFaster);
   };
+
+  const totalWithDelivery = getTotalWithDelivery(fasterDelivery);
+  const codAdvanceAmount = 99;
+  const codRemainingAmount = totalWithDelivery - codAdvanceAmount;
+
+  const totalWithCurrentSelection = getTotalWithDelivery(fasterDelivery);
 
   // Fetch location details based on pincode
   const fetchLocationByPincode = async (pincodeValue) => {
@@ -251,9 +251,9 @@ export default function AddressModal({
     setShowFasterDeliveryModal(false);
 
     if (tempPaymentMethod === "COD") {
-      proceedWithCOD(true);
+      proceedWithCOD(true, giftWrapSelected);
     } else if (tempPaymentMethod === "UPI") {
-      proceedWithUPI(true);
+      proceedWithUPI(true, giftWrapSelected);
     }
   };
 
@@ -262,13 +262,13 @@ export default function AddressModal({
     setShowFasterDeliveryModal(false);
 
     if (tempPaymentMethod === "COD") {
-      proceedWithCOD(false);
+      proceedWithCOD(false, giftWrapSelected);
     } else if (tempPaymentMethod === "UPI") {
-      proceedWithUPI(false);
+      proceedWithUPI(false, giftWrapSelected);
     }
   };
 
-  const proceedWithCOD = (isFasterDeliverySelected) => {
+  const proceedWithCOD = (isFasterDeliverySelected, isGiftWrapSelected) => {
     if (!isValidPincode || pincode.length !== 6) {
       setPincodeError("Please enter a valid 6-digit pincode");
       return;
@@ -280,10 +280,11 @@ export default function AddressModal({
     }
 
     setFasterDelivery(isFasterDeliverySelected);
+    setGiftWrap(isGiftWrapSelected);
     setShowCODPayment(true);
   };
 
-  const proceedWithUPI = (isFasterDeliverySelected) => {
+  const proceedWithUPI = (isFasterDeliverySelected, isGiftWrapSelected) => {
     if (!isValidPincode || pincode.length !== 6) {
       setPincodeError("Please enter a valid 6-digit pincode");
       return;
@@ -295,6 +296,7 @@ export default function AddressModal({
     }
 
     setFasterDelivery(isFasterDeliverySelected);
+    setGiftWrap(isGiftWrapSelected);
     setShowUPIPayment(true);
   };
 
@@ -323,9 +325,10 @@ export default function AddressModal({
           district,
           area,
           fasterDelivery: fasterDelivery && isFasterDeliveryAvailable,
+          giftWrap: giftWrap,
         },
         fasterDelivery && isFasterDeliveryAvailable,
-        giftWrapSelected, // Pass gift wrap selection
+        giftWrap,
       );
     }
     setShowCODPayment(false);
@@ -345,35 +348,13 @@ export default function AddressModal({
           district,
           area,
           fasterDelivery: fasterDelivery && isFasterDeliveryAvailable,
+          giftWrap: giftWrap,
         },
         fasterDelivery && isFasterDeliveryAvailable,
-        giftWrapSelected, // Pass gift wrap selection
+        giftWrap,
       );
     }
     setShowUPIPayment(false);
-    onClose();
-  };
-
-  const handleWhatsAppOrder = () => {
-    if (!isFormValid()) return;
-
-    if (handleWhatsAppCheckout) {
-      handleWhatsAppCheckout(
-        {
-          name,
-          phone,
-          city,
-          pincode,
-          address,
-          state,
-          district,
-          area,
-          fasterDelivery: fasterDelivery && isFasterDeliveryAvailable,
-        },
-        fasterDelivery && isFasterDeliveryAvailable,
-        giftWrapSelected, // Pass gift wrap selection
-      );
-    }
     onClose();
   };
 
@@ -485,14 +466,6 @@ export default function AddressModal({
                 />
               </div>
 
-              {/* Gift Wrap Info Display */}
-              {giftWrapSelected && (
-                <div className="gift-wrap-info">
-                  <Gift size={14} />
-                  <span>Gift wrap selected (+₹{giftWrapCharge})</span>
-                </div>
-              )}
-
               {/* Name and Phone */}
               <AnimatePresence>
                 {showContactFields && (
@@ -542,16 +515,14 @@ export default function AddressModal({
               <div className="bill-row total">
                 <span className="font-16 weight-600">Total Payable</span>
                 <span className="font-20 weight-700 green">
-                  ₹
-                  {totalWithStandardDelivery +
-                    (giftWrapSelected ? giftWrapCharge : 0)}
+                  ₹{totalWithStandardDelivery}
                 </span>
               </div>
 
               {/* Buttons */}
               {showContactFields && (
                 <div className="flex flex-col gap-12 items-start mt-16">
-                  <div className="flex flex-row gap-12 width100">
+                  <div className="flex flex-row gap-12">
                     <LoadingButton
                       className="pri-big-btn width100"
                       onClick={handleUPIClick}
@@ -573,7 +544,7 @@ export default function AddressModal({
 
                   <LoadingButton
                     className="sec-big-btn width100 flex flex-col"
-                    onClick={handleWhatsAppOrder}
+                    onClick={handleVerifyCODPayment}
                     disabled={!isFormValid()}
                   >
                     <div className="flex flex-row gap-12">
@@ -657,6 +628,7 @@ export default function AddressModal({
                         </div>
                       </div>
                     </div>
+                    {/* Hide price when cart is below 450 */}
                     {!isCartBelow450 && (
                       <span
                         className="font-16 weight-600"
@@ -775,16 +747,17 @@ export default function AddressModal({
                         : "FREE"}
                   </span>
                 </div>
-                {giftWrapSelected && (
-                  <div className="flex justify-between">
-                    <span>🎁 Gift Wrap</span>
-                    <span className="orange">+₹{giftWrapCharge}</span>
-                  </div>
-                )}
                 {fasterDelivery && (
                   <div className="flex justify-between green">
                     <span>⚡ Faster Delivery</span>
                     <span>Priority shipping</span>
+                  </div>
+                )}
+                {/* Gift Wrap Section */}
+                {giftWrap && giftWrapCharge > 0 && (
+                  <div className="flex justify-between">
+                    <span>🎁 Gift Wrap</span>
+                    <span className="orange">+₹{giftWrapCharge}</span>
                   </div>
                 )}
                 <div className="flex justify-between weight-600">
@@ -792,7 +765,7 @@ export default function AddressModal({
                   <span className="green">
                     ₹
                     {getTotalWithDelivery(fasterDelivery) +
-                      (giftWrapSelected ? giftWrapCharge : 0)}
+                      (giftWrap ? giftWrapCharge : 0)}
                   </span>
                 </div>
               </div>
@@ -854,7 +827,7 @@ export default function AddressModal({
                   <div className="flex flex-row justify-between width100 gap-12">
                     <LoadingButton
                       className="sec-big-btn width100 flex flex-col"
-                      onClick={handleWhatsAppOrder}
+                      onClick={handleVerifyCODPayment}
                       disabled={!isFormValid()}
                     >
                       <div className="flex flex-row gap-12">
@@ -933,29 +906,28 @@ export default function AddressModal({
                         : "FREE"}
                   </span>
                 </div>
-                {giftWrapSelected && (
-                  <div className="flex justify-between">
-                    <span>🎁 Gift Wrap</span>
-                    <span className="orange">+₹{giftWrapCharge}</span>
-                  </div>
-                )}
                 {fasterDelivery && (
                   <div className="flex justify-between green">
                     <span>⚡ Faster Delivery</span>
                     <span>Priority shipping</span>
                   </div>
                 )}
+                {/* Gift Wrap Section */}
+                {giftWrap && giftWrapCharge > 0 && (
+                  <div className="flex justify-between">
+                    <span>🎁 Gift Wrap</span>
+                    <span className="orange">+₹{giftWrapCharge}</span>
+                  </div>
+                )}
                 <div className="dashed-border my-8"></div>
                 <div className="flex justify-between">
                   <span>Total Amount</span>
                   <span className="weight-600">
-                    ₹
-                    {totalWithDelivery +
-                      (giftWrapSelected ? giftWrapCharge : 0)}
+                    ₹{totalWithDelivery + (giftWrap ? giftWrapCharge : 0)}
                   </span>
                 </div>
                 <div className="flex justify-between orange">
-                  <span>💳 Advance Payment</span>
+                  <span>💳 Advance Payment (₹ 99)</span>
                   <span className="weight-600">₹{codAdvanceAmount}</span>
                 </div>
                 <div className="flex justify-between">
@@ -963,7 +935,7 @@ export default function AddressModal({
                   <span className="weight-600">
                     ₹
                     {totalWithDelivery +
-                      (giftWrapSelected ? giftWrapCharge : 0) -
+                      (giftWrap ? giftWrapCharge : 0) -
                       codAdvanceAmount}
                   </span>
                 </div>
@@ -976,110 +948,100 @@ export default function AddressModal({
                 </div>
               </div>
 
-              <div className="flex flex-col items-center gap-16">
-                <div className="payment-info-message">
-                  <p className="font-12 text-center dark-50">
-                    Pay just ₹{codAdvanceAmount} and pay rest of the amount at
-                    the time of delivery and get live tracking id once shipped
-                    successfully
-                  </p>
-                </div>
+              {qrUnlocked && (
+                <motion.div
+                  className="qr-wrapper"
+                  animate={{
+                    filter: qrUnlocked ? "blur(0px)" : "blur(12px)",
+                  }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <Image
+                    src="/books/uskillbook.png"
+                    alt="UPI QR Code for payment"
+                    width={350}
+                    height={420}
+                  />
 
-                {qrUnlocked && (
-                  <motion.div
-                    className="qr-wrapper"
-                    animate={{
-                      filter: qrUnlocked ? "blur(0px)" : "blur(12px)",
-                    }}
-                    transition={{ duration: 0.5 }}
-                  >
-                    <Image
-                      src="/books/uskillbook.png"
-                      alt="UPI QR Code for advance payment"
-                      width={350}
-                      height={420}
-                    />
-
-                    <div className="flex flex-row items-center justify-center gap-8 mt-12">
-                      <button
-                        className="sec-mid-btn flex flex-row gap-8"
-                        onClick={() => {
-                          navigator.clipboard.writeText(UPI_ID);
-                          setUpiCopied(true);
-                          setTimeout(() => setUpiCopied(false), 3000);
-                        }}
-                      >
-                        <Copy size={16} />
-                        {upiCopied ? "Copied!" : UPI_ID}
-                      </button>
-
-                      <button
-                        className="pri-big-btn flex flex-row gap-8"
-                        onClick={() => {
-                          const link = document.createElement("a");
-                          link.href = "/books/uskillbook.png";
-                          link.download = "thebookx-upi-qr.png";
-                          document.body.appendChild(link);
-                          link.click();
-                          document.body.removeChild(link);
-                        }}
-                      >
-                        <Download size={16} /> Save QR
-                      </button>
-                    </div>
-
-                    <div className="qr-instructions flex items-center mt-12">
-                      <span className="font-12 text-center">
-                        Pay ₹{codAdvanceAmount} using any UPI app by scanning
-                        the QR code or copying the UPI ID.
-                      </span>
-                    </div>
-                  </motion.div>
-                )}
-
-                {!qrUnlocked && (
-                  <div className="flex flex-row justify-between width100 gap-12">
-                    <LoadingButton
-                      className="sec-big-btn width100 flex flex-col"
-                      onClick={handleWhatsAppOrder}
-                      disabled={!isFormValid()}
-                    >
-                      <div className="flex flex-row gap-12">
-                        <FaWhatsapp size={16} color="#25D366" />
-                        <span>Chat & Order</span>
-                      </div>
-                    </LoadingButton>
+                  <div className="flex flex-row items-center justify-center gap-8 mt-12">
                     <button
-                      className="pri-big-btn width100"
-                      onClick={() => setQrUnlocked(true)}
+                      className="sec-mid-btn flex flex-row gap-8"
+                      onClick={() => {
+                        navigator.clipboard.writeText(UPI_ID);
+                        setUpiCopied(true);
+                        setTimeout(() => setUpiCopied(false), 3000);
+                      }}
                     >
-                      Make Partial Payment
+                      <Copy size={16} />
+                      {upiCopied ? "Copied!" : UPI_ID}
+                    </button>
+
+                    <button
+                      className="pri-big-btn flex flex-row gap-8"
+                      onClick={() => {
+                        const link = document.createElement("a");
+                        link.href = "/books/uskillbook.png";
+                        link.download = "thebookx-upi-qr.png";
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                      }}
+                    >
+                      <Download size={16} /> Save QR
                     </button>
                   </div>
-                )}
 
-                {qrUnlocked && (
-                  <div className="width100 flex flex-col gap-8 items-center">
-                    <span className="font-12">
-                      After completing payment, click verify
-                    </span>
-                    <div className="flex flex-row gap-4 width100">
-                      <button
-                        className={`pri-big-btn width100 ${!canVerify ? "disabled-btn" : ""}`}
-                        disabled={!canVerify}
-                        onClick={handleVerifyCODPayment}
-                      >
-                        {canVerify
-                          ? "✅ Verify Payment & Confirm Order"
-                          : `Wait ${verifyTimer}s to verify`}
-                      </button>
-                    </div>
-                    <span className="font-10 gray-500">
-                      Payment verification takes ~30 seconds
+                  <div className="qr-instructions flex items-center mt-12">
+                    <span className="font-12 text-center">
+                      Pay using any UPI app (Google Pay, PhonePe, Paytm, etc.)
+                      by scanning the QR code or copying the UPI ID.
                     </span>
                   </div>
-                )}
-              </div>
+                </motion.div>
+              )}
+
+              {!qrUnlocked && (
+                <div className="flex flex-row justify-between width100 gap-12">
+                  <LoadingButton
+                    className="sec-big-btn width100 flex flex-col"
+                    onClick={handleVerifyCODPayment}
+                    disabled={!isFormValid()}
+                  >
+                    <div className="flex flex-row gap-12">
+                      <FaWhatsapp size={16} color="#25D366" />
+                      <span>Chat & Order</span>
+                    </div>
+                  </LoadingButton>
+                  <button
+                    className="pri-big-btn width100"
+                    onClick={() => setQrUnlocked(true)}
+                  >
+                    Make Partial Payment
+                  </button>
+                </div>
+              )}
+
+              {qrUnlocked && (
+                <div className="width100 flex flex-col gap-8 items-center">
+                  <span className="font-12">
+                    After completing payment, click verify
+                  </span>
+                  <div className="flex flex-row gap-4 width100">
+                    <button
+                      className={`pri-big-btn width100 ${!canVerify ? "disabled-btn" : ""}`}
+                      disabled={!canVerify}
+                      onClick={handleVerifyCODPayment}
+                    >
+                      {canVerify
+                        ? "✅ Verify Payment & Confirm Order"
+                        : `Wait ${verifyTimer}s to verify`}
+                    </button>
+                  </div>
+                  <span className="font-10 gray-500">
+                    Payment verification takes ~30 seconds
+                  </span>
+                </div>
+              )}
             </motion.div>
           </motion.div>
         )}

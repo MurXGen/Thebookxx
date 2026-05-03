@@ -19,6 +19,7 @@ import Script from "next/script";
 import { useEffect, useState, useMemo } from "react";
 import BookCard from "./BookCard";
 import Link from "next/link";
+import YouMayLike from "./UI/YouMayLike";
 
 // Slugify function
 function slugify(text) {
@@ -482,55 +483,17 @@ export default function BookDetailsModal({ book }) {
           <div className="dashed-border my-20"></div>
 
           {/* You May Also Like Section - SEO Internal Linking */}
-          {relatedBooks.length > 0 && (
-            <div className="related-books-section mt-32">
-              <div className="section-header mb-24">
-                <h3 className="font-20 weight-600">You May Also Like</h3>
-                <p className="font-12 dark-50">
-                  Discover more books similar to {book.name}
-                </p>
-              </div>
-
-              <div
-                className="books-grid"
-                style={{ padding: "0", marginTop: "12px" }}
-              >
-                {visibleRelatedBooks.map((relatedBook) => (
-                  <BookCard key={relatedBook.id} book={relatedBook} />
-                ))}
-              </div>
-
-              {/* Lazy Load More Button */}
-              {hasMoreRelated && (
-                <div
-                  className="load-more-container flex justify-center width100"
-                  style={{ marginTop: "12px" }}
-                >
-                  <button
-                    onClick={loadMoreRelated}
-                    disabled={isLoadingRelated}
-                    className="sec-mid-btn"
-                  >
-                    {isLoadingRelated
-                      ? "Loading..."
-                      : `Load More Related Books (${visibleRelatedCount}/${relatedBooks.length})`}
-                  </button>
-                </div>
-              )}
-
-              {/* SEO Internal Links List (Hidden but crawlable) */}
-              <div className="seo-internal-links" style={{ display: "none" }}>
-                {relatedBooks.map((relatedBook) => (
-                  <a
-                    key={relatedBook.id}
-                    href={`/books/${slugify(relatedBook.name)}`}
-                  >
-                    {relatedBook.name}
-                  </a>
-                ))}
-              </div>
-            </div>
-          )}
+          <YouMayLike
+            title="You May Also Like"
+            subtitle={`Discover more books similar to ${book.name}`}
+            items={relatedBooks}
+            initialCount={6}
+            step={6}
+            slugify={slugify}
+            renderItem={(relatedBook) => (
+              <BookCard key={relatedBook.id} book={relatedBook} />
+            )}
+          />
 
           {/* Browse More Categories - Footer Links */}
           <div className="browse-categories-footer mt-24 pt-24 border-t border-gray-200">

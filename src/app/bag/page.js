@@ -8,6 +8,7 @@ import BillModal from "@/components/UI/BillModal";
 import CartOfferStrip from "@/components/UI/CartOfferStrip";
 import HorizontalScroll from "@/components/UI/HorizontalScroll";
 import SlideConfirm from "@/components/UI/SlideConfirm";
+import YouMayLike from "@/components/UI/YouMayLike";
 import { useStore } from "@/context/StoreContext";
 import { books } from "@/utils/book";
 import { CART_OFFERS, getExtraDeliveryCharge } from "@/utils/cartOffers";
@@ -291,14 +292,14 @@ Thank you! 🙏
         </div>
       </div>
 
+      <CartOfferStrip discountedAmount={totalDiscounted} />
+
       {/* Book Cards */}
-      <HorizontalScroll title="">
+      <div className="grid-2">
         {cartBooks.map((book) => (
           <BookCard key={book.id} book={book} />
         ))}
-      </HorizontalScroll>
-
-      <CartOfferStrip discountedAmount={totalDiscounted} />
+      </div>
 
       {/* Gift Wrap Section */}
       <div className={`gift-wrap-section ${giftWrap ? "selected" : ""}`}>

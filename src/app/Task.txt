@@ -1,0 +1,1 @@
+1. Removed top sliding offer from navbar

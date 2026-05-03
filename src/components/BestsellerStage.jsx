@@ -124,6 +124,17 @@ export default function BestsellerStage() {
         <div className="carousel-track">
           {visibleBooks.map((book) => {
             // Calculate position styles
+            // 🔥 Responsive base distance
+            const baseOffset =
+              typeof window !== "undefined" && window.innerWidth > 680
+                ? 220
+                : 150;
+
+            const farOffset =
+              typeof window !== "undefined" && window.innerWidth > 680
+                ? 340
+                : 240;
+
             let opacity = 0.5;
             let scale = 0.85;
             let zIndex = 1;
@@ -138,24 +149,23 @@ export default function BestsellerStage() {
               opacity = 0.5;
               scale = 0.92;
               zIndex = 5;
-              translateX = 150;
+              translateX = baseOffset;
             } else if (book.position === -1) {
               opacity = 0.5;
               scale = 0.92;
               zIndex = 5;
-              translateX = -150;
+              translateX = -baseOffset;
             } else if (book.position === 2) {
               opacity = 0.1;
               scale = 0.75;
               zIndex = 2;
-              translateX = 240;
+              translateX = farOffset;
             } else if (book.position === -2) {
               opacity = 0.1;
               scale = 0.75;
               zIndex = 2;
-              translateX = -240;
+              translateX = -farOffset;
             }
-
             return (
               <div
                 key={book.id}
@@ -183,12 +193,12 @@ export default function BestsellerStage() {
                     sizes="(max-width: 768px) 130px, 180px"
                   />
                 </div>
-                {book.position === 0 && (
+                {/* {book.position === 0 && (
                   <div className="book-info">
                     <h3 className="book-title">{book.name}</h3>
-                    {/* {book.author && (
+                    {book.author && (
                       <p className="book-author">by {book.author}</p>
-                    )} */}
+                    )}
                     <div className="book-price">
                       <span className="discounted">
                         ₹{book.discountedPrice}
@@ -198,7 +208,7 @@ export default function BestsellerStage() {
                       )}
                     </div>
                   </div>
-                )}
+                )} */}
               </div>
             );
           })}

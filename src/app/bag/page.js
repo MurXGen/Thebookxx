@@ -6,11 +6,12 @@ import RecommendationModal from "@/components/RecommendationModal";
 import AddressModal from "@/components/UI/AddressModal";
 import BillModal from "@/components/UI/BillModal";
 import CartOfferStrip from "@/components/UI/CartOfferStrip";
+import HorizontalScroll from "@/components/UI/HorizontalScroll";
 import SlideConfirm from "@/components/UI/SlideConfirm";
 import { useStore } from "@/context/StoreContext";
 import { books } from "@/utils/book";
 import { CART_OFFERS, getExtraDeliveryCharge } from "@/utils/cartOffers";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Gift } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -22,6 +23,8 @@ export default function BagPage() {
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState(null);
   const [isShortening, setIsShortening] = useState(false);
+  const [giftWrap, setGiftWrap] = useState(false);
+  const GIFT_WRAP_CHARGE = 50;
 
   const getAppliedOffer = (amount) => {
     return [...CART_OFFERS].reverse().find((o) => amount >= o.target) || null;
@@ -116,20 +119,26 @@ export default function BagPage() {
   // Calculate total with standard delivery (for display)
   const totalWithStandardDelivery = finalPayable + standardDeliveryCharge;
 
+  // Calculate total with gift wrap
+  const totalWithGiftWrap = finalPayable + (giftWrap ? GIFT_WRAP_CHARGE : 0);
+  const displayTotal = totalWithGiftWrap;
+
   // Generate view bag link with user details
   const generateViewBagLinkWithDetails = (
     addressData,
     paymentType,
     fasterDeliveryChoice,
+    giftWrapSelected,
   ) => {
     if (!siteOrigin) return "";
 
     const items = cart.map((item) => `${item.id}:${item.qty}`).join(",");
     const orderId = `ORD${Date.now()}`;
 
-    // Calculate delivery charge based on user's choice (override, not add)
+    // Calculate delivery charge based on user's choice
     const deliveryCharge = getDeliveryCharge(fasterDeliveryChoice);
-    const totalWithDelivery = finalPayable + deliveryCharge;
+    const giftWrapAmount = giftWrapSelected ? GIFT_WRAP_CHARGE : 0;
+    const totalWithDelivery = finalPayable + deliveryCharge + giftWrapAmount;
 
     const orderDetails = {
       orderId: orderId,
@@ -144,6 +153,8 @@ export default function BagPage() {
       paymentMethod: paymentType,
       fasterDelivery: fasterDeliveryChoice,
       deliveryCharge: deliveryCharge,
+      giftWrap: giftWrapSelected,
+      giftWrapCharge: giftWrapAmount,
       orderDate: new Date().toISOString(),
       totalAmount: totalWithDelivery,
     };
@@ -171,18 +182,21 @@ export default function BagPage() {
     addressData,
     paymentType,
     fasterDeliveryChoice,
+    giftWrapSelected,
   ) => {
     const phoneNumber = "917710892108";
 
     // Calculate delivery charge based on user's choice
     const deliveryCharge = getDeliveryCharge(fasterDeliveryChoice);
-    const totalWithDelivery = finalPayable + deliveryCharge;
+    const giftWrapAmount = giftWrapSelected ? GIFT_WRAP_CHARGE : 0;
+    const totalWithDelivery = finalPayable + deliveryCharge + giftWrapAmount;
 
     // Generate link with user details
     const viewBagLinkWithDetails = generateViewBagLinkWithDetails(
       addressData,
       paymentType,
       fasterDeliveryChoice,
+      giftWrapSelected,
     );
 
     // Shorten the URL
@@ -198,6 +212,10 @@ export default function BagPage() {
       deliveryInfo += ` 📦 (Standard Delivery +₹${deliveryCharge})`;
     } else {
       deliveryInfo += ` 📦 (Free Delivery)`;
+    }
+
+    if (giftWrapSelected) {
+      deliveryInfo += ` 🎁 (Gift Wrap +₹${GIFT_WRAP_CHARGE})`;
     }
 
     // Short and clean WhatsApp message
@@ -229,14 +247,32 @@ Thank you! 🙏
     setShowBill(false);
   };
 
-  const handleCODCheckout = (addressData, fasterDeliveryChoice) => {
+  const handleCODCheckout = (
+    addressData,
+    fasterDeliveryChoice,
+    giftWrapSelected,
+  ) => {
     setPaymentMethod("COD");
-    sendWhatsAppMessage(addressData, "COD", fasterDeliveryChoice);
+    sendWhatsAppMessage(
+      addressData,
+      "COD",
+      fasterDeliveryChoice,
+      giftWrapSelected,
+    );
   };
 
-  const handleUPICheckout = (addressData, fasterDeliveryChoice) => {
+  const handleUPICheckout = (
+    addressData,
+    fasterDeliveryChoice,
+    giftWrapSelected,
+  ) => {
     setPaymentMethod("UPI");
-    sendWhatsAppMessage(addressData, "UPI", fasterDeliveryChoice);
+    sendWhatsAppMessage(
+      addressData,
+      "UPI",
+      fasterDeliveryChoice,
+      giftWrapSelected,
+    );
   };
 
   return (
@@ -255,13 +291,50 @@ Thank you! 🙏
         </div>
       </div>
 
-      <CartOfferStrip discountedAmount={totalDiscounted} />
-
       {/* Book Cards */}
-      <div className="grid-2">
+      <HorizontalScroll title="">
         {cartBooks.map((book) => (
           <BookCard key={book.id} book={book} />
         ))}
+      </HorizontalScroll>
+
+      <CartOfferStrip discountedAmount={totalDiscounted} />
+
+      {/* Gift Wrap Section */}
+      <div className={`gift-wrap-section ${giftWrap ? "selected" : ""}`}>
+        <label className="gift-wrap-label">
+          <input
+            type="checkbox"
+            checked={giftWrap}
+            onChange={(e) => setGiftWrap(e.target.checked)}
+            className="gift-wrap-checkbox"
+          />
+          <div className="gift-wrap-checkbox-custom">
+            <svg
+              className={`checkbox-icon ${giftWrap ? "checked" : ""}`}
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          </div>
+          <div className="gift-wrap-content">
+            {/* <div className="gift-wrap-icon">
+              <Gift size={18} />
+            </div> */}
+            <div className="gift-wrap-text">
+              <span className="gift-wrap-title">Gift Wrap this order</span>
+              <span className="gift-wrap-desc">
+                Beautifully wrapped with a personalized message
+              </span>
+            </div>
+            <div className="gift-wrap-price">
+              <span className="gift-wrap-amount">+ ₹{GIFT_WRAP_CHARGE}</span>
+            </div>
+          </div>
+        </label>
       </div>
 
       {/* FIXED BOTTOM BAR */}
@@ -270,7 +343,7 @@ Thank you! 🙏
           <span className="font-12 dark-50">Total payable</span>
           <div className="flex gap-8 items-center">
             <span className="font-16 weight-600 discounted">
-              ₹{finalPayable}
+              ₹{displayTotal}
             </span>
             {offerDiscount > 0 && (
               <span className="strike dark-50 original">
@@ -278,7 +351,7 @@ Thank you! 🙏
               </span>
             )}
             {standardDeliveryCharge > 0 && (
-              <span className="font-10">+ standard charges</span>
+              <span className="font-10">+ delivery charges</span>
             )}
 
             {appliedOffer && (
@@ -306,6 +379,8 @@ Thank you! 🙏
         standardDeliveryCharge={standardDeliveryCharge}
         fasterDeliveryCharge={FASTER_DELIVERY_CHARGE}
         totalWithStandardDelivery={totalWithStandardDelivery}
+        giftWrapCharge={GIFT_WRAP_CHARGE}
+        giftWrapSelected={giftWrap}
         handleCODCheckout={handleCODCheckout}
         handleUPICheckout={handleUPICheckout}
       />
@@ -321,7 +396,9 @@ Thank you! 🙏
         fasterDeliveryCharge={FASTER_DELIVERY_CHARGE}
         totalWithStandardDelivery={totalWithStandardDelivery}
         cartBooks={cartBooks}
-        isFasterDelivery={false} // Pass the actual faster delivery state from your address modal
+        isFasterDelivery={false}
+        giftWrapCharge={giftWrap ? GIFT_WRAP_CHARGE : 0}
+        giftWrapSelected={giftWrap}
       />
     </section>
   );

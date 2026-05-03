@@ -17,6 +17,7 @@ import {
   Zap,
   Clock,
   Package,
+  Gift,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -49,6 +50,8 @@ export default function AddressModal({
   standardDeliveryCharge = 0,
   fasterDeliveryCharge = 119,
   totalWithStandardDelivery = 0,
+  giftWrapCharge = 0,
+  giftWrapSelected = false,
 }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -78,6 +81,14 @@ export default function AddressModal({
   const UPI_ID = "7977960242-1@okbizaxis";
 
   // Calculate 50% advance for COD
+  const totalWithDelivery =
+    finalPayable +
+    (fasterDelivery ? fasterDeliveryCharge : standardDeliveryCharge);
+  const codAdvanceAmount = 99;
+  const codRemainingAmount = totalWithDelivery - codAdvanceAmount;
+
+  const totalWithCurrentSelection =
+    totalWithDelivery + (giftWrapSelected ? giftWrapCharge : 0);
 
   // Check if cart value is below 450
   const isCartBelow450 = totalDiscounted < 399;
@@ -87,7 +98,6 @@ export default function AddressModal({
     if (isFaster) {
       return fasterDeliveryCharge;
     }
-    // Still charge standard delivery charge even when cart below 450
     return standardDeliveryCharge;
   };
 
@@ -95,12 +105,6 @@ export default function AddressModal({
   const getTotalWithDelivery = (isFaster) => {
     return finalPayable + getDeliveryCharge(isFaster);
   };
-
-  const totalWithDelivery = getTotalWithDelivery(fasterDelivery);
-  const codAdvanceAmount = 99;
-  const codRemainingAmount = totalWithDelivery - codAdvanceAmount;
-
-  const totalWithCurrentSelection = getTotalWithDelivery(fasterDelivery);
 
   // Fetch location details based on pincode
   const fetchLocationByPincode = async (pincodeValue) => {
@@ -321,6 +325,7 @@ export default function AddressModal({
           fasterDelivery: fasterDelivery && isFasterDeliveryAvailable,
         },
         fasterDelivery && isFasterDeliveryAvailable,
+        giftWrapSelected, // Pass gift wrap selection
       );
     }
     setShowCODPayment(false);
@@ -342,9 +347,33 @@ export default function AddressModal({
           fasterDelivery: fasterDelivery && isFasterDeliveryAvailable,
         },
         fasterDelivery && isFasterDeliveryAvailable,
+        giftWrapSelected, // Pass gift wrap selection
       );
     }
     setShowUPIPayment(false);
+    onClose();
+  };
+
+  const handleWhatsAppOrder = () => {
+    if (!isFormValid()) return;
+
+    if (handleWhatsAppCheckout) {
+      handleWhatsAppCheckout(
+        {
+          name,
+          phone,
+          city,
+          pincode,
+          address,
+          state,
+          district,
+          area,
+          fasterDelivery: fasterDelivery && isFasterDeliveryAvailable,
+        },
+        fasterDelivery && isFasterDeliveryAvailable,
+        giftWrapSelected, // Pass gift wrap selection
+      );
+    }
     onClose();
   };
 
@@ -456,6 +485,14 @@ export default function AddressModal({
                 />
               </div>
 
+              {/* Gift Wrap Info Display */}
+              {giftWrapSelected && (
+                <div className="gift-wrap-info">
+                  <Gift size={14} />
+                  <span>Gift wrap selected (+₹{giftWrapCharge})</span>
+                </div>
+              )}
+
               {/* Name and Phone */}
               <AnimatePresence>
                 {showContactFields && (
@@ -505,14 +542,16 @@ export default function AddressModal({
               <div className="bill-row total">
                 <span className="font-16 weight-600">Total Payable</span>
                 <span className="font-20 weight-700 green">
-                  ₹{totalWithStandardDelivery}
+                  ₹
+                  {totalWithStandardDelivery +
+                    (giftWrapSelected ? giftWrapCharge : 0)}
                 </span>
               </div>
 
               {/* Buttons */}
               {showContactFields && (
                 <div className="flex flex-col gap-12 items-start mt-16">
-                  <div className="flex flex-row gap-12">
+                  <div className="flex flex-row gap-12 width100">
                     <LoadingButton
                       className="pri-big-btn width100"
                       onClick={handleUPIClick}
@@ -534,7 +573,7 @@ export default function AddressModal({
 
                   <LoadingButton
                     className="sec-big-btn width100 flex flex-col"
-                    onClick={handleVerifyCODPayment}
+                    onClick={handleWhatsAppOrder}
                     disabled={!isFormValid()}
                   >
                     <div className="flex flex-row gap-12">
@@ -618,7 +657,6 @@ export default function AddressModal({
                         </div>
                       </div>
                     </div>
-                    {/* Hide price when cart is below 450 */}
                     {!isCartBelow450 && (
                       <span
                         className="font-16 weight-600"
@@ -737,6 +775,12 @@ export default function AddressModal({
                         : "FREE"}
                   </span>
                 </div>
+                {giftWrapSelected && (
+                  <div className="flex justify-between">
+                    <span>🎁 Gift Wrap</span>
+                    <span className="orange">+₹{giftWrapCharge}</span>
+                  </div>
+                )}
                 {fasterDelivery && (
                   <div className="flex justify-between green">
                     <span>⚡ Faster Delivery</span>
@@ -746,7 +790,9 @@ export default function AddressModal({
                 <div className="flex justify-between weight-600">
                   <span>Total to Pay</span>
                   <span className="green">
-                    ₹{getTotalWithDelivery(fasterDelivery)}
+                    ₹
+                    {getTotalWithDelivery(fasterDelivery) +
+                      (giftWrapSelected ? giftWrapCharge : 0)}
                   </span>
                 </div>
               </div>
@@ -808,7 +854,7 @@ export default function AddressModal({
                   <div className="flex flex-row justify-between width100 gap-12">
                     <LoadingButton
                       className="sec-big-btn width100 flex flex-col"
-                      onClick={handleVerifyCODPayment}
+                      onClick={handleWhatsAppOrder}
                       disabled={!isFormValid()}
                     >
                       <div className="flex flex-row gap-12">
@@ -887,6 +933,12 @@ export default function AddressModal({
                         : "FREE"}
                   </span>
                 </div>
+                {giftWrapSelected && (
+                  <div className="flex justify-between">
+                    <span>🎁 Gift Wrap</span>
+                    <span className="orange">+₹{giftWrapCharge}</span>
+                  </div>
+                )}
                 {fasterDelivery && (
                   <div className="flex justify-between green">
                     <span>⚡ Faster Delivery</span>
@@ -896,15 +948,24 @@ export default function AddressModal({
                 <div className="dashed-border my-8"></div>
                 <div className="flex justify-between">
                   <span>Total Amount</span>
-                  <span className="weight-600">₹{totalWithDelivery}</span>
+                  <span className="weight-600">
+                    ₹
+                    {totalWithDelivery +
+                      (giftWrapSelected ? giftWrapCharge : 0)}
+                  </span>
                 </div>
                 <div className="flex justify-between orange">
-                  <span>💳 Advance Payment (₹ 99)</span>
+                  <span>💳 Advance Payment</span>
                   <span className="weight-600">₹{codAdvanceAmount}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>💰 Remaining at Delivery</span>
-                  <span className="weight-600">₹{codRemainingAmount}</span>
+                  <span className="weight-600">
+                    ₹
+                    {totalWithDelivery +
+                      (giftWrapSelected ? giftWrapCharge : 0) -
+                      codAdvanceAmount}
+                  </span>
                 </div>
                 <div className="dashed-border my-8"></div>
                 <div className="flex justify-between weight-600">
@@ -934,7 +995,7 @@ export default function AddressModal({
                   >
                     <Image
                       src="/books/uskillbook.png"
-                      alt="UPI QR Code for 50% advance payment"
+                      alt="UPI QR Code for advance payment"
                       width={350}
                       height={420}
                     />
@@ -980,7 +1041,7 @@ export default function AddressModal({
                   <div className="flex flex-row justify-between width100 gap-12">
                     <LoadingButton
                       className="sec-big-btn width100 flex flex-col"
-                      onClick={handleVerifyCODPayment}
+                      onClick={handleWhatsAppOrder}
                       disabled={!isFormValid()}
                     >
                       <div className="flex flex-row gap-12">

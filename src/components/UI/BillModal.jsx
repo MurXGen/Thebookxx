@@ -11,6 +11,8 @@ export default function BillModal({
   fasterDeliveryCharge = 0,
   isFasterDelivery = false,
   totalWithDelivery = null,
+  giftWrapCharge = 0,
+  giftWrapSelected = false,
 }) {
   if (!open) return null;
 
@@ -28,7 +30,7 @@ export default function BillModal({
   const finalTotal =
     totalWithDelivery !== null
       ? totalWithDelivery
-      : finalPayable + deliveryCharge;
+      : finalPayable + deliveryCharge + giftWrapCharge;
   const totalSavings = totalOriginal - finalPayable;
 
   return (
@@ -84,40 +86,20 @@ export default function BillModal({
           </div>
         )}
 
+        {/* Gift Wrap Section */}
+        {giftWrapSelected && giftWrapCharge > 0 && (
+          <div className="bill-row">
+            <span>🎁 Gift Wrap</span>
+            <span className="orange">+ ₹{giftWrapCharge}</span>
+          </div>
+        )}
+
         <div className="dashed-border my-12"></div>
 
         <div className="bill-row total">
           <span>You Pay</span>
           <span className="weight-700 green font-20">₹{finalTotal}</span>
         </div>
-
-        {/* Savings Summary */}
-        {/* {totalSavings > 0 && (
-          <div className="bill-note savings-note">
-            <span className="font-10 green">
-              ✨ You saved ₹{totalSavings} on this order!
-            </span>
-          </div>
-        )} */}
-
-        {/* Delivery Notes */}
-        {/* {isFasterDelivery && (
-          <div className="bill-note delivery-note">
-            <span className="font-10 orange">
-              🚀 Faster delivery: Your order will arrive in 2-5 business days
-            </span>
-          </div>
-        )} */}
-
-        {/* {!isFasterDelivery &&
-          standardDeliveryCharge === 0 &&
-          totalDiscounted < 400 && (
-            <div className="bill-note">
-              <span className="font-10 red">
-                ⚠️ Add ₹{400 - totalDiscounted} more to get free delivery
-              </span>
-            </div>
-          )} */}
       </div>
     </div>
   );

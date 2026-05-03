@@ -35,9 +35,9 @@ export default function Navbar() {
   return (
     <>
       <header className="navbar-wrapper">
-        <div className="flex flex-row justify-between">
+        {/* <div className="flex flex-row justify-between">
           <div className="mobile-offer-strip width100">
-            {/* rotating star */}
+            
             <motion.span
               className="badge-star"
               animate={{ rotate: 360 }}
@@ -46,7 +46,7 @@ export default function Navbar() {
               <Star size={14} />
             </motion.span>
 
-            {/* sliding text */}
+            
             <div className="offer-text-wrapper">
               <AnimatePresence mode="wait">
                 <motion.span
@@ -62,7 +62,7 @@ export default function Navbar() {
               </AnimatePresence>
             </div>
           </div>
-        </div>
+        </div> */}
         {/* 🔥 Mobile promo strip */}
 
         <nav className="navbar section-1200">

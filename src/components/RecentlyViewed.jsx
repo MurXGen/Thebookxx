@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback } from "react";
 import BookCard from "@/components/BookCard";
 import { books } from "@/utils/book";
 import { Eye } from "lucide-react";
+import HorizontalScroll from "./UI/HorizontalScroll";
 
 export default function RecentlyViewed() {
   const [recentBooks, setRecentBooks] = useState([]);
@@ -77,19 +78,19 @@ export default function RecentlyViewed() {
       style={{ marginTop: "24px" }}
     >
       {/* Section Header */}
-      <div className="label-divider">
+      {/* <div className="label-divider">
         <span className="label-text flex flex-row flex-center items-center gap-12 font-20 weight-500">
           Recently Viewed
         </span>
         <div className="label-line" />
-      </div>
+      </div> */}
 
       {/* Books Grid */}
-      <div className="trending-grid margin-tp-24px">
+      <HorizontalScroll title="Recently viewed" className="margin-tp-24px">
         {recentBooks.map((book) => (
           <BookCard key={book.id} book={book} />
         ))}
-      </div>
+      </HorizontalScroll>
     </section>
   );
 }

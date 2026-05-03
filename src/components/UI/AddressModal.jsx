@@ -515,7 +515,7 @@ export default function AddressModal({
               <div className="bill-row total">
                 <span className="font-16 weight-600">Total Payable</span>
                 <span className="font-20 weight-700 green">
-                  ₹{totalWithStandardDelivery}
+                  ₹{totalWithStandardDelivery + giftWrapCharge}
                 </span>
               </div>
 

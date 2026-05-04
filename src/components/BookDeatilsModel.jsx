@@ -20,6 +20,7 @@ import { useEffect, useState, useMemo } from "react";
 import BookCard from "./BookCard";
 import Link from "next/link";
 import YouMayLike from "./UI/YouMayLike";
+import BookReviews from "./UI/BookReviews";
 
 // Slugify function
 function slugify(text) {
@@ -481,6 +482,12 @@ export default function BookDetailsModal({ book }) {
           </div>
 
           <div className="dashed-border my-20"></div>
+
+          <BookReviews
+            bookId={book.id}
+            bookName={book.name}
+            authorName={book.author}
+          />
 
           {/* You May Also Like Section - SEO Internal Linking */}
           <YouMayLike

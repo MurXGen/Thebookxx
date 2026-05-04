@@ -2620,7 +2620,8 @@ export const blogsData = {
       },
     ],
 
-    coverImage: "/blogs/power-of-saying-no/cover.jpg",
+    coverImage:
+      "/review/author/murthy-thevar-the-author-of-the-art-of-clairty.jpeg",
 
     images: [
       {

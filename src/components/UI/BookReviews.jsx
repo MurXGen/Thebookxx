@@ -113,29 +113,8 @@ export default function BookReviews({ bookId, bookName, authorName }) {
         </button>
       </div>
 
-      {/* Rating Distribution Bar */}
-      <div className="rating-distribution">
-        {[5, 4, 3, 2, 1].map((star) => {
-          const count = ratingDistribution[star];
-          const percentage =
-            totalReviews > 0 ? (count / totalReviews) * 100 : 0;
-          return (
-            <div key={star} className="distribution-row">
-              <span className="star-label">{star} ★</span>
-              <div className="progress-bar">
-                <div
-                  className="progress-fill"
-                  style={{ width: `${percentage}%` }}
-                />
-              </div>
-              <span className="count-label">{count}</span>
-            </div>
-          );
-        })}
-      </div>
-
       {/* Reviews Grid */}
-      <div className="reviews-grid">
+      <div className="flex flex-row gap-12" style={{ overflow: "scroll" }}>
         {visibleReviews.map((review) => {
           const isExpanded = expandedReviews[review.id];
           const shouldTruncate = review.comment.length > 180;
@@ -146,16 +125,22 @@ export default function BookReviews({ bookId, bookName, authorName }) {
           return (
             <div
               key={review.id}
-              className="review-card"
               itemScope
               itemType="https://schema.org/Review"
+              style={{
+                minWidth: "300px",
+                padding: "12px",
+                border: "1px solid var(--dark-20)",
+                borderRadius: "12px",
+              }}
+              className="flex flex-col gap-12"
             >
               <meta itemProp="itemReviewed" content={bookName} />
               <meta itemProp="author" content={review.reviewerName} />
               <meta itemProp="reviewBody" content={review.comment} />
 
               <div className="review-header">
-                <div className="reviewer-info">
+                <div className="reviewer-info flex flex-row gap-12 items-center">
                   <div className="reviewer-avatar">
                     {review.reviewerImage ? (
                       <Image
@@ -173,7 +158,7 @@ export default function BookReviews({ bookId, bookName, authorName }) {
                   </div>
                   <div className="reviewer-details">
                     <h4 className="reviewer-name">{review.reviewerName}</h4>
-                    <div className="review-meta">
+                    <div className="review-meta  font-12">
                       <div className="review-stars">
                         {[1, 2, 3, 4, 5].map((star) => (
                           <Star
@@ -204,7 +189,7 @@ export default function BookReviews({ bookId, bookName, authorName }) {
                 </div>
               </div>
 
-              <div className="review-content">
+              <div className="review-content font-12 flex flex-col gap-12">
                 <Quote size={16} className="quote-icon" />
                 <p className="review-comment">
                   {displayComment}
@@ -228,7 +213,7 @@ export default function BookReviews({ bookId, bookName, authorName }) {
               </div>
 
               <div className="review-footer">
-                <button className="helpful-btn">
+                <button className="sec-mid-btn">
                   <ThumbsUp size={14} />
                   <span>Helpful ({review.helpful})</span>
                 </button>

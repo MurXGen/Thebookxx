@@ -286,4 +286,5 @@ export const bookImages = {
   "the-girl-on-the-train": `${BOOK_IMAGE_BASE_PATH}/the-girl-on-the-train.jpeg`,
   "animal-farm": `${BOOK_IMAGE_BASE_PATH}/animal-farm.jpeg`,
   "deep-work": `${BOOK_IMAGE_BASE_PATH}/deep-work.jpeg`,
+  "101-essays-that-will-change-the-way-you-think": `${BOOK_IMAGE_BASE_PATH}/101-essays.jpeg`,
 };

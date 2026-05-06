@@ -4544,4 +4544,25 @@ export const books = [
     originalPrice: calculateOriginalPrice(149),
     discountedPrice: 149,
   },
+  {
+    id: "bk-300",
+    name: "101 Essays That Will Change The Way You Think",
+    image: bookImages["101-essays-that-will-change-the-way-you-think"],
+    description:
+      "Transform your perspective with Brianna Wiest's bestselling '101 Essays That Will Change The Way You Think' at TheBookX.in. This groundbreaking collection of essays explores the hidden patterns of your mind, emotional intelligence, self-awareness, and the art of rewiring your thought processes for a more fulfilling life. Each essay is a powerful reminder that your thoughts shape your reality—and you have the power to change them. Perfect for anyone seeking personal growth, mental clarity, and a deeper understanding of themselves. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now—books starting at just ₹1 for a limited offer.",
+    author: "Brianna Wiest",
+    pages: "416",
+    language: "English",
+    size: "Paperback",
+    stock: 20,
+    catalogue: [
+      "non-fiction",
+      "self-help",
+      "psychology",
+      "bestseller",
+      "personal-growth",
+    ],
+    originalPrice: calculateOriginalPrice(199),
+    discountedPrice: 199,
+  },
 ];

@@ -2740,17 +2740,14 @@ export const blogsData = {
   },
 };
 
-// Helper function to get all blog slugs
 export const getAllBlogSlugs = () => {
   return Object.keys(blogsData).map((slug) => ({ slug }));
 };
 
-// Helper function to get blog by slug
 export const getBlogBySlug = (slug) => {
   return blogsData[slug] || null;
 };
 
-// Helper function to get all blogs (for listing page)
 export const getAllBlogs = () => {
   return Object.values(blogsData).sort(
     (a, b) => new Date(b.publishDate) - new Date(a.publishDate),

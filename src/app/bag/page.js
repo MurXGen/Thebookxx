@@ -351,9 +351,9 @@ Thank you! 🙏
                 ₹{totalDiscounted}
               </span>
             )}
-            {standardDeliveryCharge > 0 && (
+            {/* {standardDeliveryCharge > 0 && (
               <span className="font-10">+ delivery charges</span>
-            )}
+            )} */}
 
             {appliedOffer && (
               <span className="font-14 green weight-600">{offerLabel}</span>

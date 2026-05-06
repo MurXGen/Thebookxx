@@ -81,7 +81,7 @@ export default function BookReviews({ bookId, bookName, authorName }) {
         bestRating: "5",
         worstRating: "1",
       },
-      review: reviews.slice(0, 10).map((review) => ({
+      review: reviews.slice(0, 40).map((review) => ({
         "@type": "Review",
         author: {
           "@type": "Person",
@@ -277,27 +277,27 @@ export default function BookReviews({ bookId, bookName, authorName }) {
                   <p className="review-comment">
                     {displayComment}
                     {shouldTruncate && !isExpanded && (
-                      <button
+                      <span
                         onClick={() => toggleExpand(review.id)}
-                        className="read-more-btn"
+                        className="tertiary-btn"
                       >
                         ... read more
-                      </button>
+                      </span>
                     )}
                     {isExpanded && (
-                      <button
+                      <span
                         onClick={() => toggleExpand(review.id)}
-                        className="read-less-btn"
+                        className="tertiary-btn"
                       >
                         show less
-                      </button>
+                      </span>
                     )}
                   </p>
                 </div>
 
                 <div className="review-footer">
                   <button
-                    className="sec-mid-btn"
+                    className="sec-mid-btn flex flex-row items-center gap-8"
                     aria-label={`Mark as helpful (${review.helpful} people found this helpful)`}
                   >
                     <ThumbsUp size={14} />

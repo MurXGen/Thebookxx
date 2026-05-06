@@ -75,7 +75,7 @@ export default function CartBar() {
       </AnimatePresence>
 
       {/* 🛒 CART CTA */}
-      {/* <AnimatePresence>
+      <AnimatePresence>
         {hasCart && (
           <motion.div
             key="cart"
@@ -116,7 +116,7 @@ export default function CartBar() {
             </LoadingButton>
           </motion.div>
         )}
-      </AnimatePresence> */}
+      </AnimatePresence>
 
       <InstallPWA />
     </div>

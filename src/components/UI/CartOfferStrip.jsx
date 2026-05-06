@@ -164,14 +164,14 @@ export default function CartOfferStrip({ discountedAmount }) {
             );
           })}
         </div>
-        {!isBagPage && (
+        {/* {!isBagPage && (
           <Link
             href="/bag"
             className="cart-cta flex flex-row gap-4 items-center"
           >
             <ArrowRight size={24} />
           </Link>
-        )}
+        )} */}
       </div>
 
       {showConfetti && <div className="confetti" />}

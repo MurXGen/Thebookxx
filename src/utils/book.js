@@ -4565,4 +4565,19 @@ export const books = [
     originalPrice: calculateOriginalPrice(199),
     discountedPrice: 199,
   },
+  {
+    id: "bk-301",
+    name: "How to Kill Men and Get Away With It",
+    image: bookImages["how-to-kill-men-and-get-away-with-it"],
+    description:
+      "Discover the darkly addictive and hilariously twisted debut 'How to Kill Men and Get Away With It' by Kitty Collins at TheBookX.in. Meet Kitty—a wealthy, glamorous, and completely unapologetic socialite who has developed a taste for revenge. When she accidentally kills a man who wronged her, she realizes she's found her true calling. This razor-sharp, wickedly funny thriller follows her killing spree across London's elite circles, all while maintaining her perfect Instagram aesthetic. Dark, satirical, and completely addictive—perfect for fans of 'Promising Young Woman' and 'Killing Eve.' TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now—books starting at just ₹1 for a limited offer.",
+    author: "Kitty Collins",
+    pages: "352",
+    language: "English",
+    size: "Paperback",
+    stock: 20,
+    catalogue: ["thriller", "fiction", "dark-comedy", "trending", "adult"],
+    originalPrice: calculateOriginalPrice(179),
+    discountedPrice: 179,
+  },
 ];

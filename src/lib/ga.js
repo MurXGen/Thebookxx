@@ -96,6 +96,48 @@ export const trackPurchase = ({ cartItems, totalAmount, paymentId }) => {
 };
 
 /**
+ * Track pincode submission
+ */
+export const trackPincodeSubmitted = (pincode, location, timestamp) => {
+  if (!isBrowser()) return;
+
+  window.gtag("event", "pincode_submitted", {
+    event_category: "engagement",
+    event_label: "pincode_submission",
+    pincode: pincode,
+    city: location?.city || "Unknown",
+    state: location?.state || "Unknown",
+    timestamp: timestamp || new Date().toISOString(),
+  });
+};
+
+/**
+ * Track pincode skip
+ */
+export const trackPincodeSkipped = (timestamp) => {
+  if (!isBrowser()) return;
+
+  window.gtag("event", "pincode_skipped", {
+    event_category: "engagement",
+    event_label: "pincode_skip",
+    timestamp: timestamp || new Date().toISOString(),
+  });
+};
+
+/**
+ * Track pincode modal view (impression)
+ */
+export const trackPincodeModalView = () => {
+  if (!isBrowser()) return;
+
+  window.gtag("event", "pincode_modal_viewed", {
+    event_category: "engagement",
+    event_label: "pincode_modal",
+    timestamp: new Date().toISOString(),
+  });
+};
+
+/**
  * Generic event
  */
 export const trackEvent = (event, params = {}) => {

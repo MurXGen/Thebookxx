@@ -12,12 +12,14 @@ import RecommendationModal from "@/components/RecommendationModal";
 import TrendingBooks from "@/components/TrendingBooks";
 import LabelDivider from "@/components/UI/LineDivider";
 import UrgencyOffer from "@/components/UrgencyOffer";
+import PincodeModal from "@/components/UI/PincodeModal";
 import { Download } from "lucide-react";
 
 export default function HomePage() {
   return (
     <>
       <Navbar />
+      <PincodeModal /> {/* Add this component */}
       <BestsellerStage />
       <RecommendationModal />
       {/* <OffersGift /> */}

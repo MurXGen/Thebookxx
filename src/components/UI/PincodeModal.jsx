@@ -1,0 +1,218 @@
+"use client";
+
+import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
+import { X, MapPin, Truck, ShieldCheck, Clock } from "lucide-react";
+import {
+  trackPincodeSubmitted,
+  trackPincodeSkipped,
+  trackPincodeModalView,
+} from "@/lib/ga";
+import LoadingButton from "./LoadingButton";
+
+const PINCODE_STORAGE_KEY = "pincode_modal_last_shown";
+const PINCODE_DATA_KEY = "user_pincode";
+
+export default function PincodeModal() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [pincode, setPincode] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [locationData, setLocationData] = useState(null);
+
+  // Check if modal should be shown (once every 24 hours)
+  useEffect(() => {
+    const checkAndShowModal = () => {
+      const lastShown = localStorage.getItem(PINCODE_STORAGE_KEY);
+      const savedPincode = localStorage.getItem(PINCODE_DATA_KEY);
+
+      // If user already submitted pincode before, don't show modal
+      if (savedPincode) {
+        return;
+      }
+
+      if (lastShown) {
+        const lastShownTime = parseInt(lastShown, 10);
+        const currentTime = Date.now();
+        const hoursPassed = (currentTime - lastShownTime) / (1000 * 60 * 60);
+
+        if (hoursPassed >= 24) {
+          setIsOpen(true);
+          trackPincodeModalView();
+        }
+      } else {
+        // First time visitor
+        setIsOpen(true);
+        trackPincodeModalView();
+      }
+    };
+
+    const timer = setTimeout(checkAndShowModal, 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Fetch location details based on pincode
+  const fetchLocationDetails = async (pincodeValue) => {
+    try {
+      const response = await fetch(
+        `https://api.postalpincode.in/pincode/${pincodeValue}`,
+      );
+      const data = await response.json();
+
+      if (data && data[0] && data[0].Status === "Success") {
+        const postOffice = data[0].PostOffice[0];
+        return {
+          city: postOffice.District,
+          state: postOffice.State,
+          country: "India",
+        };
+      }
+      return null;
+    } catch (error) {
+      console.error("Error fetching location:", error);
+      return null;
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!pincode || pincode.length !== 6) {
+      setError("Please enter a valid 6-digit pincode");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    const location = await fetchLocationDetails(pincode);
+
+    trackPincodeSubmitted(pincode, location);
+
+    localStorage.setItem(
+      PINCODE_DATA_KEY,
+      JSON.stringify({
+        pincode: pincode,
+        city: location?.city,
+        state: location?.state,
+        submittedAt: Date.now(),
+      }),
+    );
+
+    localStorage.setItem(PINCODE_STORAGE_KEY, Date.now().toString());
+
+    setLocationData(location);
+    setLoading(false);
+
+    setTimeout(() => {
+      setIsOpen(false);
+    }, 1500);
+  };
+
+  const handleSkip = () => {
+    trackPincodeSkipped();
+    localStorage.setItem(PINCODE_STORAGE_KEY, Date.now().toString());
+    setIsOpen(false);
+  };
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          className="bill-modal-overlay"
+          onClick={handleSkip}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          <motion.div
+            className="bill-modal"
+            onClick={(e) => e.stopPropagation()}
+            initial={{ y: "100%", opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: "100%", opacity: 0 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+          >
+            {/* Header */}
+            <div className="bill-header">
+              <span className="weight-600 font-16">📍 Share Your Location</span>
+              <span className="cursor-pointer" onClick={handleSkip}>
+                <X size={16} />
+              </span>
+            </div>
+
+            <div className="address-form-content">
+              <div className="input-group">
+                <label className="flex flex-row gap-4 flex-center items-center">
+                  <MapPin size={14} />
+                  Enter Pincode <span className="red">*</span>
+                </label>
+                <input
+                  className={`sec-mid-btn ${error ? "error-border" : ""}`}
+                  placeholder="Enter 6 digit pincode"
+                  value={pincode}
+                  maxLength={6}
+                  onChange={(e) => {
+                    setPincode(e.target.value.replace(/\D/g, ""));
+                    setError("");
+                  }}
+                  onKeyPress={(e) => e.key === "Enter" && handleSubmit()}
+                  autoFocus
+                />
+                {error && (
+                  <span className="font-12 red flex items-center gap-4 mt-4">
+                    <AlertCircle size={12} />
+                    {error}
+                  </span>
+                )}
+              </div>
+
+              {/* Benefits Section */}
+              <div className="delivery-info-section mt-12">
+                <div className="flex flex-col gap-8 p-12 bg-gray-50 rounded-lg">
+                  <div className="flex items-center gap-8">
+                    <Truck size={18} className="green" />
+                    <span className="font-12">Check delivery availability</span>
+                  </div>
+                  <div className="flex items-center gap-8">
+                    <Clock size={18} className="green" />
+                    <span className="font-12">Estimated delivery time</span>
+                  </div>
+                  <div className="flex items-center gap-8">
+                    <ShieldCheck size={18} className="green" />
+                    <span className="font-12">Better recommendations</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="dashed-border my-12"></div>
+
+              {/* Buttons */}
+              <div className="flex flex-col gap-12 mt-16">
+                <LoadingButton
+                  className="pri-big-btn width100"
+                  onClick={handleSubmit}
+                  disabled={loading}
+                >
+                  {loading ? "Checking..." : "Submit Pincode"}
+                </LoadingButton>
+
+                <button className="sec-mid-btn width100" onClick={handleSkip}>
+                  Skip for now
+                </button>
+              </div>
+
+              {locationData && (
+                <div className="flex flex-row flex-center gap-4 green items-center infoMessage mt-12">
+                  <span>✓</span>
+                  <span className="font-12">
+                    Delivery available to {locationData.city},{" "}
+                    {locationData.state}
+                  </span>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}

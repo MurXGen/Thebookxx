@@ -16,6 +16,8 @@ import {
   X,
   Phone,
   Zap,
+  Download,
+  Gift,
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -42,39 +44,37 @@ export default function ViewBagClient() {
   const [standardDeliveryCharge, setStandardDeliveryCharge] = useState(0);
   const [fasterDeliveryCharge, setFasterDeliveryCharge] = useState(0);
   const [isFasterDelivery, setIsFasterDelivery] = useState(false);
+  const [giftWrapCharge, setGiftWrapCharge] = useState(0);
+  const [isGiftWrap, setIsGiftWrap] = useState(false);
 
   useEffect(() => {
     setCurrentUrl(window.location.href);
 
-    // Get order data from URL
     const orderParam = searchParams.get("order");
     if (orderParam) {
       try {
         const decodedOrder = JSON.parse(decodeURIComponent(orderParam));
         setOrderData(decodedOrder);
 
-        // Set delivery charges from order data
         setIsFasterDelivery(decodedOrder.fasterDelivery || false);
+        setIsGiftWrap(decodedOrder.giftWrap || false);
+        setGiftWrapCharge(decodedOrder.giftWrapCharge || 0);
 
         if (decodedOrder.deliveryCharge !== undefined) {
-          // If deliveryCharge is directly provided
           if (decodedOrder.fasterDelivery) {
             setFasterDeliveryCharge(decodedOrder.deliveryCharge);
           } else {
             setStandardDeliveryCharge(decodedOrder.deliveryCharge);
           }
         } else {
-          // Calculate based on order total and faster delivery flag
           const totalDiscounted = calculateTotalDiscounted(decodedOrder);
           const standardCharge = getExtraDeliveryCharge(totalDiscounted);
           setStandardDeliveryCharge(standardCharge);
-
           if (decodedOrder.fasterDelivery) {
             setFasterDeliveryCharge(decodedOrder.fasterDeliveryCharge || 119);
           }
         }
 
-        // Load saved status from localStorage
         const savedStatus = localStorage.getItem(
           `order_status_${decodedOrder.orderId}`,
         );
@@ -82,7 +82,6 @@ export default function ViewBagClient() {
           setOrderStatus(JSON.parse(savedStatus));
         }
 
-        // Load saved tracking ID
         const savedTracking = localStorage.getItem(
           `tracking_id_${decodedOrder.orderId}`,
         );
@@ -90,7 +89,6 @@ export default function ViewBagClient() {
           setSavedTrackingId(savedTracking);
         }
 
-        // Load saved alternative numbers
         const savedNumbers = localStorage.getItem(
           `alternative_numbers_${decodedOrder.orderId}`,
         );
@@ -104,7 +102,6 @@ export default function ViewBagClient() {
   }, [searchParams]);
 
   const calculateTotalDiscounted = (order) => {
-    // This would need access to cartBooks, but for now return 0
     return 0;
   };
 
@@ -176,7 +173,6 @@ export default function ViewBagClient() {
 
   const finalPayable = totalDiscounted - offerDiscount;
 
-  // Get delivery charge - either from orderData or calculate
   const getDeliveryCharge = () => {
     if (orderData?.deliveryCharge !== undefined) {
       return orderData.deliveryCharge;
@@ -188,7 +184,7 @@ export default function ViewBagClient() {
   };
 
   const deliveryCharge = getDeliveryCharge();
-  const totalWithDelivery = finalPayable + deliveryCharge;
+  const totalWithDelivery = finalPayable + deliveryCharge + giftWrapCharge;
 
   const handleStatusUpdate = (field, value) => {
     const newStatus = { ...orderStatus, [field]: value };
@@ -247,10 +243,81 @@ export default function ViewBagClient() {
     setShowNumberSelection(true);
   };
 
+  // Download Order Details as CSV
+  const downloadOrderCSV = () => {
+    if (!orderData || !cartBooks.length) return;
+
+    // Prepare CSV headers
+    const headers = [
+      "Order ID",
+      "Customer Name",
+      "Phone",
+      "Address",
+      "City",
+      "District",
+      "State",
+      "Pincode",
+      "Payment Method",
+      "Delivery Type",
+      "Delivery Charge",
+      "Gift Wrap",
+      "Gift Wrap Charge",
+      "Order Date",
+      "Total Amount",
+    ];
+
+    // Prepare CSV data row
+    const row = [
+      orderData.orderId || "N/A",
+      orderData.name || "N/A",
+      orderData.phone || "N/A",
+      `"${orderData.address || "N/A"}"`,
+      orderData.city || "N/A",
+      orderData.district || "N/A",
+      orderData.state || "N/A",
+      orderData.pincode || "N/A",
+      orderData.paymentMethod || "N/A",
+      isFasterDelivery ? "Faster Delivery" : "Standard Delivery",
+      deliveryCharge,
+      isGiftWrap ? "Yes" : "No",
+      giftWrapCharge,
+      orderData.orderDate || new Date().toISOString(),
+      totalWithDelivery,
+    ];
+
+    // Create CSV with book items
+    let csvContent = headers.join(",") + "\n";
+    csvContent += row.join(",") + "\n\n";
+
+    // Add Book Items Section
+    csvContent += "Order Items\n";
+    csvContent += "Item Name,Quantity,Price,Total\n";
+    cartBooks.forEach((book) => {
+      csvContent += `"${book.name}",${book.qty},${book.discountedPrice},${book.discountedPrice * book.qty}\n`;
+    });
+
+    // Add Status Section
+    csvContent += "\nOrder Status\n";
+    csvContent += `Advance Paid,${orderStatus.advancePaid ? "Yes" : "No"}\n`;
+    csvContent += `Item Shipped,${orderStatus.isShipped ? "Yes" : "No"}\n`;
+    csvContent += `Item Delivered,${orderStatus.isDelivered ? "Yes" : "No"}\n`;
+    csvContent += `Tracking ID,${savedTrackingId || "Not available"}\n`;
+
+    // Download file
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    link.setAttribute("download", `order_${orderData.orderId}_details.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   const sendWhatsAppMessage = (phoneNumber, messageType) => {
     let message = "";
 
-    // Add country code +91 for India
     let formattedNumber = phoneNumber;
     if (phoneNumber && !phoneNumber.startsWith("+")) {
       const cleanNumber = phoneNumber.replace(/\D/g, "");
@@ -265,7 +332,6 @@ export default function ViewBagClient() {
       }
     }
 
-    // Determine delivery days based on faster delivery
     const deliveryDays = isFasterDelivery ? "3-5" : "5-7";
     const deliveryText = isFasterDelivery
       ? `delivered in ${deliveryDays} business days (Priority Shipping)`
@@ -297,6 +363,7 @@ export default function ViewBagClient() {
     setShowNumberSelection(false);
     setPendingMessageType(null);
   };
+
   const isCOD = orderData?.paymentMethod === "COD";
   const isUPI = orderData?.paymentMethod === "UPI";
 
@@ -366,7 +433,6 @@ export default function ViewBagClient() {
               (Primary)
             </p>
 
-            {/* Alternative Numbers */}
             {alternativeNumbers.length > 0 && (
               <div className="mt-8">
                 {alternativeNumbers.map((number, index) => (
@@ -390,7 +456,6 @@ export default function ViewBagClient() {
               </div>
             )}
 
-            {/* Add Alternative Input */}
             {showAlternativeInput && (
               <div className="flex gap-8 mt-8">
                 <input
@@ -443,7 +508,16 @@ export default function ViewBagClient() {
                 </span>
               </div>
 
-              {/* Delivery Type Display */}
+              {/* Gift Wrap Section */}
+              {isGiftWrap && (
+                <div className="flex justify-between items-center">
+                  <span className="font-14">Gift Wrap</span>
+                  <span className="font-14 weight-500 orange">
+                    🎁 Included (+₹{giftWrapCharge})
+                  </span>
+                </div>
+              )}
+
               <div className="flex justify-between items-center">
                 <span className="font-14">Delivery Type</span>
                 <span
@@ -463,7 +537,6 @@ export default function ViewBagClient() {
                 </span>
               </div>
 
-              {/* Delivery Charge Display */}
               {deliveryCharge > 0 && (
                 <div className="flex justify-between items-center">
                   <span className="font-14">Delivery Charge</span>
@@ -482,7 +555,6 @@ export default function ViewBagClient() {
                 </div>
               )}
 
-              {/* COD Section */}
               {isCOD && (
                 <div className="cod-section">
                   <label className="flex items-center gap-8 cursor-pointer">
@@ -499,7 +571,6 @@ export default function ViewBagClient() {
                 </div>
               )}
 
-              {/* Shipping Status */}
               <div className="shipping-status-section mt-12">
                 <label className="flex items-center gap-8 cursor-pointer">
                   <input
@@ -528,7 +599,6 @@ export default function ViewBagClient() {
                 )}
               </div>
 
-              {/* Tracking ID Section */}
               {orderStatus.isShipped && (
                 <div className="tracking-section mt-16">
                   <div className="flex flex-col gap-12">
@@ -578,7 +648,6 @@ export default function ViewBagClient() {
                 </div>
               )}
 
-              {/* Reminder Buttons */}
               <div className="reminder-buttons-section mt-16">
                 {orderStatus.isShipped && savedTrackingId ? (
                   <button
@@ -603,7 +672,6 @@ export default function ViewBagClient() {
                 ) : null}
               </div>
 
-              {/* Status Timeline */}
               <div className="status-timeline mt-16">
                 <div className="flex items-center gap-8">
                   {orderStatus.advancePaid || isUPI ? (
@@ -642,7 +710,6 @@ export default function ViewBagClient() {
         </div>
       )}
 
-      {/* Number Selection Modal */}
       {showNumberSelection && (
         <div className="bill-modal-overlay">
           <div className="bill-modal">
@@ -661,7 +728,6 @@ export default function ViewBagClient() {
             </p>
 
             <div className="flex flex-col gap-8">
-              {/* Primary Number */}
               <button
                 onClick={() =>
                   sendWhatsAppMessage(orderData?.phone, pendingMessageType)
@@ -676,7 +742,6 @@ export default function ViewBagClient() {
                 </div>
               </button>
 
-              {/* Alternative Numbers */}
               {alternativeNumbers.map((number, index) => (
                 <button
                   key={index}
@@ -698,7 +763,6 @@ export default function ViewBagClient() {
         </div>
       )}
 
-      {/* Books Section */}
       <h3 className="font-16 weight-600 mt-16">
         Order Items ({cartBooks.length} books)
       </h3>
@@ -765,7 +829,6 @@ export default function ViewBagClient() {
         })}
       </div>
 
-      {/* Bill Summary */}
       <div className="viewbag-bill flex flex-col gap-8">
         <div className="flex justify-between">
           <span>Subtotal</span>
@@ -802,6 +865,13 @@ export default function ViewBagClient() {
           </div>
         )}
 
+        {isGiftWrap && giftWrapCharge > 0 && (
+          <div className="flex justify-between orange">
+            <span>🎁 Gift Wrap</span>
+            <span>+ ₹{giftWrapCharge}</span>
+          </div>
+        )}
+
         <hr />
 
         <div className="flex justify-between weight-600 font-16">
@@ -810,15 +880,28 @@ export default function ViewBagClient() {
         </div>
       </div>
 
-      <a
-        href={`https://wa.me/917710892108?text=${encodeURIComponent(
-          `Hi 👋 Here is my order details.\nOrder ID: ${orderData?.orderId || "N/A"}\nTotal: ₹${totalWithDelivery}`,
-        )}`}
-        target="_blank"
-        className="pri-big-btn"
-      >
-        Continue on WhatsApp
-      </a>
+      {/* Download Button at the bottom */}
+      <div className="flex flex-col gap-12">
+        <button
+          onClick={downloadOrderCSV}
+          className="sec-big-btn flex items-center justify-center gap-8"
+          style={{ width: "100%" }}
+        >
+          <Download size={18} />
+          Download Order Details (CSV)
+        </button>
+
+        <a
+          href={`https://wa.me/917710892108?text=${encodeURIComponent(
+            `Hi 👋 Here is my order details.\nOrder ID: ${orderData?.orderId || "N/A"}\nTotal: ₹${totalWithDelivery}`,
+          )}`}
+          target="_blank"
+          className="pri-big-btn"
+          style={{ textAlign: "center" }}
+        >
+          Continue on WhatsApp
+        </a>
+      </div>
     </section>
   );
 }

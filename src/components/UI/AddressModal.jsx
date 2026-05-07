@@ -23,6 +23,7 @@ import Link from "next/link";
 import { FaWhatsapp } from "react-icons/fa";
 
 // Quick delivery eligible pincodes
+const PINCODE_DATA_KEY = "user_pincode";
 const QUICK_DELIVERY_PINCODES = ["400019", "400017"];
 
 const CITIES = [
@@ -80,6 +81,38 @@ export default function AddressModal({
   const [giftWrap, setGiftWrap] = useState(giftWrapSelected);
 
   const UPI_ID = "7977960242-1@okbizaxis";
+
+  useEffect(() => {
+    if (open) {
+      const savedPincodeData = localStorage.getItem(PINCODE_DATA_KEY);
+      if (savedPincodeData) {
+        try {
+          const parsedData = JSON.parse(savedPincodeData);
+          if (parsedData.pincode && !pincode) {
+            setPincode(parsedData.pincode);
+            // Trigger location fetch for saved pincode
+            if (parsedData.pincode.length === 6) {
+              fetchLocationByPincode(parsedData.pincode);
+            }
+          }
+          if (parsedData.city && !city) {
+            setCity(parsedData.city);
+          }
+          if (parsedData.state && !state) {
+            setState(parsedData.state);
+          }
+          if (parsedData.area && !area) {
+            setArea(parsedData.area);
+          }
+          if (parsedData.district && !district) {
+            setDistrict(parsedData.district);
+          }
+        } catch (error) {
+          console.error("Error loading saved pincode data:", error);
+        }
+      }
+    }
+  }, [open]);
 
   // Calculate 50% advance for COD
 

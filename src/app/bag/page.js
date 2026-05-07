@@ -119,6 +119,8 @@ export default function BagPage() {
 
   // Calculate total with standard delivery (for display)
   const totalWithStandardDelivery = finalPayable + standardDeliveryCharge;
+  const totalWithStandardDeliveryGift =
+    totalWithStandardDelivery + (giftWrap ? GIFT_WRAP_CHARGE : 0);
 
   // Calculate total with gift wrap
   const totalWithGiftWrap = finalPayable + (giftWrap ? GIFT_WRAP_CHARGE : 0);
@@ -344,7 +346,7 @@ Thank you! 🙏
           <span className="font-12 dark-50">Total payable</span>
           <div className="flex gap-8 items-center">
             <span className="font-16 weight-600 discounted">
-              ₹{displayTotal}
+              ₹{totalWithStandardDeliveryGift}
             </span>
             {offerDiscount > 0 && (
               <span className="strike dark-50 original">

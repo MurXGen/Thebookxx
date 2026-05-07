@@ -132,7 +132,7 @@ export default function Navbar() {
               transition={{ type: "tween", duration: 0.3 }}
             >
               <div className="menu-header">
-                <span className="menu-title">Menu</span>
+                <span className="menu-title">TheBookX</span>
 
                 <button
                   onClick={() => setIsMenuOpen(false)}
@@ -187,12 +187,12 @@ export default function Navbar() {
               </div>
 
               {/* BOTTOM POLICY LINKS */}
-              <div className="menu-links margin-top-auto">
+              <div className="menu-links">
                 {menuLinks.map((link) => (
                   <Link
                     key={link.path}
                     href={link.path}
-                    className="menu-link font-12"
+                    className=" font-12"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     {link.name}

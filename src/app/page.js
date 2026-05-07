@@ -14,6 +14,7 @@ import LabelDivider from "@/components/UI/LineDivider";
 import UrgencyOffer from "@/components/UrgencyOffer";
 import PincodeModal from "@/components/UI/PincodeModal";
 import { Download } from "lucide-react";
+import NewlyAddedBooks from "@/components/NewlyAddedBooks";
 
 export default function HomePage() {
   return (
@@ -24,8 +25,9 @@ export default function HomePage() {
       <RecommendationModal />
       {/* <OffersGift /> */}
       <CatalogueSection />
-      <RecentlyViewed />
       <OneRupeeDeals />
+      <RecentlyViewed />
+      <NewlyAddedBooks />
       <TrendingBooks />
       {/* <UrgencyOffer /> */}
       <AllBooks />

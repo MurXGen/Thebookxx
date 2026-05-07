@@ -482,7 +482,7 @@ button:hover {
 }
 
 .menu-link:hover {
-  color: #0070f3;
+  color: var(--tertiary);
 }
 
 /* Update nav-left to accommodate both icons */

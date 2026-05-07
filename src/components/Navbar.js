@@ -133,6 +133,7 @@ export default function Navbar() {
             >
               <div className="menu-header">
                 <span className="menu-title">Menu</span>
+
                 <button
                   onClick={() => setIsMenuOpen(false)}
                   aria-label="Close menu"
@@ -142,18 +143,61 @@ export default function Navbar() {
                 </button>
               </div>
 
+              {/* TOP LINKS */}
               <div className="menu-links">
+                <Link
+                  href="/books"
+                  className="menu-link"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  All Books
+                </Link>
+
+                <Link
+                  href="/category"
+                  className="menu-link"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Categories
+                </Link>
+
+                <Link
+                  href="/reading-tracker"
+                  className="menu-link"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Reading Tracker
+                </Link>
+
+                <Link
+                  href="/bag"
+                  className="menu-link"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Your Cart
+                </Link>
+
+                <Link
+                  href="https://thebookx.in?suggest"
+                  className="menu-link"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Suggestion
+                </Link>
+              </div>
+
+              {/* BOTTOM POLICY LINKS */}
+              <div className="menu-links margin-top-auto">
                 {menuLinks.map((link) => (
                   <Link
                     key={link.path}
                     href={link.path}
-                    className="menu-link"
+                    className="menu-link font-12"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     {link.name}
                   </Link>
                 ))}
-                <InstallPWA />
               </div>
             </motion.div>
           </>

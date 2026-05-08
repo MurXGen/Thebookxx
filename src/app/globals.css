@@ -482,7 +482,7 @@ button:hover {
 }
 
 .menu-link:hover {
-  color: var(--tertiary);
+  color: #0070f3;
 }
 
 /* Update nav-left to accommodate both icons */
@@ -3833,29 +3833,69 @@ input {
   padding: var(--px-12);
   border-radius: var(--px-12);
   display: flex;
-  align-items: center;
+  align-items:;
   gap: 12px;
   border: 1px solid var(--dark-20);
 }
 
 .stat-value {
-  font-size: 22px;
+  font-size: var(--px-20);
   font-weight: 700;
   color: #1a1a1a;
 }
 
 .stat-label {
-  font-size: 12px;
+  font-size: var(--px-10);
   color: #6b7280;
 }
 
-/* Search Results */
+.tracked-books-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--px-12);
+}
+
+.tracked-book-card {
+  display: flex;
+  flex-direction: row;
+  gap: var(--px-12);
+  padding: var(--px-12);
+  border: 1px solid var(--dark-20);
+  border-radius: var(--px-12);
+  position: relative;
+}
+
+.completed-badge {
+  position: absolute;
+  padding: var(--px-8);
+  font-size: var(--px-10);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--px-4);
+  background: green;
+  color: white;
+  border-radius: var(--px-12);
+  max-width: fit-content;
+  right: 0px;
+  top: -12px;
+}
+
+.tracked-book-card > .tracked-book-image img {
+  width: 100%;
+  height: 100%;
+}
+
+.history-item {
+  padding: var(--px-12);
+  border: 1px solid var(--dark-20);
+  border-radius: var(--px-12);
+}
 
 .books-list {
   max-height: 400px;
   overflow-y: auto;
 }
-
 .search-result-item {
   display: flex;
   align-items: center;
@@ -3893,284 +3933,3 @@ input {
   font-weight: 600;
   color: #ffb703;
 }
-
-/* Tracked Books Section */
-.tracked-books-section {
-  margin-bottom: 32px;
-}
-
-.section-title {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 16px;
-  color: #1a1a1a;
-}
-
-.tracked-books-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-}
-
-.tracked-book-card {
-  background: white;
-  border-radius: 16px;
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  border: 1px solid #e5e7eb;
-}
-
-.tracked-book-image {
-  flex-shrink: 0;
-}
-
-.tracked-book-info {
-  flex: 1;
-}
-
-.tracked-book-name {
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 4px;
-}
-
-.tracked-book-author {
-  font-size: 11px;
-  color: #6b7280;
-  margin-bottom: 8px;
-}
-
-.progress-bar-container {
-  height: 4px;
-  background: #e5e7eb;
-  border-radius: 4px;
-  overflow: hidden;
-  margin-bottom: 6px;
-}
-
-.progress-bar-fill {
-  height: 100%;
-  background: #ffb703;
-  border-radius: 4px;
-  transition: width 0.3s;
-}
-
-.progress-text {
-  font-size: 10px;
-  color: #6b7280;
-}
-
-.completed-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: #dcfce7;
-  padding: 8px;
-  border-radius: 20px;
-  font-size: 10px;
-  color: #166534;
-  margin-top: 6px;
-}
-
-.add-entry-btn {
-  background: #ffb70310;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 40px;
-  font-size: 12px;
-  font-weight: 500;
-  color: #ffb703;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.add-entry-btn:hover {
-  background: #ffb70320;
-}
-
-/* Reading History */
-.reading-history {
-  background: white;
-  border-radius: 16px;
-  border: 1px solid #e5e7eb;
-  padding: 16px;
-  margin-bottom: 32px;
-}
-
-.history-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.history-item {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 8px 0;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.history-date {
-  min-width: 60px;
-  font-size: 12px;
-  font-weight: 500;
-  color: #ffb703;
-}
-
-.history-book {
-  flex: 1;
-  font-size: 13px;
-  color: #1a1a1a;
-}
-
-.history-pages {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 12px;
-  color: #6b7280;
-}
-
-/* Tips Section */
-.tracker-tips {
-  background: linear-gradient(135deg, #ffb70310, #ffb70305);
-  border-radius: 16px;
-  padding: 20px;
-  display: flex;
-  gap: 16px;
-  border: 1px solid #ffb70320;
-}
-
-.tips-icon {
-  font-size: 32px;
-}
-
-.tips-content h4 {
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 4px;
-  color: #1a1a1a;
-}
-
-.tips-content p {
-  font-size: 12px;
-  color: #6b7280;
-  line-height: 1.5;
-}
-
-.text-center {
-  text-align: center;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .tracker-stats {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .tracker-title {
-    font-size: 22px;
-  }
-
-  .tracker-icon {
-    width: 56px;
-    height: 56px;
-    font-size: 32px;
-  }
-
-  .tracked-book-card {
-    flex-wrap: wrap;
-  }
-
-  .add-entry-btn {
-    width: 100%;
-    margin-top: 8px;
-  }
-}
-
-/* Add Custom Book Button */
-.tracker-search {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 24px;
-}
-
-.add-custom-book-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: white;
-  border: 1px solid #e5e7eb;
-  padding: 0 20px;
-  border-radius: 40px;
-  font-size: 13px;
-  font-weight: 500;
-  color: #ffb703;
-  cursor: pointer;
-  transition: all 0.2s;
-  white-space: nowrap;
-}
-
-.add-custom-book-btn:hover {
-  background: #ffb70310;
-  border-color: #ffb703;
-}
-
-.search-input-wrapper {
-  flex: 1;
-  position: relative;
-}
-
-/* Tracked Book Actions */
-.tracked-book-actions {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-.delete-book-btn {
-  background: #fee2e2;
-  border: none;
-  padding: 8px;
-  border-radius: 40px;
-  cursor: pointer;
-  transition: all 0.2s;
-  color: #dc2626;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.delete-book-btn:hover {
-  background: #fecaca;
-  transform: scale(1.05);
-}
-
-/* Delete Entry Button */
-.delete-entry-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #9ca3af;
-  padding: 4px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-}
-
-.delete-entry-btn:hover {
-  background: #fee2e2;
-  color: #dc2626;
-}
-
-/* Red color utility */
-.red {
-  color: #dc2626;
-}
-
-/* End */

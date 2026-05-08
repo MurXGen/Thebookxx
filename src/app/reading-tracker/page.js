@@ -16,6 +16,7 @@ import {
   Zap,
   Plus,
   Trash2,
+  Phone,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -263,9 +264,9 @@ export default function ReadingTrackerPage() {
       <div className="section-1200 flex flex-col gap-24">
         {/* Header */}
         <div className="tracker-header flex flex-col gap-12">
-          <Link href="/" className=" flex flex-row gap-4 items-center font-12">
-            <ArrowLeft size={18} />
-            Go back to home
+          <Link href="/" className=" flex flex-row gap-4 items-center font-16">
+            <ArrowLeft size={24} />
+            Go back
           </Link>
           <div className="flex flex-col">
             <h1 className="font-24">Reading Tracker</h1>
@@ -360,11 +361,9 @@ export default function ReadingTrackerPage() {
           </div>
         )}
 
-        <div className="dashed-border my-20"></div>
-
         {/* Tracked Books Section */}
         {trackedBooks.length > 0 && (
-          <div className="">
+          <div className="flex flex-col gap-12">
             <h3 className="font-24">Currently Tracking</h3>
             <div className="tracked-books-grid">
               {trackedBooks.map((book) => {
@@ -432,27 +431,36 @@ export default function ReadingTrackerPage() {
 
         {/* Reading History with Delete Option */}
         {readingEntries.length > 0 && (
-          <div className="reading-history">
-            <h3 className="section-title">📝 Reading History</h3>
-            <div className="history-list">
+          <div className="flex flex-col gap-12">
+            <h3 className="section-title">Reading History</h3>
+            <div className="flex flex-col gap-12">
               {[...readingEntries]
                 .sort((a, b) => b.timestamp - a.timestamp)
                 .slice(0, 20)
                 .map((entry) => (
-                  <div key={entry.id} className="history-item">
-                    <div className="history-date">
-                      {new Date(entry.date).toLocaleDateString("en-IN", {
-                        day: "numeric",
-                        month: "short",
-                      })}
+                  <div
+                    key={entry.id}
+                    className="history-item flex flex-row justify-between items-center"
+                  >
+                    <div>
+                      <div className="font-20 weight-600">{entry.bookName}</div>
+                      <div className="flex flex-row font-14 gap-12">
+                        <div className="history-date">
+                          {new Date(entry.date).toLocaleDateString("en-IN", {
+                            day: "numeric",
+                            month: "short",
+                          })}
+                        </div>
+                        {"|"}
+                        <div className="history-pages">
+                          {entry.pages} pages added
+                        </div>
+                      </div>
                     </div>
-                    <div className="history-book">{entry.bookName}</div>
-                    <div className="history-pages">
-                      <BookOpen size={14} />
-                      {entry.pages} pages
-                    </div>
+
                     <button
-                      className="delete-entry-btn"
+                      className="sec-mid-btn flex flex-row items-center justify-center"
+                      style={{ maxHeight: "fit-content" }}
                       onClick={() => handleDeleteEntry(entry.id)}
                     >
                       <X size={14} />
@@ -463,11 +471,12 @@ export default function ReadingTrackerPage() {
           </div>
         )}
 
+        <div className="dashed-border my-20"></div>
+
         {/* Tips Section */}
         <div className="tracker-tips">
-          <div className="tips-icon">💡</div>
           <div className="tips-content">
-            <h4>Reading Tip</h4>
+            <h4 className="font-24">Reading Tip</h4>
             <p>
               Reading just 20 pages a day means you'll finish 7,300 pages in a
               year — that's about 30 books!
@@ -504,7 +513,7 @@ export default function ReadingTrackerPage() {
                 </span>
               </div>
 
-              <div className="address-form-content">
+              <div className=" flex flex-col gap-12">
                 <div className="input-group text-center">
                   <Image
                     src={selectedBook.image}
@@ -763,7 +772,7 @@ export default function ReadingTrackerPage() {
                 </span>
               </div>
 
-              <div className="address-form-content">
+              <div className="address-form-content flex flex-col gap-12">
                 <div className="delivery-info-section">
                   <div className="flex flex-col gap-8 p-12 bg-gray-50 rounded-lg">
                     <div className="flex items-center gap-8">

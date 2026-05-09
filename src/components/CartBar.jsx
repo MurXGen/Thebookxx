@@ -9,6 +9,8 @@ import LoadingButton from "./UI/LoadingButton";
 import SearchMain from "./UI/SearchMain";
 import { motion, AnimatePresence } from "framer-motion";
 import InstallPWA from "./InstallPWA";
+import { HiOutlineShoppingBag } from "react-icons/hi2";
+import { ArrowRight } from "lucide-react";
 
 export default function CartBar() {
   const { cart } = useStore();
@@ -108,12 +110,10 @@ export default function CartBar() {
               </div>
             </div>
 
-            <LoadingButton
-              className="pri-big-btn"
-              onClick={() => router.push("/bag")}
-            >
-              Checkout
-            </LoadingButton>
+            <button className="pri-big-btn" onClick={() => router.push("/bag")}>
+              <span>Checkout</span>
+              <ArrowRight size={16} />
+            </button>
           </motion.div>
         )}
       </AnimatePresence>

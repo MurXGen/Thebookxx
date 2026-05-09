@@ -1,5 +1,6 @@
 "use client";
 
+import { saveOrder } from "@/utils/indexDB";
 import { books } from "@/utils/book";
 import { CART_OFFERS, getExtraDeliveryCharge } from "@/utils/cartOffers";
 import {
@@ -100,6 +101,49 @@ export default function ViewBagClient() {
       }
     }
   }, [searchParams]);
+
+  const exportToCOList = async () => {
+    if (!orderData || !cartBooks.length) return;
+
+    const orderToSave = {
+      orderId: orderData.orderId,
+      name: orderData.name || "",
+      phone: orderData.phone || "",
+      address: orderData.address || "",
+      city: orderData.city || "",
+      district: orderData.district || "",
+      state: orderData.state || "",
+      pincode: orderData.pincode || "",
+      paymentMethod: orderData.paymentMethod || "",
+      isFasterDelivery: isFasterDelivery,
+      isGiftWrap: isGiftWrap,
+      deliveryCharge: deliveryCharge,
+      giftWrapCharge: giftWrapCharge,
+      totalAmount: totalWithDelivery,
+      orderDate: orderData.orderDate || new Date().toISOString(),
+      trackingId: savedTrackingId,
+      status: {
+        advancePaid: orderStatus.advancePaid,
+        isShipped: orderStatus.isShipped,
+        isDelivered: orderStatus.isDelivered,
+      },
+      books: cartBooks.map((book) => ({
+        name: book.name,
+        quantity: book.qty,
+        price: book.discountedPrice,
+        total: book.discountedPrice * book.qty,
+      })),
+      alternativeNumbers: alternativeNumbers,
+    };
+
+    try {
+      await saveOrder(orderToSave);
+      alert("Order saved to COList successfully!");
+    } catch (error) {
+      console.error("Error saving order:", error);
+      alert("Failed to save order. Please try again.");
+    }
+  };
 
   const calculateTotalDiscounted = (order) => {
     return 0;
@@ -901,6 +945,14 @@ export default function ViewBagClient() {
         >
           Continue on WhatsApp
         </a>
+
+        <button
+          onClick={exportToCOList}
+          className="sec-big-btn flex items-center justify-center gap-8"
+          style={{ width: "100%" }}
+        >
+          Export to COList (Admin)
+        </button>
       </div>
     </section>
   );

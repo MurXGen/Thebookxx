@@ -967,6 +967,11 @@ button:hover {
   border: 1px solid var(--dark-50);
   font-size: var(--px-12);
   font-family: "Poppins";
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: var(--px-4);
+  align-items: center;
 }
 
 .tertiary-btn {
@@ -978,6 +983,22 @@ button:hover {
 }
 
 .tertiary-btn:hover {
+  text-decoration: none;
+}
+
+.back-btn {
+  display: flex;
+  flex-direction: row;
+  gap: var(--px-4);
+  align-items: center;
+  font-size: var(--px-14);
+  text-decoration: underline;
+  color: var(--dark);
+  transition-duration: 0.3s;
+  transition: 0.3s;
+}
+
+.back-btn:hover {
   text-decoration: none;
 }
 
@@ -1023,6 +1044,11 @@ button:hover {
   border: none;
   font-size: var(--px-12);
   font-family: "Poppins";
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: var(--px-4);
+  align-items: center;
 }
 
 .sec-big-btn {
@@ -1035,6 +1061,11 @@ button:hover {
   border: none;
   font-size: var(--px-12);
   font-family: "Poppins";
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: var(--px-4);
+  align-items: center;
 }
 
 .sec-mid-btn.active {
@@ -3932,4 +3963,205 @@ input {
   font-size: 13px;
   font-weight: 600;
   color: #ffb703;
+}
+
+/* COList Page Styles */
+
+.order-card {
+  background: white;
+  border-radius: 20px;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.order-id {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.order-id-label {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.order-id-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffb703;
+}
+
+.order-date {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.order-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Order Body */
+.order-body {
+  padding: 20px;
+}
+
+.order-info {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.info-section h4 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #1a1a1a;
+}
+
+.info-section p {
+  font-size: 13px;
+  margin-bottom: 6px;
+  color: #4b5563;
+}
+
+.info-section p strong {
+  color: #1a1a1a;
+}
+
+/* Books List */
+.books-list {
+  margin-bottom: 12px;
+}
+
+.book-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  padding: 4px 0;
+  color: #4b5563;
+}
+
+.order-total {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 8px;
+  border-top: 1px solid #e5e7eb;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* Edit Inputs */
+.edit-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.edit-input:focus {
+  outline: none;
+  border-color: #ffb703;
+}
+
+.edit-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  margin-top: 8px;
+  cursor: pointer;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  background: white;
+  border-radius: 20px;
+  border: 1px solid #e5e7eb;
+}
+
+.empty-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+}
+
+.empty-state h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.empty-state p {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .order-info {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+@media (max-width: 640px) {
+  .colist-title {
+    font-size: 22px;
+  }
+
+  .colist-icon {
+    width: 56px;
+    height: 56px;
+    font-size: 32px;
+  }
+
+  .colist-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .order-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* COList Actions Bar */
+
+.whatsapp-contact-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #25d36610;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  color: #25d366;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.whatsapp-contact-btn:hover {
+  background: #25d36620;
+  transform: scale(1.02);
 }

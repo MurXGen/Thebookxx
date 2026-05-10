@@ -15,10 +15,12 @@ import UrgencyOffer from "@/components/UrgencyOffer";
 import PincodeModal from "@/components/UI/PincodeModal";
 import { Download } from "lucide-react";
 import NewlyAddedBooks from "@/components/NewlyAddedBooks";
+import IntroVideo from "@/components/IntroVideo";
 
 export default function HomePage() {
   return (
     <>
+      <IntroVideo />
       <Navbar />
       <PincodeModal /> {/* Add this component */}
       <BestsellerStage />

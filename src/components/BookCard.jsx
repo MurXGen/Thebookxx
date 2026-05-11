@@ -3,7 +3,7 @@
 import { useStore } from "@/context/StoreContext";
 import { trackAddToCart } from "@/lib/ga";
 import { books } from "@/utils/book";
-import { Book, Minus, Plus } from "lucide-react";
+import { Book, Minus, Plus, Share2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
@@ -86,6 +86,49 @@ export default function BookCard({ book }) {
     addToRecentlyViewed(book.id);
   };
 
+  // Handle share functionality
+  const handleShare = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const shareData = {
+      title: book.name,
+      text: `Check out "${book.name}"${book.author ? ` by ${book.author}` : ""} at TheBookX!`,
+      url: fullUrl,
+    };
+
+    try {
+      if (navigator.share && window.innerWidth <= 768) {
+        // Use native share on mobile devices
+        await navigator.share(shareData);
+      } else {
+        // Fallback: copy to clipboard
+        await navigator.clipboard.writeText(fullUrl);
+        // Optional: Show a small temporary notification
+        const tempMessage = document.createElement("div");
+        tempMessage.textContent = "Link copied to clipboard!";
+        tempMessage.style.position = "fixed";
+        tempMessage.style.bottom = "20px";
+        tempMessage.style.left = "50%";
+        tempMessage.style.transform = "translateX(-50%)";
+        tempMessage.style.backgroundColor = "#1a1a1a";
+        tempMessage.style.color = "white";
+        tempMessage.style.padding = "8px 16px";
+        tempMessage.style.borderRadius = "40px";
+        tempMessage.style.fontSize = "12px";
+        tempMessage.style.zIndex = "9999";
+        document.body.appendChild(tempMessage);
+        setTimeout(() => {
+          tempMessage.remove();
+        }, 2000);
+      }
+    } catch (error) {
+      console.error("Error sharing:", error);
+      // Fallback for any error
+      navigator.clipboard.writeText(fullUrl);
+    }
+  };
+
   return (
     <article
       className="trending-card"
@@ -108,6 +151,21 @@ export default function BookCard({ book }) {
           inWishlist={inWishlist}
           onClick={() => toggleWishlist(book.id)}
         />
+        {/* Share Button */}
+        <button
+          onClick={handleShare}
+          className="add-wishlist"
+          aria-label={`Share ${book.name}`}
+          title="Share this book"
+          style={{
+            top: "4px",
+            background: "#00000010",
+            border: "none",
+            backdropFilter: "blur(12px)",
+          }}
+        >
+          <Share2 size={14} color="black" />
+        </button>
 
         {!imageLoaded && <div className="image-skeleton" />}
 

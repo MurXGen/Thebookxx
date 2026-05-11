@@ -20,7 +20,7 @@ import IntroVideo from "@/components/IntroVideo";
 export default function HomePage() {
   return (
     <>
-      <IntroVideo />
+      {/* <IntroVideo /> */}
       <Navbar />
       <PincodeModal /> {/* Add this component */}
       <BestsellerStage />

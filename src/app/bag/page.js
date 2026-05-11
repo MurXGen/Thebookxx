@@ -126,6 +126,112 @@ export default function BagPage() {
   const totalWithGiftWrap = finalPayable + (giftWrap ? GIFT_WRAP_CHARGE : 0);
   const displayTotal = totalWithGiftWrap;
 
+  // Detect if user is on desktop
+  const isDesktop = () => {
+    if (typeof window === "undefined") return false;
+    const userAgent = navigator.userAgent.toLowerCase();
+    const isMobile =
+      /android|webos|iphone|ipad|ipod|blackberry|windows phone/i.test(
+        userAgent,
+      );
+    return !isMobile;
+  };
+
+  // Send order to Telegram
+  const sendOrderToTelegram = async (
+    addressData,
+    paymentType,
+    fasterDeliveryChoice,
+    giftWrapSelected,
+  ) => {
+    const deliveryCharge = getDeliveryCharge(fasterDeliveryChoice);
+    const giftWrapAmount = giftWrapSelected ? GIFT_WRAP_CHARGE : 0;
+    const totalWithDelivery = finalPayable + deliveryCharge + giftWrapAmount;
+
+    // Prepare order details for Telegram
+    const orderMessage = `
+🛍️ *NEW ORDER - THEBOOKX*
+
+━━━━━━━━━━━━━━━━━━━━
+*👤 CUSTOMER DETAILS*
+━━━━━━━━━━━━━━━━━━━━
+👨 *Name:* ${addressData.name || "Customer"}
+📞 *Phone:* ${addressData.phone || "Not provided"}
+
+━━━━━━━━━━━━━━━━━━━━
+*📍 DELIVERY ADDRESS*
+━━━━━━━━━━━━━━━━━━━━
+🏠 *Address:* ${addressData.address || "Not provided"}
+🏙️ *City:* ${addressData.city || "Not specified"}
+🗺️ *District:* ${addressData.district || "Not specified"}
+📍 *State:* ${addressData.state || "Not specified"}
+📮 *Pincode:* ${addressData.pincode || "Not specified"}
+
+━━━━━━━━━━━━━━━━━━━━
+*📦 ORDER SUMMARY*
+━━━━━━━━━━━━━━━━━━━━
+${cartBooks
+  .map(
+    (book, idx) =>
+      `${idx + 1}. *${book.name}* × ${book.qty} = ₹${book.discountedPrice * book.qty}`,
+  )
+  .join("\n")}
+
+━━━━━━━━━━━━━━━━━━━━
+*💰 BILL DETAILS*
+━━━━━━━━━━━━━━━━━━━━
+📚 Subtotal: ₹${totalDiscounted}
+🎁 Offer Discount: -₹${offerDiscount}
+🚚 Delivery: ${fasterDeliveryChoice ? "Faster Delivery" : "Standard Delivery"}
+${deliveryCharge > 0 ? `📦 Delivery Charge: +₹${deliveryCharge}` : "🚚 Free Delivery"}
+${giftWrapSelected ? `🎁 Gift Wrap: +₹${GIFT_WRAP_CHARGE}` : ""}
+━━━━━━━━━━━━━━━━━━━━
+*💵 TOTAL PAYABLE: ₹${totalWithDelivery}*
+
+━━━━━━━━━━━━━━━━━━━━
+*💳 PAYMENT METHOD*
+━━━━━━━━━━━━━━━━━━━━
+${paymentType === "COD" ? "💵 Cash on Delivery" : "📱 UPI Payment"}
+
+━━━━━━━━━━━━━━━━━━━━
+_Thank you for shopping with TheBookX! 📚✨_
+    `;
+
+    try {
+      const response = await fetch(
+        "https://api.journalx.app/api/bookxTelegram/order",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            orderDetails: orderMessage,
+            customerName: addressData.name,
+            customerPhone: addressData.phone,
+            totalAmount: totalWithDelivery,
+            paymentMethod: paymentType,
+          }),
+        },
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+        alert("Order submitted successfully! We'll contact you shortly.");
+        setShowAddressModal(false);
+        setShowBill(false);
+        // Clear cart or redirect
+        router.push("/");
+      } else {
+        alert("Failed to submit order. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error sending order to Telegram:", error);
+      alert("Failed to submit order. Please try again.");
+    }
+  };
+
   // Generate view bag link with user details
   const generateViewBagLinkWithDetails = (
     addressData,
@@ -256,12 +362,23 @@ Thank you! 🙏
     giftWrapSelected,
   ) => {
     setPaymentMethod("COD");
-    sendWhatsAppMessage(
-      addressData,
-      "COD",
-      fasterDeliveryChoice,
-      giftWrapSelected,
-    );
+
+    // Check if desktop - send to Telegram instead of WhatsApp
+    if (isDesktop()) {
+      sendOrderToTelegram(
+        addressData,
+        "COD",
+        fasterDeliveryChoice,
+        giftWrapSelected,
+      );
+    } else {
+      sendWhatsAppMessage(
+        addressData,
+        "COD",
+        fasterDeliveryChoice,
+        giftWrapSelected,
+      );
+    }
   };
 
   const handleUPICheckout = (
@@ -270,14 +387,24 @@ Thank you! 🙏
     giftWrapSelected,
   ) => {
     setPaymentMethod("UPI");
-    sendWhatsAppMessage(
-      addressData,
-      "UPI",
-      fasterDeliveryChoice,
-      giftWrapSelected,
-    );
-  };
 
+    // Check if desktop - send to Telegram instead of WhatsApp
+    if (isDesktop()) {
+      sendOrderToTelegram(
+        addressData,
+        "UPI",
+        fasterDeliveryChoice,
+        giftWrapSelected,
+      );
+    } else {
+      sendWhatsAppMessage(
+        addressData,
+        "UPI",
+        fasterDeliveryChoice,
+        giftWrapSelected,
+      );
+    }
+  };
   return (
     <section className="section-1200 flex flex-col gap-24">
       {/* Header */}

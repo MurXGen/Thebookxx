@@ -2,22 +2,19 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
-import { X, Volume2, VolumeX } from "lucide-react";
+import { X } from "lucide-react";
+import Image from "next/image";
 
-const INTRO_SEEN_KEY = "intro_video_seen";
+const INTRO_SEEN_KEY = "intro_image_seen";
 
-export default function IntroVideo() {
+export default function IntroImage() {
   const [isVisible, setIsVisible] = useState(false);
-  const [isMuted, setIsMuted] = useState(true);
-  const [isVideoEnded, setIsVideoEnded] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
-    // Check if user has seen the intro in this browser
     const hasSeenIntro = localStorage.getItem(INTRO_SEEN_KEY);
 
     if (!hasSeenIntro) {
-      // Small delay to ensure page is loaded
       const timer = setTimeout(() => {
         setIsVisible(true);
       }, 500);
@@ -25,8 +22,11 @@ export default function IntroVideo() {
     }
   }, []);
 
-  const handleVideoEnd = () => {
-    setIsVideoEnded(true);
+  const handleImageLoad = () => {
+    setImageLoaded(true);
+  };
+
+  const handleComplete = () => {
     setTimeout(() => {
       setIsVisible(false);
       localStorage.setItem(INTRO_SEEN_KEY, "true");
@@ -38,72 +38,71 @@ export default function IntroVideo() {
     localStorage.setItem(INTRO_SEEN_KEY, "true");
   };
 
-  const toggleMute = () => {
-    setIsMuted(!isMuted);
-  };
-
-  const handleVideoLoad = () => {
-    setIsLoading(false);
-  };
-
   return (
     <AnimatePresence>
       {isVisible && (
         <motion.div
-          className="intro-video-overlay"
+          className="intro-overlay"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.8, ease: "easeInOut" }}
+          transition={{ duration: 0.5, ease: "easeInOut" }}
         >
-          {/* Video Container */}
-          <div className="intro-video-container">
-            <video
-              className="intro-video"
-              autoPlay
-              muted={isMuted}
-              playsInline
-              onEnded={handleVideoEnd}
-              onCanPlay={handleVideoLoad}
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-              }}
-            >
-              <source src="/bookx_intro.mp4" type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
+          <div className="intro-container">
+            {/* Image Layer */}
+            <div className="intro-image-wrapper">
+              <Image
+                src="/intro-image.jpeg"
+                alt="Welcome to TheBookX"
+                fill
+                className="intro-image"
+                priority
+                onLoadingComplete={handleImageLoad}
+                sizes="100vw"
+              />
+            </div>
 
-            {/* Loading Overlay */}
-            {isLoading && (
+            {/* Diagonal Reveal Layer - Only this area shows the image */}
+            <motion.div
+              className="intro-reveal"
+              initial={{
+                clipPath: "polygon(0 0, 0% 0, 0% 100%, 0% 100%)",
+              }}
+              animate={{
+                clipPath: "polygon(0 0, 100% 0, 100% 100%, 0% 100%)",
+              }}
+              transition={{
+                duration: 5,
+                ease: [0.25, 0.46, 0.45, 0.94],
+                delay: 0.2,
+              }}
+              onAnimationComplete={handleComplete}
+            />
+
+            {/* Loading Spinner */}
+            {!imageLoaded && (
               <div className="intro-loading">
                 <div className="loading-spinner"></div>
               </div>
             )}
 
-            {/* Controls */}
-            <button onClick={toggleMute} className="intro-volume-btn">
-              {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
-            </button>
-
+            {/* Close Button */}
             <button onClick={handleSkip} className="intro-close-btn">
               <X size={20} />
             </button>
 
-            {/* Progress Indicator */}
-            {!isVideoEnded && (
-              <div className="intro-progress">
-                <div className="intro-progress-bar">
-                  <motion.div
-                    className="intro-progress-fill"
-                    initial={{ width: "0%" }}
-                    animate={{ width: "100%" }}
-                    transition={{ duration: 5, ease: "linear" }}
-                  />
-                </div>
-              </div>
-            )}
+            {/* Text Content */}
+            {/* <motion.div
+              className="intro-content"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+            >
+              <h1 className="intro-title">Welcome to TheBookX</h1>
+              <p className="intro-subtitle">
+                Discover your next favourite read
+              </p>
+            </motion.div> */}
           </div>
         </motion.div>
       )}

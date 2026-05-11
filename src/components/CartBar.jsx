@@ -57,7 +57,7 @@ export default function CartBar() {
   const finalPayable = discountedAmount - offerDiscount;
 
   return (
-    <div className="cart-bar">
+    <div className="cart-bar" style={{ maxWidth: "980px", margin: "0 auto" }}>
       {/* 🎁 OFFER STRIP */}
       <AnimatePresence>
         {hasCart && (

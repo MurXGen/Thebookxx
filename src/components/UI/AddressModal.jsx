@@ -402,7 +402,11 @@ export default function AddressModal({
   return (
     <AnimatePresence>
       {open && (
-        <motion.div className="bill-modal-overlay" onClick={onClose}>
+        <motion.div
+          className="bill-modal-overlay"
+          onClick={onClose}
+          style={{ maxWidth: "980px", margin: "0 auto" }}
+        >
           <motion.div
             className="bill-modal"
             onClick={(e) => e.stopPropagation()}
@@ -626,6 +630,7 @@ export default function AddressModal({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setShowFasterDeliveryModal(false)}
+            style={{ maxWidth: "980px", margin: "0 auto" }}
           >
             <motion.div
               className="bill-modal"
@@ -753,7 +758,10 @@ export default function AddressModal({
       {/* UPI Payment Modal */}
       <AnimatePresence>
         {showUPIPayment && (
-          <motion.div className="pay-online-modal-overlay">
+          <motion.div
+            className="pay-online-modal-overlay"
+            style={{ maxWidth: "980px", margin: "0 auto" }}
+          >
             <motion.div
               className="pay-online-bill-modal payment-modal flex flex-col gap-12"
               initial={{ y: "100%" }}
@@ -910,7 +918,10 @@ export default function AddressModal({
       {/* COD Advance Payment Modal */}
       <AnimatePresence>
         {showCODPayment && (
-          <motion.div className="pay-online-modal-overlay">
+          <motion.div
+            className="pay-online-modal-overlay"
+            style={{ maxWidth: "980px", margin: "0 auto" }}
+          >
             <motion.div
               className="pay-online-bill-modal"
               initial={{ y: "100%" }}

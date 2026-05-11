@@ -179,11 +179,12 @@ export const blogsData = {
       },
     ],
 
-    coverImage: "/review/author/murthy-thevar-author-portrait.jpeg",
+    coverImage:
+      "/blogs/the-art-of-clarity-mastering-clear-communication-insights-by-murthy-thevar.jpeg",
 
     images: [
       {
-        url: "/review/author/murthy-thevar-author-portrait.jpeg",
+        url: "/blogs/the-art-of-clarity-mastering-clear-communication-insights-by-murthy-thevar.jpeg",
         alt: "Murthy Thevar official author portrait - India's leading clarity coach",
         caption:
           "Official portrait of Murthy Thevar, acclaimed author of 'The Art of Clarity'",
@@ -634,11 +635,12 @@ export const blogsData = {
       },
     ],
 
-    coverImage: "/review/author/the-art-of-clarity-front-cover.jpeg",
+    coverImage:
+      "/blogs/clarity-in-speech-master-your-articulation-with-10-powerful-tongue-twisters.jpeg",
 
     images: [
       {
-        url: "/review/author/the-art-of-clarity-front-cover.jpeg",
+        url: "/blogs/clarity-in-speech-master-your-articulation-with-10-powerful-tongue-twisters.jpeg",
         alt: "Murthy Thevar demonstrating speech clarity techniques at workshop",
         caption:
           "Murthy Thevar teaching articulation exercises to an engaged audience",
@@ -1280,11 +1282,11 @@ export const blogsData = {
     ],
 
     coverImage:
-      "/review/author/the-art-clarity-book-by-murthy-thevar-on-readers-table.jpeg",
+      "/blogs/overcoming-overthinking-10-actionable-strategies-to-break-free-from-decision-paralysis.jpeg",
 
     images: [
       {
-        url: "/review/author/the-art-clarity-book-by-murthy-thevar-1.jpeg",
+        url: "/blogs/overcoming-overthinking-10-actionable-strategies-to-break-free-from-decision-paralysis.jpeg",
         alt: "Murthy Thevar teaching overthinking strategies at Clarity Summit",
         caption: "Murthy Thevar presenting the 70% Rule to a packed audience",
         category: "Speaking Event",
@@ -1939,11 +1941,12 @@ export const blogsData = {
       },
     ],
 
-    coverImage: "/review/author/the-art-clarity-book-by-murthy-thevar.jpeg",
+    coverImage:
+      "/blogs/how-to-filter-the-right-information-10-strategies-to-stop-information-overload.jpeg",
 
     images: [
       {
-        url: "/review/author/the-art-clarity-book-by-murthy-thevar.jpeg",
+        url: "/blogs/how-to-filter-the-right-information-10-strategies-to-stop-information-overload.jpeg",
         alt: "The Art of Clarity front cover - Information filtering strategies",
         caption:
           "Chapter 4 of 'The Art of Clarity' covers advanced information filtering techniques",
@@ -2621,11 +2624,11 @@ export const blogsData = {
     ],
 
     coverImage:
-      "/review/author/murthy-thevar-the-author-of-the-art-of-clairty.jpeg",
+      "/blogs/the-power-of-saying-no-how-setting-boundaries-creates-mental-clarity.jpeg",
 
     images: [
       {
-        url: "/review/author/murthy-thevar.jpeg",
+        url: "/blogs/the-power-of-saying-no-how-setting-boundaries-creates-mental-clarity.jpeg",
         alt: "Murthy Thevar - Author of The Art of Clarity on setting boundaries",
         caption:
           "Murthy Thevar teaching the power of saying no to protect mental clarity",
@@ -3232,11 +3235,11 @@ export const blogsData = {
       },
     ],
 
-    coverImage: "/review/author/murthy-thevar-author-portrait.jpeg",
+    coverImage: "/blogs/mastering-morning-routine-mental-clarity.jpeg",
 
     images: [
       {
-        url: "/review/author/murthy-thevar-author-portrait.jpeg",
+        url: "/blogs/mastering-morning-routine-mental-clarity.jpeg",
         alt: "Murthy Thevar - Author of The Art of Clarity on morning routines",
         caption:
           "Murthy Thevar teaching the 90-minute no-phone rule for morning clarity",

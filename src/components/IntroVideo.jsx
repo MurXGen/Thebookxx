@@ -92,7 +92,7 @@ export default function IntroVideo() {
             </button>
 
             {/* Progress Indicator */}
-            {/* {!isVideoEnded && (
+            {!isVideoEnded && (
               <div className="intro-progress">
                 <div className="intro-progress-bar">
                   <motion.div
@@ -103,7 +103,7 @@ export default function IntroVideo() {
                   />
                 </div>
               </div>
-            )} */}
+            )}
           </div>
         </motion.div>
       )}

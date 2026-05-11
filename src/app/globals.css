@@ -4166,6 +4166,87 @@ input {
   transform: scale(1.02);
 }
 
+/* WhatsApp Desktop Modal */
+.whatsapp-desktop-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 20px;
+}
+
+.whatsapp-desktop-modal {
+  max-width: 480px;
+  width: 100%;
+  background: white;
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.2);
+}
+
+.whatsapp-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #fafafa;
+}
+
+.whatsapp-modal-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.whatsapp-modal-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 4px;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.whatsapp-modal-close:hover {
+  background: #f3f4f6;
+  color: #1a1a1a;
+}
+
+.whatsapp-modal-content {
+  padding: 24px;
+}
+
+.whatsapp-device-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #e5e7eb;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  color: #4b5563;
+  margin-bottom: 16px;
+}
+
+.whatsapp-modal-desc {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
 /* Intro Video Styles */
 .intro-video-overlay {
   position: fixed;
@@ -4207,8 +4288,7 @@ input {
 .loading-spinner {
   width: 40px;
   height: 40px;
-  border: 3px solid rgba(255, 255, 255, 0.3);
-  border-top-color: #ffb703;
+  border-top-color: var(--white-100);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -4219,49 +4299,7 @@ input {
   }
 }
 
-/* Gradient Overlay */
-.intro-gradient-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.3) 0%,
-    rgba(0, 0, 0, 0.1) 50%,
-    rgba(0, 0, 0, 0.6) 100%
-  );
-  pointer-events: none;
-}
-
 /* Content Overlay */
-.intro-content {
-  position: absolute;
-  bottom: 20%;
-  left: 0;
-  right: 0;
-  text-align: center;
-  color: white;
-  z-index: 10;
-  padding: 20px;
-}
-
-.intro-title {
-  font-size: 36px;
-  font-weight: 700;
-  margin-bottom: 12px;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-  animation: fadeInUp 0.8s ease-out;
-}
-
-.intro-subtitle {
-  font-size: 18px;
-  opacity: 0.9;
-  margin-bottom: 32px;
-  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
-  animation: fadeInUp 0.8s ease-out 0.1s both;
-}
 
 .intro-buttons {
   animation: fadeInUp 0.8s ease-out 0.2s both;
@@ -4340,7 +4378,7 @@ input {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 3px;
+  height: 2px;
   background: rgba(255, 255, 255, 0.2);
   z-index: 10;
 }
@@ -4352,7 +4390,7 @@ input {
 
 .intro-progress-fill {
   height: 100%;
-  background: #ffb703;
+  background: var(--white-100);
   width: 0%;
 }
 

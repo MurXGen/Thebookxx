@@ -129,7 +129,10 @@ export default function RootLayout({ children }) {
   `}
         </Script>
       </head>
-      <body className={poppins.variable}>
+      <body
+        className={poppins.variable}
+        style={{ maxWidth: "980px", margin: "auto" }}
+      >
         <ToastProvider>
           <StoreProvider>
             <RegisterSW />

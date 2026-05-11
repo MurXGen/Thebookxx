@@ -279,10 +279,7 @@ Thank you! 🙏
   };
 
   return (
-    <section
-      className="section-1200 flex flex-col gap-24"
-      style={{ maxWidth: "700px" }}
-    >
+    <section className="section-1200 flex flex-col gap-24">
       {/* Header */}
       <div className="flex flec-row gap-12 items-center">
         <ArrowLeft size={20} onClick={() => router.push("/")} />
@@ -341,7 +338,10 @@ Thank you! 🙏
       </div>
 
       {/* FIXED BOTTOM BAR */}
-      <div className="fixed-bill-bar">
+      <div
+        className="fixed-bill-bar"
+        style={{ maxWidth: "980px", margin: "0 auto" }}
+      >
         <div className="bill-left">
           <span className="font-12 dark-50">Total payable</span>
           <div className="flex gap-8 items-center">

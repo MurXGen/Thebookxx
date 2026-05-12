@@ -4580,4 +4580,19 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
   },
+  {
+    id: "bk-302",
+    name: "Steal Like an Artist: 10 Things Nobody Told You About Being Creative",
+    image: bookImages["steal-like-an-artist"],
+    description:
+      "Unlock your creative potential with Austin Kleon's transformative manifesto 'Steal Like an Artist' at TheBookX.in. This bestselling non-fiction guide debunks the myth of original genius and shows you that all creative work builds on what came before. Packed with 10 actionable principles—from embracing plagiarism to side projects and creative routines—this book is a must-read for writers, designers, artists, and anyone who wants to make something meaningful. Written in a witty, visual, and inspiring style with illustrations throughout. Perfect for overcoming creative blocks and imposter syndrome. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now—books starting at just ₹1 for a limited offer.",
+    author: "Austin Kleon",
+    pages: "160",
+    language: "English",
+    size: "Paperback",
+    stock: 20,
+    catalogue: ["non-fiction", "art", "creativity", "bestseller", "self-help"],
+    originalPrice: calculateOriginalPrice(129),
+    discountedPrice: 159,
+  },
 ];

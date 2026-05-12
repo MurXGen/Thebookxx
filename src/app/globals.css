@@ -4303,7 +4303,7 @@ input {
   box-shadow: 1px 1px 12px #ffffff10;
   backdrop-filter: blur(12px);
   pointer-events: none;
-  animation: diagonalReveal 5s ease-out forwards;
+  animation: diagonalReveal 4s ease-out forwards;
 }
 
 @keyframes diagonalReveal {

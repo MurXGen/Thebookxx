@@ -118,6 +118,7 @@ export default function PincodeModal() {
       {isOpen && (
         <motion.div
           className="bill-modal-overlay"
+          style={{ maxWidth: "980px", margin: "0 auto" }}
           onClick={handleSkip}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

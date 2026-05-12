@@ -72,7 +72,7 @@ export default function IntroImage() {
                 clipPath: "polygon(0 0, 100% 0, 100% 100%, 0% 100%)",
               }}
               transition={{
-                duration: 5,
+                duration: 4,
                 ease: [0.25, 0.46, 0.45, 0.94],
                 delay: 0.2,
               }}

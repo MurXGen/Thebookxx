@@ -2,12 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
-import { X, MapPin, Truck, ShieldCheck, Clock } from "lucide-react";
-import {
-  trackPincodeSubmitted,
-  trackPincodeSkipped,
-  trackPincodeModalView,
-} from "@/lib/ga";
+import { X, MapPin, Truck, ShieldCheck, Clock, Phone } from "lucide-react";
 import LoadingButton from "./LoadingButton";
 
 const PINCODE_STORAGE_KEY = "pincode_modal_last_shown";
@@ -16,6 +11,7 @@ const PINCODE_DATA_KEY = "user_pincode";
 export default function PincodeModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [pincode, setPincode] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [locationData, setLocationData] = useState(null);
@@ -38,18 +34,51 @@ export default function PincodeModal() {
 
         if (hoursPassed >= 24) {
           setIsOpen(true);
-          trackPincodeModalView();
         }
       } else {
         // First time visitor
         setIsOpen(true);
-        trackPincodeModalView();
       }
     };
 
     const timer = setTimeout(checkAndShowModal, 1000);
     return () => clearTimeout(timer);
   }, []);
+
+  // Send data to Telegram
+  const sendToTelegram = async (pincodeValue, location, phone) => {
+    const message = `
+📍 *New Pincode Submission*
+
+━━━━━━━━━━━━━━━━━━━━
+📮 *Pincode:* ${pincodeValue}
+🏙️ *City:* ${location?.city || "Unknown"}
+🗺️ *State:* ${location?.state || "Unknown"}
+📞 *Phone:* ${phone || "Not provided"}
+🕐 *Time:* ${new Date().toLocaleString()}
+
+━━━━━━━━━━━━━━━━━━━━
+*TheBookX Pincode Collection*
+    `;
+
+    try {
+      await fetch("https://api.journalx.app/api/bookxTelegram/pincode", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: message,
+          pincode: pincodeValue,
+          city: location?.city,
+          state: location?.state,
+          phone: phone,
+        }),
+      });
+    } catch (error) {
+      console.error("Error sending to Telegram:", error);
+    }
+  };
 
   // Fetch location details based on pincode
   const fetchLocationDetails = async (pincodeValue) => {
@@ -85,14 +114,17 @@ export default function PincodeModal() {
 
     const location = await fetchLocationDetails(pincode);
 
-    trackPincodeSubmitted(pincode, location);
+    // Send to Telegram
+    await sendToTelegram(pincode, location, phoneNumber);
 
+    // Store in localStorage
     localStorage.setItem(
       PINCODE_DATA_KEY,
       JSON.stringify({
         pincode: pincode,
         city: location?.city,
         state: location?.state,
+        phone: phoneNumber,
         submittedAt: Date.now(),
       }),
     );
@@ -108,7 +140,6 @@ export default function PincodeModal() {
   };
 
   const handleSkip = () => {
-    trackPincodeSkipped();
     localStorage.setItem(PINCODE_STORAGE_KEY, Date.now().toString());
     setIsOpen(false);
   };
@@ -160,10 +191,30 @@ export default function PincodeModal() {
                 />
                 {error && (
                   <span className="font-12 red flex items-center gap-4 mt-4">
-                    <AlertCircle size={12} />
+                    <span>⚠️</span>
                     {error}
                   </span>
                 )}
+              </div>
+
+              {/* Optional Phone Number Field */}
+              <div className="input-group">
+                <label className="flex flex-row gap-4 flex-center items-center">
+                  <Phone size={14} />
+                  Phone Number <span className="gray-500">(Optional)</span>
+                </label>
+                <input
+                  className="sec-mid-btn"
+                  placeholder="Enter 10-digit mobile number"
+                  value={phoneNumber}
+                  maxLength={10}
+                  onChange={(e) =>
+                    setPhoneNumber(e.target.value.replace(/\D/g, ""))
+                  }
+                />
+                <span className="font-10 gray-500 mt-4">
+                  Get notified about special offers and delivery updates
+                </span>
               </div>
 
               {/* Benefits Section */}
@@ -193,7 +244,7 @@ export default function PincodeModal() {
                   onClick={handleSubmit}
                   disabled={loading}
                 >
-                  {loading ? "Checking..." : "Submit Pincode"}
+                  {loading ? "Submitting..." : "Submit"}
                 </LoadingButton>
 
                 <button className="sec-mid-btn width100" onClick={handleSkip}>

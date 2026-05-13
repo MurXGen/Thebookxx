@@ -11,7 +11,13 @@ import SlideConfirm from "@/components/UI/SlideConfirm";
 import YouMayLike from "@/components/UI/YouMayLike";
 import { useStore } from "@/context/StoreContext";
 import { books } from "@/utils/book";
-import { CART_OFFERS, getExtraDeliveryCharge } from "@/utils/cartOffers";
+import {
+  CART_OFFERS,
+  getDeliveryCharge,
+  getDeliveryLabel,
+  getDeliveryDescription,
+  getOriginalCharge,
+} from "@/utils/cartOffers";
 import { ArrowLeft, Gift } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -100,21 +106,24 @@ export default function BagPage() {
     }
   }
 
+  // In BagPage.jsx, replace the delivery charge calculation section
+
   const finalPayable = totalDiscounted - offerDiscount;
   const canCheckout = totalDiscounted >= 151;
 
-  // Calculate standard delivery charge (0 if order >= 400, else 100)
-  const standardDeliveryCharge = getExtraDeliveryCharge(totalDiscounted);
-
-  // Faster delivery charge is fixed at ₹119
-  const FASTER_DELIVERY_CHARGE = 119;
+  // Get dynamic delivery charges
+  const standardDeliveryCharge = getDeliveryCharge(totalDiscounted, false);
+  const fasterDeliveryCharge = getDeliveryCharge(totalDiscounted, true);
+  const standardDeliveryLabel = getDeliveryLabel(totalDiscounted, false);
+  const fasterDeliveryLabel = getDeliveryLabel(totalDiscounted, true);
+  const standardDeliveryDesc = getDeliveryDescription(totalDiscounted, false);
+  const fasterDeliveryDesc = getDeliveryDescription(totalDiscounted, true);
+  const standardOriginalCharge = getOriginalCharge(totalDiscounted, false);
+  const fasterOriginalCharge = getOriginalCharge(totalDiscounted, true);
 
   // Function to get delivery charge based on choice
-  const getDeliveryCharge = (isFasterDelivery) => {
-    if (isFasterDelivery) {
-      return FASTER_DELIVERY_CHARGE;
-    }
-    return standardDeliveryCharge;
+  const getDeliveryChargeByChoice = (isFasterDelivery) => {
+    return getDeliveryCharge(totalDiscounted, isFasterDelivery);
   };
 
   // Calculate total with standard delivery (for display)
@@ -122,11 +131,16 @@ export default function BagPage() {
   const totalWithStandardDeliveryGift =
     totalWithStandardDelivery + (giftWrap ? GIFT_WRAP_CHARGE : 0);
 
-  // Calculate total with gift wrap
-  const totalWithGiftWrap = finalPayable + (giftWrap ? GIFT_WRAP_CHARGE : 0);
-  const displayTotal = totalWithGiftWrap;
+  // Calculate savings on delivery (if original charge exists)
+  const standardDeliverySavings = standardOriginalCharge
+    ? standardOriginalCharge - standardDeliveryCharge
+    : 0;
+  const fasterDeliverySavings = fasterOriginalCharge
+    ? fasterOriginalCharge - fasterDeliveryCharge
+    : 0;
 
-  // Detect if user is on desktop
+  const displayTotal = totalWithStandardDeliveryGift;
+
   const isDesktop = () => {
     if (typeof window === "undefined") return false;
     const userAgent = navigator.userAgent.toLowerCase();
@@ -137,7 +151,6 @@ export default function BagPage() {
     return !isMobile;
   };
 
-  // Generate WhatsApp message for redirect
   const generateWhatsAppMessage = (
     addressData,
     paymentType,
@@ -145,15 +158,19 @@ export default function BagPage() {
     giftWrapSelected,
     shortLink,
   ) => {
-    const deliveryCharge = getDeliveryCharge(fasterDeliveryChoice);
+    const deliveryCharge = getDeliveryChargeByChoice(fasterDeliveryChoice);
+    const deliveryLabel = getDeliveryLabel(
+      totalDiscounted,
+      fasterDeliveryChoice,
+    );
     const giftWrapAmount = giftWrapSelected ? GIFT_WRAP_CHARGE : 0;
     const totalWithDelivery = finalPayable + deliveryCharge + giftWrapAmount;
 
     let deliveryInfo = `${addressData.city || "Not specified"} - ${addressData.pincode || "Not specified"}`;
     if (fasterDeliveryChoice) {
-      deliveryInfo += ` 🚀 (Faster Delivery +₹${FASTER_DELIVERY_CHARGE})`;
+      deliveryInfo += ` 🚀 (${deliveryLabel} +₹${deliveryCharge})`;
     } else if (deliveryCharge > 0) {
-      deliveryInfo += ` 📦 (Standard Delivery +₹${deliveryCharge})`;
+      deliveryInfo += ` 📦 (${deliveryLabel} +₹${deliveryCharge})`;
     } else {
       deliveryInfo += ` 📦 (Free Delivery)`;
     }
@@ -182,7 +199,6 @@ Thank you! 🙏
 `;
   };
 
-  // Send order to Telegram (silently, no alert)
   const sendOrderToTelegram = async (
     addressData,
     paymentType,
@@ -190,7 +206,11 @@ Thank you! 🙏
     giftWrapSelected,
     shortLink,
   ) => {
-    const deliveryCharge = getDeliveryCharge(fasterDeliveryChoice);
+    const deliveryCharge = getDeliveryChargeByChoice(fasterDeliveryChoice);
+    const deliveryLabel = getDeliveryLabel(
+      totalDiscounted,
+      fasterDeliveryChoice,
+    );
     const giftWrapAmount = giftWrapSelected ? GIFT_WRAP_CHARGE : 0;
     const totalWithDelivery = finalPayable + deliveryCharge + giftWrapAmount;
 
@@ -227,8 +247,8 @@ ${cartBooks
 ━━━━━━━━━━━━━━━━━━━━
 📚 Subtotal: ₹${totalDiscounted}
 🎁 Offer Discount: -₹${offerDiscount}
-🚚 Delivery: ${fasterDeliveryChoice ? "Faster Delivery" : "Standard Delivery"}
-${deliveryCharge > 0 ? `📦 Delivery Charge: +₹${deliveryCharge}` : "🚚 Free Delivery"}
+🚚 Delivery: ${deliveryLabel}
+📦 Delivery Charge: +₹${deliveryCharge}
 ${giftWrapSelected ? `🎁 Gift Wrap: +₹${GIFT_WRAP_CHARGE}` : ""}
 ━━━━━━━━━━━━━━━━━━━━
 *💵 TOTAL PAYABLE: ₹${totalWithDelivery}*
@@ -263,7 +283,6 @@ _Thank you for shopping with TheBookX! 📚✨_
     }
   };
 
-  // Generate view bag link with user details
   const generateViewBagLinkWithDetails = (
     addressData,
     paymentType,
@@ -275,7 +294,7 @@ _Thank you for shopping with TheBookX! 📚✨_
     const items = cart.map((item) => `${item.id}:${item.qty}`).join(",");
     const orderId = `ORD${Date.now()}`;
 
-    const deliveryCharge = getDeliveryCharge(fasterDeliveryChoice);
+    const deliveryCharge = getDeliveryChargeByChoice(fasterDeliveryChoice);
     const giftWrapAmount = giftWrapSelected ? GIFT_WRAP_CHARGE : 0;
     const totalWithDelivery = finalPayable + deliveryCharge + giftWrapAmount;
 
@@ -292,6 +311,7 @@ _Thank you for shopping with TheBookX! 📚✨_
       paymentMethod: paymentType,
       fasterDelivery: fasterDeliveryChoice,
       deliveryCharge: deliveryCharge,
+      deliveryLabel: getDeliveryLabel(totalDiscounted, fasterDeliveryChoice),
       giftWrap: giftWrapSelected,
       giftWrapCharge: giftWrapAmount,
       orderDate: new Date().toISOString(),
@@ -303,7 +323,6 @@ _Thank you for shopping with TheBookX! 📚✨_
     return `${siteOrigin}/view-bag?items=${encodeURIComponent(items)}&order=${encodedDetails}`;
   };
 
-  // Shorten URL using TinyURL API
   const shortenUrl = async (longUrl) => {
     try {
       const response = await fetch(
@@ -317,7 +336,6 @@ _Thank you for shopping with TheBookX! 📚✨_
     }
   };
 
-  // Redirect to WhatsApp with message
   const redirectToWhatsApp = (
     addressData,
     paymentType,
@@ -347,7 +365,6 @@ _Thank you for shopping with TheBookX! 📚✨_
   ) => {
     setPaymentMethod("COD");
 
-    // Generate link with user details
     const viewBagLinkWithDetails = generateViewBagLinkWithDetails(
       addressData,
       "COD",
@@ -355,14 +372,11 @@ _Thank you for shopping with TheBookX! 📚✨_
       giftWrapSelected,
     );
 
-    // Shorten the URL
     setIsShortening(true);
     const shortLink = await shortenUrl(viewBagLinkWithDetails);
     setIsShortening(false);
 
-    // Check if desktop - send to Telegram silently, then redirect to WhatsApp
     if (isDesktop()) {
-      // Send to Telegram in background (don't wait for response)
       sendOrderToTelegram(
         addressData,
         "COD",
@@ -372,7 +386,6 @@ _Thank you for shopping with TheBookX! 📚✨_
       );
     }
 
-    // Always redirect to WhatsApp
     redirectToWhatsApp(
       addressData,
       "COD",
@@ -392,7 +405,6 @@ _Thank you for shopping with TheBookX! 📚✨_
   ) => {
     setPaymentMethod("UPI");
 
-    // Generate link with user details
     const viewBagLinkWithDetails = generateViewBagLinkWithDetails(
       addressData,
       "UPI",
@@ -400,14 +412,11 @@ _Thank you for shopping with TheBookX! 📚✨_
       giftWrapSelected,
     );
 
-    // Shorten the URL
     setIsShortening(true);
     const shortLink = await shortenUrl(viewBagLinkWithDetails);
     setIsShortening(false);
 
-    // Check if desktop - send to Telegram silently, then redirect to WhatsApp
     if (isDesktop()) {
-      // Send to Telegram in background (don't wait for response)
       sendOrderToTelegram(
         addressData,
         "UPI",
@@ -417,7 +426,6 @@ _Thank you for shopping with TheBookX! 📚✨_
       );
     }
 
-    // Always redirect to WhatsApp
     redirectToWhatsApp(
       addressData,
       "UPI",
@@ -432,7 +440,6 @@ _Thank you for shopping with TheBookX! 📚✨_
 
   return (
     <section className="section-1200 flex flex-col gap-24">
-      {/* Header */}
       <div className="flex flec-row gap-12 items-center">
         <ArrowLeft size={20} onClick={() => router.push("/")} />
         <div className="flex flex-col">
@@ -445,14 +452,12 @@ _Thank you for shopping with TheBookX! 📚✨_
 
       <CartOfferStrip discountedAmount={totalDiscounted} />
 
-      {/* Book Cards */}
       <div className="grid-2">
         {cartBooks.map((book) => (
           <BookCard key={book.id} book={book} />
         ))}
       </div>
 
-      {/* Gift Wrap Section */}
       <div className={`gift-wrap-section ${giftWrap ? "selected" : ""}`}>
         <label className="gift-wrap-label">
           <input
@@ -473,9 +478,6 @@ _Thank you for shopping with TheBookX! 📚✨_
             </svg>
           </div>
           <div className="gift-wrap-content">
-            {/* <div className="gift-wrap-icon">
-              <Gift size={18} />
-            </div> */}
             <div className="gift-wrap-text">
               <span className="gift-wrap-title">Gift Wrap this order</span>
               <span className="gift-wrap-desc">
@@ -489,7 +491,6 @@ _Thank you for shopping with TheBookX! 📚✨_
         </label>
       </div>
 
-      {/* FIXED BOTTOM BAR */}
       <div
         className="fixed-bill-bar"
         style={{ maxWidth: "980px", margin: "0 auto" }}
@@ -505,10 +506,6 @@ _Thank you for shopping with TheBookX! 📚✨_
                 ₹{totalDiscounted}
               </span>
             )}
-            {/* {standardDeliveryCharge > 0 && (
-              <span className="font-10">+ delivery charges</span>
-            )} */}
-
             {appliedOffer && (
               <span className="font-14 green weight-600">{offerLabel}</span>
             )}
@@ -532,7 +529,9 @@ _Thank you for shopping with TheBookX! 📚✨_
         finalPayable={finalPayable}
         totalDiscounted={totalDiscounted}
         standardDeliveryCharge={standardDeliveryCharge}
-        fasterDeliveryCharge={FASTER_DELIVERY_CHARGE}
+        standardDeliveryLabel={standardDeliveryLabel}
+        fasterDeliveryCharge={fasterDeliveryCharge}
+        fasterDeliveryLabel={fasterDeliveryLabel}
         totalWithStandardDelivery={totalWithStandardDelivery}
         giftWrapCharge={GIFT_WRAP_CHARGE}
         giftWrapSelected={giftWrap}
@@ -548,7 +547,9 @@ _Thank you for shopping with TheBookX! 📚✨_
         offerDiscount={offerDiscount}
         offerLabel={offerLabel}
         standardDeliveryCharge={standardDeliveryCharge}
-        fasterDeliveryCharge={FASTER_DELIVERY_CHARGE}
+        standardDeliveryLabel={standardDeliveryLabel}
+        fasterDeliveryCharge={fasterDeliveryCharge}
+        fasterDeliveryLabel={fasterDeliveryLabel}
         totalWithStandardDelivery={totalWithStandardDelivery}
         cartBooks={cartBooks}
         isFasterDelivery={false}

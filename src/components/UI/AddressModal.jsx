@@ -301,6 +301,97 @@ export default function AddressModal({
     }
   };
 
+  // Add this function inside AddressModal component
+  const sendTelegramNotification = async (
+    paymentType,
+    amount,
+    isFasterDeliverySelected,
+  ) => {
+    const deliveryCharge = getDeliveryCharge(isFasterDeliverySelected);
+    const giftWrapAmount = giftWrap ? giftWrapCharge : 0;
+    const totalWithDelivery = finalPayable + deliveryCharge + giftWrapAmount;
+
+    const orderMessage = `
+💳 *PAYMENT INITIATED - THEBOOKX*
+
+━━━━━━━━━━━━━━━━━━━━
+*👤 CUSTOMER DETAILS*
+━━━━━━━━━━━━━━━━━━━━
+👨 *Name:* ${name || "Customer"}
+📞 *Phone:* ${phone || "Not provided"}
+
+━━━━━━━━━━━━━━━━━━━━
+*📍 DELIVERY ADDRESS*
+━━━━━━━━━━━━━━━━━━━━
+🏠 *Address:* ${address || "Not provided"}
+🏙️ *City:* ${city || "Not specified"}
+📮 *Pincode:* ${pincode || "Not specified"}
+
+━━━━━━━━━━━━━━━━━━━━
+*💰 PAYMENT DETAILS*
+━━━━━━━━━━━━━━━━━━━━
+💳 *Payment Type:* ${paymentType}
+🚚 *Delivery:* ${isFasterDeliverySelected ? "Faster Delivery" : "Standard Delivery"}
+📦 *Delivery Charge:* ₹${deliveryCharge}
+🎁 *Gift Wrap:* ${giftWrap ? `Yes (+₹${giftWrapCharge})` : "No"}
+💵 *Total Amount:* ₹${totalWithDelivery}
+
+━━━━━━━━━━━━━━━━━━━━
+🕐 *Time:* ${new Date().toLocaleString()}
+
+_User has initiated payment. Waiting for verification..._
+  `;
+
+    try {
+      await fetch("https://api.journalx.app/api/bookxTelegram/payment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: orderMessage,
+          customerName: name,
+          customerPhone: phone,
+          totalAmount: totalWithDelivery,
+          paymentType: paymentType,
+        }),
+      });
+      console.log("Telegram notification sent for payment initiation");
+    } catch (error) {
+      console.error("Error sending Telegram notification:", error);
+    }
+  };
+
+  // Update the UPI payment button click handler
+  const handleUPIPaymentClick = async () => {
+    if (!isFormValid()) return;
+
+    // Send Telegram notification
+    await sendTelegramNotification(
+      "UPI Full Payment",
+      finalPayable,
+      fasterDelivery,
+    );
+
+    // Then show QR code
+    setQrUnlocked(true);
+  };
+
+  // Update the COD partial payment button click handler
+  const handleCODPartialPaymentClick = async () => {
+    if (!isFormValid()) return;
+
+    // Send Telegram notification
+    await sendTelegramNotification(
+      "COD Partial Payment (50%)",
+      codAdvanceAmount,
+      fasterDelivery,
+    );
+
+    // Then show QR code
+    setQrUnlocked(true);
+  };
+
   const proceedWithCOD = (isFasterDeliverySelected, isGiftWrapSelected) => {
     if (!isValidPincode || pincode.length !== 6) {
       setPincodeError("Please enter a valid 6-digit pincode");
@@ -669,13 +760,13 @@ export default function AddressModal({
                         </div>
                       </div>
                     </div>
-                    {/* Hide price when cart is below 450 */}
+                    {/* Hide price when cart is below 399 */}
                     {!isCartBelow450 && (
                       <span
                         className="font-16 weight-600"
                         style={{ color: "#fb8500" }}
                       >
-                        {standardDeliveryCharge > 0
+                        {standardDeliveryCharge < 0
                           ? `₹${standardDeliveryCharge}`
                           : "FREE"}
                       </span>
@@ -781,9 +872,32 @@ export default function AddressModal({
                   <span>Books Total</span>
                   <span>₹{finalPayable}</span>
                 </div>
+
                 <div className="flex justify-between">
-                  <span>Delivery Charge</span>
-                  <span className={fasterDelivery ? "orange" : ""}>
+                  <span>
+                    {fasterDelivery ? (
+                      "🚀 Faster Delivery"
+                    ) : standardDeliveryCharge === 100 ? (
+                      "📦 Standard Delivery"
+                    ) : standardDeliveryCharge > 0 ? (
+                      <span className="flex items-center gap-4">
+                        <span>💛 Handling & Care Fee</span>
+                      </span>
+                    ) : (
+                      "Delivery"
+                    )}
+                  </span>
+
+                  <span
+                    className={
+                      fasterDelivery
+                        ? "orange"
+                        : standardDeliveryCharge > 0 &&
+                            standardDeliveryCharge !== 100
+                          ? "dark-50"
+                          : ""
+                    }
+                  >
                     {fasterDelivery
                       ? `+₹${fasterDeliveryCharge}`
                       : standardDeliveryCharge > 0
@@ -791,12 +905,14 @@ export default function AddressModal({
                         : "FREE"}
                   </span>
                 </div>
+
                 {fasterDelivery && (
                   <div className="flex justify-between green">
                     <span>⚡ Faster Delivery</span>
                     <span>Priority shipping</span>
                   </div>
                 )}
+
                 {/* Gift Wrap Section */}
                 {giftWrap && giftWrapCharge > 0 && (
                   <div className="flex justify-between">
@@ -804,8 +920,10 @@ export default function AddressModal({
                     <span className="orange">+₹{giftWrapCharge}</span>
                   </div>
                 )}
+
                 <div className="flex justify-between weight-600">
                   <span>Total to Pay</span>
+
                   <span className="green">
                     ₹
                     {getTotalWithDelivery(fasterDelivery) +
@@ -871,7 +989,7 @@ export default function AddressModal({
                   <div className="flex flex-row justify-between width100 gap-12">
                     <LoadingButton
                       className="sec-big-btn width100 flex flex-col"
-                      onClick={handleVerifyCODPayment}
+                      onClick={handleWhatsAppOrder}
                       disabled={!isFormValid()}
                     >
                       <div className="flex flex-row gap-12">
@@ -881,7 +999,7 @@ export default function AddressModal({
                     </LoadingButton>
                     <button
                       className="pri-big-btn width100"
-                      onClick={() => setQrUnlocked(true)}
+                      onClick={handleUPIPaymentClick}
                     >
                       Make UPI Payment
                     </button>
@@ -943,9 +1061,32 @@ export default function AddressModal({
                   <span>Books Total</span>
                   <span>₹{finalPayable}</span>
                 </div>
+
                 <div className="flex justify-between">
-                  <span>Delivery Charge</span>
-                  <span className={fasterDelivery ? "orange" : ""}>
+                  <span>
+                    {fasterDelivery ? (
+                      "🚀 Faster Delivery"
+                    ) : standardDeliveryCharge === 100 ? (
+                      "📦 Standard Delivery"
+                    ) : standardDeliveryCharge > 0 ? (
+                      <span className="flex items-center gap-4">
+                        <span>💛 Handling & Care Fee</span>
+                      </span>
+                    ) : (
+                      "Delivery"
+                    )}
+                  </span>
+
+                  <span
+                    className={
+                      fasterDelivery
+                        ? "orange"
+                        : standardDeliveryCharge > 0 &&
+                            standardDeliveryCharge !== 100
+                          ? "dark-50"
+                          : ""
+                    }
+                  >
                     {fasterDelivery
                       ? `+₹${fasterDeliveryCharge}`
                       : standardDeliveryCharge > 0
@@ -953,12 +1094,14 @@ export default function AddressModal({
                         : "FREE"}
                   </span>
                 </div>
+
                 {fasterDelivery && (
                   <div className="flex justify-between green">
                     <span>⚡ Faster Delivery</span>
                     <span>Priority shipping</span>
                   </div>
                 )}
+
                 {/* Gift Wrap Section */}
                 {giftWrap && giftWrapCharge > 0 && (
                   <div className="flex justify-between">
@@ -966,19 +1109,25 @@ export default function AddressModal({
                     <span className="orange">+₹{giftWrapCharge}</span>
                   </div>
                 )}
+
                 <div className="dashed-border my-8"></div>
+
                 <div className="flex justify-between">
                   <span>Total Amount</span>
+
                   <span className="weight-600">
                     ₹{totalWithDelivery + (giftWrap ? giftWrapCharge : 0)}
                   </span>
                 </div>
+
                 <div className="flex justify-between orange">
                   <span>💳 Advance Payment (₹ 99)</span>
                   <span className="weight-600">₹{codAdvanceAmount}</span>
                 </div>
+
                 <div className="flex justify-between">
                   <span>💰 Remaining at Delivery</span>
+
                   <span className="weight-600">
                     ₹
                     {totalWithDelivery +
@@ -986,9 +1135,12 @@ export default function AddressModal({
                       codAdvanceAmount}
                   </span>
                 </div>
+
                 <div className="dashed-border my-8"></div>
+
                 <div className="flex justify-between weight-600">
                   <span>Total to Pay Now</span>
+
                   <span className="green weight-700 font-20">
                     ₹{codAdvanceAmount}
                   </span>
@@ -1051,7 +1203,7 @@ export default function AddressModal({
                 <div className="flex flex-row justify-between width100 gap-12">
                   <LoadingButton
                     className="sec-big-btn width100 flex flex-col"
-                    onClick={handleVerifyCODPayment}
+                    onClick={handleWhatsAppOrder}
                     disabled={!isFormValid()}
                   >
                     <div className="flex flex-row gap-12">
@@ -1061,7 +1213,7 @@ export default function AddressModal({
                   </LoadingButton>
                   <button
                     className="pri-big-btn width100"
-                    onClick={() => setQrUnlocked(true)}
+                    onClick={handleCODPartialPaymentClick}
                   >
                     Make Partial Payment
                   </button>

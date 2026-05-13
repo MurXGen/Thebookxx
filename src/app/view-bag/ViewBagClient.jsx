@@ -2,7 +2,13 @@
 
 import { saveOrder } from "@/utils/indexDB";
 import { books } from "@/utils/book";
-import { CART_OFFERS, getExtraDeliveryCharge } from "@/utils/cartOffers";
+import {
+  CART_OFFERS,
+  getDeliveryCharge,
+  getDeliveryLabel,
+  getOriginalCharge,
+  getDeliveryDescription,
+} from "@/utils/cartOffers";
 import {
   ArrowLeft,
   CheckCircle,
@@ -47,6 +53,12 @@ export default function ViewBagClient() {
   const [isFasterDelivery, setIsFasterDelivery] = useState(false);
   const [giftWrapCharge, setGiftWrapCharge] = useState(0);
   const [isGiftWrap, setIsGiftWrap] = useState(false);
+  const [standardOriginalCharge, setStandardOriginalCharge] = useState(null);
+  const [fasterOriginalCharge, setFasterOriginalCharge] = useState(null);
+  const [totalDiscounted, setTotalDiscounted] = useState(0);
+  const [finalPayable, setFinalPayable] = useState(0);
+  const [offerDiscount, setOfferDiscount] = useState(0);
+  const [offerLabel, setOfferLabel] = useState(null);
 
   useEffect(() => {
     setCurrentUrl(window.location.href);
@@ -56,23 +68,19 @@ export default function ViewBagClient() {
       try {
         const decodedOrder = JSON.parse(decodeURIComponent(orderParam));
         setOrderData(decodedOrder);
-
         setIsFasterDelivery(decodedOrder.fasterDelivery || false);
         setIsGiftWrap(decodedOrder.giftWrap || false);
         setGiftWrapCharge(decodedOrder.giftWrapCharge || 0);
+
+        if (decodedOrder.totalDiscounted) {
+          setTotalDiscounted(decodedOrder.totalDiscounted);
+        }
 
         if (decodedOrder.deliveryCharge !== undefined) {
           if (decodedOrder.fasterDelivery) {
             setFasterDeliveryCharge(decodedOrder.deliveryCharge);
           } else {
             setStandardDeliveryCharge(decodedOrder.deliveryCharge);
-          }
-        } else {
-          const totalDiscounted = calculateTotalDiscounted(decodedOrder);
-          const standardCharge = getExtraDeliveryCharge(totalDiscounted);
-          setStandardDeliveryCharge(standardCharge);
-          if (decodedOrder.fasterDelivery) {
-            setFasterDeliveryCharge(decodedOrder.fasterDeliveryCharge || 119);
           }
         }
 
@@ -145,10 +153,6 @@ export default function ViewBagClient() {
     }
   };
 
-  const calculateTotalDiscounted = (order) => {
-    return 0;
-  };
-
   const itemsParam = searchParams.get("items");
 
   if (!itemsParam) {
@@ -168,7 +172,6 @@ export default function ViewBagClient() {
       const [id, qty] = entry.split(":");
       const book = books.find((b) => b.id === id);
       if (!book || !qty) return null;
-
       return {
         ...book,
         qty: Math.max(1, Number(qty)),
@@ -184,7 +187,7 @@ export default function ViewBagClient() {
     );
   }
 
-  const totalDiscounted = cartBooks.reduce(
+  const totalDiscountedValue = cartBooks.reduce(
     (sum, b) => sum + b.discountedPrice * b.qty,
     0,
   );
@@ -198,37 +201,63 @@ export default function ViewBagClient() {
     return [...CART_OFFERS].reverse().find((o) => amount >= o.target) || null;
   };
 
-  const appliedOffer = getAppliedOffer(totalDiscounted);
+  const appliedOffer = getAppliedOffer(totalDiscountedValue);
 
-  let offerDiscount = 0;
-  let offerLabel = null;
+  let offerDiscountValue = 0;
+  let offerLabelValue = null;
 
   if (appliedOffer) {
     if (appliedOffer.type === "flat") {
-      offerDiscount = appliedOffer.value;
-      offerLabel = `₹${appliedOffer.value} OFF`;
+      offerDiscountValue = appliedOffer.value;
+      offerLabelValue = `₹${appliedOffer.value} OFF`;
     }
-
     if (appliedOffer.type === "percentage") {
-      offerDiscount = Math.round((totalDiscounted * appliedOffer.value) / 100);
-      offerLabel = "Free delivery 🚚";
+      offerDiscountValue = Math.round(
+        (totalDiscountedValue * appliedOffer.value) / 100,
+      );
+      offerLabelValue = "Free delivery 🚚";
     }
   }
 
-  const finalPayable = totalDiscounted - offerDiscount;
+  const finalPayableValue = totalDiscountedValue - offerDiscountValue;
 
-  const getDeliveryCharge = () => {
+  // Get dynamic delivery charges using the new logic
+  const standardCharge = getDeliveryCharge(totalDiscountedValue, false);
+  const fasterCharge = getDeliveryCharge(totalDiscountedValue, true);
+  const standardLabel = getDeliveryLabel(totalDiscountedValue, false);
+  const fasterLabel = getDeliveryLabel(totalDiscountedValue, true);
+  const standardOriginal = getOriginalCharge(totalDiscountedValue, false);
+  const fasterOriginal = getOriginalCharge(totalDiscountedValue, true);
+  const standardDesc = getDeliveryDescription(totalDiscountedValue, false);
+  const fasterDesc = getDeliveryDescription(totalDiscountedValue, true);
+
+  const getDeliveryChargeValue = () => {
     if (orderData?.deliveryCharge !== undefined) {
       return orderData.deliveryCharge;
     }
     if (isFasterDelivery) {
-      return fasterDeliveryCharge || 119;
+      return fasterCharge;
     }
-    return standardDeliveryCharge || getExtraDeliveryCharge(totalDiscounted);
+    return standardCharge;
   };
 
-  const deliveryCharge = getDeliveryCharge();
-  const totalWithDelivery = finalPayable + deliveryCharge + giftWrapCharge;
+  const deliveryCharge = getDeliveryChargeValue();
+  const totalWithDelivery = finalPayableValue + deliveryCharge + giftWrapCharge;
+
+  const getDeliveryChargeDisplay = () => {
+    if (isFasterDelivery) return fasterCharge;
+    return standardCharge;
+  };
+
+  const getDeliveryLabelDisplay = () => {
+    if (isFasterDelivery) return fasterLabel;
+    return standardLabel;
+  };
+
+  const getOriginalChargeDisplay = () => {
+    if (isFasterDelivery) return fasterOriginal;
+    return standardOriginal;
+  };
 
   const handleStatusUpdate = (field, value) => {
     const newStatus = { ...orderStatus, [field]: value };
@@ -287,11 +316,9 @@ export default function ViewBagClient() {
     setShowNumberSelection(true);
   };
 
-  // Download Order Details as CSV
   const downloadOrderCSV = () => {
     if (!orderData || !cartBooks.length) return;
 
-    // Prepare CSV headers
     const headers = [
       "Order ID",
       "Customer Name",
@@ -310,7 +337,6 @@ export default function ViewBagClient() {
       "Total Amount",
     ];
 
-    // Prepare CSV data row
     const row = [
       orderData.orderId || "N/A",
       orderData.name || "N/A",
@@ -321,7 +347,7 @@ export default function ViewBagClient() {
       orderData.state || "N/A",
       orderData.pincode || "N/A",
       orderData.paymentMethod || "N/A",
-      isFasterDelivery ? "Faster Delivery" : "Standard Delivery",
+      isFasterDelivery ? fasterLabel : standardLabel,
       deliveryCharge,
       isGiftWrap ? "Yes" : "No",
       giftWrapCharge,
@@ -329,25 +355,19 @@ export default function ViewBagClient() {
       totalWithDelivery,
     ];
 
-    // Create CSV with book items
     let csvContent = headers.join(",") + "\n";
     csvContent += row.join(",") + "\n\n";
-
-    // Add Book Items Section
     csvContent += "Order Items\n";
     csvContent += "Item Name,Quantity,Price,Total\n";
     cartBooks.forEach((book) => {
       csvContent += `"${book.name}",${book.qty},${book.discountedPrice},${book.discountedPrice * book.qty}\n`;
     });
-
-    // Add Status Section
     csvContent += "\nOrder Status\n";
     csvContent += `Advance Paid,${orderStatus.advancePaid ? "Yes" : "No"}\n`;
     csvContent += `Item Shipped,${orderStatus.isShipped ? "Yes" : "No"}\n`;
     csvContent += `Item Delivered,${orderStatus.isDelivered ? "Yes" : "No"}\n`;
     csvContent += `Tracking ID,${savedTrackingId || "Not available"}\n`;
 
-    // Download file
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
@@ -361,8 +381,8 @@ export default function ViewBagClient() {
 
   const sendWhatsAppMessage = (phoneNumber, messageType) => {
     let message = "";
-
     let formattedNumber = phoneNumber;
+
     if (phoneNumber && !phoneNumber.startsWith("+")) {
       const cleanNumber = phoneNumber.replace(/\D/g, "");
       if (cleanNumber.length === 10) {
@@ -410,6 +430,8 @@ export default function ViewBagClient() {
 
   const isCOD = orderData?.paymentMethod === "COD";
   const isUPI = orderData?.paymentMethod === "UPI";
+  const originalCharge = getOriginalChargeDisplay();
+  const deliverySavings = originalCharge ? originalCharge - deliveryCharge : 0;
 
   return (
     <section className="section-1200 flex flex-col gap-24">
@@ -434,7 +456,6 @@ export default function ViewBagClient() {
                 {orderData.name || "Not provided"}
               </p>
             </div>
-
             <div className="col-span-2">
               <span className="font-12 gray-500">Address</span>
               <p className="font-14">{orderData.address}</p>
@@ -552,7 +573,6 @@ export default function ViewBagClient() {
                 </span>
               </div>
 
-              {/* Gift Wrap Section */}
               {isGiftWrap && (
                 <div className="flex justify-between items-center">
                   <span className="font-14">Gift Wrap</span>
@@ -570,12 +590,12 @@ export default function ViewBagClient() {
                   {isFasterDelivery ? (
                     <span className="flex items-center gap-4">
                       <Zap size={14} />
-                      Faster Delivery (2-5 days)
+                      {fasterLabel}
                     </span>
                   ) : (
                     <span className="flex items-center gap-4">
                       <Truck size={14} />
-                      Standard Delivery (5-7 days)
+                      {standardLabel}
                     </span>
                   )}
                 </span>
@@ -583,12 +603,28 @@ export default function ViewBagClient() {
 
               {deliveryCharge > 0 && (
                 <div className="flex justify-between items-center">
-                  <span className="font-14">Delivery Charge</span>
-                  <span
-                    className={`font-14 weight-500 ${isFasterDelivery ? "orange" : "red"}`}
-                  >
-                    + ₹{deliveryCharge}
+                  <span className="font-14">
+                    {totalDiscountedValue >= 799
+                      ? "Handling Fee"
+                      : "Delivery Charge"}
                   </span>
+                  <div className="text-right">
+                    {originalCharge && (
+                      <span className="font-12 line-through gray-400 mr-8">
+                        ₹{originalCharge}
+                      </span>
+                    )}
+                    <span
+                      className={`font-14 weight-500 ${isFasterDelivery ? "orange" : "red"}`}
+                    >
+                      + ₹{deliveryCharge}
+                    </span>
+                    {deliverySavings > 0 && (
+                      <span className="font-10 green ml-8">
+                        Save ₹{deliverySavings}
+                      </span>
+                    )}
+                  </div>
                 </div>
               )}
 
@@ -766,11 +802,9 @@ export default function ViewBagClient() {
                 <X size={20} />
               </span>
             </div>
-
             <p className="font-14 gray-500 mb-16">
               Choose which number to send the reminder to:
             </p>
-
             <div className="flex flex-col gap-8">
               <button
                 onClick={() =>
@@ -785,7 +819,6 @@ export default function ViewBagClient() {
                   <div className="font-12 gray-500">Primary Number</div>
                 </div>
               </button>
-
               {alternativeNumbers.map((number, index) => (
                 <button
                   key={index}
@@ -815,7 +848,6 @@ export default function ViewBagClient() {
         {cartBooks.map((book) => {
           const savings =
             book.originalPrice * book.qty - book.discountedPrice * book.qty;
-
           return (
             <article
               key={book.id}
@@ -838,14 +870,11 @@ export default function ViewBagClient() {
                   <div className="book-image-placeholder">📘</div>
                 )}
               </div>
-
               <div className="pad_16 flex flex-col gap-12 book-card">
                 <h3 className="font-14 weight-500 dark-50" itemProp="name">
                   {book.name}
                 </h3>
-
                 <p className="font-12 dark-50">Quantity: {book.qty}</p>
-
                 <div className="flex flex-row gap-24 justify-between book-content">
                   <div
                     className="flex flex-col width100"
@@ -878,53 +907,58 @@ export default function ViewBagClient() {
           <span>Subtotal</span>
           <span>₹{totalOriginal}</span>
         </div>
-
         <div className="flex justify-between">
           <span>Discount</span>
-          <span>- ₹{totalOriginal - totalDiscounted}</span>
+          <span>- ₹{totalOriginal - totalDiscountedValue}</span>
         </div>
-
         {appliedOffer && (
           <div className="flex justify-between green">
             <span>Offer Applied</span>
-            <span>{offerLabel}</span>
+            <span>{offerLabelValue}</span>
           </div>
         )}
-
         {deliveryCharge > 0 && (
           <div
             className={`flex justify-between ${isFasterDelivery ? "orange" : "red"}`}
           >
             <span>
-              Delivery Charge {isFasterDelivery && "(Faster Delivery)"}
+              {totalDiscountedValue >= 799 ? "Handling Fee" : "Delivery Charge"}{" "}
+              {isFasterDelivery && "(Express)"}
             </span>
-            <span>+ ₹{deliveryCharge}</span>
+            <div className="text-right">
+              {originalCharge && (
+                <span className="font-12 line-through gray-400 mr-8">
+                  ₹{originalCharge}
+                </span>
+              )}
+              <span>+ ₹{deliveryCharge}</span>
+              {deliverySavings > 0 && (
+                <span className="font-10 green ml-8">
+                  Save ₹{deliverySavings}
+                </span>
+              )}
+            </div>
           </div>
         )}
-
         {deliveryCharge === 0 && (
           <div className="flex justify-between green">
             <span>Delivery Charge</span>
             <span>FREE</span>
           </div>
         )}
-
         {isGiftWrap && giftWrapCharge > 0 && (
           <div className="flex justify-between orange">
             <span>🎁 Gift Wrap</span>
             <span>+ ₹{giftWrapCharge}</span>
           </div>
         )}
-
         <hr />
-
         <div className="flex justify-between weight-600 font-16">
           <span>Total Payable</span>
           <span className="green font-20 weight-700">₹{totalWithDelivery}</span>
         </div>
       </div>
 
-      {/* Download Button at the bottom */}
       <div className="flex flex-col gap-12">
         <button
           onClick={downloadOrderCSV}
@@ -934,7 +968,6 @@ export default function ViewBagClient() {
           <Download size={18} />
           Download Order Details (CSV)
         </button>
-
         <a
           href={`https://wa.me/917710892108?text=${encodeURIComponent(
             `Hi 👋 Here is my order details.\nOrder ID: ${orderData?.orderId || "N/A"}\nTotal: ₹${totalWithDelivery}`,
@@ -945,7 +978,6 @@ export default function ViewBagClient() {
         >
           Continue on WhatsApp
         </a>
-
         <button
           onClick={exportToCOList}
           className="sec-big-btn flex items-center justify-center gap-8"

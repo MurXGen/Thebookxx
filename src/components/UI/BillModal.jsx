@@ -60,7 +60,7 @@ export default function BillModal({
           </div>
         )}
 
-        {/* Delivery Charges Section */}
+        {/* Delivery / Handling Charges */}
         {deliveryCharge > 0 && (
           <div className="bill-row">
             <span>
@@ -69,11 +69,27 @@ export default function BillModal({
                   <span>🚀 Faster Delivery</span>
                   <span className="font-10 orange">(2-5 days)</span>
                 </span>
-              ) : (
+              ) : deliveryCharge === 100 ? (
                 <span>📦 Standard Delivery</span>
+              ) : (
+                <span className="flex items-center gap-4">
+                  <span>💛 Handling & Care Fee</span>
+                  <span className="font-10 dark-50">
+                    (packing, support & secure shipping)
+                  </span>
+                </span>
               )}
             </span>
-            <span className={isFasterDelivery ? "orange" : "red"}>
+
+            <span
+              className={
+                isFasterDelivery
+                  ? "orange"
+                  : deliveryCharge === 100
+                    ? "red"
+                    : "dark-50"
+              }
+            >
               + ₹{deliveryCharge}
             </span>
           </div>

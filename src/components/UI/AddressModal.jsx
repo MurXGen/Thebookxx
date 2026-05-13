@@ -52,6 +52,7 @@ export default function AddressModal({
   totalWithStandardDelivery = 0,
   giftWrapCharge = 0, // NEW
   giftWrapSelected = false, // NEW
+  cartBooks = [],
 }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -302,6 +303,7 @@ export default function AddressModal({
   };
 
   // Add this function inside AddressModal component
+  // Send Telegram notification for payment initiation with full order details
   const sendTelegramNotification = async (
     paymentType,
     amount,
@@ -310,6 +312,15 @@ export default function AddressModal({
     const deliveryCharge = getDeliveryCharge(isFasterDeliverySelected);
     const giftWrapAmount = giftWrap ? giftWrapCharge : 0;
     const totalWithDelivery = finalPayable + deliveryCharge + giftWrapAmount;
+
+    // Get cart books (you'll need to pass cartBooks as prop)
+    const cartBooksList =
+      cartBooks
+        ?.map(
+          (book, idx) =>
+            `${idx + 1}. *${book.name}* × ${book.qty} = ₹${book.discountedPrice * book.qty}`,
+        )
+        .join("\n") || "No books found";
 
     const orderMessage = `
 💳 *PAYMENT INITIATED - THEBOOKX*
@@ -325,16 +336,30 @@ export default function AddressModal({
 ━━━━━━━━━━━━━━━━━━━━
 🏠 *Address:* ${address || "Not provided"}
 🏙️ *City:* ${city || "Not specified"}
+🗺️ *District:* ${district || "Not specified"}
+📍 *State:* ${state || "Not specified"}
 📮 *Pincode:* ${pincode || "Not specified"}
 
 ━━━━━━━━━━━━━━━━━━━━
-*💰 PAYMENT DETAILS*
+*📦 ORDER SUMMARY*
+━━━━━━━━━━━━━━━━━━━━
+${cartBooksList}
+
+━━━━━━━━━━━━━━━━━━━━
+*💰 BILL DETAILS*
+━━━━━━━━━━━━━━━━━━━━
+📚 Subtotal: ₹${finalPayable}
+🚚 Delivery: ${isFasterDeliverySelected ? "Faster Delivery" : "Standard Delivery"}
+📦 Delivery Charge: +₹${deliveryCharge}
+${giftWrap ? `🎁 Gift Wrap: +₹${giftWrapCharge}` : ""}
+━━━━━━━━━━━━━━━━━━━━
+*💵 TOTAL PAYABLE: ₹${totalWithDelivery}*
+
+━━━━━━━━━━━━━━━━━━━━
+*💳 PAYMENT DETAILS*
 ━━━━━━━━━━━━━━━━━━━━
 💳 *Payment Type:* ${paymentType}
-🚚 *Delivery:* ${isFasterDeliverySelected ? "Faster Delivery" : "Standard Delivery"}
-📦 *Delivery Charge:* ₹${deliveryCharge}
-🎁 *Gift Wrap:* ${giftWrap ? `Yes (+₹${giftWrapCharge})` : "No"}
-💵 *Total Amount:* ₹${totalWithDelivery}
+💰 *Amount to Pay:* ₹${amount}
 
 ━━━━━━━━━━━━━━━━━━━━
 🕐 *Time:* ${new Date().toLocaleString()}
@@ -366,7 +391,7 @@ _User has initiated payment. Waiting for verification..._
   const handleUPIPaymentClick = async () => {
     if (!isFormValid()) return;
 
-    // Send Telegram notification
+    // Send Telegram notification with full order details
     await sendTelegramNotification(
       "UPI Full Payment",
       finalPayable,
@@ -381,7 +406,7 @@ _User has initiated payment. Waiting for verification..._
   const handleCODPartialPaymentClick = async () => {
     if (!isFormValid()) return;
 
-    // Send Telegram notification
+    // Send Telegram notification with full order details
     await sendTelegramNotification(
       "COD Partial Payment (50%)",
       codAdvanceAmount,

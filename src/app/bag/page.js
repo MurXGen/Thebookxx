@@ -537,6 +537,7 @@ _Thank you for shopping with TheBookX! 📚✨_
         giftWrapSelected={giftWrap}
         handleCODCheckout={handleCODCheckout}
         handleUPICheckout={handleUPICheckout}
+        cartBooks={cartBooks}
       />
 
       <BillModal

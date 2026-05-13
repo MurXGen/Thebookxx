@@ -989,7 +989,7 @@ _User has initiated payment. Waiting for verification..._
                   <div className="flex flex-row justify-between width100 gap-12">
                     <LoadingButton
                       className="sec-big-btn width100 flex flex-col"
-                      onClick={handleWhatsAppOrder}
+                      onClick={handleVerifyCODPayment}
                       disabled={!isFormValid()}
                     >
                       <div className="flex flex-row gap-12">
@@ -1203,7 +1203,7 @@ _User has initiated payment. Waiting for verification..._
                 <div className="flex flex-row justify-between width100 gap-12">
                   <LoadingButton
                     className="sec-big-btn width100 flex flex-col"
-                    onClick={handleWhatsAppOrder}
+                    onClick={handleVerifyCODPayment}
                     disabled={!isFormValid()}
                   >
                     <div className="flex flex-row gap-12">

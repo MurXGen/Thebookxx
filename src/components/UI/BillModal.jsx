@@ -1,5 +1,9 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+import { useTrackView } from "@/lib/trackingHooks";
+import { EVENTS } from "@/lib/trackingEvents";
+
 export default function BillModal({
   open,
   onClose,
@@ -14,6 +18,46 @@ export default function BillModal({
   giftWrapCharge = 0,
   giftWrapSelected = false,
 }) {
+  // Track when Bill Modal is viewed
+  useTrackView(
+    EVENTS.BILL_MODAL_VIEWED,
+    {
+      total_original: totalOriginal,
+      total_discounted: totalDiscounted,
+      final_payable: totalDiscounted - offerDiscount,
+      has_gift_wrap: giftWrapSelected,
+      is_faster_delivery: isFasterDelivery,
+      delivery_charge: isFasterDelivery
+        ? fasterDeliveryCharge
+        : standardDeliveryCharge,
+    },
+    open,
+  );
+
+  // Track when modal is closed
+  const hasTrackedClose = useRef(false);
+
+  useEffect(() => {
+    if (
+      !open &&
+      hasTrackedClose.current === false &&
+      hasTrackedClose.current !== undefined
+    ) {
+      // Only track close if it was previously open (not initial render)
+      import("@/lib/analytics").then(({ trackFunnelEvent }) => {
+        trackFunnelEvent(EVENTS.BILL_MODAL_CLOSED, {
+          total_amount: finalTotal,
+          reason: "manual_close",
+        });
+      });
+      hasTrackedClose.current = true;
+    }
+
+    if (open) {
+      hasTrackedClose.current = false;
+    }
+  }, [open]);
+
   if (!open) return null;
 
   const finalPayable = totalDiscounted - offerDiscount;

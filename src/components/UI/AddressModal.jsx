@@ -21,6 +21,8 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { FaWhatsapp } from "react-icons/fa";
+import { EVENTS } from "@/lib/trackingEvents";
+import { trackFunnelEvent } from "@/lib/analytics";
 
 // Quick delivery eligible pincodes
 const PINCODE_DATA_KEY = "user_pincode";
@@ -50,8 +52,8 @@ export default function AddressModal({
   standardDeliveryCharge = 0,
   fasterDeliveryCharge = 119,
   totalWithStandardDelivery = 0,
-  giftWrapCharge = 0, // NEW
-  giftWrapSelected = false, // NEW
+  giftWrapCharge = 0,
+  giftWrapSelected = false,
   cartBooks = [],
 }) {
   const [name, setName] = useState("");
@@ -69,6 +71,7 @@ export default function AddressModal({
   const [showContactFields, setShowContactFields] = useState(false);
   const [showFasterDeliveryModal, setShowFasterDeliveryModal] = useState(false);
   const [tempPaymentMethod, setTempPaymentMethod] = useState(null);
+  const [addressFormStartTime, setAddressFormStartTime] = useState(null);
 
   const [showUPIPayment, setShowUPIPayment] = useState(false);
   const [showCODPayment, setShowCODPayment] = useState(false);
@@ -83,6 +86,64 @@ export default function AddressModal({
 
   const UPI_ID = "7977960242-1@okbizaxis";
 
+  // Track modal open
+  useEffect(() => {
+    if (open) {
+      trackFunnelEvent(EVENTS.ADDRESS_MODAL_OPENED, {
+        cart_total: finalPayable,
+        has_gift_wrap: giftWrapSelected,
+      });
+      setAddressFormStartTime(Date.now());
+    }
+  }, [open]);
+
+  // Track address form completion
+  useEffect(() => {
+    if (showContactFields && name && phone && address && city && pincode) {
+      const timeSpent = addressFormStartTime
+        ? Math.round((Date.now() - addressFormStartTime) / 1000)
+        : null;
+      trackFunnelEvent(EVENTS.ADDRESS_FORM_COMPLETED, {
+        has_name: !!name,
+        has_phone: !!phone,
+        has_address: !!address,
+        has_city: !!city,
+        time_to_complete_seconds: timeSpent,
+      });
+    }
+  }, [showContactFields, name, phone, address, city, pincode]);
+
+  // Track pincode auto-population
+  useEffect(() => {
+    if (open) {
+      const savedPincodeData = localStorage.getItem(PINCODE_DATA_KEY);
+      if (savedPincodeData) {
+        try {
+          const parsedData = JSON.parse(savedPincodeData);
+          if (parsedData.pincode && !pincode) {
+            trackFunnelEvent(EVENTS.PINCODE_AUTO_POPULATED, {
+              pincode: parsedData.pincode,
+              source: "localStorage",
+            });
+          }
+        } catch (error) {
+          console.error("Error loading saved pincode data:", error);
+        }
+      }
+    }
+  }, [open]);
+
+  // Track pincode manual entry
+  const handlePincodeChange = (e) => {
+    const newPincode = e.target.value.replace(/\D/g, "");
+    if (newPincode.length === 6 && pincode.length !== 6) {
+      trackFunnelEvent(EVENTS.PINCODE_MANUAL_ENTRY, {
+        pincode: newPincode,
+      });
+    }
+    setPincode(newPincode);
+  };
+
   useEffect(() => {
     if (open) {
       const savedPincodeData = localStorage.getItem(PINCODE_DATA_KEY);
@@ -91,7 +152,6 @@ export default function AddressModal({
           const parsedData = JSON.parse(savedPincodeData);
           if (parsedData.pincode && !pincode) {
             setPincode(parsedData.pincode);
-            // Trigger location fetch for saved pincode
             if (parsedData.pincode.length === 6) {
               fetchLocationByPincode(parsedData.pincode);
             }
@@ -115,8 +175,6 @@ export default function AddressModal({
     }
   }, [open]);
 
-  // Calculate 50% advance for COD
-
   // Check if cart value is below 450
   const isCartBelow450 = totalDiscounted < 399;
 
@@ -125,7 +183,6 @@ export default function AddressModal({
     if (isFaster) {
       return fasterDeliveryCharge;
     }
-    // Still charge standard delivery charge even when cart below 450
     return standardDeliveryCharge;
   };
 
@@ -284,6 +341,13 @@ export default function AddressModal({
     setFasterDelivery(true);
     setShowFasterDeliveryModal(false);
 
+    // Track delivery speed selection
+    trackFunnelEvent(EVENTS.DELIVERY_SPEED_SELECTED, {
+      choice: "faster",
+      delivery_charge: fasterDeliveryCharge,
+      cart_total: finalPayable,
+    });
+
     if (tempPaymentMethod === "COD") {
       proceedWithCOD(true, giftWrapSelected);
     } else if (tempPaymentMethod === "UPI") {
@@ -295,6 +359,13 @@ export default function AddressModal({
     setFasterDelivery(false);
     setShowFasterDeliveryModal(false);
 
+    // Track delivery speed selection
+    trackFunnelEvent(EVENTS.DELIVERY_SPEED_SELECTED, {
+      choice: "standard",
+      delivery_charge: standardDeliveryCharge,
+      cart_total: finalPayable,
+    });
+
     if (tempPaymentMethod === "COD") {
       proceedWithCOD(false, giftWrapSelected);
     } else if (tempPaymentMethod === "UPI") {
@@ -302,7 +373,6 @@ export default function AddressModal({
     }
   };
 
-  // Add this function inside AddressModal component
   // Send Telegram notification for payment initiation with full order details
   const sendTelegramNotification = async (
     paymentType,
@@ -313,7 +383,6 @@ export default function AddressModal({
     const giftWrapAmount = giftWrap ? giftWrapCharge : 0;
     const totalWithDelivery = finalPayable + deliveryCharge + giftWrapAmount;
 
-    // Get cart books (you'll need to pass cartBooks as prop)
     const cartBooksList =
       cartBooks
         ?.map(
@@ -391,30 +460,64 @@ _User has initiated payment. Waiting for verification..._
   const handleUPIPaymentClick = async () => {
     if (!isFormValid()) return;
 
-    // Send Telegram notification with full order details
+    // Track UPI payment initiation
+    trackFunnelEvent(EVENTS.UPI_PAYMENT_INITIATED, {
+      total_amount: finalPayable,
+      delivery_type: fasterDelivery ? "faster" : "standard",
+    });
+
     await sendTelegramNotification(
       "UPI Full Payment",
       finalPayable,
       fasterDelivery,
     );
 
-    // Then show QR code
     setQrUnlocked(true);
+    trackFunnelEvent(EVENTS.UPI_QR_REVEALED, {
+      amount: finalPayable,
+    });
   };
 
   // Update the COD partial payment button click handler
   const handleCODPartialPaymentClick = async () => {
     if (!isFormValid()) return;
 
-    // Send Telegram notification with full order details
+    // Track COD payment initiation
+    trackFunnelEvent(EVENTS.COD_PARTIAL_PAYMENT_CLICKED, {
+      advance_amount: codAdvanceAmount,
+      total_amount: totalWithDelivery,
+      delivery_type: fasterDelivery ? "faster" : "standard",
+    });
+
     await sendTelegramNotification(
       "COD Partial Payment (50%)",
       codAdvanceAmount,
       fasterDelivery,
     );
 
-    // Then show QR code
     setQrUnlocked(true);
+    trackFunnelEvent(EVENTS.COD_QR_REVEALED, {
+      amount: codAdvanceAmount,
+    });
+  };
+
+  // Track UPI link copy
+  const handleCopyUpiId = () => {
+    navigator.clipboard.writeText(UPI_ID);
+    setUpiCopied(true);
+    setTimeout(() => setUpiCopied(false), 3000);
+    trackFunnelEvent(EVENTS.UPI_LINK_COPIED, {});
+  };
+
+  // Track QR download
+  const handleDownloadQR = () => {
+    const link = document.createElement("a");
+    link.href = "/books/uskillbook.png";
+    link.download = "thebookx-upi-qr.png";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    trackFunnelEvent(EVENTS.UPI_QR_DOWNLOADED, {});
   };
 
   const proceedWithCOD = (isFasterDeliverySelected, isGiftWrapSelected) => {
@@ -453,15 +556,37 @@ _User has initiated payment. Waiting for verification..._
     if (!isFormValid()) return;
     setTempPaymentMethod("COD");
     setShowFasterDeliveryModal(true);
+    trackFunnelEvent(EVENTS.PAYMENT_METHOD_SELECTED, {
+      method: "COD",
+      cart_total: finalPayable,
+    });
   };
 
   const handleUPIClick = () => {
     if (!isFormValid()) return;
     setTempPaymentMethod("UPI");
     setShowFasterDeliveryModal(true);
+    trackFunnelEvent(EVENTS.PAYMENT_METHOD_SELECTED, {
+      method: "UPI",
+      cart_total: finalPayable,
+    });
+  };
+
+  const handleWhatsAppOrderClick = () => {
+    if (!isFormValid()) return;
+    trackFunnelEvent(EVENTS.PAYMENT_METHOD_SELECTED, {
+      method: "WhatsApp",
+      cart_total: finalPayable,
+    });
+    handleVerifyCODPayment();
   };
 
   const handleVerifyCODPayment = () => {
+    trackFunnelEvent(EVENTS.COD_PAYMENT_VERIFIED, {
+      amount: codAdvanceAmount,
+      verification_time: verifyTimer,
+    });
+
     if (handleCODCheckout) {
       handleCODCheckout(
         {
@@ -485,6 +610,11 @@ _User has initiated payment. Waiting for verification..._
   };
 
   const handleVerifyUPIPayment = () => {
+    trackFunnelEvent(EVENTS.UPI_PAYMENT_VERIFIED, {
+      amount: finalPayable,
+      verification_time: verifyTimer,
+    });
+
     if (handleUPICheckout) {
       handleUPICheckout(
         {
@@ -550,9 +680,7 @@ _User has initiated payment. Waiting for verification..._
                   placeholder="Enter 6 digit pincode"
                   value={pincode}
                   maxLength={6}
-                  onChange={(e) =>
-                    setPincode(e.target.value.replace(/\D/g, ""))
-                  }
+                  onChange={handlePincodeChange}
                 />
                 {isFetchingLocation && (
                   <span className="font-10 gray-500 mt-4">
@@ -700,7 +828,7 @@ _User has initiated payment. Waiting for verification..._
 
                   <LoadingButton
                     className="sec-big-btn width100 flex flex-col"
-                    onClick={handleVerifyCODPayment}
+                    onClick={handleWhatsAppOrderClick}
                     disabled={!isFormValid()}
                   >
                     <div className="flex flex-row gap-12">
@@ -785,7 +913,6 @@ _User has initiated payment. Waiting for verification..._
                         </div>
                       </div>
                     </div>
-                    {/* Hide price when cart is below 399 */}
                     {!isCartBelow450 && (
                       <span
                         className="font-16 weight-600"
@@ -976,11 +1103,7 @@ _User has initiated payment. Waiting for verification..._
                     <div className="flex flex-row items-center justify-center gap-8 mt-12">
                       <button
                         className="sec-mid-btn flex flex-row gap-8"
-                        onClick={() => {
-                          navigator.clipboard.writeText(UPI_ID);
-                          setUpiCopied(true);
-                          setTimeout(() => setUpiCopied(false), 3000);
-                        }}
+                        onClick={handleCopyUpiId}
                       >
                         <Copy size={16} />
                         {upiCopied ? "Copied!" : UPI_ID}
@@ -988,14 +1111,7 @@ _User has initiated payment. Waiting for verification..._
 
                       <button
                         className="pri-big-btn flex flex-row gap-8"
-                        onClick={() => {
-                          const link = document.createElement("a");
-                          link.href = "/books/uskillbook.png";
-                          link.download = "thebookx-upi-qr.png";
-                          document.body.appendChild(link);
-                          link.click();
-                          document.body.removeChild(link);
-                        }}
+                        onClick={handleDownloadQR}
                       >
                         <Download size={16} /> Save QR
                       </button>
@@ -1014,7 +1130,7 @@ _User has initiated payment. Waiting for verification..._
                   <div className="flex flex-row justify-between width100 gap-12">
                     <LoadingButton
                       className="sec-big-btn width100 flex flex-col"
-                      onClick={handleVerifyCODPayment}
+                      onClick={handleWhatsAppOrderClick}
                       disabled={!isFormValid()}
                     >
                       <div className="flex flex-row gap-12">
@@ -1190,11 +1306,7 @@ _User has initiated payment. Waiting for verification..._
                   <div className="flex flex-row items-center justify-center gap-8 mt-12">
                     <button
                       className="sec-mid-btn flex flex-row gap-8"
-                      onClick={() => {
-                        navigator.clipboard.writeText(UPI_ID);
-                        setUpiCopied(true);
-                        setTimeout(() => setUpiCopied(false), 3000);
-                      }}
+                      onClick={handleCopyUpiId}
                     >
                       <Copy size={16} />
                       {upiCopied ? "Copied!" : UPI_ID}
@@ -1202,14 +1314,7 @@ _User has initiated payment. Waiting for verification..._
 
                     <button
                       className="pri-big-btn flex flex-row gap-8"
-                      onClick={() => {
-                        const link = document.createElement("a");
-                        link.href = "/books/uskillbook.png";
-                        link.download = "thebookx-upi-qr.png";
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                      }}
+                      onClick={handleDownloadQR}
                     >
                       <Download size={16} /> Save QR
                     </button>
@@ -1228,7 +1333,7 @@ _User has initiated payment. Waiting for verification..._
                 <div className="flex flex-row justify-between width100 gap-12">
                   <LoadingButton
                     className="sec-big-btn width100 flex flex-col"
-                    onClick={handleVerifyCODPayment}
+                    onClick={handleWhatsAppOrderClick}
                     disabled={!isFormValid()}
                   >
                     <div className="flex flex-row gap-12">

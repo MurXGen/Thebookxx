@@ -12,6 +12,9 @@ import LoadingButton from "./UI/LoadingButton";
 import WishlistButton from "./UI/WishListButton";
 import LockedRupeeModal from "./LockedRupeeModal";
 import { getOneRupeeOfferData, getRemainingOfferTime } from "@/utils/book";
+import { trackFunnelEvent } from "@/lib/analytics";
+import { EVENTS } from "@/lib/trackingEvents";
+import { MILESTONES } from "@/lib/trackingEvents";
 
 // Helper function to get full URL
 const getFullUrl = (path) => {
@@ -62,10 +65,12 @@ export default function BookCard({ book }) {
     canAddOneRupeeBook,
     getOneRupeeBlockReason,
     refreshUnlockStatus,
+    cartTotal,
   } = useStore();
   const [imageLoaded, setImageLoaded] = useState(false);
   const [showLockedModal, setShowLockedModal] = useState(false);
   const [isLocked, setIsLocked] = useState(false);
+  const [hasTrackedView, setHasTrackedView] = useState(false);
 
   const cartItem = cart.find((i) => i.id === book.id);
   const qty = cartItem?.qty || 0;
@@ -81,6 +86,31 @@ export default function BookCard({ book }) {
 
   const bookUrl = `/books/${slugify(book.name)}`;
   const fullUrl = `https://thebookx.in${bookUrl}`;
+
+  // Track book view when card becomes visible (once per session)
+  useEffect(() => {
+    if (!hasTrackedView && book) {
+      setHasTrackedView(true);
+
+      if (isOneRupee) {
+        trackFunnelEvent(EVENTS.ONE_RUPEE_BOOK_VIEWED, {
+          book_id: book.id,
+          book_name: book.name,
+          price: book.discountedPrice,
+          is_locked: !canAddOneRupeeBook(),
+          cart_total: cartTotal,
+        });
+      } else {
+        trackFunnelEvent(EVENTS.REGULAR_BOOK_VIEWED, {
+          book_id: book.id,
+          book_name: book.name,
+          price: book.discountedPrice,
+          category: book.catalogue?.[0] || "unknown",
+          cart_total: cartTotal,
+        });
+      }
+    }
+  }, [book, isOneRupee, canAddOneRupeeBook, cartTotal, hasTrackedView]);
 
   // Update lock status whenever the unlock status changes
   useEffect(() => {
@@ -123,11 +153,42 @@ export default function BookCard({ book }) {
 
   const handleAddToCart = () => {
     if (book.discountedPrice === 1 && isRupeeBookLocked) {
+      // Track blocked attempt to add locked ₹1 book
+      trackFunnelEvent(EVENTS.ONE_RUPEE_BOOK_ADD_BLOCKED, {
+        book_id: book.id,
+        book_name: book.name,
+        cart_total: cartTotal,
+        remaining_to_unlock: Math.max(
+          0,
+          MILESTONES.UNLOCK_THRESHOLD - cartTotal,
+        ),
+        lock_reason: getOneRupeeBlockReason(),
+      });
       setShowLockedModal(true);
       return;
     }
+
     addToCart(book.id);
     trackAddToCart({ book, qty: 1 });
+
+    // Track successful add to cart
+    if (book.discountedPrice === 1) {
+      trackFunnelEvent(EVENTS.ONE_RUPEE_BOOK_ADDED, {
+        book_id: book.id,
+        book_name: book.name,
+        cart_total: cartTotal + book.discountedPrice,
+        is_timer_active: canAddOneRupeeBook() && !isRupeeBookLocked,
+      });
+    } else {
+      trackFunnelEvent(EVENTS.REGULAR_BOOK_ADDED, {
+        book_id: book.id,
+        book_name: book.name,
+        price: book.discountedPrice,
+        qty: 1,
+        cart_total: cartTotal + book.discountedPrice,
+      });
+    }
+
     setConfetti(true);
     setTimeout(() => setConfetti(false), 50);
   };
@@ -135,6 +196,15 @@ export default function BookCard({ book }) {
   const handleLockedBookClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
+
+    // Track click on locked ₹1 book
+    trackFunnelEvent(EVENTS.ONE_RUPEE_BOOK_CLICKED, {
+      book_id: book.id,
+      book_name: book.name,
+      cart_total: cartTotal,
+      remaining_to_unlock: Math.max(0, MILESTONES.UNLOCK_THRESHOLD - cartTotal),
+    });
+
     setShowLockedModal(true);
   };
 

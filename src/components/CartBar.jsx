@@ -11,12 +11,16 @@ import InstallPWA from "./InstallPWA";
 import { HiOutlineShoppingBag } from "react-icons/hi2";
 import { ArrowRight, Zap, Clock, Gift, Lock, Sparkles } from "lucide-react";
 import { getRemainingOfferTime, getOneRupeeOfferData } from "@/utils/book";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { trackFunnelEvent } from "@/lib/analytics";
+import { EVENTS } from "@/lib/trackingEvents";
 
 export default function CartBar() {
   const { cart, cartTotal } = useStore();
   const router = useRouter();
   const [liveRemainingTime, setLiveRemainingTime] = useState(0);
+  const prevCartTotalRef = useRef(cartTotal);
+  const hasTrackedMilestonesRef = useRef({});
 
   const hasCart = cart.length > 0;
 
@@ -87,6 +91,53 @@ export default function CartBar() {
     uiState = "locked";
   }
 
+  // Track cart value changes and milestones
+  useEffect(() => {
+    const prevTotal = prevCartTotalRef.current;
+
+    // Track cart value update event
+    if (prevTotal !== cartTotal) {
+      trackFunnelEvent(EVENTS.CART_VALUE_UPDATED, {
+        cart_total: cartTotal,
+        previous_total: prevTotal,
+        item_count: cart.length,
+        has_one_rupee_book: cartBooks.some((b) => b.discountedPrice === 1),
+        user_unlock_status: uiState,
+      });
+    }
+
+    // Track milestone achievements
+    const milestones = [151, 299, 400, 599, 799, 1000];
+    for (const milestone of milestones) {
+      if (
+        prevTotal < milestone &&
+        cartTotal >= milestone &&
+        !hasTrackedMilestonesRef.current[milestone]
+      ) {
+        hasTrackedMilestonesRef.current[milestone] = true;
+        trackFunnelEvent(EVENTS.CART_TOTAL_MILESTONE, {
+          threshold: milestone,
+          cart_total: cartTotal,
+          milestone_type:
+            milestone === 151
+              ? "checkout_eligible"
+              : milestone === 299
+                ? "unlock_threshold"
+                : milestone === 400
+                  ? "free_delivery"
+                  : milestone === 599
+                    ? "handling_fee_discount"
+                    : milestone === 799
+                      ? "bulk_order_threshold"
+                      : "high_value",
+          user_unlock_status: uiState,
+        });
+      }
+    }
+
+    prevCartTotalRef.current = cartTotal;
+  }, [cartTotal, cart.length, cartBooks, uiState]);
+
   // Real-time counter effect
   useEffect(() => {
     if (!isTimerActive) {
@@ -107,11 +158,47 @@ export default function CartBar() {
 
   const remainingForUnlock = Math.max(0, 299 - cartTotal);
 
+  // Track unlock progress view when in locked state
+  useEffect(() => {
+    if (uiState === "locked" && remainingForUnlock > 0) {
+      trackFunnelEvent(EVENTS.UNLOCK_PROGRESS_VIEWED, {
+        current_total: cartTotal,
+        remaining_needed: remainingForUnlock,
+        progress_percentage: Math.min((cartTotal / 299) * 100, 100),
+        has_permanent_unlock_in_storage: isPermanentlyUnlocked,
+      });
+    }
+  }, [uiState, cartTotal, remainingForUnlock, isPermanentlyUnlocked]);
+
   // Format time for display
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
+
+  // Track checkout button click
+  const handleCheckoutClick = () => {
+    trackFunnelEvent(EVENTS.CHECKOUT_BUTTON_CLICKED, {
+      cart_total: cartTotal,
+      item_count: cart.length,
+      has_one_rupee_book: cartBooks.some((b) => b.discountedPrice === 1),
+      user_unlock_status: uiState,
+      has_applied_offer: !!appliedOffer,
+      offer_discount: offerDiscount,
+    });
+    router.push("/bag");
+  };
+
+  // Track "Add Books" button click
+  const handleAddBooksClick = () => {
+    trackFunnelEvent("add_books_button_clicked", {
+      cart_total: cartTotal,
+      remaining_needed: remainingForUnlock,
+      source: "cart_bar",
+    });
+    const booksSection = document.querySelector(".catalogue-section");
+    booksSection?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
@@ -185,7 +272,7 @@ export default function CartBar() {
 
             <motion.button
               className="pri-big-btn"
-              onClick={() => router.push("/bag")}
+              onClick={handleCheckoutClick}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               initial={{ opacity: 0, filter: "blur(4px)" }}
@@ -257,11 +344,7 @@ export default function CartBar() {
               <button
                 className="sec-mid-btn"
                 style={{ color: "white" }}
-                onClick={() => {
-                  const booksSection =
-                    document.querySelector(".catalogue-section");
-                  booksSection?.scrollIntoView({ behavior: "smooth" });
-                }}
+                onClick={handleAddBooksClick}
               >
                 ₹{cartTotal} / ₹299
               </button>

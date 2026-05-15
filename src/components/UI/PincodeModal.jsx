@@ -4,6 +4,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { X, MapPin, Truck, ShieldCheck, Clock, Phone } from "lucide-react";
 import LoadingButton from "./LoadingButton";
+import { trackFunnelEvent } from "@/lib/analytics";
+import { EVENTS } from "@/lib/trackingEvents";
+import { useTrackView } from "@/lib/trackingHooks";
 
 const PINCODE_STORAGE_KEY = "pincode_modal_last_shown";
 const PINCODE_DATA_KEY = "user_pincode";
@@ -15,6 +18,10 @@ export default function PincodeModal() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [locationData, setLocationData] = useState(null);
+  const [startTime, setStartTime] = useState(null);
+
+  // Track modal view when opened
+  useTrackView(EVENTS.PINCODE_MODAL_VIEWED, {}, isOpen);
 
   // Check if modal should be shown (once every 24 hours)
   useEffect(() => {
@@ -24,6 +31,11 @@ export default function PincodeModal() {
 
       // If user already submitted pincode before, don't show modal
       if (savedPincode) {
+        // Track that pincode was auto-filled from storage
+        trackFunnelEvent(EVENTS.PINCODE_AUTO_FILLED, {
+          source: "localStorage",
+          has_pincode: true,
+        });
         return;
       }
 
@@ -34,10 +46,12 @@ export default function PincodeModal() {
 
         if (hoursPassed >= 24) {
           setIsOpen(true);
+          setStartTime(Date.now());
         }
       } else {
         // First time visitor
         setIsOpen(true);
+        setStartTime(Date.now());
       }
     };
 
@@ -106,6 +120,11 @@ export default function PincodeModal() {
   const handleSubmit = async () => {
     if (!pincode || pincode.length !== 6) {
       setError("Please enter a valid 6-digit pincode");
+      trackFunnelEvent(EVENTS.PINCODE_SUBMITTED, {
+        status: "error",
+        error_reason: "invalid_pincode",
+        pincode_length: pincode.length,
+      });
       return;
     }
 
@@ -113,6 +132,20 @@ export default function PincodeModal() {
     setError("");
 
     const location = await fetchLocationDetails(pincode);
+    const timeSpent = startTime
+      ? Math.floor((Date.now() - startTime) / 1000)
+      : null;
+
+    // Track successful submission
+    trackFunnelEvent(EVENTS.PINCODE_SUBMITTED, {
+      status: "success",
+      pincode: pincode,
+      city: location?.city,
+      state: location?.state,
+      phone_provided: !!phoneNumber,
+      time_spent_seconds: timeSpent,
+      is_manual_entry: true,
+    });
 
     // Send to Telegram
     await sendToTelegram(pincode, location, phoneNumber);
@@ -140,8 +173,31 @@ export default function PincodeModal() {
   };
 
   const handleSkip = () => {
+    const timeSpent = startTime
+      ? Math.floor((Date.now() - startTime) / 1000)
+      : null;
+
+    trackFunnelEvent(EVENTS.PINCODE_SKIPPED, {
+      time_spent_seconds: timeSpent,
+      has_pincode_input: !!pincode,
+      has_phone_input: !!phoneNumber,
+    });
+
     localStorage.setItem(PINCODE_STORAGE_KEY, Date.now().toString());
     setIsOpen(false);
+  };
+
+  // Track when user starts typing pincode
+  const handlePincodeChange = (value) => {
+    const newValue = value.replace(/\D/g, "");
+    setPincode(newValue);
+    setError("");
+
+    if (newValue.length === 6) {
+      trackFunnelEvent(EVENTS.PINCODE_MANUAL_ENTRY, {
+        pincode_complete: true,
+      });
+    }
   };
 
   return (
@@ -182,10 +238,7 @@ export default function PincodeModal() {
                   placeholder="Enter 6 digit pincode"
                   value={pincode}
                   maxLength={6}
-                  onChange={(e) => {
-                    setPincode(e.target.value.replace(/\D/g, ""));
-                    setError("");
-                  }}
+                  onChange={(e) => handlePincodeChange(e.target.value)}
                   onKeyPress={(e) => e.key === "Enter" && handleSubmit()}
                   autoFocus
                 />

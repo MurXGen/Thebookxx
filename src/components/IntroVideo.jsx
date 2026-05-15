@@ -1,15 +1,19 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { X } from "lucide-react";
 import Image from "next/image";
+import { trackFunnelEvent } from "@/lib/analytics";
+import { EVENTS } from "@/lib/trackingEvents";
 
 const INTRO_SEEN_KEY = "intro_image_seen";
 
 export default function IntroImage() {
   const [isVisible, setIsVisible] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const startTimeRef = useRef(null);
+  const hasTrackedView = useRef(false);
 
   useEffect(() => {
     const hasSeenIntro = localStorage.getItem(INTRO_SEEN_KEY);
@@ -17,16 +21,38 @@ export default function IntroImage() {
     if (!hasSeenIntro) {
       const timer = setTimeout(() => {
         setIsVisible(true);
+        startTimeRef.current = Date.now();
       }, 500);
       return () => clearTimeout(timer);
     }
   }, []);
+
+  // Track intro view when it becomes visible
+  useEffect(() => {
+    if (isVisible && !hasTrackedView.current) {
+      hasTrackedView.current = true;
+      trackFunnelEvent(EVENTS.INTRO_VIEWED, {
+        intro_type: "image",
+        animation_duration: 4,
+      });
+    }
+  }, [isVisible]);
 
   const handleImageLoad = () => {
     setImageLoaded(true);
   };
 
   const handleComplete = () => {
+    const timeSpent = startTimeRef.current
+      ? (Date.now() - startTimeRef.current) / 1000
+      : 0;
+
+    // Track intro completion
+    trackFunnelEvent(EVENTS.INTRO_COMPLETED, {
+      time_spent_seconds: timeSpent,
+      completed_naturally: true,
+    });
+
     setTimeout(() => {
       setIsVisible(false);
       localStorage.setItem(INTRO_SEEN_KEY, "true");
@@ -34,6 +60,16 @@ export default function IntroImage() {
   };
 
   const handleSkip = () => {
+    const timeSpent = startTimeRef.current
+      ? (Date.now() - startTimeRef.current) / 1000
+      : 0;
+
+    // Track intro skip
+    trackFunnelEvent(EVENTS.INTRO_SKIPPED, {
+      time_spent_seconds: timeSpent,
+      skipped_at: timeSpent,
+    });
+
     setIsVisible(false);
     localStorage.setItem(INTRO_SEEN_KEY, "true");
   };
@@ -91,7 +127,7 @@ export default function IntroImage() {
               <X size={20} />
             </button>
 
-            {/* Text Content */}
+            {/* Text Content - Commented out as per original */}
             {/* <motion.div
               className="intro-content"
               initial={{ opacity: 0, y: 30 }}

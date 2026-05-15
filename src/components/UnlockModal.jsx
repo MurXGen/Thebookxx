@@ -195,7 +195,9 @@ export default function UnlockModal() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15, duration: 0.4 }}
             >
-              {!showTimer ? "🎉 Get Books @1" : "✨ ₹1 Books Activated!"}
+              {!showTimer
+                ? "🎉 Unlock books ₹1 with no restrictions for Limited Time Only"
+                : "✨ ₹1 Books Activated!"}
             </motion.h2>
 
             {/* Description with fade in */}

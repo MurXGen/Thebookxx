@@ -195,9 +195,7 @@ export default function UnlockModal() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15, duration: 0.4 }}
             >
-              {!showTimer
-                ? "🎉 Special Offer Unlocked!"
-                : "✨ ₹1 Books Activated!"}
+              {!showTimer ? "🎉 Get Books @1" : "✨ ₹1 Books Activated!"}
             </motion.h2>
 
             {/* Description with fade in */}
@@ -208,32 +206,35 @@ export default function UnlockModal() {
               transition={{ delay: 0.2, duration: 0.4 }}
             >
               {!showTimer
-                ? "Grab any ₹1 book for the next 10 minutes! This exclusive offer won't last long — start exploring now!"
+                ? "Grab any ₹1 book for the next few minutes! This exclusive offer won't last long — start exploring now!"
                 : "You've successfully unlocked ₹1 books! Add them to your cart within the next 10 minutes. Happy reading! 📚"}
             </motion.p>
 
             {/* SVG Image with lazy loading */}
-            <motion.div
-              className="unlock-svg-container"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.25, duration: 0.5 }}
-            >
-              {!imageLoaded && (
-                <div className="unlock-svg-placeholder">
-                  <div className="loading-spinner-small"></div>
-                </div>
-              )}
-              <Image
-                src="/unlock-offer.jpeg"
-                alt="Unlock Offer"
-                width={180}
-                height={180}
-                className={`unlock-svg ${imageLoaded ? "loaded" : "hidden"}`}
-                onLoadingComplete={() => setImageLoaded(true)}
-                loading="lazy"
-              />
-            </motion.div>
+            {!showTimer && (
+              <motion.div
+                className="unlock-svg-container"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.25, duration: 0.5 }}
+              >
+                {!imageLoaded && (
+                  <div className="unlock-svg-placeholder">
+                    <div className="loading-spinner-small"></div>
+                  </div>
+                )}
+
+                <Image
+                  src="/unlock-offer.jpeg"
+                  alt="Unlock Offer"
+                  width={180}
+                  height={180}
+                  className={`unlock-svg ${imageLoaded ? "loaded" : "hidden"}`}
+                  onLoadingComplete={() => setImageLoaded(true)}
+                  loading="lazy"
+                />
+              </motion.div>
+            )}
 
             {/* Button section with animation */}
             <motion.div
@@ -289,7 +290,7 @@ export default function UnlockModal() {
                   </Suspense>
 
                   <motion.button
-                    className="explore-btn"
+                    className="pri-big-btn"
                     onClick={handleExplore}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}

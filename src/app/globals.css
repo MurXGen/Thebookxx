@@ -4619,9 +4619,8 @@ input {
 }
 
 .unlock-modal-description {
-  font-size: 14px;
-  color: #6b7280;
-  margin-bottom: 24px;
+  font-size: var(--px-12);
+  color: var(--dark);
   line-height: 1.6;
 }
 
@@ -4755,19 +4754,6 @@ input {
   padding: 12px;
 }
 
-/* Countdown Timer inside modal */
-.unlock-modal-content .countdown-timer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  background: linear-gradient(135deg, #fef3c7, #fffbeb);
-  padding: 14px 24px;
-  border-radius: 60px;
-  margin: 8px 0;
-  border: 1px solid #fed7aa;
-}
-
 .unlock-modal-content .timer-icon {
   color: #f59e0b;
   animation: pulse 1.5s ease-in-out infinite;
@@ -4841,7 +4827,7 @@ input {
   }
 
   .unlock-modal-description {
-    font-size: 13px;
+    font-size: var(--px-12);
   }
 }
 

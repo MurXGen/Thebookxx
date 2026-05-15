@@ -10,6 +10,8 @@ import { useState, useEffect, useRef } from "react";
 import CartConfetti from "./UI/Confetti";
 import LoadingButton from "./UI/LoadingButton";
 import WishlistButton from "./UI/WishListButton";
+import LockedRupeeModal from "./LockedRupeeModal";
+import { getOneRupeeOfferData, getRemainingOfferTime } from "@/utils/book";
 
 // Helper function to get full URL
 const getFullUrl = (path) => {
@@ -33,18 +35,12 @@ const addToRecentlyViewed = (bookId) => {
       localStorage.getItem("recentlyViewed") || "[]",
     );
 
-    // Remove if already exists
     const filtered = recentlyViewed.filter((id) => id !== bookId);
-
-    // Add to beginning
     const updated = [bookId, ...filtered];
-
-    // Keep only last 10 items
     const trimmed = updated.slice(0, 10);
 
     localStorage.setItem("recentlyViewed", JSON.stringify(trimmed));
 
-    // Dispatch custom event to notify other components
     window.dispatchEvent(
       new CustomEvent("bookViewed", {
         detail: { bookId },
@@ -57,8 +53,19 @@ const addToRecentlyViewed = (bookId) => {
 
 export default function BookCard({ book }) {
   const [confetti, setConfetti] = useState(false);
-  const { cart, wishlist, addToCart, decreaseQty, toggleWishlist } = useStore();
+  const {
+    cart,
+    wishlist,
+    addToCart,
+    decreaseQty,
+    toggleWishlist,
+    canAddOneRupeeBook,
+    getOneRupeeBlockReason,
+    refreshUnlockStatus,
+  } = useStore();
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [showLockedModal, setShowLockedModal] = useState(false);
+  const [isLocked, setIsLocked] = useState(false);
 
   const cartItem = cart.find((i) => i.id === book.id);
   const qty = cartItem?.qty || 0;
@@ -75,18 +82,72 @@ export default function BookCard({ book }) {
   const bookUrl = `/books/${slugify(book.name)}`;
   const fullUrl = `https://thebookx.in${bookUrl}`;
 
+  // Update lock status whenever the unlock status changes
+  useEffect(() => {
+    const checkLockStatus = () => {
+      if (book.discountedPrice === 1) {
+        setIsLocked(!canAddOneRupeeBook());
+      } else {
+        setIsLocked(false);
+      }
+    };
+
+    checkLockStatus();
+
+    // Set up an interval to check timer expiration every second
+    let interval;
+    if (book.discountedPrice === 1) {
+      interval = setInterval(() => {
+        const offerData = getOneRupeeOfferData();
+        const isTimerActive =
+          offerData?.timerUnlocked === true &&
+          !offerData?.timerExpired &&
+          (Date.now() - (offerData?.unlockTime || 0)) / 1000 / 60 <= 10;
+
+        // If timer was active but now expired, refresh status
+        if (!isTimerActive && !offerData?.permanentUnlocked) {
+          refreshUnlockStatus();
+          setIsLocked(true);
+        } else {
+          setIsLocked(!canAddOneRupeeBook());
+        }
+      }, 1000);
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [book.discountedPrice, canAddOneRupeeBook, refreshUnlockStatus]);
+
+  const isRupeeBookLocked = isLocked;
+
+  const handleAddToCart = () => {
+    if (book.discountedPrice === 1 && isRupeeBookLocked) {
+      setShowLockedModal(true);
+      return;
+    }
+    addToCart(book.id);
+    trackAddToCart({ book, qty: 1 });
+    setConfetti(true);
+    setTimeout(() => setConfetti(false), 50);
+  };
+
+  const handleLockedBookClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setShowLockedModal(true);
+  };
+
   // Get category links for internal linking
   const primaryCategory = book.catalogue?.[0] || "";
   const categoryUrl = primaryCategory
     ? `/category/${slugify(primaryCategory)}`
     : "";
 
-  // Handle book click to track recently viewed
   const handleBookClick = () => {
     addToRecentlyViewed(book.id);
   };
 
-  // Handle share functionality
   const handleShare = async (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -99,12 +160,9 @@ export default function BookCard({ book }) {
 
     try {
       if (navigator.share && window.innerWidth <= 768) {
-        // Use native share on mobile devices
         await navigator.share(shareData);
       } else {
-        // Fallback: copy to clipboard
         await navigator.clipboard.writeText(fullUrl);
-        // Optional: Show a small temporary notification
         const tempMessage = document.createElement("div");
         tempMessage.textContent = "Link copied to clipboard!";
         tempMessage.style.position = "fixed";
@@ -124,228 +182,239 @@ export default function BookCard({ book }) {
       }
     } catch (error) {
       console.error("Error sharing:", error);
-      // Fallback for any error
       navigator.clipboard.writeText(fullUrl);
     }
   };
 
   return (
-    <article
-      className="trending-card"
-      style={{ position: "relative" }}
-      itemScope
-      itemType="https://schema.org/Book"
-    >
-      <CartConfetti trigger={confetti} />
-
-      {/* Limited Time Offer Badge */}
-      {book.discountedPrice === 1 && book.stock > 0 && (
-        <span className="flex flex-row justify-center font-10 price-drop-badge">
-          🔥 Limited period - Just ₹1
-        </span>
-      )}
-
-      {/* Image */}
-      <div className="book-image-wrapper">
-        <WishlistButton
-          inWishlist={inWishlist}
-          onClick={() => toggleWishlist(book.id)}
-        />
-        {/* Share Button */}
-        <button
-          onClick={handleShare}
-          className="add-wishlist"
-          aria-label={`Share ${book.name}`}
-          title="Share this book"
-          style={{
-            top: "4px",
-            background: "#00000010",
-            border: "none",
-            backdropFilter: "blur(12px)",
-          }}
-        >
-          <Share2 size={14} color="black" />
-        </button>
-
-        {!imageLoaded && <div className="image-skeleton" />}
-
-        {book.image ? (
-          <Link
-            href={bookUrl}
-            onClick={handleBookClick}
-            aria-label={`View details of ${book.name}`}
-          >
-            <Image
-              src={book.image}
-              alt={`${book.name} book cover - Buy online at TheBookX`}
-              fill
-              className={`book-image ${imageLoaded ? "loaded" : ""}`}
-              onLoadingComplete={() => setImageLoaded(true)}
-              sizes="(max-width: 768px) 100vw, 240px"
-              itemProp="image"
-              loading="lazy"
-            />
-          </Link>
-        ) : (
-          <div
-            className="book-image-placeholder"
-            aria-label="Book cover placeholder"
-          >
-            <Book size={18} />
+    <>
+      <article
+        className={`trending-card ${isRupeeBookLocked ? "one-rupee-book-locked" : ""}`}
+        style={{ position: "relative" }}
+        onClick={isRupeeBookLocked ? handleLockedBookClick : undefined}
+      >
+        {isRupeeBookLocked && (
+          <div className="locked-overlay">
+            <div className="locked-message">
+              <span>🔒</span>
+              <p>{getOneRupeeBlockReason()}</p>
+            </div>
           </div>
         )}
-      </div>
 
-      {/* Content */}
-      <div className="flex flex-col gap-12 book-card margin-tp-24px">
-        <h3 className="font-16 weight-500" itemProp="name">
-          <Link
-            href={bookUrl}
-            onClick={handleBookClick}
-            className="book-title-link"
-            itemProp="url"
+        <CartConfetti trigger={confetti} />
+
+        {/* Limited Time Offer Badge */}
+        {book.discountedPrice === 1 && book.stock > 0 && !isRupeeBookLocked && (
+          <span className="flex flex-row justify-center font-10 price-drop-badge">
+            🔥 Limited period - Just ₹1
+          </span>
+        )}
+
+        {/* Image */}
+        <div className="book-image-wrapper">
+          <WishlistButton
+            inWishlist={inWishlist}
+            onClick={() => toggleWishlist(book.id)}
+          />
+
+          {/* Share Button */}
+          <button
+            onClick={handleShare}
+            className="add-wishlist"
+            aria-label={`Share ${book.name}`}
+            title="Share this book"
+            style={{
+              top: "4px",
+              background: "#00000010",
+              border: "none",
+              backdropFilter: "blur(12px)",
+            }}
           >
-            {book.name}
-          </Link>
+            <Share2 size={14} color="black" />
+          </button>
 
-          {/* Category Link - Internal Backlink for SEO */}
-          {primaryCategory && (
-            <div className="font-10 gray-500 mt-4">
-              <span>in </span>
-              <Link
-                href={categoryUrl}
-                className="category-link"
-                aria-label={`Browse more ${primaryCategory} books`}
-              >
-                {primaryCategory.charAt(0).toUpperCase() +
-                  primaryCategory.slice(1)}
-              </Link>
+          {!imageLoaded && <div className="image-skeleton" />}
+
+          {book.image ? (
+            <Link
+              href={bookUrl}
+              onClick={handleBookClick}
+              aria-label={`View details of ${book.name}`}
+            >
+              <Image
+                src={book.image}
+                alt={`${book.name} book cover - Buy online at TheBookX`}
+                fill
+                className={`book-image ${imageLoaded ? "loaded" : ""}`}
+                onLoadingComplete={() => setImageLoaded(true)}
+                sizes="(max-width: 768px) 100vw, 240px"
+                itemProp="image"
+                loading="lazy"
+              />
+            </Link>
+          ) : (
+            <div
+              className="book-image-placeholder"
+              aria-label="Book cover placeholder"
+            >
+              <Book size={18} />
             </div>
           )}
+        </div>
 
-          <meta itemProp="description" content={book.description} />
-          {book.author && <meta itemProp="author" content={book.author} />}
-          {book.pages && (
-            <meta itemProp="numberOfPages" content={book.pages.toString()} />
-          )}
-          {book.language && (
-            <meta itemProp="inLanguage" content={book.language} />
-          )}
-          {book.catalogue && (
-            <meta itemProp="genre" content={book.catalogue.join(", ")} />
-          )}
-        </h3>
+        {/* Content */}
+        <div className="flex flex-col gap-12 book-card margin-tp-24px">
+          <h3 className="font-16 weight-500" itemProp="name">
+            <Link
+              href={bookUrl}
+              onClick={handleBookClick}
+              className="book-title-link"
+              itemProp="url"
+            >
+              {book.name}
+            </Link>
 
-        <div className="flex flex-row gap-24 justify-between book-content">
-          {/* Price */}
-          <div
-            className="flex flex-col width100"
-            itemProp="offers"
-            itemScope
-            itemType="https://schema.org/Offer"
-          >
-            <div className="price-row">
-              <span className="discounted">
-                ₹<span itemProp="price">{book.discountedPrice}</span>
-              </span>
-              <meta itemProp="priceCurrency" content="INR" />
-              {book.originalPrice > book.discountedPrice && (
-                <span className="original">₹{book.originalPrice}</span>
+            {/* Category Link - Internal Backlink for SEO */}
+            {primaryCategory && (
+              <div className="font-10 gray-500 mt-4">
+                <span>in </span>
+                <Link
+                  href={categoryUrl}
+                  className="category-link"
+                  aria-label={`Browse more ${primaryCategory} books`}
+                >
+                  {primaryCategory.charAt(0).toUpperCase() +
+                    primaryCategory.slice(1)}
+                </Link>
+              </div>
+            )}
+
+            <meta itemProp="description" content={book.description} />
+            {book.author && <meta itemProp="author" content={book.author} />}
+            {book.pages && (
+              <meta itemProp="numberOfPages" content={book.pages.toString()} />
+            )}
+            {book.language && (
+              <meta itemProp="inLanguage" content={book.language} />
+            )}
+            {book.catalogue && (
+              <meta itemProp="genre" content={book.catalogue.join(", ")} />
+            )}
+          </h3>
+
+          <div className="flex flex-row gap-24 justify-between book-content">
+            {/* Price */}
+            <div
+              className="flex flex-col width100"
+              itemProp="offers"
+              itemScope
+              itemType="https://schema.org/Offer"
+            >
+              <div className="price-row">
+                <span className="discounted">
+                  ₹<span itemProp="price">{book.discountedPrice}</span>
+                </span>
+                <meta itemProp="priceCurrency" content="INR" />
+                {book.originalPrice > book.discountedPrice && (
+                  <span className="original">₹{book.originalPrice}</span>
+                )}
+              </div>
+
+              <meta
+                itemProp="availability"
+                content={
+                  book.stock > 0
+                    ? "https://schema.org/InStock"
+                    : "https://schema.org/OutOfStock"
+                }
+              />
+              <meta
+                itemProp="itemCondition"
+                content="https://schema.org/NewCondition"
+              />
+              <meta
+                itemProp="priceValidUntil"
+                content={
+                  new Date(new Date().setMonth(new Date().getMonth() + 1))
+                    .toISOString()
+                    .split("T")[0]
+                }
+              />
+              <meta itemProp="seller" content="TheBookX" />
+
+              <meta
+                itemProp="hasMerchantReturnPolicy"
+                content="7-day return policy"
+              />
+              <meta
+                itemProp="shippingDetails"
+                content="Free shipping across India"
+              />
+
+              {savings > 0 && (
+                <span className="green font-10">Save ₹{savings}</span>
               )}
             </div>
 
-            <meta
-              itemProp="availability"
-              content={
-                book.stock > 0
-                  ? "https://schema.org/InStock"
-                  : "https://schema.org/OutOfStock"
-              }
-            />
-            <meta
-              itemProp="itemCondition"
-              content="https://schema.org/NewCondition"
-            />
-            <meta
-              itemProp="priceValidUntil"
-              content={
-                new Date(new Date().setMonth(new Date().getMonth() + 1))
-                  .toISOString()
-                  .split("T")[0]
-              }
-            />
-            <meta itemProp="seller" content="TheBookX" />
-
-            {/* Add return policy and shipping details for better SEO */}
-            <meta
-              itemProp="hasMerchantReturnPolicy"
-              content="7-day return policy"
-            />
-            <meta
-              itemProp="shippingDetails"
-              content="Free shipping across India"
-            />
-
-            {savings > 0 && (
-              <span className="green font-10">Save ₹{savings}</span>
-            )}
-          </div>
-
-          {/* Actions */}
-          <div className="flex gap-12 align-center card-button">
-            {qty === 0 ? (
-              <LoadingButton
-                className="sec-mid-btn width100"
-                onClick={() => {
-                  addToCart(book.id);
-                  trackAddToCart({ book, qty: 1 });
-                  setConfetti(true);
-                  setTimeout(() => setConfetti(false), 50);
-                }}
-                disabled={isOneRupee && hasOneRupeeInCart}
-                aria-label={`Add ${book.name} to cart`}
-              >
-                <span>Add </span>
-              </LoadingButton>
-            ) : (
-              <div className="width100 gap-12 items-center flex flex-row justify-between">
-                <button
-                  onClick={() => decreaseQty(book.id)}
-                  className="minus-cart"
-                  aria-label={`Decrease quantity of ${book.name}`}
-                >
-                  <Minus size={14} />
-                </button>
-
-                <span className="qty" aria-label={`Quantity: ${qty}`}>
-                  {qty}
-                </span>
-
-                <button
-                  onClick={() => {
-                    addToCart(book.id);
-                    trackAddToCart({ book, qty: 1 });
-                  }}
+            {/* Actions */}
+            <div className="flex gap-12 align-center card-button">
+              {qty === 0 ? (
+                <LoadingButton
+                  className="sec-mid-btn width100"
+                  onClick={handleAddToCart}
                   disabled={isOneRupee && hasOneRupeeInCart}
-                  className="plus-cart"
-                  aria-label={`Increase quantity of ${book.name}`}
+                  aria-label={`Add ${book.name} to cart`}
                 >
-                  <Plus size={14} />
-                </button>
-              </div>
-            )}
+                  <span>Add </span>
+                </LoadingButton>
+              ) : (
+                <div className="width100 gap-12 items-center flex flex-row justify-between">
+                  <button
+                    onClick={() => decreaseQty(book.id)}
+                    className="minus-cart"
+                    aria-label={`Decrease quantity of ${book.name}`}
+                  >
+                    <Minus size={14} />
+                  </button>
+
+                  <span className="qty" aria-label={`Quantity: ${qty}`}>
+                    {qty}
+                  </span>
+
+                  <button
+                    onClick={() => {
+                      addToCart(book.id);
+                      trackAddToCart({ book, qty: 1 });
+                    }}
+                    disabled={isOneRupee && hasOneRupeeInCart}
+                    className="plus-cart"
+                    aria-label={`Increase quantity of ${book.name}`}
+                  >
+                    <Plus size={14} />
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
+
+          {/* Stock Status Display */}
+          {book.stock && book.stock < 10 && book.stock > 0 && (
+            <div className="font-10 orange">
+              ⚡ Only {book.stock} left — order soon!
+            </div>
+          )}
+
+          {book.stock === 0 && (
+            <div className="font-10 red">❌ Out of Stock</div>
+          )}
         </div>
+      </article>
 
-        {/* Stock Status Display */}
-        {book.stock && book.stock < 10 && book.stock > 0 && (
-          <div className="font-10 orange">
-            ⚡ Only {book.stock} left — order soon!
-          </div>
-        )}
-
-        {book.stock === 0 && <div className="font-10 red">❌ Out of Stock</div>}
-      </div>
-    </article>
+      <LockedRupeeModal
+        isOpen={showLockedModal}
+        onClose={() => setShowLockedModal(false)}
+      />
+    </>
   );
 }

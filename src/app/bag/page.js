@@ -21,6 +21,7 @@ import {
 import { ArrowLeft, Gift } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { permanentlyUnlockOffer, areOneRupeeBooksEnabled } from "@/utils/book";
 
 export default function BagPage() {
   const { cart } = useStore();
@@ -88,6 +89,21 @@ export default function BagPage() {
     (sum, b) => sum + b.discountedPrice * b.qty,
     0,
   );
+
+  useEffect(() => {
+    // Check if cart total >= 299 and ₹1 books are not permanently unlocked
+    if (totalDiscounted >= 299 && !areOneRupeeBooksEnabled()) {
+      const offerData = getOneRupeeOfferData();
+      // Only trigger if not already permanently unlocked
+      if (!offerData?.permanentUnlock) {
+        permanentlyUnlockOffer();
+        // Show success message
+        alert(
+          "🎉 Congratulations! ₹1 books are now permanently unlocked for you!",
+        );
+      }
+    }
+  }, [totalDiscounted]);
 
   const appliedOffer = getAppliedOffer(totalDiscounted);
 

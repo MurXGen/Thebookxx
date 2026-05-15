@@ -1,14 +1,13 @@
+// utils/book.js
 import { bookImages } from "./bookImages";
 
 // Helper function to calculate original price based on discounted price
-// Rounds to nearest value that's 30-80% higher than discounted price
 const calculateOriginalPrice = (discountedPrice) => {
   const minMultiplier = 1.3;
   const maxMultiplier = 1.8;
   const randomMultiplier =
     minMultiplier + Math.random() * (maxMultiplier - minMultiplier);
   const calculatedPrice = Math.round(discountedPrice * randomMultiplier);
-  // Round to nearest 10 for cleaner pricing
   return Math.round(calculatedPrice / 10) * 10;
 };
 
@@ -19,6 +18,117 @@ function slugify(text) {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 }
+// utils/book.js
+const ONE_RUPEE_OFFER_KEY = "oneRupeeOffer";
+
+// Get offer data from localStorage
+export const getOneRupeeOfferData = () => {
+  if (typeof window === "undefined") return null;
+  const data = localStorage.getItem(ONE_RUPEE_OFFER_KEY);
+  if (!data) return null;
+  try {
+    return JSON.parse(data);
+  } catch {
+    return null;
+  }
+};
+
+// Save offer data to localStorage
+export const saveOneRupeeOfferData = (data) => {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(ONE_RUPEE_OFFER_KEY, JSON.stringify(data));
+};
+
+// Check if ₹1 books should be enabled
+export const areOneRupeeBooksEnabled = () => {
+  const data = getOneRupeeOfferData();
+  if (!data) return false;
+
+  const { timerUnlocked, permanentUnlocked, unlockTime, timerExpired } = data;
+
+  // Note: This function now only checks timer/permanent status
+  // Cart total check is handled in context
+  if (permanentUnlocked) return true;
+  if (timerUnlocked && !timerExpired) {
+    const elapsedMinutes = (Date.now() - unlockTime) / 1000 / 60;
+    if (elapsedMinutes <= 10) return true;
+  }
+
+  return false;
+};
+
+// Get remaining time in seconds
+export const getRemainingOfferTime = () => {
+  const data = getOneRupeeOfferData();
+  if (!data) return 0;
+
+  const { timerUnlocked, permanentUnlocked, timerExpired, unlockTime } = data;
+
+  if (permanentUnlocked) return 0;
+  if (!timerUnlocked) return 0;
+  if (timerExpired) return 0;
+
+  const elapsedSeconds = (Date.now() - unlockTime) / 1000;
+  const remainingSeconds = 600 - elapsedSeconds;
+  return Math.max(0, Math.floor(remainingSeconds));
+};
+
+// Start the unlock timer
+export const startUnlockTimer = () => {
+  const data = {
+    timerUnlocked: true,
+    unlockTime: Date.now(),
+    permanentUnlocked: false,
+    timerExpired: false,
+  };
+  saveOneRupeeOfferData(data);
+  return data;
+};
+
+// Expire the timer
+export const expireTimer = () => {
+  const currentData = getOneRupeeOfferData() || {};
+  const data = {
+    timerUnlocked: false,
+    unlockTime: currentData.unlockTime || Date.now(),
+    permanentUnlocked: false,
+    timerExpired: true,
+  };
+  saveOneRupeeOfferData(data);
+  return data;
+};
+
+// Permanently unlock
+export const permanentlyUnlockOffer = () => {
+  const currentData = getOneRupeeOfferData() || {};
+  const data = {
+    timerUnlocked: true,
+    unlockTime: currentData.unlockTime || Date.now(),
+    permanentUnlocked: true,
+    timerExpired: false,
+  };
+  saveOneRupeeOfferData(data);
+  return data;
+};
+
+// Lock the offer (when cart total drops below threshold)
+export const lockOffer = () => {
+  const currentData = getOneRupeeOfferData() || {};
+  const data = {
+    timerUnlocked: false,
+    unlockTime: currentData.unlockTime || Date.now(),
+    permanentUnlocked: false,
+    timerExpired: true,
+  };
+  saveOneRupeeOfferData(data);
+  return data;
+};
+
+// Reset offer
+export const resetOffer = () => {
+  if (typeof window === "undefined") return;
+  localStorage.removeItem(ONE_RUPEE_OFFER_KEY);
+};
 
 export const books = [
   {

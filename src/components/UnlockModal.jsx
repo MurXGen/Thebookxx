@@ -44,7 +44,7 @@ export default function UnlockModal() {
       setHasModalBeenOpened(true);
     };
 
-    const timer = setTimeout(checkAndShowModal, 12000);
+    const timer = setTimeout(checkAndShowModal, 25000);
     return () => clearTimeout(timer);
   }, [hasModalBeenOpened]);
 

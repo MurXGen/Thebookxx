@@ -201,7 +201,7 @@ export default function CartBar() {
               <div className="mobile-offer-strip permanent">
                 <div className="rupee-offer-content">
                   <span className="rupee-offer-title">
-                    Unlock ₹1 books by adding more than ₹2 books
+                    Unlock ₹1 books by adding more than ₹299 worth of books
                   </span>
                 </div>
               </div>

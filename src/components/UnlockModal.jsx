@@ -196,7 +196,7 @@ export default function UnlockModal() {
               transition={{ delay: 0.15, duration: 0.4 }}
             >
               {!showTimer
-                ? "🎉 Unlock books ₹1 with no restrictions for Limited Time Only"
+                ? "🎉 Unlock @1 books with no order limits"
                 : "✨ ₹1 Books Activated!"}
             </motion.h2>
 

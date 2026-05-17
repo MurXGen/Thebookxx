@@ -16,8 +16,11 @@ import { useStore } from "@/context/StoreContext";
 // Lazy load CountdownTimer for better performance
 const CountdownTimer = lazy(() => import("@/components/UI/CountDownTimer"));
 
-export default function UnlockModal() {
-  const [isOpen, setIsOpen] = useState(false);
+export default function UnlockModal({
+  isOpen: externalIsOpen,
+  onClose: externalOnClose,
+}) {
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
   const [isUnlocking, setIsUnlocking] = useState(false);
   const [showTimer, setShowTimer] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
@@ -26,7 +29,12 @@ export default function UnlockModal() {
   const modalRef = useRef(null);
   const { refreshUnlockStatus } = useStore();
 
+  const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
+
   useEffect(() => {
+    // Only auto-show if not controlled externally
+    if (externalIsOpen !== undefined) return;
+
     const checkAndShowModal = () => {
       const offerData = getOneRupeeOfferData();
 
@@ -34,19 +42,22 @@ export default function UnlockModal() {
       if (offerData?.permanentUnlocked) return;
 
       // Don't show modal if timer was ever started (even if expired)
-      // This prevents the modal from reappearing after timer ends
       if (offerData?.timerUnlocked) return;
 
       // Don't show modal if it has been opened before in this session
       if (hasModalBeenOpened) return;
 
-      setIsOpen(true);
+      // Also check if user has previously closed the modal in this session
+      const modalClosed = sessionStorage.getItem("unlock_modal_closed");
+      if (modalClosed === "true") return;
+
+      setInternalIsOpen(true);
       setHasModalBeenOpened(true);
     };
 
     const timer = setTimeout(checkAndShowModal, 25000);
     return () => clearTimeout(timer);
-  }, [hasModalBeenOpened]);
+  }, [hasModalBeenOpened, externalIsOpen]);
 
   const handleUnlock = () => {
     setIsUnlocking(true);
@@ -120,11 +131,17 @@ export default function UnlockModal() {
   };
 
   const handleClose = () => {
-    setIsOpen(false);
+    if (externalOnClose) {
+      externalOnClose();
+    } else {
+      setInternalIsOpen(false);
+    }
+    // Mark modal as closed in session storage so it doesn't appear again
+    sessionStorage.setItem("unlock_modal_closed", "true");
   };
 
   const handleExplore = () => {
-    setIsOpen(false);
+    handleClose();
     // Smooth scroll to books section
     const booksSection = document.querySelector(".catalogue-section");
     if (booksSection) {
@@ -135,8 +152,13 @@ export default function UnlockModal() {
   const handleTimerExpire = () => {
     expireTimer();
     setShowTimer(false);
-    setIsOpen(false);
+    handleClose();
     refreshUnlockStatus();
+  };
+
+  // Handle click outside - closes modal
+  const handleOverlayClick = () => {
+    handleClose();
   };
 
   return (
@@ -148,7 +170,7 @@ export default function UnlockModal() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
-          onClick={handleClose}
+          onClick={handleOverlayClick}
         >
           {/* Slide from bottom modal */}
           <motion.div
@@ -288,7 +310,7 @@ export default function UnlockModal() {
                       </div>
                     }
                   >
-                    <CountdownTimer onExpire={handleTimerExpire} />
+                    <CountdownTimer />
                   </Suspense>
 
                   <motion.button

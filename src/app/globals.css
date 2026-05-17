@@ -305,6 +305,7 @@ button {
   transition-duration: 0.3s;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+  font-family: "Poppins";
 }
 
 button:hover {
@@ -4757,6 +4758,55 @@ input {
 .unlock-modal-content .timer-icon {
   color: #f59e0b;
   animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Locked Timer Styles */
+.countdown-timer.locked-timer {
+  background: linear-gradient(135deg, #f1f5f9, #f8fafc);
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.countdown-timer.locked-timer:hover {
+  background: linear-gradient(135deg, #ffb70310, #ffb70305);
+  border-color: #ffb70330;
+  transform: scale(1.02);
+}
+
+.timer-icon.locked {
+  background: #94a3b820;
+  color: #64748b;
+}
+
+.countdown-timer.locked-timer:hover .timer-icon.locked {
+  background: #ffb70320;
+  color: #ffb703;
+}
+
+.timer-label.locked-label {
+  color: #64748b;
+}
+
+.timer-value.locked-value {
+  color: #ffb703;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.countdown-timer.locked-timer:hover .timer-value.locked-value {
+  color: #fb8500;
+}
+
+/* Unlock Chip Styles */
+
+.unlock-chip-badge {
+  background: #ffb703;
+  color: #1a1a1a;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
 }
 
 @keyframes pulse {

@@ -14,6 +14,7 @@ import { getRemainingOfferTime, getOneRupeeOfferData } from "@/utils/book";
 import { useEffect, useState, useRef } from "react";
 import { trackFunnelEvent } from "@/lib/analytics";
 import { EVENTS } from "@/lib/trackingEvents";
+import UnlockChip from "./UI/UnlockChip";
 
 export default function CartBar() {
   const { cart, cartTotal } = useStore();
@@ -64,6 +65,10 @@ export default function CartBar() {
   // Get ₹1 book unlock status
   const offerData = getOneRupeeOfferData();
 
+  // Check if user has EVER clicked unlock (first time or not)
+  const hasNeverUnlocked =
+    !offerData?.timerUnlocked && !offerData?.permanentUnlocked;
+
   // Check if user has permanently unlocked in localStorage
   const isPermanentlyUnlocked = offerData?.permanentUnlocked === true;
 
@@ -72,6 +77,10 @@ export default function CartBar() {
     offerData?.timerUnlocked === true &&
     !offerData?.timerExpired &&
     (Date.now() - (offerData?.unlockTime || 0)) / 1000 / 60 <= 10;
+
+  // Check if timer has expired (user unlocked but time passed)
+  const isTimerExpired =
+    offerData?.timerUnlocked === true && offerData?.timerExpired === true;
 
   // Check if ₹1 books should be visually enabled (based on cart total)
   const shouldBeEnabled = cartTotal >= 299;
@@ -87,6 +96,8 @@ export default function CartBar() {
     }
   } else if (isTimerActive) {
     uiState = "timerActive";
+  } else if (isTimerExpired) {
+    uiState = "locked"; // Timer expired, show locked state
   } else {
     uiState = "locked";
   }
@@ -160,7 +171,7 @@ export default function CartBar() {
 
   // Track unlock progress view when in locked state
   useEffect(() => {
-    if (uiState === "locked" && remainingForUnlock > 0) {
+    if (uiState === "locked" && remainingForUnlock > 0 && !hasNeverUnlocked) {
       trackFunnelEvent(EVENTS.UNLOCK_PROGRESS_VIEWED, {
         current_total: cartTotal,
         remaining_needed: remainingForUnlock,
@@ -168,7 +179,13 @@ export default function CartBar() {
         has_permanent_unlock_in_storage: isPermanentlyUnlocked,
       });
     }
-  }, [uiState, cartTotal, remainingForUnlock, isPermanentlyUnlocked]);
+  }, [
+    uiState,
+    cartTotal,
+    remainingForUnlock,
+    isPermanentlyUnlocked,
+    hasNeverUnlocked,
+  ]);
 
   // Format time for display
   const formatTime = (seconds) => {
@@ -200,6 +217,9 @@ export default function CartBar() {
     const booksSection = document.querySelector(".catalogue-section");
     booksSection?.scrollIntoView({ behavior: "smooth" });
   };
+
+  // Don't show any unlock message for first-time users (never unlocked)
+  const shouldShowUnlockMessage = !hasNeverUnlocked;
 
   return (
     <div className="cart-bar" style={{ maxWidth: "980px", margin: "0 auto" }}>
@@ -286,72 +306,78 @@ export default function CartBar() {
         )}
       </AnimatePresence>
 
-      <AnimatePresence mode="wait">
-        <motion.div
-          key="mobile-offer-strip"
-          initial={{ opacity: 0, y: -10, filter: "blur(10px)" }}
-          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          exit={{ opacity: 0, y: -10, filter: "blur(10px)" }}
-          transition={{ duration: 0.4, ease: "easeInOut" }}
-        >
-          {uiState === "timerActive" ? (
-            // Timer Active State (unlocked but not permanent)
-            <div className="mobile-offer-strip unlocked flex flex-row justify-between items-center">
-              <div className="flex flex-row gap-4">
-                <div className="rupee-offer-icon">
-                  <Zap size={18} color="orange" />
+      {/* Mobile Offer Strip - Only show if user has interacted with unlock before */}
+      {shouldShowUnlockMessage && (
+        <AnimatePresence mode="wait">
+          <motion.div
+            key="mobile-offer-strip"
+            initial={{ opacity: 0, y: -10, filter: "blur(10px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            exit={{ opacity: 0, y: -10, filter: "blur(10px)" }}
+            transition={{ duration: 0.4, ease: "easeInOut" }}
+          >
+            {uiState === "timerActive" ? (
+              // Timer Active State (unlocked but not permanent)
+              <div className="mobile-offer-strip unlocked flex flex-row justify-between items-center">
+                <div className="flex flex-row gap-4">
+                  <div className="rupee-offer-icon">
+                    <Zap size={18} color="orange" />
+                  </div>
+                  <div className="rupee-offer-content flex flex-row justify-between">
+                    <span className="rupee-offer-desc">
+                      Grab your ₹1 books before time runs out
+                    </span>
+                  </div>
                 </div>
-                <div className="rupee-offer-content flex flex-row justify-between">
-                  <span className="rupee-offer-desc">
-                    Grab your ₹1 books before time runs out
-                  </span>
-                </div>
-              </div>
 
-              {liveRemainingTime > 0 && (
-                <div className="sec-mid-btn" style={{ color: "white" }}>
-                  <Clock size={12} />
-                  <span>
-                    {Math.floor(liveRemainingTime / 60)}:
-                    {(liveRemainingTime % 60).toString().padStart(2, "0")}{" "}
-                    remaining
-                  </span>
-                </div>
-              )}
-            </div>
-          ) : uiState === "permanentUnlocked" ? (
-            // Permanently Unlocked State (cart total >= 299)
-            <div className="mobile-offer-strip permanent">
-              <div className="rupee-offer-content">
-                Grab your <span className="highlight-reward">₹1 Books</span>{" "}
-                right away
+                {liveRemainingTime > 0 && (
+                  <div className="sec-mid-btn" style={{ color: "white" }}>
+                    <Clock size={12} />
+                    <span>
+                      {Math.floor(liveRemainingTime / 60)}:
+                      {(liveRemainingTime % 60).toString().padStart(2, "0")}{" "}
+                      remaining
+                    </span>
+                  </div>
+                )}
               </div>
-            </div>
-          ) : remainingForUnlock > 0 ? (
-            // Locked State - Show unlock progress
-            <div className="mobile-offer-strip locked flex flex-row justify-between">
-              <div className="flex flex-row gap-4 items-center">
-                <div className="rupee-offer-icon">
-                  <Lock size={18} />
-                </div>
+            ) : uiState === "permanentUnlocked" ? (
+              // Permanently Unlocked State (cart total >= 299)
+              <div className="mobile-offer-strip permanent">
                 <div className="rupee-offer-content">
-                  <span className="rupee-offer-desc">
-                    Add ₹{remainingForUnlock} more to unlock special ₹1 book
-                    deals
-                  </span>
+                  Grab your <span className="highlight-reward">₹1 Books</span>{" "}
+                  right away
                 </div>
               </div>
-              <button
-                className="sec-mid-btn"
-                style={{ color: "white" }}
-                onClick={handleAddBooksClick}
-              >
-                ₹{cartTotal} / ₹299
-              </button>
-            </div>
-          ) : null}
-        </motion.div>
-      </AnimatePresence>
+            ) : remainingForUnlock > 0 ? (
+              // Locked State - Show unlock progress (only after user has unlocked before)
+              <div className="mobile-offer-strip locked flex flex-row justify-between">
+                <div className="flex flex-row gap-4 items-center">
+                  <div className="rupee-offer-icon">
+                    <Lock size={18} />
+                  </div>
+                  <div className="rupee-offer-content">
+                    <span className="rupee-offer-desc">
+                      Add ₹{remainingForUnlock} more to unlock special ₹1 book
+                      deals
+                    </span>
+                  </div>
+                </div>
+                <button
+                  className="sec-mid-btn"
+                  style={{ color: "white" }}
+                  onClick={handleAddBooksClick}
+                >
+                  ₹{cartTotal} / ₹299
+                </button>
+              </div>
+            ) : null}
+          </motion.div>
+        </AnimatePresence>
+      )}
+
+      {/* Unlock Chip - Show for first-time users who haven't unlocked yet */}
+      <UnlockChip />
     </div>
   );
 }

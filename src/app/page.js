@@ -9,6 +9,7 @@ import PincodeModal from "@/components/UI/PincodeModal";
 import CountdownTimer from "@/components/UI/CountDownTimer";
 import LabelDivider from "@/components/UI/LineDivider";
 import { Loader2 } from "lucide-react";
+import UnlockChip from "@/components/UI/UnlockChip";
 
 // Lazy load components with named exports
 const BestsellerStage = lazy(() => import("@/components/BestsellerStage"));
@@ -98,6 +99,12 @@ export default function HomePage() {
     );
   }
 
+  const handleOpenUnlockModal = () => {
+    // Function to open the unlock modal
+    // This should trigger the unlock modal to appear
+    setIsUnlockModalOpen(true); // or however you control the unlock modal
+  };
+
   return (
     <>
       <IntroVideo />
@@ -107,6 +114,7 @@ export default function HomePage() {
       <PincodeModal />
 
       <UnlockModal />
+      <UnlockChip />
 
       <BestsellerStage />
 

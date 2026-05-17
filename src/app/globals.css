@@ -505,6 +505,7 @@ button:hover {
   background: linear-gradient(90deg, #000, #222);
   color: #fff;
   font-size: 12px;
+  border: none;
 }
 
 /* =========================

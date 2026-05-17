@@ -7,6 +7,7 @@ import LoadingButton from "./LoadingButton";
 import { trackFunnelEvent } from "@/lib/analytics";
 import { EVENTS } from "@/lib/trackingEvents";
 import { useTrackView } from "@/lib/trackingHooks";
+import { trackPincodeToGoogleForm } from "@/utils/googleForm";
 
 const PINCODE_STORAGE_KEY = "pincode_modal_last_shown";
 const PINCODE_DATA_KEY = "user_pincode";
@@ -19,9 +20,41 @@ export default function PincodeModal() {
   const [error, setError] = useState("");
   const [locationData, setLocationData] = useState(null);
   const [startTime, setStartTime] = useState(null);
+  const [hasAutoFilled, setHasAutoFilled] = useState(false);
 
   // Track modal view when opened
   useTrackView(EVENTS.PINCODE_MODAL_VIEWED, {}, isOpen);
+
+  // Check for saved pincode on mount
+  useEffect(() => {
+    const savedPincodeData = localStorage.getItem(PINCODE_DATA_KEY);
+    if (savedPincodeData) {
+      try {
+        const parsed = JSON.parse(savedPincodeData);
+        if (parsed.pincode && !hasAutoFilled) {
+          setPincode(parsed.pincode);
+          setPhoneNumber(parsed.phone || "");
+          setHasAutoFilled(true);
+
+          // Track auto-fill to Google Form
+          trackPincodeToGoogleForm({
+            pincode: parsed.pincode,
+            city: parsed.city,
+            state: parsed.state,
+            phone: parsed.phone,
+            type: "auto_filled",
+          });
+
+          trackFunnelEvent(EVENTS.PINCODE_AUTO_FILLED, {
+            source: "localStorage",
+            has_pincode: true,
+          });
+        }
+      } catch (e) {
+        console.error("Error parsing saved pincode:", e);
+      }
+    }
+  }, []);
 
   // Check if modal should be shown (once every 24 hours)
   useEffect(() => {
@@ -31,11 +64,6 @@ export default function PincodeModal() {
 
       // If user already submitted pincode before, don't show modal
       if (savedPincode) {
-        // Track that pincode was auto-filled from storage
-        trackFunnelEvent(EVENTS.PINCODE_AUTO_FILLED, {
-          source: "localStorage",
-          has_pincode: true,
-        });
         return;
       }
 
@@ -58,41 +86,6 @@ export default function PincodeModal() {
     const timer = setTimeout(checkAndShowModal, 1000);
     return () => clearTimeout(timer);
   }, []);
-
-  // Send data to Telegram
-  const sendToTelegram = async (pincodeValue, location, phone) => {
-    const message = `
-📍 *New Pincode Submission*
-
-━━━━━━━━━━━━━━━━━━━━
-📮 *Pincode:* ${pincodeValue}
-🏙️ *City:* ${location?.city || "Unknown"}
-🗺️ *State:* ${location?.state || "Unknown"}
-📞 *Phone:* ${phone || "Not provided"}
-🕐 *Time:* ${new Date().toLocaleString()}
-
-━━━━━━━━━━━━━━━━━━━━
-*TheBookX Pincode Collection*
-    `;
-
-    try {
-      await fetch("https://api.journalx.app/api/bookxTelegram/pincode", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          message: message,
-          pincode: pincodeValue,
-          city: location?.city,
-          state: location?.state,
-          phone: phone,
-        }),
-      });
-    } catch (error) {
-      console.error("Error sending to Telegram:", error);
-    }
-  };
 
   // Fetch location details based on pincode
   const fetchLocationDetails = async (pincodeValue) => {
@@ -136,7 +129,7 @@ export default function PincodeModal() {
       ? Math.floor((Date.now() - startTime) / 1000)
       : null;
 
-    // Track successful submission
+    // Track successful submission to GA
     trackFunnelEvent(EVENTS.PINCODE_SUBMITTED, {
       status: "success",
       pincode: pincode,
@@ -144,11 +137,17 @@ export default function PincodeModal() {
       state: location?.state,
       phone_provided: !!phoneNumber,
       time_spent_seconds: timeSpent,
-      is_manual_entry: true,
+      is_manual_entry: !hasAutoFilled,
     });
 
-    // Send to Telegram
-    await sendToTelegram(pincode, location, phoneNumber);
+    // Submit to Google Form
+    await trackPincodeToGoogleForm({
+      pincode: pincode,
+      city: location?.city,
+      state: location?.state,
+      phone: phoneNumber,
+      type: "submit",
+    });
 
     // Store in localStorage
     localStorage.setItem(
@@ -183,6 +182,31 @@ export default function PincodeModal() {
       has_phone_input: !!phoneNumber,
     });
 
+    // Submit skip to Google Form
+    trackPincodeToGoogleForm({
+      pincode: pincode || "skipped",
+      phone: phoneNumber,
+      type: "skip",
+      time_spent: timeSpent,
+    });
+
+    localStorage.setItem(PINCODE_STORAGE_KEY, Date.now().toString());
+    setIsOpen(false);
+  };
+
+  const handleOutsideClick = () => {
+    const timeSpent = startTime
+      ? Math.floor((Date.now() - startTime) / 1000)
+      : null;
+
+    // Track outside click to Google Form
+    trackPincodeToGoogleForm({
+      pincode: pincode || "outside_click",
+      phone: phoneNumber,
+      type: "outside_click",
+      time_spent: timeSpent,
+    });
+
     localStorage.setItem(PINCODE_STORAGE_KEY, Date.now().toString());
     setIsOpen(false);
   };
@@ -206,7 +230,7 @@ export default function PincodeModal() {
         <motion.div
           className="bill-modal-overlay"
           style={{ maxWidth: "980px", margin: "0 auto" }}
-          onClick={handleSkip}
+          onClick={handleOutsideClick}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}

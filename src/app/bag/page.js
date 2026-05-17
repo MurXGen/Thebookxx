@@ -21,16 +21,7 @@ import {
 import { ArrowLeft, Gift } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import {
-  permanentlyUnlockOffer,
-  areOneRupeeBooksEnabled,
-  getOneRupeeOfferData,
-} from "@/utils/book";
-
-// Tracking imports
-import { useTrackPageView, useTrackClick } from "@/lib/trackingHooks";
-import { EVENTS } from "@/lib/trackingEvents";
-import { trackFunnelEvent } from "@/lib/analytics";
+import { permanentlyUnlockOffer, areOneRupeeBooksEnabled } from "@/utils/book";
 
 export default function BagPage() {
   const { cart } = useStore();
@@ -41,11 +32,7 @@ export default function BagPage() {
   const [paymentMethod, setPaymentMethod] = useState(null);
   const [isShortening, setIsShortening] = useState(false);
   const [giftWrap, setGiftWrap] = useState(false);
-  const [entryTime, setEntryTime] = useState(null);
   const GIFT_WRAP_CHARGE = 50;
-
-  // Track page view when bag page loads
-  useTrackPageView("bag_page");
 
   const getAppliedOffer = (amount) => {
     return [...CART_OFFERS].reverse().find((o) => amount >= o.target) || null;
@@ -70,13 +57,7 @@ export default function BagPage() {
         <div className=" section-1200 flex flec-row gap-12 items-center">
           <ArrowLeft
             size={20}
-            onClick={() => {
-              trackFunnelEvent(EVENTS.BAG_PAGE_EXIT, {
-                exit_action: "back_to_home",
-                cart_total: 0,
-              });
-              router.push("/");
-            }}
+            onClick={() => router.push("/")}
             className="cursor-pointer"
           />
           <div className="flex flex-col">
@@ -91,16 +72,7 @@ export default function BagPage() {
           style={{ height: "90vh" }}
         >
           <span className="font-16">Add books to cart to fill your bags</span>
-          <button
-            onClick={() => {
-              trackFunnelEvent(EVENTS.BAG_PAGE_EXIT, {
-                exit_action: "browse_books",
-                cart_total: 0,
-              });
-              router.push("/");
-            }}
-            className="pri-big-btn"
-          >
+          <button onClick={() => router.push("/")} className="pri-big-btn">
             Browse
           </button>
         </div>
@@ -118,66 +90,20 @@ export default function BagPage() {
     0,
   );
 
-  // Track when user leaves the bag page
   useEffect(() => {
-    setEntryTime(Date.now());
-
-    const handleBeforeUnload = () => {
-      if (entryTime) {
-        const timeSpent = (Date.now() - entryTime) / 1000;
-        trackFunnelEvent(EVENTS.BAG_PAGE_EXIT, {
-          time_spent_seconds: timeSpent,
-          cart_total: totalDiscounted,
-          item_count: cartBooks.length,
-          exit_action: "browser_close",
-        });
-      }
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-      if (entryTime) {
-        const timeSpent = (Date.now() - entryTime) / 1000;
-        trackFunnelEvent(EVENTS.BAG_PAGE_EXIT, {
-          time_spent_seconds: timeSpent,
-          cart_total: totalDiscounted,
-          item_count: cartBooks.length,
-          exit_action: "navigation",
-        });
-      }
-    };
-  }, [entryTime, cartBooks.length, totalDiscounted]);
-
-  // Track cart value updates
-  useEffect(() => {
-    trackFunnelEvent(EVENTS.CART_VALUE_UPDATED, {
-      cart_total: totalDiscounted,
-      item_count: cartBooks.length,
-      has_one_rupee_book: cartBooks.some((b) => b.discountedPrice === 1),
-    });
-  }, [totalDiscounted, cartBooks]);
-
-  // Track permanent unlock when cart reaches ₹299
-  useEffect(() => {
+    // Check if cart total >= 299 and ₹1 books are not permanently unlocked
     if (totalDiscounted >= 299 && !areOneRupeeBooksEnabled()) {
       const offerData = getOneRupeeOfferData();
+      // Only trigger if not already permanently unlocked
       if (!offerData?.permanentUnlock) {
         permanentlyUnlockOffer();
-
-        // Track permanent unlock achievement
-        trackFunnelEvent(EVENTS.UNLOCK_PERMANENT, {
-          cart_total: totalDiscounted,
-          books_added_count: cartBooks.length,
-          method: "cart_total_reached",
-        });
-
+        // Show success message
         alert(
           "🎉 Congratulations! ₹1 books are now permanently unlocked for you!",
         );
       }
     }
-  }, [totalDiscounted, cartBooks.length]);
+  }, [totalDiscounted]);
 
   const appliedOffer = getAppliedOffer(totalDiscounted);
 
@@ -196,9 +122,12 @@ export default function BagPage() {
     }
   }
 
+  // In BagPage.jsx, replace the delivery charge calculation section
+
   const finalPayable = totalDiscounted - offerDiscount;
   const canCheckout = totalDiscounted >= 151;
 
+  // Get dynamic delivery charges
   const standardDeliveryCharge = getDeliveryCharge(totalDiscounted, false);
   const fasterDeliveryCharge = getDeliveryCharge(totalDiscounted, true);
   const standardDeliveryLabel = getDeliveryLabel(totalDiscounted, false);
@@ -208,14 +137,17 @@ export default function BagPage() {
   const standardOriginalCharge = getOriginalCharge(totalDiscounted, false);
   const fasterOriginalCharge = getOriginalCharge(totalDiscounted, true);
 
+  // Function to get delivery charge based on choice
   const getDeliveryChargeByChoice = (isFasterDelivery) => {
     return getDeliveryCharge(totalDiscounted, isFasterDelivery);
   };
 
+  // Calculate total with standard delivery (for display)
   const totalWithStandardDelivery = finalPayable + standardDeliveryCharge;
   const totalWithStandardDeliveryGift =
     totalWithStandardDelivery + (giftWrap ? GIFT_WRAP_CHARGE : 0);
 
+  // Calculate savings on delivery (if original charge exists)
   const standardDeliverySavings = standardOriginalCharge
     ? standardOriginalCharge - standardDeliveryCharge
     : 0;
@@ -436,36 +368,10 @@ _Thank you for shopping with TheBookX! 📚✨_
       shortLink,
     );
 
-    // Track WhatsApp message sent
-    trackFunnelEvent(EVENTS.WHATSAPP_MESSAGE_SENT, {
-      payment_type: paymentType,
-      has_short_link: !!shortLink,
-    });
-
     window.open(
       `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`,
       "_blank",
     );
-  };
-
-  // Track gift wrap toggle
-  const handleGiftWrapToggle = (checked) => {
-    setGiftWrap(checked);
-    trackFunnelEvent(EVENTS.GIFT_WRAP_TOGGLED, {
-      selected: checked,
-      charge: GIFT_WRAP_CHARGE,
-      cart_total: totalDiscounted,
-    });
-  };
-
-  // Track checkout button click
-  const handleCheckoutClick = () => {
-    trackFunnelEvent(EVENTS.CHECKOUT_BUTTON_CLICKED, {
-      cart_total: totalDiscounted,
-      item_count: cartBooks.length,
-      has_one_rupee_book: cartBooks.some((b) => b.discountedPrice === 1),
-      has_gift_wrap: giftWrap,
-    });
   };
 
   const handleCODCheckout = async (
@@ -473,15 +379,6 @@ _Thank you for shopping with TheBookX! 📚✨_
     fasterDeliveryChoice,
     giftWrapSelected,
   ) => {
-    // Track COD payment initiated
-    trackFunnelEvent(EVENTS.COD_PAYMENT_INITIATED, {
-      total_amount:
-        finalPayable +
-        getDeliveryChargeByChoice(fasterDeliveryChoice) +
-        (giftWrapSelected ? GIFT_WRAP_CHARGE : 0),
-      advance_amount: 99,
-    });
-
     setPaymentMethod("COD");
 
     const viewBagLinkWithDetails = generateViewBagLinkWithDetails(
@@ -522,14 +419,6 @@ _Thank you for shopping with TheBookX! 📚✨_
     fasterDeliveryChoice,
     giftWrapSelected,
   ) => {
-    // Track UPI payment initiated
-    trackFunnelEvent(EVENTS.UPI_PAYMENT_INITIATED, {
-      total_amount:
-        finalPayable +
-        getDeliveryChargeByChoice(fasterDeliveryChoice) +
-        (giftWrapSelected ? GIFT_WRAP_CHARGE : 0),
-    });
-
     setPaymentMethod("UPI");
 
     const viewBagLinkWithDetails = generateViewBagLinkWithDetails(
@@ -568,16 +457,7 @@ _Thank you for shopping with TheBookX! 📚✨_
   return (
     <section className="section-1200 flex flex-col gap-24">
       <div className="flex flec-row gap-12 items-center">
-        <ArrowLeft
-          size={20}
-          onClick={() => {
-            trackFunnelEvent(EVENTS.BAG_PAGE_EXIT, {
-              exit_action: "back_to_home",
-              cart_total: totalDiscounted,
-            });
-            router.push("/");
-          }}
-        />
+        <ArrowLeft size={20} onClick={() => router.push("/")} />
         <div className="flex flex-col">
           <h2 className="font-16 weight-600">Your Bag</h2>
           <span className="font-12 dark-50">
@@ -599,7 +479,7 @@ _Thank you for shopping with TheBookX! 📚✨_
           <input
             type="checkbox"
             checked={giftWrap}
-            onChange={(e) => handleGiftWrapToggle(e.target.checked)}
+            onChange={(e) => setGiftWrap(e.target.checked)}
             className="gift-wrap-checkbox"
           />
           <div className="gift-wrap-checkbox-custom">
@@ -647,25 +527,14 @@ _Thank you for shopping with TheBookX! 📚✨_
             )}
           </div>
 
-          <span
-            className="view-bill-text"
-            onClick={() => {
-              trackFunnelEvent("bill_modal_opened", {
-                cart_total: totalDiscounted,
-              });
-              setShowBill(true);
-            }}
-          >
+          <span className="view-bill-text" onClick={() => setShowBill(true)}>
             View bill
           </span>
         </div>
 
         <SlideConfirm
           disabled={!canCheckout || isShortening}
-          onComplete={() => {
-            handleCheckoutClick();
-            setShowAddressModal(true);
-          }}
+          onComplete={() => setShowAddressModal(true)}
           resetTrigger={showAddressModal}
         />
       </div>

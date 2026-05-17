@@ -25,7 +25,7 @@ export default function PincodeModal() {
   // Track modal view when opened
   useTrackView(EVENTS.PINCODE_MODAL_VIEWED, {}, isOpen);
 
-  // Check for saved pincode on mount
+  // Check for saved pincode on mount (auto-fill from localStorage)
   useEffect(() => {
     const savedPincodeData = localStorage.getItem(PINCODE_DATA_KEY);
     if (savedPincodeData) {
@@ -36,15 +36,7 @@ export default function PincodeModal() {
           setPhoneNumber(parsed.phone || "");
           setHasAutoFilled(true);
 
-          // Track auto-fill to Google Form
-          trackPincodeToGoogleForm({
-            pincode: parsed.pincode,
-            city: parsed.city,
-            state: parsed.state,
-            phone: parsed.phone,
-            type: "auto_filled",
-          });
-
+          // Only track to GA, NOT to Google Form
           trackFunnelEvent(EVENTS.PINCODE_AUTO_FILLED, {
             source: "localStorage",
             has_pincode: true,
@@ -140,7 +132,7 @@ export default function PincodeModal() {
       is_manual_entry: !hasAutoFilled,
     });
 
-    // Submit to Google Form
+    // ✅ Submit to Google Form ONLY on manual submit
     await trackPincodeToGoogleForm({
       pincode: pincode,
       city: location?.city,
@@ -182,7 +174,7 @@ export default function PincodeModal() {
       has_phone_input: !!phoneNumber,
     });
 
-    // Submit skip to Google Form
+    // ✅ Submit skip to Google Form ONLY on manual skip
     trackPincodeToGoogleForm({
       pincode: pincode || "skipped",
       phone: phoneNumber,
@@ -199,12 +191,11 @@ export default function PincodeModal() {
       ? Math.floor((Date.now() - startTime) / 1000)
       : null;
 
-    // Track outside click to Google Form
-    trackPincodeToGoogleForm({
-      pincode: pincode || "outside_click",
-      phone: phoneNumber,
-      type: "outside_click",
-      time_spent: timeSpent,
+    // ❌ DO NOT send to Google Form on outside click
+    trackFunnelEvent("pincode_outside_click", {
+      time_spent_seconds: timeSpent,
+      has_pincode_input: !!pincode,
+      has_phone_input: !!phoneNumber,
     });
 
     localStorage.setItem(PINCODE_STORAGE_KEY, Date.now().toString());

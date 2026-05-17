@@ -19,10 +19,21 @@ import {
   CheckCircle,
   Download,
   Share2,
+  Calculator,
+  TrendingUp,
+  TrendingDown,
+  Bell,
+  Send,
+  Calendar,
 } from "lucide-react";
 import Link from "next/link";
 import { getAllOrders, updateOrder, deleteOrder } from "@/utils/indexDB";
 import { FaWhatsapp } from "react-icons/fa";
+import {
+  getDeliveryCharge,
+  getDeliveryLabel,
+  getOriginalCharge,
+} from "@/utils/cartOffers";
 
 export default function COListPage() {
   const [orders, setOrders] = useState([]);
@@ -33,6 +44,29 @@ export default function COListPage() {
   const [editFormData, setEditFormData] = useState({});
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [exporting, setExporting] = useState(false);
+  const [showCalculator, setShowCalculator] = useState(false);
+  const [calculatorData, setCalculatorData] = useState({
+    bookCosts: [],
+    totalCost: 0,
+    sellingPrice: 0,
+    deliveryChargeCustomer: 0,
+    deliveryActualCost: 0,
+    packingChargeCustomer: 0,
+    packingActualCost: 0,
+    offerDiscount: 0,
+    profit: 0,
+    margin: 0,
+  });
+  const [reminderPhone, setReminderPhone] = useState("");
+  const [showReminderModal, setShowReminderModal] = useState(false);
+  const [reminderOrder, setReminderOrder] = useState(null);
+  const [reminderMessageType, setReminderMessageType] = useState("shipping");
+
+  // Constants for costs
+  const PACKING_ACTUAL_COST = 25;
+  const PACKING_CHARGE_CUSTOMER = 50;
+  const STANDARD_DELIVERY_ACTUAL_COST = 65;
+  const BELOW_599_DELIVERY_ACTUAL_COST = 90;
 
   useEffect(() => {
     loadOrders();
@@ -132,7 +166,6 @@ export default function COListPage() {
   const exportToCSV = () => {
     setExporting(true);
 
-    // Prepare CSV headers
     const headers = [
       "Order ID",
       "Customer Name",
@@ -156,7 +189,6 @@ export default function COListPage() {
       "Books",
     ];
 
-    // Prepare CSV rows
     const rows = filteredOrders.map((order) => {
       const booksList =
         order.books
@@ -187,7 +219,6 @@ export default function COListPage() {
       ];
     });
 
-    // Create CSV content
     let csvContent = headers.join(",") + "\n";
     rows.forEach((row) => {
       const escapedRow = row.map((cell) => {
@@ -202,7 +233,6 @@ export default function COListPage() {
       csvContent += escapedRow.join(",") + "\n";
     });
 
-    // Download file
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
@@ -217,6 +247,121 @@ export default function COListPage() {
     URL.revokeObjectURL(url);
 
     setExporting(false);
+  };
+
+  const calculateProfitLoss = (order) => {
+    // Calculate total cost of books (actual cost price)
+    const totalBookCost =
+      order.books?.reduce((sum, book) => {
+        // Assuming 40% profit margin on books, so cost is 60% of selling price
+        const bookCost = book.price * 0.6;
+        return sum + bookCost * book.quantity;
+      }, 0) || 0;
+
+    // Calculate selling price
+    const sellingPrice = order.totalAmount;
+
+    // Calculate delivery actual cost based on order total
+    let deliveryActualCost = STANDARD_DELIVERY_ACTUAL_COST;
+    if (order.totalAmount < 599) {
+      deliveryActualCost = BELOW_599_DELIVERY_ACTUAL_COST;
+    } else if (order.totalAmount >= 799) {
+      deliveryActualCost = order.totalAmount * 0.15; // 15% actual cost for bulk orders
+    }
+
+    // Delivery charge customer paid
+    const deliveryChargeCustomer = order.deliveryCharge || 0;
+
+    // Packing actual cost vs customer paid
+    const packingActualCost = PACKING_ACTUAL_COST;
+    const packingChargeCustomer = order.isGiftWrap
+      ? PACKING_CHARGE_CUSTOMER
+      : 0;
+
+    // Offer discount (if any)
+    const offerDiscount = order.offerDiscount || 0;
+
+    // Calculate profit
+    const totalCost = totalBookCost + deliveryActualCost + packingActualCost;
+    const totalRevenue = sellingPrice - offerDiscount;
+    const profit = totalRevenue - totalCost;
+    const margin = (profit / totalRevenue) * 100;
+
+    return {
+      totalBookCost,
+      sellingPrice,
+      deliveryActualCost,
+      deliveryChargeCustomer,
+      packingActualCost,
+      packingChargeCustomer,
+      offerDiscount,
+      profit,
+      margin,
+    };
+  };
+
+  const openCalculator = (order) => {
+    const pl = calculateProfitLoss(order);
+    setCalculatorData({
+      bookCosts:
+        order.books?.map((book) => ({
+          name: book.name,
+          quantity: book.quantity,
+          sellingPrice: book.price,
+          cost: book.price * 0.6,
+          totalSelling: book.price * book.quantity,
+          totalCost: book.price * 0.6 * book.quantity,
+        })) || [],
+      totalCost: pl.totalBookCost,
+      sellingPrice: pl.sellingPrice,
+      deliveryChargeCustomer: pl.deliveryChargeCustomer,
+      deliveryActualCost: pl.deliveryActualCost,
+      packingChargeCustomer: pl.packingChargeCustomer,
+      packingActualCost: pl.packingActualCost,
+      offerDiscount: pl.offerDiscount,
+      profit: pl.profit,
+      margin: pl.margin,
+    });
+    setSelectedOrder(order);
+    setShowCalculator(true);
+  };
+
+  const sendReminder = async (order, messageType) => {
+    const formattedNumber = order.phone.startsWith("+")
+      ? order.phone
+      : `+91${order.phone}`;
+
+    const deliveryDays = order.isFasterDelivery ? "3-5" : "5-7";
+    const deliveryText = order.isFasterDelivery
+      ? `delivered in ${deliveryDays} business days (Priority Shipping)`
+      : `delivered in ${deliveryDays} business days`;
+
+    let message = "";
+    if (messageType === "shipped") {
+      message = encodeURIComponent(
+        `📚 *Order Update from TheBookX*\n\n` +
+          `Dear ${order.name || "Customer"},\n\n` +
+          `Your order #${order.orderId} has been shipped and will be ${deliveryText}.\n\n` +
+          `📦 Tracking ID: ${order.trackingId || "Not available"}\n\n` +
+          `Here is the link to track : https://www.indiapost.gov.in \n\n` +
+          `Thank you for shopping with TheBookX! Happy reading! 📖✨\n\n` +
+          `For any queries, feel free to reach out to us.`,
+      );
+    } else if (messageType === "shipping") {
+      message = encodeURIComponent(
+        `📚 *Order Update from TheBookX*\n\n` +
+          `Dear ${order.name || "Customer"},\n\n` +
+          `Your order #${order.orderId} is confirmed and will be shipped within 1-2 business days.\n\n` +
+          `Expected delivery: ${deliveryDays} business days after shipping.\n\n` +
+          `You will receive a tracking ID once shipped.\n\n` +
+          `Thank you for your patience! 📖✨\n\n` +
+          `For any queries, feel free to reach out to us.`,
+      );
+    }
+
+    window.open(`https://wa.me/${formattedNumber}?text=${message}`, "_blank");
+    setShowReminderModal(false);
+    setReminderOrder(null);
   };
 
   const formatDate = (dateString) => {
@@ -247,7 +392,7 @@ export default function COListPage() {
   return (
     <div>
       <div className="section-1200 flex flex-col gap-24">
-        <div className=" flex flex-col gap-12">
+        <div className="flex flex-col gap-12">
           <Link href="/" className="back-btn">
             <ArrowLeft size={18} />
             Back to Home
@@ -261,7 +406,6 @@ export default function COListPage() {
         </div>
 
         {/* Search */}
-
         <div className="flex flex-row gap-4">
           <div className="width100">
             <input
@@ -309,269 +453,541 @@ export default function COListPage() {
           </div>
         ) : (
           <div className="orders-list flex flex-col gap-24">
-            <div>
+            <div className="flex flex-row gap-12">
               <button
                 onClick={exportToCSV}
                 disabled={exporting || filteredOrders.length === 0}
-                className="sec-mid-btn width100"
+                className="sec-mid-btn"
               >
                 <Download size={18} />
-                {exporting ? "Exporting..." : "Export"}
+                {exporting ? "Exporting..." : "Export CSV"}
               </button>
             </div>
-            {filteredOrders.map((order) => (
-              <div key={order.orderId} className="order-card">
-                <div className="order-header">
-                  <div className="order-id">
-                    <span className="order-id-label">Order ID:</span>
-                    <span className="order-id-value">{order.orderId}</span>
-                  </div>
-                  <div className="order-date">
-                    {formatDate(order.orderDate)}
-                  </div>
-                  <div className="order-actions">
-                    {editingOrderId === order.orderId ? (
+            {filteredOrders.map((order) => {
+              const pl = calculateProfitLoss(order);
+              return (
+                <div key={order.orderId} className="order-card">
+                  <div className="order-header">
+                    <div className="order-id">
+                      <span className="order-id-label">Order ID:</span>
+                      <span className="order-id-value">{order.orderId}</span>
+                    </div>
+                    <div className="order-date">
+                      {formatDate(order.orderDate)}
+                    </div>
+                    <div className="order-actions">
                       <button
-                        onClick={() => handleSave(order.orderId)}
-                        className="pri-big-btn save"
-                      >
-                        <Save size={16} /> Save
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => handleEdit(order)}
+                        onClick={() => openCalculator(order)}
                         className="sec-mid-btn"
+                        title="View P&L"
                       >
-                        <Edit size={16} /> Edit
+                        <Calculator size={16} /> P&L
                       </button>
-                    )}
-                    <button
-                      onClick={() => handleDelete(order.orderId)}
-                      className="sec-mid-btn red"
-                    >
-                      <Trash2 size={16} /> Delete
-                    </button>
+                      {editingOrderId === order.orderId ? (
+                        <button
+                          onClick={() => handleSave(order.orderId)}
+                          className="pri-big-btn save"
+                        >
+                          <Save size={16} /> Save
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleEdit(order)}
+                          className="sec-mid-btn"
+                        >
+                          <Edit size={16} /> Edit
+                        </button>
+                      )}
+                      <button
+                        onClick={() => handleDelete(order.orderId)}
+                        className="sec-mid-btn red"
+                      >
+                        <Trash2 size={16} /> Delete
+                      </button>
+                    </div>
                   </div>
-                </div>
 
-                <div className="order-body">
-                  <div className="order-info">
-                    <div className="info-section">
-                      <h4>Customer Details</h4>
-                      {editingOrderId === order.orderId ? (
-                        <>
-                          <input
-                            type="text"
-                            className="edit-input"
-                            value={editFormData.name}
-                            onChange={(e) =>
-                              setEditFormData({
-                                ...editFormData,
-                                name: e.target.value,
-                              })
-                            }
-                            placeholder="Name"
-                          />
-                          <input
-                            type="tel"
-                            className="edit-input"
-                            value={editFormData.phone}
-                            onChange={(e) =>
-                              setEditFormData({
-                                ...editFormData,
-                                phone: e.target.value,
-                              })
-                            }
-                            placeholder="Phone"
-                          />
-                          <textarea
-                            className="edit-input"
-                            value={editFormData.address}
-                            onChange={(e) =>
-                              setEditFormData({
-                                ...editFormData,
-                                address: e.target.value,
-                              })
-                            }
-                            placeholder="Address"
-                            rows={2}
-                          />
-                          <div className="edit-row">
+                  {/* Profit/Loss Summary Row */}
+                  <div
+                    className={`profit-summary ${pl.profit >= 0 ? "profit" : "loss"}`}
+                  >
+                    <div className="profit-item">
+                      <span>Profit/Loss:</span>
+                      <strong
+                        className={pl.profit >= 0 ? "text-green" : "text-red"}
+                      >
+                        {pl.profit >= 0 ? "+" : ""}₹{Math.round(pl.profit)}
+                      </strong>
+                    </div>
+                    <div className="profit-item">
+                      <span>Margin:</span>
+                      <strong
+                        className={
+                          pl.margin >= 20 ? "text-green" : "text-orange"
+                        }
+                      >
+                        {Math.round(pl.margin)}%
+                      </strong>
+                    </div>
+                    <div className="profit-item">
+                      <span>Total Revenue:</span>
+                      <strong>₹{pl.sellingPrice}</strong>
+                    </div>
+                    <div className="profit-item">
+                      <span>Total Cost:</span>
+                      <strong>
+                        ₹
+                        {Math.round(
+                          pl.totalBookCost +
+                            pl.deliveryActualCost +
+                            pl.packingActualCost,
+                        )}
+                      </strong>
+                    </div>
+                  </div>
+
+                  <div className="order-body">
+                    <div className="order-info">
+                      <div className="info-section">
+                        <h4>Customer Details</h4>
+                        {editingOrderId === order.orderId ? (
+                          <>
                             <input
                               type="text"
                               className="edit-input"
-                              value={editFormData.city}
+                              value={editFormData.name}
                               onChange={(e) =>
                                 setEditFormData({
                                   ...editFormData,
-                                  city: e.target.value,
+                                  name: e.target.value,
                                 })
                               }
-                              placeholder="City"
+                              placeholder="Name"
                             />
                             <input
-                              type="text"
+                              type="tel"
                               className="edit-input"
-                              value={editFormData.pincode}
+                              value={editFormData.phone}
                               onChange={(e) =>
                                 setEditFormData({
                                   ...editFormData,
-                                  pincode: e.target.value,
+                                  phone: e.target.value,
                                 })
                               }
-                              placeholder="Pincode"
+                              placeholder="Phone"
                             />
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <p>
-                            <strong>Name:</strong> {order.name}
-                          </p>
-                          <p className="whatsapp-contact-row">
-                            <strong>Phone:</strong> {order.phone}
-                            <a
-                              href={`https://wa.me/91${order.phone}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="whatsapp-contact-btn"
-                              title="Chat on WhatsApp"
-                            >
-                              <FaWhatsapp size={16} color="#25D366" />
-                              Chat
-                            </a>
-                          </p>
-                          <p>
-                            <strong>Address:</strong> {order.address},{" "}
-                            {order.city}, {order.state} - {order.pincode}
-                          </p>
-                        </>
-                      )}
-                    </div>
-
-                    <div className="info-section">
-                      <h4>Order Summary</h4>
-                      <div className="books-list">
-                        {order.books?.map((book, idx) => (
-                          <div key={idx} className="book-item">
-                            <span>
-                              {book.name} × {book.quantity}
-                            </span>
-                            <span>₹{book.total}</span>
-                          </div>
-                        ))}
-                      </div>
-                      <div className="order-total">
-                        <span>Total Amount:</span>
-                        <strong>₹{order.totalAmount}</strong>
-                      </div>
-                      {order.deliveryCharge > 0 && (
-                        <p>
-                          <strong>Delivery Charge:</strong> +₹
-                          {order.deliveryCharge}
-                        </p>
-                      )}
-                      {order.isGiftWrap && (
-                        <p>
-                          <strong>Gift Wrap:</strong> +₹{order.giftWrapCharge}
-                        </p>
-                      )}
-                      <p>
-                        <strong>Payment:</strong> {order.paymentMethod}
-                      </p>
-                      <p>
-                        <strong>Delivery:</strong>{" "}
-                        {order.isFasterDelivery
-                          ? "Faster (2-5 days)"
-                          : "Standard (5-7 days)"}
-                      </p>
-                    </div>
-
-                    <div className="info-section">
-                      <h4>Tracking & Status</h4>
-                      {editingOrderId === order.orderId ? (
-                        <>
-                          <input
-                            type="text"
-                            className="edit-input"
-                            value={editFormData.trackingId}
-                            onChange={(e) =>
-                              setEditFormData({
-                                ...editFormData,
-                                trackingId: e.target.value,
-                              })
-                            }
-                            placeholder="Tracking ID"
-                          />
-                          <label className="checkbox-label">
-                            <input
-                              type="checkbox"
-                              checked={editFormData.advancePaid}
+                            <textarea
+                              className="edit-input"
+                              value={editFormData.address}
                               onChange={(e) =>
                                 setEditFormData({
                                   ...editFormData,
-                                  advancePaid: e.target.checked,
+                                  address: e.target.value,
                                 })
                               }
+                              placeholder="Address"
+                              rows={2}
                             />
-                            Advance Paid
-                          </label>
-                          <label className="checkbox-label">
-                            <input
-                              type="checkbox"
-                              checked={editFormData.isShipped}
-                              onChange={(e) =>
-                                setEditFormData({
-                                  ...editFormData,
-                                  isShipped: e.target.checked,
-                                })
-                              }
-                            />
-                            Item Shipped
-                          </label>
-                          <label className="checkbox-label">
-                            <input
-                              type="checkbox"
-                              checked={editFormData.isDelivered}
-                              onChange={(e) =>
-                                setEditFormData({
-                                  ...editFormData,
-                                  isDelivered: e.target.checked,
-                                })
-                              }
-                            />
-                            Item Delivered
-                          </label>
-                        </>
-                      ) : (
-                        <>
-                          {order.trackingId && (
+                            <div className="edit-row">
+                              <input
+                                type="text"
+                                className="edit-input"
+                                value={editFormData.city}
+                                onChange={(e) =>
+                                  setEditFormData({
+                                    ...editFormData,
+                                    city: e.target.value,
+                                  })
+                                }
+                                placeholder="City"
+                              />
+                              <input
+                                type="text"
+                                className="edit-input"
+                                value={editFormData.pincode}
+                                onChange={(e) =>
+                                  setEditFormData({
+                                    ...editFormData,
+                                    pincode: e.target.value,
+                                  })
+                                }
+                                placeholder="Pincode"
+                              />
+                            </div>
+                          </>
+                        ) : (
+                          <>
                             <p>
-                              <strong>Tracking ID:</strong> {order.trackingId}
+                              <strong>Name:</strong> {order.name}
                             </p>
-                          )}
+                            <p className="flex flex-row items-center gap-12">
+                              <strong>Phone:</strong> {order.phone}
+                              <a
+                                href={`https://wa.me/91${order.phone}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="whatsapp-contact-btn"
+                                title="Chat on WhatsApp"
+                              >
+                                <FaWhatsapp size={16} color="#25D366" />
+                                Chat
+                              </a>
+                              <a
+                                onClick={() => {
+                                  setReminderOrder(order);
+                                  setReminderMessageType("shipping");
+                                  setShowReminderModal(true);
+                                }}
+                                className="whatsapp-contact-btn"
+                                title="Send Reminder"
+                              >
+                                <Bell size={14} /> Remind
+                              </a>
+                            </p>
+                            <p>
+                              <strong>Address:</strong> {order.address},{" "}
+                              {order.city}, {order.state} - {order.pincode}
+                            </p>
+                          </>
+                        )}
+                      </div>
+
+                      <div className="info-section">
+                        <h4>Order Summary</h4>
+                        <div className="books-list">
+                          {order.books?.map((book, idx) => (
+                            <div key={idx} className="book-item">
+                              <span>
+                                {book.name} × {book.quantity}
+                              </span>
+                              <span>₹{book.total}</span>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="order-total">
+                          <span>Total Amount:</span>
+                          <strong>₹{order.totalAmount}</strong>
+                        </div>
+                        {order.deliveryCharge > 0 && (
                           <p>
-                            <strong>Advance Paid:</strong>{" "}
-                            {order.status?.advancePaid ? "✅ Yes" : "❌ No"}
+                            <strong>Delivery Charge:</strong> +₹
+                            {order.deliveryCharge}
                           </p>
+                        )}
+                        {order.isGiftWrap && (
                           <p>
-                            <strong>Item Shipped:</strong>{" "}
-                            {order.status?.isShipped ? "✅ Yes" : "❌ No"}
+                            <strong>Gift Wrap:</strong> +₹{order.giftWrapCharge}
                           </p>
-                          <p>
-                            <strong>Item Delivered:</strong>{" "}
-                            {order.status?.isDelivered ? "✅ Yes" : "❌ No"}
-                          </p>
-                        </>
-                      )}
+                        )}
+                        <p>
+                          <strong>Payment:</strong> {order.paymentMethod}
+                        </p>
+                        <p>
+                          <strong>Delivery:</strong>{" "}
+                          {order.isFasterDelivery
+                            ? "Faster (2-5 days)"
+                            : "Standard (5-7 days)"}
+                        </p>
+                      </div>
+
+                      <div className="info-section">
+                        <h4>Tracking & Status</h4>
+                        {editingOrderId === order.orderId ? (
+                          <>
+                            <input
+                              type="text"
+                              className="edit-input"
+                              value={editFormData.trackingId}
+                              onChange={(e) =>
+                                setEditFormData({
+                                  ...editFormData,
+                                  trackingId: e.target.value,
+                                })
+                              }
+                              placeholder="Tracking ID"
+                            />
+                            <label className="checkbox-label">
+                              <input
+                                type="checkbox"
+                                checked={editFormData.advancePaid}
+                                onChange={(e) =>
+                                  setEditFormData({
+                                    ...editFormData,
+                                    advancePaid: e.target.checked,
+                                  })
+                                }
+                              />
+                              Advance Paid
+                            </label>
+                            <label className="checkbox-label">
+                              <input
+                                type="checkbox"
+                                checked={editFormData.isShipped}
+                                onChange={(e) =>
+                                  setEditFormData({
+                                    ...editFormData,
+                                    isShipped: e.target.checked,
+                                  })
+                                }
+                              />
+                              Item Shipped
+                            </label>
+                            <label className="checkbox-label">
+                              <input
+                                type="checkbox"
+                                checked={editFormData.isDelivered}
+                                onChange={(e) =>
+                                  setEditFormData({
+                                    ...editFormData,
+                                    isDelivered: e.target.checked,
+                                  })
+                                }
+                              />
+                              Item Delivered
+                            </label>
+                          </>
+                        ) : (
+                          <>
+                            {order.trackingId && (
+                              <p>
+                                <strong>Tracking ID:</strong> {order.trackingId}
+                              </p>
+                            )}
+                            <p>
+                              <strong>Advance Paid:</strong>{" "}
+                              {order.status?.advancePaid ? "✅ Yes" : "❌ No"}
+                            </p>
+                            <p>
+                              <strong>Item Shipped:</strong>{" "}
+                              {order.status?.isShipped ? "✅ Yes" : "❌ No"}
+                            </p>
+                            <p>
+                              <strong>Item Delivered:</strong>{" "}
+                              {order.status?.isDelivered ? "✅ Yes" : "❌ No"}
+                            </p>
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
+
+      {/* P&L Calculator Modal */}
+      {showCalculator && selectedOrder && (
+        <div
+          className="bill-modal-overlay"
+          onClick={() => setShowCalculator(false)}
+        >
+          <div
+            className="bill-modal"
+            style={{ maxWidth: "600px" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="bill-header">
+              <span className="weight-600 font-16">
+                P&L Calculator - {selectedOrder.orderId}
+              </span>
+              <span
+                className="cursor-pointer"
+                onClick={() => setShowCalculator(false)}
+              >
+                <X size={16} />
+              </span>
+            </div>
+            <div className="address-form-content">
+              {/* Books List */}
+              <div className="pl-section">
+                <h4>Books Breakdown</h4>
+                <div className="pl-books">
+                  {calculatorData.bookCosts.map((book, idx) => (
+                    <div key={idx} className="pl-book-item">
+                      <div className="pl-book-name">
+                        {book.name} × {book.quantity}
+                      </div>
+                      <div className="pl-book-prices">
+                        <span>Selling: ₹{book.totalSelling}</span>
+                        <span>Cost: ₹{Math.round(book.totalCost)}</span>
+                        <span
+                          className={
+                            book.totalSelling - book.totalCost >= 0
+                              ? "text-green"
+                              : "text-red"
+                          }
+                        >
+                          P/L: ₹{Math.round(book.totalSelling - book.totalCost)}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="dashed-border my-12"></div>
+
+              {/* Revenue Section */}
+              <div className="pl-section">
+                <h4>Revenue</h4>
+                <div className="pl-row">
+                  <span>Books Selling Price:</span>
+                  <span>
+                    ₹
+                    {calculatorData.sellingPrice -
+                      calculatorData.deliveryChargeCustomer -
+                      calculatorData.packingChargeCustomer +
+                      calculatorData.offerDiscount}
+                  </span>
+                </div>
+                <div className="pl-row">
+                  <span>Delivery Charge (Customer):</span>
+                  <span>+₹{calculatorData.deliveryChargeCustomer}</span>
+                </div>
+                <div className="pl-row">
+                  <span>Packing Charge (Customer):</span>
+                  <span>+₹{calculatorData.packingChargeCustomer}</span>
+                </div>
+                <div className="pl-row text-red">
+                  <span>Offer Discount:</span>
+                  <span>-₹{calculatorData.offerDiscount}</span>
+                </div>
+                <div className="pl-row total">
+                  <span>Total Revenue:</span>
+                  <span>₹{calculatorData.sellingPrice}</span>
+                </div>
+              </div>
+
+              <div className="dashed-border my-12"></div>
+
+              {/* Cost Section */}
+              <div className="pl-section">
+                <h4>Costs</h4>
+                <div className="pl-row">
+                  <span>Books Cost (estimated 60% of SP):</span>
+                  <span>₹{Math.round(calculatorData.totalCost)}</span>
+                </div>
+                <div className="pl-row">
+                  <span>Delivery Actual Cost:</span>
+                  <span>₹{Math.round(calculatorData.deliveryActualCost)}</span>
+                </div>
+                <div className="pl-row">
+                  <span>Packing Actual Cost:</span>
+                  <span>₹{calculatorData.packingActualCost}</span>
+                </div>
+                <div className="pl-row total">
+                  <span>Total Cost:</span>
+                  <span>
+                    ₹
+                    {Math.round(
+                      calculatorData.totalCost +
+                        calculatorData.deliveryActualCost +
+                        calculatorData.packingActualCost,
+                    )}
+                  </span>
+                </div>
+              </div>
+
+              <div className="dashed-border my-12"></div>
+
+              {/* Profit/Loss Summary */}
+              <div
+                className={`pl-summary ${calculatorData.profit >= 0 ? "profit" : "loss"}`}
+              >
+                <div className="pl-row profit-loss">
+                  <span className="weight-600">Net Profit / Loss:</span>
+                  <span
+                    className={`weight-700 font-20 ${calculatorData.profit >= 0 ? "text-green" : "text-red"}`}
+                  >
+                    {calculatorData.profit >= 0 ? "+" : ""}₹
+                    {Math.round(calculatorData.profit)}
+                  </span>
+                </div>
+                <div className="pl-row">
+                  <span>Profit Margin:</span>
+                  <span
+                    className={
+                      calculatorData.margin >= 20 ? "text-green" : "text-orange"
+                    }
+                  >
+                    {Math.round(calculatorData.margin)}%
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-12 mt-16">
+                <button
+                  className="pri-big-btn"
+                  onClick={() => setShowCalculator(false)}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reminder Modal */}
+      {showReminderModal && reminderOrder && (
+        <div
+          className="bill-modal-overlay"
+          onClick={() => setShowReminderModal(false)}
+        >
+          <div
+            className="bill-modal"
+            style={{ maxWidth: "400px" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="bill-header">
+              <span className="weight-600 font-16">Send Reminder</span>
+              <span
+                className="cursor-pointer"
+                onClick={() => setShowReminderModal(false)}
+              >
+                <X size={16} />
+              </span>
+            </div>
+            <div className="address-form-content">
+              <p className="font-14 mb-16">
+                Send reminder to {reminderOrder.name} at +91
+                {reminderOrder.phone}
+              </p>
+              <div className="flex flex-col gap-12">
+                <button
+                  className="pri-big-btn"
+                  onClick={() => sendReminder(reminderOrder, "shipping")}
+                >
+                  <Calendar size={16} />
+                  Shipping in 1-2 days
+                </button>
+                <button
+                  className="pri-big-btn"
+                  onClick={() => sendReminder(reminderOrder, "shipped")}
+                  disabled={!reminderOrder.trackingId}
+                  style={{ opacity: !reminderOrder.trackingId ? 0.5 : 1 }}
+                >
+                  <Truck size={16} />
+                  Order Shipped
+                </button>
+                <button
+                  className="sec-mid-btn"
+                  onClick={() => setShowReminderModal(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+              {!reminderOrder.trackingId && (
+                <p className="font-10 red mt-12">
+                  Please add tracking ID before sending shipped reminder
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

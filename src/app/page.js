@@ -114,7 +114,6 @@ export default function HomePage() {
       <PincodeModal />
 
       <UnlockModal />
-      <UnlockChip />
 
       <BestsellerStage />
 

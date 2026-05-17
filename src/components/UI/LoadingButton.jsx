@@ -36,7 +36,7 @@ export default function LoadingButton({
       disabled={disabled || loading}
     >
       {loading ? (
-        <Loader2 className="loading-spinner" size={20} />
+        <Loader2 className="spinner" size={20} />
       ) : (
         <>
           {icon && icon}

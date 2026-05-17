@@ -376,7 +376,6 @@ export default function CartBar() {
         </AnimatePresence>
       )}
 
-      {/* Unlock Chip - Show for first-time users who haven't unlocked yet */}
       <UnlockChip />
     </div>
   );

@@ -44,8 +44,11 @@ export default function UnlockChip() {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
-        <Lock size={16} />
-        <span>Unlock ₹1 Books</span>
+        <Lock size={16} color="orange" />
+        <span>
+          Click here to{" "}
+          <span className="highlight-reward">Unlock ₹1 Books</span>
+        </span>
         <span className="unlock-chip-badge">Limited Time</span>
       </motion.button>
 

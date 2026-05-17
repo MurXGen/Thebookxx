@@ -289,4 +289,6 @@ export const bookImages = {
   "101-essays-that-will-change-the-way-you-think": `${BOOK_IMAGE_BASE_PATH}/101-essays.jpeg`,
   "how-to-kill-men-and-get-away-with-it": `${BOOK_IMAGE_BASE_PATH}/how-to-kill-men-and-get-away-with-it.jpeg`,
   "steal-like-an-artist": `${BOOK_IMAGE_BASE_PATH}/steal-like-an-artist.jpeg`,
+  "tuesdays-with-morrie": `${BOOK_IMAGE_BASE_PATH}/tuesdays-with-morrie.jpeg`,
+  "as-long-as-the-lemon-trees-grow": `${BOOK_IMAGE_BASE_PATH}/as-long-as-the-lemon-trees-grow.jpeg`,
 };

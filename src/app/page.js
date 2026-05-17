@@ -10,6 +10,7 @@ import CountdownTimer from "@/components/UI/CountDownTimer";
 import LabelDivider from "@/components/UI/LineDivider";
 import { Loader2 } from "lucide-react";
 import UnlockChip from "@/components/UI/UnlockChip";
+import StoreReviews from "@/components/StoreReviews";
 
 // Lazy load components with named exports
 const BestsellerStage = lazy(() => import("@/components/BestsellerStage"));
@@ -116,6 +117,8 @@ export default function HomePage() {
       <UnlockModal />
 
       <BestsellerStage />
+
+      <StoreReviews />
 
       <LazySection threshold={0.05}>
         <Suspense fallback={<LoadingFallback delay={0.4} />}>

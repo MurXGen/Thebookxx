@@ -22,6 +22,7 @@ import { ArrowLeft, Gift } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { permanentlyUnlockOffer, areOneRupeeBooksEnabled } from "@/utils/book";
+import { trackOrderToGoogleForm } from "@/utils/googleFormOrder";
 
 export default function BagPage() {
   const { cart } = useStore();
@@ -392,6 +393,25 @@ _Thank you for shopping with TheBookX! 📚✨_
     const shortLink = await shortenUrl(viewBagLinkWithDetails);
     setIsShortening(false);
 
+    const deliveryCharge = getDeliveryChargeByChoice(fasterDeliveryChoice);
+    const totalWithDelivery =
+      finalPayable + deliveryCharge + (giftWrapSelected ? GIFT_WRAP_CHARGE : 0);
+
+    // Send to Google Form (in addition to Telegram/WhatsApp)
+    await trackOrderToGoogleForm({
+      addressData,
+      paymentType: "COD",
+      fasterDeliveryChoice,
+      giftWrapSelected,
+      shortLink,
+      totalWithDelivery,
+      finalPayable,
+      totalDiscounted,
+      offerDiscount,
+      offerLabel,
+      cartBooks,
+    });
+
     if (isDesktop()) {
       sendOrderToTelegram(
         addressData,
@@ -432,6 +452,25 @@ _Thank you for shopping with TheBookX! 📚✨_
     const shortLink = await shortenUrl(viewBagLinkWithDetails);
     setIsShortening(false);
 
+    const deliveryCharge = getDeliveryChargeByChoice(fasterDeliveryChoice);
+    const totalWithDelivery =
+      finalPayable + deliveryCharge + (giftWrapSelected ? GIFT_WRAP_CHARGE : 0);
+
+    // Send to Google Form (in addition to Telegram/WhatsApp)
+    await trackOrderToGoogleForm({
+      addressData,
+      paymentType: "UPI",
+      fasterDeliveryChoice,
+      giftWrapSelected,
+      shortLink,
+      totalWithDelivery,
+      finalPayable,
+      totalDiscounted,
+      offerDiscount,
+      offerLabel,
+      cartBooks,
+    });
+
     if (isDesktop()) {
       sendOrderToTelegram(
         addressData,
@@ -452,6 +491,31 @@ _Thank you for shopping with TheBookX! 📚✨_
 
     setShowAddressModal(false);
     setShowBill(false);
+  };
+  // Send order to Google Form
+  const sendOrderToGoogleForm = async (
+    addressData,
+    paymentType,
+    fasterDeliveryChoice,
+    giftWrapSelected,
+    shortLink,
+    totalWithDelivery,
+  ) => {
+    const orderDetails = {
+      addressData,
+      paymentType,
+      fasterDeliveryChoice,
+      giftWrapSelected,
+      shortLink,
+      totalWithDelivery,
+      finalPayable,
+      totalDiscounted,
+      offerDiscount,
+      offerLabel,
+      cartBooks,
+    };
+
+    await trackOrderToGoogleForm(orderDetails);
   };
 
   return (

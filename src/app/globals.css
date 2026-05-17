@@ -5040,9 +5040,11 @@ input {
   display: flex;
   gap: 16px;
   flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
 }
 
-.trust-badge {
+.reviews-trust-badge {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -5270,11 +5272,6 @@ input {
 
   .trust-badges {
     gap: 10px;
-  }
-
-  .trust-badge {
-    padding: 6px 12px;
-    font-size: 10px;
   }
 
   .rating-summary {

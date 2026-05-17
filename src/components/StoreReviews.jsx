@@ -84,15 +84,15 @@ export default function StoreReviews() {
 
           {/* Trust Badges */}
           <div className="trust-badges">
-            <div className="trust-badge">
+            <div className="reviews-trust-badge">
               <ShieldCheck size={16} />
               <span>100% Genuine Books</span>
             </div>
-            <div className="trust-badge">
+            <div className="reviews-trust-badge">
               <Truck size={16} />
               <span>Free Shipping*</span>
             </div>
-            <div className="trust-badge">
+            <div className="reviews-trust-badge">
               <BsCash size={16} />
               <span>Cash on Delivery</span>
             </div>

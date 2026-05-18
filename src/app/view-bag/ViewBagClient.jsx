@@ -30,8 +30,56 @@ import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
+const safelyParseOrderData = (orderParam) => {
+  try {
+    // First, decode the URI component
+    let decoded = decodeURIComponent(orderParam);
+
+    // Replace any escaped newlines and other problematic characters
+    decoded = decoded
+      .replace(/\\n/g, " ")
+      .replace(/\\r/g, " ")
+      .replace(/\\t/g, " ")
+      .replace(/\\"/g, '"');
+
+    // Parse the JSON
+    return JSON.parse(decoded);
+  } catch (e) {
+    console.error("First parse attempt failed:", e);
+
+    try {
+      // Second attempt: Try to fix common JSON issues
+      let fixed = decodeURIComponent(orderParam);
+
+      // Fix unescaped newlines in strings
+      fixed = fixed.replace(/\n/g, "\\n");
+      fixed = fixed.replace(/\r/g, "\\r");
+
+      // Fix any other problematic characters
+      fixed = fixed.replace(/([^\\])\\n/g, "$1\\\\n");
+
+      return JSON.parse(fixed);
+    } catch (e2) {
+      console.error("Second parse attempt failed:", e2);
+
+      try {
+        // Third attempt: Use a more aggressive approach
+        const decoded = decodeURIComponent(orderParam);
+        // Use Function constructor as a fallback (safe since we control the input)
+        const parsed = new Function("return (" + decoded + ")")();
+        return parsed;
+      } catch (e3) {
+        console.error("All parse attempts failed:", e3);
+        return null;
+      }
+    }
+  }
+};
+
 export default function ViewBagClient() {
   const searchParams = useSearchParams();
+  const [loading, setLoading] = useState(true);
+  const [parseError, setParseError] = useState(false);
   const router = useRouter();
   const [currentUrl, setCurrentUrl] = useState("");
   const [orderData, setOrderData] = useState(null);
@@ -102,49 +150,80 @@ export default function ViewBagClient() {
     setCurrentUrl(window.location.href);
 
     const orderParam = searchParams.get("order");
+    console.log("Raw orderParam from useSearchParams:", orderParam);
+
     if (orderParam) {
       try {
-        const decodedOrder = JSON.parse(decodeURIComponent(orderParam));
-        setOrderData(decodedOrder);
-        setIsFasterDelivery(decodedOrder.fasterDelivery || false);
-        setIsGiftWrap(decodedOrder.giftWrap || false);
-        setGiftWrapCharge(decodedOrder.giftWrapCharge || 0);
+        // The orderParam is already decoded by Next.js, so parse it directly
+        const parsedOrder = JSON.parse(orderParam);
 
-        if (decodedOrder.totalDiscounted) {
-          setTotalDiscounted(decodedOrder.totalDiscounted);
+        console.log("Successfully parsed order:", parsedOrder.orderId);
+
+        setOrderData(parsedOrder);
+        setIsFasterDelivery(parsedOrder.fasterDelivery || false);
+        setIsGiftWrap(parsedOrder.giftWrap || false);
+        setGiftWrapCharge(parsedOrder.giftWrapCharge || 0);
+
+        if (parsedOrder.totalDiscounted) {
+          setTotalDiscounted(parsedOrder.totalDiscounted);
         }
 
-        if (decodedOrder.deliveryCharge !== undefined) {
-          if (decodedOrder.fasterDelivery) {
-            setFasterDeliveryCharge(decodedOrder.deliveryCharge);
+        if (parsedOrder.deliveryCharge !== undefined) {
+          if (parsedOrder.fasterDelivery) {
+            setFasterDeliveryCharge(parsedOrder.deliveryCharge);
           } else {
-            setStandardDeliveryCharge(decodedOrder.deliveryCharge);
+            setStandardDeliveryCharge(parsedOrder.deliveryCharge);
           }
         }
 
         const savedStatus = localStorage.getItem(
-          `order_status_${decodedOrder.orderId}`,
+          `order_status_${parsedOrder.orderId}`,
         );
         if (savedStatus) {
           setOrderStatus(JSON.parse(savedStatus));
         }
 
         const savedTracking = localStorage.getItem(
-          `tracking_id_${decodedOrder.orderId}`,
+          `tracking_id_${parsedOrder.orderId}`,
         );
         if (savedTracking) {
           setSavedTrackingId(savedTracking);
         }
 
         const savedNumbers = localStorage.getItem(
-          `alternative_numbers_${decodedOrder.orderId}`,
+          `alternative_numbers_${parsedOrder.orderId}`,
         );
         if (savedNumbers) {
           setAlternativeNumbers(JSON.parse(savedNumbers));
         }
+
+        setLoading(false);
+        setParseError(false);
       } catch (e) {
-        console.error("Failed to parse order data", e);
+        console.error("Failed to parse order data:", e);
+        console.error("Raw orderParam:", orderParam);
+
+        // Try to fix common JSON issues
+        try {
+          let fixedOrder = orderParam;
+          // Fix any unescaped newlines or control characters
+          fixedOrder = fixedOrder
+            .replace(/[\n\r\t]/g, " ")
+            .replace(/\s+/g, " ");
+          // Fix literal backslash n
+          fixedOrder = fixedOrder.replace(/\\n/g, " ").replace(/\\r/g, " ");
+          const recoveredOrder = JSON.parse(fixedOrder);
+          console.log("Recovered order:", recoveredOrder.orderId);
+          setOrderData(recoveredOrder);
+          setParseError(false);
+        } catch (e2) {
+          console.error("Recovery also failed:", e2);
+          setParseError(true);
+        }
+        setLoading(false);
       }
+    } else {
+      setLoading(false);
     }
   }, [searchParams]);
 
@@ -616,21 +695,21 @@ export default function ViewBagClient() {
                       : "Delivery Charge"}
                   </span>
                   <div className="text-right">
-                    {originalCharge && (
+                    {/* {originalCharge && (
                       <span className="font-12 line-through gray-400 mr-8">
                         ₹{originalCharge}
                       </span>
-                    )}
+                    )} */}
                     <span
                       className={`font-14 weight-500 ${isFasterDelivery ? "orange" : "red"}`}
                     >
                       + ₹{deliveryCharge}
                     </span>
-                    {deliverySavings > 0 && (
+                    {/* {deliverySavings > 0 && (
                       <span className="font-10 green ml-8">
                         Save ₹{deliverySavings}
                       </span>
-                    )}
+                    )} */}
                   </div>
                 </div>
               )}
@@ -933,17 +1012,17 @@ export default function ViewBagClient() {
               {isFasterDelivery && "(Express)"}
             </span>
             <div className="text-right">
-              {originalCharge && (
+              {/* {originalCharge && (
                 <span className="font-12 line-through gray-400 mr-8">
                   ₹{originalCharge}
                 </span>
-              )}
+              )} */}
               <span>+ ₹{deliveryCharge}</span>
-              {deliverySavings > 0 && (
+              {/* {deliverySavings > 0 && (
                 <span className="font-10 green ml-8">
                   Save ₹{deliverySavings}
                 </span>
-              )}
+              )} */}
             </div>
           </div>
         )}

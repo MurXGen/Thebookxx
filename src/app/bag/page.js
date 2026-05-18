@@ -315,12 +315,18 @@ _Thank you for shopping with TheBookX! 📚✨_
     const giftWrapAmount = giftWrapSelected ? GIFT_WRAP_CHARGE : 0;
     const totalWithDelivery = finalPayable + deliveryCharge + giftWrapAmount;
 
+    // Clean up address to remove any newlines or special characters
+    const cleanAddress = (addressData.address || "")
+      .replace(/[\n\r\t]/g, " ")
+      .trim();
+    const cleanArea = (addressData.area || "").replace(/[\n\r\t]/g, " ").trim();
+
     const orderDetails = {
       orderId: orderId,
       name: addressData.name || "",
       phone: addressData.phone || "",
-      address: addressData.address || "",
-      area: addressData.area || "",
+      address: cleanAddress,
+      area: cleanArea,
       city: addressData.city || "",
       district: addressData.district || "",
       state: addressData.state || "",
@@ -335,9 +341,19 @@ _Thank you for shopping with TheBookX! 📚✨_
       totalAmount: totalWithDelivery,
     };
 
-    const encodedDetails = encodeURIComponent(JSON.stringify(orderDetails));
+    // Use JSON.stringify with replacer to ensure proper escaping
+    const jsonString = JSON.stringify(orderDetails, (key, value) => {
+      if (typeof value === "string") {
+        // Remove any newlines and replace with spaces
+        return value.replace(/[\n\r\t]/g, " ");
+      }
+      return value;
+    });
 
-    return `${siteOrigin}/view-bag?items=${encodeURIComponent(items)}&order=${encodedDetails}`;
+    const encodedDetails = encodeURIComponent(jsonString);
+    const encodedItems = encodeURIComponent(items);
+
+    return `${siteOrigin}/view-bag?items=${encodedItems}&order=${encodedDetails}`;
   };
 
   const shortenUrl = async (longUrl) => {

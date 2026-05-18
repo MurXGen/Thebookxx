@@ -90,7 +90,27 @@ export default function COListPage() {
   const loadOrders = async () => {
     try {
       const allOrders = await getAllOrders();
-      const sorted = allOrders.sort(
+      // Process orders to ensure P&L data is properly formatted
+      const processedOrders = allOrders.map((order) => {
+        // If order has custom P&L data stored in settings
+        if (order.profitLoss?.settings || order.plData?.settings) {
+          return {
+            ...order,
+            profitLoss: order.profitLoss || order.plData,
+            useCustomBookCosts:
+              order.profitLoss?.settings?.useCustomBookCosts ||
+              order.plData?.settings?.useCustomBookCosts ||
+              false,
+            customBookCosts:
+              order.profitLoss?.settings?.bookCosts ||
+              order.plData?.settings?.bookCosts ||
+              null,
+          };
+        }
+        return order;
+      });
+
+      const sorted = processedOrders.sort(
         (a, b) => new Date(b.orderDate) - new Date(a.orderDate),
       );
       setOrders(sorted);
@@ -239,7 +259,6 @@ export default function COListPage() {
   }));
 
   const handleUpdatePL = async (orderId, plData) => {
-    // Find the order to update
     const orderToUpdate = orders.find((o) => o.orderId === orderId);
     if (!orderToUpdate) return;
 
@@ -256,12 +275,12 @@ export default function COListPage() {
         margin: plData.margin,
         settings: plData.settings,
       },
-      // Also store custom book costs if individual mode was used
+      plData: plData,
+      useCustomBookCosts: plData.settings?.useCustomBookCosts || false,
       customBookCosts: plData.settings?.useCustomBookCosts
         ? plData.settings.bookCosts
         : null,
-      customBookCostPercentage: plData.settings?.bookCostPercentage,
-      useCustomBookCosts: plData.settings?.useCustomBookCosts,
+      hasCustomPL: true,
     };
 
     try {

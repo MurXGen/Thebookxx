@@ -8,9 +8,15 @@ const PACKING_ACTUAL_COST = 25;
 const STANDARD_DELIVERY_ACTUAL_COST = 65;
 const BELOW_599_DELIVERY_ACTUAL_COST = 90;
 
-export default function ProfitLossModal({ isOpen, onClose, order, onUpdate }) {
+export default function ProfitLossModal({
+  isOpen,
+  onClose,
+  order,
+  onUpdate,
+  existingPL,
+}) {
   const [plData, setPlData] = useState({
-    bookCosts: [], // Individual book costs
+    bookCosts: [],
     bookCostPercentage: 60,
     useCustomBookCosts: false,
     deliveryActualCost: 0,
@@ -29,23 +35,75 @@ export default function ProfitLossModal({ isOpen, onClose, order, onUpdate }) {
     bookBreakdown: [],
   });
 
-  // Initialize book costs from order
+  // Initialize book costs from order or existing PL data
   useEffect(() => {
-    if (order && isOpen && plData.bookCosts.length === 0) {
-      const initialBookCosts =
-        order.books?.map((book) => ({
-          id: book.id || Math.random(),
-          name: book.name,
-          quantity: book.quantity,
-          sellingPrice: book.price,
-          totalSelling: book.total,
-          costPrice: Math.round(book.price * 0.6), // Default 60% of selling price
-          totalCost: Math.round(book.total * 0.6),
-          profit: Math.round(book.total - book.total * 0.6),
-        })) || [];
-      setPlData((prev) => ({ ...prev, bookCosts: initialBookCosts }));
+    if (order && isOpen) {
+      // If existing PL data is available, use it
+      if (existingPL && Object.keys(existingPL).length > 0) {
+        // Load saved settings
+        setPlData({
+          bookCosts: existingPL.settings?.bookCosts || [],
+          bookCostPercentage: existingPL.settings?.bookCostPercentage || 60,
+          useCustomBookCosts: existingPL.settings?.useCustomBookCosts || false,
+          deliveryActualCost: existingPL.deliveryActualCost || 0,
+          packingActualCost:
+            existingPL.packingActualCost || PACKING_ACTUAL_COST,
+          customDeliveryCost: existingPL.settings?.customDeliveryCost || false,
+        });
+
+        // If no custom book costs exist, initialize from order
+        if (
+          !existingPL.settings?.bookCosts ||
+          existingPL.settings.bookCosts.length === 0
+        ) {
+          const initialBookCosts =
+            order.books?.map((book) => ({
+              id: book.id || Math.random(),
+              name: book.name,
+              quantity: book.quantity,
+              sellingPrice: book.price,
+              totalSelling: book.total,
+              costPrice: Math.round(
+                (book.price * (existingPL.settings?.bookCostPercentage || 60)) /
+                  100,
+              ),
+              totalCost: Math.round(
+                (book.total * (existingPL.settings?.bookCostPercentage || 60)) /
+                  100,
+              ),
+              profit: Math.round(
+                book.total -
+                  (book.total *
+                    (existingPL.settings?.bookCostPercentage || 60)) /
+                    100,
+              ),
+              profitPerUnit: Math.round(
+                book.price -
+                  (book.price *
+                    (existingPL.settings?.bookCostPercentage || 60)) /
+                    100,
+              ),
+            })) || [];
+          setPlData((prev) => ({ ...prev, bookCosts: initialBookCosts }));
+        }
+      } else {
+        // Fresh initialization from order
+        const initialBookCosts =
+          order.books?.map((book) => ({
+            id: book.id || Math.random(),
+            name: book.name,
+            quantity: book.quantity,
+            sellingPrice: book.price,
+            totalSelling: book.total,
+            costPrice: Math.round(book.price * 0.6),
+            totalCost: Math.round(book.total * 0.6),
+            profit: Math.round(book.total - book.total * 0.6),
+            profitPerUnit: Math.round(book.price - book.price * 0.6),
+          })) || [];
+        setPlData((prev) => ({ ...prev, bookCosts: initialBookCosts }));
+      }
     }
-  }, [order, isOpen]);
+  }, [order, isOpen, existingPL]);
 
   // Calculate P&L whenever costs change
   useEffect(() => {
@@ -53,7 +111,7 @@ export default function ProfitLossModal({ isOpen, onClose, order, onUpdate }) {
       let totalBookCost = 0;
       let bookBreakdown = [];
 
-      if (plData.useCustomBookCosts) {
+      if (plData.useCustomBookCosts && plData.bookCosts.length > 0) {
         // Use individual book costs
         bookBreakdown = plData.bookCosts.map((book) => {
           const cost = book.costPrice * book.quantity;
@@ -189,6 +247,18 @@ export default function ProfitLossModal({ isOpen, onClose, order, onUpdate }) {
           className="address-form-content"
           style={{ maxHeight: "70vh", overflowY: "auto" }}
         >
+          {/* Show current saved settings info */}
+          {existingPL && Object.keys(existingPL).length > 0 && (
+            <div className="saved-info-message">
+              <span className="font-12 green">✓ Loaded saved P&L data</span>
+              {existingPL.settings?.useCustomBookCosts && (
+                <span className="font-12 gray-500 ml-12">
+                  Custom book costs applied
+                </span>
+              )}
+            </div>
+          )}
+
           {/* Book Cost Method Selection */}
           <div className="pl-section">
             <div className="flex gap-12 mb-16">
@@ -291,7 +361,7 @@ export default function ProfitLossModal({ isOpen, onClose, order, onUpdate }) {
                         <span>Cost Price:</span>
                         <input
                           type="number"
-                          className="sec-mid-btn"
+                          className="cost-input"
                           value={book.costPrice}
                           onChange={(e) =>
                             updateBookCost(idx, parseInt(e.target.value) || 0)

@@ -1,17 +1,17 @@
 // components/COList/OrderCard.jsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Edit, Save, X, Trash2, Calculator, Bell } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import ProfitLossModal from "./ProfitLossModal";
+import { usePL } from "@/context/PLContext";
 
 export default function OrderCard({
   order,
   onEdit,
   onSave,
   onDelete,
-  onCalculator,
   onReminder,
   editingOrderId,
   editFormData,
@@ -19,18 +19,45 @@ export default function OrderCard({
 }) {
   const isEditing = editingOrderId === order.orderId;
   const [showPLModal, setShowPLModal] = useState(false);
-  // In OrderCard.jsx, update the profit/loss display to use saved data if available
+  const { getOrderPL, updateOrderPL } = usePL();
 
-  const pl = order.profitLoss || order.customProfitLoss || {};
+  // Get P&L data from global context first, then fallback to order data
+  const contextPL = getOrderPL(order.orderId);
+  const pl =
+    contextPL ||
+    order.profitLoss ||
+    order.customProfitLoss ||
+    order.plData ||
+    {};
 
-  // Also check if there are custom book costs saved
-  const hasCustomBookCosts = order.useCustomBookCosts && order.customBookCosts;
+  // Check if there are custom book costs saved
+  const hasCustomBookCosts =
+    contextPL?.settings?.useCustomBookCosts === true ||
+    order.useCustomBookCosts === true ||
+    (order.customBookCosts && order.customBookCosts.length > 0) ||
+    pl.settings?.useCustomBookCosts === true;
 
   // Safely calculate total cost with fallbacks
   const totalBookCost = pl.totalBookCost || 0;
   const deliveryActualCost = pl.deliveryActualCost || 0;
   const packingActualCost = pl.packingActualCost || 0;
   const totalCost = totalBookCost + deliveryActualCost + packingActualCost;
+
+  // Listen for PL updates from other components
+  useEffect(() => {
+    const handlePLUpdate = (event) => {
+      if (event.detail?.orderId === order.orderId) {
+        // Force re-render by accessing the updated context
+        const updatedPL = getOrderPL(order.orderId);
+        if (updatedPL) {
+          Object.assign(pl, updatedPL);
+        }
+      }
+    };
+
+    window.addEventListener("plDataUpdated", handlePLUpdate);
+    return () => window.removeEventListener("plDataUpdated", handlePLUpdate);
+  }, [order.orderId, getOrderPL]);
 
   const handleOpenPLModal = () => {
     setShowPLModal(true);
@@ -40,11 +67,17 @@ export default function OrderCard({
     setShowPLModal(false);
   };
 
-  const handleUpdatePL = (updatedData) => {
-    // Call the parent's onCalculator function with orderId and updated data
-    if (onCalculator) {
-      onCalculator(order.orderId, updatedData);
-    }
+  const handleUpdatePL = async (updatedData) => {
+    // Save to global context
+    await updateOrderPL(order.orderId, updatedData);
+
+    // Dispatch event for other components
+    window.dispatchEvent(
+      new CustomEvent("plDataUpdated", {
+        detail: { orderId: order.orderId, data: updatedData },
+      }),
+    );
+
     setShowPLModal(false);
   };
 
@@ -101,22 +134,26 @@ export default function OrderCard({
         </div>
 
         {/* Profit/Loss Summary Row */}
-        {pl.profit !== undefined && (
+        {(pl.profit !== undefined || Object.keys(pl).length > 0) && (
           <div
-            className={`profit-summary ${pl.profit >= 0 ? "profit" : "loss"}`}
+            className={`profit-summary ${(pl.profit || 0) >= 0 ? "profit" : "loss"}`}
           >
             <div className="profit-item">
               <span>Profit/Loss:</span>
-              <strong className={pl.profit >= 0 ? "text-green" : "text-red"}>
-                {pl.profit >= 0 ? "+" : ""}₹{Math.round(pl.profit)}
+              <strong
+                className={(pl.profit || 0) >= 0 ? "text-green" : "text-red"}
+              >
+                {(pl.profit || 0) >= 0 ? "+" : ""}₹{Math.round(pl.profit || 0)}
               </strong>
             </div>
             <div className="profit-item">
               <span>Margin:</span>
               <strong
-                className={pl.margin >= 20 ? "text-green" : "text-orange"}
+                className={
+                  (pl.margin || 0) >= 20 ? "text-green" : "text-orange"
+                }
               >
-                {Math.round(pl.margin)}%
+                {Math.round(pl.margin || 0)}%
               </strong>
             </div>
             <div className="profit-item">
@@ -125,19 +162,12 @@ export default function OrderCard({
             </div>
             <div className="profit-item">
               <span>Total Cost:</span>
-              <strong>
-                ₹
-                {Math.round(
-                  (pl.totalBookCost || 0) +
-                    (pl.deliveryActualCost || 0) +
-                    (pl.packingActualCost || 0),
-                )}
-              </strong>
+              <strong>₹{Math.round(totalCost)}</strong>
             </div>
-            {order.useCustomBookCosts && (
+            {hasCustomBookCosts && (
               <div className="profit-item">
                 <span className="font-10 gray-500">
-                  Custom book costs applied
+                  📊 Custom book costs applied
                 </span>
               </div>
             )}
@@ -187,12 +217,13 @@ export default function OrderCard({
         onClose={handleClosePLModal}
         order={order}
         onUpdate={handleUpdatePL}
+        existingPL={pl}
       />
     </>
   );
 }
 
-// Sub-components (keep the same as before)
+// Sub-components (keep the same)
 function EditCustomerForm({ editFormData, setEditFormData }) {
   return (
     <>

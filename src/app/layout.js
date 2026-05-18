@@ -6,6 +6,7 @@ import AnalyticsTracker from "@/components/AnalyticsTracker";
 import { ToastProvider } from "@/context/ToastContext";
 import RegisterSW from "@/components/RegisterSW";
 import GlobalHaptics from "@/components/UI/GlobalHaptics";
+import { PLProvider } from "@/context/PLContext";
 
 /* Font */
 const poppins = Poppins({
@@ -135,10 +136,12 @@ export default function RootLayout({ children }) {
       >
         <ToastProvider>
           <StoreProvider>
-            <RegisterSW />
-            <GlobalHaptics />
-            <AnalyticsTracker />
-            {children}
+            <PLProvider>
+              <RegisterSW />
+              <GlobalHaptics />
+              <AnalyticsTracker />
+              {children}
+            </PLProvider>
           </StoreProvider>
         </ToastProvider>
       </body>

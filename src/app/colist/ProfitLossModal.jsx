@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, Save, TrendingUp, TrendingDown } from "lucide-react";
+import { X, Save, TrendingUp, TrendingDown, Edit2 } from "lucide-react";
 
 const PACKING_ACTUAL_COST = 25;
 const STANDARD_DELIVERY_ACTUAL_COST = 65;
@@ -10,7 +10,9 @@ const BELOW_599_DELIVERY_ACTUAL_COST = 90;
 
 export default function ProfitLossModal({ isOpen, onClose, order, onUpdate }) {
   const [plData, setPlData] = useState({
-    bookCostPercentage: 60, // Default 60% of selling price as cost
+    bookCosts: [], // Individual book costs
+    bookCostPercentage: 60,
+    useCustomBookCosts: false,
     deliveryActualCost: 0,
     packingActualCost: PACKING_ACTUAL_COST,
     customDeliveryCost: false,
@@ -24,15 +26,75 @@ export default function ProfitLossModal({ isOpen, onClose, order, onUpdate }) {
     totalCost: 0,
     profit: 0,
     margin: 0,
+    bookBreakdown: [],
   });
 
+  // Initialize book costs from order
+  useEffect(() => {
+    if (order && isOpen && plData.bookCosts.length === 0) {
+      const initialBookCosts =
+        order.books?.map((book) => ({
+          id: book.id || Math.random(),
+          name: book.name,
+          quantity: book.quantity,
+          sellingPrice: book.price,
+          totalSelling: book.total,
+          costPrice: Math.round(book.price * 0.6), // Default 60% of selling price
+          totalCost: Math.round(book.total * 0.6),
+          profit: Math.round(book.total - book.total * 0.6),
+        })) || [];
+      setPlData((prev) => ({ ...prev, bookCosts: initialBookCosts }));
+    }
+  }, [order, isOpen]);
+
+  // Calculate P&L whenever costs change
   useEffect(() => {
     if (order && isOpen) {
-      // Calculate book costs based on percentage
-      const totalBookSelling =
-        order.books?.reduce((sum, book) => sum + book.total, 0) || 0;
-      const totalBookCost =
-        totalBookSelling * (plData.bookCostPercentage / 100);
+      let totalBookCost = 0;
+      let bookBreakdown = [];
+
+      if (plData.useCustomBookCosts) {
+        // Use individual book costs
+        bookBreakdown = plData.bookCosts.map((book) => {
+          const cost = book.costPrice * book.quantity;
+          totalBookCost += cost;
+          return {
+            name: book.name,
+            quantity: book.quantity,
+            sellingPrice: book.sellingPrice,
+            totalSelling: book.totalSelling,
+            costPrice: book.costPrice,
+            totalCost: cost,
+            profit: book.totalSelling - cost,
+            profitPerUnit: book.sellingPrice - book.costPrice,
+          };
+        });
+      } else {
+        // Use percentage-based calculation
+        const totalBookSelling =
+          order.books?.reduce((sum, book) => sum + book.total, 0) || 0;
+        totalBookCost = totalBookSelling * (plData.bookCostPercentage / 100);
+
+        bookBreakdown =
+          order.books?.map((book) => ({
+            name: book.name,
+            quantity: book.quantity,
+            sellingPrice: book.price,
+            totalSelling: book.total,
+            costPrice: Math.round(
+              book.price * (plData.bookCostPercentage / 100),
+            ),
+            totalCost: Math.round(
+              book.total * (plData.bookCostPercentage / 100),
+            ),
+            profit: Math.round(
+              book.total - book.total * (plData.bookCostPercentage / 100),
+            ),
+            profitPerUnit: Math.round(
+              book.price - book.price * (plData.bookCostPercentage / 100),
+            ),
+          })) || [];
+      }
 
       // Calculate delivery actual cost
       let deliveryActualCost = plData.deliveryActualCost;
@@ -60,19 +122,40 @@ export default function ProfitLossModal({ isOpen, onClose, order, onUpdate }) {
         totalCost,
         profit,
         margin,
+        bookBreakdown,
       });
     }
   }, [order, isOpen, plData]);
 
-  if (!isOpen) return null;
+  const updateBookCost = (index, newCostPrice) => {
+    const updatedBookCosts = [...plData.bookCosts];
+    const book = updatedBookCosts[index];
+    const costPrice = Math.max(0, newCostPrice);
+    updatedBookCosts[index] = {
+      ...book,
+      costPrice: costPrice,
+      totalCost: costPrice * book.quantity,
+      profit: book.totalSelling - costPrice * book.quantity,
+      profitPerUnit: book.sellingPrice - costPrice,
+    };
+    setPlData((prev) => ({ ...prev, bookCosts: updatedBookCosts }));
+  };
 
   const handleSave = () => {
     onUpdate({
       ...calculatedPL,
-      settings: plData,
+      settings: {
+        bookCosts: plData.bookCosts,
+        bookCostPercentage: plData.bookCostPercentage,
+        useCustomBookCosts: plData.useCustomBookCosts,
+        deliveryActualCost: calculatedPL.deliveryActualCost,
+        packingActualCost: plData.packingActualCost,
+      },
     });
     onClose();
   };
+
+  if (!isOpen) return null;
 
   const totalBookSelling =
     order?.books?.reduce((sum, book) => sum + book.total, 0) || 0;
@@ -81,7 +164,7 @@ export default function ProfitLossModal({ isOpen, onClose, order, onUpdate }) {
     <div className="bill-modal-overlay" onClick={onClose}>
       <div
         className="bill-modal"
-        style={{ maxWidth: "600px" }}
+        style={{ maxWidth: "700px" }}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="bill-header">
@@ -97,69 +180,131 @@ export default function ProfitLossModal({ isOpen, onClose, order, onUpdate }) {
           className="address-form-content"
           style={{ maxHeight: "70vh", overflowY: "auto" }}
         >
+          {/* Book Cost Method Selection */}
+          <div className="pl-section">
+            <div className="flex gap-12 mb-16">
+              <label className="flex items-center gap-8">
+                <input
+                  type="radio"
+                  checked={!plData.useCustomBookCosts}
+                  onChange={() =>
+                    setPlData((prev) => ({
+                      ...prev,
+                      useCustomBookCosts: false,
+                    }))
+                  }
+                />
+                Use Percentage-based Cost
+              </label>
+              <label className="flex items-center gap-8">
+                <input
+                  type="radio"
+                  checked={plData.useCustomBookCosts}
+                  onChange={() =>
+                    setPlData((prev) => ({ ...prev, useCustomBookCosts: true }))
+                  }
+                />
+                Set Individual Book Costs
+              </label>
+            </div>
+          </div>
+
           {/* Books Section */}
           <div className="pl-section">
             <h4>Books Breakdown</h4>
-            <div className="pl-books">
-              {order?.books?.map((book, idx) => (
-                <div key={idx} className="pl-book-item">
-                  <div className="pl-book-name">
-                    {book.name} × {book.quantity}
-                  </div>
-                  <div className="pl-book-prices">
-                    <span>Selling: ₹{book.total}</span>
-                    <span>
-                      Cost ({plData.bookCostPercentage}%): ₹
-                      {Math.round(
-                        (book.total * plData.bookCostPercentage) / 100,
-                      )}
+
+            {!plData.useCustomBookCosts ? (
+              // Percentage-based view
+              <>
+                <div className="pl-books">
+                  {calculatedPL.bookBreakdown.map((book, idx) => (
+                    <div key={idx} className="pl-book-item">
+                      <div className="pl-book-name">
+                        {book.name} × {book.quantity}
+                      </div>
+                      <div className="pl-book-prices">
+                        <span>Selling: ₹{book.totalSelling}</span>
+                        <span>
+                          Cost ({plData.bookCostPercentage}%): ₹
+                          {Math.round(book.totalCost)}
+                        </span>
+                        <span
+                          className={
+                            book.profit >= 0 ? "text-green" : "text-red"
+                          }
+                        >
+                          P/L: ₹{Math.round(book.profit)} (₹
+                          {Math.round(book.profitPerUnit)}/unit)
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="input-group mt-12">
+                  <label className="flex flex-row gap-4">
+                    Book Cost Percentage
+                  </label>
+                  <input
+                    type="range"
+                    min="30"
+                    max="80"
+                    step="5"
+                    value={plData.bookCostPercentage}
+                    onChange={(e) =>
+                      setPlData((prev) => ({
+                        ...prev,
+                        bookCostPercentage: parseInt(e.target.value),
+                      }))
+                    }
+                    className="width100"
+                  />
+                  <div className="flex justify-between">
+                    <span className="font-12">30% (High Profit)</span>
+                    <span className="font-12 weight-600">
+                      {plData.bookCostPercentage}%
                     </span>
-                    <span
-                      className={
-                        book.total -
-                          (book.total * plData.bookCostPercentage) / 100 >=
-                        0
-                          ? "text-green"
-                          : "text-red"
-                      }
-                    >
-                      P/L: ₹
-                      {Math.round(
-                        book.total -
-                          (book.total * plData.bookCostPercentage) / 100,
-                      )}
-                    </span>
+                    <span className="font-12">80% (Low Profit)</span>
                   </div>
                 </div>
-              ))}
-            </div>
-
-            <div className="input-group mt-12">
-              <label className="flex flex-row gap-4">
-                Book Cost Percentage
-              </label>
-              <input
-                type="range"
-                min="30"
-                max="80"
-                step="5"
-                value={plData.bookCostPercentage}
-                onChange={(e) =>
-                  setPlData({
-                    ...plData,
-                    bookCostPercentage: parseInt(e.target.value),
-                  })
-                }
-                className="width100"
-              />
-              <div className="flex justify-between">
-                <span className="font-12">30% (High Profit)</span>
-                <span className="font-12 weight-600">
-                  {plData.bookCostPercentage}%
-                </span>
-                <span className="font-12">80% (Low Profit)</span>
+              </>
+            ) : (
+              // Individual book costs view
+              <div className="pl-books">
+                {plData.bookCosts.map((book, idx) => (
+                  <div key={idx} className="pl-book-item">
+                    <div className="pl-book-name">
+                      {book.name} × {book.quantity}
+                    </div>
+                    <div className="pl-book-prices">
+                      <span>Selling: ₹{book.totalSelling}</span>
+                      <div className="flex items-center gap-8">
+                        <span>Cost Price:</span>
+                        <input
+                          type="number"
+                          className="sec-mid-btn"
+                          value={book.costPrice}
+                          onChange={(e) =>
+                            updateBookCost(idx, parseInt(e.target.value) || 0)
+                          }
+                          step="1"
+                          min="0"
+                        />
+                        <span>
+                          × {book.quantity} = ₹{book.totalCost}
+                        </span>
+                      </div>
+                      <span
+                        className={book.profit >= 0 ? "text-green" : "text-red"}
+                      >
+                        P/L: ₹{Math.round(book.profit)} (₹
+                        {Math.round(book.profitPerUnit)}/unit)
+                      </span>
+                    </div>
+                  </div>
+                ))}
               </div>
-            </div>
+            )}
           </div>
 
           <div className="dashed-border my-12"></div>
@@ -172,7 +317,10 @@ export default function ProfitLossModal({ isOpen, onClose, order, onUpdate }) {
                 type="checkbox"
                 checked={plData.customDeliveryCost}
                 onChange={(e) =>
-                  setPlData({ ...plData, customDeliveryCost: e.target.checked })
+                  setPlData((prev) => ({
+                    ...prev,
+                    customDeliveryCost: e.target.checked,
+                  }))
                 }
               />
               Use Custom Delivery Cost
@@ -185,10 +333,10 @@ export default function ProfitLossModal({ isOpen, onClose, order, onUpdate }) {
                   className="sec-mid-btn"
                   value={plData.deliveryActualCost}
                   onChange={(e) =>
-                    setPlData({
-                      ...plData,
+                    setPlData((prev) => ({
+                      ...prev,
                       deliveryActualCost: parseInt(e.target.value) || 0,
-                    })
+                    }))
                   }
                   placeholder="Enter delivery cost"
                 />
@@ -212,10 +360,10 @@ export default function ProfitLossModal({ isOpen, onClose, order, onUpdate }) {
                 className="sec-mid-btn"
                 value={plData.packingActualCost}
                 onChange={(e) =>
-                  setPlData({
-                    ...plData,
+                  setPlData((prev) => ({
+                    ...prev,
                     packingActualCost: parseInt(e.target.value) || 0,
-                  })
+                  }))
                 }
                 placeholder="Enter packing cost"
               />
@@ -261,7 +409,7 @@ export default function ProfitLossModal({ isOpen, onClose, order, onUpdate }) {
           <div className="pl-section">
             <h4>Costs</h4>
             <div className="pl-row">
-              <span>Books Cost ({plData.bookCostPercentage}% of SP):</span>
+              <span>Books Cost:</span>
               <span>₹{Math.round(calculatedPL.totalBookCost)}</span>
             </div>
             <div className="pl-row">

@@ -299,7 +299,47 @@ _Thank you for shopping with TheBookX! 📚✨_
       console.error("Error sending order to Telegram:", error);
     }
   };
+  // In your BagPage component, update the shortenUrl function:
 
+  const shortenUrl = async (longUrl) => {
+    try {
+      // First, make sure the URL is properly encoded
+      const encodedUrl = encodeURIComponent(longUrl);
+
+      // Use TinyURL with proper encoding
+      const response = await fetch(
+        `https://tinyurl.com/api-create.php?url=${encodedUrl}`,
+      );
+      const shortUrl = await response.text();
+
+      // Validate the short URL returns a valid response
+      if (
+        !shortUrl ||
+        shortUrl.includes("error") ||
+        shortUrl.includes("Invalid")
+      ) {
+        console.error("TinyURL failed:", shortUrl);
+        return longUrl;
+      }
+
+      // Verify the short URL actually resolves
+      try {
+        const checkResponse = await fetch(shortUrl, { method: "HEAD" });
+        if (!checkResponse.ok) {
+          return longUrl;
+        }
+      } catch {
+        return longUrl;
+      }
+
+      return shortUrl;
+    } catch (error) {
+      console.error("Error shortening URL:", error);
+      return longUrl;
+    }
+  };
+
+  // Update generateViewBagLinkWithDetails with better compression:
   const generateViewBagLinkWithDetails = (
     addressData,
     paymentType,
@@ -315,42 +355,35 @@ _Thank you for shopping with TheBookX! 📚✨_
     const giftWrapAmount = giftWrapSelected ? GIFT_WRAP_CHARGE : 0;
     const totalWithDelivery = finalPayable + deliveryCharge + giftWrapAmount;
 
+    // Compress order details with shorter keys to reduce URL length
     const orderDetails = {
-      orderId: orderId,
-      name: addressData.name || "",
-      phone: addressData.phone || "",
-      address: addressData.address || "",
-      area: addressData.area || "",
-      city: addressData.city || "",
-      district: addressData.district || "",
-      state: addressData.state || "",
-      pincode: addressData.pincode || "",
-      paymentMethod: paymentType,
-      fasterDelivery: fasterDeliveryChoice,
-      deliveryCharge: deliveryCharge,
-      deliveryLabel: getDeliveryLabel(totalDiscounted, fasterDeliveryChoice),
-      giftWrap: giftWrapSelected,
-      giftWrapCharge: giftWrapAmount,
-      orderDate: new Date().toISOString(),
-      totalAmount: totalWithDelivery,
+      oid: orderId, // orderId
+      n: addressData.name || "", // name
+      ph: addressData.phone || "", // phone
+      a: addressData.address || "", // address
+      ar: addressData.area || "", // area
+      ci: addressData.city || "", // city
+      d: addressData.district || "", // district
+      s: addressData.state || "", // state
+      pc: addressData.pincode || "", // pincode
+      pm: paymentType, // paymentMethod
+      fd: fasterDeliveryChoice, // fasterDelivery
+      dc: deliveryCharge, // deliveryCharge
+      dl: getDeliveryLabel(totalDiscounted, fasterDeliveryChoice), // deliveryLabel
+      gw: giftWrapSelected, // giftWrap
+      gwc: giftWrapAmount, // giftWrapCharge
+      od: new Date().toISOString(), // orderDate
+      ta: totalWithDelivery, // totalAmount
     };
 
-    const encodedDetails = encodeURIComponent(JSON.stringify(orderDetails));
+    // Convert to JSON and encode
+    const jsonString = JSON.stringify(orderDetails);
+    const encodedDetails = encodeURIComponent(jsonString);
 
-    return `${siteOrigin}/view-bag?items=${encodeURIComponent(items)}&order=${encodedDetails}`;
-  };
+    // Also encode items
+    const encodedItems = encodeURIComponent(items);
 
-  const shortenUrl = async (longUrl) => {
-    try {
-      const response = await fetch(
-        `https://tinyurl.com/api-create.php?url=${encodeURIComponent(longUrl)}`,
-      );
-      const shortUrl = await response.text();
-      return shortUrl;
-    } catch (error) {
-      console.error("Error shortening URL:", error);
-      return longUrl;
-    }
+    return `${siteOrigin}/view-bag?items=${encodedItems}&order=${encodedDetails}`;
   };
 
   const redirectToWhatsApp = (

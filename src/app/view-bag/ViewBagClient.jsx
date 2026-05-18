@@ -98,52 +98,97 @@ export default function ViewBagClient() {
     );
   }
 
+  // In ViewBagClient component, update the order data parsing:
+
   useEffect(() => {
     setCurrentUrl(window.location.href);
 
     const orderParam = searchParams.get("order");
     if (orderParam) {
       try {
-        const decodedOrder = JSON.parse(decodeURIComponent(orderParam));
-        setOrderData(decodedOrder);
-        setIsFasterDelivery(decodedOrder.fasterDelivery || false);
-        setIsGiftWrap(decodedOrder.giftWrap || false);
-        setGiftWrapCharge(decodedOrder.giftWrapCharge || 0);
+        // First decode the URI component
+        const decodedOrder = decodeURIComponent(orderParam);
+        console.log("Decoded order param length:", decodedOrder.length);
 
-        if (decodedOrder.totalDiscounted) {
-          setTotalDiscounted(decodedOrder.totalDiscounted);
+        // Parse the JSON
+        let parsedOrder = JSON.parse(decodedOrder);
+
+        // Check if this is compressed format (using short keys)
+        if (parsedOrder.oid) {
+          // Convert compressed format back to full format
+          parsedOrder = {
+            orderId: parsedOrder.oid,
+            name: parsedOrder.n,
+            phone: parsedOrder.ph,
+            address: parsedOrder.a,
+            area: parsedOrder.ar,
+            city: parsedOrder.ci,
+            district: parsedOrder.d,
+            state: parsedOrder.s,
+            pincode: parsedOrder.pc,
+            paymentMethod: parsedOrder.pm,
+            fasterDelivery: parsedOrder.fd,
+            deliveryCharge: parsedOrder.dc,
+            deliveryLabel: parsedOrder.dl,
+            giftWrap: parsedOrder.gw,
+            giftWrapCharge: parsedOrder.gwc,
+            orderDate: parsedOrder.od,
+            totalAmount: parsedOrder.ta,
+          };
         }
 
-        if (decodedOrder.deliveryCharge !== undefined) {
-          if (decodedOrder.fasterDelivery) {
-            setFasterDeliveryCharge(decodedOrder.deliveryCharge);
+        setOrderData(parsedOrder);
+        setIsFasterDelivery(parsedOrder.fasterDelivery || false);
+        setIsGiftWrap(parsedOrder.giftWrap || false);
+        setGiftWrapCharge(parsedOrder.giftWrapCharge || 0);
+
+        if (parsedOrder.totalDiscounted) {
+          setTotalDiscounted(parsedOrder.totalDiscounted);
+        }
+
+        if (parsedOrder.deliveryCharge !== undefined) {
+          if (parsedOrder.fasterDelivery) {
+            setFasterDeliveryCharge(parsedOrder.deliveryCharge);
           } else {
-            setStandardDeliveryCharge(decodedOrder.deliveryCharge);
+            setStandardDeliveryCharge(parsedOrder.deliveryCharge);
           }
         }
 
+        // Load saved status from localStorage
         const savedStatus = localStorage.getItem(
-          `order_status_${decodedOrder.orderId}`,
+          `order_status_${parsedOrder.orderId}`,
         );
         if (savedStatus) {
           setOrderStatus(JSON.parse(savedStatus));
         }
 
+        // Load saved tracking ID
         const savedTracking = localStorage.getItem(
-          `tracking_id_${decodedOrder.orderId}`,
+          `tracking_id_${parsedOrder.orderId}`,
         );
         if (savedTracking) {
           setSavedTrackingId(savedTracking);
         }
 
+        // Load saved alternative numbers
         const savedNumbers = localStorage.getItem(
-          `alternative_numbers_${decodedOrder.orderId}`,
+          `alternative_numbers_${parsedOrder.orderId}`,
         );
         if (savedNumbers) {
           setAlternativeNumbers(JSON.parse(savedNumbers));
         }
       } catch (e) {
-        console.error("Failed to parse order data", e);
+        console.error("Failed to parse order data:", e);
+        // Try to recover by attempting to decode again
+        try {
+          const doubleDecoded = decodeURIComponent(
+            decodeURIComponent(orderParam),
+          );
+          const recoveredOrder = JSON.parse(doubleDecoded);
+          setOrderData(recoveredOrder);
+        } catch (e2) {
+          console.error("Recovery also failed:", e2);
+        }
       }
     }
   }, [searchParams]);

@@ -60,6 +60,44 @@ export default function ViewBagClient() {
   const [offerDiscount, setOfferDiscount] = useState(0);
   const [offerLabel, setOfferLabel] = useState(null);
 
+  const itemsParam = searchParams.get("items");
+
+  // Parse cartBooks FIRST (before any conditional returns)
+  const cartBooks = itemsParam
+    ? itemsParam
+        .split(",")
+        .map((entry) => {
+          const [id, qty] = entry.split(":");
+          const book = books.find((b) => b.id === id);
+          if (!book || !qty) return null;
+          return {
+            ...book,
+            qty: Math.max(1, Number(qty)),
+          };
+        })
+        .filter(Boolean)
+    : [];
+
+  // Check for missing itemsParam AFTER cartBooks is defined
+  if (!itemsParam) {
+    return (
+      <div className="section-1200 flex flex-col gap-12 items-center">
+        <h2>Invalid or expired bag link</h2>
+        <button onClick={() => router.push("/")} className="pri-big-btn">
+          Browse Books
+        </button>
+      </div>
+    );
+  }
+
+  if (!cartBooks.length) {
+    return (
+      <div className="section-1200">
+        <h2>No valid books found</h2>
+      </div>
+    );
+  }
+
   useEffect(() => {
     setCurrentUrl(window.location.href);
 
@@ -111,7 +149,12 @@ export default function ViewBagClient() {
   }, [searchParams]);
 
   const exportToCOList = async () => {
-    if (!orderData || !cartBooks.length) return;
+    if (!orderData || !cartBooks.length) {
+      console.error("Missing order data or cart books");
+      return;
+    }
+
+    const deliveryCharge = getDeliveryChargeValue();
 
     const orderToSave = {
       orderId: orderData.orderId,
@@ -152,40 +195,6 @@ export default function ViewBagClient() {
       alert("Failed to save order. Please try again.");
     }
   };
-
-  const itemsParam = searchParams.get("items");
-
-  if (!itemsParam) {
-    return (
-      <div className="section-1200 flex flex-col gap-12 items-center">
-        <h2>Invalid or expired bag link</h2>
-        <button onClick={() => router.push("/")} className="pri-big-btn">
-          Browse Books
-        </button>
-      </div>
-    );
-  }
-
-  const cartBooks = itemsParam
-    .split(",")
-    .map((entry) => {
-      const [id, qty] = entry.split(":");
-      const book = books.find((b) => b.id === id);
-      if (!book || !qty) return null;
-      return {
-        ...book,
-        qty: Math.max(1, Number(qty)),
-      };
-    })
-    .filter(Boolean);
-
-  if (!cartBooks.length) {
-    return (
-      <div className="section-1200">
-        <h2>No valid books found</h2>
-      </div>
-    );
-  }
 
   const totalDiscountedValue = cartBooks.reduce(
     (sum, b) => sum + b.discountedPrice * b.qty,
@@ -228,8 +237,6 @@ export default function ViewBagClient() {
   const fasterLabel = getDeliveryLabel(totalDiscountedValue, true);
   const standardOriginal = getOriginalCharge(totalDiscountedValue, false);
   const fasterOriginal = getOriginalCharge(totalDiscountedValue, true);
-  const standardDesc = getDeliveryDescription(totalDiscountedValue, false);
-  const fasterDesc = getDeliveryDescription(totalDiscountedValue, true);
 
   const getDeliveryChargeValue = () => {
     if (orderData?.deliveryCharge !== undefined) {

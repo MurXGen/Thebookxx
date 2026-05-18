@@ -238,17 +238,55 @@ export default function COListPage() {
     formattedDate: formatDate(order.orderDate),
   }));
 
+  const handleUpdatePL = async (orderId, plData) => {
+    // Find the order to update
+    const orderToUpdate = orders.find((o) => o.orderId === orderId);
+    if (!orderToUpdate) return;
+
+    // Create updated order with new P&L data
+    const updatedOrder = {
+      ...orderToUpdate,
+      profitLoss: {
+        totalBookCost: plData.totalBookCost,
+        sellingPrice: plData.sellingPrice,
+        deliveryActualCost: plData.deliveryActualCost,
+        packingActualCost: plData.packingActualCost,
+        totalCost: plData.totalCost,
+        profit: plData.profit,
+        margin: plData.margin,
+        settings: plData.settings,
+      },
+      // Also store custom book costs if individual mode was used
+      customBookCosts: plData.settings?.useCustomBookCosts
+        ? plData.settings.bookCosts
+        : null,
+      customBookCostPercentage: plData.settings?.bookCostPercentage,
+      useCustomBookCosts: plData.settings?.useCustomBookCosts,
+    };
+
+    try {
+      await updateOrder(updatedOrder);
+      await loadOrders(); // Refresh the orders list
+      alert("P&L data saved successfully!");
+    } catch (error) {
+      console.error("Error saving P&L data:", error);
+      alert("Failed to save P&L data");
+    }
+  };
+
   return (
     <div className="section-1200 flex flex-col gap-24 p-20">
-      <div className="flex justify-between items-center">
-        <div>
+      <div className="flex gap-12 justify-between items-center">
+        <div className="flex flex-col gap-12">
           <Link href="/" className="back-btn">
             <ArrowLeft size={18} /> Back to Home
           </Link>
-          <h1 className="font-24 mt-12">Customer Orders List</h1>
-          <p className="font-16 gray-500">
-            Manage and track all customer orders from TheBookX
-          </p>
+          <div>
+            <h1 className="font-24 mt-12">Customer Orders List</h1>
+            <p className="font-16 gray-500">
+              Manage and track all customer orders from TheBookX
+            </p>
+          </div>
         </div>
         <button className="pri-big-btn" onClick={() => setShowAddModal(true)}>
           <Plus size={18} /> Add Order
@@ -320,7 +358,7 @@ export default function COListPage() {
               onEdit={handleEdit}
               onSave={handleSave}
               onDelete={handleDelete}
-              onCalculator={(o) => {}} // Add calculator modal logic if needed
+              onCalculator={handleUpdatePL} // Pass the update function
               onReminder={handleReminder}
               editingOrderId={editingOrderId}
               editFormData={editFormData}

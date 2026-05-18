@@ -19,7 +19,12 @@ export default function OrderCard({
 }) {
   const isEditing = editingOrderId === order.orderId;
   const [showPLModal, setShowPLModal] = useState(false);
-  const pl = order.profitLoss || {};
+  // In OrderCard.jsx, update the profit/loss display to use saved data if available
+
+  const pl = order.profitLoss || order.customProfitLoss || {};
+
+  // Also check if there are custom book costs saved
+  const hasCustomBookCosts = order.useCustomBookCosts && order.customBookCosts;
 
   // Safely calculate total cost with fallbacks
   const totalBookCost = pl.totalBookCost || 0;
@@ -36,10 +41,11 @@ export default function OrderCard({
   };
 
   const handleUpdatePL = (updatedData) => {
-    // This will be handled by the parent component
+    // Call the parent's onCalculator function with orderId and updated data
     if (onCalculator) {
-      onCalculator({ ...order, profitLoss: updatedData });
+      onCalculator(order.orderId, updatedData);
     }
+    setShowPLModal(false);
   };
 
   return (
@@ -119,8 +125,22 @@ export default function OrderCard({
             </div>
             <div className="profit-item">
               <span>Total Cost:</span>
-              <strong>₹{Math.round(totalCost)}</strong>
+              <strong>
+                ₹
+                {Math.round(
+                  (pl.totalBookCost || 0) +
+                    (pl.deliveryActualCost || 0) +
+                    (pl.packingActualCost || 0),
+                )}
+              </strong>
             </div>
+            {order.useCustomBookCosts && (
+              <div className="profit-item">
+                <span className="font-10 gray-500">
+                  Custom book costs applied
+                </span>
+              </div>
+            )}
           </div>
         )}
 

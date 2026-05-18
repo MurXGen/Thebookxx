@@ -142,16 +142,25 @@ export default function ProfitLossModal({ isOpen, onClose, order, onUpdate }) {
   };
 
   const handleSave = () => {
-    onUpdate({
-      ...calculatedPL,
+    const saveData = {
+      totalBookCost: calculatedPL.totalBookCost,
+      sellingPrice: calculatedPL.sellingPrice,
+      deliveryActualCost: calculatedPL.deliveryActualCost,
+      packingActualCost: calculatedPL.packingActualCost,
+      totalCost: calculatedPL.totalCost,
+      profit: calculatedPL.profit,
+      margin: calculatedPL.margin,
       settings: {
         bookCosts: plData.bookCosts,
         bookCostPercentage: plData.bookCostPercentage,
         useCustomBookCosts: plData.useCustomBookCosts,
         deliveryActualCost: calculatedPL.deliveryActualCost,
         packingActualCost: plData.packingActualCost,
+        customDeliveryCost: plData.customDeliveryCost,
       },
-    });
+    };
+
+    onUpdate(saveData);
     onClose();
   };
 

@@ -46,7 +46,7 @@ export default function HorizontalScroll({
     <div className="h-scroll-wrapper">
       {/* HEADER */}
       <div className="h-scroll-header">
-        <h3>{title}</h3>
+        <h1 className="shinny-icon">{title}</h1>
         {/* <span className="scroll-hint">Scroll →</span> */}
       </div>
 

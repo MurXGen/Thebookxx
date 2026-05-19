@@ -2,7 +2,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Edit, Save, X, Trash2, Calculator, Bell } from "lucide-react";
+import {
+  Edit,
+  Save,
+  X,
+  Trash2,
+  Calculator,
+  Bell,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import ProfitLossModal from "./ProfitLossModal";
 import { usePL } from "@/context/PLContext";
@@ -19,6 +28,7 @@ export default function OrderCard({
 }) {
   const isEditing = editingOrderId === order.orderId;
   const [showPLModal, setShowPLModal] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const { getOrderPL, updateOrderPL } = usePL();
 
   // Get P&L data from global context first, then fallback to order data
@@ -47,7 +57,6 @@ export default function OrderCard({
   useEffect(() => {
     const handlePLUpdate = (event) => {
       if (event.detail?.orderId === order.orderId) {
-        // Force re-render by accessing the updated context
         const updatedPL = getOrderPL(order.orderId);
         if (updatedPL) {
           Object.assign(pl, updatedPL);
@@ -68,29 +77,34 @@ export default function OrderCard({
   };
 
   const handleUpdatePL = async (updatedData) => {
-    // Save to global context
     await updateOrderPL(order.orderId, updatedData);
-
-    // Dispatch event for other components
     window.dispatchEvent(
       new CustomEvent("plDataUpdated", {
         detail: { orderId: order.orderId, data: updatedData },
       }),
     );
-
     setShowPLModal(false);
+  };
+
+  const toggleExpand = () => {
+    if (!isEditing) {
+      setIsExpanded(!isExpanded);
+    }
   };
 
   return (
     <>
       <div className="order-card">
-        <div className="order-header">
-          <div className="order-id">
-            <span className="order-id-label">Order ID:</span>
-            <span className="order-id-value">{order.orderId}</span>
+        {/* Clickable Header - expands/collapses the card */}
+        <div className="order-header" onClick={toggleExpand}>
+          <div className="order-header-left">
+            <div className="order-id">
+              <span className="order-id-label">Order ID:</span>
+              <span className="order-id-value">{order.orderId}</span>
+            </div>
+            <div className="order-date">{order.formattedDate}</div>
           </div>
-          <div className="order-date">{order.formattedDate}</div>
-          <div className="order-actions">
+          <div className="order-actions" onClick={(e) => e.stopPropagation()}>
             <button
               onClick={handleOpenPLModal}
               className="sec-mid-btn"
@@ -116,10 +130,13 @@ export default function OrderCard({
             >
               <Trash2 size={16} /> Delete
             </button>
+            <button className="expand-btn">
+              {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+            </button>
           </div>
         </div>
 
-        {/* Payment Status Badge */}
+        {/* Always visible - Payment Status Badge */}
         <div className="payment-status-badge">
           <span
             className={`status-badge ${order.paymentStatus === "paid" ? "paid" : "pending"}`}
@@ -133,7 +150,7 @@ export default function OrderCard({
           )}
         </div>
 
-        {/* Profit/Loss Summary Row */}
+        {/* Always visible - Profit/Loss Summary Row */}
         {(pl.profit !== undefined || Object.keys(pl).length > 0) && (
           <div
             className={`profit-summary ${(pl.profit || 0) >= 0 ? "profit" : "loss"}`}
@@ -174,41 +191,44 @@ export default function OrderCard({
           </div>
         )}
 
-        <div className="order-body">
-          <div className="order-info">
-            {/* Customer Details Section */}
-            <div className="info-section">
-              <h4>Customer Details</h4>
-              {isEditing ? (
-                <EditCustomerForm
-                  editFormData={editFormData}
-                  setEditFormData={setEditFormData}
-                />
-              ) : (
-                <ViewCustomerDetails order={order} onReminder={onReminder} />
-              )}
-            </div>
+        {/* Expandable Content - Only visible when expanded */}
+        {isExpanded && (
+          <div className="order-body">
+            <div className="order-info">
+              {/* Customer Details Section */}
+              <div className="info-section">
+                <h4>Customer Details</h4>
+                {isEditing ? (
+                  <EditCustomerForm
+                    editFormData={editFormData}
+                    setEditFormData={setEditFormData}
+                  />
+                ) : (
+                  <ViewCustomerDetails order={order} onReminder={onReminder} />
+                )}
+              </div>
 
-            {/* Order Summary Section */}
-            <div className="info-section">
-              <h4>Order Summary</h4>
-              <ViewOrderSummary order={order} />
-            </div>
+              {/* Order Summary Section */}
+              <div className="info-section">
+                <h4>Order Summary</h4>
+                <ViewOrderSummary order={order} />
+              </div>
 
-            {/* Tracking & Status Section */}
-            <div className="info-section">
-              <h4>Tracking & Status</h4>
-              {isEditing ? (
-                <EditStatusForm
-                  editFormData={editFormData}
-                  setEditFormData={setEditFormData}
-                />
-              ) : (
-                <ViewStatusDetails order={order} />
-              )}
+              {/* Tracking & Status Section */}
+              <div className="info-section">
+                <h4>Tracking & Status</h4>
+                {isEditing ? (
+                  <EditStatusForm
+                    editFormData={editFormData}
+                    setEditFormData={setEditFormData}
+                  />
+                ) : (
+                  <ViewStatusDetails order={order} />
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* P&L Modal */}
@@ -223,7 +243,7 @@ export default function OrderCard({
   );
 }
 
-// Sub-components (keep the same)
+// Sub-components (same as before)
 function EditCustomerForm({ editFormData, setEditFormData }) {
   return (
     <>

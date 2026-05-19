@@ -10,7 +10,10 @@ export default function OneRupeeDeals() {
   return (
     <section className="catalogue-section-2 trending-section sparkleContainer">
       {/* Books Grid */}
-      <HorizontalScroll title="Grab Books : ₹1" className="margin-tp-24px">
+      <HorizontalScroll
+        title="Grab Books at just ₹1"
+        className="margin-tp-24px"
+      >
         {oneRupeeBooks.map((book) => (
           <ProductCard key={book.id} book={book} />
         ))}

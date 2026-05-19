@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ArrowLeft, Search, Download, Plus } from "lucide-react";
+import { ArrowLeft, Search, Download, Plus, Filter, X } from "lucide-react";
 import Link from "next/link";
 import { getAllOrders, updateOrder, deleteOrder } from "@/utils/indexDB";
 import OrderCard from "./OrderCard";
@@ -16,14 +16,12 @@ const BELOW_599_DELIVERY_ACTUAL_COST = 90;
 const calculateProfitLoss = (order) => {
   const totalBookCost =
     order.books?.reduce((sum, book) => {
-      // Assuming 40% profit margin on books, so cost is 60% of selling price
       const bookCost = book.price * 0.6;
       return sum + bookCost * book.quantity;
     }, 0) || 0;
 
   const sellingPrice = order.totalAmount || 0;
 
-  // Calculate delivery actual cost based on order total
   let deliveryActualCost = STANDARD_DELIVERY_ACTUAL_COST;
   if (order.totalAmount < 599) {
     deliveryActualCost = BELOW_599_DELIVERY_ACTUAL_COST;
@@ -32,7 +30,6 @@ const calculateProfitLoss = (order) => {
   }
 
   const packingActualCost = PACKING_ACTUAL_COST;
-
   const totalCost = totalBookCost + deliveryActualCost + packingActualCost;
   const totalRevenue = sellingPrice - (order.offerDiscount || 0);
   const profit = totalRevenue - totalCost;
@@ -58,6 +55,16 @@ const formatDate = (dateString) =>
     minute: "2-digit",
   });
 
+// Filter options
+const FILTER_OPTIONS = {
+  SHIPPED: "shipped",
+  NOT_SHIPPED: "not_shipped",
+  DELIVERED: "delivered",
+  ADVANCE_PAID: "advance_paid",
+  PENDING: "pending",
+  PAID: "paid",
+};
+
 export default function COListPage() {
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
@@ -67,32 +74,82 @@ export default function COListPage() {
   const [editFormData, setEditFormData] = useState({});
   const [exporting, setExporting] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+  const [activeFilters, setActiveFilters] = useState({
+    shipped: false,
+    not_shipped: false,
+    delivered: false,
+    advance_paid: false,
+    pending: false,
+    paid: false,
+  });
 
   useEffect(() => {
     loadOrders();
   }, []);
 
   useEffect(() => {
-    if (searchQuery) {
-      setFilteredOrders(
-        orders.filter(
-          (order) =>
-            order.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            order.phone?.includes(searchQuery) ||
-            order.orderId?.toLowerCase().includes(searchQuery.toLowerCase()),
-        ),
-      );
-    } else {
-      setFilteredOrders(orders);
+    applyFiltersAndSearch();
+  }, [searchQuery, orders, activeFilters]);
+
+  const applyFiltersAndSearch = () => {
+    let filtered = [...orders];
+
+    // Apply status filters
+    if (Object.values(activeFilters).some(Boolean)) {
+      filtered = filtered.filter((order) => {
+        let matches = false;
+
+        // Shipped filter
+        if (activeFilters.shipped && order.status?.isShipped) {
+          matches = true;
+        }
+        // Not Shipped filter
+        if (
+          activeFilters.not_shipped &&
+          !order.status?.isShipped &&
+          !order.status?.isDelivered
+        ) {
+          matches = true;
+        }
+        // Delivered filter
+        if (activeFilters.delivered && order.status?.isDelivered) {
+          matches = true;
+        }
+        // Advance Paid filter
+        if (activeFilters.advance_paid && order.status?.advancePaid) {
+          matches = true;
+        }
+        // Pending Payment filter
+        if (activeFilters.pending && order.paymentStatus === "pending") {
+          matches = true;
+        }
+        // Paid filter
+        if (activeFilters.paid && order.paymentStatus === "paid") {
+          matches = true;
+        }
+
+        return matches;
+      });
     }
-  }, [searchQuery, orders]);
+
+    // Apply search query
+    if (searchQuery) {
+      filtered = filtered.filter(
+        (order) =>
+          order.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          order.phone?.includes(searchQuery) ||
+          order.orderId?.toLowerCase().includes(searchQuery.toLowerCase()),
+      );
+    }
+
+    setFilteredOrders(filtered);
+  };
 
   const loadOrders = async () => {
     try {
       const allOrders = await getAllOrders();
-      // Process orders to ensure P&L data is properly formatted
       const processedOrders = allOrders.map((order) => {
-        // If order has custom P&L data stored in settings
         if (order.profitLoss?.settings || order.plData?.settings) {
           return {
             ...order,
@@ -191,6 +248,9 @@ export default function COListPage() {
       "State",
       "Pincode",
       "Payment Status",
+      "Advance Paid",
+      "Is Shipped",
+      "Is Delivered",
       "Total Amount",
       "Order Date",
       "Books",
@@ -204,6 +264,9 @@ export default function COListPage() {
       order.state || "",
       order.pincode || "",
       order.paymentStatus === "paid" ? "Paid" : "Pending",
+      order.status?.advancePaid ? "Yes" : "No",
+      order.status?.isShipped ? "Yes" : "No",
+      order.status?.isDelivered ? "Yes" : "No",
       order.totalAmount || 0,
       formatDate(order.orderDate),
       order.books?.map((b) => `${b.name} (${b.quantity})`).join(" | ") || "",
@@ -237,6 +300,29 @@ export default function COListPage() {
     window.open(`https://wa.me/${formattedNumber}?text=${message}`, "_blank");
   };
 
+  const toggleFilter = (filterName) => {
+    setActiveFilters((prev) => ({
+      ...prev,
+      [filterName]: !prev[filterName],
+    }));
+  };
+
+  const clearAllFilters = () => {
+    setActiveFilters({
+      shipped: false,
+      not_shipped: false,
+      delivered: false,
+      advance_paid: false,
+      pending: false,
+      paid: false,
+    });
+    setSearchQuery("");
+  };
+
+  const getActiveFilterCount = () => {
+    return Object.values(activeFilters).filter(Boolean).length;
+  };
+
   if (loading) {
     return (
       <div className="section-1200 p-40">
@@ -262,7 +348,6 @@ export default function COListPage() {
     const orderToUpdate = orders.find((o) => o.orderId === orderId);
     if (!orderToUpdate) return;
 
-    // Create updated order with new P&L data
     const updatedOrder = {
       ...orderToUpdate,
       profitLoss: {
@@ -285,7 +370,7 @@ export default function COListPage() {
 
     try {
       await updateOrder(updatedOrder);
-      await loadOrders(); // Refresh the orders list
+      await loadOrders();
       alert("P&L data saved successfully!");
     } catch (error) {
       console.error("Error saving P&L data:", error);
@@ -295,7 +380,7 @@ export default function COListPage() {
 
   return (
     <div className="section-1200 flex flex-col gap-24 p-20">
-      <div className="flex gap-12 justify-between items-center">
+      <div className="flex gap-12 justify-between items-center flex-wrap">
         <div className="flex flex-col gap-12">
           <Link href="/" className="back-btn">
             <ArrowLeft size={18} /> Back to Home
@@ -312,14 +397,27 @@ export default function COListPage() {
         </button>
       </div>
 
-      <div className="flex gap-12">
-        <input
-          type="text"
-          className="sec-mid-btn flex-1"
-          placeholder="Search by name, phone, or order ID..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
+      {/* Search and Filter Bar */}
+      <div className="flex gap-12 flex-wrap">
+        <div className="flex-1 min-w-[200px]">
+          <input
+            type="text"
+            className="sec-mid-btn width100"
+            placeholder="Search by name, phone, or order ID..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+        <button
+          className={`sec-mid-btn flex items-center gap-8 ${getActiveFilterCount() > 0 ? "active-filter" : ""}`}
+          onClick={() => setShowFilters(!showFilters)}
+        >
+          <Filter size={16} />
+          Filters
+          {getActiveFilterCount() > 0 && (
+            <span className="filter-count">{getActiveFilterCount()}</span>
+          )}
+        </button>
         <button
           onClick={exportToCSV}
           disabled={exporting || filteredOrders.length === 0}
@@ -329,17 +427,90 @@ export default function COListPage() {
         </button>
       </div>
 
+      {/* Filter Panel */}
+      {showFilters && (
+        <div className="filter-panel">
+          <div className="filter-header">
+            <span className="weight-600">Filter Orders</span>
+            <button onClick={clearAllFilters} className="clear-filters-btn">
+              <X size={14} /> Clear All
+            </button>
+          </div>
+          <div className="filter-group">
+            <span className="filter-group-title">Shipping Status</span>
+            <div className="filter-options">
+              <label className="filter-checkbox">
+                <input
+                  type="checkbox"
+                  checked={activeFilters.shipped}
+                  onChange={() => toggleFilter("shipped")}
+                />
+                <span>📦 Shipped</span>
+              </label>
+              <label className="filter-checkbox">
+                <input
+                  type="checkbox"
+                  checked={activeFilters.not_shipped}
+                  onChange={() => toggleFilter("not_shipped")}
+                />
+                <span>⏳ Not Shipped Yet</span>
+              </label>
+              <label className="filter-checkbox">
+                <input
+                  type="checkbox"
+                  checked={activeFilters.delivered}
+                  onChange={() => toggleFilter("delivered")}
+                />
+                <span>✅ Delivered</span>
+              </label>
+            </div>
+          </div>
+          <div className="filter-group">
+            <span className="filter-group-title">Payment Status</span>
+            <div className="filter-options">
+              <label className="filter-checkbox">
+                <input
+                  type="checkbox"
+                  checked={activeFilters.paid}
+                  onChange={() => toggleFilter("paid")}
+                />
+                <span>💰 Paid</span>
+              </label>
+              <label className="filter-checkbox">
+                <input
+                  type="checkbox"
+                  checked={activeFilters.pending}
+                  onChange={() => toggleFilter("pending")}
+                />
+                <span>⏰ Pending</span>
+              </label>
+              <label className="filter-checkbox">
+                <input
+                  type="checkbox"
+                  checked={activeFilters.advance_paid}
+                  onChange={() => toggleFilter("advance_paid")}
+                />
+                <span>💳 Advance Paid</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Stats with active filters info */}
       <div className="tracker-stats">
         <div className="stat-card">
           <div>
-            <div className="stat-value">{orders.length}</div>
-            <div className="stat-label">Total Orders</div>
+            <div className="stat-value">{filteredOrders.length}</div>
+            <div className="stat-label">
+              {getActiveFilterCount() > 0 ? "Filtered Orders" : "Total Orders"}
+            </div>
           </div>
         </div>
         <div className="stat-card">
           <div>
             <div className="stat-value">
-              {orders.filter((o) => o.status?.isShipped).length}
+              {filteredOrders.filter((o) => o.status?.isShipped).length}
             </div>
             <div className="stat-label">Shipped</div>
           </div>
@@ -347,7 +518,7 @@ export default function COListPage() {
         <div className="stat-card">
           <div>
             <div className="stat-value">
-              {orders.filter((o) => o.status?.isDelivered).length}
+              {filteredOrders.filter((o) => o.status?.isDelivered).length}
             </div>
             <div className="stat-label">Delivered</div>
           </div>
@@ -355,7 +526,7 @@ export default function COListPage() {
         <div className="stat-card">
           <div>
             <div className="stat-value">
-              {orders.filter((o) => o.paymentStatus === "paid").length}
+              {filteredOrders.filter((o) => o.paymentStatus === "paid").length}
             </div>
             <div className="stat-label">Paid</div>
           </div>
@@ -366,7 +537,12 @@ export default function COListPage() {
         <div className="empty-state">
           <div className="empty-icon">📭</div>
           <h3>No orders found</h3>
-          <p>Orders exported from the bag page will appear here</p>
+          <p>Try adjusting your filters or search criteria</p>
+          {(searchQuery || getActiveFilterCount() > 0) && (
+            <button onClick={clearAllFilters} className="pri-big-btn mt-16">
+              Clear All Filters
+            </button>
+          )}
         </div>
       ) : (
         <div className="orders-list flex flex-col gap-24">
@@ -377,7 +553,7 @@ export default function COListPage() {
               onEdit={handleEdit}
               onSave={handleSave}
               onDelete={handleDelete}
-              onCalculator={handleUpdatePL} // Pass the update function
+              onCalculator={handleUpdatePL}
               onReminder={handleReminder}
               editingOrderId={editingOrderId}
               editFormData={editFormData}

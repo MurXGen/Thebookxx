@@ -4747,4 +4747,19 @@ export const books = [
     originalPrice: calculateOriginalPrice(219),
     discountedPrice: 219,
   },
+  {
+    id: "bk-305",
+    name: "The Daily Stoic: 366 Meditations on Wisdom, Perseverance, and the Art of Living",
+    image: bookImages["the-daily-stoic"],
+    description:
+      "Transform your life with Ryan Holiday's international bestseller 'The Daily Stoic' at TheBookX.in. This timeless collection features 366 daily meditations—one for each day of the year—drawing from the timeless wisdom of Marcus Aurelius, Seneca, Epictetus, and other great Stoic philosophers. Each page offers a powerful quote, a practical reflection, and an actionable challenge to help you cultivate resilience, discipline, and inner peace in the face of modern chaos. Whether you're facing stress at work, relationship struggles, or simply seeking a more meaningful existence, this book provides ancient solutions for contemporary problems. Perfect for daily reading, journaling, or gifting. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now—books starting at just ₹1 for a limited offer.",
+    author: "Ryan Holiday",
+    pages: "416",
+    language: "English",
+    size: "Paperback",
+    stock: 20,
+    catalogue: ["non-fiction", "philosophy", "self-help", "bestseller"],
+    originalPrice: calculateOriginalPrice(169),
+    discountedPrice: 169,
+  },
 ];

@@ -1,7 +1,7 @@
 // components/COList/OrderCard.jsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Edit,
   Save,
@@ -29,6 +29,8 @@ export default function OrderCard({
   const isEditing = editingOrderId === order.orderId;
   const [showPLModal, setShowPLModal] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [showExpandButton, setShowExpandButton] = useState(false);
+  const contentRef = useRef(null);
   const { getOrderPL, updateOrderPL } = usePL();
 
   // Get P&L data from global context first, then fallback to order data
@@ -52,6 +54,15 @@ export default function OrderCard({
   const deliveryActualCost = pl.deliveryActualCost || 0;
   const packingActualCost = pl.packingActualCost || 0;
   const totalCost = totalBookCost + deliveryActualCost + packingActualCost;
+
+  // Check if content overflows to show expand button
+  useEffect(() => {
+    if (contentRef.current && !isExpanded) {
+      const scrollHeight = contentRef.current.scrollHeight;
+      const clientHeight = contentRef.current.clientHeight;
+      setShowExpandButton(scrollHeight > clientHeight + 50);
+    }
+  }, [isExpanded]);
 
   // Listen for PL updates from other components
   useEffect(() => {
@@ -95,8 +106,8 @@ export default function OrderCard({
   return (
     <>
       <div className="order-card">
-        {/* Clickable Header - expands/collapses the card */}
-        <div className="order-header" onClick={toggleExpand}>
+        {/* Header */}
+        <div className="order-header">
           <div className="order-header-left">
             <div className="order-id">
               <span className="order-id-label">Order ID:</span>
@@ -130,13 +141,10 @@ export default function OrderCard({
             >
               <Trash2 size={16} /> Delete
             </button>
-            <button className="expand-btn">
-              {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-            </button>
           </div>
         </div>
 
-        {/* Always visible - Payment Status Badge */}
+        {/* Payment Status Badge */}
         <div className="payment-status-badge">
           <span
             className={`status-badge ${order.paymentStatus === "paid" ? "paid" : "pending"}`}
@@ -150,7 +158,7 @@ export default function OrderCard({
           )}
         </div>
 
-        {/* Always visible - Profit/Loss Summary Row */}
+        {/* Profit/Loss Summary Row */}
         {(pl.profit !== undefined || Object.keys(pl).length > 0) && (
           <div
             className={`profit-summary ${(pl.profit || 0) >= 0 ? "profit" : "loss"}`}
@@ -191,9 +199,14 @@ export default function OrderCard({
           </div>
         )}
 
-        {/* Expandable Content - Only visible when expanded */}
-        {isExpanded && (
-          <div className="order-body">
+        {/* Expandable Content with Fade Mask */}
+        <div
+          className={`order-body-wrapper ${isExpanded ? "expanded" : "collapsed"}`}
+        >
+          <div
+            ref={contentRef}
+            className={`order-body ${isExpanded ? "expanded" : "collapsed"}`}
+          >
             <div className="order-info">
               {/* Customer Details Section */}
               <div className="info-section">
@@ -227,6 +240,26 @@ export default function OrderCard({
                 )}
               </div>
             </div>
+          </div>
+
+          {/* Fade Mask and Expand Button */}
+          {!isExpanded && showExpandButton && (
+            <div className="expand-fade-mask">
+              <button className="expand-btn-bottom" onClick={toggleExpand}>
+                <ChevronDown size={18} />
+                <span>Show more details</span>
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Expand/Collapse Button at Bottom (when expanded) */}
+        {isExpanded && (
+          <div className="collapse-section">
+            <button className="collapse-btn" onClick={toggleExpand}>
+              <ChevronUp size={16} />
+              <span>Show less</span>
+            </button>
           </div>
         )}
       </div>

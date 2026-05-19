@@ -2,7 +2,21 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ArrowLeft, Search, Download, Plus, Filter, X } from "lucide-react";
+import {
+  ArrowLeft,
+  Search,
+  Download,
+  Plus,
+  Filter,
+  X,
+  TrendingUp,
+  TrendingDown,
+  Calculator,
+  DollarSign,
+  PlusCircle,
+  Trash2,
+  Edit2,
+} from "lucide-react";
 import Link from "next/link";
 import { getAllOrders, updateOrder, deleteOrder } from "@/utils/indexDB";
 import OrderCard from "./OrderCard";
@@ -75,6 +89,14 @@ export default function COListPage() {
   const [exporting, setExporting] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+  const [showExpenseModal, setShowExpenseModal] = useState(false);
+  const [expenses, setExpenses] = useState([]);
+  const [newExpense, setNewExpense] = useState({
+    name: "",
+    amount: 0,
+    date: new Date().toISOString().split("T")[0],
+  });
+  const [editingExpenseId, setEditingExpenseId] = useState(null);
   const [activeFilters, setActiveFilters] = useState({
     shipped: false,
     not_shipped: false,
@@ -83,6 +105,25 @@ export default function COListPage() {
     pending: false,
     paid: false,
   });
+
+  // Load expenses from localStorage
+  useEffect(() => {
+    const savedExpenses = localStorage.getItem("colist_expenses");
+    if (savedExpenses) {
+      try {
+        setExpenses(JSON.parse(savedExpenses));
+      } catch (e) {
+        console.error("Error loading expenses:", e);
+      }
+    }
+  }, []);
+
+  // Save expenses to localStorage
+  useEffect(() => {
+    if (expenses.length > 0 || localStorage.getItem("colist_expenses")) {
+      localStorage.setItem("colist_expenses", JSON.stringify(expenses));
+    }
+  }, [expenses]);
 
   useEffect(() => {
     loadOrders();
@@ -95,45 +136,28 @@ export default function COListPage() {
   const applyFiltersAndSearch = () => {
     let filtered = [...orders];
 
-    // Apply status filters
     if (Object.values(activeFilters).some(Boolean)) {
       filtered = filtered.filter((order) => {
         let matches = false;
-
-        // Shipped filter
-        if (activeFilters.shipped && order.status?.isShipped) {
-          matches = true;
-        }
-        // Not Shipped filter
+        if (activeFilters.shipped && order.status?.isShipped) matches = true;
         if (
           activeFilters.not_shipped &&
           !order.status?.isShipped &&
           !order.status?.isDelivered
-        ) {
+        )
           matches = true;
-        }
-        // Delivered filter
-        if (activeFilters.delivered && order.status?.isDelivered) {
+        if (activeFilters.delivered && order.status?.isDelivered)
           matches = true;
-        }
-        // Advance Paid filter
-        if (activeFilters.advance_paid && order.status?.advancePaid) {
+        if (activeFilters.advance_paid && order.status?.advancePaid)
           matches = true;
-        }
-        // Pending Payment filter
-        if (activeFilters.pending && order.paymentStatus === "pending") {
+        if (activeFilters.pending && order.paymentStatus === "pending")
           matches = true;
-        }
-        // Paid filter
-        if (activeFilters.paid && order.paymentStatus === "paid") {
+        if (activeFilters.paid && order.paymentStatus === "paid")
           matches = true;
-        }
-
         return matches;
       });
     }
 
-    // Apply search query
     if (searchQuery) {
       filtered = filtered.filter(
         (order) =>
@@ -301,10 +325,7 @@ export default function COListPage() {
   };
 
   const toggleFilter = (filterName) => {
-    setActiveFilters((prev) => ({
-      ...prev,
-      [filterName]: !prev[filterName],
-    }));
+    setActiveFilters((prev) => ({ ...prev, [filterName]: !prev[filterName] }));
   };
 
   const clearAllFilters = () => {
@@ -319,8 +340,82 @@ export default function COListPage() {
     setSearchQuery("");
   };
 
-  const getActiveFilterCount = () => {
-    return Object.values(activeFilters).filter(Boolean).length;
+  const getActiveFilterCount = () =>
+    Object.values(activeFilters).filter(Boolean).length;
+
+  // Calculate total P&L
+  const calculateTotalPL = () => {
+    let totalRevenue = 0;
+    let totalCost = 0;
+    let totalProfit = 0;
+
+    filteredOrders.forEach((order) => {
+      const pl = calculateProfitLoss(order);
+      totalRevenue += pl.sellingPrice;
+      totalCost += pl.totalCost;
+      totalProfit += pl.profit;
+    });
+
+    return { totalRevenue, totalCost, totalProfit };
+  };
+
+  const { totalRevenue, totalCost, totalProfit } = calculateTotalPL();
+  const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+  const netProfit = totalProfit - totalExpenses;
+  const netMargin = totalRevenue > 0 ? (netProfit / totalRevenue) * 100 : 0;
+
+  const addExpense = () => {
+    if (newExpense.name && newExpense.amount > 0) {
+      setExpenses([...expenses, { ...newExpense, id: Date.now() }]);
+      setNewExpense({
+        name: "",
+        amount: 0,
+        date: new Date().toISOString().split("T")[0],
+      });
+      setShowExpenseModal(false);
+    }
+  };
+
+  const updateExpense = () => {
+    if (newExpense.name && newExpense.amount > 0 && editingExpenseId) {
+      setExpenses(
+        expenses.map((exp) =>
+          exp.id === editingExpenseId
+            ? { ...newExpense, id: editingExpenseId }
+            : exp,
+        ),
+      );
+      setEditingExpenseId(null);
+      setNewExpense({
+        name: "",
+        amount: 0,
+        date: new Date().toISOString().split("T")[0],
+      });
+      setShowExpenseModal(false);
+    }
+  };
+
+  const deleteExpense = (id) => {
+    setExpenses(expenses.filter((exp) => exp.id !== id));
+  };
+
+  const openExpenseModal = (expense = null) => {
+    if (expense) {
+      setEditingExpenseId(expense.id);
+      setNewExpense({
+        name: expense.name,
+        amount: expense.amount,
+        date: expense.date,
+      });
+    } else {
+      setEditingExpenseId(null);
+      setNewExpense({
+        name: "",
+        amount: 0,
+        date: new Date().toISOString().split("T")[0],
+      });
+    }
+    setShowExpenseModal(true);
   };
 
   if (loading) {
@@ -347,7 +442,6 @@ export default function COListPage() {
   const handleUpdatePL = async (orderId, plData) => {
     const orderToUpdate = orders.find((o) => o.orderId === orderId);
     if (!orderToUpdate) return;
-
     const updatedOrder = {
       ...orderToUpdate,
       profitLoss: {
@@ -367,7 +461,6 @@ export default function COListPage() {
         : null,
       hasCustomPL: true,
     };
-
     try {
       await updateOrder(updatedOrder);
       await loadOrders();
@@ -412,8 +505,7 @@ export default function COListPage() {
           className={`sec-mid-btn flex items-center gap-8 ${getActiveFilterCount() > 0 ? "active-filter" : ""}`}
           onClick={() => setShowFilters(!showFilters)}
         >
-          <Filter size={16} />
-          Filters
+          <Filter size={16} /> Filters{" "}
           {getActiveFilterCount() > 0 && (
             <span className="filter-count">{getActiveFilterCount()}</span>
           )}
@@ -444,7 +536,7 @@ export default function COListPage() {
                   type="checkbox"
                   checked={activeFilters.shipped}
                   onChange={() => toggleFilter("shipped")}
-                />
+                />{" "}
                 <span>📦 Shipped</span>
               </label>
               <label className="filter-checkbox">
@@ -452,7 +544,7 @@ export default function COListPage() {
                   type="checkbox"
                   checked={activeFilters.not_shipped}
                   onChange={() => toggleFilter("not_shipped")}
-                />
+                />{" "}
                 <span>⏳ Not Shipped Yet</span>
               </label>
               <label className="filter-checkbox">
@@ -460,7 +552,7 @@ export default function COListPage() {
                   type="checkbox"
                   checked={activeFilters.delivered}
                   onChange={() => toggleFilter("delivered")}
-                />
+                />{" "}
                 <span>✅ Delivered</span>
               </label>
             </div>
@@ -473,7 +565,7 @@ export default function COListPage() {
                   type="checkbox"
                   checked={activeFilters.paid}
                   onChange={() => toggleFilter("paid")}
-                />
+                />{" "}
                 <span>💰 Paid</span>
               </label>
               <label className="filter-checkbox">
@@ -481,7 +573,7 @@ export default function COListPage() {
                   type="checkbox"
                   checked={activeFilters.pending}
                   onChange={() => toggleFilter("pending")}
-                />
+                />{" "}
                 <span>⏰ Pending</span>
               </label>
               <label className="filter-checkbox">
@@ -489,7 +581,7 @@ export default function COListPage() {
                   type="checkbox"
                   checked={activeFilters.advance_paid}
                   onChange={() => toggleFilter("advance_paid")}
-                />
+                />{" "}
                 <span>💳 Advance Paid</span>
               </label>
             </div>
@@ -497,7 +589,98 @@ export default function COListPage() {
         </div>
       )}
 
-      {/* Stats with active filters info */}
+      {/* Total P&L Summary Card */}
+      <div className="total-pl-summary">
+        <div className="total-pl-header">
+          <div className="flex items-center gap-8">
+            <Calculator size={20} className="orange" />
+            <span className="weight-600 font-16">
+              Total Profit & Loss Summary
+            </span>
+          </div>
+          <button
+            className="sec-mid-btn flex items-center gap-8"
+            onClick={() => openExpenseModal()}
+          >
+            <PlusCircle size={14} /> Add Expense
+          </button>
+        </div>
+        <div className="total-pl-stats">
+          <div className="pl-stat">
+            <span className="pl-stat-label">Total Revenue</span>
+            <span className="pl-stat-value">₹{Math.round(totalRevenue)}</span>
+          </div>
+          <div className="pl-stat">
+            <span className="pl-stat-label">Total Cost</span>
+            <span className="pl-stat-value">₹{Math.round(totalCost)}</span>
+          </div>
+          <div className="pl-stat">
+            <span className="pl-stat-label">Order Profit</span>
+            <span
+              className={`pl-stat-value ${totalProfit >= 0 ? "text-green" : "text-red"}`}
+            >
+              {totalProfit >= 0 ? "+" : ""}₹{Math.round(totalProfit)}
+            </span>
+          </div>
+          <div className="pl-stat">
+            <span className="pl-stat-label">Expenses</span>
+            <span className="pl-stat-value text-red">
+              -₹{Math.round(totalExpenses)}
+            </span>
+          </div>
+          <div className="pl-stat total">
+            <span className="pl-stat-label">Net Profit</span>
+            <span
+              className={`pl-stat-value font-20 weight-700 ${netProfit >= 0 ? "text-green" : "text-red"}`}
+            >
+              {netProfit >= 0 ? "+" : ""}₹{Math.round(netProfit)}
+            </span>
+          </div>
+          <div className="pl-stat">
+            <span className="pl-stat-label">Net Margin</span>
+            <span
+              className={`pl-stat-value ${netMargin >= 20 ? "text-green" : "text-orange"}`}
+            >
+              {Math.round(netMargin)}%
+            </span>
+          </div>
+        </div>
+
+        {/* Expenses List */}
+        {expenses.length > 0 && (
+          <div className="expenses-list">
+            <div className="expenses-header">
+              <span className="font-12 weight-600 gray-500">Expense Name</span>
+              <span className="font-12 weight-600 gray-500">Date</span>
+              <span className="font-12 weight-600 gray-500">Amount</span>
+              <span></span>
+            </div>
+            {expenses.map((exp) => (
+              <div key={exp.id} className="expense-item">
+                <span>{exp.name}</span>
+                <span className="font-12 gray-500">{exp.date}</span>
+                <span className="red">-₹{Math.round(exp.amount)}</span>
+                <div className="expense-actions">
+                  <button
+                    onClick={() => openExpenseModal(exp)}
+                    className="expense-edit"
+                  >
+                    <Edit2 size={14} />
+                  </button>
+                  <button
+                    onClick={() => deleteExpense(exp.id)}
+                    className="expense-delete"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Stats */}
       <div className="tracker-stats">
         <div className="stat-card">
           <div>
@@ -560,6 +743,82 @@ export default function COListPage() {
               setEditFormData={setEditFormData}
             />
           ))}
+        </div>
+      )}
+
+      {/* Expense Modal */}
+      {showExpenseModal && (
+        <div
+          className="bill-modal-overlay"
+          onClick={() => setShowExpenseModal(false)}
+        >
+          <div className="bill-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="bill-header">
+              <span className="weight-600 font-16">
+                {editingExpenseId ? "Edit Expense" : "Add Expense"}
+              </span>
+              <span
+                className="cursor-pointer"
+                onClick={() => setShowExpenseModal(false)}
+              >
+                <X size={16} />
+              </span>
+            </div>
+            <div className="address-form-content">
+              <div className="input-group">
+                <label>Expense Name</label>
+                <input
+                  type="text"
+                  className="sec-mid-btn"
+                  placeholder="e.g., Google Ads, Marketing, Shipping"
+                  value={newExpense.name}
+                  onChange={(e) =>
+                    setNewExpense({ ...newExpense, name: e.target.value })
+                  }
+                />
+              </div>
+              <div className="input-group">
+                <label>Amount (₹)</label>
+                <input
+                  type="number"
+                  className="sec-mid-btn"
+                  placeholder="Enter amount"
+                  value={newExpense.amount}
+                  onChange={(e) =>
+                    setNewExpense({
+                      ...newExpense,
+                      amount: parseFloat(e.target.value) || 0,
+                    })
+                  }
+                />
+              </div>
+              <div className="input-group">
+                <label>Date</label>
+                <input
+                  type="date"
+                  className="sec-mid-btn"
+                  value={newExpense.date}
+                  onChange={(e) =>
+                    setNewExpense({ ...newExpense, date: e.target.value })
+                  }
+                />
+              </div>
+              <div className="flex gap-12 mt-16">
+                <button
+                  className="pri-big-btn flex-1"
+                  onClick={editingExpenseId ? updateExpense : addExpense}
+                >
+                  {editingExpenseId ? "Update" : "Add Expense"}
+                </button>
+                <button
+                  className="sec-mid-btn"
+                  onClick={() => setShowExpenseModal(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 

@@ -61,6 +61,13 @@ export default function ShippingPolicy() {
           Orders are processed within 1 to 2 working days after successful
           payment confirmation.
         </p>
+        <p className="processing-note">
+          <strong>Note:</strong> For Quick Delivery orders, processing begins
+          immediately after order confirmation. Cancellation requests for Quick
+          Delivery orders will only be accepted within{" "}
+          <strong>5 minutes</strong> of placing the order. After that, the order
+          is handed over to the delivery partner and cannot be cancelled.
+        </p>
       </section>
 
       <section>
@@ -70,26 +77,68 @@ export default function ShippingPolicy() {
           contact details. TheBookX will not be responsible for delays or failed
           deliveries caused by incorrect information provided by the customer.
         </p>
+        <p>
+          <strong>Address Change Policy:</strong> Address change requests must
+          be made within <strong>10 minutes</strong> of order placement. After
+          this window, the order is processed and cannot be modified.
+        </p>
       </section>
 
       <section>
         <h2>6. Delivery Confirmation</h2>
         <p>
           Once the order is delivered, customers are advised to inspect the
-          package immediately as per our Refund & Return Policy.
+          package immediately as per our Refund & Return Policy. Any issues must
+          be reported within <strong>5 minutes</strong> of package opening.
         </p>
       </section>
 
       <section>
-        <h2>7. Service Areas</h2>
+        <h2>7. Failed Delivery Attempts</h2>
+        <p>
+          If a delivery fails due to the customer being unavailable or incorrect
+          address details, the following will apply:
+        </p>
+        <ul>
+          <li>
+            <strong>For COD Orders:</strong> The advance payment (if any) will
+            be forfeited as a cancellation fee.
+          </li>
+          <li>
+            <strong>For Prepaid Orders (UPI/Card/Net Banking):</strong> A refund
+            will be issued after deducting the shipping and handling charges.
+            The refund will be processed within 5-7 working days.
+          </li>
+          <li>
+            <strong>Re-delivery:</strong> Re-delivery attempts will be made only
+            after additional shipping charges are paid by the customer.
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>8. Service Areas</h2>
         <p>
           Delivery services are currently available in selected cities and
           surrounding areas. Availability may change without prior notice.
         </p>
+        <p>
+          To check if we deliver to your location, please contact our support
+          team before placing an order.
+        </p>
       </section>
 
       <section>
-        <h2>8. Contact Information</h2>
+        <h2>9. Shipping Restrictions</h2>
+        <p>
+          Certain products may have shipping restrictions based on size, weight,
+          or delivery location. Such restrictions will be clearly mentioned on
+          the product page.
+        </p>
+      </section>
+
+      <section>
+        <h2>10. Contact Information</h2>
         <p>
           For any shipping or delivery related queries, please contact us at:
         </p>
@@ -100,8 +149,8 @@ export default function ShippingPolicy() {
       </section>
 
       <p className="note">
-        By placing an order on TheBookX, you agree to this Shipping & Delivery
-        Policy.
+        By placing an order on TheBookX, you agree to this Shipping &amp;
+        Delivery Policy.
       </p>
     </main>
   );

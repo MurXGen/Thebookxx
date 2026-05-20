@@ -29,6 +29,12 @@ export const trackViewBook = (book) => {
 export const trackAddToCart = ({ book, qty = 1 }) => {
   if (!isBrowser()) return;
 
+  trackUserActivity("remove_from_cart", {
+    book_id: book.id,
+    book_name: book.name,
+    cart_total: newCartTotal,
+  });
+
   window.gtag("event", "add_to_cart", {
     currency: "INR",
     value: book.discountedPrice * qty,

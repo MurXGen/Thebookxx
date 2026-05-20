@@ -5628,7 +5628,7 @@ input {
 }
 
 .order-body.collapsed {
-  max-height: 280px;
+  max-height: 150px;
   overflow-y: auto;
 }
 
@@ -5844,4 +5844,66 @@ input {
     font-size: 12px;
     gap: 8px;
   }
+}
+
+.total-pl-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.total-pl-header .cursor-pointer {
+  cursor: pointer;
+  user-select: none;
+}
+
+.total-pl-header .cursor-pointer:hover .gray-500 {
+  color: #ffb703;
+}
+
+.total-pl-content {
+  overflow: hidden;
+}
+
+/* Ensure smooth height transition */
+.total-pl-content {
+  will-change: height, opacity;
+}
+
+/* Optional: Add a subtle border animation */
+.total-pl-header .cursor-pointer {
+  transition: all 0.2s ease;
+  border-radius: 12px;
+  padding: 4px 8px;
+  margin: -4px -8px;
+}
+
+.total-pl-header .cursor-pointer:hover {
+  background: #f9fafb;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .total-pl-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.star-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.star-btn:hover {
+  background: #ffb70310;
+  transform: scale(1.05);
 }

@@ -11,6 +11,7 @@ import {
   Bell,
   ChevronDown,
   ChevronUp,
+  Star,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import ProfitLossModal from "./ProfitLossModal";
@@ -25,6 +26,7 @@ export default function OrderCard({
   editingOrderId,
   editFormData,
   setEditFormData,
+  onToggleStarred,
 }) {
   const isEditing = editingOrderId === order.orderId;
   const [showPLModal, setShowPLModal] = useState(false);
@@ -156,6 +158,20 @@ export default function OrderCard({
               Advance: ₹{order.advanceAmount || 99}
             </span>
           )}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleStarred(order.orderId);
+            }}
+            className="star-btn"
+            title={order.isStarred ? "Remove from starred" : "Mark as starred"}
+          >
+            <Star
+              size={16}
+              fill={order.isStarred ? "#ffb703" : "none"}
+              stroke={order.isStarred ? "#ffb703" : "#9ca3af"}
+            />
+          </button>
         </div>
 
         {/* Profit/Loss Summary Row */}

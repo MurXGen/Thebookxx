@@ -16,11 +16,14 @@ import {
   PlusCircle,
   Trash2,
   Edit2,
+  Star,
 } from "lucide-react";
 import Link from "next/link";
 import { getAllOrders, updateOrder, deleteOrder } from "@/utils/indexDB";
 import OrderCard from "./OrderCard";
 import AddCustomOrderModal from "./AddCustomOrderModal";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const PACKING_ACTUAL_COST = 25;
 const PACKING_CHARGE_CUSTOMER = 50;
@@ -69,7 +72,7 @@ const formatDate = (dateString) =>
     minute: "2-digit",
   });
 
-// Filter options
+// Filter options without emojis
 const FILTER_OPTIONS = {
   SHIPPED: "shipped",
   NOT_SHIPPED: "not_shipped",
@@ -77,6 +80,7 @@ const FILTER_OPTIONS = {
   ADVANCE_PAID: "advance_paid",
   PENDING: "pending",
   PAID: "paid",
+  STARRED: "starred",
 };
 
 export default function COListPage() {
@@ -104,9 +108,11 @@ export default function COListPage() {
     advance_paid: false,
     pending: false,
     paid: false,
+    starred: false,
   });
+  const [isPLExpanded, setIsPLExpanded] = useState(true);
 
-  // Load expenses from localStorage
+  // Load expenses and starred orders from localStorage
   useEffect(() => {
     const savedExpenses = localStorage.getItem("colist_expenses");
     if (savedExpenses) {
@@ -154,6 +160,7 @@ export default function COListPage() {
           matches = true;
         if (activeFilters.paid && order.paymentStatus === "paid")
           matches = true;
+        if (activeFilters.starred && order.isStarred === true) matches = true;
         return matches;
       });
     }
@@ -173,6 +180,12 @@ export default function COListPage() {
   const loadOrders = async () => {
     try {
       const allOrders = await getAllOrders();
+
+      // Load starred orders from localStorage
+      const starredOrders = JSON.parse(
+        localStorage.getItem("starred_orders") || "[]",
+      );
+
       const processedOrders = allOrders.map((order) => {
         if (order.profitLoss?.settings || order.plData?.settings) {
           return {
@@ -186,9 +199,13 @@ export default function COListPage() {
               order.profitLoss?.settings?.bookCosts ||
               order.plData?.settings?.bookCosts ||
               null,
+            isStarred: starredOrders.includes(order.orderId) || false,
           };
         }
-        return order;
+        return {
+          ...order,
+          isStarred: starredOrders.includes(order.orderId) || false,
+        };
       });
 
       const sorted = processedOrders.sort(
@@ -201,6 +218,37 @@ export default function COListPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const toggleStarred = async (orderId) => {
+    // Update localStorage
+    const starredOrders = JSON.parse(
+      localStorage.getItem("starred_orders") || "[]",
+    );
+    let updatedStarred;
+
+    if (starredOrders.includes(orderId)) {
+      updatedStarred = starredOrders.filter((id) => id !== orderId);
+    } else {
+      updatedStarred = [...starredOrders, orderId];
+    }
+
+    localStorage.setItem("starred_orders", JSON.stringify(updatedStarred));
+
+    // Update orders state
+    const updatedOrders = orders.map((order) =>
+      order.orderId === orderId
+        ? { ...order, isStarred: !order.isStarred }
+        : order,
+    );
+    setOrders(updatedOrders);
+    setFilteredOrders((prev) =>
+      prev.map((order) =>
+        order.orderId === orderId
+          ? { ...order, isStarred: !order.isStarred }
+          : order,
+      ),
+    );
   };
 
   const handleEdit = (order) => {
@@ -254,6 +302,12 @@ export default function COListPage() {
     if (confirm("Delete this order? This cannot be undone.")) {
       try {
         await deleteOrder(orderId);
+        // Also remove from starred if exists
+        const starredOrders = JSON.parse(
+          localStorage.getItem("starred_orders") || "[]",
+        );
+        const updatedStarred = starredOrders.filter((id) => id !== orderId);
+        localStorage.setItem("starred_orders", JSON.stringify(updatedStarred));
         await loadOrders();
       } catch (error) {
         console.error("Error deleting order:", error);
@@ -275,6 +329,7 @@ export default function COListPage() {
       "Advance Paid",
       "Is Shipped",
       "Is Delivered",
+      "Is Starred",
       "Total Amount",
       "Order Date",
       "Books",
@@ -291,6 +346,7 @@ export default function COListPage() {
       order.status?.advancePaid ? "Yes" : "No",
       order.status?.isShipped ? "Yes" : "No",
       order.status?.isDelivered ? "Yes" : "No",
+      order.isStarred ? "Yes" : "No",
       order.totalAmount || 0,
       formatDate(order.orderDate),
       order.books?.map((b) => `${b.name} (${b.quantity})`).join(" | ") || "",
@@ -336,6 +392,7 @@ export default function COListPage() {
       advance_paid: false,
       pending: false,
       paid: false,
+      starred: false,
     });
     setSearchQuery("");
   };
@@ -519,7 +576,7 @@ export default function COListPage() {
         </button>
       </div>
 
-      {/* Filter Panel */}
+      {/* Filter Panel - No Emojis */}
       {showFilters && (
         <div className="filter-panel">
           <div className="filter-header">
@@ -537,7 +594,7 @@ export default function COListPage() {
                   checked={activeFilters.shipped}
                   onChange={() => toggleFilter("shipped")}
                 />{" "}
-                <span>📦 Shipped</span>
+                <span>Shipped</span>
               </label>
               <label className="filter-checkbox">
                 <input
@@ -545,7 +602,7 @@ export default function COListPage() {
                   checked={activeFilters.not_shipped}
                   onChange={() => toggleFilter("not_shipped")}
                 />{" "}
-                <span>⏳ Not Shipped Yet</span>
+                <span>Not Shipped Yet</span>
               </label>
               <label className="filter-checkbox">
                 <input
@@ -553,7 +610,7 @@ export default function COListPage() {
                   checked={activeFilters.delivered}
                   onChange={() => toggleFilter("delivered")}
                 />{" "}
-                <span>✅ Delivered</span>
+                <span>Delivered</span>
               </label>
             </div>
           </div>
@@ -566,7 +623,7 @@ export default function COListPage() {
                   checked={activeFilters.paid}
                   onChange={() => toggleFilter("paid")}
                 />{" "}
-                <span>💰 Paid</span>
+                <span>Paid</span>
               </label>
               <label className="filter-checkbox">
                 <input
@@ -574,7 +631,7 @@ export default function COListPage() {
                   checked={activeFilters.pending}
                   onChange={() => toggleFilter("pending")}
                 />{" "}
-                <span>⏰ Pending</span>
+                <span>Pending</span>
               </label>
               <label className="filter-checkbox">
                 <input
@@ -582,7 +639,20 @@ export default function COListPage() {
                   checked={activeFilters.advance_paid}
                   onChange={() => toggleFilter("advance_paid")}
                 />{" "}
-                <span>💳 Advance Paid</span>
+                <span>Advance Paid</span>
+              </label>
+            </div>
+          </div>
+          <div className="filter-group">
+            <span className="filter-group-title">Other</span>
+            <div className="filter-options">
+              <label className="filter-checkbox">
+                <input
+                  type="checkbox"
+                  checked={activeFilters.starred}
+                  onChange={() => toggleFilter("starred")}
+                />{" "}
+                <span>Starred</span>
               </label>
             </div>
           </div>
@@ -592,11 +662,19 @@ export default function COListPage() {
       {/* Total P&L Summary Card */}
       <div className="total-pl-summary">
         <div className="total-pl-header">
-          <div className="flex items-center gap-8">
+          <div
+            className="flex items-center gap-8 cursor-pointer select-none"
+            onClick={() => setIsPLExpanded(!isPLExpanded)}
+          >
             <Calculator size={20} className="orange" />
             <span className="weight-600 font-16">
               Total Profit & Loss Summary
             </span>
+            {isPLExpanded ? (
+              <ChevronUp size={18} className="gray-500" />
+            ) : (
+              <ChevronDown size={18} className="gray-500" />
+            )}
           </div>
           <button
             className="sec-mid-btn flex items-center gap-8"
@@ -605,79 +683,113 @@ export default function COListPage() {
             <PlusCircle size={14} /> Add Expense
           </button>
         </div>
-        <div className="total-pl-stats">
-          <div className="pl-stat">
-            <span className="pl-stat-label">Total Revenue</span>
-            <span className="pl-stat-value">₹{Math.round(totalRevenue)}</span>
-          </div>
-          <div className="pl-stat">
-            <span className="pl-stat-label">Total Cost</span>
-            <span className="pl-stat-value">₹{Math.round(totalCost)}</span>
-          </div>
-          <div className="pl-stat">
-            <span className="pl-stat-label">Order Profit</span>
-            <span
-              className={`pl-stat-value ${totalProfit >= 0 ? "text-green" : "text-red"}`}
-            >
-              {totalProfit >= 0 ? "+" : ""}₹{Math.round(totalProfit)}
-            </span>
-          </div>
-          <div className="pl-stat">
-            <span className="pl-stat-label">Expenses</span>
-            <span className="pl-stat-value text-red">
-              -₹{Math.round(totalExpenses)}
-            </span>
-          </div>
-          <div className="pl-stat total">
-            <span className="pl-stat-label">Net Profit</span>
-            <span
-              className={`pl-stat-value font-20 weight-700 ${netProfit >= 0 ? "text-green" : "text-red"}`}
-            >
-              {netProfit >= 0 ? "+" : ""}₹{Math.round(netProfit)}
-            </span>
-          </div>
-          <div className="pl-stat">
-            <span className="pl-stat-label">Net Margin</span>
-            <span
-              className={`pl-stat-value ${netMargin >= 20 ? "text-green" : "text-orange"}`}
-            >
-              {Math.round(netMargin)}%
-            </span>
-          </div>
-        </div>
 
-        {/* Expenses List */}
-        {expenses.length > 0 && (
-          <div className="expenses-list">
-            <div className="expenses-header">
-              <span className="font-12 weight-600 gray-500">Expense Name</span>
-              <span className="font-12 weight-600 gray-500">Date</span>
-              <span className="font-12 weight-600 gray-500">Amount</span>
-              <span></span>
-            </div>
-            {expenses.map((exp) => (
-              <div key={exp.id} className="expense-item">
-                <span>{exp.name}</span>
-                <span className="font-12 gray-500">{exp.date}</span>
-                <span className="red">-₹{Math.round(exp.amount)}</span>
-                <div className="expense-actions">
-                  <button
-                    onClick={() => openExpenseModal(exp)}
-                    className="expense-edit"
+        <AnimatePresence initial={false}>
+          {isPLExpanded && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{
+                duration: 0.3,
+                ease: "easeInOut",
+                opacity: { duration: 0.2 },
+              }}
+              className="total-pl-content"
+            >
+              <div className="total-pl-stats">
+                <div className="pl-stat">
+                  <span className="pl-stat-label">Total Revenue</span>
+                  <span className="pl-stat-value">
+                    ₹{Math.round(totalRevenue)}
+                  </span>
+                </div>
+                <div className="pl-stat">
+                  <span className="pl-stat-label">Total Cost</span>
+                  <span className="pl-stat-value">
+                    ₹{Math.round(totalCost)}
+                  </span>
+                </div>
+                <div className="pl-stat">
+                  <span className="pl-stat-label">Order Profit</span>
+                  <span
+                    className={`pl-stat-value ${totalProfit >= 0 ? "text-green" : "text-red"}`}
                   >
-                    <Edit2 size={14} />
-                  </button>
-                  <button
-                    onClick={() => deleteExpense(exp.id)}
-                    className="expense-delete"
+                    {totalProfit >= 0 ? "+" : ""}₹{Math.round(totalProfit)}
+                  </span>
+                </div>
+                <div className="pl-stat">
+                  <span className="pl-stat-label">Expenses</span>
+                  <span className="pl-stat-value text-red">
+                    -₹{Math.round(totalExpenses)}
+                  </span>
+                </div>
+                <div className="pl-stat total">
+                  <span className="pl-stat-label">Net Profit</span>
+                  <span
+                    className={`pl-stat-value font-20 weight-700 ${netProfit >= 0 ? "text-green" : "text-red"}`}
                   >
-                    <Trash2 size={14} />
-                  </button>
+                    {netProfit >= 0 ? "+" : ""}₹{Math.round(netProfit)}
+                  </span>
+                </div>
+                <div className="pl-stat">
+                  <span className="pl-stat-label">Net Margin</span>
+                  <span
+                    className={`pl-stat-value ${netMargin >= 20 ? "text-green" : "text-orange"}`}
+                  >
+                    {Math.round(netMargin)}%
+                  </span>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
+
+              {/* Expenses List */}
+              {expenses.length > 0 && (
+                <motion.div
+                  className="expenses-list"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.1, duration: 0.2 }}
+                >
+                  <div className="expenses-header">
+                    <span className="font-12 weight-600 gray-500">
+                      Expense Name
+                    </span>
+                    <span className="font-12 weight-600 gray-500">Date</span>
+                    <span className="font-12 weight-600 gray-500">Amount</span>
+                    <span></span>
+                  </div>
+                  {expenses.map((exp, idx) => (
+                    <motion.div
+                      key={exp.id}
+                      className="expense-item"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: idx * 0.05, duration: 0.2 }}
+                    >
+                      <span>{exp.name}</span>
+                      <span className="font-12 gray-500">{exp.date}</span>
+                      <span className="red">-₹{Math.round(exp.amount)}</span>
+                      <div className="expense-actions">
+                        <button
+                          onClick={() => openExpenseModal(exp)}
+                          className="expense-edit"
+                        >
+                          <Edit2 size={14} />
+                        </button>
+                        <button
+                          onClick={() => deleteExpense(exp.id)}
+                          className="expense-delete"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Stats */}
@@ -738,6 +850,7 @@ export default function COListPage() {
               onDelete={handleDelete}
               onCalculator={handleUpdatePL}
               onReminder={handleReminder}
+              onToggleStarred={toggleStarred}
               editingOrderId={editingOrderId}
               editFormData={editFormData}
               setEditFormData={setEditFormData}

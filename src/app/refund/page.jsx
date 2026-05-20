@@ -91,6 +91,23 @@ export default function RefundPolicy() {
           Orders can be cancelled only before they are shipped. Once shipped,
           cancellation requests will not be accepted.
         </p>
+        <p className="cancellation-refund-note">
+          <strong>Refund on Cancellation:</strong>
+        </p>
+        <ul className="cancellation-details">
+          <li>
+            <strong>For Cash on Delivery (COD) Orders:</strong> If you cancel
+            your order, the advance payment made (if any) is treated as a
+            security deposit against cancellation and will not be refunded.
+          </li>
+          <li>
+            <strong>For Prepaid Orders (UPI / Card / Net Banking):</strong> If
+            you cancel your order, the full amount paid (including any advance
+            fee) will be refunded to your original payment method within 5–7
+            working days. This refund policy is designed to ensure efficient
+            business operations and customer convenience.
+          </li>
+        </ul>
       </section>
 
       <section>
@@ -105,7 +122,7 @@ export default function RefundPolicy() {
       </section>
 
       <p className="note">
-        By placing an order on TheBookX, you agree to this Refund, Return &
+        By placing an order on TheBookX, you agree to this Refund, Return &amp;
         Exchange Policy.
       </p>
     </main>

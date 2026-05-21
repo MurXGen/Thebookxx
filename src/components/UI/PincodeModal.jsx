@@ -242,52 +242,54 @@ export default function PincodeModal() {
               </span>
             </div>
 
-            <div className="address-form-content">
-              <div className="input-group">
-                <label className="flex flex-row gap-4 flex-center items-center">
-                  <MapPin size={14} />
-                  Enter Pincode <span className="red">*</span>
-                </label>
-                <input
-                  className={`sec-mid-btn ${error ? "error-border" : ""}`}
-                  placeholder="Enter 6 digit pincode"
-                  value={pincode}
-                  maxLength={6}
-                  onChange={(e) => handlePincodeChange(e.target.value)}
-                  onKeyPress={(e) => e.key === "Enter" && handleSubmit()}
-                  autoFocus
-                />
-                {error && (
-                  <span className="font-12 red flex items-center gap-4 mt-4">
-                    <span>⚠️</span>
-                    {error}
+            <div className="address-form-content flex flex-col gap-12">
+              <div className="flex flex-row gap-12">
+                {" "}
+                <div className="input-group">
+                  <label className="flex flex-row gap-4 flex-center items-center">
+                    <MapPin size={14} />
+                    Enter Pincode <span className="red">*</span>
+                  </label>
+                  <input
+                    className={`sec-mid-btn ${error ? "error-border" : ""}`}
+                    placeholder="Enter 6 digit pincode"
+                    value={pincode}
+                    maxLength={6}
+                    onChange={(e) => handlePincodeChange(e.target.value)}
+                    onKeyPress={(e) => e.key === "Enter" && handleSubmit()}
+                    autoFocus
+                  />
+                  {error && (
+                    <span className="font-12 red flex items-center gap-4 mt-4">
+                      <span>⚠️</span>
+                      {error}
+                    </span>
+                  )}
+                </div>
+                {/* Optional Phone Number Field */}
+                <div className="input-group">
+                  <label className="flex flex-row gap-4 flex-center items-center">
+                    <Phone size={14} />
+                    Phone Number <span className="gray-500">(Optional)</span>
+                  </label>
+                  <input
+                    className="sec-mid-btn"
+                    placeholder="Enter 10-digit mobile number"
+                    value={phoneNumber}
+                    maxLength={10}
+                    onChange={(e) =>
+                      setPhoneNumber(e.target.value.replace(/\D/g, ""))
+                    }
+                  />
+                  <span className="font-10 gray-500 mt-4">
+                    Get notified about special offers and delivery updates
                   </span>
-                )}
-              </div>
-
-              {/* Optional Phone Number Field */}
-              <div className="input-group">
-                <label className="flex flex-row gap-4 flex-center items-center">
-                  <Phone size={14} />
-                  Phone Number <span className="gray-500">(Optional)</span>
-                </label>
-                <input
-                  className="sec-mid-btn"
-                  placeholder="Enter 10-digit mobile number"
-                  value={phoneNumber}
-                  maxLength={10}
-                  onChange={(e) =>
-                    setPhoneNumber(e.target.value.replace(/\D/g, ""))
-                  }
-                />
-                <span className="font-10 gray-500 mt-4">
-                  Get notified about special offers and delivery updates
-                </span>
+                </div>
               </div>
 
               {/* Benefits Section */}
-              <div className="delivery-info-section mt-12">
-                <div className="flex flex-col gap-8 p-12 bg-gray-50 rounded-lg">
+              <div className="">
+                <div className="grid-2">
                   <div className="flex items-center gap-8">
                     <Truck size={18} className="green" />
                     <span className="font-12">Check delivery availability</span>
@@ -306,7 +308,10 @@ export default function PincodeModal() {
               <div className="dashed-border my-12"></div>
 
               {/* Buttons */}
-              <div className="flex flex-col gap-12 mt-16">
+              <div className="flex flex-row gap-12">
+                <button className="sec-mid-btn width100" onClick={handleSkip}>
+                  Skip for now
+                </button>
                 <LoadingButton
                   className="pri-big-btn width100"
                   onClick={handleSubmit}
@@ -314,10 +319,6 @@ export default function PincodeModal() {
                 >
                   {loading ? "Submitting..." : "Submit"}
                 </LoadingButton>
-
-                <button className="sec-mid-btn width100" onClick={handleSkip}>
-                  Skip for now
-                </button>
               </div>
 
               {locationData && (

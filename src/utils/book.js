@@ -18,8 +18,11 @@ function slugify(text) {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 }
+
 // utils/book.js
 const ONE_RUPEE_OFFER_KEY = "oneRupeeOffer";
+const OFFER_DURATION_MINUTES = 60; // Changed from 10 to 60 minutes
+const OFFER_DURATION_SECONDS = OFFER_DURATION_MINUTES * 60; // 3600 seconds
 
 // Get offer data from localStorage
 export const getOneRupeeOfferData = () => {
@@ -51,7 +54,7 @@ export const areOneRupeeBooksEnabled = () => {
   if (permanentUnlocked) return true;
   if (timerUnlocked && !timerExpired) {
     const elapsedMinutes = (Date.now() - unlockTime) / 1000 / 60;
-    if (elapsedMinutes <= 10) return true;
+    if (elapsedMinutes <= OFFER_DURATION_MINUTES) return true;
   }
 
   return false;
@@ -69,7 +72,7 @@ export const getRemainingOfferTime = () => {
   if (timerExpired) return 0;
 
   const elapsedSeconds = (Date.now() - unlockTime) / 1000;
-  const remainingSeconds = 600 - elapsedSeconds;
+  const remainingSeconds = OFFER_DURATION_SECONDS - elapsedSeconds;
   return Math.max(0, Math.floor(remainingSeconds));
 };
 

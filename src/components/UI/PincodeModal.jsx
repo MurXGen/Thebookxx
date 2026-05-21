@@ -243,7 +243,7 @@ export default function PincodeModal() {
             </div>
 
             <div className="address-form-content flex flex-col gap-12">
-              <div className="flex flex-row gap-12">
+              <div className="flex flex-col">
                 {" "}
                 <div className="input-group">
                   <label className="flex flex-row gap-4 flex-center items-center">

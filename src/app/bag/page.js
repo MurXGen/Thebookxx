@@ -22,9 +22,9 @@ import { ArrowLeft, Gift } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { permanentlyUnlockOffer, areOneRupeeBooksEnabled } from "@/utils/book";
-import { trackOrderToGoogleForm } from "@/utils/googleFormOrder";
 
 export default function BagPage() {
+  // ✅ ALL hooks go here - NO EXCEPTIONS
   const { cart } = useStore();
   const router = useRouter();
   const [siteOrigin, setSiteOrigin] = useState("");
@@ -35,16 +35,14 @@ export default function BagPage() {
   const [giftWrap, setGiftWrap] = useState(false);
   const GIFT_WRAP_CHARGE = 50;
 
-  const getAppliedOffer = (amount) => {
-    return [...CART_OFFERS].reverse().find((o) => amount >= o.target) || null;
-  };
-
+  // ✅ Move useEffect hooks here
   useEffect(() => {
     if (typeof window !== "undefined") {
       setSiteOrigin(window.location.origin);
     }
   }, []);
 
+  // Calculate cartBooks BEFORE the conditional return
   const cartBooks = cart
     .map((item) => {
       const book = books.find((b) => b.id === item.id);
@@ -52,35 +50,7 @@ export default function BagPage() {
     })
     .filter(Boolean);
 
-  if (!cartBooks.length) {
-    return (
-      <>
-        <div className=" section-1200 flex flec-row gap-12 items-center">
-          <ArrowLeft
-            size={20}
-            onClick={() => router.push("/")}
-            className="cursor-pointer"
-          />
-          <div className="flex flex-col">
-            <h2 className="font-16 weight-600">Your Bag</h2>
-            <span className="font-12 dark-50">
-              {cartBooks.length} book{cartBooks.length > 1 ? "s" : ""} in cart
-            </span>
-          </div>
-        </div>
-        <div
-          className="flex flex-col gap-12 justify-center items-center"
-          style={{ height: "90vh" }}
-        >
-          <span className="font-16">Add books to cart to fill your bags</span>
-          <button onClick={() => router.push("/")} className="pri-big-btn">
-            Browse
-          </button>
-        </div>
-      </>
-    );
-  }
-
+  // Calculate other values that depend on cartBooks
   const totalOriginal = cartBooks.reduce(
     (sum, b) => sum + b.originalPrice * b.qty,
     0,
@@ -91,14 +61,12 @@ export default function BagPage() {
     0,
   );
 
+  // ✅ This useEffect also needs to be here (before conditional return)
   useEffect(() => {
-    // Check if cart total >= 299 and ₹1 books are not permanently unlocked
     if (totalDiscounted >= 299 && !areOneRupeeBooksEnabled()) {
       const offerData = getOneRupeeOfferData();
-      // Only trigger if not already permanently unlocked
       if (!offerData?.permanentUnlock) {
         permanentlyUnlockOffer();
-        // Show success message
         alert(
           "🎉 Congratulations! ₹1 books are now permanently unlocked for you!",
         );
@@ -106,8 +74,12 @@ export default function BagPage() {
     }
   }, [totalDiscounted]);
 
-  const appliedOffer = getAppliedOffer(totalDiscounted);
+  // ✅ Define all helper functions BEFORE conditional return
+  const getAppliedOffer = (amount) => {
+    return [...CART_OFFERS].reverse().find((o) => amount >= o.target) || null;
+  };
 
+  const appliedOffer = getAppliedOffer(totalDiscounted);
   let offerDiscount = 0;
   let offerLabel = null;
 
@@ -116,19 +88,15 @@ export default function BagPage() {
       offerDiscount = appliedOffer.value;
       offerLabel = `₹${appliedOffer.value} OFF`;
     }
-
     if (appliedOffer.type === "percentage") {
       offerDiscount = Math.round((totalDiscounted * appliedOffer.value) / 100);
       offerLabel = `Free delivery`;
     }
   }
 
-  // In BagPage.jsx, replace the delivery charge calculation section
-
   const finalPayable = totalDiscounted - offerDiscount;
   const canCheckout = totalDiscounted >= 151;
 
-  // Get dynamic delivery charges
   const standardDeliveryCharge = getDeliveryCharge(totalDiscounted, false);
   const fasterDeliveryCharge = getDeliveryCharge(totalDiscounted, true);
   const standardDeliveryLabel = getDeliveryLabel(totalDiscounted, false);
@@ -138,24 +106,19 @@ export default function BagPage() {
   const standardOriginalCharge = getOriginalCharge(totalDiscounted, false);
   const fasterOriginalCharge = getOriginalCharge(totalDiscounted, true);
 
-  // Function to get delivery charge based on choice
   const getDeliveryChargeByChoice = (isFasterDelivery) => {
     return getDeliveryCharge(totalDiscounted, isFasterDelivery);
   };
 
-  // Calculate total with standard delivery (for display)
   const totalWithStandardDelivery = finalPayable + standardDeliveryCharge;
   const totalWithStandardDeliveryGift =
     totalWithStandardDelivery + (giftWrap ? GIFT_WRAP_CHARGE : 0);
-
-  // Calculate savings on delivery (if original charge exists)
   const standardDeliverySavings = standardOriginalCharge
     ? standardOriginalCharge - standardDeliveryCharge
     : 0;
   const fasterDeliverySavings = fasterOriginalCharge
     ? fasterOriginalCharge - fasterDeliveryCharge
     : 0;
-
   const displayTotal = totalWithStandardDeliveryGift;
 
   const isDesktop = () => {
@@ -315,18 +278,12 @@ _Thank you for shopping with TheBookX! 📚✨_
     const giftWrapAmount = giftWrapSelected ? GIFT_WRAP_CHARGE : 0;
     const totalWithDelivery = finalPayable + deliveryCharge + giftWrapAmount;
 
-    // Clean up address to remove any newlines or special characters
-    const cleanAddress = (addressData.address || "")
-      .replace(/[\n\r\t]/g, " ")
-      .trim();
-    const cleanArea = (addressData.area || "").replace(/[\n\r\t]/g, " ").trim();
-
     const orderDetails = {
       orderId: orderId,
       name: addressData.name || "",
       phone: addressData.phone || "",
-      address: cleanAddress,
-      area: cleanArea,
+      address: addressData.address || "",
+      area: addressData.area || "",
       city: addressData.city || "",
       district: addressData.district || "",
       state: addressData.state || "",
@@ -341,19 +298,9 @@ _Thank you for shopping with TheBookX! 📚✨_
       totalAmount: totalWithDelivery,
     };
 
-    // Use JSON.stringify with replacer to ensure proper escaping
-    const jsonString = JSON.stringify(orderDetails, (key, value) => {
-      if (typeof value === "string") {
-        // Remove any newlines and replace with spaces
-        return value.replace(/[\n\r\t]/g, " ");
-      }
-      return value;
-    });
+    const encodedDetails = encodeURIComponent(JSON.stringify(orderDetails));
 
-    const encodedDetails = encodeURIComponent(jsonString);
-    const encodedItems = encodeURIComponent(items);
-
-    return `${siteOrigin}/view-bag?items=${encodedItems}&order=${encodedDetails}`;
+    return `${siteOrigin}/view-bag?items=${encodeURIComponent(items)}&order=${encodedDetails}`;
   };
 
   const shortenUrl = async (longUrl) => {
@@ -409,25 +356,6 @@ _Thank you for shopping with TheBookX! 📚✨_
     const shortLink = await shortenUrl(viewBagLinkWithDetails);
     setIsShortening(false);
 
-    const deliveryCharge = getDeliveryChargeByChoice(fasterDeliveryChoice);
-    const totalWithDelivery =
-      finalPayable + deliveryCharge + (giftWrapSelected ? GIFT_WRAP_CHARGE : 0);
-
-    // Send to Google Form (in addition to Telegram/WhatsApp)
-    await trackOrderToGoogleForm({
-      addressData,
-      paymentType: "COD",
-      fasterDeliveryChoice,
-      giftWrapSelected,
-      shortLink,
-      totalWithDelivery,
-      finalPayable,
-      totalDiscounted,
-      offerDiscount,
-      offerLabel,
-      cartBooks,
-    });
-
     if (isDesktop()) {
       sendOrderToTelegram(
         addressData,
@@ -468,25 +396,6 @@ _Thank you for shopping with TheBookX! 📚✨_
     const shortLink = await shortenUrl(viewBagLinkWithDetails);
     setIsShortening(false);
 
-    const deliveryCharge = getDeliveryChargeByChoice(fasterDeliveryChoice);
-    const totalWithDelivery =
-      finalPayable + deliveryCharge + (giftWrapSelected ? GIFT_WRAP_CHARGE : 0);
-
-    // Send to Google Form (in addition to Telegram/WhatsApp)
-    await trackOrderToGoogleForm({
-      addressData,
-      paymentType: "UPI",
-      fasterDeliveryChoice,
-      giftWrapSelected,
-      shortLink,
-      totalWithDelivery,
-      finalPayable,
-      totalDiscounted,
-      offerDiscount,
-      offerLabel,
-      cartBooks,
-    });
-
     if (isDesktop()) {
       sendOrderToTelegram(
         addressData,
@@ -508,31 +417,34 @@ _Thank you for shopping with TheBookX! 📚✨_
     setShowAddressModal(false);
     setShowBill(false);
   };
-  // Send order to Google Form
-  const sendOrderToGoogleForm = async (
-    addressData,
-    paymentType,
-    fasterDeliveryChoice,
-    giftWrapSelected,
-    shortLink,
-    totalWithDelivery,
-  ) => {
-    const orderDetails = {
-      addressData,
-      paymentType,
-      fasterDeliveryChoice,
-      giftWrapSelected,
-      shortLink,
-      totalWithDelivery,
-      finalPayable,
-      totalDiscounted,
-      offerDiscount,
-      offerLabel,
-      cartBooks,
-    };
 
-    await trackOrderToGoogleForm(orderDetails);
-  };
+  // ✅ NOW the conditional return (after all hooks and functions)
+  if (!cartBooks.length) {
+    return (
+      <>
+        <div className="section-1200 flex flex-row gap-12 items-center">
+          <ArrowLeft
+            size={20}
+            onClick={() => router.push("/")}
+            className="cursor-pointer"
+          />
+          <div className="flex flex-col">
+            <h2 className="font-16 weight-600">Your Bag</h2>
+            <span className="font-12 dark-50">0 books in cart</span>
+          </div>
+        </div>
+        <div
+          className="flex flex-col gap-12 justify-center items-center"
+          style={{ height: "90vh" }}
+        >
+          <span className="font-16">Add books to cart to fill your bags</span>
+          <button onClick={() => router.push("/")} className="pri-big-btn">
+            Browse
+          </button>
+        </div>
+      </>
+    );
+  }
 
   return (
     <section className="section-1200 flex flex-col gap-24">

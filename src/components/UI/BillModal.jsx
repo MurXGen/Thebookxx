@@ -37,19 +37,14 @@ export default function BillModal({
   // Track when modal is closed
   const hasTrackedClose = useRef(false);
 
+  const finalPayable = totalDiscounted - offerDiscount;
+
   useEffect(() => {
     if (
       !open &&
       hasTrackedClose.current === false &&
       hasTrackedClose.current !== undefined
     ) {
-      // Only track close if it was previously open (not initial render)
-      import("@/lib/analytics").then(({ trackFunnelEvent }) => {
-        trackFunnelEvent(EVENTS.BILL_MODAL_CLOSED, {
-          total_amount: finalTotal,
-          reason: "manual_close",
-        });
-      });
       hasTrackedClose.current = true;
     }
 
@@ -60,8 +55,6 @@ export default function BillModal({
 
   if (!open) return null;
 
-  const finalPayable = totalDiscounted - offerDiscount;
-
   // Get the actual delivery charge based on selection
   const getDeliveryCharge = () => {
     if (isFasterDelivery) {
@@ -70,12 +63,13 @@ export default function BillModal({
     return standardDeliveryCharge;
   };
 
-  const deliveryCharge = getDeliveryCharge();
   const finalTotal =
     totalWithDelivery !== null
       ? totalWithDelivery
       : finalPayable + deliveryCharge + giftWrapCharge;
   const totalSavings = totalOriginal - finalPayable;
+
+  const deliveryCharge = getDeliveryCharge();
 
   return (
     <div className="bill-modal-overlay" onClick={onClose}>

@@ -23,7 +23,7 @@ export default function WishlistPage() {
           />
 
           <div className="flex flex-col">
-            <h2 className="font-16 weight-600">Your Wishlist</h2>
+            <h2 className="font-24 weight-600">Your Wishlist</h2>
             <span className="font-12 dark-50">
               {wishlistBooks.length} book
               {wishlistBooks.length > 1 ? "s" : ""} in wishlist
@@ -55,7 +55,7 @@ export default function WishlistPage() {
         />
 
         <div className="flex flex-col">
-          <h2 className="font-16 weight-600">Your Wishlist</h2>
+          <h2 className="font-24 weight-600">Your Wishlist</h2>
           <span className="font-12 dark-50">
             {wishlistBooks.length} book
             {wishlistBooks.length > 1 ? "s" : ""} in wishlist

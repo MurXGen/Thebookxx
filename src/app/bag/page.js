@@ -23,6 +23,8 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { permanentlyUnlockOffer, areOneRupeeBooksEnabled } from "@/utils/book";
 import { FaWhatsapp } from "react-icons/fa";
+import Link from "next/link";
+import { FcDocument } from "react-icons/fc";
 
 export default function BagPage() {
   // ✅ ALL hooks go here - NO EXCEPTIONS
@@ -423,16 +425,24 @@ _Thank you for shopping with TheBookX! 📚✨_
   if (!cartBooks.length) {
     return (
       <>
-        <div className="section-1200 flex flex-row gap-12 items-center">
-          <ArrowLeft
-            size={20}
-            onClick={() => router.push("/")}
-            className="cursor-pointer"
-          />
-          <div className="flex flex-col">
-            <h2 className="font-16 weight-600">Your Bag</h2>
-            <span className="font-12 dark-50">0 books in cart</span>
+        <div className="section-1200 flex flex-row gap-12 items-center justify-between">
+          <div className="flex flex-row gap-12 items-center justify-between">
+            <ArrowLeft size={20} onClick={() => router.push("/")} />
+            <div className="flex flex-col">
+              <h2 className="font-24 weight-600">Your Bag</h2>
+              <span className="font-12 dark-50">
+                {cartBooks.length} book{cartBooks.length > 1 ? "s" : ""} in cart
+              </span>
+            </div>
           </div>
+          <Link
+            href="/profile"
+            className="sec-mid-btn"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            <FcDocument size={16} color="orange" />
+            Order History
+          </Link>
         </div>
         <div
           className="flex flex-col gap-12 justify-center items-center"
@@ -449,14 +459,24 @@ _Thank you for shopping with TheBookX! 📚✨_
 
   return (
     <section className="section-1200 flex flex-col gap-24">
-      <div className="flex flec-row gap-12 items-center">
-        <ArrowLeft size={20} onClick={() => router.push("/")} />
-        <div className="flex flex-col">
-          <h2 className="font-16 weight-600">Your Bag</h2>
-          <span className="font-12 dark-50">
-            {cartBooks.length} book{cartBooks.length > 1 ? "s" : ""} in cart
-          </span>
+      <div className="flex flex-row justify-between ">
+        <div className="flex flec-row gap-12 items-center">
+          <ArrowLeft size={20} onClick={() => router.push("/")} />
+          <div className="flex flex-col">
+            <h2 className="font-24 weight-600">Your Bag</h2>
+            <span className="font-12 dark-50">
+              {cartBooks.length} book{cartBooks.length > 1 ? "s" : ""} in cart
+            </span>
+          </div>
         </div>
+        <Link
+          href="/profile"
+          className="sec-mid-btn"
+          onClick={() => setIsMenuOpen(false)}
+        >
+          <FcDocument size={16} color="orange" />
+          Order History
+        </Link>
       </div>
 
       <CartOfferStrip discountedAmount={totalDiscounted} />

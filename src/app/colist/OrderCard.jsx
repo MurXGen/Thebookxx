@@ -17,6 +17,35 @@ import { FaWhatsapp } from "react-icons/fa";
 import ProfitLossModal from "./ProfitLossModal";
 import { usePL } from "@/context/PLContext";
 
+const DEFAULT_ADVANCE_AMOUNT = 99;
+
+// ---- COD helper ----
+const getCODInfo = (order) => {
+  const method = (order.paymentMethod || "").toLowerCase();
+  const isCOD =
+    typeof order.isCOD === "boolean"
+      ? order.isCOD
+      : method.includes("cod") || method.includes("cash");
+
+  if (!isCOD) {
+    return { isCOD: false, codAmount: 0, advanceAmount: 0, advancePaid: false };
+  }
+
+  const total = order.totalAmount || 0;
+  const advanceAmount = order.advanceAmount || DEFAULT_ADVANCE_AMOUNT;
+  const advancePaid = !!order.status?.advancePaid;
+
+  const codAmount =
+    typeof order.codAmount === "number"
+      ? order.codAmount
+      : advancePaid
+        ? Math.max(0, total - advanceAmount)
+        : total;
+
+  return { isCOD: true, codAmount, advanceAmount, advancePaid };
+};
+// --------------------
+
 export default function OrderCard({
   order,
   onEdit,
@@ -43,6 +72,9 @@ export default function OrderCard({
     order.customProfitLoss ||
     order.plData ||
     {};
+
+  // COD info derived from the order
+  const codInfo = getCODInfo(order);
 
   // Check if there are custom book costs saved
   const hasCustomBookCosts =
@@ -155,9 +187,14 @@ export default function OrderCard({
           </span>
           {order.paymentStatus === "pending" && order.status?.advancePaid && (
             <span className="advance-badge">
-              Advance: ₹{order.advanceAmount || 99}
+              Advance: ₹{order.advanceAmount || DEFAULT_ADVANCE_AMOUNT}
             </span>
           )}
+          {codInfo.isCOD &&
+            codInfo.codAmount > 0 &&
+            order.paymentStatus !== "paid" && (
+              <span className="advance-badge">COD: ₹{codInfo.codAmount}</span>
+            )}
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -240,7 +277,7 @@ export default function OrderCard({
               {/* Order Summary Section */}
               <div className="info-section">
                 <h4>Order Summary</h4>
-                <ViewOrderSummary order={order} />
+                <ViewOrderSummary order={order} codInfo={codInfo} />
               </div>
 
               {/* Tracking & Status Section */}
@@ -252,7 +289,7 @@ export default function OrderCard({
                     setEditFormData={setEditFormData}
                   />
                 ) : (
-                  <ViewStatusDetails order={order} />
+                  <ViewStatusDetails order={order} codInfo={codInfo} />
                 )}
               </div>
             </div>
@@ -292,7 +329,7 @@ export default function OrderCard({
   );
 }
 
-// Sub-components (same as before)
+// Sub-components
 function EditCustomerForm({ editFormData, setEditFormData }) {
   return (
     <>
@@ -385,7 +422,7 @@ function ViewCustomerDetails({ order, onReminder }) {
   );
 }
 
-function ViewOrderSummary({ order }) {
+function ViewOrderSummary({ order, codInfo }) {
   return (
     <>
       <div className="books-list">
@@ -419,6 +456,13 @@ function ViewOrderSummary({ order }) {
       <p>
         <strong>Payment:</strong> {order.paymentMethod || "N/A"}
       </p>
+      {codInfo?.isCOD &&
+        codInfo.codAmount > 0 &&
+        order.paymentStatus !== "paid" && (
+          <p>
+            <strong>COD Amount:</strong> ₹{codInfo.codAmount}
+          </p>
+        )}
       <p>
         <strong>Delivery:</strong>{" "}
         {order.isFasterDelivery ? "Faster (2-5 days)" : "Standard (5-7 days)"}
@@ -472,7 +516,7 @@ function EditStatusForm({ editFormData, setEditFormData }) {
               <input
                 type="number"
                 className="edit-input mt-8"
-                value={editFormData.advanceAmount || 99}
+                value={editFormData.advanceAmount || DEFAULT_ADVANCE_AMOUNT}
                 onChange={(e) =>
                   setEditFormData({
                     ...editFormData,
@@ -509,7 +553,7 @@ function EditStatusForm({ editFormData, setEditFormData }) {
   );
 }
 
-function ViewStatusDetails({ order }) {
+function ViewStatusDetails({ order, codInfo }) {
   return (
     <>
       {order.trackingId && (
@@ -523,9 +567,17 @@ function ViewStatusDetails({ order }) {
       </p>
       {order.paymentStatus === "pending" && order.status?.advancePaid && (
         <p>
-          <strong>Advance Paid:</strong> ₹{order.advanceAmount || 99}
+          <strong>Advance Paid:</strong> ₹
+          {order.advanceAmount || DEFAULT_ADVANCE_AMOUNT}
         </p>
       )}
+      {codInfo?.isCOD &&
+        codInfo.codAmount > 0 &&
+        order.paymentStatus !== "paid" && (
+          <p>
+            <strong>COD Amount to Collect:</strong> ₹{codInfo.codAmount}
+          </p>
+        )}
       <p>
         <strong>Item Shipped:</strong>{" "}
         {order.status?.isShipped ? "✅ Yes" : "❌ No"}

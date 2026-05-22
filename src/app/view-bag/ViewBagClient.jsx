@@ -235,6 +235,26 @@ export default function ViewBagClient() {
 
     const deliveryCharge = getDeliveryChargeValue();
 
+    // ----- COD amount calculation -----
+    // Rules:
+    //   - If payment method is COD:
+    //       - advance paid  -> COD = totalWithDelivery - advanceAmount (default 99)
+    //       - advance NOT paid -> COD = totalWithDelivery
+    //   - If payment method is not COD -> COD = 0
+    const isCOD =
+      (orderData.paymentMethod || "").toLowerCase().includes("cod") ||
+      (orderData.paymentMethod || "").toLowerCase().includes("cash");
+
+    const advanceAmount = orderData.advanceAmount || 99;
+
+    let codAmount = 0;
+    if (isCOD) {
+      codAmount = orderStatus.advancePaid
+        ? Math.max(0, totalWithDelivery - advanceAmount)
+        : totalWithDelivery;
+    }
+    // -----------------------------------
+
     const orderToSave = {
       orderId: orderData.orderId,
       name: orderData.name || "",
@@ -245,6 +265,9 @@ export default function ViewBagClient() {
       state: orderData.state || "",
       pincode: orderData.pincode || "",
       paymentMethod: orderData.paymentMethod || "",
+      isCOD, // NEW
+      advanceAmount, // NEW (stored so card can recompute if needed)
+      codAmount, // NEW (already-computed amount to collect on delivery)
       isFasterDelivery: isFasterDelivery,
       isGiftWrap: isGiftWrap,
       deliveryCharge: deliveryCharge,

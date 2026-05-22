@@ -146,6 +146,13 @@ export default function Navbar() {
               {/* TOP LINKS */}
               <div className="menu-links">
                 <Link
+                  href="/profile"
+                  className="menu-link"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Profile
+                </Link>
+                <Link
                   href="/books"
                   className="menu-link"
                   onClick={() => setIsMenuOpen(false)}

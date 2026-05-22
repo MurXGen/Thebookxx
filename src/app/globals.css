@@ -5998,3 +5998,95 @@ input {
     font-size: var(--px-14);
   }
 }
+
+/* WhatsApp Help Section */
+.whatsapp-help-section {
+  margin-top: 16px;
+  background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+  border-radius: 16px;
+  transition: all 0.2s ease;
+  border: 1px solid #86efac;
+}
+
+.whatsapp-help-section:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15);
+  border-color: #22c55e;
+}
+
+.whatsapp-help-link {
+  text-decoration: none;
+  display: block;
+  padding: 16px;
+}
+
+.whatsapp-help-content {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.whatsapp-help-icon {
+  width: 48px;
+  height: 48px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.whatsapp-help-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.whatsapp-help-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #166534;
+}
+
+.whatsapp-help-desc {
+  font-size: 12px;
+  color: #15803d;
+}
+
+.whatsapp-help-arrow {
+  color: #22c55e;
+  opacity: 0.7;
+  transition: all 0.2s;
+}
+
+.whatsapp-help-section:hover .whatsapp-help-arrow {
+  opacity: 1;
+  transform: translateX(4px);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .whatsapp-help-content {
+    gap: 10px;
+  }
+
+  .whatsapp-help-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .whatsapp-help-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .whatsapp-help-title {
+    font-size: 13px;
+  }
+
+  .whatsapp-help-desc {
+    font-size: 10px;
+  }
+}

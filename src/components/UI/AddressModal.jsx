@@ -219,9 +219,10 @@ export default function AddressModal({
         setIsValidPincode(true);
         setPincodeError("");
       } else {
-        setIsValidPincode(false);
+        // Don't mark as invalid - just show warning but allow proceeding
+        setIsValidPincode(true);
         setPincodeError(
-          "Invalid pincode. Please enter a valid Indian pincode.",
+          "Pincode could not be verified, but you can still proceed.",
         );
         setArea("");
         setCity("");
@@ -230,34 +231,35 @@ export default function AddressModal({
       }
     } catch (error) {
       console.error("Error fetching pincode details:", error);
-      setPincodeError("Unable to verify pincode. Please check and try again.");
-      setIsValidPincode(false);
+      // Don't mark as invalid - allow proceeding with warning
+      setIsValidPincode(true);
+      setPincodeError("Unable to verify pincode. You can still proceed.");
     } finally {
       setIsFetchingLocation(false);
     }
   };
 
-  // Auto-fetch when pincode reaches 6 digits
+  // Auto-fetch when pincode reaches 6 digits (but don't block)
   useEffect(() => {
     if (pincode.length === 6) {
       fetchLocationByPincode(pincode);
     } else if (pincode.length > 0 && pincode.length < 6) {
       setPincodeError("Please enter a complete 6-digit pincode");
-      setIsValidPincode(false);
+      setIsValidPincode(true); // Keep as true to allow proceeding
     } else {
       setIsValidPincode(true);
       setPincodeError("");
     }
   }, [pincode]);
 
-  // Show contact fields only when address and pincode are verified
+  // Show contact fields when address is filled (regardless of pincode verification)
   useEffect(() => {
-    if (isValidPincode && pincode.length === 6 && city && address) {
+    if (address && city) {
       setShowContactFields(true);
     } else {
       setShowContactFields(false);
     }
-  }, [isValidPincode, pincode, city, address]);
+  }, [address, city]);
 
   // Check if faster delivery is available for this pincode
   const isFasterDeliveryAvailable = true;
@@ -521,11 +523,7 @@ _User has initiated payment. Waiting for verification..._
   };
 
   const proceedWithCOD = (isFasterDeliverySelected, isGiftWrapSelected) => {
-    if (!isValidPincode || pincode.length !== 6) {
-      setPincodeError("Please enter a valid 6-digit pincode");
-      return;
-    }
-
+    // Removed pincode validation check
     if (!name || !phone) {
       alert("Please enter your name and phone number");
       return;
@@ -537,11 +535,7 @@ _User has initiated payment. Waiting for verification..._
   };
 
   const proceedWithUPI = (isFasterDeliverySelected, isGiftWrapSelected) => {
-    if (!isValidPincode || pincode.length !== 6) {
-      setPincodeError("Please enter a valid 6-digit pincode");
-      return;
-    }
-
+    // Removed pincode validation check
     if (!name || !phone) {
       alert("Please enter your name and phone number");
       return;
@@ -638,10 +632,12 @@ _User has initiated payment. Waiting for verification..._
   };
 
   const isAddressValid = () => {
-    return city && pincode.length === 6 && address && isValidPincode;
+    // Simplified: only check if city and address are filled (pincode optional)
+    return city && address;
   };
 
   const isFormValid = () => {
+    // Simplified: only check name, phone, city, address
     return name && phone && isAddressValid();
   };
 
@@ -669,11 +665,11 @@ _User has initiated payment. Waiting for verification..._
             </div>
 
             <div className="address-form-content">
-              {/* Pincode */}
+              {/* Pincode - Optional now */}
               <div className="input-group">
                 <label className="flex flex-row gap-4 flex-center items-center">
                   <MapPin size={14} />
-                  Pincode <span className="red">*</span>
+                  Pincode <span className="gray-500">(Optional)</span>
                 </label>
                 <input
                   className={`sec-mid-btn ${!isValidPincode && pincode ? "error-border" : ""}`}
@@ -687,19 +683,19 @@ _User has initiated payment. Waiting for verification..._
                     Fetching location details...
                   </span>
                 )}
-                {pincodeError && (
-                  <span className="font-12 red flex items-center gap-4 mt-4">
+                {/* {pincodeError && (
+                  <span className="font-12 orange flex items-center gap-4 mt-4">
                     <AlertCircle size={12} />
                     {pincodeError}
                   </span>
-                )}
-                {isValidPincode &&
+                )} */}
+                {/* {isValidPincode &&
                   pincode.length === 6 &&
                   !isFetchingLocation && (
                     <span className="font-10 green mt-4">
                       ✓ Location verified
                     </span>
-                  )}
+                  )} */}
               </div>
 
               {/* Location Details Grid */}
@@ -709,7 +705,7 @@ _User has initiated payment. Waiting for verification..._
                   <input
                     list="cities"
                     className="sec-mid-btn width100"
-                    placeholder="Auto-filled from pincode"
+                    placeholder="Enter your city"
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
                   />
@@ -842,12 +838,12 @@ _User has initiated payment. Waiting for verification..._
                 </div>
               )}
 
-              {/* Reminders */}
+              {/* Reminders - Updated messages */}
               {!isAddressValid() && (
                 <div className="flex flex-row flex-center gap-4 orange items-center infoMessage mt-12">
                   <AlertCircle size={14} />
                   <span className="font-12">
-                    Please fill your pincode, city, and full address first
+                    Please fill your city and full address to proceed
                   </span>
                 </div>
               )}

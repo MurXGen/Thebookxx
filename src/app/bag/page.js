@@ -22,6 +22,7 @@ import { ArrowLeft, Gift } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { permanentlyUnlockOffer, areOneRupeeBooksEnabled } from "@/utils/book";
+import { FaWhatsapp } from "react-icons/fa";
 
 export default function BagPage() {
   // ✅ ALL hooks go here - NO EXCEPTIONS
@@ -497,6 +498,40 @@ _Thank you for shopping with TheBookX! 📚✨_
             </div>
           </div>
         </label>
+      </div>
+
+      <div className="whatsapp-help-section">
+        <a
+          href="https://wa.me/917710892108?text=Hi%2C%20I%20need%20help%20with%20my%20order%20from%20TheBookX"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="whatsapp-help-link"
+        >
+          <div className="whatsapp-help-content">
+            <div className="whatsapp-help-icon">
+              <FaWhatsapp size={24} color="#25D366" />
+            </div>
+            <div className="whatsapp-help-text">
+              <span className="whatsapp-help-title">Need any help?</span>
+              <span className="whatsapp-help-desc">
+                Chat with us on WhatsApp for quick support
+              </span>
+            </div>
+            <div className="whatsapp-help-arrow">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="12 5 19 12 12 19" />
+              </svg>
+            </div>
+          </div>
+        </a>
       </div>
 
       <div

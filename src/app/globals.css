@@ -377,7 +377,7 @@ button:hover {
 }
 
 .logo-text {
-  font-size: var(--px-20);
+  font-size: var(--px-24);
   font-weight: var(--weight-700);
   letter-spacing: 0.5px;
 }

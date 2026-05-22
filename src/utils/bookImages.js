@@ -292,4 +292,6 @@ export const bookImages = {
   "tuesdays-with-morrie": `${BOOK_IMAGE_BASE_PATH}/tuesdays-with-morrie.jpeg`,
   "as-long-as-the-lemon-trees-grow": `${BOOK_IMAGE_BASE_PATH}/as-long-as-the-lemon-trees-grow.jpeg`,
   "the-daily-stoic": `${BOOK_IMAGE_BASE_PATH}/the-daily-stoic.jpeg`,
+  "normal-people": `${BOOK_IMAGE_BASE_PATH}/normal-people.jpeg`,
+  "conversations-with-friends": `${BOOK_IMAGE_BASE_PATH}/conversations-with-friends.jpeg`,
 };

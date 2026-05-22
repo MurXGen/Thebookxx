@@ -14,7 +14,7 @@ export default function TrendingBooks() {
       className="catalogue-section-2 trending-section sparkleContainer"
       style={{ marginTop: "24px" }}
     >
-      <HorizontalScroll title="Trending books" className="margin-tp-24px">
+      <HorizontalScroll title="Trending Books" className="margin-tp-24px">
         {trendingBooks.map((book) => (
           <ProductCard key={book.id} book={book} />
         ))}

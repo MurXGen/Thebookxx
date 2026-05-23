@@ -481,7 +481,7 @@ export default function MyOrdersPage() {
                     </span>
                     <span className="customer-phone">{phoneNumber}</span>
                   </div>
-                  <button className="edit-number-btn" onClick={handleNewSearch}>
+                  <button className="sec-mid-btn" onClick={handleNewSearch}>
                     <LogOut size={14} />
                     Logout
                   </button>

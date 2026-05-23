@@ -18,6 +18,9 @@ const poppins = Poppins({
   fallback: ["system-ui", "Arial", "sans-serif"],
 });
 
+// Paths that are admin-only — analytics, pixels, and indexing all disabled here
+const ADMIN_PATHS = ["/manage-orders", "/colist"];
+
 /* SEO Metadata - Essential Only */
 export const metadata = {
   metadataBase: new URL("https://thebookx.in"),
@@ -46,6 +49,8 @@ export const metadata = {
   creator: "TheBookX",
   publisher: "TheBookX",
 
+  // Default to indexable — the page-level layouts for /manage-orders and /colist
+  // override this with their own robots: { index: false } metadata.
   robots: {
     index: true,
     follow: true,
@@ -96,6 +101,20 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+  // Inline guard string — evaluated at the top of each analytics script
+  // so admin paths skip tracking entirely. Kept as a small string so it
+  // can be reused in every <Script> block without duplication.
+  const ADMIN_GUARD = `
+    (function() {
+      var p = window.location.pathname || "";
+      var admin = ${JSON.stringify(ADMIN_PATHS)};
+      for (var i = 0; i < admin.length; i++) {
+        if (p === admin[i] || p.indexOf(admin[i] + "/") === 0) return true;
+      }
+      return false;
+    })()
+  `;
+
   return (
     <html lang="en">
       <head>
@@ -111,39 +130,48 @@ export default function RootLayout({ children }) {
           crossOrigin="anonymous"
         />
         <link rel="preload" as="image" href="/favicon.ico" />
-        <Script
-          strategy="lazyOnload" // Changed from afterInteractive to lazyOnload
-          src={`https://www.googletagmanager.com/gtag/js?id=G-VZX7GSTR9Z`}
-        />
 
-        <Script
-          id="ga-init"
-          strategy="lazyOnload" // Changed from afterInteractive to lazyOnload
-        >
+        {/* Google Analytics — skipped on admin paths */}
+        <Script id="ga-loader" strategy="lazyOnload">
           {`
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-VZX7GSTR9Z', {
-      page_path: window.location.pathname,
-      send_page_view: false // Defer page view until page is interactive
-    });
-  `}
+            if (!${ADMIN_GUARD}) {
+              var s = document.createElement('script');
+              s.async = true;
+              s.src = 'https://www.googletagmanager.com/gtag/js?id=G-VZX7GSTR9Z';
+              document.head.appendChild(s);
+            }
+          `}
         </Script>
 
-        {/* ✅ Meta Pixel Code - Add this */}
+        <Script id="ga-init" strategy="lazyOnload">
+          {`
+            if (!${ADMIN_GUARD}) {
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-VZX7GSTR9Z', {
+                page_path: window.location.pathname,
+                send_page_view: false
+              });
+            }
+          `}
+        </Script>
+
+        {/* ✅ Meta Pixel Code — skipped on admin paths */}
         <Script id="meta-pixel" strategy="afterInteractive">
           {`
-            !function(f,b,e,v,n,t,s)
-            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-            n.queue=[];t=b.createElement(e);t.async=!0;
-            t.src=v;s=b.getElementsByTagName(e)[0];
-            s.parentNode.insertBefore(t,s)}(window, document,'script',
-            'https://connect.facebook.net/en_US/fbevents.js');
-            fbq('init', '1050460933362185');
-            fbq('track', 'PageView');
+            if (!${ADMIN_GUARD}) {
+              !function(f,b,e,v,n,t,s)
+              {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+              n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+              if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+              n.queue=[];t=b.createElement(e);t.async=!0;
+              t.src=v;s=b.getElementsByTagName(e)[0];
+              s.parentNode.insertBefore(t,s)}(window, document,'script',
+              'https://connect.facebook.net/en_US/fbevents.js');
+              fbq('init', '1050460933362185');
+              fbq('track', 'PageView');
+            }
           `}
         </Script>
         <noscript>

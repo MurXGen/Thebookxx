@@ -14,6 +14,7 @@ export default function CartOfferStrip({ discountedAmount }) {
   const pathname = usePathname();
 
   const isBagPage = pathname === "/bag";
+  const isHomePage = pathname === "/";
 
   if (discountedAmount === null || discountedAmount === undefined) return null;
 
@@ -126,8 +127,9 @@ export default function CartOfferStrip({ discountedAmount }) {
   /* 🖼️ Preview cards */
   const previewItems = cartItems.slice(0, 3);
 
-  return (
-    <div className="offer-strip">
+  /* 🧱 The card content stays identical whether wrapped in Link or div */
+  const stripContent = (
+    <>
       {/* LEFT */}
       <div className="offer-left">
         <div className="offer-message">{message}</div>
@@ -164,17 +166,24 @@ export default function CartOfferStrip({ discountedAmount }) {
             );
           })}
         </div>
-        {/* {!isBagPage && (
-          <Link
-            href="/bag"
-            className="cart-cta flex flex-row gap-4 items-center"
-          >
-            <ArrowRight size={24} />
-          </Link>
-        )} */}
       </div>
 
       {showConfetti && <div className="confetti" />}
-    </div>
+    </>
+  );
+
+  /* Wrap the whole strip in a Link when not already on home */
+  if (isHomePage) {
+    return <div className="offer-strip">{stripContent}</div>;
+  }
+
+  return (
+    <Link
+      href="/"
+      className="offer-strip"
+      style={{ textDecoration: "none", display: "flex" }}
+    >
+      {stripContent}
+    </Link>
   );
 }

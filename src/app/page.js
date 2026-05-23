@@ -180,9 +180,8 @@ export default function HomePage() {
       </LazySection> */}
 
       {/* Critical Components - Always Visible */}
-      <SmoothAppear delay={1.2}>
-        <AllBooks />
-      </SmoothAppear>
+
+      <AllBooks />
 
       <CartBar />
 

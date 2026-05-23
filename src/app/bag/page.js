@@ -36,7 +36,7 @@ export default function BagPage() {
   const [paymentMethod, setPaymentMethod] = useState(null);
   const [isShortening, setIsShortening] = useState(false);
   const [giftWrap, setGiftWrap] = useState(false);
-  const GIFT_WRAP_CHARGE = 50;
+  const GIFT_WRAP_CHARGE = 15;
 
   // ✅ Move useEffect hooks here
   useEffect(() => {
@@ -601,6 +601,10 @@ _Thank you for shopping with TheBookX! 📚✨_
         handleCODCheckout={handleCODCheckout}
         handleUPICheckout={handleUPICheckout}
         cartBooks={cartBooks}
+        generateViewBagLinkWithDetails={generateViewBagLinkWithDetails}
+        shortenUrl={shortenUrl}
+        offerLabel={offerLabel} // e.g. "FLAT100" or "NEWUSER10"
+        offerDiscount={offerDiscount}
       />
 
       <BillModal

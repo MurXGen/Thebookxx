@@ -63,13 +63,13 @@ export default function BillModal({
     return standardDeliveryCharge;
   };
 
+  const deliveryCharge = getDeliveryCharge();
+
   const finalTotal =
     totalWithDelivery !== null
       ? totalWithDelivery
       : finalPayable + deliveryCharge + giftWrapCharge;
   const totalSavings = totalOriginal - finalPayable;
-
-  const deliveryCharge = getDeliveryCharge();
 
   return (
     <div className="bill-modal-overlay" onClick={onClose}>

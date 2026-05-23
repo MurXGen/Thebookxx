@@ -11,7 +11,7 @@ export const CART_OFFERS = [
     target: 400,
     type: "percentage",
     value: 0,
-    message: "Add ₹{remaining} more to get free delivery",
+    message: "Add ₹{remaining} more to get Free Delivery",
     icon: "sparkle",
   },
   {

@@ -56,12 +56,13 @@ export default function AddressModal({
   giftWrapCharge = 0,
   giftWrapSelected = false,
   cartBooks = [],
-  // Optional: short link if you generate one before this modal opens.
-  // Falls back to "" if not provided.
-  shortLink = "",
-  // Optional: discount info if you want it in the form submission.
+  // Offer info passed from bag page
   offerDiscount = 0,
   offerLabel = "",
+  // URL generators passed from bag page — used at click-time
+  // to build the view-bag link with the user's actual selections.
+  generateViewBagLinkWithDetails,
+  shortenUrl,
 }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -204,12 +205,51 @@ export default function AddressModal({
 
   const totalWithCurrentSelection = getTotalWithDelivery(fasterDelivery);
 
-  // ----- Shared Google Form submit helper -----
-  // Builds the orderDetails shape that trackOrderToGoogleForm expects
-  // using current state. Fire-and-forget — never awaited so it doesn't
-  // delay the UI flow.
-  const submitToGoogleForm = (paymentType) => {
+  // ----- Build a TinyURL at click-time using the parent's generators -----
+  // Returns "" silently if generators weren't passed or shortening fails.
+  const buildShortLink = async (paymentTypeLabel) => {
+    if (typeof generateViewBagLinkWithDetails !== "function") return "";
     try {
+      const longUrl = generateViewBagLinkWithDetails(
+        {
+          name,
+          phone,
+          address,
+          area,
+          city,
+          district,
+          state,
+          pincode,
+        },
+        paymentTypeLabel,
+        fasterDelivery,
+        giftWrap || giftWrapSelected,
+      );
+      if (!longUrl) return "";
+      if (typeof shortenUrl === "function") {
+        try {
+          const short = await shortenUrl(longUrl);
+          return short || longUrl;
+        } catch (e) {
+          // Shortener failed — fall back to the long URL
+          return longUrl;
+        }
+      }
+      return longUrl;
+    } catch (e) {
+      console.error("buildShortLink failed:", e);
+      return "";
+    }
+  };
+
+  // ----- Shared Google Form submit helper -----
+  // Now async — awaits the TinyURL generation so the sheet gets it.
+  // Still doesn't block the UI in any meaningful way (typically <1s).
+  const submitToGoogleForm = async (paymentType) => {
+    try {
+      const shortLink = await buildShortLink(paymentType);
+
+      // Fire-and-forget once we have the URL
       trackOrderToGoogleForm({
         addressData: {
           name,
@@ -222,7 +262,7 @@ export default function AddressModal({
         paymentType, // "COD" | "UPI" | "WhatsApp"
         fasterDeliveryChoice: fasterDelivery,
         giftWrapSelected: giftWrap || giftWrapSelected,
-        shortLink: shortLink || "",
+        shortLink,
         totalWithDelivery:
           getTotalWithDelivery(fasterDelivery) +
           (giftWrap || giftWrapSelected ? giftWrapCharge : 0),
@@ -232,7 +272,6 @@ export default function AddressModal({
         offerLabel,
         cartBooks,
       }).catch((err) => {
-        // googleFormOrder already swallows errors but be extra safe
         console.error("Google Form submit failed:", err);
       });
     } catch (err) {
@@ -576,11 +615,13 @@ _User has initiated payment. Waiting for verification..._
   };
 
   // === The 3 buttons that fire the Google Form submit ===
+  // Note: handlers are async so we can build the TinyURL before submit.
+  // UI doesn't wait — the rest of the click flow continues immediately.
 
   const handleCODClick = () => {
     if (!isFormValid()) return;
 
-    // Submit to Google Form (fire-and-forget)
+    // Fire-and-forget submit with TinyURL + offer (async internally)
     submitToGoogleForm("COD");
 
     setTempPaymentMethod("COD");
@@ -594,7 +635,6 @@ _User has initiated payment. Waiting for verification..._
   const handleUPIClick = () => {
     if (!isFormValid()) return;
 
-    // Submit to Google Form (fire-and-forget)
     submitToGoogleForm("UPI");
 
     setTempPaymentMethod("UPI");
@@ -608,7 +648,6 @@ _User has initiated payment. Waiting for verification..._
   const handleWhatsAppOrderClick = () => {
     if (!isFormValid()) return;
 
-    // Submit to Google Form (fire-and-forget)
     submitToGoogleForm("WhatsApp");
 
     trackFunnelEvent(EVENTS.PAYMENT_METHOD_SELECTED, {
@@ -1362,7 +1401,7 @@ _User has initiated payment. Waiting for verification..._
                   >
                     <div className="flex flex-row gap-12">
                       <FaWhatsapp size={16} color="#25D366" />
-                      <span>Chat & Order</span>
+                      <span>Pay fully at Delivery</span>
                     </div>
                   </LoadingButton>
                   <button

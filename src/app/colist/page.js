@@ -170,7 +170,8 @@ export default function COListPage() {
         (order) =>
           order.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
           order.phone?.includes(searchQuery) ||
-          order.orderId?.toLowerCase().includes(searchQuery.toLowerCase()),
+          order.orderId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          order.trackingId?.toLowerCase().includes(searchQuery.toLowerCase()),
       );
     }
 
@@ -330,6 +331,7 @@ export default function COListPage() {
       "Is Shipped",
       "Is Delivered",
       "Is Starred",
+      "Tracking ID",
       "Total Amount",
       "Order Date",
       "Books",
@@ -347,6 +349,7 @@ export default function COListPage() {
       order.status?.isShipped ? "Yes" : "No",
       order.status?.isDelivered ? "Yes" : "No",
       order.isStarred ? "Yes" : "No",
+      order.trackingId || "",
       order.totalAmount || 0,
       formatDate(order.orderDate),
       order.books?.map((b) => `${b.name} (${b.quantity})`).join(" | ") || "",
@@ -553,7 +556,7 @@ export default function COListPage() {
           <input
             type="text"
             className="sec-mid-btn width100"
-            placeholder="Search by name, phone, or order ID..."
+            placeholder="Search by name, phone, order ID, or tracking ID..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />

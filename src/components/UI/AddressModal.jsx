@@ -23,6 +23,7 @@ import Link from "next/link";
 import { FaWhatsapp } from "react-icons/fa";
 import { EVENTS } from "@/lib/trackingEvents";
 import { trackFunnelEvent } from "@/lib/analytics";
+import { trackOrderToGoogleForm } from "@/utils/googleFormOrder";
 
 // Quick delivery eligible pincodes
 const PINCODE_DATA_KEY = "user_pincode";
@@ -55,6 +56,12 @@ export default function AddressModal({
   giftWrapCharge = 0,
   giftWrapSelected = false,
   cartBooks = [],
+  // Optional: short link if you generate one before this modal opens.
+  // Falls back to "" if not provided.
+  shortLink = "",
+  // Optional: discount info if you want it in the form submission.
+  offerDiscount = 0,
+  offerLabel = "",
 }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -197,6 +204,43 @@ export default function AddressModal({
 
   const totalWithCurrentSelection = getTotalWithDelivery(fasterDelivery);
 
+  // ----- Shared Google Form submit helper -----
+  // Builds the orderDetails shape that trackOrderToGoogleForm expects
+  // using current state. Fire-and-forget — never awaited so it doesn't
+  // delay the UI flow.
+  const submitToGoogleForm = (paymentType) => {
+    try {
+      trackOrderToGoogleForm({
+        addressData: {
+          name,
+          phone,
+          pincode,
+          city,
+          state,
+          address,
+        },
+        paymentType, // "COD" | "UPI" | "WhatsApp"
+        fasterDeliveryChoice: fasterDelivery,
+        giftWrapSelected: giftWrap || giftWrapSelected,
+        shortLink: shortLink || "",
+        totalWithDelivery:
+          getTotalWithDelivery(fasterDelivery) +
+          (giftWrap || giftWrapSelected ? giftWrapCharge : 0),
+        finalPayable,
+        totalDiscounted,
+        offerDiscount,
+        offerLabel,
+        cartBooks,
+      }).catch((err) => {
+        // googleFormOrder already swallows errors but be extra safe
+        console.error("Google Form submit failed:", err);
+      });
+    } catch (err) {
+      console.error("Google Form submit threw:", err);
+    }
+  };
+  // --------------------------------------------
+
   // Fetch location details based on pincode
   const fetchLocationByPincode = async (pincodeValue) => {
     if (!pincodeValue || pincodeValue.length !== 6) return;
@@ -219,7 +263,6 @@ export default function AddressModal({
         setIsValidPincode(true);
         setPincodeError("");
       } else {
-        // Don't mark as invalid - just show warning but allow proceeding
         setIsValidPincode(true);
         setPincodeError(
           "Pincode could not be verified, but you can still proceed.",
@@ -231,7 +274,6 @@ export default function AddressModal({
       }
     } catch (error) {
       console.error("Error fetching pincode details:", error);
-      // Don't mark as invalid - allow proceeding with warning
       setIsValidPincode(true);
       setPincodeError("Unable to verify pincode. You can still proceed.");
     } finally {
@@ -239,20 +281,18 @@ export default function AddressModal({
     }
   };
 
-  // Auto-fetch when pincode reaches 6 digits (but don't block)
   useEffect(() => {
     if (pincode.length === 6) {
       fetchLocationByPincode(pincode);
     } else if (pincode.length > 0 && pincode.length < 6) {
       setPincodeError("Please enter a complete 6-digit pincode");
-      setIsValidPincode(true); // Keep as true to allow proceeding
+      setIsValidPincode(true);
     } else {
       setIsValidPincode(true);
       setPincodeError("");
     }
   }, [pincode]);
 
-  // Show contact fields when address is filled (regardless of pincode verification)
   useEffect(() => {
     if (address && city) {
       setShowContactFields(true);
@@ -261,7 +301,6 @@ export default function AddressModal({
     }
   }, [address, city]);
 
-  // Check if faster delivery is available for this pincode
   const isFasterDeliveryAvailable = true;
 
   // Timer for UPI verification
@@ -343,7 +382,6 @@ export default function AddressModal({
     setFasterDelivery(true);
     setShowFasterDeliveryModal(false);
 
-    // Track delivery speed selection
     trackFunnelEvent(EVENTS.DELIVERY_SPEED_SELECTED, {
       choice: "faster",
       delivery_charge: fasterDeliveryCharge,
@@ -361,7 +399,6 @@ export default function AddressModal({
     setFasterDelivery(false);
     setShowFasterDeliveryModal(false);
 
-    // Track delivery speed selection
     trackFunnelEvent(EVENTS.DELIVERY_SPEED_SELECTED, {
       choice: "standard",
       delivery_charge: standardDeliveryCharge,
@@ -458,11 +495,9 @@ _User has initiated payment. Waiting for verification..._
     }
   };
 
-  // Update the UPI payment button click handler
   const handleUPIPaymentClick = async () => {
     if (!isFormValid()) return;
 
-    // Track UPI payment initiation
     trackFunnelEvent(EVENTS.UPI_PAYMENT_INITIATED, {
       total_amount: finalPayable,
       delivery_type: fasterDelivery ? "faster" : "standard",
@@ -480,11 +515,9 @@ _User has initiated payment. Waiting for verification..._
     });
   };
 
-  // Update the COD partial payment button click handler
   const handleCODPartialPaymentClick = async () => {
     if (!isFormValid()) return;
 
-    // Track COD payment initiation
     trackFunnelEvent(EVENTS.COD_PARTIAL_PAYMENT_CLICKED, {
       advance_amount: codAdvanceAmount,
       total_amount: totalWithDelivery,
@@ -503,7 +536,6 @@ _User has initiated payment. Waiting for verification..._
     });
   };
 
-  // Track UPI link copy
   const handleCopyUpiId = () => {
     navigator.clipboard.writeText(UPI_ID);
     setUpiCopied(true);
@@ -511,7 +543,6 @@ _User has initiated payment. Waiting for verification..._
     trackFunnelEvent(EVENTS.UPI_LINK_COPIED, {});
   };
 
-  // Track QR download
   const handleDownloadQR = () => {
     const link = document.createElement("a");
     link.href = "/books/uskillbook.png";
@@ -523,7 +554,6 @@ _User has initiated payment. Waiting for verification..._
   };
 
   const proceedWithCOD = (isFasterDeliverySelected, isGiftWrapSelected) => {
-    // Removed pincode validation check
     if (!name || !phone) {
       alert("Please enter your name and phone number");
       return;
@@ -535,7 +565,6 @@ _User has initiated payment. Waiting for verification..._
   };
 
   const proceedWithUPI = (isFasterDeliverySelected, isGiftWrapSelected) => {
-    // Removed pincode validation check
     if (!name || !phone) {
       alert("Please enter your name and phone number");
       return;
@@ -546,8 +575,14 @@ _User has initiated payment. Waiting for verification..._
     setShowUPIPayment(true);
   };
 
+  // === The 3 buttons that fire the Google Form submit ===
+
   const handleCODClick = () => {
     if (!isFormValid()) return;
+
+    // Submit to Google Form (fire-and-forget)
+    submitToGoogleForm("COD");
+
     setTempPaymentMethod("COD");
     setShowFasterDeliveryModal(true);
     trackFunnelEvent(EVENTS.PAYMENT_METHOD_SELECTED, {
@@ -558,6 +593,10 @@ _User has initiated payment. Waiting for verification..._
 
   const handleUPIClick = () => {
     if (!isFormValid()) return;
+
+    // Submit to Google Form (fire-and-forget)
+    submitToGoogleForm("UPI");
+
     setTempPaymentMethod("UPI");
     setShowFasterDeliveryModal(true);
     trackFunnelEvent(EVENTS.PAYMENT_METHOD_SELECTED, {
@@ -568,12 +607,18 @@ _User has initiated payment. Waiting for verification..._
 
   const handleWhatsAppOrderClick = () => {
     if (!isFormValid()) return;
+
+    // Submit to Google Form (fire-and-forget)
+    submitToGoogleForm("WhatsApp");
+
     trackFunnelEvent(EVENTS.PAYMENT_METHOD_SELECTED, {
       method: "WhatsApp",
       cart_total: finalPayable,
     });
     handleVerifyCODPayment();
   };
+
+  // ======================================================
 
   const handleVerifyCODPayment = () => {
     trackFunnelEvent(EVENTS.COD_PAYMENT_VERIFIED, {
@@ -632,12 +677,10 @@ _User has initiated payment. Waiting for verification..._
   };
 
   const isAddressValid = () => {
-    // Simplified: only check if city and address are filled (pincode optional)
     return city && address;
   };
 
   const isFormValid = () => {
-    // Simplified: only check name, phone, city, address
     return name && phone && isAddressValid();
   };
 
@@ -683,19 +726,6 @@ _User has initiated payment. Waiting for verification..._
                     Fetching location details...
                   </span>
                 )}
-                {/* {pincodeError && (
-                  <span className="font-12 orange flex items-center gap-4 mt-4">
-                    <AlertCircle size={12} />
-                    {pincodeError}
-                  </span>
-                )} */}
-                {/* {isValidPincode &&
-                  pincode.length === 6 &&
-                  !isFetchingLocation && (
-                    <span className="font-10 green mt-4">
-                      ✓ Location verified
-                    </span>
-                  )} */}
               </div>
 
               {/* Location Details Grid */}
@@ -838,7 +868,7 @@ _User has initiated payment. Waiting for verification..._
                 </div>
               )}
 
-              {/* Reminders - Updated messages */}
+              {/* Reminders */}
               {!isAddressValid() && (
                 <div className="flex flex-row flex-center gap-4 orange items-center infoMessage mt-12">
                   <AlertCircle size={14} />
@@ -1061,7 +1091,6 @@ _User has initiated payment. Waiting for verification..._
                   </div>
                 )}
 
-                {/* Gift Wrap Section */}
                 {giftWrap && giftWrapCharge > 0 && (
                   <div className="flex justify-between">
                     <span>🎁 Gift Wrap</span>
@@ -1239,7 +1268,6 @@ _User has initiated payment. Waiting for verification..._
                   </div>
                 )}
 
-                {/* Gift Wrap Section */}
                 {giftWrap && giftWrapCharge > 0 && (
                   <div className="flex justify-between">
                     <span>🎁 Gift Wrap</span>

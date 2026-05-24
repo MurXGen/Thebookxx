@@ -18,7 +18,7 @@ import {
   getDeliveryDescription,
   getOriginalCharge,
 } from "@/utils/cartOffers";
-import { ArrowLeft, Gift } from "lucide-react";
+import { ArrowLeft, Gift, Sparkle, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { permanentlyUnlockOffer, areOneRupeeBooksEnabled } from "@/utils/book";
@@ -35,6 +35,7 @@ export default function BagPage() {
   const [siteOrigin, setSiteOrigin] = useState("");
   const [showBill, setShowBill] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
+  const [showRecommendationModal, setShowRecommendationModal] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState(null);
   const [isShortening, setIsShortening] = useState(false);
   const [giftWrap, setGiftWrap] = useState(false);
@@ -428,8 +429,6 @@ _Thank you for shopping with TheBookX! 📚✨_
   };
 
   // ----- Confirm Order button handler -----
-  // Always fires onClick (button is NOT natively disabled), so we can
-  // show a toast explaining WHY the action isn't allowed yet.
   const handleConfirmOrderClick = () => {
     if (isShortening) {
       showToast("Preparing your order, please wait…", "info");
@@ -474,7 +473,21 @@ _Thank you for shopping with TheBookX! 📚✨_
           <button onClick={() => router.push("/")} className="pri-big-btn">
             Browse
           </button>
+          <button
+            type="button"
+            onClick={() => setShowRecommendationModal(true)}
+            className="sec-mid-btn flex flex-row gap-8 items-center"
+          >
+            <Sparkles size={16} />
+            Need Book Suggestion?
+          </button>
         </div>
+
+        {/* Recommendation modal — available in empty cart state too */}
+        <RecommendationModal
+          isOpen={showRecommendationModal}
+          onClose={() => setShowRecommendationModal(false)}
+        />
       </>
     );
   }
@@ -572,46 +585,55 @@ _Thank you for shopping with TheBookX! 📚✨_
         </a>
       </div>
 
-      <div
-        className="fixed-bill-bar"
-        style={{ maxWidth: "980px", margin: "0 auto" }}
-      >
-        <div className="bill-left">
-          <span className="font-12 dark-50">Total payable</span>
-          <div className="flex gap-8 items-center">
-            <span className="font-16 weight-600 discounted">
-              ₹{totalWithStandardDeliveryGift}
-            </span>
-            {offerDiscount > 0 && (
-              <span className="strike dark-50 original">
-                ₹{totalDiscounted}
+      <div className="fixed-bill-bar flex flex-col">
+        <div className="flex flex-row justify-between width100 items-center">
+          <div className="bill-left">
+            <span className="font-12 dark-50">Total payable</span>
+            <div className="flex gap-8 items-center">
+              <span className="font-16 weight-600 discounted">
+                ₹{totalWithStandardDeliveryGift}
               </span>
-            )}
-            {appliedOffer && (
-              <span className="font-14 green weight-600">{offerLabel}</span>
-            )}
+              {offerDiscount > 0 && (
+                <span className="strike dark-50 original">
+                  ₹{totalDiscounted}
+                </span>
+              )}
+              {appliedOffer && (
+                <span className="font-14 green weight-600">{offerLabel}</span>
+              )}
+            </div>
+
+            <span className="view-bill-text" onClick={() => setShowBill(true)}>
+              View bill
+            </span>
           </div>
 
-          <span className="view-bill-text" onClick={() => setShowBill(true)}>
-            View bill
-          </span>
+          <div className="flex flex-row items-center gap-12">
+            {/* Small "Need book suggestion?" CTA — sits just above the fixed bill bar */}
+            <span
+              type="button"
+              onClick={() => setShowRecommendationModal(true)}
+              className="tertiary-btn flex flex-row gap-4 items-center"
+              aria-label="Get book suggestions"
+            >
+              <Sparkle size={12} />
+              Suggest Me
+            </span>
+            <button
+              type="button"
+              className="pri-big-btn"
+              onClick={handleConfirmOrderClick}
+              aria-disabled={isCheckoutDisabled}
+              style={
+                isCheckoutDisabled
+                  ? { opacity: 0.6, cursor: "not-allowed" }
+                  : undefined
+              }
+            >
+              {isShortening ? "Preparing…" : "Confirm Order"}
+            </button>
+          </div>
         </div>
-
-        {/* Confirm Order button — always clickable so we can show a toast
-            with the reason when the action isn't actually allowed. */}
-        <button
-          type="button"
-          className="pri-big-btn"
-          onClick={handleConfirmOrderClick}
-          aria-disabled={isCheckoutDisabled}
-          style={
-            isCheckoutDisabled
-              ? { opacity: 0.6, cursor: "not-allowed" }
-              : undefined
-          }
-        >
-          {isShortening ? "Preparing…" : "Confirm Order"}
-        </button>
       </div>
 
       <AddressModal
@@ -651,6 +673,11 @@ _Thank you for shopping with TheBookX! 📚✨_
         isFasterDelivery={false}
         giftWrapCharge={giftWrap ? GIFT_WRAP_CHARGE : 0}
         giftWrapSelected={giftWrap}
+      />
+
+      <RecommendationModal
+        isOpen={showRecommendationModal}
+        onClose={() => setShowRecommendationModal(false)}
       />
     </section>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import BookCard from "@/components/BookCard";
+import RecommendationModal from "@/components/RecommendationModal";
 import { books } from "@/utils/book";
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
@@ -37,6 +38,7 @@ const parsePriceQuery = (query) => {
 export default function SearchOverlay({ open, onClose }) {
   const inputRef = useRef(null);
   const [query, setQuery] = useState("");
+  const [showRecommendationModal, setShowRecommendationModal] = useState(false);
 
   // Auto focus input
   useEffect(() => {
@@ -45,12 +47,16 @@ export default function SearchOverlay({ open, onClose }) {
     }
   }, [open]);
 
-  // ESC key close
+  // ESC key close — but don't close SearchOverlay if RecommendationModal is open
   useEffect(() => {
-    const handler = (e) => e.key === "Escape" && onClose();
+    const handler = (e) => {
+      if (e.key === "Escape" && !showRecommendationModal) {
+        onClose();
+      }
+    };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [onClose]);
+  }, [onClose, showRecommendationModal]);
 
   // Prevent body scroll when modal is open
   useEffect(() => {
@@ -95,104 +101,110 @@ export default function SearchOverlay({ open, onClose }) {
   });
 
   // Encode search term for WhatsApp
-  const encodedSearchTerm = encodeURIComponent(query);
   const whatsappMessage = `Hey hi! I'm looking for a book related to "${query}" but couldn't find it on TheBookX. Could you please help me find it?`;
 
   return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          className="search-overlay"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={onClose}
-        >
+    <>
+      <AnimatePresence>
+        {open && (
           <motion.div
-            className="search-modal"
-            initial={{ opacity: 0, scale: 0.96, y: 12 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.96, y: 12 }}
-            transition={{ duration: 0.25, ease: "easeOut" }}
-            onClick={(e) => e.stopPropagation()}
+            className="search-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
           >
-            {/* Header */}
-            <div className="search-header">
-              <input
-                ref={inputRef}
-                type="text"
-                placeholder="Search by name, category, or price (e.g. fiction, 129, under 200)"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="search-input"
-              />
+            <motion.div
+              className="search-modal"
+              initial={{ opacity: 0, scale: 0.96, y: 12 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96, y: 12 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="search-header">
+                <input
+                  ref={inputRef}
+                  type="text"
+                  placeholder="Search by name, category, or price (e.g. fiction, 129, under 200)"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  className="search-input"
+                />
 
-              <button
-                onClick={onClose}
-                className="flex items-center sec-mid-btn"
-                aria-label="Close search"
-              >
-                <X size={16} />
-              </button>
-            </div>
+                <button
+                  onClick={onClose}
+                  className="flex items-center sec-mid-btn"
+                  aria-label="Close search"
+                >
+                  <X size={16} />
+                </button>
+              </div>
 
-            {/* Results */}
-            <div className="search-body">
-              {query ? (
-                <>
-                  {filteredBooks.length === 0 ? (
-                    <div className="empty-state">
-                      <span className="font-16 weight-500">
-                        Can’t find the book you’re looking for?
-                      </span>
-                      <div className="flex flex-col width100 gap-12">
-                        <a
-                          href={`https://wa.me/917710892108?text=${encodeURIComponent(whatsappMessage)}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          aria-label="Chat with us on WhatsApp"
-                          className="cursor-pointer pri-big-btn"
-                          style={{
-                            minWidth: "fit-content",
-                            maxWidth: "fit-content",
-                            margin: "8px auto",
-                          }}
-                        >
-                          Ask on WhatsApp
-                        </a>
-                        <a
-                          href="https://thebookx.in?suggest"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          aria-label="Chat with us on WhatsApp"
-                          className="cursor-pointer sec-big-btn"
-                          style={{
-                            minWidth: "fit-content",
-                            maxWidth: "fit-content",
-                            margin: "8px auto",
-                          }}
-                        >
-                          or Need suggestion?
-                        </a>
+              {/* Results */}
+              <div className="search-body">
+                {query ? (
+                  <>
+                    {filteredBooks.length === 0 ? (
+                      <div className="empty-state">
+                        <span className="font-16 weight-500">
+                          Can’t find the book you’re looking for?
+                        </span>
+                        <div className="flex flex-col width100 gap-12">
+                          <a
+                            href={`https://wa.me/917710892108?text=${encodeURIComponent(whatsappMessage)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="Chat with us on WhatsApp"
+                            className="cursor-pointer pri-big-btn"
+                            style={{
+                              minWidth: "fit-content",
+                              maxWidth: "fit-content",
+                              margin: "8px auto",
+                            }}
+                          >
+                            Ask on WhatsApp
+                          </a>
+                          <button
+                            type="button"
+                            onClick={() => setShowRecommendationModal(true)}
+                            aria-label="Get book suggestions"
+                            className="cursor-pointer sec-big-btn"
+                            style={{
+                              minWidth: "fit-content",
+                              maxWidth: "fit-content",
+                              margin: "8px auto",
+                            }}
+                          >
+                            or Need suggestion?
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  ) : (
-                    <div className="book-grid">
-                      {filteredBooks.map((book) => (
-                        <BookCard key={book.id} book={book} />
-                      ))}
-                    </div>
-                  )}
-                </>
-              ) : (
-                <p className="empty-state">
-                  Type something to search for books...
-                </p>
-              )}
-            </div>
+                    ) : (
+                      <div className="book-grid">
+                        {filteredBooks.map((book) => (
+                          <BookCard key={book.id} book={book} />
+                        ))}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <p className="empty-state">
+                    Type something to search for books...
+                  </p>
+                )}
+              </div>
+            </motion.div>
           </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+        )}
+      </AnimatePresence>
+
+      {/* Recommendation modal — rendered as sibling so it layers above search */}
+      <RecommendationModal
+        isOpen={showRecommendationModal}
+        onClose={() => setShowRecommendationModal(false)}
+      />
+    </>
   );
 }

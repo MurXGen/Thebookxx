@@ -229,18 +229,15 @@ export default function BookReviews({ bookId, bookName, authorName }) {
                           </div>
                         </div>
                         <span className="review-date">{review.date}</span>
-                        {review.verified && (
-                          <span className="verified-badge">
-                            ✓ Verified Purchase
-                          </span>
-                        )}
                       </div>
                     </div>
                   </div>
+                  {review.verified && (
+                    <span className="verified-badge">✓ Verified</span>
+                  )}
                 </div>
 
-                <div className="review-content font-12 flex flex-col gap-12">
-                  <Quote size={16} className="quote-icon" />
+                <div className="review-content font-16 flex flex-col gap-12">
                   <p className="review-comment">
                     {displayComment}
                     {shouldTruncate && !isExpanded && (
@@ -262,7 +259,7 @@ export default function BookReviews({ bookId, bookName, authorName }) {
                   </p>
                 </div>
 
-                <div className="review-footer">
+                {/* <div className="review-footer">
                   <button
                     className="sec-mid-btn flex flex-row items-center gap-8"
                     aria-label={`Mark as helpful (${review.helpful} people found this helpful)`}
@@ -270,7 +267,7 @@ export default function BookReviews({ bookId, bookName, authorName }) {
                     <ThumbsUp size={14} />
                     <span>Helpful ({review.helpful})</span>
                   </button>
-                </div>
+                </div> */}
               </div>
             );
           })}
@@ -323,11 +320,11 @@ export default function BookReviews({ bookId, bookName, authorName }) {
         )}
 
         {/* All reviews loaded message */}
-        {!hasMore && visibleReviews.length > 0 && (
+        {/* {!hasMore && visibleReviews.length > 0 && (
           <div className="all-reviews-loaded font-12 flex flex-row justify-center">
             ✨ You've seen all reviews for "{bookName}" ✨
           </div>
-        )}
+        )} */}
       </div>
     </>
   );

@@ -67,8 +67,7 @@ function Accordion({ icon: Icon, title, defaultOpen = false, children }) {
 
   return (
     <div className="bd-accordion">
-      <button
-        type="button"
+      <div
         className="bd-accordion-header"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
@@ -82,7 +81,7 @@ function Accordion({ icon: Icon, title, defaultOpen = false, children }) {
         ) : (
           <ChevronDown size={18} className="bd-accordion-chevron" />
         )}
-      </button>
+      </div>
 
       <AnimatePresence initial={false}>
         {open && (
@@ -560,7 +559,7 @@ export default function BookDetailsModal({ book }) {
           <div className="bd-trust-strip">
             <div className="bd-trust-item">
               <Truck size={18} className="bd-trust-icon" />
-              <span className="bd-trust-label">Free Shipping</span>
+              <span className="bd-trust-label">Free Shipping*</span>
             </div>
             <div className="bd-trust-divider" />
             <div className="bd-trust-item">
@@ -680,7 +679,7 @@ export default function BookDetailsModal({ book }) {
                   <Truck size={16} className="bd-shipping-icon" />
                   <div>
                     <p className="bd-shipping-title">
-                      Free shipping across India
+                      Free shipping across India*
                     </p>
                     <p className="bd-shipping-desc">
                       Delivered via Delhivery and Indian Post in 3-7 business

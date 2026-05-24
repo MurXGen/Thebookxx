@@ -3,7 +3,7 @@
 import { Download, Search, StarsIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { FaWhatsapp } from "react-icons/fa";
-import RecommendationModal from "@/components/RecommendationModal";
+import RecommendationModal from "../RecommendationModal";
 import { trackEvent } from "@/lib/ga";
 
 export default function SearchButton({ onClick }) {
@@ -33,6 +33,17 @@ export default function SearchButton({ onClick }) {
     return () => {
       window.removeEventListener("beforeinstallprompt", beforeInstallHandler);
       window.removeEventListener("appinstalled", installedHandler);
+    };
+  }, []);
+
+  // ----- Listen for URL trigger event from RecommendationModal -----
+  // When the URL contains ?suggest, RecommendationModal dispatches a
+  // CustomEvent so any parent controlling its open state can react.
+  useEffect(() => {
+    const openHandler = () => setShowRecommendationModal(true);
+    window.addEventListener("openRecommendationModal", openHandler);
+    return () => {
+      window.removeEventListener("openRecommendationModal", openHandler);
     };
   }, []);
 

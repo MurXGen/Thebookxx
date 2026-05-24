@@ -909,6 +909,7 @@ button:hover {
   border: none;
   color: var(--dark);
   font-size: var(--px-12);
+  background-color: none;
 }
 
 .tertiary-btn:hover {
@@ -1515,7 +1516,7 @@ button:hover {
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  z-index: 999;
+  z-index: 199;
   padding-top: 40px;
 }
 
@@ -3490,9 +3491,10 @@ input {
 /* Reviews section of a book */
 
 .reviewer-image {
-  border-radius: 50%;
+  border-radius: var(--px-12);
   width: 50px;
   height: 50px;
+  object-fit: cover;
 }
 
 /* Book review end */

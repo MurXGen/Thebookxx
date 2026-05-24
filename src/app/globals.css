@@ -332,6 +332,7 @@ button:hover {
   transition: 0.3s;
   outline: 1px solid var(--dark-50);
   cursor: pointer;
+  border-radius: var(--px-8);
 }
 
 .cursor-pointer {
@@ -6948,5 +6949,720 @@ input {
 
   .toast {
     padding: var(--px-10) var(--px-12);
+  }
+}
+
+/* ============================================
+   Book Details — append to globals.css
+   Uses :root design tokens only
+   ============================================ */
+
+/* ---------- Page wrapper ---------- */
+.bd-page {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.bd-container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--px-16) var(--px-20);
+  display: flex;
+  flex-direction: column;
+  gap: var(--px-24);
+}
+
+/* ---------- Top bar (in-flow) ---------- */
+.bd-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bd-topbar-actions {
+  display: flex;
+  gap: var(--px-8);
+}
+
+.bd-icon-btn {
+  width: var(--px-42);
+  height: var(--px-42);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--dark-10);
+  border-radius: 50%;
+  color: var(--foreground);
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.bd-icon-btn:hover {
+  background: var(--dark-10);
+  border-color: var(--dark-20);
+}
+
+/* ---------- Sticky header (on scroll) ---------- */
+.bd-sticky-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: var(--px-12);
+  padding: var(--px-10) var(--px-16);
+  background: var(--background);
+  border-bottom: 1px solid var(--dark-10);
+  box-shadow: 0 2px 8px var(--dark-10);
+}
+
+.bd-sticky-title {
+  flex: 1;
+  font-size: 15px;
+  font-weight: var(--weight-600);
+  color: var(--foreground);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bd-sticky-actions {
+  display: flex;
+  gap: var(--px-8);
+}
+
+.bd-sticky-header .bd-icon-btn {
+  width: 36px;
+  height: 36px;
+}
+
+/* ---------- Hero ---------- */
+.bd-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--px-20);
+  padding: var(--px-12) 0;
+}
+
+.bd-hero-image {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bd-cover {
+  border-radius: var(--px-12);
+  box-shadow: 0 12px 32px var(--dark-20);
+  object-fit: cover;
+  background: var(--dark-4);
+}
+
+.bd-cover-placeholder {
+  width: 240px;
+  height: 340px;
+  border-radius: var(--px-12);
+  background: var(--dark-10);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--dark-50);
+}
+
+.bd-deal-badge {
+  position: absolute;
+  top: var(--px-10);
+  left: var(--px-10);
+  background: var(--danger);
+  color: var(--white-100);
+  padding: var(--px-4) var(--px-10);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: var(--weight-700);
+  letter-spacing: 0.3px;
+}
+
+.bd-hero-info {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  text-align: center;
+  gap: var(--px-8);
+  width: 100%;
+}
+
+.bd-title {
+  font-size: 22px;
+  font-weight: var(--weight-700);
+  color: var(--foreground);
+  line-height: 1.3;
+  margin: 0;
+}
+
+.bd-author {
+  font-size: 13px;
+  color: var(--dark-50);
+  margin: 0;
+}
+
+.bd-author-link {
+  color: var(--foreground);
+  font-weight: var(--weight-500);
+  text-decoration: none;
+}
+
+.bd-author-link:hover {
+  color: var(--tertiary);
+}
+
+.bd-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--px-8);
+  margin-top: var(--px-4);
+}
+
+.bd-rating-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--success);
+  color: var(--white-100);
+  padding: 2px var(--px-8);
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: var(--weight-600);
+}
+
+.bd-rating-count {
+  font-size: 12px;
+  color: var(--dark-50);
+}
+
+/* ---------- Price block ---------- */
+.bd-price-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--px-8);
+  padding: var(--px-16) 0;
+  border-top: 1px solid var(--dark-10);
+  border-bottom: 1px solid var(--dark-10);
+}
+
+.bd-price-row {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--px-12);
+}
+
+.bd-price-current {
+  font-size: 28px;
+  font-weight: var(--weight-700);
+  color: var(--foreground);
+  line-height: 1;
+}
+
+.bd-price-original {
+  font-size: 16px;
+  color: var(--dark-50);
+  text-decoration: line-through;
+}
+
+.bd-savings-badge {
+  background: var(--tertiary-10);
+  color: var(--tertiary);
+  font-size: 12px;
+  font-weight: var(--weight-600);
+  padding: var(--px-4) var(--px-10);
+  border-radius: 999px;
+}
+
+.bd-stock-line {
+  display: flex;
+  align-items: center;
+  gap: var(--px-8);
+}
+
+.bd-stock-text {
+  font-size: 13px;
+  font-weight: var(--weight-500);
+}
+
+.bd-stock-icon-success,
+.bd-text-success {
+  color: var(--success);
+}
+
+.bd-stock-icon-warning,
+.bd-text-warning {
+  color: var(--tertiary);
+}
+
+.bd-stock-icon-danger,
+.bd-text-danger {
+  color: var(--danger);
+}
+
+/* ---------- Trust strip ---------- */
+.bd-trust-strip {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  padding: var(--px-12) var(--px-16);
+  background: var(--dark-4);
+  border-radius: var(--px-10);
+}
+
+.bd-trust-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.bd-trust-icon {
+  color: var(--success);
+}
+
+.bd-trust-label {
+  font-size: 11px;
+  color: var(--foreground);
+  text-align: center;
+  font-weight: var(--weight-500);
+}
+
+.bd-trust-divider {
+  width: 1px;
+  background: var(--dark-10);
+}
+
+/* ---------- Quick info chips ---------- */
+.bd-quick-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--px-8);
+}
+
+.bd-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--dark-4);
+  border: 1px solid var(--dark-10);
+  padding: 6px var(--px-10);
+  border-radius: var(--px-8);
+}
+
+.bd-chip-icon {
+  color: var(--dark-50);
+}
+
+.bd-chip-text {
+  font-size: 12px;
+  font-weight: var(--weight-500);
+  color: var(--foreground);
+}
+
+/* ---------- Category tags ---------- */
+.bd-tags-scroll {
+  display: flex;
+  gap: var(--px-8);
+  overflow-x: auto;
+  padding-bottom: var(--px-4);
+  scrollbar-width: none;
+}
+
+.bd-tags-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.bd-tag-pill {
+  flex-shrink: 0;
+  background: var(--tertiary-light-10);
+  color: var(--tertiary);
+  font-size: 12px;
+  font-weight: var(--weight-500);
+  padding: 6px var(--px-12);
+  border-radius: 999px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s ease;
+}
+
+.bd-tag-pill:hover {
+  background: var(--tertiary-light-20);
+}
+
+/* ---------- Inline CTA (desktop only) ---------- */
+.bd-cta-inline {
+  display: flex;
+  gap: var(--px-12);
+  align-items: stretch;
+}
+
+.bd-cta-icon-btn {
+  flex-shrink: 0;
+  width: var(--px-56);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--background);
+  border: 1px solid var(--dark-20);
+  border-radius: var(--px-10);
+  color: var(--foreground);
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.bd-cta-icon-btn:hover {
+  border-color: var(--dark-50);
+}
+
+.bd-cta-primary {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--px-8);
+  background: var(--primary);
+  color: var(--white-100);
+  border: none;
+  border-radius: var(--px-10);
+  padding: var(--px-14) var(--px-20);
+  font-size: 15px;
+  font-weight: var(--weight-600);
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.bd-cta-primary[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---------- Accordions ---------- */
+.bd-accordions {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--dark-10);
+}
+
+.bd-accordion {
+  border-bottom: 1px solid var(--dark-10);
+}
+
+.bd-accordion-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--px-16) 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--foreground);
+}
+
+.bd-accordion-title {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--px-12);
+  font-size: 15px;
+  font-weight: var(--weight-600);
+}
+
+.bd-accordion-icon {
+  color: var(--tertiary);
+}
+
+.bd-accordion-chevron {
+  color: var(--dark-50);
+  transition: transform 0.2s ease;
+}
+
+.bd-accordion-body-wrap {
+  overflow: hidden;
+}
+
+.bd-accordion-body {
+  padding: 0 0 var(--px-20) 0;
+}
+
+/* ---------- Description ---------- */
+.bd-description {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--foreground);
+  text-align: justify;
+  margin: 0;
+}
+
+/* ---------- Specifications ---------- */
+.bd-specs-list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+}
+
+.bd-spec-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--px-16);
+  padding: var(--px-10) 0;
+  border-bottom: 1px dashed var(--dark-10);
+}
+
+.bd-spec-row:last-child {
+  border-bottom: none;
+}
+
+.bd-spec-label {
+  flex-shrink: 0;
+  width: 110px;
+  font-size: 12px;
+  font-weight: var(--weight-500);
+  color: var(--dark-50);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin: 0;
+}
+
+.bd-spec-value {
+  flex: 1;
+  font-size: 13px;
+  color: var(--foreground);
+  margin: 0;
+}
+
+.bd-spec-link {
+  color: var(--tertiary);
+  text-decoration: none;
+  font-weight: var(--weight-500);
+}
+
+.bd-spec-link:hover {
+  text-decoration: underline;
+}
+
+/* ---------- Shipping & Returns ---------- */
+.bd-shipping-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--px-16);
+}
+
+.bd-shipping-row {
+  display: flex;
+  gap: var(--px-12);
+}
+
+.bd-shipping-icon {
+  flex-shrink: 0;
+  color: var(--success);
+  margin-top: 2px;
+}
+
+.bd-shipping-title {
+  font-size: 13px;
+  font-weight: var(--weight-600);
+  color: var(--foreground);
+  margin: 0 0 4px 0;
+}
+
+.bd-shipping-desc {
+  font-size: 12px;
+  color: var(--dark-50);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ---------- Section blocks (you may like, browse) ---------- */
+.bd-section-block,
+.bd-browse-block {
+  padding-top: var(--px-12);
+}
+
+.bd-browse-block {
+  border-top: 1px solid var(--dark-10);
+  padding-top: var(--px-24);
+}
+
+.bd-browse-title {
+  font-size: 14px;
+  font-weight: var(--weight-600);
+  color: var(--foreground);
+  margin: 0 0 var(--px-12) 0;
+}
+
+.bd-browse-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--px-8);
+}
+
+.bd-browse-chip {
+  background: var(--dark-4);
+  border: 1px solid var(--dark-10);
+  color: var(--foreground);
+  font-size: 12px;
+  font-weight: var(--weight-500);
+  padding: 6px var(--px-12);
+  border-radius: var(--px-8);
+  text-decoration: none;
+  transition: background 0.15s ease;
+}
+
+.bd-browse-chip:hover {
+  background: var(--dark-10);
+}
+
+/* ---------- Bottom spacer (mobile) ---------- */
+.bd-bottom-spacer {
+  display: none;
+}
+
+/* ---------- Sticky bottom CTA (mobile only) ---------- */
+.bd-sticky-bottom {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 90;
+  background: var(--background);
+  border-top: 1px solid var(--dark-10);
+  box-shadow: 0 -4px 12px var(--dark-10);
+  padding: var(--px-10) var(--px-12)
+    calc(var(--px-10) + env(safe-area-inset-bottom));
+}
+
+.bd-sticky-bottom-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: var(--px-8);
+}
+
+.bd-sticky-price {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex-shrink: 0;
+  min-width: 70px;
+}
+
+.bd-sticky-price-current {
+  font-size: 16px;
+  font-weight: var(--weight-700);
+  color: var(--foreground);
+  line-height: 1.1;
+}
+
+.bd-sticky-price-original {
+  font-size: 11px;
+  color: var(--dark-50);
+  text-decoration: line-through;
+}
+
+.bd-sticky-icon-btn {
+  flex-shrink: 0;
+  width: var(--px-42);
+  height: var(--px-42);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--dark-20);
+  border-radius: var(--px-10);
+  color: var(--foreground);
+  cursor: pointer;
+}
+
+.bd-sticky-add-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--px-8);
+  background: var(--primary);
+  color: var(--white-100);
+  border: none;
+  border-radius: var(--px-10);
+  padding: var(--px-12) var(--px-16);
+  font-size: 14px;
+  font-weight: var(--weight-600);
+  cursor: pointer;
+}
+
+.bd-sticky-add-btn[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---------- Mobile breakpoint ---------- */
+@media (max-width: 768px) {
+  .bd-container {
+    padding: var(--px-12) var(--px-16);
+    gap: var(--px-20);
+  }
+
+  .bd-title {
+    font-size: 20px;
+  }
+
+  .bd-price-current {
+    font-size: 24px;
+  }
+
+  .bd-spec-label {
+    width: 90px;
+    font-size: 11px;
+  }
+
+  /* Hide inline CTAs on mobile — sticky bottom bar replaces them */
+  .bd-cta-inline {
+    display: none;
+  }
+
+  /* Show sticky bottom CTA on mobile */
+  .bd-sticky-bottom {
+    display: block;
+  }
+
+  /* Reserve space at bottom so content isn't covered */
+  .bd-bottom-spacer {
+    display: block;
+    height: 80px;
+  }
+}
+
+/* ---------- Desktop: image larger ---------- */
+@media (min-width: 769px) {
+  .bd-hero {
+    flex-direction: row;
+    align-items: flex-start;
+    text-align: left;
+    gap: var(--px-32);
+  }
+
+  .bd-hero-info {
+    align-items: flex-start;
+    text-align: left;
+    padding-top: var(--px-12);
+  }
+
+  .bd-cover {
+    width: 280px;
+    height: 400px;
   }
 }

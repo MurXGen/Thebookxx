@@ -1,7 +1,8 @@
-// components/BookDeatilsModel.js
+// components/BookDetailsModal.jsx
 "use client";
 
 import { useStore } from "@/context/StoreContext";
+import { showToast } from "@/context/ToastContext";
 import { books } from "@/utils/book";
 import {
   ArrowLeft,
@@ -11,12 +12,23 @@ import {
   Truck,
   ShieldCheck,
   RotateCcw,
+  Share2,
+  Star,
+  ChevronDown,
+  ChevronUp,
+  BookOpen,
+  FileText,
+  Globe,
+  Package,
+  CheckCircle2,
+  XCircle,
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import LoadingButton from "./UI/LoadingButton";
 import Script from "next/script";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import BookCard from "./BookCard";
 import Link from "next/link";
 import YouMayLike from "./UI/YouMayLike";
@@ -41,14 +53,61 @@ function getStableReviewCount(bookId) {
   return Math.abs(hash % (max - min + 1)) + min;
 }
 
+function getStableRating(bookId) {
+  let hash = 0;
+  for (let i = 0; i < bookId.length; i++) {
+    hash = bookId.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return Number((4 + (Math.abs(hash) % 10) / 10).toFixed(1));
+}
+
+// Reusable accordion
+function Accordion({ icon: Icon, title, defaultOpen = false, children }) {
+  const [open, setOpen] = useState(defaultOpen);
+
+  return (
+    <div className="bd-accordion">
+      <button
+        type="button"
+        className="bd-accordion-header"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+      >
+        <span className="bd-accordion-title">
+          {Icon && <Icon size={18} className="bd-accordion-icon" />}
+          {title}
+        </span>
+        {open ? (
+          <ChevronUp size={18} className="bd-accordion-chevron" />
+        ) : (
+          <ChevronDown size={18} className="bd-accordion-chevron" />
+        )}
+      </button>
+
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+            className="bd-accordion-body-wrap"
+          >
+            <div className="bd-accordion-body">{children}</div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 export default function BookDetailsModal({ book }) {
   const { cart, addToCart, toggleWishlist, wishlist } = useStore();
   const inWishlist = wishlist.includes(book.id);
   const router = useRouter();
 
-  // Lazy loading state for related books
-  const [visibleRelatedCount, setVisibleRelatedCount] = useState(6);
-  const [isLoadingRelated, setIsLoadingRelated] = useState(false);
+  const heroRef = useRef(null);
+  const [showStickyHeader, setShowStickyHeader] = useState(false);
 
   const bookSlug = slugify(book.name);
   const bookUrl = `/books/${bookSlug}`;
@@ -63,10 +122,16 @@ export default function BookDetailsModal({ book }) {
     return b?.discountedPrice === 1;
   });
 
-  // Get related books based on same category
+  const isOneRupeeLimitReached = isOneRupee && hasOneRupeeInCart;
+  const isOutOfStock = book.stock === 0;
+  const isAddDisabled = isOneRupeeLimitReached || isOutOfStock;
+
+  const rating = book.rating || getStableRating(book.id);
+  const reviewCount = book.reviewCount || getStableReviewCount(book.id);
+
+  // Related books based on same category
   const relatedBooks = useMemo(() => {
     if (!book.catalogue || book.catalogue.length === 0) return [];
-
     return books
       .filter(
         (b) =>
@@ -76,31 +141,66 @@ export default function BookDetailsModal({ book }) {
       .slice(0, 30);
   }, [book.id, book.catalogue]);
 
-  // Lazy load more related books
-  const loadMoreRelated = () => {
-    if (isLoadingRelated) return;
-    setIsLoadingRelated(true);
-    setTimeout(() => {
-      setVisibleRelatedCount((prev) => Math.min(prev + 6, relatedBooks.length));
-      setIsLoadingRelated(false);
-    }, 300);
-  };
-
-  const visibleRelatedBooks = relatedBooks.slice(0, visibleRelatedCount);
-  const hasMoreRelated = visibleRelatedCount < relatedBooks.length;
+  // Sticky header observer
+  useEffect(() => {
+    if (!heroRef.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setShowStickyHeader(!entry.isIntersecting),
+      { threshold: 0, rootMargin: "-60px 0px 0px 0px" },
+    );
+    observer.observe(heroRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   const handleWishlist = () => {
     toggleWishlist(book.id);
-    router.back();
+    // Stay on page — only toast feedback
+    showToast(
+      inWishlist ? "Removed from wishlist" : "Added to wishlist",
+      "success",
+    );
   };
 
   const handleAddToCart = () => {
+    if (isOneRupeeLimitReached) {
+      showToast("Maximum book allotted reached for Rs.1", "info");
+      return;
+    }
+    if (isOutOfStock) {
+      showToast("This book is currently out of stock", "warning");
+      return;
+    }
     addToCart(book.id);
-    router.push("/");
+    showToast(`Added "${book.name}" to cart`, "success");
   };
 
   const handleReview = () => {
     router.push(`/review?bk=${book.id}`);
+  };
+
+  const handleShare = async (e) => {
+    e?.preventDefault?.();
+    e?.stopPropagation?.();
+
+    const shareData = {
+      title: book.name,
+      text: `Check out "${book.name}"${book.author ? ` by ${book.author}` : ""} at TheBookX!`,
+      url: canonicalUrl,
+    };
+
+    try {
+      if (navigator.share && window.innerWidth <= 768) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(canonicalUrl);
+        showToast("Link copied to clipboard", "success");
+      }
+    } catch (error) {
+      // User dismissed share sheet — not an error
+      if (error?.name !== "AbortError") {
+        console.error("Share failed:", error);
+      }
+    }
   };
 
   useEffect(() => {
@@ -135,10 +235,7 @@ export default function BookDetailsModal({ book }) {
             name: book.name,
             description: `${book.description} Shop now at TheBookX — India's most trusted online bookstore.`,
             image: book.image,
-            brand: {
-              "@type": "Brand",
-              name: "TheBookX",
-            },
+            brand: { "@type": "Brand", name: "TheBookX" },
             sku: book.id,
             author: {
               "@type": "Person",
@@ -201,12 +298,8 @@ export default function BookDetailsModal({ book }) {
             },
             aggregateRating: {
               "@type": "AggregateRating",
-              ratingValue:
-                book.rating ||
-                Number(
-                  (4 + (getStableReviewCount(book.id) % 10) / 10).toFixed(1),
-                ),
-              reviewCount: book.reviewCount || getStableReviewCount(book.id),
+              ratingValue: rating,
+              reviewCount: reviewCount,
               bestRating: 5,
               worstRating: 1,
             },
@@ -214,7 +307,6 @@ export default function BookDetailsModal({ book }) {
         }}
       />
 
-      {/* JSON-LD for Related Items (Internal Linking SEO) */}
       {relatedBooks.length > 0 && (
         <Script
           id={`related-items-schema-${book.id}`}
@@ -239,286 +331,477 @@ export default function BookDetailsModal({ book }) {
         />
       )}
 
-      <div
-        className="book-detail-section"
-        itemScope
-        itemType="https://schema.org/Book"
-      >
-        <div
-          className="section-1200 flex flex-col gap-24"
-          style={{ maxWidth: "680px" }}
-        >
-          {/* Header */}
-          <div className="flex flex-row gap-12 items-center">
-            <ArrowLeft
-              size={24}
-              onClick={() => router.push("/")}
-              className="cursor-pointer hover:opacity-70"
+      {/* ===== Sticky top header (appears on scroll past hero) ===== */}
+      <AnimatePresence>
+        {showStickyHeader && (
+          <motion.div
+            className="bd-sticky-header"
+            initial={{ y: -60, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -60, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <button
+              type="button"
+              className="bd-icon-btn"
+              onClick={() => router.back()}
               aria-label="Go back"
-            />
-            <div className="flex flex-col">
-              <h1 className="font-20 weight-600" itemProp="name">
+            >
+              <ArrowLeft size={20} />
+            </button>
+            <span className="bd-sticky-title">{book.name}</span>
+            <div className="bd-sticky-actions">
+              <button
+                type="button"
+                className="bd-icon-btn"
+                onClick={handleWishlist}
+                aria-label={
+                  inWishlist ? "Remove from wishlist" : "Add to wishlist"
+                }
+              >
+                <Heart
+                  size={18}
+                  fill={inWishlist ? "var(--danger)" : "none"}
+                  color={inWishlist ? "var(--danger)" : "var(--foreground)"}
+                />
+              </button>
+              <button
+                type="button"
+                className="bd-icon-btn"
+                onClick={handleShare}
+                aria-label="Share book"
+              >
+                <Share2 size={18} />
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="bd-page" itemScope itemType="https://schema.org/Book">
+        <div className="bd-container">
+          {/* ===== Top bar (in-flow) ===== */}
+          <div className="bd-topbar">
+            <button
+              type="button"
+              className="bd-icon-btn"
+              onClick={() => router.back()}
+              aria-label="Go back"
+            >
+              <ArrowLeft size={20} />
+            </button>
+            <div className="bd-topbar-actions">
+              <button
+                type="button"
+                className="bd-icon-btn"
+                onClick={handleWishlist}
+                aria-label={
+                  inWishlist ? "Remove from wishlist" : "Add to wishlist"
+                }
+              >
+                <Heart
+                  size={20}
+                  fill={inWishlist ? "var(--danger)" : "none"}
+                  color={inWishlist ? "var(--danger)" : "var(--foreground)"}
+                />
+              </button>
+              <button
+                type="button"
+                className="bd-icon-btn"
+                onClick={handleShare}
+                aria-label="Share book"
+              >
+                <Share2 size={20} />
+              </button>
+            </div>
+          </div>
+
+          {/* ===== Hero ===== */}
+          <div ref={heroRef} className="bd-hero">
+            <div className="bd-hero-image">
+              {book.image ? (
+                <Image
+                  src={book.image}
+                  alt={`${book.name} book cover — Buy online at TheBookX, India's trusted bookstore`}
+                  width={240}
+                  height={340}
+                  priority
+                  itemProp="image"
+                  className="bd-cover"
+                />
+              ) : (
+                <div className="bd-cover-placeholder">
+                  <BookOpen size={48} />
+                </div>
+              )}
+              {isOneRupee && book.stock > 0 && (
+                <div className="bd-deal-badge">🔥 Just ₹1</div>
+              )}
+            </div>
+
+            {/* ===== Quick info chips ===== */}
+            <div className="bd-quick-chips">
+              {book.size && (
+                <div className="bd-chip">
+                  <Package size={14} className="bd-chip-icon" />
+                  <span className="bd-chip-text">{book.size}</span>
+                </div>
+              )}
+              {book.pages && (
+                <div className="bd-chip">
+                  <FileText size={14} className="bd-chip-icon" />
+                  <span className="bd-chip-text">{book.pages} pages</span>
+                </div>
+              )}
+              {book.language && (
+                <div className="bd-chip">
+                  <Globe size={14} className="bd-chip-icon" />
+                  <span className="bd-chip-text">{book.language}</span>
+                </div>
+              )}
+            </div>
+
+            <div className="bd-hero-info">
+              <h1 className="bd-title" itemProp="name">
                 {book.name}
               </h1>
+
               {book.author && (
-                <p className="font-12 dark-50" itemProp="author">
-                  By{" "}
+                <p className="bd-author" itemProp="author">
+                  by{" "}
                   <Link
                     href={`/authors/${book.authorSlug || slugify(book.author)}`}
-                    style={{
-                      textDecoration: "none",
-                      fontWeight: "500",
-                    }}
+                    className="bd-author-link"
                     itemProp="url"
                   >
                     <span itemProp="name">{book.author}</span>
                   </Link>
                 </p>
               )}
-            </div>
-          </div>
 
-          {/* Image */}
-          <div className="book-detail-image flex flex-row gap-24 justify-center">
-            <div className="book-detail-image">
-              <Image
-                src={book.image}
-                alt={`${book.name} book cover — Buy online at TheBookX, India's trusted bookstore`}
-                width={100}
-                height={100}
-                priority
-                itemProp="image"
-                style={{ border: "1px solid #00000020" }}
-              />
-              <Image
-                src={book.image}
-                alt={`${book.name} book cover — Buy online at TheBookX, India's trusted bookstore`}
-                width={100}
-                height={100}
-                priority
-                style={{ border: "1px solid #00000020" }}
-                itemProp="image"
-              />
-            </div>
-          </div>
-
-          {/* Content */}
-          <div className="book-detail-body">
-            <div>
-              <h2 className="font-24 weight-600" itemProp="name">
-                {book.name}
-              </h2>
-              {/* Price */}
-              <div className="price-row flex flex-row items-center gap-16 mt-24">
-                <span className="font-32 weight-600 green">
-                  ₹{book.discountedPrice}
+              <div className="bd-rating">
+                <span className="bd-rating-pill">
+                  <Star size={12} fill="currentColor" />
+                  {rating}
                 </span>
-                {book.originalPrice > book.discountedPrice && (
-                  <>
-                    <span className="original font-24 line-through text-gray-400">
-                      ₹{book.originalPrice}
-                    </span>
-                    {savings > 0 && (
-                      <span className="green font-14 weight-500 bg-green-50 px-8 py-4 rounded-full">
-                        Save ₹{savings} ({savingsPercentage}% OFF)
-                      </span>
-                    )}
-                  </>
-                )}
-              </div>
-            </div>
-
-            {/* Specifications */}
-            <div className="flex flex-row flex-wrap gap-24 mt-16 pt-16 border-t border-gray-200">
-              {book.author && (
-                <div className="flex flex-col">
-                  <span className="font-10 uppercase text-gray-500">
-                    Author
-                  </span>
-                  <span className="font-14 weight-500">
-                    <Link
-                      href={`/author/${book.authorSlug || slugify(book.author)}`}
-                      style={{
-                        textDecoration: "underline",
-                        cursor: "pointer",
-                      }}
-                    >
-                      {book.author}
-                    </Link>
-                  </span>
-                </div>
-              )}
-              {book.pages && (
-                <div className="flex flex-col">
-                  <span className="font-10 uppercase text-gray-500">Pages</span>
-                  <span className="font-14">{book.pages}</span>
-                </div>
-              )}
-              <div className="flex flex-col">
-                <span className="font-10 uppercase text-gray-500">Format</span>
-                <span className="font-14">{book.size}</span>
-              </div>
-              {book.language && (
-                <div className="flex flex-col">
-                  <span className="font-10 uppercase text-gray-500">
-                    Language
-                  </span>
-                  <span className="font-14">{book.language}</span>
-                </div>
-              )}
-              <div className="flex flex-col">
-                <span className="font-10 uppercase text-gray-500">Stock</span>
-                <span className="font-14">
-                  {book.stock > 0 ? (
-                    <span className="green">
-                      In Stock ({book.stock} available)
-                    </span>
-                  ) : (
-                    <span className="red">Out of Stock</span>
-                  )}
+                <span className="bd-rating-count">
+                  ({reviewCount.toLocaleString()} ratings)
                 </span>
-              </div>
-            </div>
-            <div className="dashed-border my-20"></div>
-            <div className="flex flex-col gap-4">
-              <p className="font-16 weight-600">Book Description</p>
-              <p
-                className="font-14"
-                itemProp="description"
-                style={{ lineHeight: "1.7", textAlign: "justify" }}
-              >
-                {book.description}
-              </p>
-              {/* Category Tags - Internal Links */}
-              <div className="flex flex-row flex-wrap gap-12 tags mt-16">
-                {book.catalogue?.map((tag) => (
-                  <a
-                    key={tag}
-                    href={`/category/${slugify(tag)}`}
-                    className="font-12 text-capitalize hover:opacity-80"
-                    aria-label={`Browse more #${tag} books`}
-                  >
-                    #{tag}
-                  </a>
-                ))}
-              </div>
-            </div>
-
-            <div className="dashed-border my-20"></div>
-
-            {/* Limited Offer Badge */}
-            {book.discountedPrice === 1 && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-12 mt-16">
-                <span className="red font-14 weight-600">
-                  🔥 Limited Time Offer!
-                </span>
-                <p className="font-12 mt-4">
-                  Get this book for just ₹1. Free shipping across India. Hurry,
-                  offer valid while stocks last!
-                </p>
-              </div>
-            )}
-
-            {/* Trust Badges */}
-            <div className="flex flex-row flex-wrap gap-24 justify-between py-16">
-              <div className="flex flex-row items-center gap-8">
-                <Truck size={18} className="green" />
-                <span className="font-12">Free Shipping</span>
-              </div>
-              <div className="flex flex-row items-center gap-8">
-                <ShieldCheck size={18} className="green" />
-                <span className="font-12">
-                  Secure Delivery via Delhivery/Indian Post
-                </span>
-              </div>
-              <div className="flex flex-row items-center gap-8">
-                <RotateCcw size={18} className="green" />
-                <span className="font-12">7-Day Returns</span>
               </div>
             </div>
           </div>
 
-          {/* Buttons */}
+          {/* ===== Price block ===== */}
           <div
-            className="book-detail-cta section-1200 flex flex-row gap-16 flex-wrap"
-            style={{ zIndex: "1000" }}
+            className="bd-price-block"
+            itemProp="offers"
+            itemScope
+            itemType="https://schema.org/Offer"
           >
+            <div className="bd-price-row">
+              <span className="bd-price-current">
+                ₹<span itemProp="price">{book.discountedPrice}</span>
+              </span>
+              {book.originalPrice > book.discountedPrice && (
+                <>
+                  <span className="bd-price-original">
+                    ₹{book.originalPrice}
+                  </span>
+                  {savings > 0 && (
+                    <span className="bd-savings-badge">
+                      Save ₹{savings} ({savingsPercentage}% off)
+                    </span>
+                  )}
+                </>
+              )}
+            </div>
+            <meta itemProp="priceCurrency" content="INR" />
+            <meta
+              itemProp="availability"
+              content={
+                book.stock > 0
+                  ? "https://schema.org/InStock"
+                  : "https://schema.org/OutOfStock"
+              }
+            />
+            <meta
+              itemProp="itemCondition"
+              content="https://schema.org/NewCondition"
+            />
+            <meta itemProp="seller" content="TheBookX" />
+
+            <div className="bd-stock-line">
+              {isOutOfStock ? (
+                <>
+                  <XCircle size={14} className="bd-stock-icon-danger" />
+                  <span className="bd-stock-text bd-text-danger">
+                    Currently out of stock
+                  </span>
+                </>
+              ) : book.stock < 10 ? (
+                <>
+                  <CheckCircle2 size={14} className="bd-stock-icon-warning" />
+                  <span className="bd-stock-text bd-text-warning">
+                    Only {book.stock} left — order soon
+                  </span>
+                </>
+              ) : (
+                <>
+                  <CheckCircle2 size={14} className="bd-stock-icon-success" />
+                  <span className="bd-stock-text bd-text-success">
+                    In stock — delivers in 3-7 days
+                  </span>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* ===== Trust strip ===== */}
+          <div className="bd-trust-strip">
+            <div className="bd-trust-item">
+              <Truck size={18} className="bd-trust-icon" />
+              <span className="bd-trust-label">Free Shipping</span>
+            </div>
+            <div className="bd-trust-divider" />
+            <div className="bd-trust-item">
+              <ShieldCheck size={18} className="bd-trust-icon" />
+              <span className="bd-trust-label">Secure Delivery</span>
+            </div>
+            <div className="bd-trust-divider" />
+            <div className="bd-trust-item">
+              <RotateCcw size={18} className="bd-trust-icon" />
+              <span className="bd-trust-label">7-Day Returns</span>
+            </div>
+          </div>
+
+          {/* ===== Inline CTA row (visible on desktop, hidden on mobile via CSS) ===== */}
+          <div className="bd-cta-inline">
             <button
-              className="flex flex-row items-center gap-12 justify-center sec-mid-btn"
+              type="button"
+              className="bd-cta-icon-btn"
               onClick={handleWishlist}
+              aria-label={
+                inWishlist ? "Remove from wishlist" : "Add to wishlist"
+              }
             >
               <Heart
                 size={20}
-                stroke="gray"
-                fill={inWishlist ? "red" : "none"}
+                fill={inWishlist ? "var(--danger)" : "none"}
+                color={inWishlist ? "var(--danger)" : "var(--foreground)"}
               />
             </button>
             <button
-              className="sec-mid-btn flex flex-row gap-12"
+              type="button"
+              className="bd-cta-icon-btn"
               onClick={handleReview}
+              aria-label="Write a review"
             >
               <MessageSquare size={20} />
             </button>
             <LoadingButton
-              className="flex-1 pri-big-btn flex flex-row items-center gap-12 justify-center"
+              className="bd-cta-primary"
               onClick={handleAddToCart}
-              disabled={(isOneRupee && hasOneRupeeInCart) || book.stock === 0}
-              icon={<ShoppingCart size={20} />}
+              aria-disabled={isAddDisabled}
+              icon={<ShoppingCart size={18} />}
             >
-              {book.stock === 0 ? "Out of Stock" : "Add to Cart"}
+              {isOutOfStock ? "Out of Stock" : "Add to Cart"}
             </LoadingButton>
           </div>
 
-          {/* Delivery Info */}
-          <div className="bg-gray-50 rounded-lg p-16 mt-8">
-            <p className="font-12 text-gray-600 text-center">
-              🇮🇳 Delivered securely across India via <strong>Delhivery</strong>{" "}
-              and <strong>Indian Post</strong>. Estimated delivery: 3-7 business
-              days.{" "}
-              <a href="/shipping" className="green underline">
-                Learn more
-              </a>
-            </p>
+          {/* ===== Accordions ===== */}
+          <div className="bd-accordions">
+            <Accordion icon={BookOpen} title="Description" defaultOpen>
+              <p className="bd-description" itemProp="description">
+                {book.description}
+              </p>
+            </Accordion>
+
+            <Accordion icon={FileText} title="Specifications">
+              <dl className="bd-specs-list">
+                {book.author && (
+                  <div className="bd-spec-row">
+                    <dt className="bd-spec-label">Author</dt>
+                    <dd className="bd-spec-value">
+                      <Link
+                        href={`/author/${book.authorSlug || slugify(book.author)}`}
+                        className="bd-spec-link"
+                      >
+                        {book.author}
+                      </Link>
+                    </dd>
+                  </div>
+                )}
+                {book.pages && (
+                  <div className="bd-spec-row">
+                    <dt className="bd-spec-label">Pages</dt>
+                    <dd className="bd-spec-value">{book.pages}</dd>
+                  </div>
+                )}
+                {book.size && (
+                  <div className="bd-spec-row">
+                    <dt className="bd-spec-label">Format</dt>
+                    <dd className="bd-spec-value">{book.size}</dd>
+                  </div>
+                )}
+                {book.language && (
+                  <div className="bd-spec-row">
+                    <dt className="bd-spec-label">Language</dt>
+                    <dd className="bd-spec-value">{book.language}</dd>
+                  </div>
+                )}
+                {book.catalogue?.length > 0 && (
+                  <div className="bd-spec-row">
+                    <dt className="bd-spec-label">Categories</dt>
+                    <dd className="bd-spec-value">
+                      {book.catalogue.join(", ")}
+                    </dd>
+                  </div>
+                )}
+                <div className="bd-spec-row">
+                  <dt className="bd-spec-label">Availability</dt>
+                  <dd className="bd-spec-value">
+                    {book.stock > 0 ? `${book.stock} in stock` : "Out of stock"}
+                  </dd>
+                </div>
+              </dl>
+            </Accordion>
+
+            <Accordion icon={Star} title="Reviews">
+              <BookReviews
+                bookId={book.id}
+                bookName={book.name}
+                authorName={book.author}
+              />
+            </Accordion>
+
+            <Accordion icon={Truck} title="Shipping & Returns">
+              <div className="bd-shipping-content">
+                <div className="bd-shipping-row">
+                  <Truck size={16} className="bd-shipping-icon" />
+                  <div>
+                    <p className="bd-shipping-title">
+                      Free shipping across India
+                    </p>
+                    <p className="bd-shipping-desc">
+                      Delivered via Delhivery and Indian Post in 3-7 business
+                      days.
+                    </p>
+                  </div>
+                </div>
+                <div className="bd-shipping-row">
+                  <ShieldCheck size={16} className="bd-shipping-icon" />
+                  <div>
+                    <p className="bd-shipping-title">Secure packaging</p>
+                    <p className="bd-shipping-desc">
+                      Every book is wrapped in protective packaging to arrive in
+                      perfect condition.
+                    </p>
+                  </div>
+                </div>
+                <div className="bd-shipping-row">
+                  <RotateCcw size={16} className="bd-shipping-icon" />
+                  <div>
+                    <p className="bd-shipping-title">7-day easy returns</p>
+                    <p className="bd-shipping-desc">
+                      Not satisfied? Return within 7 days of delivery for a full
+                      refund.{" "}
+                      <Link href="/shipping" className="bd-spec-link">
+                        Learn more
+                      </Link>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </Accordion>
           </div>
 
-          <div className="dashed-border my-20"></div>
+          {/* ===== Category tags ===== */}
+          {book.catalogue?.length > 0 && (
+            <div className="bd-tags-scroll">
+              {book.catalogue.map((tag) => (
+                <Link
+                  key={tag}
+                  href={`/category/${slugify(tag)}`}
+                  className="bd-tag-pill"
+                  aria-label={`Browse more ${tag} books`}
+                >
+                  #{tag}
+                </Link>
+              ))}
+            </div>
+          )}
 
-          <BookReviews
-            bookId={book.id}
-            bookName={book.name}
-            authorName={book.author}
-          />
+          {/* ===== You May Also Like ===== */}
+          <div className="bd-section-block">
+            <YouMayLike
+              title="You May Also Like"
+              subtitle={`Discover more books similar to ${book.name}`}
+              items={relatedBooks}
+              initialCount={6}
+              step={6}
+              slugify={slugify}
+              renderItem={(relatedBook) => (
+                <BookCard key={relatedBook.id} book={relatedBook} />
+              )}
+            />
+          </div>
 
-          {/* You May Also Like Section - SEO Internal Linking */}
-          <YouMayLike
-            title="You May Also Like"
-            subtitle={`Discover more books similar to ${book.name}`}
-            items={relatedBooks}
-            initialCount={6}
-            step={6}
-            slugify={slugify}
-            renderItem={(relatedBook) => (
-              <BookCard key={relatedBook.id} book={relatedBook} />
-            )}
-          />
-
-          {/* Browse More Categories - Footer Links */}
-          <div className="browse-categories-footer mt-24 pt-24 border-t border-gray-200">
-            <h4 className="font-14 weight-600 mb-12">Browse More Categories</h4>
-            <div className="flex flex-row flex-wrap gap-12">
+          {/* ===== Browse More Categories ===== */}
+          <div className="bd-browse-block">
+            <h4 className="bd-browse-title">Browse More Categories</h4>
+            <div className="bd-browse-chips">
               {[...new Set(books.flatMap((b) => b.catalogue || []))]
                 .slice(0, 15)
                 .map((category) => (
-                  <a
+                  <Link
                     key={category}
                     href={`/category/${slugify(category)}`}
-                    className="font-12 sec-mid-btn px-12 py-6"
+                    className="bd-browse-chip"
                   >
                     {category.charAt(0).toUpperCase() + category.slice(1)}
-                  </a>
+                  </Link>
                 ))}
             </div>
           </div>
+
+          {/* Spacer so sticky bottom bar doesn't overlap last content on mobile */}
+          <div className="bd-bottom-spacer" />
+        </div>
+      </div>
+
+      {/* ===== Sticky bottom CTA (mobile only) ===== */}
+      <div className="bd-sticky-bottom">
+        <div className="bd-sticky-bottom-inner">
+          <div className="bd-sticky-price">
+            <span className="bd-sticky-price-current">
+              ₹{book.discountedPrice}
+            </span>
+            {book.originalPrice > book.discountedPrice && (
+              <span className="bd-sticky-price-original">
+                ₹{book.originalPrice}
+              </span>
+            )}
+          </div>
+          <button
+            type="button"
+            className="bd-sticky-icon-btn"
+            onClick={handleWishlist}
+            aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
+          >
+            <Heart
+              size={20}
+              fill={inWishlist ? "var(--danger)" : "none"}
+              color={inWishlist ? "var(--danger)" : "var(--foreground)"}
+            />
+          </button>
+          <LoadingButton
+            className="bd-sticky-add-btn"
+            onClick={handleAddToCart}
+            aria-disabled={isAddDisabled}
+            icon={<ShoppingCart size={18} />}
+          >
+            {isOutOfStock ? "Out of Stock" : "Add to Cart"}
+          </LoadingButton>
         </div>
       </div>
     </>

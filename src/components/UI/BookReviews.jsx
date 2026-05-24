@@ -140,39 +140,6 @@ export default function BookReviews({ bookId, bookName, authorName }) {
           <meta itemProp="itemReviewed" content={bookName} />
         </div>
 
-        <div className="reviews-header flex flex-col gap-24">
-          <div className="reviews-header-left">
-            <h3 className="font-20 weight-600">Reader Reviews</h3>
-            <div className="rating-summary flex flex-row justify-between font-12">
-              <div className="rating-stars-large">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Star
-                    key={star}
-                    size={20}
-                    fill={star <= Math.round(avgRating) ? "#FFB800" : "none"}
-                    color="#FFB800"
-                  />
-                ))}
-              </div>
-              <div className="flex flex-row gap-4">
-                <span className="avg-rating">{avgRating}</span>
-                <span className="total-reviews">out of 5</span>
-              </div>
-            </div>
-          </div>
-          <button
-            onClick={() => {
-              const reviewUrl = `/review?bk=${bookId}`;
-              window.location.href = reviewUrl;
-            }}
-            className="sec-mid-btn width100 flex flex-row gap-4 items-center justify-center"
-            aria-label={`Write a review for ${bookName}`}
-          >
-            <MessageSquare size={16} />
-            Write a Review
-          </button>
-        </div>
-
         {/* Hidden SEO content for better keyword density */}
         <div
           className="seo-hidden-content"
@@ -307,6 +274,38 @@ export default function BookReviews({ bookId, bookName, authorName }) {
               </div>
             );
           })}
+        </div>
+
+        <div className="reviews-header flex flex-col gap-24 width100">
+          <div className="reviews-header-left width100">
+            <div className=" flex flex-row justify-between font-12">
+              <div className="rating-stars-large">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Star
+                    key={star}
+                    size={20}
+                    fill={star <= Math.round(avgRating) ? "#FFB800" : "none"}
+                    color="#FFB800"
+                  />
+                ))}
+              </div>
+              <div className="flex flex-row gap-4">
+                <span className="avg-rating">{avgRating}</span>
+                <span className="total-reviews">out of 5</span>
+              </div>
+            </div>
+          </div>
+          <button
+            onClick={() => {
+              const reviewUrl = `/review?bk=${bookId}`;
+              window.location.href = reviewUrl;
+            }}
+            className="sec-mid-btn width100 flex flex-row gap-4 items-center justify-center"
+            aria-label={`Write a review for ${bookName}`}
+          >
+            <MessageSquare size={16} />
+            Write a Review
+          </button>
         </div>
 
         {/* Lazy Loading Trigger */}

@@ -7,9 +7,9 @@ import AddressModal from "@/components/UI/AddressModal";
 import BillModal from "@/components/UI/BillModal";
 import CartOfferStrip from "@/components/UI/CartOfferStrip";
 import HorizontalScroll from "@/components/UI/HorizontalScroll";
-import SlideConfirm from "@/components/UI/SlideConfirm";
 import YouMayLike from "@/components/UI/YouMayLike";
 import { useStore } from "@/context/StoreContext";
+import { showToast } from "@/context/ToastContext";
 import { books } from "@/utils/book";
 import {
   CART_OFFERS,
@@ -25,6 +25,8 @@ import { permanentlyUnlockOffer, areOneRupeeBooksEnabled } from "@/utils/book";
 import { FaWhatsapp } from "react-icons/fa";
 import Link from "next/link";
 import { FcDocument } from "react-icons/fc";
+
+const MIN_CHECKOUT_AMOUNT = 151;
 
 export default function BagPage() {
   // ✅ ALL hooks go here - NO EXCEPTIONS
@@ -98,7 +100,11 @@ export default function BagPage() {
   }
 
   const finalPayable = totalDiscounted - offerDiscount;
-  const canCheckout = totalDiscounted >= 151;
+  const canCheckout = totalDiscounted >= MIN_CHECKOUT_AMOUNT;
+  const amountNeededToCheckout = Math.max(
+    0,
+    MIN_CHECKOUT_AMOUNT - totalDiscounted,
+  );
 
   const standardDeliveryCharge = getDeliveryCharge(totalDiscounted, false);
   const fasterDeliveryCharge = getDeliveryCharge(totalDiscounted, true);
@@ -421,6 +427,26 @@ _Thank you for shopping with TheBookX! 📚✨_
     setShowBill(false);
   };
 
+  // ----- Confirm Order button handler -----
+  // Always fires onClick (button is NOT natively disabled), so we can
+  // show a toast explaining WHY the action isn't allowed yet.
+  const handleConfirmOrderClick = () => {
+    if (isShortening) {
+      showToast("Preparing your order, please wait…", "info");
+      return;
+    }
+    if (!canCheckout) {
+      showToast(
+        `Add ₹${amountNeededToCheckout} more to checkout (minimum ₹${MIN_CHECKOUT_AMOUNT})`,
+        "warning",
+      );
+      return;
+    }
+    setShowAddressModal(true);
+  };
+
+  const isCheckoutDisabled = !canCheckout || isShortening;
+
   // ✅ NOW the conditional return (after all hooks and functions)
   if (!cartBooks.length) {
     return (
@@ -435,11 +461,7 @@ _Thank you for shopping with TheBookX! 📚✨_
               </span>
             </div>
           </div>
-          <Link
-            href="/profile"
-            className="sec-mid-btn"
-            onClick={() => setIsMenuOpen(false)}
-          >
+          <Link href="/profile" className="sec-mid-btn">
             <FcDocument size={16} color="orange" />
             Order History
           </Link>
@@ -469,11 +491,7 @@ _Thank you for shopping with TheBookX! 📚✨_
             </span>
           </div>
         </div>
-        <Link
-          href="/profile"
-          className="sec-mid-btn"
-          onClick={() => setIsMenuOpen(false)}
-        >
+        <Link href="/profile" className="sec-mid-btn">
           <FcDocument size={16} color="orange" />
           Order History
         </Link>
@@ -579,11 +597,21 @@ _Thank you for shopping with TheBookX! 📚✨_
           </span>
         </div>
 
-        <SlideConfirm
-          disabled={!canCheckout || isShortening}
-          onComplete={() => setShowAddressModal(true)}
-          resetTrigger={showAddressModal}
-        />
+        {/* Confirm Order button — always clickable so we can show a toast
+            with the reason when the action isn't actually allowed. */}
+        <button
+          type="button"
+          className="pri-big-btn"
+          onClick={handleConfirmOrderClick}
+          aria-disabled={isCheckoutDisabled}
+          style={
+            isCheckoutDisabled
+              ? { opacity: 0.6, cursor: "not-allowed" }
+              : undefined
+          }
+        >
+          {isShortening ? "Preparing…" : "Confirm Order"}
+        </button>
       </div>
 
       <AddressModal
@@ -603,7 +631,7 @@ _Thank you for shopping with TheBookX! 📚✨_
         cartBooks={cartBooks}
         generateViewBagLinkWithDetails={generateViewBagLinkWithDetails}
         shortenUrl={shortenUrl}
-        offerLabel={offerLabel} // e.g. "FLAT100" or "NEWUSER10"
+        offerLabel={offerLabel}
         offerDiscount={offerDiscount}
       />
 

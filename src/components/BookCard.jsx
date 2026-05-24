@@ -15,6 +15,7 @@ import { getOneRupeeOfferData, getRemainingOfferTime } from "@/utils/book";
 import { trackFunnelEvent } from "@/lib/analytics";
 import { EVENTS } from "@/lib/trackingEvents";
 import { MILESTONES } from "@/lib/trackingEvents";
+import { showToast } from "@/context/ToastContext";
 
 // Helper function to get full URL
 const getFullUrl = (path) => {
@@ -84,6 +85,9 @@ export default function BookCard({ book }) {
     return b?.discountedPrice === 1;
   });
 
+  // Guard: when a ₹1 book is already in cart, prevent adding another and toast
+  const isOneRupeeLimitReached = isOneRupee && hasOneRupeeInCart;
+
   const bookUrl = `/books/${slugify(book.name)}`;
   const fullUrl = `https://thebookx.in${bookUrl}`;
 
@@ -152,6 +156,12 @@ export default function BookCard({ book }) {
   const isRupeeBookLocked = isLocked;
 
   const handleAddToCart = () => {
+    // ₹1 max-allotment guard — same toast for both "Add" and "+"
+    if (isOneRupeeLimitReached) {
+      showToast("Maximum book limit reached for Rs.1", "info");
+      return;
+    }
+
     if (book.discountedPrice === 1 && isRupeeBookLocked) {
       // Track blocked attempt to add locked ₹1 book
       trackFunnelEvent(EVENTS.ONE_RUPEE_BOOK_ADD_BLOCKED, {
@@ -191,6 +201,17 @@ export default function BookCard({ book }) {
 
     setConfetti(true);
     setTimeout(() => setConfetti(false), 50);
+  };
+
+  // Plus button handler — separate so we can show the same toast
+  // when the ₹1 max-allotment is reached, instead of silently no-op.
+  const handleIncreaseQty = () => {
+    if (isOneRupeeLimitReached) {
+      showToast("Maximum book allotted reached for Rs.1", "info");
+      return;
+    }
+    addToCart(book.id);
+    trackAddToCart({ book, qty: 1 });
   };
 
   const handleLockedBookClick = (e) => {
@@ -433,8 +454,8 @@ export default function BookCard({ book }) {
                 <LoadingButton
                   className="sec-mid-btn width100"
                   onClick={handleAddToCart}
-                  disabled={isOneRupee && hasOneRupeeInCart}
                   aria-label={`Add ${book.name} to cart`}
+                  aria-disabled={isOneRupeeLimitReached}
                 >
                   <span>Add </span>
                 </LoadingButton>
@@ -453,13 +474,10 @@ export default function BookCard({ book }) {
                   </span>
 
                   <button
-                    onClick={() => {
-                      addToCart(book.id);
-                      trackAddToCart({ book, qty: 1 });
-                    }}
-                    disabled={isOneRupee && hasOneRupeeInCart}
+                    onClick={handleIncreaseQty}
                     className="plus-cart"
                     aria-label={`Increase quantity of ${book.name}`}
+                    aria-disabled={isOneRupeeLimitReached}
                   >
                     <Plus size={14} />
                   </button>

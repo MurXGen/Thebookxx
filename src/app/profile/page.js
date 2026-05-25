@@ -535,7 +535,7 @@ export default function MyOrdersPage() {
                   </div>
 
                   {/* Payment Status Banner - NEW */}
-                  <div
+                  {/* <div
                     className={`payment-status-banner payment-${paymentStatus.type}`}
                   >
                     <div className="payment-status-left">
@@ -554,7 +554,7 @@ export default function MyOrdersPage() {
                         </span>
                       </div>
                     )}
-                  </div>
+                  </div> */}
 
                   {/* Order Items Preview */}
                   <div className="order-items-preview">

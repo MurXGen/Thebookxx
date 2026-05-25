@@ -25,6 +25,7 @@ import {
   Zap,
   Download,
   Gift,
+  AlertTriangle,
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -32,40 +33,25 @@ import { useEffect, useState } from "react";
 
 const safelyParseOrderData = (orderParam) => {
   try {
-    // First, decode the URI component
     let decoded = decodeURIComponent(orderParam);
-
-    // Replace any escaped newlines and other problematic characters
     decoded = decoded
       .replace(/\\n/g, " ")
       .replace(/\\r/g, " ")
       .replace(/\\t/g, " ")
       .replace(/\\"/g, '"');
-
-    // Parse the JSON
     return JSON.parse(decoded);
   } catch (e) {
     console.error("First parse attempt failed:", e);
-
     try {
-      // Second attempt: Try to fix common JSON issues
       let fixed = decodeURIComponent(orderParam);
-
-      // Fix unescaped newlines in strings
       fixed = fixed.replace(/\n/g, "\\n");
       fixed = fixed.replace(/\r/g, "\\r");
-
-      // Fix any other problematic characters
       fixed = fixed.replace(/([^\\])\\n/g, "$1\\\\n");
-
       return JSON.parse(fixed);
     } catch (e2) {
       console.error("Second parse attempt failed:", e2);
-
       try {
-        // Third attempt: Use a more aggressive approach
         const decoded = decodeURIComponent(orderParam);
-        // Use Function constructor as a fallback (safe since we control the input)
         const parsed = new Function("return (" + decoded + ")")();
         return parsed;
       } catch (e3) {
@@ -76,6 +62,48 @@ const safelyParseOrderData = (orderParam) => {
   }
 };
 
+// Reasons available when "Unable to Deliver" is checked.
+// `key` is stored in localStorage; `label` shown in UI; `message` is used in the
+// WhatsApp reminder body.
+const UNABLE_TO_DELIVER_REASONS = [
+  {
+    key: "address_mismatch",
+    label: "Address mismatch or incomplete",
+    message:
+      "the delivery address provided seems incomplete or doesn't match the location. Could you please share the correct, complete address (including landmark) so we can re-attempt delivery?",
+  },
+  {
+    key: "number_mismatch",
+    label: "Phone number not reachable / wrong",
+    message:
+      "the courier was unable to reach you on the contact number provided. Could you please share an alternate working number so we can coordinate the re-delivery?",
+  },
+  {
+    key: "customer_unavailable",
+    label: "Customer not available",
+    message:
+      "the courier visited your address but you were not available to receive the order. Could you please share a time slot when someone will be at the address so we can re-attempt delivery?",
+  },
+  {
+    key: "address_not_found",
+    label: "Address not found by courier",
+    message:
+      "the courier couldn't locate the delivery address. Could you please share a Google Maps link or a clearer landmark so the re-delivery goes smoothly?",
+  },
+  {
+    key: "customer_refused",
+    label: "Customer refused to accept",
+    message:
+      "the courier informed us that the package was refused at the time of delivery. Could you let us know if there's an issue we can help resolve, or if you'd like us to re-attempt the delivery?",
+  },
+  {
+    key: "other",
+    label: "Other reason",
+    message:
+      "the delivery couldn't be completed. Could you please reach out so we can sort this out and schedule a re-delivery at your convenience?",
+  },
+];
+
 export default function ViewBagClient() {
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(true);
@@ -85,8 +113,11 @@ export default function ViewBagClient() {
   const [orderData, setOrderData] = useState(null);
   const [orderStatus, setOrderStatus] = useState({
     isShipped: false,
+    isOutForDelivery: false, // NEW
     isDelivered: false,
     advancePaid: false,
+    isUnableToDeliver: false, // NEW
+    unableToDeliverReason: "", // NEW — stores the reason key
   });
   const [trackingId, setTrackingId] = useState("");
   const [showTrackingInput, setShowTrackingInput] = useState(false);
@@ -126,7 +157,6 @@ export default function ViewBagClient() {
         .filter(Boolean)
     : [];
 
-  // Check for missing itemsParam AFTER cartBooks is defined
   if (!itemsParam) {
     return (
       <div className="section-1200 flex flex-col gap-12 items-center">
@@ -150,14 +180,10 @@ export default function ViewBagClient() {
     setCurrentUrl(window.location.href);
 
     const orderParam = searchParams.get("order");
-    console.log("Raw orderParam from useSearchParams:", orderParam);
 
     if (orderParam) {
       try {
-        // The orderParam is already decoded by Next.js, so parse it directly
         const parsedOrder = JSON.parse(orderParam);
-
-        console.log("Successfully parsed order:", parsedOrder.orderId);
 
         setOrderData(parsedOrder);
         setIsFasterDelivery(parsedOrder.fasterDelivery || false);
@@ -180,7 +206,9 @@ export default function ViewBagClient() {
           `order_status_${parsedOrder.orderId}`,
         );
         if (savedStatus) {
-          setOrderStatus(JSON.parse(savedStatus));
+          // Merge with default to backfill new fields for older saved data
+          const parsed = JSON.parse(savedStatus);
+          setOrderStatus((prev) => ({ ...prev, ...parsed }));
         }
 
         const savedTracking = localStorage.getItem(
@@ -201,19 +229,13 @@ export default function ViewBagClient() {
         setParseError(false);
       } catch (e) {
         console.error("Failed to parse order data:", e);
-        console.error("Raw orderParam:", orderParam);
-
-        // Try to fix common JSON issues
         try {
           let fixedOrder = orderParam;
-          // Fix any unescaped newlines or control characters
           fixedOrder = fixedOrder
             .replace(/[\n\r\t]/g, " ")
             .replace(/\s+/g, " ");
-          // Fix literal backslash n
           fixedOrder = fixedOrder.replace(/\\n/g, " ").replace(/\\r/g, " ");
           const recoveredOrder = JSON.parse(fixedOrder);
-          console.log("Recovered order:", recoveredOrder.orderId);
           setOrderData(recoveredOrder);
           setParseError(false);
         } catch (e2) {
@@ -235,12 +257,6 @@ export default function ViewBagClient() {
 
     const deliveryCharge = getDeliveryChargeValue();
 
-    // ----- COD amount calculation -----
-    // Rules:
-    //   - If payment method is COD:
-    //       - advance paid  -> COD = totalWithDelivery - advanceAmount (default 99)
-    //       - advance NOT paid -> COD = totalWithDelivery
-    //   - If payment method is not COD -> COD = 0
     const isCOD =
       (orderData.paymentMethod || "").toLowerCase().includes("cod") ||
       (orderData.paymentMethod || "").toLowerCase().includes("cash");
@@ -253,7 +269,6 @@ export default function ViewBagClient() {
         ? Math.max(0, totalWithDelivery - advanceAmount)
         : totalWithDelivery;
     }
-    // -----------------------------------
 
     const orderToSave = {
       orderId: orderData.orderId,
@@ -265,9 +280,9 @@ export default function ViewBagClient() {
       state: orderData.state || "",
       pincode: orderData.pincode || "",
       paymentMethod: orderData.paymentMethod || "",
-      isCOD, // NEW
-      advanceAmount, // NEW (stored so card can recompute if needed)
-      codAmount, // NEW (already-computed amount to collect on delivery)
+      isCOD,
+      advanceAmount,
+      codAmount,
       isFasterDelivery: isFasterDelivery,
       isGiftWrap: isGiftWrap,
       deliveryCharge: deliveryCharge,
@@ -278,7 +293,10 @@ export default function ViewBagClient() {
       status: {
         advancePaid: orderStatus.advancePaid,
         isShipped: orderStatus.isShipped,
+        isOutForDelivery: orderStatus.isOutForDelivery,
         isDelivered: orderStatus.isDelivered,
+        isUnableToDeliver: orderStatus.isUnableToDeliver,
+        unableToDeliverReason: orderStatus.unableToDeliverReason,
       },
       books: cartBooks.map((book) => ({
         name: book.name,
@@ -332,7 +350,6 @@ export default function ViewBagClient() {
 
   const finalPayableValue = totalDiscountedValue - offerDiscountValue;
 
-  // Get dynamic delivery charges using the new logic
   const standardCharge = getDeliveryCharge(totalDiscountedValue, false);
   const fasterCharge = getDeliveryCharge(totalDiscountedValue, true);
   const standardLabel = getDeliveryLabel(totalDiscountedValue, false);
@@ -368,8 +385,8 @@ export default function ViewBagClient() {
     return standardOriginal;
   };
 
-  const handleStatusUpdate = (field, value) => {
-    const newStatus = { ...orderStatus, [field]: value };
+  // Generic helper — persist the new orderStatus to localStorage
+  const persistStatus = (newStatus) => {
     setOrderStatus(newStatus);
     if (orderData) {
       localStorage.setItem(
@@ -377,6 +394,26 @@ export default function ViewBagClient() {
         JSON.stringify(newStatus),
       );
     }
+  };
+
+  const handleStatusUpdate = (field, value) => {
+    persistStatus({ ...orderStatus, [field]: value });
+  };
+
+  // Toggle "Unable to Deliver" — when turning OFF, clear the reason too
+  const handleUnableToDeliverToggle = (checked) => {
+    persistStatus({
+      ...orderStatus,
+      isUnableToDeliver: checked,
+      unableToDeliverReason: checked ? orderStatus.unableToDeliverReason : "",
+    });
+  };
+
+  const handleReasonChange = (reasonKey) => {
+    persistStatus({
+      ...orderStatus,
+      unableToDeliverReason: reasonKey,
+    });
   };
 
   const handleSaveTrackingId = () => {
@@ -474,7 +511,15 @@ export default function ViewBagClient() {
     csvContent += "\nOrder Status\n";
     csvContent += `Advance Paid,${orderStatus.advancePaid ? "Yes" : "No"}\n`;
     csvContent += `Item Shipped,${orderStatus.isShipped ? "Yes" : "No"}\n`;
+    csvContent += `Out for Delivery,${orderStatus.isOutForDelivery ? "Yes" : "No"}\n`;
     csvContent += `Item Delivered,${orderStatus.isDelivered ? "Yes" : "No"}\n`;
+    csvContent += `Unable to Deliver,${orderStatus.isUnableToDeliver ? "Yes" : "No"}\n`;
+    if (orderStatus.isUnableToDeliver && orderStatus.unableToDeliverReason) {
+      const reasonObj = UNABLE_TO_DELIVER_REASONS.find(
+        (r) => r.key === orderStatus.unableToDeliverReason,
+      );
+      csvContent += `Failure Reason,"${reasonObj?.label || orderStatus.unableToDeliverReason}"\n`;
+    }
     csvContent += `Tracking ID,${savedTrackingId || "Not available"}\n`;
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -530,6 +575,32 @@ export default function ViewBagClient() {
           `Thank you for your patience! 📖✨\n\n` +
           `For any queries, feel free to reach out to us.`,
       );
+    } else if (messageType === "out_for_delivery") {
+      message = encodeURIComponent(
+        `🚚 *Out for Delivery — TheBookX*\n\n` +
+          `Dear ${orderData?.name || "Customer"},\n\n` +
+          `Great news! Your order #${orderData?.orderId} is *out for delivery* today and will reach you soon.\n\n` +
+          `📦 Tracking ID: ${savedTrackingId || "Not available"}\n\n` +
+          `Please keep your phone reachable so the delivery agent can contact you. ` +
+          `If you're not available, kindly share a time slot or an alternate number.\n\n` +
+          `Thank you for shopping with TheBookX! 📖✨`,
+      );
+    } else if (messageType === "unable_to_deliver") {
+      const reasonObj = UNABLE_TO_DELIVER_REASONS.find(
+        (r) => r.key === orderStatus.unableToDeliverReason,
+      );
+      const reasonBlurb =
+        reasonObj?.message ||
+        "the delivery couldn't be completed. Could you reach out so we can sort this out and re-attempt the delivery?";
+
+      message = encodeURIComponent(
+        `⚠️ *Delivery Issue — TheBookX*\n\n` +
+          `Dear ${orderData?.name || "Customer"},\n\n` +
+          `We tried to deliver your order #${orderData?.orderId} but ${reasonBlurb}\n\n` +
+          `📦 Tracking ID: ${savedTrackingId || "Not available"}\n\n` +
+          `Please reply to this message and we'll arrange a re-delivery right away.\n\n` +
+          `Thank you for your patience.\n— Team TheBookX`,
+      );
     }
 
     window.open(`https://wa.me/${formattedNumber}?text=${message}`, "_blank");
@@ -553,7 +624,6 @@ export default function ViewBagClient() {
         <h2 className="font-16 weight-600">Order Details</h2>
       </div>
 
-      {/* User Details Section */}
       {orderData && (
         <div className="flex flex-col gap-16">
           <h3 className="font-16 weight-600 mb-16">Customer Details</h3>
@@ -718,21 +788,11 @@ export default function ViewBagClient() {
                       : "Delivery Charge"}
                   </span>
                   <div className="text-right">
-                    {/* {originalCharge && (
-                      <span className="font-12 line-through gray-400 mr-8">
-                        ₹{originalCharge}
-                      </span>
-                    )} */}
                     <span
                       className={`font-14 weight-500 ${isFasterDelivery ? "orange" : "red"}`}
                     >
                       + ₹{deliveryCharge}
                     </span>
-                    {/* {deliverySavings > 0 && (
-                      <span className="font-10 green ml-8">
-                        Save ₹{deliverySavings}
-                      </span>
-                    )} */}
                   </div>
                 </div>
               )}
@@ -760,6 +820,7 @@ export default function ViewBagClient() {
                 </div>
               )}
 
+              {/* ===== Shipping status checkboxes ===== */}
               <div className="shipping-status-section mt-12">
                 <label className="flex items-center gap-8 cursor-pointer">
                   <input
@@ -774,17 +835,92 @@ export default function ViewBagClient() {
                 </label>
 
                 {orderStatus.isShipped && (
-                  <label className="flex items-center gap-8 mt-8 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={orderStatus.isDelivered}
-                      onChange={(e) =>
-                        handleStatusUpdate("isDelivered", e.target.checked)
-                      }
-                      className="cursor-pointer"
-                    />
-                    <span className="font-14">Item Delivered</span>
-                  </label>
+                  <>
+                    {/* NEW: Out for Delivery */}
+                    <label className="flex items-center gap-8 mt-8 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={orderStatus.isOutForDelivery}
+                        onChange={(e) =>
+                          handleStatusUpdate(
+                            "isOutForDelivery",
+                            e.target.checked,
+                          )
+                        }
+                        className="cursor-pointer"
+                      />
+                      <span className="font-14">Out for Delivery</span>
+                    </label>
+
+                    <label className="flex items-center gap-8 mt-8 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={orderStatus.isDelivered}
+                        onChange={(e) =>
+                          handleStatusUpdate("isDelivered", e.target.checked)
+                        }
+                        className="cursor-pointer"
+                      />
+                      <span className="font-14">Item Delivered</span>
+                    </label>
+
+                    {/* NEW: Unable to Deliver — only shown if not yet delivered */}
+                    {!orderStatus.isDelivered && (
+                      <div className="mt-12">
+                        <label className="flex items-center gap-8 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={orderStatus.isUnableToDeliver}
+                            onChange={(e) =>
+                              handleUnableToDeliverToggle(e.target.checked)
+                            }
+                            className="cursor-pointer"
+                          />
+                          <span className="font-14 red flex items-center gap-4">
+                            <AlertTriangle size={14} />
+                            Unable to Deliver
+                          </span>
+                        </label>
+
+                        {orderStatus.isUnableToDeliver && (
+                          <div
+                            className="mt-12 p-12"
+                            style={{
+                              background: "var(--tertiary-10, #fb850010)",
+                              border: "1px solid var(--tertiary, #fb8500)",
+                              borderRadius: "8px",
+                            }}
+                          >
+                            <span className="font-12 weight-600 mb-8 block">
+                              Select reason:
+                            </span>
+                            <div className="flex flex-col gap-4">
+                              {UNABLE_TO_DELIVER_REASONS.map((r) => (
+                                <label
+                                  key={r.key}
+                                  className="flex items-center gap-8 cursor-pointer"
+                                  style={{ padding: "4px 0" }}
+                                >
+                                  <input
+                                    type="radio"
+                                    name="unable_reason"
+                                    value={r.key}
+                                    checked={
+                                      orderStatus.unableToDeliverReason ===
+                                      r.key
+                                    }
+                                    onChange={() => handleReasonChange(r.key)}
+                                    style={{ accentColor: "#fb8500" }}
+                                  />
+                                  <span className="font-13">{r.label}</span>
+                                </label>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
 
@@ -837,18 +973,54 @@ export default function ViewBagClient() {
                 </div>
               )}
 
-              <div className="reminder-buttons-section mt-16">
-                {orderStatus.isShipped && savedTrackingId ? (
-                  <button
-                    onClick={() => handleRemindClick("shipped")}
-                    className="pri-big-btn width100 flex items-center justify-center gap-8"
-                    style={{ background: "#25D366" }}
-                  >
-                    <Bell size={16} />
-                    Remind Customer (Order Shipped)
-                    <Send size={14} />
-                  </button>
-                ) : !orderStatus.isShipped ? (
+              {/* ===== Reminder buttons (priority order) ===== */}
+              <div className="reminder-buttons-section mt-16 flex flex-col gap-8">
+                {/* Unable to Deliver — takes top priority when active */}
+                {orderStatus.isUnableToDeliver &&
+                  orderStatus.unableToDeliverReason && (
+                    <button
+                      onClick={() => handleRemindClick("unable_to_deliver")}
+                      className="pri-big-btn width100 flex items-center justify-center gap-8"
+                      style={{ background: "var(--danger, #ef4444)" }}
+                    >
+                      <AlertTriangle size={16} />
+                      Notify Customer (Delivery Issue)
+                      <Send size={14} />
+                    </button>
+                  )}
+
+                {/* Out for Delivery */}
+                {orderStatus.isOutForDelivery &&
+                  !orderStatus.isDelivered &&
+                  !orderStatus.isUnableToDeliver && (
+                    <button
+                      onClick={() => handleRemindClick("out_for_delivery")}
+                      className="pri-big-btn width100 flex items-center justify-center gap-8"
+                      style={{ background: "#2196F3" }}
+                    >
+                      <Truck size={16} />
+                      Notify Customer (Out for Delivery)
+                      <Send size={14} />
+                    </button>
+                  )}
+
+                {/* Shipped */}
+                {orderStatus.isShipped &&
+                  !orderStatus.isOutForDelivery &&
+                  savedTrackingId && (
+                    <button
+                      onClick={() => handleRemindClick("shipped")}
+                      className="pri-big-btn width100 flex items-center justify-center gap-8"
+                      style={{ background: "#25D366" }}
+                    >
+                      <Bell size={16} />
+                      Remind Customer (Order Shipped)
+                      <Send size={14} />
+                    </button>
+                  )}
+
+                {/* Not yet shipped */}
+                {!orderStatus.isShipped && (
                   <button
                     onClick={() => handleRemindClick("shipping")}
                     className="pri-big-btn width100 flex items-center justify-center gap-8"
@@ -858,9 +1030,10 @@ export default function ViewBagClient() {
                     Remind Customer (Shipping in 1-2 days)
                     <Send size={14} />
                   </button>
-                ) : null}
+                )}
               </div>
 
+              {/* ===== Status timeline ===== */}
               <div className="status-timeline mt-16">
                 <div className="flex items-center gap-8">
                   {orderStatus.advancePaid || isUPI ? (
@@ -883,6 +1056,21 @@ export default function ViewBagClient() {
                     Order {orderStatus.isShipped ? "Shipped" : "Processing"}
                   </span>
                 </div>
+
+                {/* NEW: Out for Delivery row */}
+                <div className="flex items-center gap-8 mt-8">
+                  {orderStatus.isOutForDelivery ? (
+                    <Truck size={16} className="green" />
+                  ) : (
+                    <Clock size={16} className="gray-400" />
+                  )}
+                  <span className="font-12">
+                    {orderStatus.isOutForDelivery
+                      ? "Out for Delivery"
+                      : "Awaiting dispatch"}
+                  </span>
+                </div>
+
                 <div className="flex items-center gap-8 mt-8">
                   {orderStatus.isDelivered ? (
                     <Package size={16} className="green" />
@@ -893,6 +1081,27 @@ export default function ViewBagClient() {
                     Order {orderStatus.isDelivered ? "Delivered" : "In Transit"}
                   </span>
                 </div>
+
+                {/* NEW: Unable to Deliver row (only shown if active) */}
+                {orderStatus.isUnableToDeliver && (
+                  <div className="flex items-center gap-8 mt-8">
+                    <AlertTriangle size={16} className="red" />
+                    <span className="font-12 red">
+                      Unable to deliver
+                      {orderStatus.unableToDeliverReason && (
+                        <>
+                          {" — "}
+                          {
+                            UNABLE_TO_DELIVER_REASONS.find(
+                              (r) =>
+                                r.key === orderStatus.unableToDeliverReason,
+                            )?.label
+                          }
+                        </>
+                      )}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -1035,17 +1244,7 @@ export default function ViewBagClient() {
               {isFasterDelivery && "(Express)"}
             </span>
             <div className="text-right">
-              {/* {originalCharge && (
-                <span className="font-12 line-through gray-400 mr-8">
-                  ₹{originalCharge}
-                </span>
-              )} */}
               <span>+ ₹{deliveryCharge}</span>
-              {/* {deliverySavings > 0 && (
-                <span className="font-10 green ml-8">
-                  Save ₹{deliverySavings}
-                </span>
-              )} */}
             </div>
           </div>
         )}

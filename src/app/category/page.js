@@ -56,16 +56,15 @@ export default function CategoriesPage() {
       <div className="section-1200 flex flex-col gap-12">
         {/* Header */}
         <div className="categories-header flex flex-col gap-12">
-          <Link href="/" className="flex flex-row gap-4 items-center font-14">
-            <ArrowLeft size={18} />
-            Back to Home
-          </Link>
-          <div className="categories-title-wrapper">
-            <div>
-              <h1 className="categories-title">All Categories</h1>
-              <p className="categories-subtitle">
+          <div className="flex flex-row gap-12 items-center">
+            <Link href="/" className="cursor-pointer">
+              <ArrowLeft size={20} />
+            </Link>
+            <div className="flex flex-col">
+              <h2 className="font-24 weight-600">All Categories</h2>
+              <span className="font-12 dark-50">
                 Explore genres and find your next favorite book
-              </p>
+              </span>
             </div>
           </div>
         </div>
@@ -80,7 +79,6 @@ export default function CategoriesPage() {
               style={{
                 background: `linear-gradient(135deg, ${category.color}15, ${category.color}05)`,
                 borderColor: `${category.color}30`,
-                
               }}
             >
               <div className="category-card-content">

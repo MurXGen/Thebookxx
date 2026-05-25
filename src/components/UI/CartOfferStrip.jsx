@@ -89,7 +89,7 @@ export default function CartOfferStrip({ discountedAmount }) {
         return (
           <>
             <span className="success-text">₹{appliedOffer.value} OFF</span>{" "}
-            availed 🎉
+            unlocked 🎉
           </>
         );
       }
@@ -98,7 +98,7 @@ export default function CartOfferStrip({ discountedAmount }) {
         return (
           <>
             <span className="success-text">{appliedOffer.value}% OFF</span>{" "}
-            availed 🎉
+            unlocked 🎉
           </>
         );
       }

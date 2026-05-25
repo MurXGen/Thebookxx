@@ -3,6 +3,7 @@ import { books } from "@/utils/book";
 import { notFound } from "next/navigation";
 import BookCard from "@/components/BookCard";
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 function slugify(text) {
   return text
@@ -75,15 +76,17 @@ export default async function CategoryPage({ params }) {
       />
 
       <div className="category-page">
-        <div className="category-header">
-          <Link href="/category" className="back-link">
-            ← Back to All Books
+        <div className="flex flex-row gap-12 items-center  section-1200">
+          <Link href="/category" className="cursor-pointer">
+            <ArrowLeft size={20} />
           </Link>
-          <h1 className="category-title">{displayName} Books</h1>
-          <p className="category-description">
-            Browse our collection of {categoryBooks.length} {displayName} books.
-            Shop online at best prices with free shipping across India.
-          </p>
+          <div className="flex flex-col">
+            <h2 className="font-24 weight-600">{displayName} Books</h2>
+            <span className="font-12 dark-50">
+              Browse our collection of {categoryBooks.length} {displayName}{" "}
+              books. Shop online at best prices with free shipping across India.
+            </span>
+          </div>
         </div>
 
         <div className="books-grid">

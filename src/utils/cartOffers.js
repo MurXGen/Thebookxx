@@ -3,7 +3,7 @@ export const CART_OFFERS = [
     min: 0,
     target: 151,
     type: "free_shipping",
-    message: "Add ₹{remaining} more for checkout",
+    message: "Add ₹{remaining} more for checkout & Free Delivery",
     icon: "gift",
   },
   // {
@@ -51,7 +51,7 @@ export const getDeliveryCharge = (orderAmount, isFasterDelivery = false) => {
   }
 
   // Between 399 and 599 - Free standard, faster 119
-  if (orderAmount >= 151 && orderAmount < 9999) {
+  if (orderAmount >= 151 && orderAmount < 399) {
     if (isFasterDelivery) {
       return 119;
     }
@@ -91,10 +91,10 @@ export const getDeliveryLabel = (orderAmount, isFasterDelivery = false) => {
     return "Express Delivery";
   } else {
     if (orderAmount >= 799) {
-      return "Free shipping";
+      return "Free Delivery";
     }
     if (orderAmount >= 599 && orderAmount < 799) {
-      return "Free shipping";
+      return "Free Delivery";
     }
     if (orderAmount >= 399 && orderAmount < 599) {
       return "Free Delivery";

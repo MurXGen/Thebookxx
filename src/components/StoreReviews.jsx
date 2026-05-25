@@ -69,7 +69,7 @@ export default function StoreReviews() {
     <section className="store-reviews-section">
       <div className="section-1200">
         {/* Header */}
-        <div className="reviews-header">
+        <div className="reviews-header ">
           {/* <div className="reviews-title-wrapper">
             <div className="reviews-badge">
               <Quote size={24} />
@@ -83,7 +83,7 @@ export default function StoreReviews() {
           </div> */}
 
           {/* Trust Badges */}
-          <div className="trust-badges">
+          <div className="trust-badges ">
             <div className="reviews-trust-badge">
               <ShieldCheck size={16} />
               <span>100% Genuine Books</span>

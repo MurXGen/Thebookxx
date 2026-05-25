@@ -419,15 +419,38 @@ export default function BookDetailsModal({ book }) {
           <div ref={heroRef} className="bd-hero">
             <div className="bd-hero-image">
               {book.image ? (
-                <Image
-                  src={book.image}
-                  alt={`${book.name} book cover — Buy online at TheBookX, India's trusted bookstore`}
-                  width={240}
-                  height={340}
-                  priority
-                  itemProp="image"
-                  className="bd-cover"
-                />
+                <div className="flex flex-col justify-center items-center gap-24">
+                  <Image
+                    src={book.image}
+                    alt={`${book.name} book cover — Buy online at TheBookX, India's trusted bookstore`}
+                    width={240}
+                    height={340}
+                    priority
+                    itemProp="image"
+                    className="bd-cover"
+                  />
+                  {/* ===== Quick info chips ===== */}
+                  <div className="bd-quick-chips">
+                    {book.size && (
+                      <div className="bd-chip">
+                        <Package size={14} className="bd-chip-icon" />
+                        <span className="bd-chip-text">{book.size}</span>
+                      </div>
+                    )}
+                    {book.pages && (
+                      <div className="bd-chip">
+                        <FileText size={14} className="bd-chip-icon" />
+                        <span className="bd-chip-text">{book.pages} pages</span>
+                      </div>
+                    )}
+                    {book.language && (
+                      <div className="bd-chip">
+                        <Globe size={14} className="bd-chip-icon" />
+                        <span className="bd-chip-text">{book.language}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
               ) : (
                 <div className="bd-cover-placeholder">
                   <BookOpen size={48} />
@@ -438,120 +461,105 @@ export default function BookDetailsModal({ book }) {
               )}
             </div>
 
-            {/* ===== Quick info chips ===== */}
-            <div className="bd-quick-chips">
-              {book.size && (
-                <div className="bd-chip">
-                  <Package size={14} className="bd-chip-icon" />
-                  <span className="bd-chip-text">{book.size}</span>
-                </div>
-              )}
-              {book.pages && (
-                <div className="bd-chip">
-                  <FileText size={14} className="bd-chip-icon" />
-                  <span className="bd-chip-text">{book.pages} pages</span>
-                </div>
-              )}
-              {book.language && (
-                <div className="bd-chip">
-                  <Globe size={14} className="bd-chip-icon" />
-                  <span className="bd-chip-text">{book.language}</span>
-                </div>
-              )}
-            </div>
+            <div className="width100">
+              <div className="bd-hero-info">
+                <h1 className="bd-title" itemProp="name">
+                  {book.name}
+                </h1>
 
-            <div className="bd-hero-info">
-              <h1 className="bd-title" itemProp="name">
-                {book.name}
-              </h1>
+                {book.author && (
+                  <p className="bd-author" itemProp="author">
+                    by{" "}
+                    <Link
+                      href={`/authors/${book.authorSlug || slugify(book.author)}`}
+                      className="bd-author-link"
+                      itemProp="url"
+                    >
+                      <span itemProp="name">{book.author}</span>
+                    </Link>
+                  </p>
+                )}
 
-              {book.author && (
-                <p className="bd-author" itemProp="author">
-                  by{" "}
-                  <Link
-                    href={`/authors/${book.authorSlug || slugify(book.author)}`}
-                    className="bd-author-link"
-                    itemProp="url"
-                  >
-                    <span itemProp="name">{book.author}</span>
-                  </Link>
-                </p>
-              )}
-
-              <div className="bd-rating">
-                <span className="bd-rating-pill">
-                  <Star size={12} fill="currentColor" />
-                  {rating}
-                </span>
-                <span className="bd-rating-count">
-                  ({reviewCount.toLocaleString()} ratings)
-                </span>
+                <div className="bd-rating">
+                  <span className="bd-rating-pill">
+                    <Star size={12} fill="currentColor" />
+                    {rating}
+                  </span>
+                  <span className="bd-rating-count">
+                    ({reviewCount.toLocaleString()} ratings)
+                  </span>
+                </div>
               </div>
-            </div>
-          </div>
-
-          {/* ===== Price block ===== */}
-          <div
-            className="bd-price-block"
-            itemProp="offers"
-            itemScope
-            itemType="https://schema.org/Offer"
-          >
-            <div className="bd-price-row">
-              <span className="bd-price-current">
-                ₹<span itemProp="price">{book.discountedPrice}</span>
-              </span>
-              {book.originalPrice > book.discountedPrice && (
-                <>
-                  <span className="bd-price-original">
-                    ₹{book.originalPrice}
+              {/* ===== Price block ===== */}
+              <div
+                className="bd-price-block"
+                itemProp="offers"
+                itemScope
+                itemType="https://schema.org/Offer"
+              >
+                <div className="bd-price-row">
+                  <span className="bd-price-current">
+                    ₹<span itemProp="price">{book.discountedPrice}</span>
                   </span>
-                  {savings > 0 && (
-                    <span className="bd-savings-badge">
-                      Save ₹{savings} ({savingsPercentage}% off)
-                    </span>
+                  {book.originalPrice > book.discountedPrice && (
+                    <>
+                      <span className="bd-price-original">
+                        ₹{book.originalPrice}
+                      </span>
+                      {savings > 0 && (
+                        <span className="bd-savings-badge">
+                          Save ₹{savings} ({savingsPercentage}% off)
+                        </span>
+                      )}
+                    </>
                   )}
-                </>
-              )}
-            </div>
-            <meta itemProp="priceCurrency" content="INR" />
-            <meta
-              itemProp="availability"
-              content={
-                book.stock > 0
-                  ? "https://schema.org/InStock"
-                  : "https://schema.org/OutOfStock"
-              }
-            />
-            <meta
-              itemProp="itemCondition"
-              content="https://schema.org/NewCondition"
-            />
-            <meta itemProp="seller" content="TheBookX" />
+                </div>
+                <meta itemProp="priceCurrency" content="INR" />
+                <meta
+                  itemProp="availability"
+                  content={
+                    book.stock > 0
+                      ? "https://schema.org/InStock"
+                      : "https://schema.org/OutOfStock"
+                  }
+                />
+                <meta
+                  itemProp="itemCondition"
+                  content="https://schema.org/NewCondition"
+                />
+                <meta itemProp="seller" content="TheBookX" />
 
-            <div className="bd-stock-line">
-              {isOutOfStock ? (
-                <>
-                  <XCircle size={14} className="bd-stock-icon-danger" />
-                  <span className="bd-stock-text bd-text-danger">
-                    Currently out of stock
-                  </span>
-                </>
-              ) : book.stock < 10 ? (
-                <>
-                  <CheckCircle2 size={14} className="bd-stock-icon-warning" />
-                  <span className="bd-stock-text bd-text-warning">
-                    Only {book.stock} left — order soon
-                  </span>
-                </>
-              ) : (
-                <>
-                  <CheckCircle2 size={14} className="bd-stock-icon-success" />
-                  <span className="bd-stock-text bd-text-success">
-                    In stock — delivers in 3-7 days
-                  </span>
-                </>
-              )}
+                <div className="bd-stock-line">
+                  {isOutOfStock ? (
+                    <>
+                      <XCircle size={14} className="bd-stock-icon-danger" />
+                      <span className="bd-stock-text bd-text-danger">
+                        Currently out of stock
+                      </span>
+                    </>
+                  ) : book.stock < 10 ? (
+                    <>
+                      <CheckCircle2
+                        size={14}
+                        className="bd-stock-icon-warning"
+                      />
+                      <span className="bd-stock-text bd-text-warning">
+                        Only {book.stock} left — order soon
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle2
+                        size={14}
+                        className="bd-stock-icon-success"
+                      />
+                      <span className="bd-stock-text bd-text-success">
+                        In stock — delivers in 3-7 days
+                      </span>
+                    </>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 

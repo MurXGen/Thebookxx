@@ -68,17 +68,17 @@ export default function BagPage() {
   );
 
   // ✅ This useEffect also needs to be here (before conditional return)
-  useEffect(() => {
-    if (totalDiscounted >= 299 && !areOneRupeeBooksEnabled()) {
-      const offerData = getOneRupeeOfferData();
-      if (!offerData?.permanentUnlock) {
-        permanentlyUnlockOffer();
-        alert(
-          "🎉 Congratulations! ₹1 books are now permanently unlocked for you!",
-        );
-      }
-    }
-  }, [totalDiscounted]);
+  // useEffect(() => {
+  //   if (totalDiscounted >= 299 && !areOneRupeeBooksEnabled()) {
+  //     const offerData = getOneRupeeOfferData();
+  //     if (!offerData?.permanentUnlock) {
+  //       permanentlyUnlockOffer();
+  //       alert(
+  //         "🎉 Congratulations! ₹1 books are now permanently unlocked for you!",
+  //       );
+  //     }
+  //   }
+  // }, [totalDiscounted]);
 
   // ✅ Define all helper functions BEFORE conditional return
   const getAppliedOffer = (amount) => {

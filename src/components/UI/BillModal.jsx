@@ -108,9 +108,14 @@ export default function BillModal({
                   <span className="font-10 orange">(2-5 days)</span>
                 </span>
               ) : deliveryCharge === 100 ? (
-                <span>📦 Standard Delivery</span>
+                <div className="flex flex-col">
+                  <span> Standard Delivery</span>
+                  <span className="dark-50 font-10">
+                    Books more than ₹399 : Free Delivery
+                  </span>
+                </div>
               ) : (
-                <span className="flex items-center gap-4">
+                <span className="flex flex-col  gap-4">
                   <span>💛 Handling & Care Fee</span>
                   <span className="font-10 dark-50">
                     (packing, support & secure shipping)

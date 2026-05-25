@@ -6,14 +6,14 @@ export const CART_OFFERS = [
     message: "Add ₹{remaining} more for checkout",
     icon: "gift",
   },
-  {
-    min: 151,
-    target: 400,
-    type: "percentage",
-    value: 0,
-    message: "Add ₹{remaining} more to get Free Delivery",
-    icon: "sparkle",
-  },
+  // {
+  //   min: 151,
+  //   target: 400,
+  //   type: "percentage",
+  //   value: 0,
+  //   message: "Add ₹{remaining} more to get Free Delivery",
+  //   icon: "sparkle",
+  // },
   {
     min: 400,
     target: 650,
@@ -47,11 +47,11 @@ export const getDeliveryCharge = (orderAmount, isFasterDelivery = false) => {
     if (isFasterDelivery) {
       return 119;
     }
-    return 100;
+    return 0;
   }
 
   // Between 399 and 599 - Free standard, faster 119
-  if (orderAmount >= 399 && orderAmount < 599) {
+  if (orderAmount >= 151 && orderAmount < 9999) {
     if (isFasterDelivery) {
       return 119;
     }
@@ -63,12 +63,12 @@ export const getDeliveryCharge = (orderAmount, isFasterDelivery = false) => {
     if (isFasterDelivery) {
       return 119;
     }
-    return 49; // Small handling fee
+    return 0; // Small handling fee
   }
 
   // Above 799 - Bulk order handling fees (20% base, with discounts)
   if (orderAmount >= 799) {
-    const baseCharge = orderAmount * 0.2; // 20% base
+    const baseCharge = 0; // 20% base
     if (isFasterDelivery) {
       // Faster delivery: 15% of total (discounted from 20%)
       const fasterCharge = orderAmount * 0.15;
@@ -91,10 +91,10 @@ export const getDeliveryLabel = (orderAmount, isFasterDelivery = false) => {
     return "Express Delivery";
   } else {
     if (orderAmount >= 799) {
-      return "Bulk Order Handling (10% fee)";
+      return "Free shipping";
     }
     if (orderAmount >= 599 && orderAmount < 799) {
-      return "Small Handling Fee";
+      return "Free shipping";
     }
     if (orderAmount >= 399 && orderAmount < 599) {
       return "Free Delivery";
@@ -129,7 +129,7 @@ export const getDeliveryDescription = (
 
 // Get original charge before discount (for display)
 export const getOriginalCharge = (orderAmount, isFasterDelivery = false) => {
-  if (orderAmount >= 799) {
+  if (orderAmount >= 9999) {
     const baseCharge = orderAmount * 0.2;
     return Math.min(Math.round(baseCharge), 1500);
   }

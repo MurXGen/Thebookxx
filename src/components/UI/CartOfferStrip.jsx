@@ -79,7 +79,8 @@ export default function CartOfferStrip({ discountedAmount }) {
       if (appliedOffer.type === "free_shipping") {
         return (
           <>
-            <span className="success-text">Free Delivery</span> availed 🎉
+            <span className="highlight-amount">🚚 Free Delivery</span> unlocked
+            🎉
           </>
         );
       }

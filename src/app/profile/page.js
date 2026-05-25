@@ -23,12 +23,12 @@ import {
   LogOut,
   ArrowLeft,
   ChevronRight,
+  BadgeCheck,
 } from "lucide-react";
 import Image from "next/image";
 import { FaWhatsapp } from "react-icons/fa";
 import Link from "next/link";
 
-// Your Google Sheet ID
 const SHEET_ID = "1ovqFn50d0TKjV0nm4q1lb3N9XvimUgIsHCOlHh6QRdg";
 
 export default function MyOrdersPage() {
@@ -169,6 +169,7 @@ export default function MyOrdersPage() {
           parsedBooks: parseBooksList(order["Books List"]),
           status: order["Order Status"] || "Pending",
           shippingId: order["Shipping ID"] || "",
+          advancePaid: order["Advance Paid"] || "No",
         };
       });
 
@@ -258,46 +259,108 @@ export default function MyOrdersPage() {
     return () => clearInterval(interval);
   }, [qrUnlocked]);
 
-  const getAdvanceAmount = (order) => {
+  // UPDATED: Calculate the amount to show based on advance paid status
+  const getAmountToShow = (order) => {
     const total = parseFloat(order["Total Amount"]) || 0;
     const paymentType = order["Payment Type"] || "";
+    const advancePaid = order.advancePaid === "Yes";
+
+    // For COD orders
     if (paymentType.includes("Cash on Delivery")) {
-      return Math.min(99, total);
+      if (advancePaid) {
+        // If advance is paid, show remaining amount (total - 99)
+        return Math.max(0, total - 99);
+      } else {
+        // If advance NOT paid, show full amount
+        return total;
+      }
     }
+
+    // For non-COD orders, show total amount
     return total;
   };
 
+  // Get the original advance amount (₹99 for COD)
+  const getAdvanceAmountPaid = (order) => {
+    const paymentType = order["Payment Type"] || "";
+    const advancePaid = order.advancePaid === "Yes";
+
+    if (paymentType.includes("Cash on Delivery") && advancePaid) {
+      return 99;
+    }
+    return 0;
+  };
+
+  // Get remaining amount (only relevant for COD with advance paid)
   const getRemainingAmount = (order) => {
     const total = parseFloat(order["Total Amount"]) || 0;
     const paymentType = order["Payment Type"] || "";
-    if (paymentType.includes("Cash on Delivery")) {
+    const advancePaid = order.advancePaid === "Yes";
+
+    if (paymentType.includes("Cash on Delivery") && advancePaid) {
       return total - 99;
     }
     return 0;
+  };
+
+  // Check if payment is due
+  const isPaymentDue = (order) => {
+    const paymentType = order["Payment Type"] || "";
+    const status = order.status;
+    const advancePaid = order.advancePaid === "Yes";
+
+    if (paymentType.includes("Cash on Delivery")) {
+      // Payment due only if not delivered and advance not paid
+      return status !== "Delivered" && !advancePaid;
+    }
+    return false;
+  };
+
+  // Get payment status message
+  const getPaymentStatusMessage = (order) => {
+    const paymentType = order["Payment Type"] || "";
+    const advancePaid = order.advancePaid === "Yes";
+
+    if (paymentType.includes("Cash on Delivery")) {
+      if (advancePaid) {
+        return {
+          message: "✓ Advance Paid (₹99)",
+          type: "success",
+          remaining: `₹${getRemainingAmount(order)} pending at delivery`,
+        };
+      } else {
+        return {
+          message: "⚠️ Payment Pending",
+          type: "warning",
+          remaining: `Pay ₹${getAmountToShow(order)} at delivery`,
+        };
+      }
+    }
+
+    return {
+      message: "✓ Payment Completed",
+      type: "success",
+      remaining: null,
+    };
   };
 
   const formatDate = (dateString) => {
     if (!dateString) return "Date not available";
 
     try {
-      // Handle Google Sheets serialized date format: Date(2026,4,20,23,14,14)
       if (typeof dateString === "string" && dateString.startsWith("Date(")) {
         const match = dateString.match(
           /Date\((\d+),(\d+),(\d+),(\d+),(\d+),(\d+)\)/,
         );
         if (match) {
           const year = parseInt(match[1]);
-          const month = parseInt(match[2]); // Google Sheets months are 0-indexed? Let's check
+          const month = parseInt(match[2]);
           const day = parseInt(match[3]);
           const hours = parseInt(match[4]);
           const minutes = parseInt(match[5]);
           const seconds = parseInt(match[6]);
 
-          // Create date - if month is 4 (April), it might be 0-indexed or 1-indexed
-          // Try both approaches
           let date = new Date(year, month, day, hours, minutes, seconds);
-
-          // If the date seems off (e.g., shows wrong month), try with month-1
           if (date.getMonth() !== month && month > 0) {
             date = new Date(year, month - 1, day, hours, minutes, seconds);
           }
@@ -308,13 +371,11 @@ export default function MyOrdersPage() {
         }
       }
 
-      // Handle standard Date objects or ISO strings
       const date = new Date(dateString);
       if (!isNaN(date.getTime())) {
         return formatDateToCustomString(date);
       }
 
-      // If all parsing fails, return original
       return dateString;
     } catch (error) {
       console.error("Date formatting error:", error);
@@ -322,13 +383,11 @@ export default function MyOrdersPage() {
     }
   };
 
-  // Helper function to format date as "21st May, 2026 | 11:00pm"
   const formatDateToCustomString = (date) => {
     const day = date.getDate();
     const month = date.toLocaleString("en-IN", { month: "long" });
     const year = date.getFullYear();
 
-    // Add ordinal suffix to day (st, nd, rd, th)
     const getOrdinalSuffix = (day) => {
       if (day > 3 && day < 21) return "th";
       switch (day % 10) {
@@ -344,72 +403,15 @@ export default function MyOrdersPage() {
     };
 
     const formattedDay = `${day}${getOrdinalSuffix(day)}`;
-
-    // Format time to 12-hour format with am/pm
     let hours = date.getHours();
     const minutes = date.getMinutes();
     const ampm = hours >= 12 ? "pm" : "am";
     hours = hours % 12;
-    hours = hours ? hours : 12; // Convert 0 to 12
+    hours = hours ? hours : 12;
     const formattedMinutes = minutes.toString().padStart(2, "0");
     const formattedTime = `${hours}:${formattedMinutes}${ampm}`;
 
     return `${formattedDay} ${month}, ${year} | ${formattedTime}`;
-  };
-
-  const getTimeAgo = (dateString) => {
-    if (!dateString) return "";
-
-    try {
-      let date;
-
-      // Handle Google Sheets serialized date format: Date(2026,4,20,23,14,14)
-      if (typeof dateString === "string" && dateString.startsWith("Date(")) {
-        const match = dateString.match(
-          /Date\((\d+),(\d+),(\d+),(\d+),(\d+),(\d+)\)/,
-        );
-        if (match) {
-          const year = parseInt(match[1]);
-          const month = parseInt(match[2]);
-          const day = parseInt(match[3]);
-          const hours = parseInt(match[4]);
-          const minutes = parseInt(match[5]);
-          const seconds = parseInt(match[6]);
-
-          date = new Date(year, month, day, hours, minutes, seconds);
-
-          // If the date seems off, try with month-1
-          if (date.getMonth() !== month && month > 0) {
-            date = new Date(year, month - 1, day, hours, minutes, seconds);
-          }
-        }
-      } else {
-        date = new Date(dateString);
-      }
-
-      if (isNaN(date.getTime())) return "";
-
-      const now = new Date();
-      const diffMs = now - date;
-      const diffMins = Math.floor(diffMs / 60000);
-      const diffHours = Math.floor(diffMs / 3600000);
-      const diffDays = Math.floor(diffMs / 86400000);
-
-      if (diffMins < 1) return "Just now";
-      if (diffMins < 60)
-        return `${diffMins} minute${diffMins === 1 ? "" : "s"} ago`;
-      if (diffHours < 24)
-        return `${diffHours} hour${diffHours === 1 ? "" : "s"} ago`;
-      if (diffDays < 7)
-        return `${diffDays} day${diffDays === 1 ? "" : "s"} ago`;
-      if (diffDays < 30)
-        return `${Math.floor(diffDays / 7)} week${Math.floor(diffDays / 7) === 1 ? "" : "s"} ago`;
-      if (diffDays < 365)
-        return `${Math.floor(diffDays / 30)} month${Math.floor(diffDays / 30) === 1 ? "" : "s"} ago`;
-      return `${Math.floor(diffDays / 365)} year${Math.floor(diffDays / 365) === 1 ? "" : "s"} ago`;
-    } catch {
-      return "";
-    }
   };
 
   return (
@@ -499,195 +501,234 @@ export default function MyOrdersPage() {
                 {orders.length} {orders.length === 1 ? "Order" : "Orders"}
               </span>
             </div>
-            {orders.map((order, idx) => (
-              <div key={idx} className="order-card">
-                {/* Order Header */}
-                <div className="order-card-header">
-                  <div className="order-id-section">
-                    <span className="order-id-label">Order ID</span>
-                    <span className="order-id-value">{order["Order ID"]}</span>
-                  </div>
-                  <div className="order-date-section">
-                    <Calendar size={14} />
-                    <span className="time-full">
-                      {formatDate(order["Timestamp(D)"] || order["Order Date"])}
-                    </span>
-                  </div>
+            {orders.map((order, idx) => {
+              const paymentStatus = getPaymentStatusMessage(order);
+              const amountToShow = getAmountToShow(order);
 
-                  <div className="flex flex-row gap-4 items-center">
-                    <span className="order-id-label">Delivery status:</span>
-                    <div
-                      className={`order-status-badge ${getStatusColor(order.status)}`}
-                    >
-                      {getStatusIcon(order.status)}
-                      <span>{order.status}</span>
+              return (
+                <div key={idx} className="order-card">
+                  {/* Order Header */}
+                  <div className="order-card-header">
+                    <div className="order-id-section">
+                      <span className="order-id-label">Order ID</span>
+                      <span className="order-id-value">
+                        {order["Order ID"]}
+                      </span>
+                    </div>
+                    <div className="order-date-section">
+                      <Calendar size={14} />
+                      <span className="time-full">
+                        {formatDate(
+                          order["Timestamp(D)"] || order["Order Date"],
+                        )}
+                      </span>
+                    </div>
+                    <div className="flex flex-row gap-4 items-center">
+                      <span className="order-id-label">Delivery status:</span>
+                      <div
+                        className={`order-status-badge ${getStatusColor(order.status)}`}
+                      >
+                        {getStatusIcon(order.status)}
+                        <span>{order.status}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Order Items Preview */}
-                <div className="order-items-preview">
-                  <div className="items-icon">
-                    <Package size={16} />
-                  </div>
-                  <div className="items-list">
-                    {order.parsedBooks?.slice(0, 2).map((book, bidx) => (
-                      <span key={bidx} className="item-name">
-                        {book.name}
-                        {bidx === 0 &&
-                          order.parsedBooks?.length > 1 &&
-                          ` + ${order.parsedBooks.length - 1} more`}
-                      </span>
-                    ))}
-                    {(!order.parsedBooks || order.parsedBooks.length === 0) && (
-                      <span className="item-name">Books not listed</span>
+                  {/* Payment Status Banner - NEW */}
+                  <div
+                    className={`payment-status-banner payment-${paymentStatus.type}`}
+                  >
+                    <div className="payment-status-left">
+                      {paymentStatus.type === "success" ? (
+                        <BadgeCheck size={16} />
+                      ) : (
+                        <Clock size={16} />
+                      )}
+                      <span>{paymentStatus.message}</span>
+                    </div>
+                    {paymentStatus.remaining && (
+                      <div className="payment-status-right">
+                        <span className="payment-amount">₹{amountToShow}</span>
+                        <span className="payment-label">
+                          {paymentStatus.remaining}
+                        </span>
+                      </div>
                     )}
                   </div>
-                </div>
 
-                {/* Order Details Grid */}
-                <div className="order-details-grid">
-                  <div className="detail-item">
-                    <IndianRupee size={14} className="gray-500" />
-                    <div>
-                      <span className="detail-label">Total Amount</span>
-                      <span className="detail-value">
-                        ₹{order["Total Amount"]}
-                      </span>
+                  {/* Order Items Preview */}
+                  <div className="order-items-preview">
+                    <div className="items-icon">
+                      <Package size={16} />
                     </div>
-                  </div>
-                  <div className="detail-item">
-                    <Package size={14} className="gray-500" />
-                    <div>
-                      <span className="detail-label">Payment Method</span>
-                      <span className="detail-value">
-                        {order["Payment Type"]}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="detail-item">
-                    <Truck size={14} className="gray-500" />
-                    <div>
-                      <span className="detail-label">Delivery</span>
-                      <span className="detail-value">
-                        {order["Delivery Type"]}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="detail-item">
-                    <MapPin size={14} className="gray-500" />
-                    <div>
-                      <span className="detail-label">Address</span>
-                      <span className="detail-value">
-                        {order["City"]}, {order["Pincode"]}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Tracking Info if available */}
-                {order.shippingId && (
-                  <div className="tracking-info-row">
-                    <div className="tracking-id-display">
-                      <span className="tracking-label">Tracking ID:</span>
-                      <span className="tracking-id">{order.shippingId}</span>
-                    </div>
-                    <button
-                      className="track-btn-small"
-                      onClick={() => handleTrackPackage(order.shippingId)}
-                    >
-                      Track Package
-                    </button>
-                  </div>
-                )}
-
-                {/* COD Payment Action */}
-                {order["Payment Type"]?.includes("Cash on Delivery") &&
-                  order.status !== "Delivered" && (
-                    <div className="cod-action-row">
-                      <div className="cod-amount-info">
-                        <span className="cod-label">
-                          Pay ₹{getRemainingAmount(order)} now
+                    <div className="items-list">
+                      {order.parsedBooks?.slice(0, 2).map((book, bidx) => (
+                        <span key={bidx} className="item-name">
+                          {book.name}
+                          {bidx === 0 &&
+                            order.parsedBooks?.length > 1 &&
+                            ` + ${order.parsedBooks.length - 1} more`}
                         </span>
-                        <span className="cod-hint">or pay at delivery</span>
+                      ))}
+                      {(!order.parsedBooks ||
+                        order.parsedBooks.length === 0) && (
+                        <span className="item-name">Books not listed</span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Order Details Grid */}
+                  <div className="order-details-grid">
+                    <div className="detail-item">
+                      <IndianRupee size={14} className="gray-500" />
+                      <div>
+                        <span className="detail-label">Total Amount</span>
+                        <span className="detail-value">
+                          ₹{order["Total Amount"]}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="detail-item">
+                      <Package size={14} className="gray-500" />
+                      <div>
+                        <span className="detail-label">Payment Method</span>
+                        <span className="detail-value">
+                          {order["Payment Type"]}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="detail-item">
+                      <Truck size={14} className="gray-500" />
+                      <div>
+                        <span className="detail-label">Delivery</span>
+                        <span className="detail-value">
+                          {order["Delivery Type"]}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="detail-item">
+                      <MapPin size={14} className="gray-500" />
+                      <div>
+                        <span className="detail-label">Address</span>
+                        <span className="detail-value">
+                          {order["City"]}, {order["Pincode"]}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Tracking Info */}
+                  {order.shippingId && (
+                    <div className="tracking-info-row">
+                      <div className="tracking-id-display">
+                        <span className="tracking-label">Tracking ID:</span>
+                        <span className="tracking-id">{order.shippingId}</span>
                       </div>
                       <button
-                        className="pay-now-btn-small"
-                        onClick={() => handlePayNow(order)}
+                        className="track-btn-small"
+                        onClick={() => handleTrackPackage(order.shippingId)}
                       >
-                        <CreditCard size={14} />
-                        Pay Advance
+                        Track Package
                       </button>
                     </div>
                   )}
 
-                {/* Expand/Collapse for More Details */}
-                <details className="order-details">
-                  <summary className="order-details-summary">
-                    <span>View Order Details</span>
-                    <ChevronRight size={16} />
-                  </summary>
-                  <div className="order-details-content">
-                    {/* Full Address */}
-                    <div className="full-address">
-                      <h4>Delivery Address</h4>
-                      <p>
-                        {order["Address"]}, {order["City"]}, {order["State"]} -{" "}
-                        {order["Pincode"]}
-                      </p>
-                    </div>
+                  {/* COD Payment Action - UPDATED: Only show if advance NOT paid */}
+                  {order["Payment Type"]?.includes("Cash on Delivery") &&
+                    order.status !== "Delivered" &&
+                    order.advancePaid !== "Yes" && (
+                      <div className="cod-action-row">
+                        <div className="cod-amount-info">
+                          <span className="cod-label">
+                            Pay ₹{amountToShow} now
+                          </span>
+                          <span className="cod-hint">or pay at delivery</span>
+                        </div>
+                        <button
+                          className="pay-now-btn-small"
+                          onClick={() => handlePayNow(order)}
+                        >
+                          <CreditCard size={14} />
+                          Pay Now
+                        </button>
+                      </div>
+                    )}
 
-                    {/* All Books */}
-                    <div className="all-books">
-                      <h4>Order Items ({order.parsedBooks?.length || 0})</h4>
-                      {order.parsedBooks && order.parsedBooks.length > 0 ? (
-                        order.parsedBooks.map((book, bidx) => (
-                          <div key={bidx} className="book-row">
-                            <span className="book-name">{book.name}</span>
-                            <div className="flex flex-row items-center gap-12 font-12 justify-between width100">
-                              <div className="flex flex-row gap-12">
-                                {book.quantity > 0 && (
-                                  <span>Qty: {book.quantity}</span>
-                                )}
-                                {book.price > 0 && (
-                                  <span>₹{book.price} each</span>
+                  {/* Advance Paid Badge - NEW */}
+                  {order.advancePaid === "Yes" && (
+                    <div className="advance-paid-badge">
+                      <BadgeCheck size={12} />
+                      <span>Advance payment of ₹99 completed</span>
+                    </div>
+                  )}
+
+                  {/* Expand/Collapse for More Details */}
+                  <details className="order-details">
+                    <summary className="order-details-summary">
+                      <span>View Order Details</span>
+                      <ChevronRight size={16} />
+                    </summary>
+                    <div className="order-details-content">
+                      {/* Full Address */}
+                      <div className="full-address">
+                        <h4>Delivery Address</h4>
+                        <p>
+                          {order["Address"]}, {order["City"]}, {order["State"]}{" "}
+                          - {order["Pincode"]}
+                        </p>
+                      </div>
+
+                      {/* All Books */}
+                      <div className="all-books">
+                        <h4>Order Items ({order.parsedBooks?.length || 0})</h4>
+                        {order.parsedBooks && order.parsedBooks.length > 0 ? (
+                          order.parsedBooks.map((book, bidx) => (
+                            <div key={bidx} className="book-row">
+                              <span className="book-name">{book.name}</span>
+                              <div className="flex flex-row items-center gap-12 font-12 justify-between width100">
+                                <div className="flex flex-row gap-12">
+                                  {book.quantity > 0 && (
+                                    <span>Qty: {book.quantity}</span>
+                                  )}
+                                  {book.price > 0 && (
+                                    <span>₹{book.price} each</span>
+                                  )}
+                                </div>
+                                {book.total > 0 && (
+                                  <span className="book-total">
+                                    ₹{book.total}
+                                  </span>
                                 )}
                               </div>
-
-                              {book.total > 0 && (
-                                <span className="book-total">
-                                  ₹{book.total}
-                                </span>
-                              )}
                             </div>
-                          </div>
-                        ))
-                      ) : (
-                        <p className="no-books">Book details not available</p>
+                          ))
+                        ) : (
+                          <p className="no-books">Book details not available</p>
+                        )}
+                      </div>
+
+                      {/* Delivery Charges */}
+                      {order["Delivery Charge"] > 0 && (
+                        <div className="delivery-charge">
+                          <span>Delivery Charge</span>
+                          <span>+₹{order["Delivery Charge"]}</span>
+                        </div>
+                      )}
+
+                      {/* Gift Wrap */}
+                      {order["Gift Wrap"] === "Yes" && (
+                        <div className="gift-wrap-info">
+                          <Gift size={14} />
+                          <span>
+                            Gift Wrap included (+₹{order["Gift Wrap Charge"]})
+                          </span>
+                        </div>
                       )}
                     </div>
-
-                    {/* Delivery Charges */}
-                    {order["Delivery Charge"] > 0 && (
-                      <div className="delivery-charge">
-                        <span>Delivery Charge</span>
-                        <span>+₹{order["Delivery Charge"]}</span>
-                      </div>
-                    )}
-
-                    {/* Gift Wrap */}
-                    {order["Gift Wrap"] === "Yes" && (
-                      <div className="gift-wrap-info">
-                        <Gift size={14} />
-                        <span>
-                          Gift Wrap included (+₹{order["Gift Wrap Charge"]})
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </details>
-              </div>
-            ))}
+                  </details>
+                </div>
+              );
+            })}
           </div>
         )}
 
@@ -749,127 +790,133 @@ export default function MyOrdersPage() {
       </div>
 
       {/* Payment Modal */}
-      {showPaymentModal && selectedOrder && (
-        <div
-          className="bill-modal-overlay"
-          onClick={() => setShowPaymentModal(false)}
-        >
-          <div
-            className="bill-modal"
-            style={{ maxWidth: "500px" }}
-            onClick={(e) => e.stopPropagation()}
+      <AnimatePresence>
+        {showPaymentModal && selectedOrder && (
+          <motion.div
+            className="bill-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowPaymentModal(false)}
           >
-            <div className="bill-header">
-              <span className="weight-600 font-16">
-                Pay for Order #{selectedOrder["Order ID"]}
-              </span>
-              <span
-                className="cursor-pointer"
-                onClick={() => setShowPaymentModal(false)}
-              >
-                <X size={16} />
-              </span>
-            </div>
-            <div className="address-form-content">
-              <div className="payment-order-summary">
-                <div className="flex justify-between">
-                  <span>Order Total</span>
-                  <span>₹{selectedOrder["Total Amount"]}</span>
-                </div>
-                <div className="flex justify-between orange">
-                  <span>Advance Payment</span>
-                  <span>₹{getAdvanceAmount(selectedOrder)}</span>
-                </div>
-                {selectedOrder["Payment Type"]?.includes(
-                  "Cash on Delivery",
-                ) && (
-                  <div className="flex justify-between">
-                    <span>Remaining Due</span>
-                    <span>₹{getRemainingAmount(selectedOrder)}</span>
-                  </div>
-                )}
-                <div className="dashed-border my-12"></div>
-                <div className="flex justify-between weight-600">
-                  <span>Total Amount Due</span>
-                  <span className="green weight-700 font-20">
-                    ₹{getRemainingAmount(selectedOrder)}
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex flex-col items-center gap-16">
-                <motion.div
-                  className="qr-wrapper"
-                  animate={{ filter: qrUnlocked ? "blur(0px)" : "blur(12px)" }}
-                  transition={{ duration: 0.5 }}
+            <motion.div
+              className="bill-modal"
+              style={{ maxWidth: "500px" }}
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="bill-header">
+                <span className="weight-600 font-16">
+                  Pay for Order #{selectedOrder["Order ID"]}
+                </span>
+                <span
+                  className="cursor-pointer"
+                  onClick={() => setShowPaymentModal(false)}
                 >
-                  <Image
-                    src="/books/uskillbook.png"
-                    alt="UPI QR Code for payment"
-                    width={280}
-                    height={280}
-                  />
-                  <div className="flex flex-row items-center justify-center gap-8 mt-12">
-                    <button
-                      className="sec-mid-btn flex flex-row gap-8"
-                      onClick={() => {
-                        navigator.clipboard.writeText(UPI_ID);
-                        setUpiCopied(true);
-                        setTimeout(() => setUpiCopied(false), 3000);
-                      }}
-                    >
-                      <Copy size={16} />
-                      {upiCopied ? "Copied!" : UPI_ID}
-                    </button>
-                    <button
-                      className="pri-big-btn flex flex-row gap-8"
-                      onClick={() => {
-                        const link = document.createElement("a");
-                        link.href = "/books/uskillbook.png";
-                        link.download = "payment-qr.png";
-                        link.click();
-                      }}
-                    >
-                      <Download size={16} /> Save QR
-                    </button>
-                  </div>
-                </motion.div>
-
-                {!qrUnlocked && (
-                  <button
-                    className="pri-big-btn"
-                    onClick={() => setQrUnlocked(true)}
-                  >
-                    Reveal QR Code to Pay
-                  </button>
-                )}
-
-                {qrUnlocked && (
-                  <div className="width100 flex flex-col gap-8 items-center">
-                    <span className="font-12">
-                      After completing payment, click verify
-                    </span>
-                    <button
-                      className={`pri-big-btn width100 ${!canVerify ? "disabled-btn" : ""}`}
-                      disabled={!canVerify}
-                      onClick={() => {
-                        alert(
-                          "Payment verification initiated! Status will be updated shortly.",
-                        );
-                        setShowPaymentModal(false);
-                      }}
-                    >
-                      {canVerify
-                        ? "✅ Verify Payment"
-                        : `Wait ${verifyTimer}s to verify`}
-                    </button>
-                  </div>
-                )}
+                  <X size={16} />
+                </span>
               </div>
-            </div>
-          </div>
-        </div>
-      )}
+              <div className="address-form-content">
+                <div className="payment-order-summary">
+                  <div className="flex justify-between">
+                    <span>Order Total</span>
+                    <span>₹{selectedOrder["Total Amount"]}</span>
+                  </div>
+                  <div className="flex justify-between orange">
+                    <span>Advance Payment (₹99)</span>
+                    <span>₹99</span>
+                  </div>
+                  <div className="dashed-border my-12"></div>
+                  <div className="flex justify-between weight-600">
+                    <span>Amount to Pay Now</span>
+                    <span className="green weight-700 font-20">₹99</span>
+                  </div>
+                  <div className="flex justify-between font-12 gray-500 mt-8">
+                    <span>Remaining to pay at delivery</span>
+                    <span>
+                      ₹{parseFloat(selectedOrder["Total Amount"] || 0) - 99}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex flex-col items-center gap-16">
+                  <motion.div
+                    className="qr-wrapper"
+                    animate={{
+                      filter: qrUnlocked ? "blur(0px)" : "blur(12px)",
+                    }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <Image
+                      src="/books/uskillbook.png"
+                      alt="UPI QR Code for payment"
+                      width={280}
+                      height={280}
+                    />
+                    <div className="flex flex-row items-center justify-center gap-8 mt-12">
+                      <button
+                        className="sec-mid-btn flex flex-row gap-8"
+                        onClick={() => {
+                          navigator.clipboard.writeText(UPI_ID);
+                          setUpiCopied(true);
+                          setTimeout(() => setUpiCopied(false), 3000);
+                        }}
+                      >
+                        <Copy size={16} />
+                        {upiCopied ? "Copied!" : UPI_ID}
+                      </button>
+                      <button
+                        className="pri-big-btn flex flex-row gap-8"
+                        onClick={() => {
+                          const link = document.createElement("a");
+                          link.href = "/books/uskillbook.png";
+                          link.download = "payment-qr.png";
+                          link.click();
+                        }}
+                      >
+                        <Download size={16} /> Save QR
+                      </button>
+                    </div>
+                  </motion.div>
+
+                  {!qrUnlocked && (
+                    <button
+                      className="pri-big-btn"
+                      onClick={() => setQrUnlocked(true)}
+                    >
+                      Reveal QR Code to Pay
+                    </button>
+                  )}
+
+                  {qrUnlocked && (
+                    <div className="width100 flex flex-col gap-8 items-center">
+                      <span className="font-12">
+                        After completing payment, click verify
+                      </span>
+                      <button
+                        className={`pri-big-btn width100 ${!canVerify ? "disabled-btn" : ""}`}
+                        disabled={!canVerify}
+                        onClick={() => {
+                          alert(
+                            "Payment verification initiated! Status will be updated shortly.",
+                          );
+                          setShowPaymentModal(false);
+                        }}
+                      >
+                        {canVerify
+                          ? "✅ Verify Payment"
+                          : `Wait ${verifyTimer}s to verify`}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

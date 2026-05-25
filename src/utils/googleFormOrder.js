@@ -22,6 +22,7 @@ const FORM_FIELD_IDS = {
   offerApplied: "entry.1246399200",
   tinyUrl: "entry.76337166",
   orderStatus: "entry.1458161030",
+  advancePaid: "entry.392734436",
   timestamp: "entry.509242940",
   userAgent: "entry.2060171385",
 };

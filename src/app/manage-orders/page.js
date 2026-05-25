@@ -57,6 +57,7 @@ const FORM_FIELD_IDS = {
   offerApplied: "entry.1246399200",
   tinyUrl: "entry.76337166",
   orderStatus: "entry.1458161030",
+  advancePaid: "entry.392734436",
   userAgent: "entry.2060171385",
   shippingId: "entry.363127280",
 };
@@ -414,6 +415,8 @@ export default function ManageOrdersPage() {
     params.append(FORM_FIELD_IDS.orderStatus, formData.orderStatus);
     params.append(FORM_FIELD_IDS.userAgent, navigator.userAgent);
     params.append(FORM_FIELD_IDS.shippingId, formData.shippingId);
+    // In your checkout submission
+    params.append(FORM_FIELD_IDS.advancePaid, advancePaid ? "Yes" : "No");
 
     try {
       await fetch(FORM_SUBMIT_URL, {
@@ -458,6 +461,7 @@ export default function ManageOrdersPage() {
     params.append(FORM_FIELD_IDS.orderStatus, formData.orderStatus);
     params.append(FORM_FIELD_IDS.userAgent, navigator.userAgent);
     params.append(FORM_FIELD_IDS.shippingId, formData.shippingId);
+    params.append(FORM_FIELD_IDS.advancePaid, advancePaid ? "Yes" : "No");
 
     try {
       await fetch(FORM_SUBMIT_URL, {

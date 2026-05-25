@@ -294,4 +294,5 @@ export const bookImages = {
   "the-daily-stoic": `${BOOK_IMAGE_BASE_PATH}/the-daily-stoic.jpeg`,
   "normal-people": `${BOOK_IMAGE_BASE_PATH}/normal-people.jpeg`,
   "conversations-with-friends": `${BOOK_IMAGE_BASE_PATH}/conversations-with-friends.jpeg`,
+  "the-7-habits-of-highly-effective-people": `${BOOK_IMAGE_BASE_PATH}/the-7-habits-of-highly-effective-people.jpeg`,
 };

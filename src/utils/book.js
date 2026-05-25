@@ -4795,4 +4795,25 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
   },
+  {
+    id: "bk-308",
+    name: "The 7 Habits of Highly Effective People: Powerful Lessons in Personal Change",
+    image: bookImages["the-7-habits-of-highly-effective-people"],
+    description:
+      "Transform your life with Stephen R. Covey's iconic masterpiece 'The 7 Habits of Highly Effective People' at TheBookX.in. This groundbreaking self-help book has sold over 40 million copies worldwide and remains one of the most influential business and personal development books of all time. Covey presents a principle-centered, character-based approach to solving personal and professional problems. The seven habits—from 'Be Proactive' and 'Begin with the End in Mind' to 'Seek First to Understand, Then to Be Understood' and 'Sharpen the Saw'—provide a step-by-step framework for effectiveness, integrity, and meaningful success. Whether you're a CEO, student, parent, or entrepreneur, this timeless classic will help you align your actions with your values and create lasting positive change. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now—books starting at just ₹1 for a limited offer.",
+    author: "Stephen R. Covey",
+    pages: "432",
+    language: "English",
+    size: "Paperback",
+    stock: 20,
+    catalogue: [
+      "non-fiction",
+      "self-help",
+      "bestseller",
+      "business",
+      "productivity",
+    ],
+    originalPrice: calculateOriginalPrice(249),
+    discountedPrice: 249,
+  },
 ];

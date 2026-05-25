@@ -296,7 +296,7 @@ export const bookImages = {
   "conversations-with-friends": `${BOOK_IMAGE_BASE_PATH}/conversations-with-friends.jpeg`,
   "the-7-habits-of-highly-effective-people": `${BOOK_IMAGE_BASE_PATH}/the-7-habits-of-highly-effective-people.jpeg`,
   "sapiens-a-brief-history-of-humankind": `${BOOK_IMAGE_BASE_PATH}/sapiens-a-brief-history-of-humankind.jpg`,
-  "a-demonstration-of-our-own-design": `${BOOK_IMAGE_BASE_PATH}/a-demonstration-of-our-own-design.jpg`,
+  "a-demonstration-of-our-own-design": `${BOOK_IMAGE_BASE_PATH}/a-demonstration-of-our-own-design.jpeg`,
   "a-gentleman-in-moscow": `${BOOK_IMAGE_BASE_PATH}/a-gentleman-in-moscow.jpg`,
   "a-promised-land": `${BOOK_IMAGE_BASE_PATH}/a-promised-land.jpg`,
   "absolute-friends": `${BOOK_IMAGE_BASE_PATH}/absolute-friends.jpg`,

@@ -734,9 +734,9 @@ export default function MyOrdersPage() {
 
         {/* Loading State */}
         {loading && (
-          <div className="loading-state">
-            <div className="loading-spinner"></div>
-            <p>Fetching your orders...</p>
+          <div className="loading-state flex flex-col items-center justify-center">
+            <div className="spinner"></div>
+            Getting your order details
           </div>
         )}
 
@@ -819,7 +819,7 @@ export default function MyOrdersPage() {
                 </span>
               </div>
               <div className="address-form-content">
-                <div className="payment-order-summary">
+                {/* <div className="payment-order-summary">
                   <div className="flex justify-between">
                     <span>Order Total</span>
                     <span>₹{selectedOrder["Total Amount"]}</span>
@@ -839,7 +839,7 @@ export default function MyOrdersPage() {
                       ₹{parseFloat(selectedOrder["Total Amount"] || 0) - 99}
                     </span>
                   </div>
-                </div>
+                </div> */}
 
                 <div className="flex flex-col items-center gap-16">
                   <motion.div
@@ -853,7 +853,7 @@ export default function MyOrdersPage() {
                       src="/books/uskillbook.png"
                       alt="UPI QR Code for payment"
                       width={280}
-                      height={280}
+                      height={380}
                     />
                     <div className="flex flex-row items-center justify-center gap-8 mt-12">
                       <button

@@ -47,7 +47,7 @@ export default function UnlockChip() {
         <Lock size={16} color="orange" />
         <span>
           Click here to{" "}
-          <span className="highlight-reward">Unlock ₹1 Books</span>
+          <span className="highlight-reward">Unlock ₹1 Books Faster </span>
         </span>
         <span className="unlock-chip-badge">Limited Time</span>
       </motion.button>

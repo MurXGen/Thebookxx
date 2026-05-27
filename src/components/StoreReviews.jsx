@@ -69,8 +69,8 @@ export default function StoreReviews() {
     <section className="store-reviews-section">
       <div className="section-1200">
         {/* Header */}
-        <div className="reviews-header ">
-          {/* <div className="reviews-title-wrapper">
+        {/* <div className="reviews-header ">
+          <div className="reviews-title-wrapper">
             <div className="reviews-badge">
               <Quote size={24} />
             </div>
@@ -80,10 +80,10 @@ export default function StoreReviews() {
                 Join 10,000+ happy readers who trust TheBookX
               </p>
             </div>
-          </div> */}
+          </div>
 
-          {/* Trust Badges */}
-          <div className="trust-badges ">
+          
+          <div className="trust-badges">
             <div className="reviews-trust-badge">
               <ShieldCheck size={16} />
               <span>100% Genuine Books</span>
@@ -97,7 +97,7 @@ export default function StoreReviews() {
               <span>Cash on Delivery</span>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Rating Summary */}
         {/* <div className="rating-summary">

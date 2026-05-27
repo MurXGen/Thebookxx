@@ -21,7 +21,7 @@ function slugify(text) {
 
 // utils/book.js
 const ONE_RUPEE_OFFER_KEY = "oneRupeeOffer";
-const OFFER_DURATION_MINUTES = 10; // Changed from 10 to 60 minutes
+const OFFER_DURATION_MINUTES = 60; // Changed from 10 to 60 minutes
 const OFFER_DURATION_SECONDS = OFFER_DURATION_MINUTES * 60; // 3600 seconds
 
 // Get offer data from localStorage

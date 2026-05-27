@@ -19,17 +19,14 @@ const SORT_OPTIONS = [
 export default function AllBooks() {
   const router = useRouter();
 
-  // ----- Active filter/sort state (what's actually applied) -----
-  const [selectedCategories, setSelectedCategories] = useState([]); // multi-select
+  const [selectedCategories, setSelectedCategories] = useState([]);
   const [priceMin, setPriceMin] = useState("");
   const [priceMax, setPriceMax] = useState("");
   const [sortType, setSortType] = useState("default");
 
-  // ----- Modal state -----
   const [showFiltersModal, setShowFiltersModal] = useState(false);
   const [showSortModal, setShowSortModal] = useState(false);
 
-  // ----- Staged state (inside the modal — only committed on Apply) -----
   const [stagedCategories, setStagedCategories] = useState([]);
   const [stagedPriceMin, setStagedPriceMin] = useState("");
   const [stagedPriceMax, setStagedPriceMax] = useState("");
@@ -39,14 +36,11 @@ export default function AllBooks() {
   const [isLoading, setIsLoading] = useState(false);
   const loadMoreRef = useRef(null);
 
-  // Get all categories (from your existing util), keeping only ones
-  // with at least 11 books so we don't show sparse niche tags.
   const categoryData = useMemo(
     () => getCatalogueData().filter((cat) => cat.count >= 11),
     [],
   );
 
-  // Compute price bounds across all books (excluding ₹1) for placeholders
   const priceBounds = useMemo(() => {
     const prices = books
       .filter((b) => b.discountedPrice !== 1)
@@ -55,21 +49,16 @@ export default function AllBooks() {
     return { min: Math.min(...prices), max: Math.max(...prices) };
   }, []);
 
-  /* 🔄 Filter + Sort books */
   const filteredBooks = useMemo(() => {
     let data = [...books];
-
-    // ❌ Remove ₹1 books
     data = data.filter((b) => b.discountedPrice !== 1);
 
-    // Category filter (multi-select — book must match ANY selected)
     if (selectedCategories.length > 0) {
       data = data.filter((b) =>
         b.catalogue?.some((c) => selectedCategories.includes(c)),
       );
     }
 
-    // Price range filter
     const minNum = priceMin === "" ? null : Number(priceMin);
     const maxNum = priceMax === "" ? null : Number(priceMax);
     if (minNum !== null && !isNaN(minNum)) {
@@ -79,7 +68,6 @@ export default function AllBooks() {
       data = data.filter((b) => b.discountedPrice <= maxNum);
     }
 
-    // Sort
     if (sortType === "low") {
       data.sort((a, b) => a.discountedPrice - b.discountedPrice);
     } else if (sortType === "high") {
@@ -110,7 +98,6 @@ export default function AllBooks() {
     }, 300);
   };
 
-  // Intersection Observer for infinite scroll
   useEffect(() => {
     if (!loadMoreRef.current || !hasMore) return;
 
@@ -132,12 +119,10 @@ export default function AllBooks() {
     };
   }, [hasMore, isLoading, visibleCount]);
 
-  // Reset visible count when filters/sort change
   useEffect(() => {
     setVisibleCount(10);
   }, [selectedCategories, priceMin, priceMax, sortType]);
 
-  // ----- Modal openers — copy active state into staged state -----
   const openFiltersModal = () => {
     setStagedCategories(selectedCategories);
     setStagedPriceMin(priceMin);
@@ -150,14 +135,12 @@ export default function AllBooks() {
     setShowSortModal(true);
   };
 
-  // ----- Toggle chip in staged categories -----
   const toggleStagedCategory = (key) => {
     setStagedCategories((prev) =>
       prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key],
     );
   };
 
-  // ----- Apply / Clear -----
   const applyFilters = () => {
     setSelectedCategories(stagedCategories);
     setPriceMin(stagedPriceMin);
@@ -180,7 +163,6 @@ export default function AllBooks() {
     setStagedSort("default");
   };
 
-  // ----- Active counts for the button badges -----
   const activeFilterCount =
     selectedCategories.length +
     (priceMin !== "" ? 1 : 0) +
@@ -195,12 +177,10 @@ export default function AllBooks() {
       className="catalogue-section-2 trending-section"
       style={{ marginTop: "24px" }}
     >
-      {/* Header */}
       <div className="flex flex-row justify-between flex-center gap-16">
         <div className="width100">
           <div className="flex flex-row gap-4 items-center justify-between">
             <h2 className="font-20 weight-500">All Books</h2>
-            {/* Filter + Sort buttons */}
             <div className="flex flex-row gap-12 margin-tp-16px items-center">
               <div className="margin-tp-12px font-12 dark-50">
                 {visibleBooks.length} of {filteredBooks.length} books
@@ -271,19 +251,16 @@ export default function AllBooks() {
             <span className="font-14 dark-50">
               Explore novels, self-help, business & more
             </span>
-            {/* Results count */}
           </div>
         </div>
       </div>
 
-      {/* Books Grid */}
       <div className="grid-2 margin-tp-24px">
         {visibleBooks.map((book) => (
           <BookCard key={book.id} book={book} />
         ))}
       </div>
 
-      {/* Empty state */}
       {filteredBooks.length === 0 && (
         <div style={{ textAlign: "center", padding: "60px 20px" }}>
           <div style={{ fontSize: "48px", marginBottom: "12px" }}>📚</div>
@@ -305,7 +282,6 @@ export default function AllBooks() {
         </div>
       )}
 
-      {/* Loading indicator and trigger */}
       {hasMore && (
         <div
           ref={loadMoreRef}
@@ -332,7 +308,6 @@ export default function AllBooks() {
         </div>
       )}
 
-      {/* End message */}
       {!hasMore && visibleBooks.length > 0 && (
         <div
           className="end-message"
@@ -396,9 +371,10 @@ export default function AllBooks() {
                   <div
                     style={{
                       display: "flex",
-                      overflow: "scroll",
+                      flexDirection: "row",
                       gap: "8px",
                       marginTop: "8px",
+                      overflowX: "scroll",
                     }}
                   >
                     {categoryData.map((cat) => {
@@ -406,11 +382,22 @@ export default function AllBooks() {
                       return (
                         <button
                           key={cat.key}
+                          type="button"
                           onClick={() => toggleStagedCategory(cat.key)}
-                          className="sec-mid-btn"
+                          className={`sec-mid-btn ${isSelected ? "active" : ""}`}
+                          aria-pressed={isSelected}
                           style={{
                             minWidth: "fit-content",
                             maxWidth: "fit-content",
+                            border: `1.5px solid ${isSelected ? "#fb8500" : "#e5e7eb"}`,
+                            background: isSelected ? "#fff4e5" : "#fff",
+                            color: isSelected ? "#fb8500" : "#374151",
+                            fontWeight: isSelected ? 600 : 500,
+                            transition: "all 0.15s ease",
+                            cursor: "pointer",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "4px",
                           }}
                         >
                           <span
@@ -424,7 +411,7 @@ export default function AllBooks() {
                           <span
                             style={{
                               fontSize: "10px",
-                              opacity: 0.6,
+                              opacity: isSelected ? 0.8 : 0.6,
                               fontWeight: 500,
                             }}
                           >
@@ -481,6 +468,19 @@ export default function AllBooks() {
               <div className="flex flex-row gap-12 p-20">
                 <button className="pri-big-btn flex-1" onClick={applyFilters}>
                   Apply Filters
+                  {stagedCategories.length > 0 && (
+                    <span
+                      style={{
+                        marginLeft: "8px",
+                        background: "rgba(255,255,255,0.25)",
+                        padding: "1px 8px",
+                        borderRadius: "999px",
+                        fontSize: "11px",
+                      }}
+                    >
+                      {stagedCategories.length}
+                    </span>
+                  )}
                 </button>
                 <button
                   className="sec-mid-btn"

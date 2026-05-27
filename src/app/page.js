@@ -11,6 +11,7 @@ import LabelDivider from "@/components/UI/LineDivider";
 import { Loader2 } from "lucide-react";
 import UnlockChip from "@/components/UI/UnlockChip";
 import StoreReviews from "@/components/StoreReviews";
+import OneRupeeHero from "@/components/OneRupeeHero";
 
 // Lazy load components with named exports
 const BestsellerStage = lazy(() => import("@/components/BestsellerStage"));
@@ -117,6 +118,7 @@ export default function HomePage() {
       <UnlockModal />
 
       <BestsellerStage />
+      <OneRupeeHero />
 
       <StoreReviews />
 
@@ -129,15 +131,6 @@ export default function HomePage() {
       </LazySection>
 
       {/* <OffersGift /> */}
-
-      <LazySection threshold={0.05}>
-        <Suspense fallback={<LoadingFallback delay={0.6} />}>
-          <SmoothAppear delay={0.6}>
-            <CatalogueSection />
-          </SmoothAppear>
-        </Suspense>
-      </LazySection>
-
       <LazySection threshold={0.05}>
         <Suspense fallback={<LoadingFallback delay={0.7} />}>
           <SmoothAppear delay={0.7}>
@@ -147,28 +140,36 @@ export default function HomePage() {
       </LazySection>
 
       <LazySection threshold={0.05}>
+        <Suspense fallback={<LoadingFallback delay={0.6} />}>
+          <SmoothAppear delay={0.6}>
+            <CatalogueSection />
+          </SmoothAppear>
+        </Suspense>
+      </LazySection>
+
+      {/* <LazySection threshold={0.05}>
         <Suspense fallback={<LoadingFallback delay={0.8} />}>
           <SmoothAppear delay={0.8}>
             <RecentlyViewed />
           </SmoothAppear>
         </Suspense>
-      </LazySection>
+      </LazySection> */}
 
-      <LazySection threshold={0.05}>
+      {/* <LazySection threshold={0.05}>
         <Suspense fallback={<LoadingFallback delay={0.9} />}>
           <SmoothAppear delay={0.9}>
             <NewlyAddedBooks />
           </SmoothAppear>
         </Suspense>
-      </LazySection>
+      </LazySection> */}
 
-      <LazySection threshold={0.05}>
+      {/* <LazySection threshold={0.05}>
         <Suspense fallback={<LoadingFallback delay={1.0} />}>
           <SmoothAppear delay={1.0}>
             <TrendingBooks />
           </SmoothAppear>
         </Suspense>
-      </LazySection>
+      </LazySection> */}
 
       {/* 
       <LazySection threshold={0.05}>

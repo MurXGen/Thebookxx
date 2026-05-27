@@ -24,12 +24,301 @@ import {
   ArrowLeft,
   ChevronRight,
   BadgeCheck,
+  Check,
+  Zap,
 } from "lucide-react";
 import Image from "next/image";
 import { FaWhatsapp } from "react-icons/fa";
 import Link from "next/link";
 
 const SHEET_ID = "1ovqFn50d0TKjV0nm4q1lb3N9XvimUgIsHCOlHh6QRdg";
+
+// ===== Order Tracking Timeline =====
+// Renders 4-stage horizontal stepper: Ordered → Shipped → Out for Delivery → Delivered
+// `stage` is the index of the most recently completed step (0-based).
+function OrderTrackingTimeline({ order }) {
+  // Determine current stage from order data
+  const statusLower = (order.status || "").toLowerCase();
+  const advancePaid = order.advancePaid === "Yes";
+
+  // Stage detection — falls back gracefully
+  let activeStage = 0; // Ordered is always done
+  if (statusLower.includes("delivered")) {
+    activeStage = 3;
+  } else if (statusLower.includes("out for delivery")) {
+    activeStage = 2;
+  } else if (
+    statusLower.includes("shipped") ||
+    statusLower.includes("in transit")
+  ) {
+    activeStage = 1;
+  }
+
+  // Parse the order date — the "Timestamp" column in the sheet can hold
+  // several different formats depending on when the row was written:
+  //   "27/05/2026, 04:50:03 pm"   (dd/mm/yyyy, 12-hour w/ am-pm)
+  //   "27/05/2026, 16:50:04"      (dd/mm/yyyy, 24-hour, NO am-pm)
+  //   "Date(2026,4,27,16,50,3)"   (Google Sheets serialized — months 0-based)
+  //   Date object instances       (some gviz responses)
+  //   ISO strings                 (fallback)
+  const parseOrderDate = (dateStr) => {
+    if (!dateStr) return null;
+
+    // Already a Date object?
+    if (dateStr instanceof Date) {
+      return isNaN(dateStr.getTime()) ? null : dateStr;
+    }
+
+    const str = String(dateStr).trim();
+
+    // Google Sheets Date() literal — months are ALREADY 0-based
+    if (str.startsWith("Date(")) {
+      const m = str.match(/Date\((\d+),(\d+),(\d+)(?:,(\d+),(\d+),(\d+))?/);
+      if (m) {
+        const year = parseInt(m[1], 10);
+        const month = parseInt(m[2], 10); // already 0-based
+        const day = parseInt(m[3], 10);
+        const hours = m[4] ? parseInt(m[4], 10) : 0;
+        const minutes = m[5] ? parseInt(m[5], 10) : 0;
+        const seconds = m[6] ? parseInt(m[6], 10) : 0;
+        const d = new Date(year, month, day, hours, minutes, seconds);
+        if (!isNaN(d.getTime())) return d;
+      }
+    }
+
+    // dd/mm/yyyy with optional time (12-hour with am/pm OR 24-hour)
+    // Matches: "27/05/2026", "27/05/2026 16:50:04", "27/05/2026, 04:50:03 pm"
+    if (str.includes("/")) {
+      const m = str.match(
+        /^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[,\s]+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?\s*(am|pm)?)?/i,
+      );
+      if (m) {
+        const day = parseInt(m[1], 10);
+        const month = parseInt(m[2], 10) - 1; // dd/mm/yyyy → 0-based for JS
+        const year = parseInt(m[3], 10);
+        let hours = m[4] ? parseInt(m[4], 10) : 0;
+        const minutes = m[5] ? parseInt(m[5], 10) : 0;
+        const seconds = m[6] ? parseInt(m[6], 10) : 0;
+        const meridiem = (m[7] || "").toLowerCase();
+
+        // Convert 12-hour to 24-hour only if am/pm is present
+        if (meridiem === "pm" && hours < 12) hours += 12;
+        if (meridiem === "am" && hours === 12) hours = 0;
+
+        const d = new Date(year, month, day, hours, minutes, seconds);
+        if (!isNaN(d.getTime())) return d;
+      }
+    }
+
+    // ISO / fallback
+    const d = new Date(str);
+    return isNaN(d.getTime()) ? null : d;
+  };
+
+  // The sheet stores the human-readable date in the "Timestamp" column.
+  // Use it as the primary source; fall back to other columns if missing.
+  const orderDateRaw =
+    order["Timestamp"] ||
+    order["Timestamp (D)"] ||
+    order["Timestamp(D)"] ||
+    order["Order Date"];
+  const orderDate = parseOrderDate(orderDateRaw);
+
+  // Diagnostic — remove once verified working
+  if (typeof window !== "undefined" && !window.__loggedOrderDate) {
+    console.log("[OrderTrackingTimeline] raw Timestamp value:", orderDateRaw);
+    console.log("[OrderTrackingTimeline] parsed Date:", orderDate);
+    console.log("[OrderTrackingTimeline] typeof:", typeof orderDateRaw);
+    window.__loggedOrderDate = true;
+  }
+
+  // Estimated delivery window: 3-15 days from order date
+  const DAY_MS = 24 * 60 * 60 * 1000;
+  const minDeliveryDate = orderDate
+    ? new Date(orderDate.getTime() + 3 * DAY_MS)
+    : null;
+  const maxDeliveryDate = orderDate
+    ? new Date(orderDate.getTime() + 15 * DAY_MS)
+    : null;
+  // Use the midpoint for the step-level "expected" date markers (~9 days)
+  const estimatedDelivery = orderDate
+    ? new Date(orderDate.getTime() + 9 * DAY_MS)
+    : null;
+
+  const shortDate = (d) => {
+    if (!d) return "—";
+    return d.toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+    });
+  };
+
+  const longDate = (d) => {
+    if (!d) return "—";
+    return d.toLocaleDateString("en-IN", {
+      weekday: "short",
+      day: "2-digit",
+      month: "short",
+    });
+  };
+
+  // Format the delivery-window range — "30 May – 11 Jun"
+  const deliveryRangeLabel = (() => {
+    if (!minDeliveryDate || !maxDeliveryDate) return "—";
+    return `${shortDate(minDeliveryDate)} – ${shortDate(maxDeliveryDate)}`;
+  })();
+
+  // Compute each step's date label
+  const orderedDate = orderDate ? shortDate(orderDate) : "—";
+  const shippedDate =
+    activeStage >= 1
+      ? shortDate(
+          orderDate
+            ? new Date(orderDate.getTime() + 1 * 24 * 60 * 60 * 1000)
+            : null,
+        )
+      : "Soon";
+  const outForDeliveryDate =
+    activeStage >= 2
+      ? shortDate(estimatedDelivery)
+      : estimatedDelivery
+        ? shortDate(estimatedDelivery)
+        : "—";
+  const deliveredDate =
+    activeStage >= 3
+      ? shortDate(new Date())
+      : estimatedDelivery
+        ? shortDate(estimatedDelivery)
+        : "—";
+
+  const steps = [
+    { key: "ordered", label: "Ordered", date: orderedDate },
+    { key: "shipped", label: "Shipped", date: shippedDate },
+    {
+      key: "out_for_delivery",
+      label: "Out for Delivery",
+      date: outForDeliveryDate,
+    },
+    { key: "delivered", label: "Delivery", date: deliveredDate },
+  ];
+
+  // Banner text — Mumbai gets a stat-driven line, others get a generic line
+  const city = (order.City || "").toLowerCase();
+  const bannerText = city.includes("mumbai")
+    ? "95% orders delivered early in Mumbai"
+    : `Most orders delivered on time across India`;
+
+  // The "tooltip" attaches to the step that is *next* to be reached
+  // (i.e. activeStage + 1, unless we're already at the final step)
+  const tooltipStage = activeStage < 3 ? activeStage + 1 : null;
+  const tooltipLabel =
+    tooltipStage === 1
+      ? "Shipping Soon!"
+      : tooltipStage === 2
+        ? "Out for Delivery Soon!"
+        : tooltipStage === 3
+          ? "Arriving Soon!"
+          : null;
+
+  return (
+    <div className="tracking-timeline-card">
+      {/* Header */}
+      <div className="tracking-header">
+        <div className="tracking-header-icon">
+          <CheckCircle size={20} className="tracking-check-icon" />
+          <div className="tracking-package-icon">📦</div>
+        </div>
+        <div className="tracking-header-text">
+          <span className="tracking-title">
+            {activeStage === 3 ? "Delivered" : "Order Placed"}
+          </span>
+          <span className="tracking-subtitle">
+            {activeStage === 3
+              ? `Delivered on ${longDate(new Date())}`
+              : `Delivery expected ${deliveryRangeLabel}`}
+          </span>
+        </div>
+      </div>
+
+      {/* Stepper */}
+      <div className="tracking-stepper">
+        {/* Tooltip pointing at next step */}
+        {tooltipLabel && tooltipStage !== null && (
+          <div
+            className="tracking-tooltip"
+            style={{
+              left: `calc(${(tooltipStage / (steps.length - 1)) * 100}% - 0px)`,
+            }}
+          >
+            <div className="tracking-tooltip-content">
+              <span className="tracking-tooltip-dot" />
+              <span>{tooltipLabel}</span>
+            </div>
+            <div className="tracking-tooltip-arrow" />
+          </div>
+        )}
+
+        {/* Track line behind dots */}
+        <div className="tracking-track">
+          <div
+            className="tracking-track-filled"
+            style={{
+              width: `${(activeStage / (steps.length - 1)) * 100}%`,
+            }}
+          />
+        </div>
+
+        {/* Step dots */}
+        <div className="tracking-steps-row">
+          {steps.map((step, idx) => {
+            const isComplete = idx <= activeStage;
+            const isTruckPosition = idx === tooltipStage;
+            return (
+              <div key={step.key} className="tracking-step">
+                <div
+                  className={`tracking-step-dot ${isComplete ? "complete" : ""} ${isTruckPosition ? "active-truck" : ""}`}
+                >
+                  {isTruckPosition ? (
+                    <Truck size={14} className="tracking-truck-icon" />
+                  ) : (
+                    <Check
+                      size={12}
+                      className="tracking-step-check"
+                      strokeWidth={3}
+                    />
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Step labels */}
+        <div className="tracking-labels-row">
+          {steps.map((step, idx) => {
+            const isComplete = idx <= activeStage;
+            return (
+              <div key={step.key} className="tracking-label-col">
+                <span
+                  className={`tracking-step-label ${isComplete ? "complete" : ""}`}
+                >
+                  {step.label}
+                </span>
+                {/* <span className="tracking-step-date">{step.date}</span> */}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Bottom banner */}
+      <div className="tracking-banner">
+        <Zap size={14} className="tracking-banner-icon" />
+        <span className="tracking-banner-text">{bannerText}</span>
+      </div>
+    </div>
+  );
+}
 
 export default function MyOrdersPage() {
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -48,7 +337,6 @@ export default function MyOrdersPage() {
 
   const UPI_ID = "7977960242-1@okbizaxis";
 
-  // Load saved phone number from localStorage
   useEffect(() => {
     const savedPhone = localStorage.getItem("track_orders_phone");
     const savedName = localStorage.getItem("track_orders_name");
@@ -62,17 +350,13 @@ export default function MyOrdersPage() {
 
   const parseBooksList = (booksStr) => {
     if (!booksStr) return [];
-
     const lines = booksStr.split("\n");
     const parsedBooks = [];
-
     for (const line of lines) {
       if (!line.trim()) continue;
-
       const match = line.match(
         /\d+\.\s([^|]+)\s*\|\s*Qty:\s*(\d+)\s*\|\s*₹(\d+)\s*each\s*\|\s*Total:\s*₹(\d+)/,
       );
-
       if (match) {
         parsedBooks.push({
           name: match[1].trim(),
@@ -92,7 +376,6 @@ export default function MyOrdersPage() {
         }
       }
     }
-
     return parsedBooks;
   };
 
@@ -101,37 +384,33 @@ export default function MyOrdersPage() {
       setError("Please enter a valid 10-digit phone number");
       return;
     }
-
     setLoading(true);
     setError("");
     setSearched(true);
-
     try {
       const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
       const response = await fetch(url);
-
-      if (!response.ok) {
+      if (!response.ok)
         throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
       const text = await response.text();
       const jsonString = text.substring(47, text.length - 2);
       const data = JSON.parse(jsonString);
-
       if (!data.table || !data.table.rows) {
         setError("No data found in sheet.");
         setLoading(false);
         return;
       }
-
       const rows = data.table.rows;
       const headers = data.table.cols.map((col) => col.label);
-
       const allOrders = rows.map((row) => {
         const order = {};
         row.c.forEach((cell, idx) => {
           const header = headers[idx];
           let value = cell?.v;
+          // gviz returns dates as raw Date literals in `v` but human-readable
+          // strings in `f`. Prefer the formatted string for date-like columns
+          // so the downstream parser sees something it can handle reliably.
+          const formatted = cell?.f;
           if (
             value &&
             typeof value === "object" &&
@@ -139,25 +418,38 @@ export default function MyOrdersPage() {
           ) {
             value = value.value;
           }
+          // If `v` looks like a Date literal AND we have a formatted version,
+          // use the formatted human-readable string instead.
+          if (
+            formatted &&
+            typeof value === "string" &&
+            value.startsWith("Date(")
+          ) {
+            value = formatted;
+          }
           order[header] = value;
         });
         return order;
       });
 
+      // ---- Diagnostic: log the first row so we can see the actual data shape
+      if (allOrders.length > 0) {
+        console.log("[my-orders] first row keys:", Object.keys(allOrders[0]));
+        console.log("[my-orders] Timestamp candidates:", {
+          Timestamp: allOrders[0]["Timestamp"],
+          "Timestamp(D)": allOrders[0]["Timestamp(D)"],
+          "Order Date": allOrders[0]["Order Date"],
+        });
+      }
       const userOrders = allOrders.filter((order) => {
         const orderPhone = order["Phone Number"];
-        const orderPhoneStr = String(orderPhone).trim();
-        const inputPhoneStr = String(phone).trim();
-        return orderPhoneStr === inputPhoneStr;
+        return String(orderPhone).trim() === String(phone).trim();
       });
-
-      // Sort orders by timestamp (newest first)
       const sortedOrders = userOrders.sort((a, b) => {
         const dateA = new Date(a["Timestamp(D)"] || a["Order Date"] || 0);
         const dateB = new Date(b["Timestamp"] || b["Order Date"] || 0);
         return dateB - dateA;
       });
-
       const parsedOrders = sortedOrders.map((order) => {
         const customer = order["Customer Name"] || "";
         if (customer && !customerName) {
@@ -172,9 +464,7 @@ export default function MyOrdersPage() {
           advancePaid: order["Advance Paid"] || "No",
         };
       });
-
       setOrders(parsedOrders);
-
       if (parsedOrders.length === 0) {
         setError(`No profile found for phone number ${phone}`);
       } else {
@@ -241,10 +531,8 @@ export default function MyOrdersPage() {
 
   useEffect(() => {
     if (!qrUnlocked) return;
-
     setVerifyTimer(30);
     setCanVerify(false);
-
     const interval = setInterval(() => {
       setVerifyTimer((prev) => {
         if (prev <= 1) {
@@ -255,72 +543,43 @@ export default function MyOrdersPage() {
         return prev - 1;
       });
     }, 1000);
-
     return () => clearInterval(interval);
   }, [qrUnlocked]);
 
-  // UPDATED: Calculate the amount to show based on advance paid status
   const getAmountToShow = (order) => {
     const total = parseFloat(order["Total Amount"]) || 0;
     const paymentType = order["Payment Type"] || "";
     const advancePaid = order.advancePaid === "Yes";
-
-    // For COD orders
     if (paymentType.includes("Cash on Delivery")) {
-      if (advancePaid) {
-        // If advance is paid, show remaining amount (total - 99)
-        return Math.max(0, total - 99);
-      } else {
-        // If advance NOT paid, show full amount
-        return total;
-      }
+      if (advancePaid) return Math.max(0, total - 99);
+      return total;
     }
-
-    // For non-COD orders, show total amount
     return total;
   };
 
-  // Get the original advance amount (₹99 for COD)
-  const getAdvanceAmountPaid = (order) => {
-    const paymentType = order["Payment Type"] || "";
-    const advancePaid = order.advancePaid === "Yes";
-
-    if (paymentType.includes("Cash on Delivery") && advancePaid) {
-      return 99;
-    }
-    return 0;
-  };
-
-  // Get remaining amount (only relevant for COD with advance paid)
   const getRemainingAmount = (order) => {
     const total = parseFloat(order["Total Amount"]) || 0;
     const paymentType = order["Payment Type"] || "";
     const advancePaid = order.advancePaid === "Yes";
-
     if (paymentType.includes("Cash on Delivery") && advancePaid) {
       return total - 99;
     }
     return 0;
   };
 
-  // Check if payment is due
   const isPaymentDue = (order) => {
     const paymentType = order["Payment Type"] || "";
     const status = order.status;
     const advancePaid = order.advancePaid === "Yes";
-
     if (paymentType.includes("Cash on Delivery")) {
-      // Payment due only if not delivered and advance not paid
       return status !== "Delivered" && !advancePaid;
     }
     return false;
   };
 
-  // Get payment status message
   const getPaymentStatusMessage = (order) => {
     const paymentType = order["Payment Type"] || "";
     const advancePaid = order.advancePaid === "Yes";
-
     if (paymentType.includes("Cash on Delivery")) {
       if (advancePaid) {
         return {
@@ -328,15 +587,13 @@ export default function MyOrdersPage() {
           type: "success",
           remaining: `₹${getRemainingAmount(order)} pending at delivery`,
         };
-      } else {
-        return {
-          message: "⚠️ Payment Pending",
-          type: "warning",
-          remaining: `Pay ₹${getAmountToShow(order)} at delivery`,
-        };
       }
+      return {
+        message: "⚠️ Payment Pending",
+        type: "warning",
+        remaining: `Pay ₹${getAmountToShow(order)} at delivery`,
+      };
     }
-
     return {
       message: "✓ Payment Completed",
       type: "success",
@@ -346,7 +603,6 @@ export default function MyOrdersPage() {
 
   const formatDate = (dateString) => {
     if (!dateString) return "Date not available";
-
     try {
       if (typeof dateString === "string" && dateString.startsWith("Date(")) {
         const match = dateString.match(
@@ -359,23 +615,15 @@ export default function MyOrdersPage() {
           const hours = parseInt(match[4]);
           const minutes = parseInt(match[5]);
           const seconds = parseInt(match[6]);
-
           let date = new Date(year, month, day, hours, minutes, seconds);
           if (date.getMonth() !== month && month > 0) {
             date = new Date(year, month - 1, day, hours, minutes, seconds);
           }
-
-          if (!isNaN(date.getTime())) {
-            return formatDateToCustomString(date);
-          }
+          if (!isNaN(date.getTime())) return formatDateToCustomString(date);
         }
       }
-
       const date = new Date(dateString);
-      if (!isNaN(date.getTime())) {
-        return formatDateToCustomString(date);
-      }
-
+      if (!isNaN(date.getTime())) return formatDateToCustomString(date);
       return dateString;
     } catch (error) {
       console.error("Date formatting error:", error);
@@ -387,7 +635,6 @@ export default function MyOrdersPage() {
     const day = date.getDate();
     const month = date.toLocaleString("en-IN", { month: "long" });
     const year = date.getFullYear();
-
     const getOrdinalSuffix = (day) => {
       if (day > 3 && day < 21) return "th";
       switch (day % 10) {
@@ -401,7 +648,6 @@ export default function MyOrdersPage() {
           return "th";
       }
     };
-
     const formattedDay = `${day}${getOrdinalSuffix(day)}`;
     let hours = date.getHours();
     const minutes = date.getMinutes();
@@ -410,14 +656,13 @@ export default function MyOrdersPage() {
     hours = hours ? hours : 12;
     const formattedMinutes = minutes.toString().padStart(2, "0");
     const formattedTime = `${hours}:${formattedMinutes}${ampm}`;
-
     return `${formattedDay} ${month}, ${year} | ${formattedTime}`;
   };
 
   return (
     <div className="my-orders-page">
       <div className="section-1200 flex flex-col gap-24">
-        {/* Header with Back Button */}
+        {/* Header */}
         <div className="orders-header">
           <Link href="/" className="flex flex-row gap-8 items-center">
             <ArrowLeft size={18} />
@@ -534,27 +779,8 @@ export default function MyOrdersPage() {
                     </div>
                   </div>
 
-                  {/* Payment Status Banner - NEW */}
-                  {/* <div
-                    className={`payment-status-banner payment-${paymentStatus.type}`}
-                  >
-                    <div className="payment-status-left">
-                      {paymentStatus.type === "success" ? (
-                        <BadgeCheck size={16} />
-                      ) : (
-                        <Clock size={16} />
-                      )}
-                      <span>{paymentStatus.message}</span>
-                    </div>
-                    {paymentStatus.remaining && (
-                      <div className="payment-status-right">
-                        <span className="payment-amount">₹{amountToShow}</span>
-                        <span className="payment-label">
-                          {paymentStatus.remaining}
-                        </span>
-                      </div>
-                    )}
-                  </div> */}
+                  {/* NEW: Order Tracking Timeline */}
+                  <OrderTrackingTimeline order={order} />
 
                   {/* Order Items Preview */}
                   <div className="order-items-preview">
@@ -577,7 +803,6 @@ export default function MyOrdersPage() {
                     </div>
                   </div>
 
-                  {/* Order Details Grid */}
                   <div className="order-details-grid">
                     <div className="detail-item">
                       <IndianRupee size={14} className="gray-500" />
@@ -617,7 +842,6 @@ export default function MyOrdersPage() {
                     </div>
                   </div>
 
-                  {/* Tracking Info */}
                   {order.shippingId && (
                     <div className="tracking-info-row">
                       <div className="tracking-id-display">
@@ -633,7 +857,6 @@ export default function MyOrdersPage() {
                     </div>
                   )}
 
-                  {/* COD Payment Action - UPDATED: Only show if advance NOT paid */}
                   {order["Payment Type"]?.includes("Cash on Delivery") &&
                     order.status !== "Delivered" &&
                     order.advancePaid !== "Yes" && (
@@ -654,7 +877,6 @@ export default function MyOrdersPage() {
                       </div>
                     )}
 
-                  {/* Advance Paid Badge - NEW */}
                   {order.advancePaid === "Yes" && (
                     <div className="advance-paid-badge">
                       <BadgeCheck size={12} />
@@ -662,14 +884,12 @@ export default function MyOrdersPage() {
                     </div>
                   )}
 
-                  {/* Expand/Collapse for More Details */}
                   <details className="order-details">
                     <summary className="order-details-summary">
                       <span>View Order Details</span>
                       <ChevronRight size={16} />
                     </summary>
                     <div className="order-details-content">
-                      {/* Full Address */}
                       <div className="full-address">
                         <h4>Delivery Address</h4>
                         <p>
@@ -677,8 +897,6 @@ export default function MyOrdersPage() {
                           - {order["Pincode"]}
                         </p>
                       </div>
-
-                      {/* All Books */}
                       <div className="all-books">
                         <h4>Order Items ({order.parsedBooks?.length || 0})</h4>
                         {order.parsedBooks && order.parsedBooks.length > 0 ? (
@@ -706,16 +924,12 @@ export default function MyOrdersPage() {
                           <p className="no-books">Book details not available</p>
                         )}
                       </div>
-
-                      {/* Delivery Charges */}
                       {order["Delivery Charge"] > 0 && (
                         <div className="delivery-charge">
                           <span>Delivery Charge</span>
                           <span>+₹{order["Delivery Charge"]}</span>
                         </div>
                       )}
-
-                      {/* Gift Wrap */}
                       {order["Gift Wrap"] === "Yes" && (
                         <div className="gift-wrap-info">
                           <Gift size={14} />
@@ -732,7 +946,6 @@ export default function MyOrdersPage() {
           </div>
         )}
 
-        {/* Loading State */}
         {loading && (
           <div className="loading-state flex flex-col items-center justify-center">
             <div className="spinner"></div>
@@ -740,7 +953,6 @@ export default function MyOrdersPage() {
           </div>
         )}
 
-        {/* Error State */}
         {error && !showPhoneInput && (
           <div className="error-state">
             <div className="error-icon">⚠️</div>
@@ -751,7 +963,6 @@ export default function MyOrdersPage() {
           </div>
         )}
 
-        {/* Need Help Section */}
         {orders.length > 0 && (
           <div className="whatsapp-help-section">
             <a
@@ -789,7 +1000,7 @@ export default function MyOrdersPage() {
         )}
       </div>
 
-      {/* Payment Modal */}
+      {/* Payment Modal — unchanged */}
       <AnimatePresence>
         {showPaymentModal && selectedOrder && (
           <motion.div
@@ -819,28 +1030,6 @@ export default function MyOrdersPage() {
                 </span>
               </div>
               <div className="address-form-content">
-                {/* <div className="payment-order-summary">
-                  <div className="flex justify-between">
-                    <span>Order Total</span>
-                    <span>₹{selectedOrder["Total Amount"]}</span>
-                  </div>
-                  <div className="flex justify-between orange">
-                    <span>Advance Payment (₹99)</span>
-                    <span>₹99</span>
-                  </div>
-                  <div className="dashed-border my-12"></div>
-                  <div className="flex justify-between weight-600">
-                    <span>Amount to Pay Now</span>
-                    <span className="green weight-700 font-20">₹99</span>
-                  </div>
-                  <div className="flex justify-between font-12 gray-500 mt-8">
-                    <span>Remaining to pay at delivery</span>
-                    <span>
-                      ₹{parseFloat(selectedOrder["Total Amount"] || 0) - 99}
-                    </span>
-                  </div>
-                </div> */}
-
                 <div className="flex flex-col items-center gap-16">
                   <motion.div
                     className="qr-wrapper"
@@ -880,7 +1069,6 @@ export default function MyOrdersPage() {
                       </button>
                     </div>
                   </motion.div>
-
                   {!qrUnlocked && (
                     <button
                       className="pri-big-btn"
@@ -889,7 +1077,6 @@ export default function MyOrdersPage() {
                       Reveal QR Code to Pay
                     </button>
                   )}
-
                   {qrUnlocked && (
                     <div className="width100 flex flex-col gap-8 items-center">
                       <span className="font-12">

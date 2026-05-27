@@ -15,11 +15,13 @@ import { useEffect, useState, useRef } from "react";
 import { trackFunnelEvent } from "@/lib/analytics";
 import { EVENTS } from "@/lib/trackingEvents";
 import UnlockChip from "./UI/UnlockChip";
+import OneRupeeModal from "./OneRupeeModal";
 
 export default function CartBar() {
   const { cart, cartTotal } = useStore();
   const router = useRouter();
   const [liveRemainingTime, setLiveRemainingTime] = useState(0);
+  const [showOneRupeeModal, setShowOneRupeeModal] = useState(false);
   const prevCartTotalRef = useRef(cartTotal);
   const hasTrackedMilestonesRef = useRef({});
 
@@ -65,39 +67,33 @@ export default function CartBar() {
   // Get ₹1 book unlock status
   const offerData = getOneRupeeOfferData();
 
-  // Check if user has EVER clicked unlock (first time or not)
   const hasNeverUnlocked =
     !offerData?.timerUnlocked && !offerData?.permanentUnlocked;
 
-  // Check if user has permanently unlocked in localStorage
   const isPermanentlyUnlocked = offerData?.permanentUnlocked === true;
 
-  // Check if timer is active (user clicked unlock button and timer not expired)
   const isTimerActive =
     offerData?.timerUnlocked === true &&
     !offerData?.timerExpired &&
     (Date.now() - (offerData?.unlockTime || 0)) / 1000 / 60 <= 10;
 
-  // Check if timer has expired (user unlocked but time passed)
   const isTimerExpired =
     offerData?.timerUnlocked === true && offerData?.timerExpired === true;
 
-  // Check if ₹1 books should be visually enabled (based on cart total)
   const shouldBeEnabled = cartTotal >= 299;
 
-  // Determine which UI to show
-  let uiState = "locked"; // locked, timerActive, permanentUnlocked
+  let uiState = "locked";
 
   if (isPermanentlyUnlocked) {
     if (shouldBeEnabled) {
       uiState = "permanentUnlocked";
     } else {
-      uiState = "locked"; // Show locked state even though permanently unlocked in storage
+      uiState = "locked";
     }
   } else if (isTimerActive) {
     uiState = "timerActive";
   } else if (isTimerExpired) {
-    uiState = "locked"; // Timer expired, show locked state
+    uiState = "locked";
   } else {
     uiState = "locked";
   }
@@ -106,7 +102,6 @@ export default function CartBar() {
   useEffect(() => {
     const prevTotal = prevCartTotalRef.current;
 
-    // Track cart value update event
     if (prevTotal !== cartTotal) {
       trackFunnelEvent(EVENTS.CART_VALUE_UPDATED, {
         cart_total: cartTotal,
@@ -117,7 +112,6 @@ export default function CartBar() {
       });
     }
 
-    // Track milestone achievements
     const milestones = [151, 299, 400, 599, 799, 1000];
     for (const milestone of milestones) {
       if (
@@ -187,14 +181,6 @@ export default function CartBar() {
     hasNeverUnlocked,
   ]);
 
-  // Format time for display
-  const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
-  };
-
-  // Track checkout button click
   const handleCheckoutClick = () => {
     trackFunnelEvent(EVENTS.CHECKOUT_BUTTON_CLICKED, {
       cart_total: cartTotal,
@@ -207,7 +193,7 @@ export default function CartBar() {
     router.push("/bag");
   };
 
-  // Track "Add Books" button click
+  // Fallback handler (used inside locked modal CTA — scrolls to catalogue)
   const handleAddBooksClick = () => {
     trackFunnelEvent("add_books_button_clicked", {
       cart_total: cartTotal,
@@ -218,7 +204,17 @@ export default function CartBar() {
     booksSection?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // Don't show any unlock message for first-time users (never unlocked)
+  // Open the ₹1 modal — replaces the previous scroll-to-catalogue behavior
+  const handleOpenOneRupeeModal = () => {
+    trackFunnelEvent("one_rupee_modal_opened", {
+      cart_total: cartTotal,
+      remaining_needed: remainingForUnlock,
+      user_unlock_status: uiState,
+      source: "cart_bar",
+    });
+    setShowOneRupeeModal(true);
+  };
+
   const shouldShowUnlockMessage = !hasNeverUnlocked;
 
   return (
@@ -306,7 +302,7 @@ export default function CartBar() {
         )}
       </AnimatePresence>
 
-      {/* Mobile Offer Strip - Only show if user has interacted with unlock before */}
+      {/* Mobile Offer Strip */}
       {shouldShowUnlockMessage && (
         <AnimatePresence mode="wait">
           <motion.div
@@ -317,8 +313,14 @@ export default function CartBar() {
             transition={{ duration: 0.4, ease: "easeInOut" }}
           >
             {uiState === "timerActive" ? (
-              // Timer Active State (unlocked but not permanent)
-              <div className="mobile-offer-strip unlocked flex flex-row justify-between items-center">
+              // Timer Active — whole strip clickable to open modal
+              <div
+                className="mobile-offer-strip unlocked flex flex-row justify-between items-center"
+                onClick={handleOpenOneRupeeModal}
+                style={{ cursor: "pointer" }}
+                role="button"
+                aria-label="Open ₹1 book deals"
+              >
                 <div className="flex flex-row gap-4">
                   <div className="rupee-offer-icon">
                     <Zap size={18} color="orange" />
@@ -334,7 +336,7 @@ export default function CartBar() {
                   <div className="sec-mid-btn" style={{ color: "white" }}>
                     <Clock size={12} />
                     <span>
-                      {Math.floor(liveRemainingTime / 60)}:
+                      Claim in {Math.floor(liveRemainingTime / 60)}:
                       {(liveRemainingTime % 60).toString().padStart(2, "0")}{" "}
                       remaining
                     </span>
@@ -342,15 +344,21 @@ export default function CartBar() {
                 )}
               </div>
             ) : uiState === "permanentUnlocked" ? (
-              // Permanently Unlocked State (cart total >= 299)
-              <div className="mobile-offer-strip permanent">
+              // Permanently Unlocked — whole strip clickable to open modal
+              <div
+                className="mobile-offer-strip permanent"
+                onClick={handleOpenOneRupeeModal}
+                style={{ cursor: "pointer" }}
+                role="button"
+                aria-label="Open ₹1 book deals"
+              >
                 <div className="rupee-offer-content">
                   Grab your <span className="highlight-reward">₹1 Books</span>{" "}
                   right away
                 </div>
               </div>
             ) : remainingForUnlock > 0 ? (
-              // Locked State - Show unlock progress (only after user has unlocked before)
+              // Locked State — Claim button opens modal in locked mode
               <div className="mobile-offer-strip locked flex flex-row justify-between">
                 <div className="flex flex-row gap-4 items-center">
                   <div className="rupee-offer-icon">
@@ -366,9 +374,9 @@ export default function CartBar() {
                 <button
                   className="sec-mid-btn"
                   style={{ color: "white" }}
-                  onClick={handleAddBooksClick}
+                  onClick={handleOpenOneRupeeModal}
                 >
-                  ₹{cartTotal} / ₹299
+                  Claim in ₹{cartTotal} / ₹299
                 </button>
               </div>
             ) : null}
@@ -377,6 +385,16 @@ export default function CartBar() {
       )}
 
       <UnlockChip />
+
+      {/* ₹1 Books Modal */}
+      <OneRupeeModal
+        isOpen={showOneRupeeModal}
+        onClose={() => setShowOneRupeeModal(false)}
+        mode={uiState}
+        remainingForUnlock={remainingForUnlock}
+        liveRemainingTime={liveRemainingTime}
+        onAddBooksClick={handleAddBooksClick}
+      />
     </div>
   );
 }

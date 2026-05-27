@@ -751,7 +751,7 @@ _User has initiated payment. Waiting for verification..._
               <div className="input-group">
                 <label className="flex flex-row gap-4 flex-center items-center">
                   <MapPin size={14} />
-                  Pincode <span className="gray-500">(Optional)</span>
+                  Pincode
                 </label>
                 <input
                   className={`sec-mid-btn ${!isValidPincode && pincode ? "error-border" : ""}`}

@@ -7668,3 +7668,520 @@ input {
     height: 400px;
   }
 }
+/* ============================================
+   Order Tracking Timeline — append to globals.css
+   Uses :root design tokens only
+   ============================================ */
+
+.tracking-timeline-card {
+  background: var(--background);
+  border: 1px solid var(--dark-10);
+  border-radius: var(--px-12);
+  padding: var(--px-20);
+  display: flex;
+  flex-direction: column;
+  gap: var(--px-20);
+  margin-top: var(--px-12);
+  margin-bottom: var(--px-12);
+}
+
+/* ---------- Header ---------- */
+.tracking-header {
+  display: flex;
+  align-items: center;
+  gap: var(--px-12);
+}
+
+.tracking-header-icon {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  background: var(--tertiary-10);
+  border-radius: var(--px-8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tracking-package-icon {
+  font-size: 20px;
+}
+
+.tracking-check-icon {
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  color: var(--success);
+  background: var(--white-100);
+  border-radius: 50%;
+}
+
+.tracking-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tracking-title {
+  font-size: 15px;
+  font-weight: var(--weight-700);
+  color: var(--foreground);
+}
+
+.tracking-subtitle {
+  font-size: 12px;
+  color: var(--dark-50);
+  font-weight: var(--weight-500);
+}
+
+/* ---------- Stepper ---------- */
+.tracking-stepper {
+  position: relative;
+  padding-top: var(--px-32);
+}
+
+/* Tooltip / speech bubble */
+.tracking-tooltip {
+  position: absolute;
+  top: 0;
+  transform: translateX(-100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.tracking-tooltip-content {
+  background: var(--primary);
+  color: var(--white-100);
+  padding: 6px var(--px-10);
+  border-radius: var(--px-8);
+  font-size: 12px;
+  font-weight: var(--weight-600);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.tracking-tooltip-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--success);
+  display: inline-block;
+}
+
+.tracking-tooltip-arrow {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid var(--primary);
+  margin-top: -1px;
+}
+
+/* Track line behind dots */
+.tracking-track {
+  position: absolute;
+  top: calc(var(--px-32) + 12px);
+  left: 12px;
+  right: 12px;
+  height: 3px;
+  background: var(--dark-10);
+  border-radius: 2px;
+  z-index: 0;
+}
+
+.tracking-track-filled {
+  height: 100%;
+  background: var(--success);
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+/* Step dots row */
+.tracking-steps-row {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 1;
+}
+
+.tracking-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tracking-step-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--dark-10);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--white-100);
+  transition:
+    background 0.3s ease,
+    transform 0.2s ease;
+}
+
+.tracking-step-dot.complete {
+  background: var(--success);
+}
+
+.tracking-step-dot.complete .tracking-step-check {
+  color: var(--white-100);
+  display: block;
+}
+
+.tracking-step-dot:not(.complete) .tracking-step-check {
+  color: var(--dark-50);
+}
+
+/* Active step with truck icon */
+.tracking-step-dot.active-truck {
+  background: var(--white-100);
+  border: 2px solid var(--tertiary);
+  width: 36px;
+  height: 36px;
+}
+
+.tracking-truck-icon {
+  color: var(--tertiary);
+}
+
+/* Step labels row */
+.tracking-labels-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--px-12);
+}
+
+.tracking-label-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+  text-align: center;
+  min-width: 0;
+}
+
+.tracking-step-label {
+  font-size: 12px;
+  font-weight: var(--weight-700);
+  color: var(--dark-50);
+}
+
+.tracking-step-label.complete {
+  color: var(--foreground);
+}
+
+.tracking-step-date {
+  font-size: 11px;
+  color: var(--dark-50);
+  font-weight: var(--weight-500);
+}
+
+/* ---------- Bottom banner ---------- */
+.tracking-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--px-8);
+  padding: var(--px-12) var(--px-14);
+  background: var(--tertiary-10);
+  border: 1px solid var(--tertiary-light);
+  border-radius: var(--px-10);
+}
+
+.tracking-banner-icon {
+  color: var(--tertiary);
+  flex-shrink: 0;
+}
+
+.tracking-banner-text {
+  font-size: 13px;
+  font-weight: var(--weight-600);
+  color: var(--foreground);
+}
+
+/* ---------- Mobile tweaks ---------- */
+@media (max-width: 480px) {
+  .tracking-timeline-card {
+    padding: var(--px-16);
+    gap: var(--px-16);
+  }
+
+  .tracking-stepper {
+    padding-top: var(--px-32);
+  }
+
+  .tracking-step-dot {
+    width: 20px;
+    height: 20px;
+  }
+
+  .tracking-step-dot.active-truck {
+    width: 30px;
+    height: 30px;
+  }
+
+  .tracking-step-label {
+    font-size: 11px;
+  }
+
+  .tracking-step-date {
+    font-size: 10px;
+  }
+
+  .tracking-tooltip-content {
+    font-size: 11px;
+    padding: 5px var(--px-8);
+  }
+
+  .tracking-banner-text {
+    font-size: 12px;
+  }
+}
+
+/* ============================================
+   OneRupeeHero — append to globals.css
+   Celebratory short-height section for home page
+   Uses :root design tokens (--tertiary, --tertiary-light, etc.)
+   ============================================ */
+
+.onerupee-hero {
+  position: relative;
+  width: 100%;
+  max-width: 980px;
+  margin: var(--px-16) auto;
+  padding: var(--px-16) var(--px-20);
+  border-radius: var(--px-16);
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--background);
+  border: 1px solid var(--tertiary-light-20, #ffb70320);
+  min-height: 140px;
+  display: flex;
+  align-items: center;
+}
+
+/* Animated gradient background */
+.onerupee-hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(
+      circle at 20% 30%,
+      var(--tertiary-light-20, #ffb70320) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 70%,
+      var(--tertiary-10, #fb850010) 0%,
+      transparent 50%
+    ),
+    linear-gradient(
+      135deg,
+      var(--tertiary-light-05, #ffb70308) 0%,
+      var(--tertiary-10, #fb850010) 100%
+    );
+  background-size: 200% 200%;
+  animation: onerupee-shimmer 8s ease-in-out infinite;
+}
+
+@keyframes onerupee-shimmer {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Confetti container */
+.onerupee-hero-confetti {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.onerupee-hero-dot {
+  position: absolute;
+  top: 0;
+  border-radius: 50%;
+  opacity: 0;
+}
+
+/* Content row sits above bg */
+.onerupee-hero-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--px-16);
+  width: 100%;
+}
+
+/* Bouncing ₹1 coin */
+.onerupee-hero-coin {
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    var(--tertiary-light, #ffb703) 0%,
+    var(--tertiary, #fb8500) 100%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  box-shadow:
+    0 6px 16px var(--tertiary-10, #fb850010),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.1),
+    inset 0 2px 4px rgba(255, 255, 255, 0.3);
+  color: var(--white-100, #fff);
+  font-weight: var(--weight-700, 700);
+  position: relative;
+}
+
+.onerupee-hero-coin-rupee {
+  font-size: var(--px-32);
+  margin-top: -8px;
+}
+
+.onerupee-hero-coin-num {
+  font-size: 28px;
+  font-weight: var(--weight-900, 900);
+  line-height: 1;
+}
+
+/* Headline column */
+.onerupee-hero-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.onerupee-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  align-self: flex-start;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--tertiary, #fb8500);
+  color: var(--white-100, #fff);
+  font-size: 10px;
+  font-weight: var(--weight-700, 700);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.onerupee-hero-title {
+  font-size: 18px;
+  font-weight: var(--weight-700, 700);
+  color: var(--foreground, #0a0a0a);
+  line-height: 1.2;
+  margin: 0;
+}
+
+.onerupee-hero-emoji {
+  color: var(--tertiary, #fb8500);
+  font-weight: var(--weight-900, 900);
+}
+
+.onerupee-hero-subtitle {
+  font-size: 12px;
+  color: var(--dark-50, #828282);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* CTA button */
+.onerupee-hero-cta {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: var(--px-10, 10px) var(--px-16, 16px);
+  background: var(--primary, #0a0a0a);
+  color: var(--white-100, #fff);
+  border: none;
+  border-radius: var(--px-10, 10px);
+  font-size: 14px;
+  font-weight: var(--weight-600, 600);
+  cursor: pointer;
+  transition: box-shadow 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.onerupee-hero-cta:hover {
+  box-shadow: 0 6px 20px rgba(251, 133, 0, 0.3);
+}
+
+/* ---------- Mobile ---------- */
+@media (max-width: 640px) {
+  .onerupee-hero {
+    padding: var(--px-14, 14px) var(--px-16, 16px);
+    min-height: 120px;
+    border-radius: var(--px-12, 12px);
+  }
+
+  .onerupee-hero-content {
+    gap: var(--px-12, 12px);
+  }
+
+  .onerupee-hero-coin {
+    width: 52px;
+    height: 52px;
+  }
+
+  .onerupee-hero-coin-rupee {
+    font-size: var(--px-24);
+    margin-top: -6px;
+  }
+
+  .onerupee-hero-coin-num {
+    font-size: 22px;
+  }
+
+  .onerupee-hero-title {
+    font-size: 15px;
+  }
+
+  .onerupee-hero-subtitle {
+    font-size: 11px;
+  }
+
+  .onerupee-hero-cta {
+    padding: var(--px-8, 8px) var(--px-12, 12px);
+    font-size: 12px;
+  }
+
+  /* On very narrow screens, CTA shows only the arrow */
+}
+
+/* ---------- Very narrow phones ---------- */
+@media (max-width: 380px) {
+  .onerupee-hero-badge {
+    display: none;
+  }
+
+  .onerupee-hero-title {
+    font-size: 14px;
+  }
+}

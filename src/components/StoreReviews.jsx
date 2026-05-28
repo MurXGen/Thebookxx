@@ -29,8 +29,15 @@ export default function StoreReviews() {
   const scrollRef = useRef(null);
   const animationRef = useRef(null);
 
-  // Triple the reviews for seamless infinite scroll
-  const infiniteReviews = [...storeReviews, ...storeReviews, ...storeReviews];
+  // Show latest reviews first (reverse the array)
+  const reversedReviews = [...storeReviews].reverse();
+
+  // Triple the reviews for seamless infinite scroll (using reversed order)
+  const infiniteReviews = [
+    ...reversedReviews,
+    ...reversedReviews,
+    ...reversedReviews,
+  ];
 
   useEffect(() => {
     const scrollContainer = scrollRef.current;
@@ -59,7 +66,7 @@ export default function StoreReviews() {
     };
   }, [isHovered]);
 
-  // Calculate average rating
+  // Calculate average rating (using original order doesn't matter for average)
   const avgRating = (
     storeReviews.reduce((sum, r) => sum + r.rating, 0) / storeReviews.length
   ).toFixed(1);
@@ -68,52 +75,7 @@ export default function StoreReviews() {
   return (
     <section className="store-reviews-section">
       <div className="section-1200">
-        {/* Header */}
-        {/* <div className="reviews-header ">
-          <div className="reviews-title-wrapper">
-            <div className="reviews-badge">
-              <Quote size={24} />
-            </div>
-            <div>
-              <h2 className="reviews-title">What Our Readers Say</h2>
-              <p className="reviews-subtitle">
-                Join 10,000+ happy readers who trust TheBookX
-              </p>
-            </div>
-          </div>
-
-          
-          <div className="trust-badges">
-            <div className="reviews-trust-badge">
-              <ShieldCheck size={16} />
-              <span>100% Genuine Books</span>
-            </div>
-            <div className="reviews-trust-badge">
-              <Truck size={16} />
-              <span>Free Shipping*</span>
-            </div>
-            <div className="reviews-trust-badge">
-              <BsCash size={16} />
-              <span>Cash on Delivery</span>
-            </div>
-          </div>
-        </div> */}
-
-        {/* Rating Summary */}
-        {/* <div className="rating-summary">
-          <div className="rating-stars">
-            <div className="rating-number">{avgRating}</div>
-            <StarRating rating={parseFloat(avgRating)} />
-            <div className="rating-count">Based on 2k+ verified reviews</div>
-          </div>
-          <div className="rating-divider"></div>
-          <div className="google-rating">
-            <span className="google-icon">⭐</span>
-            <span className="google-text">4.8 • Google Reviews</span>
-          </div>
-        </div> */}
-
-        {/* Infinite Scroll Reviews */}
+        {/* Infinite Scroll Reviews - Now showing latest first */}
         <div
           className="reviews-scroll-container"
           onMouseEnter={() => setIsHovered(true)}

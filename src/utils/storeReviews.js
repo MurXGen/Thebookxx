@@ -111,4 +111,59 @@ export const storeReviews = [
     verified: true,
     avatar: "RM",
   },
+
+  {
+    id: 11,
+    name: "Raisul Islam",
+    location: "Kolkata, West Bengal",
+    rating: 4,
+    review: "delivery took time but quality of the books are really great",
+    date: "3 days ago",
+    verified: true,
+    avatar: "RI",
+  },
+  {
+    id: 12,
+    name: "Vivek Yadav",
+    location: "Mumbai, Maharashtra",
+    rating: 5,
+    review:
+      "Theire customer service amazing, earlier i thought its not legit but guys really try it out",
+    date: "2 days ago",
+    verified: true,
+    avatar: "VY",
+  },
+  {
+    id: 13,
+    name: "Abdullah Shakib",
+    location: "Delhi, India",
+    rating: 5,
+    review:
+      "Those 1rs books have really changed where i buy books from when i get books at best prices and qualities",
+    date: "yesterday",
+    verified: true,
+    avatar: "AS",
+  },
+  {
+    id: 14,
+    name: "Indhu",
+    location: "Chennai, Tamil Nadu",
+    rating: 5,
+    review:
+      "They didn't got bookmark on my first order but after that when i told them initially whenever i order eveytime they added bookmarks",
+    date: "today",
+    verified: true,
+    avatar: "IN",
+  },
+  {
+    id: 15,
+    name: "Priyanka Sharma",
+    location: "Jaipur, Rajasthan",
+    rating: 5,
+    review:
+      "honestly the best place for budget readers, got 3 books for under 300 and all were in perfect condition, packaging could be better but for the price it's a steal",
+    date: "yesterday",
+    verified: true,
+    avatar: "PS",
+  },
 ];

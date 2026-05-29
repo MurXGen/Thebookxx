@@ -12,11 +12,12 @@ import { useStore } from "@/context/StoreContext";
 import { showToast } from "@/context/ToastContext";
 import { books } from "@/utils/book";
 import {
-  CART_OFFERS,
+  getCartOffers,
   getDeliveryCharge,
   getDeliveryLabel,
   getDeliveryDescription,
   getOriginalCharge,
+  getMinCheckoutAmount,
 } from "@/utils/cartOffers";
 import { ArrowLeft, Gift, Sparkle, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -25,8 +26,6 @@ import { permanentlyUnlockOffer, areOneRupeeBooksEnabled } from "@/utils/book";
 import { FaWhatsapp } from "react-icons/fa";
 import Link from "next/link";
 import { FcDocument } from "react-icons/fc";
-
-const MIN_CHECKOUT_AMOUNT = 399;
 
 export default function BagPage() {
   // ✅ ALL hooks go here - NO EXCEPTIONS
@@ -56,6 +55,13 @@ export default function BagPage() {
     })
     .filter(Boolean);
 
+  // ✅ Check if cart has any ₹1 book
+  const hasOneRupeeItem = cartBooks.some((book) => book.discountedPrice === 1);
+
+  // ✅ Get dynamic values based on ₹1 item presence
+  const MIN_CHECKOUT_AMOUNT = getMinCheckoutAmount(hasOneRupeeItem);
+  const cartOffers = getCartOffers(hasOneRupeeItem);
+
   // Calculate other values that depend on cartBooks
   const totalOriginal = cartBooks.reduce(
     (sum, b) => sum + b.originalPrice * b.qty,
@@ -67,22 +73,9 @@ export default function BagPage() {
     0,
   );
 
-  // ✅ This useEffect also needs to be here (before conditional return)
-  // useEffect(() => {
-  //   if (totalDiscounted >= 299 && !areOneRupeeBooksEnabled()) {
-  //     const offerData = getOneRupeeOfferData();
-  //     if (!offerData?.permanentUnlock) {
-  //       permanentlyUnlockOffer();
-  //       alert(
-  //         "🎉 Congratulations! ₹1 books are now permanently unlocked for you!",
-  //       );
-  //     }
-  //   }
-  // }, [totalDiscounted]);
-
   // ✅ Define all helper functions BEFORE conditional return
   const getAppliedOffer = (amount) => {
-    return [...CART_OFFERS].reverse().find((o) => amount >= o.target) || null;
+    return [...cartOffers].reverse().find((o) => amount >= o.target) || null;
   };
 
   const appliedOffer = getAppliedOffer(totalDiscounted);
@@ -107,17 +100,45 @@ export default function BagPage() {
     MIN_CHECKOUT_AMOUNT - totalDiscounted,
   );
 
-  const standardDeliveryCharge = getDeliveryCharge(totalDiscounted, false);
-  const fasterDeliveryCharge = getDeliveryCharge(totalDiscounted, true);
-  const standardDeliveryLabel = getDeliveryLabel(totalDiscounted, false);
-  const fasterDeliveryLabel = getDeliveryLabel(totalDiscounted, true);
-  const standardDeliveryDesc = getDeliveryDescription(totalDiscounted, false);
-  const fasterDeliveryDesc = getDeliveryDescription(totalDiscounted, true);
+  const standardDeliveryCharge = getDeliveryCharge(
+    totalDiscounted,
+    false,
+    hasOneRupeeItem,
+  );
+  const fasterDeliveryCharge = getDeliveryCharge(
+    totalDiscounted,
+    true,
+    hasOneRupeeItem,
+  );
+  const standardDeliveryLabel = getDeliveryLabel(
+    totalDiscounted,
+    false,
+    hasOneRupeeItem,
+  );
+  const fasterDeliveryLabel = getDeliveryLabel(
+    totalDiscounted,
+    true,
+    hasOneRupeeItem,
+  );
+  const standardDeliveryDesc = getDeliveryDescription(
+    totalDiscounted,
+    false,
+    hasOneRupeeItem,
+  );
+  const fasterDeliveryDesc = getDeliveryDescription(
+    totalDiscounted,
+    true,
+    hasOneRupeeItem,
+  );
   const standardOriginalCharge = getOriginalCharge(totalDiscounted, false);
   const fasterOriginalCharge = getOriginalCharge(totalDiscounted, true);
 
   const getDeliveryChargeByChoice = (isFasterDelivery) => {
-    return getDeliveryCharge(totalDiscounted, isFasterDelivery);
+    return getDeliveryCharge(
+      totalDiscounted,
+      isFasterDelivery,
+      hasOneRupeeItem,
+    );
   };
 
   const totalWithStandardDelivery = finalPayable + standardDeliveryCharge;
@@ -152,6 +173,7 @@ export default function BagPage() {
     const deliveryLabel = getDeliveryLabel(
       totalDiscounted,
       fasterDeliveryChoice,
+      hasOneRupeeItem,
     );
     const giftWrapAmount = giftWrapSelected ? GIFT_WRAP_CHARGE : 0;
     const totalWithDelivery = finalPayable + deliveryCharge + giftWrapAmount;
@@ -200,6 +222,7 @@ Thank you! 🙏
     const deliveryLabel = getDeliveryLabel(
       totalDiscounted,
       fasterDeliveryChoice,
+      hasOneRupeeItem,
     );
     const giftWrapAmount = giftWrapSelected ? GIFT_WRAP_CHARGE : 0;
     const totalWithDelivery = finalPayable + deliveryCharge + giftWrapAmount;
@@ -301,7 +324,11 @@ _Thank you for shopping with TheBookX! 📚✨_
       paymentMethod: paymentType,
       fasterDelivery: fasterDeliveryChoice,
       deliveryCharge: deliveryCharge,
-      deliveryLabel: getDeliveryLabel(totalDiscounted, fasterDeliveryChoice),
+      deliveryLabel: getDeliveryLabel(
+        totalDiscounted,
+        fasterDeliveryChoice,
+        hasOneRupeeItem,
+      ),
       giftWrap: giftWrapSelected,
       giftWrapCharge: giftWrapAmount,
       orderDate: new Date().toISOString(),

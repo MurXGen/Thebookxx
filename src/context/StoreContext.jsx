@@ -218,6 +218,20 @@ export function StoreProvider({ children }) {
   };
 
   const getCartTotal = () => cartTotal;
+  const hasOneRupeeItem = cart.some((cartItem) => {
+    const book = books.find((b) => b.id === cartItem.id);
+    return book && book.discountedPrice === 1;
+  });
+
+  // Get minimum checkout amount based on ₹1 items
+  const getMinCheckoutAmount = () => {
+    return hasOneRupeeItem ? 399 : 151;
+  };
+
+  // Check if cart meets minimum checkout
+  const canCheckout = () => {
+    return cartTotal >= getMinCheckoutAmount();
+  };
 
   return (
     <StoreContext.Provider
@@ -225,6 +239,9 @@ export function StoreProvider({ children }) {
         cart,
         wishlist,
         cartTotal,
+        hasOneRupeeItem, // Add this
+        getMinCheckoutAmount, // Add this
+        canCheckout, // Add this
         addToCart,
         decreaseQty,
         removeFromCart,

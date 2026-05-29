@@ -1,89 +1,191 @@
-export const CART_OFFERS = [
-  {
-    min: 0,
-    target: 399,
-    type: "free_shipping",
-    message: "Add ₹{remaining} more for checkout & Free Delivery",
-    icon: "gift",
-  },
-  {
-    min: 399,
-    target: 400,
-    type: "percentage",
-    value: 0,
-    message: "Add ₹{remaining} more to get Free Delivery",
-    icon: "sparkle",
-  },
-  {
-    min: 400,
-    target: 650,
-    type: "flat",
-    value: 100,
-    message: "Add ₹{remaining} more & get flat ₹100 OFF",
-    icon: "sparkle",
-  },
-  {
-    min: 650,
-    target: 1000,
-    type: "flat",
-    value: 250,
-    message: "Add ₹{remaining} more & get ₹250 OFF",
-    icon: "sparkle",
-  },
-  {
-    min: 1000,
-    target: 2000,
-    type: "flat",
-    value: 500,
-    message: "Add ₹{remaining} more & get ₹500 OFF",
-    icon: "sparkle",
-  },
-];
+// utils/cartOffers.js
 
-// Dynamic delivery charge based on order value
-export const getDeliveryCharge = (orderAmount, isFasterDelivery = false) => {
-  // Below 399 - Normal flow
-  if (orderAmount < 399) {
-    if (isFasterDelivery) {
-      return 119;
-    }
-    return 0;
+// Get base offers based on whether ₹1 items are present
+export const getCartOffers = (hasOneRupeeItem = false) => {
+  if (hasOneRupeeItem) {
+    return [
+      {
+        min: 0,
+        target: 399,
+        type: "free_shipping",
+        message: "Add ₹{remaining} more for checkout & Free Delivery",
+        icon: "gift",
+      },
+      {
+        min: 399,
+        target: 400,
+        type: "percentage",
+        value: 0,
+        message: "Add ₹{remaining} more to get Free Delivery",
+        icon: "sparkle",
+      },
+      {
+        min: 400,
+        target: 650,
+        type: "flat",
+        value: 100,
+        message: "Add ₹{remaining} more & get flat ₹100 OFF",
+        icon: "sparkle",
+      },
+      {
+        min: 650,
+        target: 1000,
+        type: "flat",
+        value: 250,
+        message: "Add ₹{remaining} more & get ₹250 OFF",
+        icon: "sparkle",
+      },
+      {
+        min: 1000,
+        target: 2000,
+        type: "flat",
+        value: 500,
+        message: "Add ₹{remaining} more & get ₹500 OFF",
+        icon: "sparkle",
+      },
+    ];
+  } else {
+    return [
+      {
+        min: 0,
+        target: 151,
+        type: "free_shipping",
+        message: "Add ₹{remaining} more for checkout",
+        icon: "gift",
+      },
+      {
+        min: 300,
+        target: 600,
+        type: "percentage",
+        value: 0,
+        message: "Add ₹{remaining} more & get flat ₹100 OFF",
+        icon: "sparkle",
+      },
+      {
+        min: 400,
+        target: 650,
+        type: "flat",
+        value: 100,
+        message: "Add ₹{remaining} more & get flat ₹100 OFF",
+        icon: "sparkle",
+      },
+      {
+        min: 650,
+        target: 1000,
+        type: "flat",
+        value: 250,
+        message: "Add ₹{remaining} more & get ₹250 OFF",
+        icon: "sparkle",
+      },
+      {
+        min: 1000,
+        target: 2000,
+        type: "flat",
+        value: 500,
+        message: "Add ₹{remaining} more & get ₹500 OFF",
+        icon: "sparkle",
+      },
+    ];
   }
+};
 
-  // Between 399 and 599 - Free standard, faster 119
-  if (orderAmount >= 399 && orderAmount < 599) {
-    if (isFasterDelivery) {
-      return 119;
+// Dynamic delivery charge based on order value and ₹1 item presence
+export const getDeliveryCharge = (
+  orderAmount,
+  isFasterDelivery = false,
+  hasOneRupeeItem = false,
+) => {
+  // If ₹1 items are in cart, use higher threshold
+  if (hasOneRupeeItem) {
+    // Below 399 - Normal flow
+    if (orderAmount < 399) {
+      if (isFasterDelivery) {
+        return 119;
+      }
+      return 0;
     }
-    return 0; // Free delivery
-  }
 
-  // Between 599 and 799 - Small handling fee ₹49 for standard
-  if (orderAmount >= 599 && orderAmount < 799) {
-    if (isFasterDelivery) {
-      return 119;
+    // Between 399 and 599 - Free standard, faster 119
+    if (orderAmount >= 399 && orderAmount < 599) {
+      if (isFasterDelivery) {
+        return 119;
+      }
+      return 0; // Free delivery
     }
-    return 49; // Small handling fee
-  }
 
-  // Above 799 - Bulk order handling fees (20% base, with discounts)
-  if (orderAmount >= 799) {
-    const baseCharge = orderAmount * 0.2; // 20% base
-    if (isFasterDelivery) {
-      // Faster delivery: 15% of total (discounted from 20%)
-      const fasterCharge = orderAmount * 0.15;
-      return Math.min(Math.round(fasterCharge), 1000);
+    // Between 599 and 799 - Small handling fee ₹49 for standard
+    if (orderAmount >= 599 && orderAmount < 799) {
+      if (isFasterDelivery) {
+        return 119;
+      }
+      return 49; // Small handling fee
     }
-    // Standard delivery: 10% of total (discounted from 20%)
-    const standardCharge = orderAmount * 0.1;
-    return Math.min(Math.round(standardCharge), 800);
+
+    // Above 799 - Bulk order handling fees
+    if (orderAmount >= 799) {
+      const baseCharge = orderAmount * 0.2;
+      if (isFasterDelivery) {
+        const fasterCharge = orderAmount * 0.15;
+        return Math.min(Math.round(fasterCharge), 1000);
+      }
+      const standardCharge = orderAmount * 0.1;
+      return Math.min(Math.round(standardCharge), 800);
+    }
+  } else {
+    // No ₹1 items - use lower threshold (151 for checkout)
+    // Below 151 - Cannot checkout
+    if (orderAmount < 151) {
+      if (isFasterDelivery) {
+        return 119;
+      }
+      return 0;
+    }
+
+    // Between 151 and 399 - Free standard, faster 119
+    if (orderAmount >= 151 && orderAmount < 399) {
+      if (isFasterDelivery) {
+        return 119;
+      }
+      return 0;
+    }
+
+    // Between 399 and 599 - Free standard, faster 119
+    if (orderAmount >= 399 && orderAmount < 599) {
+      if (isFasterDelivery) {
+        return 119;
+      }
+      return 0;
+    }
+
+    // Between 599 and 799 - Small handling fee ₹49 for standard
+    if (orderAmount >= 599 && orderAmount < 799) {
+      if (isFasterDelivery) {
+        return 119;
+      }
+      return 49;
+    }
+
+    // Above 799 - Bulk order handling fees
+    if (orderAmount >= 799) {
+      const baseCharge = orderAmount * 0.2;
+      if (isFasterDelivery) {
+        const fasterCharge = orderAmount * 0.15;
+        return Math.min(Math.round(fasterCharge), 1000);
+      }
+      const standardCharge = orderAmount * 0.1;
+      return Math.min(Math.round(standardCharge), 800);
+    }
   }
 
   return 0;
 };
 
-// Get delivery label based on order value
-export const getDeliveryLabel = (orderAmount, isFasterDelivery = false) => {
+// Get delivery label
+export const getDeliveryLabel = (
+  orderAmount,
+  isFasterDelivery = false,
+  hasOneRupeeItem = false,
+) => {
   if (isFasterDelivery) {
     if (orderAmount >= 799) {
       return "Priority Express (15% of order)";
@@ -99,14 +201,18 @@ export const getDeliveryLabel = (orderAmount, isFasterDelivery = false) => {
     if (orderAmount >= 399 && orderAmount < 599) {
       return "Free Delivery";
     }
+    if (!hasOneRupeeItem && orderAmount >= 151 && orderAmount < 399) {
+      return "Free Delivery";
+    }
     return "Standard Delivery";
   }
 };
 
-// Get delivery description for UI
+// Get delivery description
 export const getDeliveryDescription = (
   orderAmount,
   isFasterDelivery = false,
+  hasOneRupeeItem = false,
 ) => {
   if (isFasterDelivery) {
     if (orderAmount >= 799) {
@@ -123,11 +229,14 @@ export const getDeliveryDescription = (
     if (orderAmount >= 399 && orderAmount < 599) {
       return "Complimentary shipping on orders above ₹399";
     }
+    if (!hasOneRupeeItem && orderAmount >= 151 && orderAmount < 399) {
+      return "Complimentary shipping on orders above ₹151";
+    }
     return "Get your order delivered in 5-7 business days";
   }
 };
 
-// Get original charge before discount (for display)
+// Get original charge before discount
 export const getOriginalCharge = (orderAmount, isFasterDelivery = false) => {
   if (orderAmount >= 799) {
     const baseCharge = orderAmount * 0.2;
@@ -135,3 +244,15 @@ export const getOriginalCharge = (orderAmount, isFasterDelivery = false) => {
   }
   return null;
 };
+
+// Helper to get minimum checkout amount based on ₹1 items
+export const getMinCheckoutAmount = (hasOneRupeeItem = false) => {
+  return hasOneRupeeItem ? 399 : 151;
+};
+
+export const CART_OFFERS = (() => {
+  console.warn(
+    "CART_OFFERS is deprecated. Use getCartOffers(hasOneRupeeItem) instead.",
+  );
+  return getCartOffers(false); // Default to false (no ₹1 items)
+})();

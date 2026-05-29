@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { CART_OFFERS } from "@/utils/cartOffers";
+import { getCartOffers } from "@/utils/cartOffers";
 import { motion, animate } from "framer-motion";
 import { useStore } from "@/context/StoreContext";
 import { books } from "@/utils/book"; // 👈 needed to map id → image
@@ -18,16 +18,23 @@ export default function CartOfferStrip({ discountedAmount }) {
 
   if (discountedAmount === null || discountedAmount === undefined) return null;
 
-  /* 🛒 Merge cart with book data */
+  /* 🛒 Merge cart with book data and check for ₹1 items */
   const cartItems = useMemo(() => {
     return cart.map((item) => {
       const book = books.find((b) => b.id === item.id);
       return {
         ...item,
         image: book?.image,
+        discountedPrice: book?.discountedPrice,
       };
     });
   }, [cart]);
+
+  /* ✅ Check if cart has any ₹1 book */
+  const hasOneRupeeItem = cartItems.some((item) => item.discountedPrice === 1);
+
+  /* ✅ Get dynamic offers based on ₹1 item presence */
+  const CART_OFFERS = getCartOffers(hasOneRupeeItem);
 
   /* ✅ Correct cart count */
   const cartCount = cart.reduce((acc, item) => acc + item.qty, 0);
@@ -125,8 +132,38 @@ export default function CartOfferStrip({ discountedAmount }) {
     );
   }, [progressOffer, appliedOffer, remaining]);
 
+  /* Get the target message for the CTA based on ₹1 items */
+  const getCTAMessage = () => {
+    if (hasOneRupeeItem) {
+      return "Add more to unlock offers →";
+    }
+    return "Continue shopping →";
+  };
+
+  /* Get the correct link based on cart state */
+  const getCTALink = () => {
+    if (hasOneRupeeItem && discountedAmount < 151) {
+      return "/books"; // Send to books page to add more
+    }
+    return "/"; // Send to home page
+  };
+
   /* 🖼️ Preview cards */
   const previewItems = cartItems.slice(0, 3);
+
+  /* Get the appropriate offer text for display */
+  const getOfferDisplay = () => {
+    if (hasOneRupeeItem && discountedAmount < 399) {
+      return {
+        title: "₹1 Books in Cart",
+        subtitle: `Add ₹${399 - discountedAmount} more to unlock free delivery`,
+        progressTarget: 399,
+      };
+    }
+    return null;
+  };
+
+  const offerDisplay = getOfferDisplay();
 
   /* 🧱 The card content stays identical whether wrapped in Link or div */
   const stripContent = (
@@ -180,7 +217,7 @@ export default function CartOfferStrip({ discountedAmount }) {
 
   return (
     <Link
-      href="/"
+      href={getCTALink()}
       className="offer-strip"
       style={{ textDecoration: "none", display: "flex" }}
     >

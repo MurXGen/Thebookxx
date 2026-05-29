@@ -101,7 +101,7 @@ export const getDeliveryCharge = (
     // Below 399 - Charge ₹100 handling fee + faster delivery if selected
     if (orderAmount < 399) {
       if (isFasterDelivery) {
-        return 119 + 100; // ₹219 total
+        return 119; // ₹219 total
       }
       return 100; // ₹100 handling fee
     }
@@ -239,15 +239,15 @@ export const getDeliveryDescription = (
   if (hasOneRupeeItem) {
     if (isFasterDelivery) {
       if (orderAmount >= 799) {
-        return "Priority handling for bulk orders + ₹1 book processing fee";
+        return "Priority handling for bulk orders";
       }
-      return "Get your order delivered in 2-5 business days (includes ₹1 book handling)";
+      return "Get your order delivered in 2-5 business days";
     } else {
       if (orderAmount >= 799) {
-        return "Special handling fee for large book collections + ₹1 book processing";
+        return "Special handling fee for large book collections";
       }
       if (orderAmount >= 599 && orderAmount < 799) {
-        return "Small handling fee + ₹1 book processing fee";
+        return "Small handling fee";
       }
       return "₹100 handling fee for orders containing ₹1 books";
     }

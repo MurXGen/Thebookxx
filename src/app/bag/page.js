@@ -59,7 +59,7 @@ export default function BagPage() {
   const hasOneRupeeItem = cartBooks.some((book) => book.discountedPrice === 1);
 
   // ✅ Get dynamic values based on ₹1 item presence
-  const MIN_CHECKOUT_AMOUNT = getMinCheckoutAmount(hasOneRupeeItem);
+  const MIN_CHECKOUT_AMOUNT = 151;
   const cartOffers = getCartOffers(hasOneRupeeItem);
 
   // Calculate other values that depend on cartBooks

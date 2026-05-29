@@ -376,7 +376,7 @@ export default function CartBar() {
                   style={{ color: "white" }}
                   onClick={handleOpenOneRupeeModal}
                 >
-                  Claim in ₹{cartTotal} / ₹299
+                  ₹{cartTotal} / ₹299
                 </button>
               </div>
             ) : null}

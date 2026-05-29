@@ -90,50 +90,55 @@ export const getCartOffers = (hasOneRupeeItem = false) => {
 };
 
 // Dynamic delivery charge based on order value and ₹1 item presence
+
 export const getDeliveryCharge = (
   orderAmount,
   isFasterDelivery = false,
   hasOneRupeeItem = false,
 ) => {
-  // If ₹1 items are in cart, use higher threshold
+  // If ₹1 items are in cart - charge ₹100 handling fee (instead of free)
   if (hasOneRupeeItem) {
-    // Below 399 - Normal flow
+    // Below 399 - Charge ₹100 handling fee + faster delivery if selected
     if (orderAmount < 399) {
       if (isFasterDelivery) {
-        return 119;
+        return 119 + 100; // ₹219 total
       }
-      return 0;
+      return 100; // ₹100 handling fee
     }
 
-    // Between 399 and 599 - Free standard, faster 119
+    // Between 399 and 599 - Charge ₹100 handling fee, faster delivery extra
     if (orderAmount >= 399 && orderAmount < 599) {
       if (isFasterDelivery) {
-        return 119;
+        return 119 + 100; // ₹219 total
       }
-      return 0; // Free delivery
+      return 100; // ₹100 handling fee
     }
 
-    // Between 599 and 799 - Small handling fee ₹49 for standard
+    // Between 599 and 799 - Charge ₹100 + ₹49 handling fee
     if (orderAmount >= 599 && orderAmount < 799) {
       if (isFasterDelivery) {
-        return 119;
+        return 119 + 100; // ₹219 total
       }
-      return 49; // Small handling fee
+      return 49 + 100; // ₹149 total
     }
 
-    // Above 799 - Bulk order handling fees
+    // Above 799 - Bulk order handling fees + ₹100 base
     if (orderAmount >= 799) {
-      const baseCharge = orderAmount * 0.2;
+      const baseCharge = orderAmount * 0.2; // 20% base
       if (isFasterDelivery) {
         const fasterCharge = orderAmount * 0.15;
-        return Math.min(Math.round(fasterCharge), 1000);
+        return Math.min(Math.round(fasterCharge), 1000) + 100;
       }
       const standardCharge = orderAmount * 0.1;
-      return Math.min(Math.round(standardCharge), 800);
+      return Math.min(Math.round(standardCharge), 800) + 100;
     }
-  } else {
-    // No ₹1 items - use lower threshold (151 for checkout)
-    // Below 151 - Cannot checkout
+
+    return 100; // Default handling fee
+  }
+
+  // No ₹1 items - Free delivery for eligible orders
+  else {
+    // Below 151 - Cannot checkout (will be handled by checkout minimum)
     if (orderAmount < 151) {
       if (isFasterDelivery) {
         return 119;
@@ -175,36 +180,53 @@ export const getDeliveryCharge = (
       const standardCharge = orderAmount * 0.1;
       return Math.min(Math.round(standardCharge), 800);
     }
-  }
 
-  return 0;
+    return 0;
+  }
 };
 
-// Get delivery label
 export const getDeliveryLabel = (
   orderAmount,
   isFasterDelivery = false,
   hasOneRupeeItem = false,
 ) => {
-  if (isFasterDelivery) {
-    if (orderAmount >= 799) {
-      return "Priority Express (15% of order)";
+  if (hasOneRupeeItem) {
+    if (isFasterDelivery) {
+      if (orderAmount >= 799) {
+        return "Priority Express + ₹1 Book Handling (15% + ₹100)";
+      }
+      return "Express Delivery + ₹1 Book Handling";
+    } else {
+      if (orderAmount >= 799) {
+        return "Bulk Order + ₹1 Book Handling (10% + ₹100)";
+      }
+      if (orderAmount >= 599 && orderAmount < 799) {
+        return "Small Handling Fee + ₹1 Book Handling";
+      }
+      return "₹1 Book Handling Fee";
     }
-    return "Express Delivery";
   } else {
-    if (orderAmount >= 799) {
-      return "Bulk Order Handling (10% fee)";
+    // Original labels for orders without ₹1 items
+    if (isFasterDelivery) {
+      if (orderAmount >= 799) {
+        return "Priority Express (15% of order)";
+      }
+      return "Express Delivery";
+    } else {
+      if (orderAmount >= 799) {
+        return "Bulk Order Handling (10% fee)";
+      }
+      if (orderAmount >= 599 && orderAmount < 799) {
+        return "Small Handling Fee";
+      }
+      if (orderAmount >= 399 && orderAmount < 599) {
+        return "Free Delivery";
+      }
+      if (orderAmount >= 151 && orderAmount < 399) {
+        return "Free Delivery";
+      }
+      return "Standard Delivery";
     }
-    if (orderAmount >= 599 && orderAmount < 799) {
-      return "Small Handling Fee";
-    }
-    if (orderAmount >= 399 && orderAmount < 599) {
-      return "Free Delivery";
-    }
-    if (!hasOneRupeeItem && orderAmount >= 151 && orderAmount < 399) {
-      return "Free Delivery";
-    }
-    return "Standard Delivery";
   }
 };
 
@@ -214,25 +236,43 @@ export const getDeliveryDescription = (
   isFasterDelivery = false,
   hasOneRupeeItem = false,
 ) => {
-  if (isFasterDelivery) {
-    if (orderAmount >= 799) {
-      return "Priority handling for bulk orders";
+  if (hasOneRupeeItem) {
+    if (isFasterDelivery) {
+      if (orderAmount >= 799) {
+        return "Priority handling for bulk orders + ₹1 book processing fee";
+      }
+      return "Get your order delivered in 2-5 business days (includes ₹1 book handling)";
+    } else {
+      if (orderAmount >= 799) {
+        return "Special handling fee for large book collections + ₹1 book processing";
+      }
+      if (orderAmount >= 599 && orderAmount < 799) {
+        return "Small handling fee + ₹1 book processing fee";
+      }
+      return "₹100 handling fee for orders containing ₹1 books";
     }
-    return "Get your order delivered in 2-5 business days";
   } else {
-    if (orderAmount >= 799) {
-      return "Special handling fee for large book collections";
+    // Original descriptions for orders without ₹1 items
+    if (isFasterDelivery) {
+      if (orderAmount >= 799) {
+        return "Priority handling for bulk orders";
+      }
+      return "Get your order delivered in 2-5 business days";
+    } else {
+      if (orderAmount >= 799) {
+        return "Special handling fee for large book collections";
+      }
+      if (orderAmount >= 599 && orderAmount < 799) {
+        return "Small handling fee for order processing";
+      }
+      if (orderAmount >= 399 && orderAmount < 599) {
+        return "Complimentary shipping on orders above ₹399";
+      }
+      if (orderAmount >= 151 && orderAmount < 399) {
+        return "Complimentary shipping on orders above ₹151";
+      }
+      return "Get your order delivered in 5-7 business days";
     }
-    if (orderAmount >= 599 && orderAmount < 799) {
-      return "Small handling fee for order processing";
-    }
-    if (orderAmount >= 399 && orderAmount < 599) {
-      return "Complimentary shipping on orders above ₹399";
-    }
-    if (!hasOneRupeeItem && orderAmount >= 151 && orderAmount < 399) {
-      return "Complimentary shipping on orders above ₹151";
-    }
-    return "Get your order delivered in 5-7 business days";
   }
 };
 

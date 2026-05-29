@@ -1,13 +1,13 @@
 export const CART_OFFERS = [
   {
     min: 0,
-    target: 151,
+    target: 399,
     type: "free_shipping",
-    message: "Add ₹{remaining} more for checkout",
+    message: "Add ₹{remaining} more for checkout & Free Delivery",
     icon: "gift",
   },
   {
-    min: 151,
+    min: 399,
     target: 400,
     type: "percentage",
     value: 0,
@@ -47,7 +47,7 @@ export const getDeliveryCharge = (orderAmount, isFasterDelivery = false) => {
     if (isFasterDelivery) {
       return 119;
     }
-    return 100;
+    return 0;
   }
 
   // Between 399 and 599 - Free standard, faster 119

@@ -107,7 +107,7 @@ export const storeReviews = [
     rating: 5,
     review:
       "Finally an online bookstore that cares about customers. The WhatsApp support is super responsive. Got my order tracked easily. Thumbs up!",
-    date: "3 days ago",
+    date: "20th May, 2026",
     verified: true,
     avatar: "RM",
   },
@@ -118,7 +118,7 @@ export const storeReviews = [
     location: "Kolkata, West Bengal",
     rating: 4,
     review: "delivery took time but quality of the books are really great",
-    date: "3 days ago",
+    date: "22nd May, 2026",
     verified: true,
     avatar: "RI",
   },
@@ -129,7 +129,7 @@ export const storeReviews = [
     rating: 5,
     review:
       "Theire customer service amazing, earlier i thought its not legit but guys really try it out",
-    date: "2 days ago",
+    date: "24th May, 2026",
     verified: true,
     avatar: "VY",
   },
@@ -140,7 +140,7 @@ export const storeReviews = [
     rating: 5,
     review:
       "Those 1rs books have really changed where i buy books from when i get books at best prices and qualities",
-    date: "yesterday",
+    date: "27th May, 2026",
     verified: true,
     avatar: "AS",
   },
@@ -151,7 +151,7 @@ export const storeReviews = [
     rating: 5,
     review:
       "They didn't got bookmark on my first order but after that when i told them initially whenever i order eveytime they added bookmarks",
-    date: "today",
+    date: "27th May, 2026",
     verified: true,
     avatar: "IN",
   },
@@ -162,7 +162,7 @@ export const storeReviews = [
     rating: 5,
     review:
       "honestly the best place for budget readers, got 3 books for under 300 and all were in perfect condition, packaging could be better but for the price it's a steal",
-    date: "yesterday",
+    date: "28th May, 2026",
     verified: true,
     avatar: "PS",
   },

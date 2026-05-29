@@ -26,7 +26,7 @@ import { FaWhatsapp } from "react-icons/fa";
 import Link from "next/link";
 import { FcDocument } from "react-icons/fc";
 
-const MIN_CHECKOUT_AMOUNT = 151;
+const MIN_CHECKOUT_AMOUNT = 399;
 
 export default function BagPage() {
   // ✅ ALL hooks go here - NO EXCEPTIONS

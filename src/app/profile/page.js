@@ -1,4 +1,3 @@
-// app/my-orders/page.js
 "use client";
 
 import { useState, useEffect } from "react";
@@ -26,6 +25,8 @@ import {
   BadgeCheck,
   Check,
   Zap,
+  MessageSquare,
+  Notebook,
 } from "lucide-react";
 import Image from "next/image";
 import { FaWhatsapp } from "react-icons/fa";
@@ -304,7 +305,6 @@ function OrderTrackingTimeline({ order }) {
                 >
                   {step.label}
                 </span>
-                {/* <span className="tracking-step-date">{step.date}</span> */}
               </div>
             );
           })}
@@ -407,9 +407,6 @@ export default function MyOrdersPage() {
         row.c.forEach((cell, idx) => {
           const header = headers[idx];
           let value = cell?.v;
-          // gviz returns dates as raw Date literals in `v` but human-readable
-          // strings in `f`. Prefer the formatted string for date-like columns
-          // so the downstream parser sees something it can handle reliably.
           const formatted = cell?.f;
           if (
             value &&
@@ -418,8 +415,6 @@ export default function MyOrdersPage() {
           ) {
             value = value.value;
           }
-          // If `v` looks like a Date literal AND we have a formatted version,
-          // use the formatted human-readable string instead.
           if (
             formatted &&
             typeof value === "string" &&
@@ -432,15 +427,6 @@ export default function MyOrdersPage() {
         return order;
       });
 
-      // ---- Diagnostic: log the first row so we can see the actual data shape
-      if (allOrders.length > 0) {
-        console.log("[my-orders] first row keys:", Object.keys(allOrders[0]));
-        console.log("[my-orders] Timestamp candidates:", {
-          Timestamp: allOrders[0]["Timestamp"],
-          "Timestamp(D)": allOrders[0]["Timestamp(D)"],
-          "Order Date": allOrders[0]["Order Date"],
-        });
-      }
       const userOrders = allOrders.filter((order) => {
         const orderPhone = order["Phone Number"];
         return String(orderPhone).trim() === String(phone).trim();
@@ -462,6 +448,7 @@ export default function MyOrdersPage() {
           status: order["Order Status"] || "Pending",
           shippingId: order["Shipping ID"] || "",
           advancePaid: order["Advance Paid"] || "No",
+          comment: order["Comment for this order"] || order["Comment"] || "", // Add comment field
         };
       });
       setOrders(parsedOrders);
@@ -749,6 +736,7 @@ export default function MyOrdersPage() {
             {orders.map((order, idx) => {
               const paymentStatus = getPaymentStatusMessage(order);
               const amountToShow = getAmountToShow(order);
+              const hasComment = order.comment && order.comment.trim() !== "";
 
               return (
                 <div key={idx} className="order-card">
@@ -779,7 +767,7 @@ export default function MyOrdersPage() {
                     </div>
                   </div>
 
-                  {/* NEW: Order Tracking Timeline */}
+                  {/* Order Tracking Timeline */}
                   <OrderTrackingTimeline order={order} />
 
                   {/* Order Items Preview */}
@@ -831,15 +819,17 @@ export default function MyOrdersPage() {
                         </span>
                       </div>
                     </div>
-                    <div className="detail-item">
-                      <MapPin size={14} className="gray-500" />
-                      <div>
-                        <span className="detail-label">Address</span>
-                        <span className="detail-value">
-                          {order["City"]}, {order["Pincode"]}
-                        </span>
+                    {hasComment && (
+                      <div className="detail-item">
+                        <Notebook size={14} className="gray-500" />
+                        <div>
+                          <span className="detail-label">
+                            Note from TheBookX
+                          </span>
+                          <span className="detail-value">{order.comment}</span>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
 
                   {order.shippingId && (

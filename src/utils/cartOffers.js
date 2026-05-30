@@ -109,7 +109,7 @@ export const getDeliveryCharge = (
     // Between 399 and 599 - Charge ₹100 handling fee, faster delivery extra
     if (orderAmount >= 399 && orderAmount < 599) {
       if (isFasterDelivery) {
-        return 119 + 100; // ₹219 total
+        return 119; // ₹219 total
       }
       return 100; // ₹100 handling fee
     }
@@ -117,7 +117,7 @@ export const getDeliveryCharge = (
     // Between 599 and 799 - Charge ₹100 + ₹49 handling fee
     if (orderAmount >= 599 && orderAmount < 799) {
       if (isFasterDelivery) {
-        return 119 + 100; // ₹219 total
+        return 119; // ₹219 total
       }
       return 49 + 100; // ₹149 total
     }

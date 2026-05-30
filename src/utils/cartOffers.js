@@ -132,7 +132,8 @@ export const getDeliveryCharge = (
       const standardCharge = orderAmount * 0.1;
       return Math.min(Math.round(standardCharge), 800) + 100;
     }
-    return 0;
+
+    return 0; // Default handling fee
   }
 
   // No ₹1 items - Free delivery for eligible orders

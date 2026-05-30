@@ -6,14 +6,12 @@ import { books } from "@/utils/book";
 import { Book, Minus, Plus, Share2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import CartConfetti from "./UI/Confetti";
 import LoadingButton from "./UI/LoadingButton";
 import WishlistButton from "./UI/WishListButton";
-import { getOneRupeeOfferData, getRemainingOfferTime } from "@/utils/book";
 import { trackFunnelEvent } from "@/lib/analytics";
 import { EVENTS } from "@/lib/trackingEvents";
-import { MILESTONES } from "@/lib/trackingEvents";
 import { showToast } from "@/context/ToastContext";
 
 // Helper function to get full URL
@@ -56,19 +54,9 @@ const addToRecentlyViewed = (bookId) => {
 
 export default function BookCard({ book }) {
   const [confetti, setConfetti] = useState(false);
-  const {
-    cart,
-    wishlist,
-    addToCart,
-    decreaseQty,
-    toggleWishlist,
-    canAddOneRupeeBook,
-    getOneRupeeBlockReason,
-    refreshUnlockStatus,
-    cartTotal,
-  } = useStore();
+  const { cart, wishlist, addToCart, decreaseQty, toggleWishlist, cartTotal } =
+    useStore();
   const [imageLoaded, setImageLoaded] = useState(false);
-
   const [hasTrackedView, setHasTrackedView] = useState(false);
 
   const cartItem = cart.find((i) => i.id === book.id);
@@ -78,18 +66,20 @@ export default function BookCard({ book }) {
 
   const isOneRupee = book.discountedPrice === 1;
 
+  // Detect whether the cart already has any ₹1 book.
+  // We still enforce a max of 1 ₹1 book per cart (allotment rule),
+  // but no longer gate ₹1 books behind a cart-total unlock.
   const hasOneRupeeInCart = cart.some((i) => {
     const b = books.find((x) => x.id === i.id);
     return b?.discountedPrice === 1;
   });
 
-  // Guard: when a ₹1 book is already in cart, prevent adding another and toast
-  const isOneRupeeLimitReached = isOneRupee && hasOneRupeeInCart;
+  const isOneRupeeLimitReached = isOneRupee && hasOneRupeeInCart && qty === 0;
 
   const bookUrl = `/books/${slugify(book.name)}`;
   const fullUrl = `https://thebookx.in${bookUrl}`;
 
-  // Track book view when card becomes visible (once per session)
+  // Track book view once per session
   useEffect(() => {
     if (!hasTrackedView && book) {
       setHasTrackedView(true);
@@ -99,7 +89,6 @@ export default function BookCard({ book }) {
           book_id: book.id,
           book_name: book.name,
           price: book.discountedPrice,
-          is_locked: !canAddOneRupeeBook(),
           cart_total: cartTotal,
         });
       } else {
@@ -112,41 +101,23 @@ export default function BookCard({ book }) {
         });
       }
     }
-  }, [book, isOneRupee, canAddOneRupeeBook, cartTotal, hasTrackedView]);
+  }, [book, isOneRupee, cartTotal, hasTrackedView]);
 
   const handleAddToCart = () => {
-    // ₹1 max-allotment guard — same toast for both "Add" and "+"
+    // Allotment rule — only one ₹1 book per cart
     if (isOneRupeeLimitReached) {
       showToast("Maximum book limit reached for Rs.1", "info");
-      return;
-    }
-
-    if (book.discountedPrice === 1) {
-      // Track blocked attempt to add locked ₹1 book
-      trackFunnelEvent(EVENTS.ONE_RUPEE_BOOK_ADD_BLOCKED, {
-        book_id: book.id,
-        book_name: book.name,
-        cart_total: cartTotal,
-        remaining_to_unlock: Math.max(
-          0,
-          MILESTONES.UNLOCK_THRESHOLD - cartTotal,
-        ),
-        lock_reason: getOneRupeeBlockReason(),
-      });
-      setShowLockedModal(true);
       return;
     }
 
     addToCart(book.id);
     trackAddToCart({ book, qty: 1 });
 
-    // Track successful add to cart
-    if (book.discountedPrice === 1) {
+    if (isOneRupee) {
       trackFunnelEvent(EVENTS.ONE_RUPEE_BOOK_ADDED, {
         book_id: book.id,
         book_name: book.name,
         cart_total: cartTotal + book.discountedPrice,
-        is_timer_active: canAddOneRupeeBook(),
       });
     } else {
       trackFunnelEvent(EVENTS.REGULAR_BOOK_ADDED, {
@@ -162,30 +133,14 @@ export default function BookCard({ book }) {
     setTimeout(() => setConfetti(false), 50);
   };
 
-  // Plus button handler — separate so we can show the same toast
-  // when the ₹1 max-allotment is reached, instead of silently no-op.
+  // Plus button — for ₹1 books, never allow quantity > 1
   const handleIncreaseQty = () => {
-    if (isOneRupeeLimitReached) {
+    if (isOneRupee) {
       showToast("Maximum book allotted reached for Rs.1", "info");
       return;
     }
     addToCart(book.id);
     trackAddToCart({ book, qty: 1 });
-  };
-
-  const handleLockedBookClick = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    // Track click on locked ₹1 book
-    trackFunnelEvent(EVENTS.ONE_RUPEE_BOOK_CLICKED, {
-      book_id: book.id,
-      book_name: book.name,
-      cart_total: cartTotal,
-      remaining_to_unlock: Math.max(0, MILESTONES.UNLOCK_THRESHOLD - cartTotal),
-    });
-
-    setShowLockedModal(true);
   };
 
   // Get category links for internal linking
@@ -242,7 +197,7 @@ export default function BookCard({ book }) {
         <CartConfetti trigger={confetti} />
 
         {/* Limited Time Offer Badge */}
-        {book.discountedPrice === 1 && book.stock > 0 && (
+        {isOneRupee && book.stock > 0 && (
           <span className="flex flex-row justify-center font-10 price-drop-badge">
             🔥 Limited period - Just ₹1
           </span>
@@ -423,7 +378,7 @@ export default function BookCard({ book }) {
                     onClick={handleIncreaseQty}
                     className="plus-cart"
                     aria-label={`Increase quantity of ${book.name}`}
-                    aria-disabled={isOneRupeeLimitReached}
+                    aria-disabled={isOneRupee}
                   >
                     <Plus size={14} />
                   </button>

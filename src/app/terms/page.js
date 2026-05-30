@@ -82,9 +82,8 @@ export default function TermsAndConditions() {
         <ul>
           <li>
             <strong>"Company", "We", "Us", "Our"</strong> refers to TheBookX, a
-            sole proprietorship operated by{" "}
-            <strong>Murthy Poothapandi Thevar</strong>, with its registered
-            place of business in Mumbai, Maharashtra, India.
+            sole proprietorship operated, with its registered place of business
+            in Mumbai, Maharashtra, India.
           </li>
           <li>
             <strong>"User", "You", "Your"</strong> refers to any individual

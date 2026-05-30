@@ -492,54 +492,6 @@ export default function PrivacyPolicy() {
         </p>
       </section>
 
-      <section id="grievance">
-        <h2>14. Grievance Redressal</h2>
-        <p>
-          In accordance with the Information Technology Act, 2000, the IT Rules,
-          2011, and the Consumer Protection (E-Commerce) Rules, 2020, the
-          contact details of the Grievance Officer are provided below. If you
-          have any complaint regarding the processing of your personal
-          information, you may contact:
-        </p>
-
-        <div className="legal-card">
-          <h3 className="legal-card-title">Grievance Officer</h3>
-          <dl>
-            <dt>Name</dt>
-            <dd>Murthy Poothapandi Thevar</dd>
-
-            <dt>Designation</dt>
-            <dd>Proprietor &amp; Grievance Officer</dd>
-
-            <dt>Email</dt>
-            <dd>
-              <a href="mailto:support@thebookx.in">support@thebookx.in</a>
-            </dd>
-
-            <dt>Phone / WhatsApp</dt>
-            <dd>
-              <a href="https://wa.me/917710892108">+91 77108 92108</a>
-            </dd>
-
-            <dt>Address</dt>
-            <dd>
-              Room No 107, A Wing, Thevar Suryoodaya CHS, UM Thevar Marg, Sion
-              Mahim Link Road, Dharavi, Mumbai, Maharashtra 400017, India
-            </dd>
-
-            <dt>Response time</dt>
-            <dd>Within 30 days of receipt of complaint</dd>
-          </dl>
-        </div>
-
-        <p>
-          Complaints are addressed in accordance with applicable Indian law.
-          Where a complaint is not resolved to your satisfaction, you may
-          escalate the matter to the appropriate adjudicating authority under
-          the IT Act, 2000 or the DPDP Act, 2023.
-        </p>
-      </section>
-
       <section id="changes">
         <h2>15. Changes to This Policy</h2>
         <p>

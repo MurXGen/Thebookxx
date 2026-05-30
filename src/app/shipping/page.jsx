@@ -493,58 +493,8 @@ export default function ShippingDeliveryPolicy() {
           We currently do <strong>not</strong> offer international shipping and
           ship only to addresses within India. For any inquiry regarding bulk or
           international orders, please contact us at{" "}
-          <a href="mailto:support@thebookx.in">support@thebookx.in</a> and we
+          <a href="mailto:uskillbook@gmail.com">uskillbook@gmail.com</a> and we
           will assess feasibility on a case-by-case basis.
-        </p>
-      </section>
-
-      <section id="grievance-shipping">
-        <h2>16. Grievance Redressal</h2>
-        <p>
-          For any shipping-related grievance, please first contact our customer
-          support team using the channels listed in Section 18. Unresolved
-          complaints may be escalated to our designated Grievance Officer:
-        </p>
-
-        <div className="legal-card">
-          <h3 className="legal-card-title">Grievance Officer</h3>
-          <dl>
-            <dt>Name</dt>
-            <dd>Murthy Poothapandi Thevar</dd>
-
-            <dt>Designation</dt>
-            <dd>Proprietor &amp; Grievance Officer</dd>
-
-            <dt>Email</dt>
-            <dd>
-              <a href="mailto:support@thebookx.in">support@thebookx.in</a>
-            </dd>
-
-            <dt>Phone / WhatsApp</dt>
-            <dd>
-              <a href="https://wa.me/917710892108">+91 77108 92108</a>
-            </dd>
-
-            <dt>Address</dt>
-            <dd>
-              Room No 107, A Wing, Thevar Suryoodaya CHS, UM Thevar Marg, Sion
-              Mahim Link Road, Dharavi, Mumbai, Maharashtra 400017, India
-            </dd>
-
-            <dt>Acknowledgement</dt>
-            <dd>Within 48 hours of receipt</dd>
-
-            <dt>Resolution Target</dt>
-            <dd>Within 30 days of receipt of complaint</dd>
-          </dl>
-        </div>
-
-        <p>
-          Unresolved complaints may be further escalated to the appropriate
-          Consumer Disputes Redressal Forum under the Consumer Protection Act,
-          2019, or to the National Consumer Helpline (1800-11-4000 /{" "}
-          <a href="https://consumerhelpline.gov.in">consumerhelpline.gov.in</a>
-          ).
         </p>
       </section>
 

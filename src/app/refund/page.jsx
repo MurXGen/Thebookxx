@@ -236,7 +236,7 @@ export default function RefundCancellationPolicy() {
           <li>
             <strong>Contact us within 24 hours of delivery</strong> via WhatsApp
             at +91 77108 92108 or email at{" "}
-            <a href="mailto:support@thebookx.in">support@thebookx.in</a>
+            <a href="mailto:uskillbook@gmail.com">uskillbook@gmail.com</a>
           </li>
           <li>
             <strong>Provide your Order ID</strong> and a clear description of
@@ -440,8 +440,8 @@ export default function RefundCancellationPolicy() {
         <p>
           In the unlikely event of a double charge (where the same order is
           billed twice), notify us immediately at{" "}
-          <a href="mailto:support@thebookx.in">support@thebookx.in</a> with the
-          two transaction reference numbers. The duplicate amount will be
+          <a href="mailto:uskillbook@gmail.com">uskillbook@gmail.com</a> with
+          the two transaction reference numbers. The duplicate amount will be
           refunded within 5–7 business days of verification.
         </p>
       </section>
@@ -489,56 +489,6 @@ export default function RefundCancellationPolicy() {
           <li>Refusal to process future orders</li>
           <li>Recovery of associated costs and fees through legal channels</li>
         </ul>
-      </section>
-
-      <section id="grievance-refund">
-        <h2>15. Grievance Redressal</h2>
-        <p>
-          In accordance with the Consumer Protection (E-Commerce) Rules, 2020,
-          complaints regarding refunds or cancellations may be directed to our
-          designated Grievance Officer:
-        </p>
-
-        <div className="legal-card">
-          <h3 className="legal-card-title">Grievance Officer</h3>
-          <dl>
-            <dt>Name</dt>
-            <dd>Murthy Poothapandi Thevar</dd>
-
-            <dt>Designation</dt>
-            <dd>Proprietor &amp; Grievance Officer</dd>
-
-            <dt>Email</dt>
-            <dd>
-              <a href="mailto:support@thebookx.in">support@thebookx.in</a>
-            </dd>
-
-            <dt>Phone / WhatsApp</dt>
-            <dd>
-              <a href="https://wa.me/917710892108">+91 77108 92108</a>
-            </dd>
-
-            <dt>Address</dt>
-            <dd>
-              Room No 107, A Wing, Thevar Suryoodaya CHS, UM Thevar Marg, Sion
-              Mahim Link Road, Dharavi, Mumbai, Maharashtra 400017, India
-            </dd>
-
-            <dt>Acknowledgement</dt>
-            <dd>Within 48 hours of receipt</dd>
-
-            <dt>Resolution Target</dt>
-            <dd>Within 30 days of receipt of complaint</dd>
-          </dl>
-        </div>
-
-        <p>
-          Unresolved complaints may be escalated to the appropriate Consumer
-          Disputes Redressal Forum under the Consumer Protection Act, 2019, or
-          to the National Consumer Helpline (1800-11-4000 /{" "}
-          <a href="https://consumerhelpline.gov.in">consumerhelpline.gov.in</a>
-          ).
-        </p>
       </section>
 
       <section id="changes-refund">

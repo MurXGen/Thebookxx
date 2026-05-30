@@ -190,57 +190,6 @@ export default function ContactUs() {
         </div>
       </section>
 
-      {/* Grievance Officer */}
-      <section id="grievance-contact">
-        <h2>Grievance Officer</h2>
-        <p>
-          In accordance with the Information Technology Act, 2000, the IT Rules,
-          2011, and the Consumer Protection (E-Commerce) Rules, 2020, unresolved
-          complaints may be escalated to our designated Grievance Officer:
-        </p>
-
-        <div className="legal-card">
-          <h3 className="legal-card-title">Grievance Officer</h3>
-          <dl>
-            <dt>Name</dt>
-            <dd>Murthy Poothapandi Thevar</dd>
-
-            <dt>Designation</dt>
-            <dd>Proprietor &amp; Grievance Officer</dd>
-
-            <dt>Email</dt>
-            <dd>
-              <a href="mailto:uskillbook@gmail.com">uskillbook@gmail.com</a>
-            </dd>
-
-            <dt>Phone / WhatsApp</dt>
-            <dd>
-              <a href="https://wa.me/917710892108">+91 77108 92108</a>
-            </dd>
-
-            <dt>Address</dt>
-            <dd>
-              Room No 107, A Wing, Thevar Suryoodaya CHS, UM Thevar Marg, Sion
-              Mahim Link Road, Dharavi, Mumbai, Maharashtra 400017, India
-            </dd>
-
-            <dt>Acknowledgement</dt>
-            <dd>Within 48 hours of receipt</dd>
-
-            <dt>Resolution Target</dt>
-            <dd>Within 30 days of receipt of complaint</dd>
-          </dl>
-        </div>
-
-        <p>
-          Unresolved complaints may be further escalated to the appropriate
-          Consumer Disputes Redressal Forum under the Consumer Protection Act,
-          2019, or to the National Consumer Helpline (1800-11-4000 /{" "}
-          <a href="https://consumerhelpline.gov.in">consumerhelpline.gov.in</a>
-          ).
-        </p>
-      </section>
-
       {/* Related policies */}
       <section id="related-policies">
         <h2>Related Policies</h2>
@@ -265,11 +214,10 @@ export default function ContactUs() {
 
       <div className="legal-disclaimer">
         <p>
-          TheBookX is operated as a sole proprietorship by Murthy Poothapandi
-          Thevar, with its registered place of business in Mumbai, Maharashtra,
-          India. All communications are subject to applicable Indian laws and
-          the exclusive jurisdiction of the competent courts located in Mumbai,
-          Maharashtra.
+          TheBookX is operated as a sole proprietorship, with its registered
+          place of business in Mumbai, Maharashtra, India. All communications
+          are subject to applicable Indian laws and the exclusive jurisdiction
+          of the competent courts located in Mumbai, Maharashtra.
         </p>
       </div>
     </main>

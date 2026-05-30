@@ -12,6 +12,7 @@ import { Loader2 } from "lucide-react";
 import UnlockChip from "@/components/UI/UnlockChip";
 import StoreReviews from "@/components/StoreReviews";
 import OneRupeeHero from "@/components/OneRupeeHero";
+import CategoryBooks from "@/components/CategoryBooks";
 
 // Lazy load components with named exports
 const BestsellerStage = lazy(() => import("@/components/BestsellerStage"));
@@ -163,13 +164,13 @@ export default function HomePage() {
         </Suspense>
       </LazySection> */}
 
-      {/* <LazySection threshold={0.05}>
+      <LazySection threshold={0.05}>
         <Suspense fallback={<LoadingFallback delay={1.0} />}>
           <SmoothAppear delay={1.0}>
             <TrendingBooks />
           </SmoothAppear>
         </Suspense>
-      </LazySection> */}
+      </LazySection>
 
       {/* 
       <LazySection threshold={0.05}>
@@ -183,6 +184,18 @@ export default function HomePage() {
       {/* Critical Components - Always Visible */}
 
       <AllBooks />
+
+      <CategoryBooks category="business" />
+      <CategoryBooks category="selfhelp" />
+      <CategoryBooks category="romance" />
+
+      <LazySection threshold={0.05}>
+        <Suspense fallback={<LoadingFallback delay={0.6} />}>
+          <SmoothAppear delay={0.6}>
+            <CatalogueSection />
+          </SmoothAppear>
+        </Suspense>
+      </LazySection>
 
       <CartBar />
 

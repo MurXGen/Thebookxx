@@ -55,7 +55,7 @@ export default function UnlockModal({
       setHasModalBeenOpened(true);
     };
 
-    const timer = setTimeout(checkAndShowModal, 20000);
+    const timer = setTimeout(checkAndShowModal, 7000);
     return () => clearTimeout(timer);
   }, [hasModalBeenOpened, externalIsOpen]);
 

@@ -76,7 +76,7 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-family: var(--font-poppins), sans-serif;
-  padding-bottom: 120px;
+  padding-bottom: 200px;
 }
 
 * {

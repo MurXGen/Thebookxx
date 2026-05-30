@@ -4,7 +4,7 @@ import BookCard from "@/components/BookCard";
 import { books } from "@/utils/book";
 import { getCatalogueData } from "@/utils/catalogueUtils";
 import { ArrowRight, X, SlidersHorizontal, ArrowUpDown } from "lucide-react";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import CartBar from "./CartBar";
@@ -15,26 +15,6 @@ const SORT_OPTIONS = [
   { key: "high", label: "Price: High to Low" },
   { key: "avg", label: "Average Price" },
 ];
-
-// Keys that count as "bestseller" — case-insensitive match.
-// Add more variants here if your data uses a different key (e.g. "top-pick").
-const BESTSELLER_KEYS = [
-  "bestseller",
-  "bestsellers",
-  "best-seller",
-  "best_seller",
-];
-
-// Flexible bestseller detection — works regardless of which field your book
-// schema uses to mark bestsellers (catalogue array, tag string, or tags array).
-const isBestseller = (book) => {
-  const lc = (v) => (typeof v === "string" ? v.toLowerCase() : "");
-  if (book.catalogue?.some((k) => BESTSELLER_KEYS.includes(lc(k)))) return true;
-  if (book.tags?.some((t) => BESTSELLER_KEYS.includes(lc(t)))) return true;
-  if (BESTSELLER_KEYS.includes(lc(book.tag))) return true;
-  if (book.isBestseller === true) return true;
-  return false;
-};
 
 export default function AllBooks() {
   const router = useRouter();
@@ -54,18 +34,7 @@ export default function AllBooks() {
 
   const [visibleCount, setVisibleCount] = useState(10);
   const [isLoading, setIsLoading] = useState(false);
-
-  // Random score per bestseller book — populated once on mount so the order
-  // is fresh on every page reload, but stable across filter changes.
-  const [bestsellerScores, setBestsellerScores] = useState({});
-
-  useEffect(() => {
-    const scores = {};
-    books.forEach((b) => {
-      if (isBestseller(b)) scores[b.id] = Math.random();
-    });
-    setBestsellerScores(scores);
-  }, []);
+  const loadMoreRef = useRef(null);
 
   const categoryData = useMemo(
     () => getCatalogueData().filter((cat) => cat.count >= 11),
@@ -109,23 +78,10 @@ export default function AllBooks() {
           (a.originalPrice + a.discountedPrice) / 2 -
           (b.originalPrice + b.discountedPrice) / 2,
       );
-    } else {
-      // ----- Default order: bestsellers first (shuffled), then everyone else
-      const bestsellers = [];
-      const others = [];
-      data.forEach((b) => {
-        if (isBestseller(b)) bestsellers.push(b);
-        else others.push(b);
-      });
-      // Shuffle bestsellers using the random scores generated on mount
-      bestsellers.sort(
-        (a, b) => (bestsellerScores[a.id] ?? 0) - (bestsellerScores[b.id] ?? 0),
-      );
-      data = [...bestsellers, ...others];
     }
 
     return data;
-  }, [selectedCategories, priceMin, priceMax, sortType, bestsellerScores]);
+  }, [selectedCategories, priceMin, priceMax, sortType]);
 
   const visibleBooks = useMemo(() => {
     return filteredBooks.slice(0, visibleCount);
@@ -133,7 +89,6 @@ export default function AllBooks() {
 
   const hasMore = visibleCount < filteredBooks.length;
 
-  // Manual load — no IntersectionObserver. Button click is the only trigger.
   const loadMore = () => {
     if (isLoading) return;
     setIsLoading(true);
@@ -142,6 +97,27 @@ export default function AllBooks() {
       setIsLoading(false);
     }, 300);
   };
+
+  useEffect(() => {
+    if (!loadMoreRef.current || !hasMore) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !isLoading) {
+          loadMore();
+        }
+      },
+      { threshold: 0.1, rootMargin: "100px" },
+    );
+
+    observer.observe(loadMoreRef.current);
+
+    return () => {
+      if (loadMoreRef.current) {
+        observer.unobserve(loadMoreRef.current);
+      }
+    };
+  }, [hasMore, isLoading, visibleCount]);
 
   useEffect(() => {
     setVisibleCount(10);
@@ -306,14 +282,15 @@ export default function AllBooks() {
         </div>
       )}
 
-      {/* Manual load-more — click to reveal more books */}
       {hasMore && (
         <div
+          ref={loadMoreRef}
+          className="load-more-trigger"
           style={{
             textAlign: "center",
+            padding: "40px 0",
             marginTop: "20px",
           }}
-          className="flex flex-row justify-center"
         >
           {isLoading ? (
             <div className="loading-spinner">

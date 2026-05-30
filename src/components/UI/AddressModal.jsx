@@ -998,12 +998,12 @@ function CODSuccessModal({
   onClose,
 }) {
   // Auto-trigger WhatsApp after a short celebration
-  useEffect(() => {
-    const t = setTimeout(() => {
-      onContinue();
-    }, 7000);
-    return () => clearTimeout(t);
-  }, [onContinue]);
+  // useEffect(() => {
+  //   const t = setTimeout(() => {
+  //     onContinue();
+  //   }, 7000);
+  //   return () => clearTimeout(t);
+  // }, [onContinue]);
 
   const deliveryWindow = fasterDelivery
     ? "2–5 business days"
@@ -1215,7 +1215,7 @@ function CODSuccessModal({
             className="font-10 dark-50"
             style={{ textAlign: "center", marginTop: 4 }}
           >
-            Auto-redirecting to WhatsApp in a few seconds…
+            You can close this window...
           </span>
         </motion.div>
       </motion.div>

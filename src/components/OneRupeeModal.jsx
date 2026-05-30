@@ -92,7 +92,7 @@ export default function OneRupeeModal({
   };
 
   const headerTitle =
-    mode === "locked" ? "₹1 Book Deals (Locked)" : "Your ₹1 Book Deals";
+    mode === "locked" ? "₹1 Book Deals" : "Your ₹1 Book Deals";
 
   return (
     <AnimatePresence>
@@ -120,7 +120,7 @@ export default function OneRupeeModal({
                   <Sparkles size={16} color="#fb8500" />
                   {headerTitle}
                 </span>
-                <span className="font-12 dark-50">{getSubtitle()}</span>
+                {/* <span className="font-12 dark-50">{getSubtitle()}</span> */}
               </div>
               <span className="cursor-pointer" onClick={onClose}>
                 <X size={16} />

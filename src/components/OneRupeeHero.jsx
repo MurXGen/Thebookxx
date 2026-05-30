@@ -140,7 +140,7 @@ export default function OneRupeeHero() {
                 ? `Unlocked — ${oneRupeeCount} books waiting for you`
                 : uiState === "timerActive"
                   ? `Hurry! ${Math.floor(liveRemainingTime / 60)}:${(liveRemainingTime % 60).toString().padStart(2, "0")} left to claim`
-                  : `${oneRupeeCount} books available — add ₹${remainingForUnlock || 299} to unlock`}
+                  : ``}
             </p>
           </div>
 

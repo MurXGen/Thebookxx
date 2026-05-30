@@ -5774,10 +5774,6 @@ input {
     height: 36px;
   }
 
-  .store-reviews-section {
-    padding: 40px 0;
-  }
-
   .reviews-title {
     font-size: 22px;
   }
@@ -8112,7 +8108,7 @@ input {
 @media (max-width: 640px) {
   .onerupee-hero {
     padding: var(--px-14, 14px) var(--px-16, 16px);
-    min-height: 120px;
+    min-height: 80px;
     border-radius: var(--px-12, 12px);
   }
 

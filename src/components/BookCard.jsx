@@ -10,7 +10,6 @@ import { useState, useEffect, useRef } from "react";
 import CartConfetti from "./UI/Confetti";
 import LoadingButton from "./UI/LoadingButton";
 import WishlistButton from "./UI/WishListButton";
-import LockedRupeeModal from "./LockedRupeeModal";
 import { getOneRupeeOfferData, getRemainingOfferTime } from "@/utils/book";
 import { trackFunnelEvent } from "@/lib/analytics";
 import { EVENTS } from "@/lib/trackingEvents";
@@ -69,8 +68,7 @@ export default function BookCard({ book }) {
     cartTotal,
   } = useStore();
   const [imageLoaded, setImageLoaded] = useState(false);
-  const [showLockedModal, setShowLockedModal] = useState(false);
-  const [isLocked, setIsLocked] = useState(false);
+
   const [hasTrackedView, setHasTrackedView] = useState(false);
 
   const cartItem = cart.find((i) => i.id === book.id);
@@ -116,45 +114,6 @@ export default function BookCard({ book }) {
     }
   }, [book, isOneRupee, canAddOneRupeeBook, cartTotal, hasTrackedView]);
 
-  // Update lock status whenever the unlock status changes
-  useEffect(() => {
-    const checkLockStatus = () => {
-      if (book.discountedPrice === 1) {
-        setIsLocked(!canAddOneRupeeBook());
-      } else {
-        setIsLocked(false);
-      }
-    };
-
-    checkLockStatus();
-
-    // Set up an interval to check timer expiration every second
-    let interval;
-    if (book.discountedPrice === 1) {
-      interval = setInterval(() => {
-        const offerData = getOneRupeeOfferData();
-        const isTimerActive =
-          offerData?.timerUnlocked === true &&
-          !offerData?.timerExpired &&
-          (Date.now() - (offerData?.unlockTime || 0)) / 1000 / 60 <= 10;
-
-        // If timer was active but now expired, refresh status
-        if (!isTimerActive && !offerData?.permanentUnlocked) {
-          refreshUnlockStatus();
-          setIsLocked(true);
-        } else {
-          setIsLocked(!canAddOneRupeeBook());
-        }
-      }, 1000);
-    }
-
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [book.discountedPrice, canAddOneRupeeBook, refreshUnlockStatus]);
-
-  const isRupeeBookLocked = isLocked;
-
   const handleAddToCart = () => {
     // ₹1 max-allotment guard — same toast for both "Add" and "+"
     if (isOneRupeeLimitReached) {
@@ -162,7 +121,7 @@ export default function BookCard({ book }) {
       return;
     }
 
-    if (book.discountedPrice === 1 && isRupeeBookLocked) {
+    if (book.discountedPrice === 1) {
       // Track blocked attempt to add locked ₹1 book
       trackFunnelEvent(EVENTS.ONE_RUPEE_BOOK_ADD_BLOCKED, {
         book_id: book.id,
@@ -187,7 +146,7 @@ export default function BookCard({ book }) {
         book_id: book.id,
         book_name: book.name,
         cart_total: cartTotal + book.discountedPrice,
-        is_timer_active: canAddOneRupeeBook() && !isRupeeBookLocked,
+        is_timer_active: canAddOneRupeeBook(),
       });
     } else {
       trackFunnelEvent(EVENTS.REGULAR_BOOK_ADDED, {
@@ -279,24 +238,11 @@ export default function BookCard({ book }) {
 
   return (
     <>
-      <article
-        className={`trending-card ${isRupeeBookLocked ? "one-rupee-book-locked" : ""}`}
-        style={{ position: "relative" }}
-        onClick={isRupeeBookLocked ? handleLockedBookClick : undefined}
-      >
-        {isRupeeBookLocked && (
-          <div className="locked-overlay">
-            <div className="locked-message">
-              <span>🔒</span>
-              <p>{getOneRupeeBlockReason()}</p>
-            </div>
-          </div>
-        )}
-
+      <article className={`trending-card`} style={{ position: "relative" }}>
         <CartConfetti trigger={confetti} />
 
         {/* Limited Time Offer Badge */}
-        {book.discountedPrice === 1 && book.stock > 0 && !isRupeeBookLocked && (
+        {book.discountedPrice === 1 && book.stock > 0 && (
           <span className="flex flex-row justify-center font-10 price-drop-badge">
             🔥 Limited period - Just ₹1
           </span>
@@ -498,11 +444,6 @@ export default function BookCard({ book }) {
           )}
         </div>
       </article>
-
-      <LockedRupeeModal
-        isOpen={showLockedModal}
-        onClose={() => setShowLockedModal(false)}
-      />
     </>
   );
 }

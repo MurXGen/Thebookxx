@@ -115,7 +115,7 @@ export default function HomePage() {
 
       <PincodeModal />
 
-      <UnlockModal />
+      {/* <UnlockModal /> */}
 
       <BestsellerStage />
       <OneRupeeHero />

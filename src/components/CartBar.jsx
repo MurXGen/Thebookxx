@@ -302,7 +302,7 @@ export default function CartBar() {
         )}
       </AnimatePresence>
 
-      <UnlockChip />
+      {/* <UnlockChip /> */}
 
       {/* ₹1 Books Modal */}
       <OneRupeeModal

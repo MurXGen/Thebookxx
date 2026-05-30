@@ -8234,4 +8234,19 @@ export const books = [
     originalPrice: calculateOriginalPrice(159),
     discountedPrice: 159,
   },
+  {
+    id: "bk-508",
+    name: "Crooked House",
+    image: bookImages["crooked-house"],
+    description:
+      "Unravel one of Agatha Christie's most twisted and personal mysteries with 'Crooked House' at TheBookX.in. In this masterful standalone thriller, a wealthy Greek tycoon is poisoned in his sprawling, crooked mansion—and every member of his dysfunctional family is a suspect. His granddaughter's fiancé, a young diplomat and amateur detective, takes on the investigation, only to discover that behind the grand facade lies a nest of jealousy, greed, hatred, and dark secrets. The family is compared to a 'crooked house'—twisted and unstable at its core. With an ending that will shock even the most seasoned mystery reader, Christie herself considered this one of her finest puzzles. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now—books starting at just ₹1 for a limited offer.",
+    author: "Agatha Christie",
+    pages: "256",
+    language: "English",
+    size: "Paperback",
+    stock: 20,
+    catalogue: ["fiction", "mystery", "thriller", "classics", "crime"],
+    originalPrice: calculateOriginalPrice(189),
+    discountedPrice: 189,
+  },
 ];

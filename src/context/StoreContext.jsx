@@ -87,12 +87,6 @@ export function StoreProvider({ children }) {
       return;
     }
 
-    // If permanently unlocked
-    if (offerData.permanentUnlocked) {
-      setIsOneRupeeEnabled(total >= 299);
-      return;
-    }
-
     // If timer unlocked and not expired
     if (offerData.timerUnlocked && !offerData.timerExpired) {
       const elapsedMinutes = (Date.now() - offerData.unlockTime) / 1000 / 60;

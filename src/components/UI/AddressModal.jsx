@@ -1001,7 +1001,7 @@ function CODSuccessModal({
   useEffect(() => {
     const t = setTimeout(() => {
       onContinue();
-    }, 20000);
+    }, 7000);
     return () => clearTimeout(t);
   }, [onContinue]);
 

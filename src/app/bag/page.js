@@ -616,15 +616,18 @@ _Thank you for shopping with TheBookX! 📚✨_
         <div className="flex flex-row justify-between width100 items-center">
           <div className="bill-left">
             <span className="font-12 dark-50">Total payable</span>
-            <div className="flex gap-8 items-center">
-              <span className="font-16 weight-600 discounted">
-                ₹{totalWithStandardDeliveryGift}
-              </span>
-              {offerDiscount > 0 && (
-                <span className="strike dark-50 original">
-                  ₹{totalDiscounted}
+            <div className="flex flex-col">
+              <div className="flex flex-row gap-8 items-center">
+                <span className="font-16 weight-600 discounted">
+                  ₹{totalWithStandardDeliveryGift}
                 </span>
-              )}
+                {offerDiscount > 0 && (
+                  <span className="strike dark-50 original">
+                    ₹{totalDiscounted}
+                  </span>
+                )}
+              </div>
+
               {appliedOffer && (
                 <span className="font-14 green weight-600">{offerLabel}</span>
               )}

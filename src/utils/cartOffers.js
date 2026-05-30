@@ -111,7 +111,7 @@ export const getDeliveryCharge = (
       if (isFasterDelivery) {
         return 119; // ₹219 total
       }
-      return 100; // ₹100 handling fee
+      return 0; // ₹100 handling fee
     }
 
     // Between 599 and 799 - Charge ₹100 + ₹49 handling fee
@@ -119,7 +119,7 @@ export const getDeliveryCharge = (
       if (isFasterDelivery) {
         return 119; // ₹219 total
       }
-      return 49 + 100; // ₹149 total
+      return 49; // ₹149 total
     }
 
     // Above 799 - Bulk order handling fees + ₹100 base
@@ -132,8 +132,7 @@ export const getDeliveryCharge = (
       const standardCharge = orderAmount * 0.1;
       return Math.min(Math.round(standardCharge), 800) + 100;
     }
-
-    return 100; // Default handling fee
+    return 0;
   }
 
   // No ₹1 items - Free delivery for eligible orders

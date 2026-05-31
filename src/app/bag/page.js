@@ -76,15 +76,16 @@ export default function BagPage() {
     0,
   );
 
-  // ----- Nudge logic — fires for ANY cart below ₹399 -----
-  const needsShippingNudge = totalDiscounted < 399 && !hasAcceptedShipping;
+  // ----- Nudge logic — only fires when cart < ₹399 AND has ₹1 book -----
+  const needsShippingNudge =
+    totalDiscounted < 399 && hasOneRupeeItem && !hasAcceptedShipping;
 
-  // Reset acceptance if cart goes >= 399 (free delivery anyway, no need to gate)
+  // Reset acceptance if the nudge condition no longer applies
   useEffect(() => {
-    if (totalDiscounted >= 399) {
+    if (totalDiscounted >= 399 || !hasOneRupeeItem) {
       setHasAcceptedShipping(false);
     }
-  }, [totalDiscounted]);
+  }, [totalDiscounted, hasOneRupeeItem]);
 
   const getAppliedOffer = (amount) => {
     return [...cartOffers].reverse().find((o) => amount >= o.target) || null;
@@ -503,7 +504,6 @@ _Thank you for shopping with TheBookX! 📚✨_
             </div>
           </div>
           <Link href="/profile" className="sec-mid-btn">
-            <FcDocument size={16} color="orange" />
             Order History
           </Link>
         </div>
@@ -546,12 +546,12 @@ _Thank you for shopping with TheBookX! 📚✨_
           </div>
         </div>
         <Link href="/profile" className="sec-mid-btn">
-          <FcDocument size={16} color="orange" />
           Order History
         </Link>
       </div>
 
       <CartOfferStrip discountedAmount={totalDiscounted} />
+      <FreebieBadge />
 
       <div className="grid-2">
         {cartBooks.map((book) => (
@@ -591,8 +591,6 @@ _Thank you for shopping with TheBookX! 📚✨_
           </div>
         </label>
       </div>
-
-      <FreebieBadge />
 
       <div className="whatsapp-help-section">
         <a

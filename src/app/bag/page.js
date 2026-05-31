@@ -11,6 +11,7 @@ import YouMayLike from "@/components/UI/YouMayLike";
 import { useStore } from "@/context/StoreContext";
 import { showToast } from "@/context/ToastContext";
 import { books } from "@/utils/book";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   getCartOffers,
   getDeliveryCharge,
@@ -578,6 +579,8 @@ _Thank you for shopping with TheBookX! 📚✨_
         </label>
       </div>
 
+      <FreebieBadge />
+
       <div className="whatsapp-help-section">
         <a
           href="https://wa.me/917710892108?text=Hi%2C%20I%20need%20help%20with%20my%20order%20from%20TheBookX"
@@ -710,5 +713,34 @@ _Thank you for shopping with TheBookX! 📚✨_
         onClose={() => setShowRecommendationModal(false)}
       />
     </section>
+  );
+}
+
+function FreebieBadge() {
+  return (
+    <motion.div
+      className="freebie-badge"
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: 0.15 }}
+      style={{
+        padding: "16px",
+        background:
+          "linear-gradient(135deg, var(--tertiary-light-10, #ffb70320) 0%, var(--tertiary-10, #fb850010) 100%)",
+        border: "1px dashed var(--tertiary, #fb8500)",
+        borderRadius: "12px",
+        display: "flex",
+        alignItems: "center",
+        gap: "12px",
+        overflow: "hidden",
+        position: "relative",
+      }}
+    >
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div className="font-12 weight-600">
+          <span>Free Bookmarks &amp; surprise gift packs</span>
+        </div>
+      </div>
+    </motion.div>
   );
 }

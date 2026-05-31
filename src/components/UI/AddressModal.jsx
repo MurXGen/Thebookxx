@@ -23,6 +23,7 @@ import {
   Smartphone,
   QrCode,
   Headphones,
+  Loader2,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -48,26 +49,13 @@ const CITIES = [
 
 /**
  * Normalize a phone string to a clean 10-digit Indian mobile number.
- * Accepts: "9876543210", "+91 9876543210", "+919876543210",
- *          "91 98765 43210", "98765-43210", etc.
- * Returns up to 10 digits — caller validates length === 10 for "complete".
  */
 function normalizePhone(raw = "") {
   if (!raw) return "";
-  // Strip everything that isn't a digit
   let digits = String(raw).replace(/\D/g, "");
-  // Drop leading 91 country code if we ended up with 12 digits
-  if (digits.length === 12 && digits.startsWith("91")) {
-    digits = digits.slice(2);
-  }
-  // Drop leading 0 if we ended up with 11 digits (some users type "0987...")
-  if (digits.length === 11 && digits.startsWith("0")) {
-    digits = digits.slice(1);
-  }
-  // Keep the last 10 digits if we still somehow have more
-  if (digits.length > 10) {
-    digits = digits.slice(-10);
-  }
+  if (digits.length === 12 && digits.startsWith("91")) digits = digits.slice(2);
+  if (digits.length === 11 && digits.startsWith("0")) digits = digits.slice(1);
+  if (digits.length > 10) digits = digits.slice(-10);
   return digits;
 }
 
@@ -107,7 +95,7 @@ export default function AddressModal({
   const [addressFormStartTime, setAddressFormStartTime] = useState(null);
 
   const [showUPIPayment, setShowUPIPayment] = useState(false);
-  const [showCODSuccess, setShowCODSuccess] = useState(false); // NEW — COD success animation
+  const [showCODSuccess, setShowCODSuccess] = useState(false);
   const [qrUnlocked, setQrUnlocked] = useState(false);
   const [upiCopied, setUpiCopied] = useState(false);
 
@@ -118,7 +106,6 @@ export default function AddressModal({
 
   const UPI_ID = "7977960242-1@okbizaxis";
 
-  // ---------- Effects ----------
   useEffect(() => {
     if (open) {
       trackFunnelEvent(EVENTS.ADDRESS_MODAL_OPENED, {
@@ -186,8 +173,6 @@ export default function AddressModal({
     setPincode(newPincode);
   };
 
-  // Phone input handler — keeps the input lightweight, but normalizes on every
-  // change so paste of "+91 98765 43210" becomes "9876543210" immediately.
   const handlePhoneChange = (e) => {
     setPhone(normalizePhone(e.target.value));
   };
@@ -198,7 +183,6 @@ export default function AddressModal({
     setPhone(normalizePhone(pasted));
   };
 
-  // Cart value bucket helpers
   const isCartBelow399 = totalDiscounted < 399;
 
   const getDeliveryCharge = (isFaster) =>
@@ -210,7 +194,6 @@ export default function AddressModal({
   const totalWithDelivery = getTotalWithDelivery(fasterDelivery);
   const codAdvanceAmount = 99;
 
-  // ---------- Pincode location lookup ----------
   const fetchLocationByPincode = async (pincodeValue) => {
     if (!pincodeValue || pincodeValue.length !== 6) return;
     setIsFetchingLocation(true);
@@ -262,7 +245,6 @@ export default function AddressModal({
     else setShowContactFields(false);
   }, [address, city]);
 
-  // ---------- UPI verify timer ----------
   useEffect(() => {
     if (!qrUnlocked) return;
     setVerifyTimer(30);
@@ -280,7 +262,6 @@ export default function AddressModal({
     return () => clearInterval(interval);
   }, [qrUnlocked]);
 
-  // ---------- Restore saved address (no `state` anymore) ----------
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem("checkoutAddress") || "null");
     if (saved) {
@@ -323,7 +304,6 @@ export default function AddressModal({
     showContactFields,
   ]);
 
-  // ---------- TinyURL helper ----------
   const buildShortLink = async (paymentTypeLabel) => {
     if (typeof generateViewBagLinkWithDetails !== "function") return "";
     try {
@@ -380,7 +360,6 @@ export default function AddressModal({
     }
   };
 
-  // ---------- Delivery speed selection ----------
   const handleProceedWithFasterDelivery = () => {
     setFasterDelivery(true);
     setShowFasterDeliveryModal(false);
@@ -389,7 +368,6 @@ export default function AddressModal({
       delivery_charge: fasterDeliveryCharge,
       cart_total: finalPayable,
     });
-
     if (tempPaymentMethod === "COD") triggerCODSuccess(true);
     else if (tempPaymentMethod === "UPI") setShowUPIPayment(true);
   };
@@ -402,18 +380,15 @@ export default function AddressModal({
       delivery_charge: standardDeliveryCharge,
       cart_total: finalPayable,
     });
-
     if (tempPaymentMethod === "COD") triggerCODSuccess(false);
     else if (tempPaymentMethod === "UPI") setShowUPIPayment(true);
   };
 
-  // ---------- Trigger COD success modal ----------
   const triggerCODSuccess = (isFasterDeliverySelected) => {
     setFasterDelivery(isFasterDeliverySelected);
     setShowCODSuccess(true);
   };
 
-  // ---------- COD success → WhatsApp ----------
   const handleCODSuccessContinue = () => {
     setShowCODSuccess(false);
     if (handleCODCheckout) {
@@ -436,7 +411,6 @@ export default function AddressModal({
     onClose();
   };
 
-  // ---------- Payment method click handlers ----------
   const handleCODClick = () => {
     if (!isFormValid()) return;
     submitToGoogleForm("COD");
@@ -486,7 +460,6 @@ export default function AddressModal({
     onClose();
   };
 
-  // ---------- UPI payment actions ----------
   const handleUPIPaymentClick = async () => {
     if (!isFormValid()) return;
     trackFunnelEvent(EVENTS.UPI_PAYMENT_INITIATED, {
@@ -544,7 +517,6 @@ export default function AddressModal({
   const isFormValid = () =>
     Boolean(name && phone.length === 10 && isAddressValid());
 
-  // Phone validation hint
   const phoneError =
     phone.length > 0 && phone.length < 10
       ? `${10 - phone.length} more digit${10 - phone.length === 1 ? "" : "s"} needed`
@@ -574,7 +546,6 @@ export default function AddressModal({
             </div>
 
             <div className="address-form-content">
-              {/* Pincode */}
               <div className="input-group">
                 <label className="flex flex-row gap-4 flex-center items-center">
                   <MapPin size={14} />
@@ -595,7 +566,6 @@ export default function AddressModal({
                 )}
               </div>
 
-              {/* City only (State removed) */}
               <div className="input-group">
                 <label>City / District</label>
                 <input
@@ -612,7 +582,6 @@ export default function AddressModal({
                 </datalist>
               </div>
 
-              {/* Full Address */}
               <div className="input-group">
                 <label>
                   Full Address <span className="red">*</span>
@@ -626,7 +595,6 @@ export default function AddressModal({
                 />
               </div>
 
-              {/* Name + Phone */}
               <AnimatePresence>
                 {showContactFields && (
                   <motion.div
@@ -682,7 +650,6 @@ export default function AddressModal({
                 </span>
               </div>
 
-              {/* Payment Buttons */}
               {showContactFields && (
                 <div className="flex flex-col gap-12 items-start mt-16">
                   <div className="flex flex-row gap-12">
@@ -721,7 +688,6 @@ export default function AddressModal({
                 </div>
               )}
 
-              {/* Validation hints */}
               {!isAddressValid() && (
                 <div className="flex flex-row flex-center gap-4 orange items-center infoMessage mt-12">
                   <AlertCircle size={14} />
@@ -740,8 +706,7 @@ export default function AddressModal({
                 </div>
               )}
 
-              {/* ===== Bottom freebie badge ===== */}
-              <FreebieBadge />
+          
             </div>
           </motion.div>
         </motion.div>
@@ -858,7 +823,7 @@ export default function AddressModal({
         )}
       </AnimatePresence>
 
-      {/* ========== COD SUCCESS MODAL (NEW) ========== */}
+      {/* ========== COD SUCCESS MODAL ========== */}
       <AnimatePresence>
         {showCODSuccess && (
           <CODSuccessModal
@@ -879,7 +844,7 @@ export default function AddressModal({
         )}
       </AnimatePresence>
 
-      {/* ========== UPI Payment Modal (Redesigned) ========== */}
+      {/* ========== UPI Payment Modal ========== */}
       <AnimatePresence>
         {showUPIPayment && (
           <UPIPaymentModal
@@ -912,75 +877,9 @@ export default function AddressModal({
 }
 
 // =====================================================================
-// ============== Sub-component: FreebieBadge (bottom strip) ===========
+// ============== Sub-component: FreebieBadge ==========================
 // =====================================================================
-function FreebieBadge() {
-  return (
-    <motion.div
-      className="freebie-badge"
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: 0.15 }}
-      style={{
-        marginTop: "20px",
-        padding: "12px 14px",
-        background:
-          "linear-gradient(135deg, var(--tertiary-light-10, #ffb70320) 0%, var(--tertiary-10, #fb850010) 100%)",
-        border: "1px dashed var(--tertiary, #fb8500)",
-        borderRadius: "12px",
-        display: "flex",
-        alignItems: "center",
-        gap: "12px",
-        overflow: "hidden",
-        position: "relative",
-      }}
-    >
-      <motion.div
-        animate={{ rotate: [0, -8, 8, -8, 0] }}
-        transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-        style={{
-          flexShrink: 0,
-          width: "36px",
-          height: "36px",
-          borderRadius: "50%",
-          background:
-            "linear-gradient(135deg, var(--tertiary-light, #ffb703), var(--tertiary, #fb8500))",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "#fff",
-        }}
-      >
-        <Gift size={18} />
-      </motion.div>
 
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div
-          style={{
-            fontSize: "10px",
-            fontWeight: "var(--weight-700, 700)",
-            color: "var(--foreground, #0a0a0a)",
-            display: "flex",
-            alignItems: "center",
-            gap: "6px",
-            flexWrap: "wrap",
-          }}
-        >
-          <span>Bookmarks &amp; surprise gift packs</span>
-        </div>
-        <div
-          style={{
-            fontSize: "10px",
-            color: "var(--dark-50, #828282)",
-            marginTop: "2px",
-          }}
-        >
-          Free with every order — included automatically
-        </div>
-      </div>
-    </motion.div>
-  );
-}
 
 // =====================================================================
 // ============== Sub-component: CODSuccessModal =======================
@@ -997,13 +896,15 @@ function CODSuccessModal({
   onContinue,
   onClose,
 }) {
-  // Auto-trigger WhatsApp after a short celebration
-  // useEffect(() => {
-  //   const t = setTimeout(() => {
-  //     onContinue();
-  //   }, 7000);
-  //   return () => clearTimeout(t);
-  // }, [onContinue]);
+  // NEW — 3-second processing phase before showing success content
+  const [isProcessing, setIsProcessing] = useState(true);
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setIsProcessing(false);
+    }, 3000);
+    return () => clearTimeout(t);
+  }, []);
 
   const deliveryWindow = fasterDelivery
     ? "2–5 business days"
@@ -1023,13 +924,20 @@ function CODSuccessModal({
     );
   };
 
+  // Disable overlay-click-to-close while processing — don't let users
+  // accidentally bail mid-confirmation
+  const handleOverlayClick = () => {
+    if (isProcessing) return;
+    onClose();
+  };
+
   return (
     <motion.div
       className="bill-modal-overlay"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      onClick={onClose}
+      onClick={handleOverlayClick}
       style={{ maxWidth: "980px", margin: "0 auto" }}
     >
       <motion.div
@@ -1041,190 +949,329 @@ function CODSuccessModal({
         onClick={(e) => e.stopPropagation()}
         style={{ maxHeight: "85vh", overflowY: "auto" }}
       >
-        <div style={{ padding: "32px 20px 20px 20px", textAlign: "center" }}>
-          {/* Animated tick */}
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{
-              type: "spring",
-              stiffness: 260,
-              damping: 18,
-              delay: 0.1,
-            }}
-            style={{
-              width: "72px",
-              height: "72px",
-              margin: "0 auto 16px",
-              borderRadius: "50%",
-              background:
-                "linear-gradient(135deg, var(--success, #008f0c), #00b510)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              boxShadow: "0 8px 24px rgba(0, 143, 12, 0.35)",
-            }}
-          >
+        <AnimatePresence mode="wait">
+          {isProcessing ? (
+            // ===== Phase 1: Processing spinner =====
             <motion.div
-              initial={{ pathLength: 0, opacity: 0 }}
-              animate={{ pathLength: 1, opacity: 1 }}
-              transition={{ duration: 0.45, delay: 0.35, ease: "easeOut" }}
+              key="processing"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+              style={{
+                padding: "48px 20px",
+                textAlign: "center",
+                minHeight: 240,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 12,
+              }}
             >
-              <CheckCircle2 size={40} color="#fff" strokeWidth={3} />
-            </motion.div>
-          </motion.div>
-
-          {/* Confetti dots */}
-          <div style={{ position: "relative", height: 0 }}>
-            {[...Array(8)].map((_, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, scale: 0, x: 0, y: 0 }}
-                animate={{
-                  opacity: [0, 1, 0],
-                  scale: [0, 1, 0.6],
-                  x: Math.cos((i * Math.PI * 2) / 8) * 80,
-                  y: Math.sin((i * Math.PI * 2) / 8) * 80 - 80,
-                }}
-                transition={{ duration: 1.2, delay: 0.4, ease: "easeOut" }}
+              {/* Outer pulsing ring */}
+              <div
                 style={{
-                  position: "absolute",
-                  left: "50%",
-                  top: 0,
-                  width: 8,
-                  height: 8,
-                  borderRadius: "50%",
-                  background: ["#fb8500", "#ffb703", "#008f0c", "#fb8500"][
-                    i % 4
-                  ],
-                  pointerEvents: "none",
+                  position: "relative",
+                  width: 80,
+                  height: 80,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
-              />
-            ))}
-          </div>
+              >
+                <motion.div
+                  animate={{
+                    scale: [1, 1.18, 1],
+                    opacity: [0.4, 0.15, 0.4],
+                  }}
+                  transition={{
+                    duration: 1.6,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    borderRadius: "50%",
+                    background:
+                      "radial-gradient(circle, var(--tertiary, #fb8500) 0%, transparent 70%)",
+                  }}
+                />
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{
+                    duration: 1,
+                    repeat: Infinity,
+                    ease: "linear",
+                  }}
+                  style={{
+                    color: "var(--tertiary, #fb8500)",
+                    display: "flex",
+                  }}
+                >
+                  <Loader2 size={48} strokeWidth={2.5} />
+                </motion.div>
+              </div>
 
-          <motion.h2
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="weight-700"
-            style={{
-              fontSize: "20px",
-              margin: "8px 0 6px",
-              color: "var(--foreground)",
-            }}
-          >
-            🎉 Order Confirmed!
-          </motion.h2>
+              <motion.h2
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15 }}
+                className="weight-700"
+                style={{
+                  fontSize: 18,
+                  margin: "8px 0 4px",
+                  color: "var(--foreground)",
+                }}
+              >
+                Placing your order…
+              </motion.h2>
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+                className="font-12 dark-50"
+                style={{ margin: 0 }}
+              >
+                Just a moment — confirming your details
+              </motion.p>
 
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.45 }}
-            className="font-14 dark-50"
-            style={{ margin: 0 }}
-          >
-            Your Cash on Delivery order has been placed
-          </motion.p>
-        </div>
+              {/* Subtle progress dots */}
+              <div className="flex flex-row gap-6" style={{ marginTop: 12 }}>
+                {[0, 1, 2].map((i) => (
+                  <motion.div
+                    key={i}
+                    animate={{
+                      opacity: [0.3, 1, 0.3],
+                      y: [0, -3, 0],
+                    }}
+                    transition={{
+                      duration: 1.2,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                      delay: i * 0.15,
+                    }}
+                    style={{
+                      width: 6,
+                      height: 6,
+                      borderRadius: "50%",
+                      background: "var(--tertiary, #fb8500)",
+                    }}
+                  />
+                ))}
+              </div>
+            </motion.div>
+          ) : (
+            // ===== Phase 2: Success content =====
+            <motion.div
+              key="success"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35 }}
+            >
+              <div
+                style={{ padding: "32px 20px 20px 20px", textAlign: "center" }}
+              >
+                {/* Animated tick */}
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 260,
+                    damping: 18,
+                    delay: 0.1,
+                  }}
+                  style={{
+                    width: "72px",
+                    height: "72px",
+                    margin: "0 auto 16px",
+                    borderRadius: "50%",
+                    background:
+                      "linear-gradient(135deg, var(--success, #008f0c), #00b510)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    boxShadow: "0 8px 24px rgba(0, 143, 12, 0.35)",
+                  }}
+                >
+                  <motion.div
+                    initial={{ pathLength: 0, opacity: 0 }}
+                    animate={{ pathLength: 1, opacity: 1 }}
+                    transition={{
+                      duration: 0.45,
+                      delay: 0.35,
+                      ease: "easeOut",
+                    }}
+                  >
+                    <CheckCircle2 size={40} color="#fff" strokeWidth={3} />
+                  </motion.div>
+                </motion.div>
 
-        {/* Order summary card */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.55 }}
-          style={{
-            padding: "16px",
-            background: "var(--dark-4)",
-            border: "1px solid var(--dark-10)",
-            borderRadius: "12px",
-            display: "flex",
-            flexDirection: "column",
-            gap: "14px",
-          }}
-        >
-          {/* Delivery ETA */}
-          <div className="flex flex-row gap-12 items-start">
-            <Truck
-              size={18}
-              style={{ color: "var(--success)", marginTop: 2 }}
-            />
-            <div className="flex flex-col" style={{ flex: 1 }}>
-              <span className="font-12 dark-50">Delivery in</span>
-              <span className="font-14 weight-600">{deliveryWindow}</span>
-              <span className="font-10 dark-50" style={{ marginTop: 2 }}>
-                Shipping ID will be shared once dispatched
-              </span>
-            </div>
-          </div>
+                {/* Confetti dots */}
+                <div style={{ position: "relative", height: 0 }}>
+                  {[...Array(8)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, scale: 0, x: 0, y: 0 }}
+                      animate={{
+                        opacity: [0, 1, 0],
+                        scale: [0, 1, 0.6],
+                        x: Math.cos((i * Math.PI * 2) / 8) * 80,
+                        y: Math.sin((i * Math.PI * 2) / 8) * 80 - 80,
+                      }}
+                      transition={{
+                        duration: 1.2,
+                        delay: 0.4,
+                        ease: "easeOut",
+                      }}
+                      style={{
+                        position: "absolute",
+                        left: "50%",
+                        top: 0,
+                        width: 8,
+                        height: 8,
+                        borderRadius: "50%",
+                        background: [
+                          "#fb8500",
+                          "#ffb703",
+                          "#008f0c",
+                          "#fb8500",
+                        ][i % 4],
+                        pointerEvents: "none",
+                      }}
+                    />
+                  ))}
+                </div>
 
-          {/* Address */}
-          <div className="flex flex-row gap-12 items-start">
-            <MapPin
-              size={18}
-              style={{ color: "var(--tertiary)", marginTop: 2 }}
-            />
-            <div className="flex flex-col" style={{ flex: 1 }}>
-              <span className="font-12 dark-50">Delivery Address</span>
-              <span className="font-14 weight-500">{name}</span>
-              <span className="font-12" style={{ color: "var(--foreground)" }}>
-                {address}, {city} - {pincode}
-              </span>
-              <span className="font-12 dark-50">+91 {phone}</span>
-            </div>
-          </div>
+                <motion.h2
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="weight-700"
+                  style={{
+                    fontSize: "20px",
+                    margin: "8px 0 6px",
+                    color: "var(--foreground)",
+                  }}
+                >
+                  🎉 Order Confirmed!
+                </motion.h2>
 
-          {/* Delivery type chip */}
-          <div className="flex flex-row gap-12 items-center">
-            {fasterDelivery ? (
-              <Zap size={18} style={{ color: "var(--tertiary)" }} />
-            ) : (
-              <Clock size={18} style={{ color: "var(--dark-50)" }} />
-            )}
-            <div className="flex flex-col" style={{ flex: 1 }}>
-              <span className="font-12 dark-50">Delivery Speed</span>
-              <span className="font-14 weight-500">
-                {fasterDelivery ? "Faster Delivery" : "Standard Delivery"}
-              </span>
-            </div>
-            <span className="font-16 weight-700 green">₹{totalAmount}</span>
-          </div>
-        </motion.div>
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.45 }}
+                  className="font-14 dark-50"
+                  style={{ margin: 0 }}
+                >
+                  Your Cash on Delivery order has been placed
+                </motion.p>
+              </div>
 
-        {/* CTAs */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "10px",
-          }}
-        >
-          <button
-            className="sec-mid-btn width100 flex flex-row items-center justify-center gap-8"
-            onClick={handleNeedHelp}
-            style={{ padding: "10px 16px" }}
-          >
-            <Headphones size={16} />
-            Need help? Contact us
-          </button>
+              {/* Order summary card */}
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.55 }}
+                style={{
+                  padding: "16px",
+                  background: "var(--dark-4)",
+                  border: "1px solid var(--dark-10)",
+                  borderRadius: "12px",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "14px",
+                }}
+              >
+                <div className="flex flex-row gap-12 items-start">
+                  <Truck
+                    size={18}
+                    style={{ color: "var(--success)", marginTop: 2 }}
+                  />
+                  <div className="flex flex-col" style={{ flex: 1 }}>
+                    <span className="font-12 dark-50">Delivery in</span>
+                    <span className="font-14 weight-600">{deliveryWindow}</span>
+                    <span className="font-10 dark-50" style={{ marginTop: 2 }}>
+                      Shipping ID will be shared once dispatched
+                    </span>
+                  </div>
+                </div>
 
-          <span
-            className="font-10 dark-50"
-            style={{ textAlign: "center", marginTop: 4 }}
-          >
-            You can close this window...
-          </span>
-        </motion.div>
+                <div className="flex flex-row gap-12 items-start">
+                  <MapPin
+                    size={18}
+                    style={{ color: "var(--tertiary)", marginTop: 2 }}
+                  />
+                  <div className="flex flex-col" style={{ flex: 1 }}>
+                    <span className="font-12 dark-50">Delivery Address</span>
+                    <span className="font-14 weight-500">{name}</span>
+                    <span
+                      className="font-12"
+                      style={{ color: "var(--foreground)" }}
+                    >
+                      {address}, {city} - {pincode}
+                    </span>
+                    <span className="font-12 dark-50">+91 {phone}</span>
+                  </div>
+                </div>
+
+                <div className="flex flex-row gap-12 items-center">
+                  {fasterDelivery ? (
+                    <Zap size={18} style={{ color: "var(--tertiary)" }} />
+                  ) : (
+                    <Clock size={18} style={{ color: "var(--dark-50)" }} />
+                  )}
+                  <div className="flex flex-col" style={{ flex: 1 }}>
+                    <span className="font-12 dark-50">Delivery Speed</span>
+                    <span className="font-14 weight-500">
+                      {fasterDelivery ? "Faster Delivery" : "Standard Delivery"}
+                    </span>
+                  </div>
+                  <span className="font-16 weight-700 green">
+                    ₹{totalAmount}
+                  </span>
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7 }}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "10px",
+                  marginTop: 16,
+                }}
+              >
+                <button
+                  className="sec-mid-btn width100 flex flex-row items-center justify-center gap-8"
+                  onClick={handleNeedHelp}
+                  style={{ padding: "10px 16px" }}
+                >
+                  <Headphones size={16} />
+                  Need help? Contact us
+                </button>
+
+                <span
+                  className="font-10 dark-50"
+                  style={{ textAlign: "center", marginTop: 4 }}
+                >
+                  You can close this window...
+                </span>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.div>
     </motion.div>
   );
 }
 
 // =====================================================================
-// ============== Sub-component: UPIPaymentModal (Redesigned) ==========
+// ============== Sub-component: UPIPaymentModal =======================
 // =====================================================================
 function UPIPaymentModal({
   finalPayable,
@@ -1264,7 +1311,6 @@ function UPIPaymentModal({
         onClick={(e) => e.stopPropagation()}
         style={{ maxHeight: "92vh", overflowY: "auto" }}
       >
-        {/* Header with gradient */}
         <div
           style={{
             padding: "20px",
@@ -1305,7 +1351,6 @@ function UPIPaymentModal({
             gap: "16px",
           }}
         >
-          {/* Amount card */}
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
@@ -1374,7 +1419,6 @@ function UPIPaymentModal({
             </div>
           </motion.div>
 
-          {/* QR section — locked or unlocked */}
           {!qrUnlocked ? (
             <motion.div
               initial={{ opacity: 0, y: 8 }}
@@ -1453,7 +1497,6 @@ function UPIPaymentModal({
                 gap: "14px",
               }}
             >
-              {/* Step strip */}
               <div
                 className="flex flex-row gap-8 width100 "
                 style={{ justifyContent: "center" }}
@@ -1557,7 +1600,6 @@ function UPIPaymentModal({
             </motion.div>
           )}
 
-          {/* Trust strip */}
           <div
             className="flex flex-row justify-between items-center"
             style={{

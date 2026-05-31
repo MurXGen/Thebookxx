@@ -4,7 +4,7 @@ import BookCard from "@/components/BookCard";
 import RecommendationModal from "@/components/RecommendationModal";
 import { books } from "@/utils/book";
 import { AnimatePresence, motion } from "framer-motion";
-import { X } from "lucide-react";
+import { X, Loader2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 const normalize = (str = "") => str.toLowerCase().trim();
@@ -38,6 +38,8 @@ const parsePriceQuery = (query) => {
 export default function SearchOverlay({ open, onClose }) {
   const inputRef = useRef(null);
   const [query, setQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
   const [showRecommendationModal, setShowRecommendationModal] = useState(false);
 
   // Auto focus input
@@ -46,6 +48,23 @@ export default function SearchOverlay({ open, onClose }) {
       setTimeout(() => inputRef.current?.focus(), 50);
     }
   }, [open]);
+
+  // Debounce the query — keeps filtering off the main thread on every keystroke
+  // so typing stays smooth even on large book lists. The loader shows during
+  // the debounce window so the user gets visual feedback that search is happening.
+  useEffect(() => {
+    if (!query) {
+      setDebouncedQuery("");
+      setIsSearching(false);
+      return;
+    }
+    setIsSearching(true);
+    const t = setTimeout(() => {
+      setDebouncedQuery(query);
+      setIsSearching(false);
+    }, 280);
+    return () => clearTimeout(t);
+  }, [query]);
 
   // ESC key close — but don't close SearchOverlay if RecommendationModal is open
   useEffect(() => {
@@ -68,40 +87,55 @@ export default function SearchOverlay({ open, onClose }) {
     };
   }, [open]);
 
-  const filteredBooks = books.filter((book) => {
-    if (!query) return false;
-
-    const q = normalize(query);
-
-    // 1️⃣ Name match
-    const nameMatch = normalize(book.name).includes(q);
-
-    // 2️⃣ Catalogue match
-    const catalogueMatch = book.catalogue?.some((cat) =>
-      normalize(cat).includes(q),
-    );
-
-    // 3️⃣ Price match
-    const priceRule = parsePriceQuery(q);
-    let priceMatch = false;
-
-    if (priceRule) {
-      if (priceRule.type === "exact") {
-        priceMatch = book.discountedPrice === priceRule.value;
-      }
-      if (priceRule.type === "lt") {
-        priceMatch = book.discountedPrice < priceRule.value;
-      }
-      if (priceRule.type === "gt") {
-        priceMatch = book.discountedPrice > priceRule.value;
-      }
+  // Clean state when the modal closes — next open starts fresh
+  useEffect(() => {
+    if (!open) {
+      setQuery("");
+      setDebouncedQuery("");
+      setIsSearching(false);
     }
+  }, [open]);
 
-    return nameMatch || catalogueMatch || priceMatch;
-  });
+  // Filter uses the debounced query so it only runs after the user pauses typing
+  const filteredBooks = !debouncedQuery
+    ? []
+    : books.filter((book) => {
+        const q = normalize(debouncedQuery);
+
+        // 1️⃣ Name match
+        const nameMatch = normalize(book.name).includes(q);
+
+        // 2️⃣ Catalogue match
+        const catalogueMatch = book.catalogue?.some((cat) =>
+          normalize(cat).includes(q),
+        );
+
+        // 3️⃣ Price match
+        const priceRule = parsePriceQuery(q);
+        let priceMatch = false;
+
+        if (priceRule) {
+          if (priceRule.type === "exact") {
+            priceMatch = book.discountedPrice === priceRule.value;
+          }
+          if (priceRule.type === "lt") {
+            priceMatch = book.discountedPrice < priceRule.value;
+          }
+          if (priceRule.type === "gt") {
+            priceMatch = book.discountedPrice > priceRule.value;
+          }
+        }
+
+        return nameMatch || catalogueMatch || priceMatch;
+      });
 
   // Encode search term for WhatsApp
   const whatsappMessage = `Hey hi! I'm looking for a book related to "${query}" but couldn't find it on TheBookX. Could you please help me find it?`;
+
+  const handleClearInput = () => {
+    setQuery("");
+    inputRef.current?.focus();
+  };
 
   return (
     <>
@@ -122,79 +156,209 @@ export default function SearchOverlay({ open, onClose }) {
               transition={{ duration: 0.25, ease: "easeOut" }}
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Header */}
+              {/* Header — input with inline clear-X (only when typing) */}
               <div className="search-header">
-                <input
-                  ref={inputRef}
-                  type="text"
-                  placeholder="Search by name, category, or price (e.g. fiction, 129, under 200)"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  className="search-input"
-                />
-
-                <button
-                  onClick={onClose}
-                  className="flex items-center sec-mid-btn"
-                  aria-label="Close search"
+                <div
+                  className="search-input-wrapper"
+                  style={{
+                    position: "relative",
+                    flex: 1,
+                    display: "flex",
+                    alignItems: "center",
+                  }}
                 >
-                  <X size={16} />
-                </button>
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    placeholder="Search by name, category, or price (e.g. fiction, 129, under 200)"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    className="search-input"
+                    style={{ paddingRight: 38, width: "100%" }}
+                  />
+
+                  <AnimatePresence>
+                    {query && (
+                      <motion.button
+                        type="button"
+                        key="clear-btn"
+                        initial={{ opacity: 0, scale: 0.7 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.7 }}
+                        transition={{ duration: 0.15 }}
+                        onClick={handleClearInput}
+                        aria-label="Clear search"
+                        style={{
+                          position: "absolute",
+                          right: 10,
+                          transform: "translateY(-50%)",
+                          background: "var(--dark-10)",
+                          border: "none",
+                          borderRadius: "50%",
+                          width: 22,
+                          height: 22,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          cursor: "pointer",
+                          color: "var(--dark-50)",
+                          padding: 0,
+                        }}
+                      >
+                        <X size={12} />
+                      </motion.button>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
 
-              {/* Results */}
-              <div className="search-body">
-                {query ? (
-                  <>
-                    {filteredBooks.length === 0 ? (
-                      <div className="empty-state">
-                        <span className="font-16 weight-500">
-                          Can’t find the book you’re looking for?
-                        </span>
-                        <div className="flex flex-col width100 gap-12">
-                          <a
-                            href={`https://wa.me/917710892108?text=${encodeURIComponent(whatsappMessage)}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            aria-label="Chat with us on WhatsApp"
-                            className="cursor-pointer pri-big-btn"
-                            style={{
-                              minWidth: "fit-content",
-                              maxWidth: "fit-content",
-                              margin: "8px auto",
-                            }}
-                          >
-                            Ask on WhatsApp
-                          </a>
-                          <button
-                            type="button"
-                            onClick={() => setShowRecommendationModal(true)}
-                            aria-label="Get book suggestions"
-                            className="cursor-pointer sec-big-btn"
-                            style={{
-                              minWidth: "fit-content",
-                              maxWidth: "fit-content",
-                              margin: "8px auto",
-                            }}
-                          >
-                            or Need suggestion?
-                          </button>
-                        </div>
+              {/* Body — animated between placeholder / loader / empty / results */}
+              <div className="search-body" style={{ paddingBottom: 100 }}>
+                <AnimatePresence mode="wait">
+                  {!query ? (
+                    <motion.p
+                      key="placeholder"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="empty-state"
+                    >
+                      Type something to search for books...
+                    </motion.p>
+                  ) : isSearching ? (
+                    <motion.div
+                      key="loader"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.15 }}
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        padding: "48px 16px",
+                        gap: 12,
+                      }}
+                    >
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{
+                          duration: 0.9,
+                          repeat: Infinity,
+                          ease: "linear",
+                        }}
+                        style={{ color: "var(--tertiary, #fb8500)" }}
+                      >
+                        <Loader2 size={28} />
+                      </motion.div>
+                      <span className="font-12 dark-50">
+                        Searching books...
+                      </span>
+                    </motion.div>
+                  ) : filteredBooks.length === 0 ? (
+                    <motion.div
+                      key="empty"
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="empty-state"
+                    >
+                      <span className="font-16 weight-500">
+                        Can&apos;t find the book you&apos;re looking for?
+                      </span>
+                      <div className="flex flex-col width100 gap-12">
+                        <a
+                          href={`https://wa.me/917710892108?text=${encodeURIComponent(whatsappMessage)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label="Chat with us on WhatsApp"
+                          className="cursor-pointer pri-big-btn"
+                          style={{
+                            minWidth: "fit-content",
+                            maxWidth: "fit-content",
+                            margin: "8px auto",
+                          }}
+                        >
+                          Ask on WhatsApp
+                        </a>
+                        <button
+                          type="button"
+                          onClick={() => setShowRecommendationModal(true)}
+                          aria-label="Get book suggestions"
+                          className="cursor-pointer sec-big-btn"
+                          style={{
+                            minWidth: "fit-content",
+                            maxWidth: "fit-content",
+                            margin: "8px auto",
+                          }}
+                        >
+                          or Need suggestion?
+                        </button>
                       </div>
-                    ) : (
-                      <div className="book-grid">
-                        {filteredBooks.map((book) => (
-                          <BookCard key={book.id} book={book} />
-                        ))}
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <p className="empty-state">
-                    Type something to search for books...
-                  </p>
-                )}
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key={`results-${debouncedQuery}`}
+                      className="book-grid"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.15 }}
+                    >
+                      {filteredBooks.map((book, idx) => (
+                        <motion.div
+                          key={book.id}
+                          initial={{ opacity: 0, y: 14 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{
+                            duration: 0.28,
+                            delay: Math.min(idx * 0.03, 0.3),
+                            ease: "easeOut",
+                          }}
+                        >
+                          <BookCard book={book} />
+                        </motion.div>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
+
+              {/* Fixed bottom-right close FAB — always visible, even when scrolled */}
+              <motion.button
+                type="button"
+                key="close-fab"
+                initial={{ opacity: 0, scale: 0.7, y: 12 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.7, y: 12 }}
+                whileTap={{ scale: 0.92 }}
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.25, ease: "easeOut", delay: 0.1 }}
+                onClick={onClose}
+                aria-label="Close search"
+                style={{
+                  position: "fixed",
+                  bottom: 24,
+                  right: 24,
+                  width: 52,
+                  height: 52,
+                  borderRadius: "50%",
+                  background: "var(--foreground, #0a0a0a)",
+                  color: "#fff",
+                  border: "none",
+                  boxShadow: "0 6px 20px rgba(0, 0, 0, 0.28)",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  zIndex: 10000,
+                }}
+              >
+                <X size={22} />
+              </motion.button>
             </motion.div>
           </motion.div>
         )}

@@ -6,6 +6,7 @@ import RecommendationModal from "@/components/RecommendationModal";
 import AddressModal from "@/components/UI/AddressModal";
 import BillModal from "@/components/UI/BillModal";
 import CartOfferStrip from "@/components/UI/CartOfferStrip";
+import FreeShippingNudgeModal from "@/components/UI/FreeShippingNudgeModal";
 import HorizontalScroll from "@/components/UI/HorizontalScroll";
 import YouMayLike from "@/components/UI/YouMayLike";
 import { useStore } from "@/context/StoreContext";
@@ -29,26 +30,30 @@ import Link from "next/link";
 import { FcDocument } from "react-icons/fc";
 
 export default function BagPage() {
-  // ✅ ALL hooks go here - NO EXCEPTIONS
   const { cart } = useStore();
   const router = useRouter();
   const [siteOrigin, setSiteOrigin] = useState("");
   const [showBill, setShowBill] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [showRecommendationModal, setShowRecommendationModal] = useState(false);
+  const [showFreeShippingNudge, setShowFreeShippingNudge] = useState(false);
+
+  // Flips to true once user explicitly skips the free-shipping nudge.
+  // Until then, the bill modal hides delivery and the address modal
+  // is gated behind the nudge.
+  const [hasAcceptedShipping, setHasAcceptedShipping] = useState(false);
+
   const [paymentMethod, setPaymentMethod] = useState(null);
   const [isShortening, setIsShortening] = useState(false);
   const [giftWrap, setGiftWrap] = useState(false);
   const GIFT_WRAP_CHARGE = 15;
 
-  // ✅ Move useEffect hooks here
   useEffect(() => {
     if (typeof window !== "undefined") {
       setSiteOrigin(window.location.origin);
     }
   }, []);
 
-  // Calculate cartBooks BEFORE the conditional return
   const cartBooks = cart
     .map((item) => {
       const book = books.find((b) => b.id === item.id);
@@ -56,14 +61,11 @@ export default function BagPage() {
     })
     .filter(Boolean);
 
-  // ✅ Check if cart has any ₹1 book
   const hasOneRupeeItem = cartBooks.some((book) => book.discountedPrice === 1);
 
-  // ✅ Get dynamic values based on ₹1 item presence
   const MIN_CHECKOUT_AMOUNT = 151;
   const cartOffers = getCartOffers(hasOneRupeeItem);
 
-  // Calculate other values that depend on cartBooks
   const totalOriginal = cartBooks.reduce(
     (sum, b) => sum + b.originalPrice * b.qty,
     0,
@@ -74,7 +76,16 @@ export default function BagPage() {
     0,
   );
 
-  // ✅ Define all helper functions BEFORE conditional return
+  // ----- Nudge logic — fires for ANY cart below ₹399 -----
+  const needsShippingNudge = totalDiscounted < 399 && !hasAcceptedShipping;
+
+  // Reset acceptance if cart goes >= 399 (free delivery anyway, no need to gate)
+  useEffect(() => {
+    if (totalDiscounted >= 399) {
+      setHasAcceptedShipping(false);
+    }
+  }, [totalDiscounted]);
+
   const getAppliedOffer = (amount) => {
     return [...cartOffers].reverse().find((o) => amount >= o.target) || null;
   };
@@ -121,18 +132,6 @@ export default function BagPage() {
     true,
     hasOneRupeeItem,
   );
-  const standardDeliveryDesc = getDeliveryDescription(
-    totalDiscounted,
-    false,
-    hasOneRupeeItem,
-  );
-  const fasterDeliveryDesc = getDeliveryDescription(
-    totalDiscounted,
-    true,
-    hasOneRupeeItem,
-  );
-  const standardOriginalCharge = getOriginalCharge(totalDiscounted, false);
-  const fasterOriginalCharge = getOriginalCharge(totalDiscounted, true);
 
   const getDeliveryChargeByChoice = (isFasterDelivery) => {
     return getDeliveryCharge(
@@ -145,13 +144,11 @@ export default function BagPage() {
   const totalWithStandardDelivery = finalPayable + standardDeliveryCharge;
   const totalWithStandardDeliveryGift =
     totalWithStandardDelivery + (giftWrap ? GIFT_WRAP_CHARGE : 0);
-  const standardDeliverySavings = standardOriginalCharge
-    ? standardOriginalCharge - standardDeliveryCharge
-    : 0;
-  const fasterDeliverySavings = fasterOriginalCharge
-    ? fasterOriginalCharge - fasterDeliveryCharge
-    : 0;
-  const displayTotal = totalWithStandardDeliveryGift;
+
+  // Fixed bill bar total — exclude delivery while nudge is pending
+  const displayedFixedBarTotal = needsShippingNudge
+    ? finalPayable + (giftWrap ? GIFT_WRAP_CHARGE : 0)
+    : totalWithStandardDeliveryGift;
 
   const isDesktop = () => {
     if (typeof window === "undefined") return false;
@@ -281,9 +278,7 @@ _Thank you for shopping with TheBookX! 📚✨_
     try {
       await fetch("https://api.journalx.app/api/bookxTelegram/order", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           orderDetails: orderMessage,
           customerName: addressData.name,
@@ -313,7 +308,7 @@ _Thank you for shopping with TheBookX! 📚✨_
     const totalWithDelivery = finalPayable + deliveryCharge + giftWrapAmount;
 
     const orderDetails = {
-      orderId: orderId,
+      orderId,
       name: addressData.name || "",
       phone: addressData.phone || "",
       address: addressData.address || "",
@@ -324,7 +319,7 @@ _Thank you for shopping with TheBookX! 📚✨_
       pincode: addressData.pincode || "",
       paymentMethod: paymentType,
       fasterDelivery: fasterDeliveryChoice,
-      deliveryCharge: deliveryCharge,
+      deliveryCharge,
       deliveryLabel: getDeliveryLabel(
         totalDiscounted,
         fasterDeliveryChoice,
@@ -337,7 +332,6 @@ _Thank you for shopping with TheBookX! 📚✨_
     };
 
     const encodedDetails = encodeURIComponent(JSON.stringify(orderDetails));
-
     return `${siteOrigin}/view-bag?items=${encodeURIComponent(items)}&order=${encodedDetails}`;
   };
 
@@ -346,8 +340,7 @@ _Thank you for shopping with TheBookX! 📚✨_
       const response = await fetch(
         `https://tinyurl.com/api-create.php?url=${encodeURIComponent(longUrl)}`,
       );
-      const shortUrl = await response.text();
-      return shortUrl;
+      return await response.text();
     } catch (error) {
       console.error("Error shortening URL:", error);
       return longUrl;
@@ -456,7 +449,7 @@ _Thank you for shopping with TheBookX! 📚✨_
     setShowBill(false);
   };
 
-  // ----- Confirm Order button handler -----
+  // ----- Confirm Order — routes through nudge if applicable -----
   const handleConfirmOrderClick = () => {
     if (isShortening) {
       showToast("Preparing your order, please wait…", "info");
@@ -469,12 +462,33 @@ _Thank you for shopping with TheBookX! 📚✨_
       );
       return;
     }
+
+    // Intercept: show nudge if cart < ₹399 and user hasn't already accepted
+    if (needsShippingNudge) {
+      setShowFreeShippingNudge(true);
+      return;
+    }
+
     setShowAddressModal(true);
+  };
+
+  const handleSkipNudge = () => {
+    setHasAcceptedShipping(true);
+    setShowFreeShippingNudge(false);
+    setTimeout(() => setShowAddressModal(true), 100);
+  };
+
+  const handleNudgeClose = () => {
+    setShowFreeShippingNudge(false);
+  };
+
+  const handleProceedAfterUnlock = () => {
+    setShowFreeShippingNudge(false);
+    setTimeout(() => setShowAddressModal(true), 100);
   };
 
   const isCheckoutDisabled = !canCheckout || isShortening;
 
-  // ✅ NOW the conditional return (after all hooks and functions)
   if (!cartBooks.length) {
     return (
       <>
@@ -511,7 +525,6 @@ _Thank you for shopping with TheBookX! 📚✨_
           </button>
         </div>
 
-        {/* Recommendation modal — available in empty cart state too */}
         <RecommendationModal
           isOpen={showRecommendationModal}
           onClose={() => setShowRecommendationModal(false)}
@@ -622,7 +635,7 @@ _Thank you for shopping with TheBookX! 📚✨_
             <div className="flex flex-col">
               <div className="flex flex-row gap-8 items-center">
                 <span className="font-16 weight-600 discounted">
-                  ₹{totalWithStandardDeliveryGift}
+                  ₹{displayedFixedBarTotal}
                 </span>
                 {offerDiscount > 0 && (
                   <span className="strike dark-50 original">
@@ -642,7 +655,6 @@ _Thank you for shopping with TheBookX! 📚✨_
           </div>
 
           <div className="flex flex-row items-center gap-12">
-            {/* Small "Need book suggestion?" CTA — sits just above the fixed bill bar */}
             <span
               type="button"
               onClick={() => setShowRecommendationModal(true)}
@@ -668,6 +680,16 @@ _Thank you for shopping with TheBookX! 📚✨_
           </div>
         </div>
       </div>
+
+      {/* Pre-address nudge — only when cart < ₹399 */}
+      <FreeShippingNudgeModal
+        open={showFreeShippingNudge}
+        onClose={handleNudgeClose}
+        onSkip={handleSkipNudge}
+        onProceedAfterUnlock={handleProceedAfterUnlock}
+        cartBooks={cartBooks}
+        totalDiscounted={totalDiscounted}
+      />
 
       <AddressModal
         open={showAddressModal}
@@ -706,6 +728,7 @@ _Thank you for shopping with TheBookX! 📚✨_
         isFasterDelivery={false}
         giftWrapCharge={giftWrap ? GIFT_WRAP_CHARGE : 0}
         giftWrapSelected={giftWrap}
+        hideDeliveryCharges={needsShippingNudge}
       />
 
       <RecommendationModal

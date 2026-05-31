@@ -17,8 +17,11 @@ export default function BillModal({
   totalWithDelivery = null,
   giftWrapCharge = 0,
   giftWrapSelected = false,
+  // NEW — when true, hide all delivery-related rows AND exclude delivery
+  // from the displayed "You Pay" total. Used when the user hasn't yet
+  // committed to shipping (i.e. the nudge modal is still pending).
+  hideDeliveryCharges = false,
 }) {
-  // Track when Bill Modal is viewed
   useTrackView(
     EVENTS.BILL_MODAL_VIEWED,
     {
@@ -30,13 +33,12 @@ export default function BillModal({
       delivery_charge: isFasterDelivery
         ? fasterDeliveryCharge
         : standardDeliveryCharge,
+      hide_delivery_charges: hideDeliveryCharges,
     },
     open,
   );
 
-  // Track when modal is closed
   const hasTrackedClose = useRef(false);
-
   const finalPayable = totalDiscounted - offerDiscount;
 
   useEffect(() => {
@@ -47,7 +49,6 @@ export default function BillModal({
     ) {
       hasTrackedClose.current = true;
     }
-
     if (open) {
       hasTrackedClose.current = false;
     }
@@ -55,21 +56,20 @@ export default function BillModal({
 
   if (!open) return null;
 
-  // Get the actual delivery charge based on selection
   const getDeliveryCharge = () => {
-    if (isFasterDelivery) {
-      return fasterDeliveryCharge;
-    }
+    if (isFasterDelivery) return fasterDeliveryCharge;
     return standardDeliveryCharge;
   };
 
   const deliveryCharge = getDeliveryCharge();
 
-  const finalTotal =
-    totalWithDelivery !== null
+  // When hiding delivery, the displayed total excludes it.
+  // Final total still includes gift wrap (that's already a confirmed selection).
+  const finalTotal = hideDeliveryCharges
+    ? finalPayable + giftWrapCharge
+    : totalWithDelivery !== null
       ? totalWithDelivery
       : finalPayable + deliveryCharge + giftWrapCharge;
-  const totalSavings = totalOriginal - finalPayable;
 
   return (
     <div className="bill-modal-overlay" onClick={onClose}>
@@ -98,54 +98,67 @@ export default function BillModal({
           </div>
         )}
 
-        {/* Delivery / Handling Charges */}
-        {deliveryCharge > 0 && (
-          <div className="bill-row">
-            <span>
-              {isFasterDelivery ? (
-                <span className="flex items-center gap-4">
-                  <span>🚀 Faster Delivery</span>
-                  <span className="font-10 orange">(2-5 days)</span>
+        {/* Delivery rows — hidden until user accepts shipping */}
+        {!hideDeliveryCharges && (
+          <>
+            {deliveryCharge > 0 && (
+              <div className="bill-row">
+                <span>
+                  {isFasterDelivery ? (
+                    <span className="flex items-center gap-4">
+                      <span>🚀 Faster Delivery</span>
+                      <span className="font-10 orange">(2-5 days)</span>
+                    </span>
+                  ) : deliveryCharge === 100 ? (
+                    <div className="flex flex-col">
+                      <span> Standard Delivery</span>
+                      <span className="dark-50 font-10">
+                        Books more than ₹399 : Free Delivery
+                      </span>
+                    </div>
+                  ) : (
+                    <span className="flex flex-col gap-4">
+                      <span>💛 Handling & Care Fee</span>
+                      <span className="font-10 dark-50">
+                        (packing, support & secure shipping)
+                      </span>
+                    </span>
+                  )}
                 </span>
-              ) : deliveryCharge === 100 ? (
-                <div className="flex flex-col">
-                  <span> Standard Delivery</span>
-                  <span className="dark-50 font-10">
-                    Books more than ₹399 : Free Delivery
-                  </span>
-                </div>
-              ) : (
-                <span className="flex flex-col  gap-4">
-                  <span>💛 Handling & Care Fee</span>
-                  <span className="font-10 dark-50">
-                    (packing, support & secure shipping)
-                  </span>
-                </span>
-              )}
-            </span>
 
-            <span
-              className={
-                isFasterDelivery
-                  ? "orange"
-                  : deliveryCharge === 100
-                    ? "red"
-                    : "dark-50"
-              }
-            >
-              + ₹{deliveryCharge}
+                <span
+                  className={
+                    isFasterDelivery
+                      ? "orange"
+                      : deliveryCharge === 100
+                        ? "red"
+                        : "dark-50"
+                  }
+                >
+                  + ₹{deliveryCharge}
+                </span>
+              </div>
+            )}
+
+            {deliveryCharge === 0 && !isFasterDelivery && (
+              <div className="bill-row">
+                <span>📦 Free Delivery</span>
+                <span className="green">FREE</span>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* Subtle hint when delivery is intentionally hidden */}
+        {hideDeliveryCharges && (
+          <div className="bill-row" style={{ opacity: 0.7 }}>
+            <span className="font-10 dark-50">
+              📦 Shipping will be calculated at checkout
             </span>
           </div>
         )}
 
-        {deliveryCharge === 0 && !isFasterDelivery && (
-          <div className="bill-row">
-            <span>📦 Free Delivery</span>
-            <span className="green">FREE</span>
-          </div>
-        )}
-
-        {/* Gift Wrap Section */}
+        {/* Gift Wrap */}
         {giftWrapSelected && giftWrapCharge > 0 && (
           <div className="bill-row">
             <span>🎁 Gift Wrap</span>

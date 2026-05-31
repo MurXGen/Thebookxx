@@ -705,8 +705,6 @@ export default function AddressModal({
                   </span>
                 </div>
               )}
-
-          
             </div>
           </motion.div>
         </motion.div>
@@ -879,7 +877,6 @@ export default function AddressModal({
 // =====================================================================
 // ============== Sub-component: FreebieBadge ==========================
 // =====================================================================
-
 
 // =====================================================================
 // ============== Sub-component: CODSuccessModal =======================
@@ -1325,7 +1322,6 @@ function UPIPaymentModal({
           <div className="flex flex-col gap-4">
             <span className="font-12 dark-50 weight-500">Secure Payment</span>
             <div className="flex flex-row items-center gap-8">
-              <Smartphone size={18} style={{ color: "var(--tertiary)" }} />
               <span className="font-16 weight-700">Pay via UPI</span>
             </div>
           </div>
@@ -1365,7 +1361,7 @@ function UPIPaymentModal({
               gap: "8px",
             }}
           >
-            <div className="flex justify-between font-13">
+            {/* <div className="flex justify-between font-13">
               <span className="dark-50">Books Subtotal</span>
               <span className="weight-500">₹{finalPayable}</span>
             </div>
@@ -1400,10 +1396,10 @@ function UPIPaymentModal({
                   +₹{giftWrapCharge}
                 </span>
               </div>
-            )}
+            )} */}
             <div
               style={{
-                borderTop: "1px dashed var(--dark-20)",
+                // borderTop: "1px dashed var(--dark-20)",
                 paddingTop: 8,
                 marginTop: 4,
               }}

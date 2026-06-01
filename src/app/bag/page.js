@@ -29,6 +29,10 @@ import { FaWhatsapp } from "react-icons/fa";
 import Link from "next/link";
 import { FcDocument } from "react-icons/fc";
 
+// COD handling fee — added to total only when payment method is COD.
+// Disclosed transparently after delivery selection via CODHandlingFeeModal.
+const COD_HANDLING_FEE = 49;
+
 export default function BagPage() {
   const { cart } = useStore();
   const router = useRouter();
@@ -38,9 +42,6 @@ export default function BagPage() {
   const [showRecommendationModal, setShowRecommendationModal] = useState(false);
   const [showFreeShippingNudge, setShowFreeShippingNudge] = useState(false);
 
-  // Flips to true once user explicitly skips the free-shipping nudge.
-  // Until then, the bill modal hides delivery and the address modal
-  // is gated behind the nudge.
   const [hasAcceptedShipping, setHasAcceptedShipping] = useState(false);
 
   const [paymentMethod, setPaymentMethod] = useState(null);
@@ -76,11 +77,9 @@ export default function BagPage() {
     0,
   );
 
-  // ----- Nudge logic — only fires when cart < ₹399 AND has ₹1 book -----
   const needsShippingNudge =
     totalDiscounted < 399 && hasOneRupeeItem && !hasAcceptedShipping;
 
-  // Reset acceptance if the nudge condition no longer applies
   useEffect(() => {
     if (totalDiscounted >= 399 || !hasOneRupeeItem) {
       setHasAcceptedShipping(false);
@@ -146,7 +145,6 @@ export default function BagPage() {
   const totalWithStandardDeliveryGift =
     totalWithStandardDelivery + (giftWrap ? GIFT_WRAP_CHARGE : 0);
 
-  // Fixed bill bar total — exclude delivery while nudge is pending
   const displayedFixedBarTotal = needsShippingNudge
     ? finalPayable + (giftWrap ? GIFT_WRAP_CHARGE : 0)
     : totalWithStandardDeliveryGift;
@@ -160,6 +158,10 @@ export default function BagPage() {
       );
     return !isMobile;
   };
+
+  // Returns the COD fee amount only when paymentType is COD
+  const getCodFeeForPayment = (paymentType) =>
+    paymentType === "COD" ? COD_HANDLING_FEE : 0;
 
   const generateWhatsAppMessage = (
     addressData,
@@ -175,7 +177,9 @@ export default function BagPage() {
       hasOneRupeeItem,
     );
     const giftWrapAmount = giftWrapSelected ? GIFT_WRAP_CHARGE : 0;
-    const totalWithDelivery = finalPayable + deliveryCharge + giftWrapAmount;
+    const codFee = getCodFeeForPayment(paymentType);
+    const totalWithDelivery =
+      finalPayable + deliveryCharge + giftWrapAmount + codFee;
 
     let deliveryInfo = `${addressData.city || "Not specified"} - ${addressData.pincode || "Not specified"}`;
     if (fasterDeliveryChoice) {
@@ -190,6 +194,10 @@ export default function BagPage() {
       deliveryInfo += ` 🎁 (Gift Wrap +₹${GIFT_WRAP_CHARGE})`;
     }
 
+    if (codFee > 0) {
+      deliveryInfo += ` 💵 (COD Handling Fee +₹${codFee})`;
+    }
+
     return `
 *CONFIRM MY ORDER*
 
@@ -200,7 +208,7 @@ export default function BagPage() {
 
 📍 *Delivery:* ${deliveryInfo}
 
-💰 *Total Amount:* ₹${totalWithDelivery}
+💰 *Total Amount:* ₹${totalWithDelivery}${codFee > 0 ? ` (incl. ₹${codFee} COD fee)` : ""}
 💳 *Payment:* ${paymentType === "COD" ? "Cash on Delivery" : "UPI Payment"}
 
 🔗 *View Full Order Details:*
@@ -224,7 +232,9 @@ Thank you! 🙏
       hasOneRupeeItem,
     );
     const giftWrapAmount = giftWrapSelected ? GIFT_WRAP_CHARGE : 0;
-    const totalWithDelivery = finalPayable + deliveryCharge + giftWrapAmount;
+    const codFee = getCodFeeForPayment(paymentType);
+    const totalWithDelivery =
+      finalPayable + deliveryCharge + giftWrapAmount + codFee;
 
     const orderMessage = `
 🛍️ *NEW ORDER - THEBOOKX*
@@ -260,15 +270,14 @@ ${cartBooks
 📚 Subtotal: ₹${totalDiscounted}
 🎁 Offer Discount: -₹${offerDiscount}
 🚚 Delivery: ${deliveryLabel}
-📦 Delivery Charge: +₹${deliveryCharge}
-${giftWrapSelected ? `🎁 Gift Wrap: +₹${GIFT_WRAP_CHARGE}` : ""}
+📦 Delivery Charge: +₹${deliveryCharge}${giftWrapSelected ? `\n🎁 Gift Wrap: +₹${GIFT_WRAP_CHARGE}` : ""}${codFee > 0 ? `\n💵 COD Handling Fee: +₹${codFee}` : ""}
 ━━━━━━━━━━━━━━━━━━━━
-*💵 TOTAL PAYABLE: ₹${totalWithDelivery}*
+*💵 TOTAL PAYABLE: ₹${totalWithDelivery}*${codFee > 0 ? `\n_(includes ₹${codFee} COD fee, collected at delivery)_` : ""}
 
 ━━━━━━━━━━━━━━━━━━━━
 *💳 PAYMENT METHOD*
 ━━━━━━━━━━━━━━━━━━━━
-${paymentType === "COD" ? "💵 Cash on Delivery" : "📱 UPI Payment"}
+${paymentType === "COD" ? `💵 Cash on Delivery (incl. ₹${codFee} fee)` : "📱 UPI Payment"}
 
 🔗 *Order Link:* ${shortLink}
 
@@ -286,6 +295,7 @@ _Thank you for shopping with TheBookX! 📚✨_
           customerPhone: addressData.phone,
           totalAmount: totalWithDelivery,
           paymentMethod: paymentType,
+          codHandlingFee: codFee,
         }),
       });
     } catch (error) {
@@ -306,7 +316,9 @@ _Thank you for shopping with TheBookX! 📚✨_
 
     const deliveryCharge = getDeliveryChargeByChoice(fasterDeliveryChoice);
     const giftWrapAmount = giftWrapSelected ? GIFT_WRAP_CHARGE : 0;
-    const totalWithDelivery = finalPayable + deliveryCharge + giftWrapAmount;
+    const codFee = getCodFeeForPayment(paymentType);
+    const totalWithDelivery =
+      finalPayable + deliveryCharge + giftWrapAmount + codFee;
 
     const orderDetails = {
       orderId,
@@ -328,6 +340,7 @@ _Thank you for shopping with TheBookX! 📚✨_
       ),
       giftWrap: giftWrapSelected,
       giftWrapCharge: giftWrapAmount,
+      codHandlingFee: codFee,
       orderDate: new Date().toISOString(),
       totalAmount: totalWithDelivery,
     };
@@ -450,7 +463,6 @@ _Thank you for shopping with TheBookX! 📚✨_
     setShowBill(false);
   };
 
-  // ----- Confirm Order — routes through nudge if applicable -----
   const handleConfirmOrderClick = () => {
     if (isShortening) {
       showToast("Preparing your order, please wait…", "info");
@@ -464,7 +476,6 @@ _Thank you for shopping with TheBookX! 📚✨_
       return;
     }
 
-    // Intercept: show nudge if cart < ₹399 and user hasn't already accepted
     if (needsShippingNudge) {
       setShowFreeShippingNudge(true);
       return;
@@ -679,7 +690,6 @@ _Thank you for shopping with TheBookX! 📚✨_
         </div>
       </div>
 
-      {/* Pre-address nudge — only when cart < ₹399 */}
       <FreeShippingNudgeModal
         open={showFreeShippingNudge}
         onClose={handleNudgeClose}
@@ -708,6 +718,7 @@ _Thank you for shopping with TheBookX! 📚✨_
         shortenUrl={shortenUrl}
         offerLabel={offerLabel}
         offerDiscount={offerDiscount}
+        codHandlingFee={COD_HANDLING_FEE}
       />
 
       <BillModal

@@ -8300,4 +8300,25 @@ export const books = [
     originalPrice: calculateOriginalPrice(399),
     discountedPrice: 189,
   },
+  {
+    id: "bk-512",
+    name: "The Midnight Library",
+    image: bookImages["the-midnight-library"],
+    description:
+      "Discover the uplifting international bestseller 'The Midnight Library' by Matt Haig at TheBookX.in. Between life and death lies a magical library—one that contains an infinite number of books, each offering a chance to explore a different version of your life. When Nora Seed finds herself there, she gets the opportunity to undo her deepest regrets and try on the lives she could have lived. But as she journeys through alternate realities, she discovers that the life she truly wants might be closer than she thinks. This heartwarming, philosophical novel explores regret, possibility, mental health, and the beautiful mess of being human. Perfect for fans of 'The Alchemist' and 'Replay.' TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now—books starting at just ₹1 for a limited offer.",
+    author: "Matt Haig",
+    pages: "304",
+    language: "English",
+    size: "Paperback",
+    stock: 20,
+    catalogue: [
+      "fiction",
+      "literary",
+      "magical-realism",
+      "bestseller",
+      "contemporary",
+    ],
+    originalPrice: calculateOriginalPrice(169),
+    discountedPrice: 169,
+  },
 ];

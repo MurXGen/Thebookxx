@@ -493,4 +493,5 @@ export const bookImages = {
   "blue-sisters": `${BOOK_IMAGE_BASE_PATH}/blue-sisters.jpeg`,
   "heart-the-lover": `${BOOK_IMAGE_BASE_PATH}/heart-the-lover.jpeg`,
   "cleopatra-and-frankenstein": `${BOOK_IMAGE_BASE_PATH}/cleopatra-and-frankenstein.jpeg`,
+  "the-midnight-library": `${BOOK_IMAGE_BASE_PATH}/the-midnight-library.jpeg`,
 };

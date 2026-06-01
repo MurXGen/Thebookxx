@@ -27,8 +27,8 @@ import {
   Zap,
   MessageSquare,
   Notebook,
+  XCircle,
   CalendarClock,
-  Ban,
   AlertTriangle,
 } from "lucide-react";
 import Image from "next/image";
@@ -36,78 +36,83 @@ import { FaWhatsapp } from "react-icons/fa";
 import Link from "next/link";
 
 const SHEET_ID = "1ovqFn50d0TKjV0nm4q1lb3N9XvimUgIsHCOlHh6QRdg";
-const SUPPORT_PHONE = "917710892108";
+const SUPPORT_WHATSAPP = "917710892108";
 
-// ===================================================================
-// Robust date parser — used by both the timeline and formatDate.
-// Handles every format the gviz response can throw at us:
-//   "20/05/2026 23:14:14"          dd/mm/yyyy 24-hour (space, no comma)
-//   "27/05/2026, 04:50:03 pm"      dd/mm/yyyy 12-hour with am/pm
-//   "27/05/2026, 16:50:04"         dd/mm/yyyy 24-hour with comma
-//   "Date(2026,4,27,16,50,3)"      Google Sheets serialized — months 0-based
-//   Date object                    occasionally returned directly
-//   ISO strings                    fallback
-// ===================================================================
-function parseAnyDate(value) {
-  if (!value) return null;
-  if (value instanceof Date) return isNaN(value.getTime()) ? null : value;
+// =====================================================================
+// Module-level date parser — handles every format the Google Sheet emits
+// =====================================================================
+// The "Timestamp" / "Timestamp (D)" columns can hold any of:
+//   "20/05/2026 23:14:14"        (dd/mm/yyyy, 24-hour, NO am/pm, NO comma)
+//   "20/05/2026, 23:14:12"       (dd/mm/yyyy, 24-hour, with comma)
+//   "27/05/2026, 04:50:03 pm"    (dd/mm/yyyy, 12-hour with am/pm)
+//   "Date(2026,4,27,16,50,3)"    (Google Sheets serialized, months 0-based)
+//   Date object instances        (some gviz responses)
+//   ISO strings                  (fallback)
+function parseSheetDate(input) {
+  if (!input) return null;
+  if (input instanceof Date) {
+    return isNaN(input.getTime()) ? null : input;
+  }
 
-  const str = String(value).trim();
+  const str = String(input).trim();
+  if (!str) return null;
 
-  // Google Sheets Date() literal — months are ALREADY 0-based
+  // Google Sheets Date() literal — months ALREADY 0-based
   if (str.startsWith("Date(")) {
     const m = str.match(/Date\((\d+),(\d+),(\d+)(?:,(\d+),(\d+),(\d+))?/);
     if (m) {
-      const year = parseInt(m[1], 10);
-      const month = parseInt(m[2], 10);
-      const day = parseInt(m[3], 10);
-      const hours = m[4] ? parseInt(m[4], 10) : 0;
-      const minutes = m[5] ? parseInt(m[5], 10) : 0;
-      const seconds = m[6] ? parseInt(m[6], 10) : 0;
-      const d = new Date(year, month, day, hours, minutes, seconds);
+      const d = new Date(
+        parseInt(m[1], 10),
+        parseInt(m[2], 10),
+        parseInt(m[3], 10),
+        m[4] ? parseInt(m[4], 10) : 0,
+        m[5] ? parseInt(m[5], 10) : 0,
+        m[6] ? parseInt(m[6], 10) : 0,
+      );
       if (!isNaN(d.getTime())) return d;
     }
   }
 
-  // dd/mm/yyyy with optional time (12-hour OR 24-hour, comma OR space sep)
+  // dd/mm/yyyy [optional HH:mm:ss [am/pm]]
+  // [,\s]+ matches " ", ", ", "," — handles all separators
   if (str.includes("/")) {
     const m = str.match(
       /^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[,\s]+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?\s*(am|pm)?)?/i,
     );
     if (m) {
       const day = parseInt(m[1], 10);
-      const month = parseInt(m[2], 10) - 1; // dd/mm/yyyy → 0-based
+      const month = parseInt(m[2], 10) - 1; // dd/mm/yyyy → 0-based for JS
       const year = parseInt(m[3], 10);
       let hours = m[4] ? parseInt(m[4], 10) : 0;
       const minutes = m[5] ? parseInt(m[5], 10) : 0;
       const seconds = m[6] ? parseInt(m[6], 10) : 0;
       const meridiem = (m[7] || "").toLowerCase();
+
       if (meridiem === "pm" && hours < 12) hours += 12;
       if (meridiem === "am" && hours === 12) hours = 0;
+
       const d = new Date(year, month, day, hours, minutes, seconds);
       if (!isNaN(d.getTime())) return d;
     }
   }
 
-  // ISO / native fallback
+  // ISO / fallback
   const d = new Date(str);
   return isNaN(d.getTime()) ? null : d;
 }
 
-// Look up the timestamp from any of the possible column names.
-// Sheet header is "Timestamp (D)" *with a space* — older code missed this.
-function getOrderTimestamp(order) {
+// Order date lookup — sheet column header has a SPACE: "Timestamp (D)"
+function getOrderDateValue(order) {
   return (
     order["Timestamp (D)"] ||
-    order["Timestamp(D)"] ||
     order["Timestamp"] ||
+    order["Timestamp(D)"] ||
     order["Order Date"] ||
     null
   );
 }
 
 // ===== Order Tracking Timeline =====
-// Renders 4-stage horizontal stepper: Ordered → Shipped → Out for Delivery → Delivered
 function OrderTrackingTimeline({ order }) {
   const statusLower = (order.status || "").toLowerCase();
 
@@ -123,7 +128,7 @@ function OrderTrackingTimeline({ order }) {
     activeStage = 1;
   }
 
-  const orderDate = parseAnyDate(getOrderTimestamp(order));
+  const orderDate = parseSheetDate(getOrderDateValue(order));
 
   const DAY_MS = 24 * 60 * 60 * 1000;
   const minDeliveryDate = orderDate
@@ -136,27 +141,32 @@ function OrderTrackingTimeline({ order }) {
     ? new Date(orderDate.getTime() + 9 * DAY_MS)
     : null;
 
-  const shortDate = (d) =>
-    d ? d.toLocaleDateString("en-IN", { day: "2-digit", month: "short" }) : "—";
+  const shortDate = (d) => {
+    if (!d) return "—";
+    return d.toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+    });
+  };
 
-  const longDate = (d) =>
-    d
-      ? d.toLocaleDateString("en-IN", {
-          weekday: "short",
-          day: "2-digit",
-          month: "short",
-        })
-      : "—";
+  const longDate = (d) => {
+    if (!d) return "—";
+    return d.toLocaleDateString("en-IN", {
+      weekday: "short",
+      day: "2-digit",
+      month: "short",
+    });
+  };
 
-  const deliveryRangeLabel =
-    minDeliveryDate && maxDeliveryDate
-      ? `${shortDate(minDeliveryDate)} – ${shortDate(maxDeliveryDate)}`
-      : "—";
+  const deliveryRangeLabel = (() => {
+    if (!minDeliveryDate || !maxDeliveryDate) return "—";
+    return `${shortDate(minDeliveryDate)} – ${shortDate(maxDeliveryDate)}`;
+  })();
 
   const orderedDate = orderDate ? shortDate(orderDate) : "—";
   const shippedDate =
     activeStage >= 1
-      ? shortDate(orderDate ? new Date(orderDate.getTime() + DAY_MS) : null)
+      ? shortDate(orderDate ? new Date(orderDate.getTime() + 1 * DAY_MS) : null)
       : "Soon";
   const outForDeliveryDate =
     activeStage >= 2
@@ -185,7 +195,7 @@ function OrderTrackingTimeline({ order }) {
   const city = (order.City || "").toLowerCase();
   const bannerText = city.includes("mumbai")
     ? "95% orders delivered early in Mumbai"
-    : "Most orders delivered on time across India";
+    : `Most orders delivered on time across India`;
 
   const tooltipStage = activeStage < 3 ? activeStage + 1 : null;
   const tooltipLabel =
@@ -304,19 +314,21 @@ export default function MyOrdersPage() {
   const [showPhoneInput, setShowPhoneInput] = useState(true);
   const [customerName, setCustomerName] = useState("");
 
-  // NEW — reschedule modal state
+  // ----- NEW state for cancel + reschedule -----
   const [showRescheduleModal, setShowRescheduleModal] = useState(false);
   const [rescheduleOrder, setRescheduleOrder] = useState(null);
   const [rescheduleDate, setRescheduleDate] = useState("");
-  const [rescheduleTimeSlot, setRescheduleTimeSlot] = useState("");
-  const [rescheduleNotes, setRescheduleNotes] = useState("");
-
-  // NEW — cancel confirmation modal state
-  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
-  const [cancelOrder, setCancelOrder] = useState(null);
-  const [cancelReason, setCancelReason] = useState("");
+  const [rescheduleTime, setRescheduleTime] = useState("");
+  const [rescheduleNote, setRescheduleNote] = useState("");
 
   const UPI_ID = "7977960242-1@okbizaxis";
+
+  // Tomorrow as YYYY-MM-DD for the date picker minimum
+  const tomorrowISO = (() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    return d.toISOString().split("T")[0];
+  })();
 
   useEffect(() => {
     const savedPhone = localStorage.getItem("track_orders_phone");
@@ -413,13 +425,11 @@ export default function MyOrdersPage() {
         return String(orderPhone).trim() === String(phone).trim();
       });
 
-      // Sort newest-first using the robust parser
+      // Sort newest-first using the proper sheet date parser
       const sortedOrders = userOrders.sort((a, b) => {
-        const dateA = parseAnyDate(getOrderTimestamp(a));
-        const dateB = parseAnyDate(getOrderTimestamp(b));
-        const tsA = dateA ? dateA.getTime() : 0;
-        const tsB = dateB ? dateB.getTime() : 0;
-        return tsB - tsA;
+        const dateA = parseSheetDate(getOrderDateValue(a)) || new Date(0);
+        const dateB = parseSheetDate(getOrderDateValue(b)) || new Date(0);
+        return dateB - dateA;
       });
 
       const parsedOrders = sortedOrders.map((order) => {
@@ -502,152 +512,6 @@ export default function MyOrdersPage() {
     setVerifyTimer(30);
   };
 
-  // -----------------------------------------------------------------
-  // Cancel & Reschedule eligibility + handlers
-  // -----------------------------------------------------------------
-  const canCancelOrder = (order) => {
-    const s = (order.status || "").toLowerCase();
-    if (s.includes("delivered") || s.includes("cancelled")) return false;
-    if (
-      s.includes("shipped") ||
-      s.includes("in transit") ||
-      s.includes("out for delivery") ||
-      s.includes("dispatched")
-    )
-      return false;
-    return true; // pending, placed, empty → cancellable
-  };
-
-  const canRescheduleOrder = (order) => {
-    const s = (order.status || "").toLowerCase();
-    if (s.includes("delivered") || s.includes("cancelled")) return false;
-    return (
-      s.includes("shipped") ||
-      s.includes("in transit") ||
-      s.includes("out for delivery") ||
-      s.includes("dispatched")
-    );
-  };
-
-  // ===== Cancel — opens confirm modal, then redirects to WhatsApp =====
-  const handleOpenCancel = (order) => {
-    setCancelOrder(order);
-    setCancelReason("");
-    setShowCancelConfirm(true);
-  };
-
-  const handleConfirmCancel = () => {
-    const order = cancelOrder;
-    if (!order) return;
-
-    const orderId = order["Order ID"] || "—";
-    const customer = order["Customer Name"] || customerName || "Customer";
-    const phone = order["Phone Number"] || phoneNumber;
-    const orderDate = formatDate(getOrderTimestamp(order));
-    const total = order["Total Amount"] || "—";
-    const itemsList = (order.parsedBooks || [])
-      .map((b, i) => `${i + 1}. ${b.name} × ${b.quantity}`)
-      .join("\n");
-
-    const message = `🚫 *ORDER CANCELLATION REQUEST*
-
-Hi TheBookX 👋
-
-I'd like to cancel the following order:
-
-📋 *Order ID:* ${orderId}
-👤 *Name:* ${customer}
-📞 *Phone:* ${phone}
-📅 *Order Date:* ${orderDate}
-💰 *Total:* ₹${total}
-
-*Items:*
-${itemsList || "(see order)"}
-${cancelReason ? `\n📝 *Reason:* ${cancelReason}` : ""}
-
-Please confirm the cancellation. Thank you!`;
-
-    window.open(
-      `https://wa.me/${SUPPORT_PHONE}?text=${encodeURIComponent(message)}`,
-      "_blank",
-    );
-
-    setShowCancelConfirm(false);
-    setCancelOrder(null);
-    setCancelReason("");
-  };
-
-  // ===== Reschedule — opens modal, collects date/time, redirects to WhatsApp =====
-  const handleOpenReschedule = (order) => {
-    setRescheduleOrder(order);
-    setRescheduleDate("");
-    setRescheduleTimeSlot("");
-    setRescheduleNotes("");
-    setShowRescheduleModal(true);
-  };
-
-  const handleSubmitReschedule = () => {
-    if (!rescheduleDate || !rescheduleTimeSlot) {
-      alert("Please pick a date and a time slot");
-      return;
-    }
-    const order = rescheduleOrder;
-    if (!order) return;
-
-    const orderId = order["Order ID"] || "—";
-    const customer = order["Customer Name"] || customerName || "Customer";
-    const phone = order["Phone Number"] || phoneNumber;
-    const address = [
-      order["Address"],
-      order["City"],
-      order["State"],
-      order["Pincode"] ? `- ${order["Pincode"]}` : "",
-    ]
-      .filter(Boolean)
-      .join(", ");
-
-    const niceDate = (() => {
-      try {
-        const d = new Date(rescheduleDate);
-        return d.toLocaleDateString("en-IN", {
-          weekday: "long",
-          day: "2-digit",
-          month: "long",
-          year: "numeric",
-        });
-      } catch {
-        return rescheduleDate;
-      }
-    })();
-
-    const message = `📅 *DELIVERY RESCHEDULE REQUEST*
-
-Hi TheBookX 👋
-
-I'd like to reschedule the delivery for:
-
-📋 *Order ID:* ${orderId}
-👤 *Name:* ${customer}
-📞 *Phone:* ${phone}
-📍 *Address:* ${address || "(see order)"}
-
-🗓️ *Preferred Date:* ${niceDate}
-⏰ *Preferred Time:* ${rescheduleTimeSlot}${rescheduleNotes ? `\n📝 *Notes:* ${rescheduleNotes}` : ""}
-
-Please confirm the new slot. Thank you!`;
-
-    window.open(
-      `https://wa.me/${SUPPORT_PHONE}?text=${encodeURIComponent(message)}`,
-      "_blank",
-    );
-
-    setShowRescheduleModal(false);
-    setRescheduleOrder(null);
-    setRescheduleDate("");
-    setRescheduleTimeSlot("");
-    setRescheduleNotes("");
-  };
-
   useEffect(() => {
     if (!qrUnlocked) return;
     setVerifyTimer(30);
@@ -686,16 +550,6 @@ Please confirm the new slot. Thank you!`;
     return 0;
   };
 
-  const isPaymentDue = (order) => {
-    const paymentType = order["Payment Type"] || "";
-    const status = order.status;
-    const advancePaid = order.advancePaid === "Yes";
-    if (paymentType.includes("Cash on Delivery")) {
-      return status !== "Delivered" && !advancePaid;
-    }
-    return false;
-  };
-
   const getPaymentStatusMessage = (order) => {
     const paymentType = order["Payment Type"] || "";
     const advancePaid = order.advancePaid === "Yes";
@@ -720,15 +574,99 @@ Please confirm the new slot. Thank you!`;
     };
   };
 
-  // -----------------------------------------------------------------
-  // Date formatting — uses the robust parser, so it handles every
-  // sheet format including "20/05/2026 23:14:14"
-  // -----------------------------------------------------------------
+  // ===== NEW — Cancel & Reschedule handlers =====
+
+  const handleCancelOrder = (order) => {
+    const ok = window.confirm(
+      `Cancel order ${order["Order ID"]}? You'll be redirected to WhatsApp to confirm with our team.`,
+    );
+    if (!ok) return;
+
+    const itemsList = (order.parsedBooks || [])
+      .map((b, i) => `${i + 1}. ${b.name} × ${b.quantity}`)
+      .join("\n");
+
+    const message = `Hi TheBookX 👋
+
+I'd like to *cancel* my order. Here are the details:
+
+📋 *Order ID:* ${order["Order ID"]}
+👤 *Name:* ${order["Customer Name"] || ""}
+📞 *Phone:* ${order["Phone Number"] || ""}
+💰 *Total Amount:* ₹${order["Total Amount"] || ""}
+💳 *Payment:* ${order["Payment Type"] || ""}
+
+📦 *Items:*
+${itemsList || "—"}
+
+Please cancel this order. Thank you 🙏`;
+
+    window.open(
+      `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(message)}`,
+      "_blank",
+    );
+  };
+
+  const handleRescheduleClick = (order) => {
+    setRescheduleOrder(order);
+    setRescheduleDate("");
+    setRescheduleTime("");
+    setRescheduleNote("");
+    setShowRescheduleModal(true);
+  };
+
+  const handleRescheduleSubmit = () => {
+    if (!rescheduleDate) {
+      alert("Please pick a preferred delivery date.");
+      return;
+    }
+    const order = rescheduleOrder;
+    if (!order) return;
+
+    // Format date nicely — "Saturday, 14 June 2026"
+    const formattedDate = new Date(rescheduleDate).toLocaleDateString("en-IN", {
+      weekday: "long",
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
+
+    const lines = [
+      "Hi TheBookX 👋",
+      "",
+      "I'd like to *reschedule* the delivery of my order.",
+      "",
+      `📋 *Order ID:* ${order["Order ID"]}`,
+      `👤 *Name:* ${order["Customer Name"] || ""}`,
+      `📞 *Phone:* ${order["Phone Number"] || ""}`,
+      "",
+      `🗓 *Preferred Date:* ${formattedDate}`,
+    ];
+    if (rescheduleTime) {
+      lines.push(`⏰ *Preferred Time:* ${rescheduleTime}`);
+    }
+    if (rescheduleNote.trim()) {
+      lines.push(`📝 *Note:* ${rescheduleNote.trim()}`);
+    }
+    lines.push("", "Please update the delivery accordingly. Thank you 🙏");
+
+    const message = lines.join("\n");
+
+    window.open(
+      `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(message)}`,
+      "_blank",
+    );
+
+    setShowRescheduleModal(false);
+  };
+
+  // ===== Date formatting for the order card header =====
   const formatDate = (dateString) => {
     if (!dateString) return "Date not available";
-    const parsed = parseAnyDate(dateString);
-    if (parsed) return formatDateToCustomString(parsed);
-    return String(dateString); // fallback to raw
+    const d = parseSheetDate(dateString);
+    if (d) return formatDateToCustomString(d);
+    // Last resort — show the raw string so the user sees *something*
+    return String(dateString);
   };
 
   const formatDateToCustomString = (date) => {
@@ -759,9 +697,6 @@ Please confirm the new slot. Thank you!`;
     return `${formattedDay} ${month}, ${year} | ${formattedTime}`;
   };
 
-  // Min date for reschedule input — today
-  const todayIso = new Date().toISOString().split("T")[0];
-
   return (
     <div className="my-orders-page">
       <div className="section-1200 flex flex-col gap-24">
@@ -778,7 +713,6 @@ Please confirm the new slot. Thank you!`;
           </Link>
         </div>
 
-        {/* Phone Input Section */}
         <AnimatePresence mode="wait">
           {showPhoneInput ? (
             <motion.div
@@ -850,15 +784,14 @@ Please confirm the new slot. Thank you!`;
               </span>
             </div>
             {orders.map((order, idx) => {
-              const paymentStatus = getPaymentStatusMessage(order);
               const amountToShow = getAmountToShow(order);
               const hasComment = order.comment && order.comment.trim() !== "";
-              const showCancel = canCancelOrder(order);
-              const showReschedule = canRescheduleOrder(order);
+              const isPending = (order.status || "")
+                .toLowerCase()
+                .includes("pending");
 
               return (
                 <div key={idx} className="order-card">
-                  {/* Order Header */}
                   <div className="order-card-header">
                     <div className="order-id-section">
                       <span className="order-id-label">Order ID</span>
@@ -869,7 +802,7 @@ Please confirm the new slot. Thank you!`;
                     <div className="order-date-section">
                       <Calendar size={14} />
                       <span className="time-full">
-                        {formatDate(getOrderTimestamp(order))}
+                        {formatDate(getOrderDateValue(order))}
                       </span>
                     </div>
                     <div className="flex flex-row gap-4 items-center">
@@ -883,10 +816,8 @@ Please confirm the new slot. Thank you!`;
                     </div>
                   </div>
 
-                  {/* Tracking Timeline */}
                   <OrderTrackingTimeline order={order} />
 
-                  {/* Order Items Preview */}
                   <div className="order-items-preview">
                     <div className="items-icon">
                       <Package size={16} />
@@ -948,6 +879,65 @@ Please confirm the new slot. Thank you!`;
                     )}
                   </div>
 
+                  {/* ===== NEW — Cancel + Reschedule actions for Pending orders ===== */}
+                  {isPending && (
+                    <div
+                      className="pending-actions-row"
+                      style={{
+                        display: "flex",
+                        gap: 10,
+                        marginTop: 12,
+                        paddingTop: 12,
+                        borderTop: "1px dashed var(--dark-10)",
+                      }}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => handleCancelOrder(order)}
+                        style={{
+                          flex: 1,
+                          padding: "10px 14px",
+                          background: "transparent",
+                          border: "1.5px solid var(--danger, #ef4444)",
+                          color: "var(--danger, #ef4444)",
+                          borderRadius: 8,
+                          fontSize: 12,
+                          fontWeight: 600,
+                          cursor: "pointer",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: 6,
+                        }}
+                      >
+                        <XCircle size={14} />
+                        Cancel Order
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleRescheduleClick(order)}
+                        style={{
+                          flex: 1,
+                          padding: "10px 14px",
+                          background: "transparent",
+                          border: "1.5px solid var(--tertiary, #fb8500)",
+                          color: "var(--tertiary, #fb8500)",
+                          borderRadius: 8,
+                          fontSize: 12,
+                          fontWeight: 600,
+                          cursor: "pointer",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: 6,
+                        }}
+                      >
+                        <CalendarClock size={14} />
+                        Reschedule
+                      </button>
+                    </div>
+                  )}
+
                   {order.shippingId && (
                     <div className="tracking-info-row">
                       <div className="tracking-id-display">
@@ -987,67 +977,6 @@ Please confirm the new slot. Thank you!`;
                     <div className="advance-paid-badge">
                       <BadgeCheck size={12} />
                       <span>Advance payment of ₹99 completed</span>
-                    </div>
-                  )}
-
-                  {/* NEW — Cancel / Reschedule action row */}
-                  {(showCancel || showReschedule) && (
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        gap: 8,
-                        marginTop: 12,
-                      }}
-                    >
-                      {showCancel && (
-                        <button
-                          type="button"
-                          onClick={() => handleOpenCancel(order)}
-                          style={{
-                            flex: 1,
-                            padding: "10px 12px",
-                            border: "1px solid var(--danger, #ef4444)",
-                            background: "transparent",
-                            color: "var(--danger, #ef4444)",
-                            borderRadius: 8,
-                            fontWeight: 600,
-                            fontSize: 12,
-                            cursor: "pointer",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            gap: 6,
-                          }}
-                        >
-                          <Ban size={14} />
-                          Cancel Order
-                        </button>
-                      )}
-                      {showReschedule && (
-                        <button
-                          type="button"
-                          onClick={() => handleOpenReschedule(order)}
-                          style={{
-                            flex: 1,
-                            padding: "10px 12px",
-                            border: "1px solid var(--tertiary, #fb8500)",
-                            background: "var(--tertiary-10, #fb850010)",
-                            color: "var(--tertiary, #fb8500)",
-                            borderRadius: 8,
-                            fontWeight: 600,
-                            fontSize: 12,
-                            cursor: "pointer",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            gap: 6,
-                          }}
-                        >
-                          <CalendarClock size={14} />
-                          Reschedule Delivery
-                        </button>
-                      )}
                     </div>
                   )}
 
@@ -1133,7 +1062,7 @@ Please confirm the new slot. Thank you!`;
         {orders.length > 0 && (
           <div className="whatsapp-help-section">
             <a
-              href={`https://wa.me/${SUPPORT_PHONE}?text=Hi%2C%20I%20need%20help%20with%20my%20order%20from%20TheBookX`}
+              href={`https://wa.me/${SUPPORT_WHATSAPP}?text=Hi%2C%20I%20need%20help%20with%20my%20order%20from%20TheBookX`}
               target="_blank"
               rel="noopener noreferrer"
               className="whatsapp-help-link"
@@ -1167,7 +1096,7 @@ Please confirm the new slot. Thank you!`;
         )}
       </div>
 
-      {/* ===== Payment Modal — unchanged ===== */}
+      {/* ========== Payment Modal — unchanged ========== */}
       <AnimatePresence>
         {showPaymentModal && selectedOrder && (
           <motion.div
@@ -1272,160 +1201,7 @@ Please confirm the new slot. Thank you!`;
         )}
       </AnimatePresence>
 
-      {/* ===== NEW — Cancel Confirmation Modal ===== */}
-      <AnimatePresence>
-        {showCancelConfirm && cancelOrder && (
-          <motion.div
-            className="bill-modal-overlay"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setShowCancelConfirm(false)}
-          >
-            <motion.div
-              className="bill-modal"
-              style={{ maxWidth: 480 }}
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "100%" }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="bill-header">
-                <span className="weight-600 font-16">Cancel this order?</span>
-                <span
-                  className="cursor-pointer"
-                  onClick={() => setShowCancelConfirm(false)}
-                >
-                  <X size={16} />
-                </span>
-              </div>
-
-              <div
-                style={{
-                  padding: "16px 20px 20px",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 14,
-                }}
-              >
-                {/* Warning card */}
-                <div
-                  style={{
-                    padding: 14,
-                    background:
-                      "linear-gradient(135deg, rgba(239,68,68,0.08) 0%, rgba(239,68,68,0.03) 100%)",
-                    border: "1px solid rgba(239,68,68,0.25)",
-                    borderRadius: 10,
-                    display: "flex",
-                    flexDirection: "row",
-                    gap: 10,
-                    alignItems: "flex-start",
-                  }}
-                >
-                  <AlertTriangle
-                    size={18}
-                    style={{
-                      color: "var(--danger, #ef4444)",
-                      flexShrink: 0,
-                      marginTop: 2,
-                    }}
-                  />
-                  <div>
-                    <div className="font-13 weight-600">
-                      This will send a cancellation request to our team
-                    </div>
-                    <div
-                      className="font-11 dark-50"
-                      style={{ marginTop: 4, lineHeight: 1.4 }}
-                    >
-                      We&apos;ll confirm via WhatsApp. Cancellation is possible
-                      only before the order is shipped.
-                    </div>
-                  </div>
-                </div>
-
-                {/* Order info */}
-                <div
-                  style={{
-                    padding: 12,
-                    background: "var(--dark-4)",
-                    borderRadius: 10,
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 4,
-                  }}
-                >
-                  <span className="font-12 dark-50">Order ID</span>
-                  <span className="font-14 weight-600">
-                    {cancelOrder["Order ID"]}
-                  </span>
-                  <span className="font-12" style={{ marginTop: 4 }}>
-                    Total: ₹{cancelOrder["Total Amount"]}
-                  </span>
-                </div>
-
-                {/* Optional reason */}
-                <div className="input-group">
-                  <label className="font-12 weight-500">
-                    Reason for cancellation (optional)
-                  </label>
-                  <textarea
-                    className="sec-mid-btn textarea"
-                    rows={2}
-                    placeholder="Tell us why — helps us improve"
-                    value={cancelReason}
-                    onChange={(e) => setCancelReason(e.target.value)}
-                  />
-                </div>
-
-                {/* CTAs */}
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 8,
-                    marginTop: 4,
-                  }}
-                >
-                  <button
-                    type="button"
-                    onClick={handleConfirmCancel}
-                    style={{
-                      width: "100%",
-                      padding: "12px 16px",
-                      border: "none",
-                      background: "var(--danger, #ef4444)",
-                      color: "#fff",
-                      borderRadius: 8,
-                      fontWeight: 600,
-                      fontSize: 13,
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: 8,
-                    }}
-                  >
-                    <FaWhatsapp size={16} />
-                    Send Cancellation Request
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setShowCancelConfirm(false)}
-                    className="sec-mid-btn width100"
-                    style={{ padding: "10px 16px" }}
-                  >
-                    Keep my order
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* ===== NEW — Reschedule Modal ===== */}
+      {/* ========== Reschedule Modal — NEW ========== */}
       <AnimatePresence>
         {showRescheduleModal && rescheduleOrder && (
           <motion.div
@@ -1437,15 +1213,21 @@ Please confirm the new slot. Thank you!`;
           >
             <motion.div
               className="bill-modal"
-              style={{ maxWidth: 500 }}
+              style={{ maxWidth: 500, maxHeight: "90vh", overflowY: "auto" }}
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
               onClick={(e) => e.stopPropagation()}
             >
               <div className="bill-header">
-                <span className="weight-600 font-16">Reschedule Delivery</span>
+                <span className="weight-600 font-16 flex items-center gap-8">
+                  <CalendarClock
+                    size={18}
+                    style={{ color: "var(--tertiary, #fb8500)" }}
+                  />
+                  Reschedule Delivery
+                </span>
                 <span
                   className="cursor-pointer"
                   onClick={() => setShowRescheduleModal(false)}
@@ -1455,170 +1237,127 @@ Please confirm the new slot. Thank you!`;
               </div>
 
               <div
-                style={{
-                  padding: "16px 20px 20px",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 14,
-                }}
+                className="address-form-content"
+                style={{ display: "flex", flexDirection: "column", gap: 14 }}
               >
-                {/* Order info card */}
+                {/* Order ID strip */}
                 <div
                   style={{
-                    padding: 12,
-                    background:
-                      "linear-gradient(135deg, var(--tertiary-10, #fb850010) 0%, var(--tertiary-light-10, #ffb70310) 100%)",
-                    border: "1px solid var(--tertiary, #fb8500)",
-                    borderRadius: 10,
+                    padding: "10px 12px",
+                    background: "var(--dark-4)",
+                    border: "1px solid var(--dark-10)",
+                    borderRadius: 8,
                     display: "flex",
                     flexDirection: "column",
-                    gap: 4,
+                    gap: 2,
                   }}
                 >
-                  <span className="font-12 dark-50">Rescheduling</span>
+                  <span className="font-10 dark-50">Order ID</span>
                   <span className="font-14 weight-600">
                     {rescheduleOrder["Order ID"]}
                   </span>
-                  <span className="font-11 dark-50" style={{ marginTop: 2 }}>
-                    We&apos;ll confirm the new slot via WhatsApp
-                  </span>
                 </div>
 
-                {/* Date picker */}
                 <div className="input-group">
-                  <label className="flex flex-row gap-4 items-center font-12 weight-500">
+                  <label className="flex flex-row gap-4 items-center">
                     <Calendar size={14} />
-                    Preferred Date <span className="red">*</span>
+                    Preferred delivery date <span className="red">*</span>
                   </label>
                   <input
                     type="date"
                     className="sec-mid-btn width100"
+                    min={tomorrowISO}
                     value={rescheduleDate}
-                    min={todayIso}
                     onChange={(e) => setRescheduleDate(e.target.value)}
                   />
                 </div>
 
-                {/* Time slot picker */}
                 <div className="input-group">
-                  <label className="flex flex-row gap-4 items-center font-12 weight-500">
+                  <label className="flex flex-row gap-4 items-center">
                     <Clock size={14} />
-                    Preferred Time Slot <span className="red">*</span>
+                    Preferred time slot
                   </label>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: 8,
-                      marginTop: 4,
-                    }}
+                  <select
+                    className="sec-mid-btn width100"
+                    value={rescheduleTime}
+                    onChange={(e) => setRescheduleTime(e.target.value)}
                   >
-                    {[
-                      {
-                        value: "Morning (9 AM - 12 PM)",
-                        label: "Morning",
-                        sub: "9 AM – 12 PM",
-                      },
-                      {
-                        value: "Afternoon (12 PM - 4 PM)",
-                        label: "Afternoon",
-                        sub: "12 PM – 4 PM",
-                      },
-                      {
-                        value: "Evening (4 PM - 7 PM)",
-                        label: "Evening",
-                        sub: "4 PM – 7 PM",
-                      },
-                    ].map((slot) => {
-                      const isSelected = rescheduleTimeSlot === slot.value;
-                      return (
-                        <button
-                          key={slot.value}
-                          type="button"
-                          onClick={() => setRescheduleTimeSlot(slot.value)}
-                          style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                            padding: "10px 14px",
-                            border: `1.5px solid ${
-                              isSelected
-                                ? "var(--tertiary, #fb8500)"
-                                : "var(--dark-10)"
-                            }`,
-                            background: isSelected
-                              ? "var(--tertiary-10, #fb850010)"
-                              : "var(--background)",
-                            borderRadius: 8,
-                            cursor: "pointer",
-                            textAlign: "left",
-                          }}
-                        >
-                          <div className="flex flex-col">
-                            <span
-                              className="font-13"
-                              style={{
-                                fontWeight: isSelected ? 600 : 500,
-                                color: isSelected
-                                  ? "var(--tertiary, #fb8500)"
-                                  : "var(--foreground)",
-                              }}
-                            >
-                              {slot.label}
-                            </span>
-                            <span className="font-10 dark-50">{slot.sub}</span>
-                          </div>
-                          {isSelected && (
-                            <Check
-                              size={16}
-                              style={{ color: "var(--tertiary, #fb8500)" }}
-                            />
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
+                    <option value="">Any time</option>
+                    <option value="Morning (9am – 12pm)">
+                      Morning (9am – 12pm)
+                    </option>
+                    <option value="Afternoon (12pm – 4pm)">
+                      Afternoon (12pm – 4pm)
+                    </option>
+                    <option value="Evening (4pm – 8pm)">
+                      Evening (4pm – 8pm)
+                    </option>
+                  </select>
                 </div>
 
-                {/* Optional notes */}
                 <div className="input-group">
-                  <label className="font-12 weight-500">
-                    Additional notes (optional)
+                  <label className="flex flex-row gap-4 items-center">
+                    <MessageSquare size={14} />
+                    Note (optional)
                   </label>
                   <textarea
                     className="sec-mid-btn textarea"
                     rows={2}
-                    placeholder="Any special instructions for the delivery person..."
-                    value={rescheduleNotes}
-                    onChange={(e) => setRescheduleNotes(e.target.value)}
+                    placeholder="Any special instructions for delivery..."
+                    value={rescheduleNote}
+                    onChange={(e) => setRescheduleNote(e.target.value)}
                   />
                 </div>
 
-                {/* Submit */}
-                <button
-                  className="pri-big-btn width100 flex flex-row items-center justify-center gap-8"
-                  onClick={handleSubmitReschedule}
-                  disabled={!rescheduleDate || !rescheduleTimeSlot}
+                {/* Info hint */}
+                <div
                   style={{
-                    opacity: !rescheduleDate || !rescheduleTimeSlot ? 0.6 : 1,
-                    cursor:
-                      !rescheduleDate || !rescheduleTimeSlot
-                        ? "not-allowed"
-                        : "pointer",
-                    padding: "12px 16px",
+                    padding: "8px 12px",
+                    background:
+                      "linear-gradient(135deg, var(--tertiary-10, #fb850010), transparent)",
+                    border: "1px dashed var(--tertiary, #fb8500)",
+                    borderRadius: 8,
+                    display: "flex",
+                    gap: 8,
+                    alignItems: "flex-start",
                   }}
                 >
-                  <FaWhatsapp size={16} />
-                  Send Reschedule Request
-                </button>
+                  <AlertTriangle
+                    size={14}
+                    style={{
+                      color: "var(--tertiary)",
+                      flexShrink: 0,
+                      marginTop: 2,
+                    }}
+                  />
+                  <span className="font-10 dark-50" style={{ lineHeight: 1.5 }}>
+                    Your request will open in WhatsApp. Once our team confirms
+                    the new slot, your delivery will be updated.
+                  </span>
+                </div>
 
-                <span
-                  className="font-10 dark-50"
-                  style={{ textAlign: "center" }}
-                >
-                  Opens WhatsApp with your request prefilled
-                </span>
+                <div className="flex flex-col gap-8 mt-8">
+                  <button
+                    type="button"
+                    onClick={handleRescheduleSubmit}
+                    disabled={!rescheduleDate}
+                    className="pri-big-btn width100 flex flex-row items-center justify-center gap-8"
+                    style={{
+                      opacity: rescheduleDate ? 1 : 0.6,
+                      cursor: rescheduleDate ? "pointer" : "not-allowed",
+                    }}
+                  >
+                    <FaWhatsapp size={16} />
+                    Send via WhatsApp
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowRescheduleModal(false)}
+                    className="sec-mid-btn width100"
+                  >
+                    Cancel
+                  </button>
+                </div>
               </div>
             </motion.div>
           </motion.div>

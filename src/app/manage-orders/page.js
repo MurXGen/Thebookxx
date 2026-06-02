@@ -265,7 +265,7 @@ export default function ManageOrdersPage() {
     giftWrapCharge: "0",
     offerApplied: "",
     tinyUrl: "",
-    orderStatus: "Processing",
+    orderStatus: "Pending",
     shippingId: "",
     timestamp: "",
   });
@@ -300,7 +300,7 @@ export default function ManageOrdersPage() {
         order._rowIndex = index;
         order.parsedBooks = parseBooksList(order["Books List"]);
         order.shippingId = order["Shipping ID"] || "";
-        order.status = order["Order Status"] || "Processing";
+        order.status = order["Order Status"] || "Pending";
         return order;
       });
 
@@ -378,7 +378,7 @@ export default function ManageOrdersPage() {
       giftWrapCharge: "0",
       offerApplied: "",
       tinyUrl: "",
-      orderStatus: "Processing",
+      orderStatus: "Pending",
       shippingId: "",
       timestamp: formatDateForSheet(now),
     });
@@ -497,7 +497,7 @@ export default function ManageOrdersPage() {
       giftWrapCharge: order["Gift Wrap Charge"] || "0",
       offerApplied: order["Offer Applied"] || "",
       tinyUrl: order["TinyURL"] || "",
-      orderStatus: order["Order Status"] || "Processing",
+      orderStatus: order["Order Status"] || "Pending",
       shippingId: order["Shipping ID"] || "",
       timestamp: order["Timestamp"] || "",
     });
@@ -688,7 +688,7 @@ export default function ManageOrdersPage() {
                       onChange={(e) => setStatusFilter(e.target.value)}
                     >
                       <option value="all">All Statuses</option>
-                      <option value="Processing">Processing</option>
+                      <option value="Pending">Pending</option>
                       <option value="Shipped">Shipped</option>
                       <option value="In Transit">In Transit</option>
                       <option value="Out for Delivery">Out for Delivery</option>
@@ -1242,7 +1242,7 @@ export default function ManageOrdersPage() {
                       value={formData.orderStatus}
                       onChange={handleInputChange}
                     >
-                      <option value="Processing">Processing</option>
+                      <option value="Pending">Pending</option>
                       <option value="Shipped">Shipped</option>
                       <option value="In Transit">In Transit</option>
                       <option value="Out for Delivery">Out for Delivery</option>

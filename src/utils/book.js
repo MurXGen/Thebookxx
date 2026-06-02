@@ -7612,8 +7612,8 @@ export const books = [
     size: "Paperback",
     stock: 20,
     catalogue: ["fiction", "young-adult", "mystery", "thriller", "series"],
-    originalPrice: calculateOriginalPrice(159),
-    discountedPrice: 159,
+    originalPrice: calculateOriginalPrice(999),
+    discountedPrice: 999,
   },
   {
     id: "bk-471",

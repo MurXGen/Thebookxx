@@ -8321,4 +8321,25 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
   },
+  {
+    id: "bk-513",
+    name: "How to Talk to Anyone: 92 Little Tricks for Big Success in Relationships",
+    image: bookImages["how-to-talk-to-anyone"],
+    description:
+      "Master the art of conversation with Leil Lowndes' international bestseller 'How to Talk to Anyone' at TheBookX.in. Have you ever admired those successful people who seem to have it all? They're not necessarily smarter or better looking—they simply have more skillful ways of communicating. This fun, witty, and insightful guide reveals 92 proven techniques to help you connect with anyone, anytime, anywhere. From working a party like a politician and becoming an insider in any crowd to using key words and body language that create chemistry, this book will transform your personal and professional relationships. Learn how to make a killer first impression, avoid awkward silences, and turn every conversation into an opportunity for success. Perfect for shy individuals, professionals, networkers, and anyone who wants to feel more confident in social situations. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now—books starting at just ₹1 for a limited offer.",
+    author: "Leil Lowndes",
+    pages: "352",
+    language: "English",
+    size: "Paperback",
+    stock: 20,
+    catalogue: [
+      "non-fiction",
+      "self-help",
+      "communication",
+      "bestseller",
+      "psychology",
+    ],
+    originalPrice: calculateOriginalPrice(299),
+    discountedPrice: 169,
+  },
 ];

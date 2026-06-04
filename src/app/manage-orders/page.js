@@ -232,7 +232,7 @@ const getStatusColor = (status) => {
   if (statusLower.includes("out for delivery"))
     return "status-out-for-delivery";
   if (statusLower.includes("in transit")) return "status-in-transit";
-  return "status-pending";
+  return "status-Processing";
 };
 // --------------------------------------------------------------------
 
@@ -265,7 +265,7 @@ export default function ManageOrdersPage() {
     giftWrapCharge: "0",
     offerApplied: "",
     tinyUrl: "",
-    orderStatus: "Pending",
+    orderStatus: "Processing",
     shippingId: "",
     timestamp: "",
   });
@@ -300,7 +300,7 @@ export default function ManageOrdersPage() {
         order._rowIndex = index;
         order.parsedBooks = parseBooksList(order["Books List"]);
         order.shippingId = order["Shipping ID"] || "";
-        order.status = order["Order Status"] || "Pending";
+        order.status = order["Order Status"] || "Processing";
         return order;
       });
 
@@ -378,7 +378,7 @@ export default function ManageOrdersPage() {
       giftWrapCharge: "0",
       offerApplied: "",
       tinyUrl: "",
-      orderStatus: "Pending",
+      orderStatus: "Processing",
       shippingId: "",
       timestamp: formatDateForSheet(now),
     });
@@ -497,7 +497,7 @@ export default function ManageOrdersPage() {
       giftWrapCharge: order["Gift Wrap Charge"] || "0",
       offerApplied: order["Offer Applied"] || "",
       tinyUrl: order["TinyURL"] || "",
-      orderStatus: order["Order Status"] || "Pending",
+      orderStatus: order["Order Status"] || "Processing",
       shippingId: order["Shipping ID"] || "",
       timestamp: order["Timestamp"] || "",
     });
@@ -688,7 +688,7 @@ export default function ManageOrdersPage() {
                       onChange={(e) => setStatusFilter(e.target.value)}
                     >
                       <option value="all">All Statuses</option>
-                      <option value="Pending">Pending</option>
+                      <option value="Processing">Processing</option>
                       <option value="Shipped">Shipped</option>
                       <option value="In Transit">In Transit</option>
                       <option value="Out for Delivery">Out for Delivery</option>
@@ -1242,7 +1242,7 @@ export default function ManageOrdersPage() {
                       value={formData.orderStatus}
                       onChange={handleInputChange}
                     >
-                      <option value="Pending">Pending</option>
+                      <option value="Processing">Processing</option>
                       <option value="Shipped">Shipped</option>
                       <option value="In Transit">In Transit</option>
                       <option value="Out for Delivery">Out for Delivery</option>

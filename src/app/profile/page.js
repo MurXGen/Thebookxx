@@ -30,6 +30,7 @@ import {
   XCircle,
   CalendarClock,
   AlertTriangle,
+  Wallet,
 } from "lucide-react";
 import Image from "next/image";
 import { FaWhatsapp } from "react-icons/fa";
@@ -313,6 +314,7 @@ export default function MyOrdersPage() {
   const [verifyTimer, setVerifyTimer] = useState(30);
   const [showPhoneInput, setShowPhoneInput] = useState(true);
   const [customerName, setCustomerName] = useState("");
+  const [walletBalance, setWalletBalance] = useState(0);
 
   // ----- NEW state for cancel + reschedule -----
   const [showRescheduleModal, setShowRescheduleModal] = useState(false);
@@ -447,6 +449,16 @@ export default function MyOrdersPage() {
           comment: order["Comment for this order"] || order["Comment"] || "",
         };
       });
+      // Compute wallet balance — read from the "Wallet" column.
+      // Take the max across rows so blank cells in older orders don't
+      // overwrite a positive balance from a more recent row.
+      const walletValue = parsedOrders.reduce((max, order) => {
+        const raw = order["Wallet"] ?? order["wallet"] ?? 0;
+        const w = parseFloat(raw);
+        return isNaN(w) ? max : Math.max(max, w);
+      }, 0);
+      setWalletBalance(walletValue);
+
       setOrders(parsedOrders);
       if (parsedOrders.length === 0) {
         setError(`No profile found for phone number ${phone}`);
@@ -469,6 +481,7 @@ export default function MyOrdersPage() {
     setSearched(false);
     setError("");
     setCustomerName("");
+    setWalletBalance(0);
     localStorage.removeItem("track_orders_phone");
     localStorage.removeItem("track_orders_name");
   };
@@ -770,6 +783,91 @@ Please cancel this order. Thank you 🙏`;
                     Logout
                   </button>
                 </div>
+
+                {/* Wallet balance strip — only shown when balance > 0 */}
+                {walletBalance > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                    style={{
+                      marginTop: 12,
+                      padding: "12px 14px",
+                      background:
+                        "linear-gradient(135deg, var(--tertiary-10, #fb850010) 0%, var(--tertiary-light-10, #ffb70310) 100%)",
+                      border: "1px solid var(--tertiary, #fb8500)",
+                      borderRadius: 10,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 12,
+                    }}
+                  >
+                    <motion.div
+                      animate={{
+                        boxShadow: [
+                          "0 2px 8px rgba(251, 133, 0, 0.25)",
+                          "0 4px 14px rgba(251, 133, 0, 0.45)",
+                          "0 2px 8px rgba(251, 133, 0, 0.25)",
+                        ],
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }}
+                      style={{
+                        flexShrink: 0,
+                        width: 36,
+                        height: 36,
+                        borderRadius: "50%",
+                        background: "var(--tertiary, #fb8500)",
+                        color: "#fff",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Wallet size={18} strokeWidth={2.4} />
+                    </motion.div>
+
+                    <div
+                      style={{
+                        flex: 1,
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 1,
+                        minWidth: 0,
+                      }}
+                    >
+                      <span
+                        className="font-10 dark-50"
+                        style={{ fontWeight: 600, letterSpacing: 0.2 }}
+                      >
+                        Wallet Balance
+                      </span>
+                      <span
+                        className="weight-700"
+                        style={{
+                          fontSize: 18,
+                          color: "var(--tertiary, #fb8500)",
+                        }}
+                      >
+                        ₹{walletBalance}
+                      </span>
+                    </div>
+
+                    <span
+                      className="font-10 dark-50"
+                      style={{
+                        textAlign: "right",
+                        maxWidth: 120,
+                        lineHeight: 1.4,
+                      }}
+                    >
+                      Available on your next order
+                    </span>
+                  </motion.div>
+                )}
               </div>
             </motion.div>
           )}
@@ -953,6 +1051,13 @@ Please cancel this order. Thank you 🙏`;
                     </div>
                   )}
 
+                  {/* {order.advancePaid === "Yes" && (
+                    <div className="advance-paid-badge">
+                      <BadgeCheck size={12} />
+                      <span>Advance payment of ₹99 completed</span>
+                    </div>
+                  )} */}
+
                   {order["Payment Type"]?.includes("Cash on Delivery") &&
                     order.status !== "Delivered" &&
                     order.advancePaid !== "Yes" && (
@@ -972,13 +1077,6 @@ Please cancel this order. Thank you 🙏`;
                         </button>
                       </div>
                     )}
-
-                  {order.advancePaid === "Yes" && (
-                    <div className="advance-paid-badge">
-                      <BadgeCheck size={12} />
-                      <span>Advance payment of ₹99 completed</span>
-                    </div>
-                  )}
 
                   <details className="order-details">
                     <summary className="order-details-summary">

@@ -24,6 +24,9 @@ import {
   QrCode,
   Headphones,
   Loader2,
+  Wallet,
+  ArrowRight,
+  TrendingDown,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -47,9 +50,6 @@ const CITIES = [
   "Ulhasnagar",
 ];
 
-/**
- * Normalize a phone string to a clean 10-digit Indian mobile number.
- */
 function normalizePhone(raw = "") {
   if (!raw) return "";
   let digits = String(raw).replace(/\D/g, "");
@@ -77,6 +77,7 @@ export default function AddressModal({
   offerLabel = "",
   generateViewBagLinkWithDetails,
   shortenUrl,
+  codHandlingFee = 29, // NEW
 }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -96,6 +97,7 @@ export default function AddressModal({
 
   const [showUPIPayment, setShowUPIPayment] = useState(false);
   const [showCODSuccess, setShowCODSuccess] = useState(false);
+  const [showCODFeeModal, setShowCODFeeModal] = useState(false); // NEW
   const [qrUnlocked, setQrUnlocked] = useState(false);
   const [upiCopied, setUpiCopied] = useState(false);
 
@@ -193,6 +195,11 @@ export default function AddressModal({
 
   const totalWithDelivery = getTotalWithDelivery(fasterDelivery);
   const codAdvanceAmount = 99;
+
+  // For the COD fee modal comparison
+  const upiTotalForFlow =
+    getTotalWithDelivery(fasterDelivery) + (giftWrap ? giftWrapCharge : 0);
+  const codTotalWithFee = upiTotalForFlow + codHandlingFee;
 
   const fetchLocationByPincode = async (pincodeValue) => {
     if (!pincodeValue || pincodeValue.length !== 6) return;
@@ -304,21 +311,16 @@ export default function AddressModal({
     showContactFields,
   ]);
 
-  const buildShortLink = async (paymentTypeLabel) => {
+  const buildShortLink = async (
+    paymentTypeLabel,
+    isFaster = fasterDelivery,
+  ) => {
     if (typeof generateViewBagLinkWithDetails !== "function") return "";
     try {
       const longUrl = generateViewBagLinkWithDetails(
-        {
-          name,
-          phone,
-          address,
-          area,
-          city,
-          district,
-          pincode,
-        },
+        { name, phone, address, area, city, district, pincode },
         paymentTypeLabel,
-        fasterDelivery,
+        isFaster,
         giftWrap || giftWrapSelected,
       );
       if (!longUrl) return "";
@@ -337,29 +339,39 @@ export default function AddressModal({
     }
   };
 
-  const submitToGoogleForm = async (paymentType) => {
+  // Submit to Google Form (the sheet's source of truth).
+  // IMPORTANT: `isFaster` must be passed explicitly when the caller knows the
+  // user's delivery-speed choice, because `setFasterDelivery` is async and
+  // reading from `fasterDelivery` state inside this function can return the
+  // pre-selection default. The default arg falls back to state for safety.
+  const submitToGoogleForm = async (paymentType, isFaster = fasterDelivery) => {
     try {
-      const shortLink = await buildShortLink(paymentType);
+      const shortLink = await buildShortLink(paymentType, isFaster);
+      const feeForThisOrder = paymentType === "COD" ? codHandlingFee : 0;
       trackOrderToGoogleForm({
         addressData: { name, phone, pincode, city, address },
         paymentType,
-        fasterDeliveryChoice: fasterDelivery,
+        fasterDeliveryChoice: isFaster,
         giftWrapSelected: giftWrap || giftWrapSelected,
         shortLink,
         totalWithDelivery:
-          getTotalWithDelivery(fasterDelivery) +
-          (giftWrap || giftWrapSelected ? giftWrapCharge : 0),
+          getTotalWithDelivery(isFaster) +
+          (giftWrap || giftWrapSelected ? giftWrapCharge : 0) +
+          feeForThisOrder,
         finalPayable,
         totalDiscounted,
         offerDiscount,
         offerLabel,
         cartBooks,
+        codHandlingFee: feeForThisOrder,
       }).catch((err) => console.error("Google Form submit failed:", err));
     } catch (err) {
       console.error("Google Form submit threw:", err);
     }
   };
 
+  // After delivery-speed selection — UPI users go straight to UPI modal,
+  // COD users now go through the COD fee disclosure modal first.
   const handleProceedWithFasterDelivery = () => {
     setFasterDelivery(true);
     setShowFasterDeliveryModal(false);
@@ -368,8 +380,14 @@ export default function AddressModal({
       delivery_charge: fasterDeliveryCharge,
       cart_total: finalPayable,
     });
-    if (tempPaymentMethod === "COD") triggerCODSuccess(true);
-    else if (tempPaymentMethod === "UPI") setShowUPIPayment(true);
+    // Sheet write happens HERE — after user has picked delivery speed.
+    // Passing `true` explicitly because setFasterDelivery is async.
+    submitToGoogleForm(tempPaymentMethod, true);
+    if (tempPaymentMethod === "COD") {
+      setShowCODFeeModal(true);
+    } else if (tempPaymentMethod === "UPI") {
+      setShowUPIPayment(true);
+    }
   };
 
   const handleProceedWithoutFasterDelivery = () => {
@@ -380,13 +398,43 @@ export default function AddressModal({
       delivery_charge: standardDeliveryCharge,
       cart_total: finalPayable,
     });
-    if (tempPaymentMethod === "COD") triggerCODSuccess(false);
-    else if (tempPaymentMethod === "UPI") setShowUPIPayment(true);
+    submitToGoogleForm(tempPaymentMethod, false);
+    if (tempPaymentMethod === "COD") {
+      setShowCODFeeModal(true);
+    } else if (tempPaymentMethod === "UPI") {
+      setShowUPIPayment(true);
+    }
   };
 
   const triggerCODSuccess = (isFasterDeliverySelected) => {
     setFasterDelivery(isFasterDeliverySelected);
     setShowCODSuccess(true);
+  };
+
+  // NEW — user confirmed they'll pay the COD fee
+  const handleConfirmCODWithFee = () => {
+    setShowCODFeeModal(false);
+    trackFunnelEvent(EVENTS.PAYMENT_METHOD_SELECTED, {
+      method: "COD_confirmed_with_fee",
+      cart_total: finalPayable,
+      cod_fee: codHandlingFee,
+    });
+    triggerCODSuccess(fasterDelivery);
+  };
+
+  // NEW — user switched to UPI from the COD fee modal (the deflection success path)
+  const handleSwitchToUPIFromCODFee = () => {
+    setShowCODFeeModal(false);
+    trackFunnelEvent(EVENTS.PAYMENT_METHOD_SELECTED, {
+      method: "UPI_switched_from_COD",
+      cart_total: finalPayable,
+      saved_amount: codHandlingFee,
+    });
+    // Re-submit Google Form as UPI (overrides the earlier COD submission).
+    // By this point delivery speed has already been picked, so state is correct.
+    submitToGoogleForm("UPI", fasterDelivery);
+    setTempPaymentMethod("UPI");
+    setShowUPIPayment(true);
   };
 
   const handleCODSuccessContinue = () => {
@@ -413,7 +461,9 @@ export default function AddressModal({
 
   const handleCODClick = () => {
     if (!isFormValid()) return;
-    submitToGoogleForm("COD");
+    // NOTE: Form submission is intentionally NOT here — it now fires inside
+    // handleProceedWithFasterDelivery / handleProceedWithoutFasterDelivery
+    // so that the sheet captures the user's actual delivery-speed choice.
     setTempPaymentMethod("COD");
     setShowFasterDeliveryModal(true);
     trackFunnelEvent(EVENTS.PAYMENT_METHOD_SELECTED, {
@@ -424,7 +474,7 @@ export default function AddressModal({
 
   const handleUPIClick = () => {
     if (!isFormValid()) return;
-    submitToGoogleForm("UPI");
+    // NOTE: Form submission is intentionally NOT here — see handleCODClick.
     setTempPaymentMethod("UPI");
     setShowFasterDeliveryModal(true);
     trackFunnelEvent(EVENTS.PAYMENT_METHOD_SELECTED, {
@@ -821,6 +871,20 @@ export default function AddressModal({
         )}
       </AnimatePresence>
 
+      {/* ========== COD HANDLING FEE MODAL (NEW) ========== */}
+      <AnimatePresence>
+        {showCODFeeModal && (
+          <CODHandlingFeeModal
+            codFee={codHandlingFee}
+            upiTotal={upiTotalForFlow}
+            codTotal={codTotalWithFee}
+            onConfirmCOD={handleConfirmCODWithFee}
+            onSwitchToUPI={handleSwitchToUPIFromCODFee}
+            onClose={() => setShowCODFeeModal(false)}
+          />
+        )}
+      </AnimatePresence>
+
       {/* ========== COD SUCCESS MODAL ========== */}
       <AnimatePresence>
         {showCODSuccess && (
@@ -831,9 +895,15 @@ export default function AddressModal({
             city={city}
             pincode={pincode}
             fasterDelivery={fasterDelivery}
-            totalAmount={
+            baseAmount={
               getTotalWithDelivery(fasterDelivery) +
               (giftWrap ? giftWrapCharge : 0)
+            }
+            codFee={codHandlingFee}
+            totalAmount={
+              getTotalWithDelivery(fasterDelivery) +
+              (giftWrap ? giftWrapCharge : 0) +
+              codHandlingFee
             }
             cartBooks={cartBooks}
             onContinue={handleCODSuccessContinue}
@@ -875,8 +945,209 @@ export default function AddressModal({
 }
 
 // =====================================================================
-// ============== Sub-component: FreebieBadge ==========================
+// ============ Sub-component: CODHandlingFeeModal (NEW) ==============
 // =====================================================================
+// Shown AFTER the user has chosen delivery speed in the COD path.
+// Discloses the ₹49 fee, shows a clear cost comparison, and offers
+// a one-tap deflection to UPI with emotionally-charged copy.
+//
+// Slides in from the bottom (slidin pattern matching the rest of the app).
+// =====================================================================
+
+function CODHandlingFeeModal({
+  codFee,
+  upiTotal,
+  codTotal,
+  onConfirmCOD,
+  onSwitchToUPI,
+  onClose,
+}) {
+  return (
+    <motion.div
+      className="bill-modal-overlay"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={onClose}
+      style={{ maxWidth: "980px", margin: "0 auto" }}
+    >
+      <motion.div
+        className="bill-modal"
+        initial={{ y: "100%" }}
+        animate={{ y: 0 }}
+        exit={{ y: "100%" }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        onClick={(e) => e.stopPropagation()}
+        style={{ maxHeight: "92vh", overflowY: "auto" }}
+      >
+        <div className="bill-header">
+          <span className="weight-600 font-16">A small heads up</span>
+          <span className="cursor-pointer" onClick={onClose}>
+            <X size={16} />
+          </span>
+        </div>
+
+        <div
+          style={{
+            padding: "16px 20px 20px",
+            display: "flex",
+            flexDirection: "column",
+            gap: 16,
+          }}
+        >
+          {/* Fee disclosure hero — orange-tinted, bouncing wallet icon */}
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.05 }}
+            animate-extra={{
+              boxShadow: [
+                "0 6px 20px rgba(251, 133, 0, 0.25)",
+                "0 8px 26px rgba(251, 133, 0, 0.4)",
+                "0 6px 20px rgba(251, 133, 0, 0.25)",
+              ],
+            }}
+            style={{
+              padding: "16px",
+              background:
+                "linear-gradient(135deg, var(--tertiary-10, #fb850010) 0%, var(--tertiary-light-10, #ffb70310) 100%)",
+              border: "1px solid var(--tertiary, #fb8500)",
+              borderRadius: 12,
+              display: "flex",
+              flexDirection: "column",
+              gap: 10,
+            }}
+          >
+            <div className="flex flex-row gap-12 items-start">
+              <motion.div
+                animate={{ y: [0, -3, 0] }}
+                transition={{
+                  duration: 1.8,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+                style={{
+                  flexShrink: 0,
+                  width: 40,
+                  height: 40,
+                  borderRadius: "50%",
+                  background: "var(--tertiary, #fb8500)",
+                  color: "#fff",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Wallet size={20} strokeWidth={2.4} />
+              </motion.div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div className="font-14 weight-700">
+                  ₹{codFee} COD handling fee will be added
+                </div>
+                <div
+                  className="font-12 dark-50"
+                  style={{ marginTop: 4, lineHeight: 1.45 }}
+                >
+                  Collected at the door, along with your order. Covers cash
+                  handling, secure delivery confirmation, and reconciliation.
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Cost comparison — UPI on top (green), COD below (with +fee in orange) */}
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.12 }}
+            style={{
+              padding: 14,
+              background: "var(--dark-4)",
+              border: "1px solid var(--dark-10)",
+              borderRadius: 10,
+              display: "flex",
+              flexDirection: "column",
+              gap: 12,
+            }}
+          >
+            <div className="flex flex-row justify-between items-center">
+              <div className="flex flex-col">
+                <span
+                  className="font-12 weight-600"
+                  style={{ color: "var(--success, #008f0c)" }}
+                >
+                  Pay UPI now
+                </span>
+                <span className="font-10 dark-50">
+                  Instant • No extra charges
+                </span>
+              </div>
+              <span
+                className="weight-700"
+                style={{ fontSize: 18, color: "var(--success, #008f0c)" }}
+              >
+                ₹{upiTotal}
+              </span>
+            </div>
+
+            <div style={{ borderTop: "1px dashed var(--dark-20)" }} />
+
+            <div className="flex flex-row justify-between items-center">
+              <div className="flex flex-col">
+                <span className="font-12 weight-600">Pay at delivery</span>
+                <span className="font-10 orange" style={{ fontWeight: 600 }}>
+                  Includes ₹{codFee} handling fee
+                </span>
+              </div>
+              <span className="weight-700" style={{ fontSize: 18 }}>
+                ₹{codTotal}
+              </span>
+            </div>
+          </motion.div>
+
+          {/* CTAs — emotionally-charged primary, neutral secondary */}
+          <div className="flex flex-col gap-10" style={{ marginTop: 4 }}>
+            <motion.button
+              initial={{ scale: 0.96, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.18 }}
+              whileTap={{ scale: 0.97 }}
+              whileHover={{ scale: 1.01 }}
+              onClick={onSwitchToUPI}
+              className="pri-big-btn width100 flex flex-row items-center justify-center gap-8"
+              style={{
+                background:
+                  "linear-gradient(135deg, var(--tertiary, #fb8500) 0%, var(--tertiary-light, #ffb703) 100%)",
+                position: "relative",
+                overflow: "hidden",
+              }}
+            >
+              <Sparkles size={16} />
+              Skip the ₹{codFee} fee — Pay via UPI
+              <ArrowRight size={16} />
+            </motion.button>
+
+            <button
+              type="button"
+              onClick={onConfirmCOD}
+              className="sec-mid-btn width100"
+              style={{ padding: "12px 16px" }}
+            >
+              Yes, proceed with COD handling fee
+            </button>
+          </div>
+
+          <span
+            className="font-10 dark-50"
+            style={{ textAlign: "center", marginTop: 2 }}
+          >
+            Pay UPI from any app — Google Pay, PhonePe, Paytm, BHIM
+          </span>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
 
 // =====================================================================
 // ============== Sub-component: CODSuccessModal =======================
@@ -889,11 +1160,12 @@ function CODSuccessModal({
   pincode,
   fasterDelivery,
   totalAmount,
+  baseAmount = 0,
+  codFee = 0,
   cartBooks,
   onContinue,
   onClose,
 }) {
-  // NEW — 3-second processing phase before showing success content
   const [isProcessing, setIsProcessing] = useState(true);
 
   useEffect(() => {
@@ -921,8 +1193,6 @@ function CODSuccessModal({
     );
   };
 
-  // Disable overlay-click-to-close while processing — don't let users
-  // accidentally bail mid-confirmation
   const handleOverlayClick = () => {
     if (isProcessing) return;
     onClose();
@@ -948,7 +1218,6 @@ function CODSuccessModal({
       >
         <AnimatePresence mode="wait">
           {isProcessing ? (
-            // ===== Phase 1: Processing spinner =====
             <motion.div
               key="processing"
               initial={{ opacity: 0 }}
@@ -966,7 +1235,6 @@ function CODSuccessModal({
                 gap: 12,
               }}
             >
-              {/* Outer pulsing ring */}
               <div
                 style={{
                   position: "relative",
@@ -1016,11 +1284,7 @@ function CODSuccessModal({
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.15 }}
                 className="weight-700"
-                style={{
-                  fontSize: 18,
-                  margin: "8px 0 4px",
-                  color: "var(--foreground)",
-                }}
+                style={{ fontSize: 18, margin: "8px 0 4px" }}
               >
                 Placing your order…
               </motion.h2>
@@ -1034,15 +1298,11 @@ function CODSuccessModal({
                 Just a moment — confirming your details
               </motion.p>
 
-              {/* Subtle progress dots */}
               <div className="flex flex-row gap-6" style={{ marginTop: 12 }}>
                 {[0, 1, 2].map((i) => (
                   <motion.div
                     key={i}
-                    animate={{
-                      opacity: [0.3, 1, 0.3],
-                      y: [0, -3, 0],
-                    }}
+                    animate={{ opacity: [0.3, 1, 0.3], y: [0, -3, 0] }}
                     transition={{
                       duration: 1.2,
                       repeat: Infinity,
@@ -1060,7 +1320,6 @@ function CODSuccessModal({
               </div>
             </motion.div>
           ) : (
-            // ===== Phase 2: Success content =====
             <motion.div
               key="success"
               initial={{ opacity: 0, y: 8 }}
@@ -1070,7 +1329,6 @@ function CODSuccessModal({
               <div
                 style={{ padding: "32px 20px 20px 20px", textAlign: "center" }}
               >
-                {/* Animated tick */}
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
@@ -1093,20 +1351,9 @@ function CODSuccessModal({
                     boxShadow: "0 8px 24px rgba(0, 143, 12, 0.35)",
                   }}
                 >
-                  <motion.div
-                    initial={{ pathLength: 0, opacity: 0 }}
-                    animate={{ pathLength: 1, opacity: 1 }}
-                    transition={{
-                      duration: 0.45,
-                      delay: 0.35,
-                      ease: "easeOut",
-                    }}
-                  >
-                    <CheckCircle2 size={40} color="#fff" strokeWidth={3} />
-                  </motion.div>
+                  <CheckCircle2 size={40} color="#fff" strokeWidth={3} />
                 </motion.div>
 
-                {/* Confetti dots */}
                 <div style={{ position: "relative", height: 0 }}>
                   {[...Array(8)].map((_, i) => (
                     <motion.div
@@ -1147,11 +1394,7 @@ function CODSuccessModal({
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
                   className="weight-700"
-                  style={{
-                    fontSize: "20px",
-                    margin: "8px 0 6px",
-                    color: "var(--foreground)",
-                  }}
+                  style={{ fontSize: "20px", margin: "8px 0 6px" }}
                 >
                   🎉 Order Confirmed!
                 </motion.h2>
@@ -1167,7 +1410,6 @@ function CODSuccessModal({
                 </motion.p>
               </div>
 
-              {/* Order summary card */}
               <motion.div
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -1214,21 +1456,41 @@ function CODSuccessModal({
                   </div>
                 </div>
 
-                <div className="flex flex-row gap-12 items-center">
-                  {fasterDelivery ? (
-                    <Zap size={18} style={{ color: "var(--tertiary)" }} />
-                  ) : (
-                    <Clock size={18} style={{ color: "var(--dark-50)" }} />
+                {/* Itemised amount breakdown — includes COD fee */}
+                <div
+                  style={{
+                    borderTop: "1px dashed var(--dark-20)",
+                    paddingTop: 12,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 6,
+                  }}
+                >
+                  <div className="flex flex-row justify-between font-12">
+                    <span className="dark-50">Order amount</span>
+                    <span>₹{baseAmount}</span>
+                  </div>
+                  {codFee > 0 && (
+                    <div className="flex flex-row justify-between font-12">
+                      <span className="dark-50">COD handling fee</span>
+                      <span className="orange weight-600">+₹{codFee}</span>
+                    </div>
                   )}
-                  <div className="flex flex-col" style={{ flex: 1 }}>
-                    <span className="font-12 dark-50">Delivery Speed</span>
-                    <span className="font-14 weight-500">
-                      {fasterDelivery ? "Faster Delivery" : "Standard Delivery"}
+                  <div
+                    style={{
+                      borderTop: "1px solid var(--dark-10)",
+                      paddingTop: 8,
+                      marginTop: 2,
+                    }}
+                    className="flex flex-row justify-between items-center"
+                  >
+                    <span className="font-14 weight-600">
+                      To pay at delivery
+                    </span>
+                    <span className="font-18 weight-700 green">
+                      ₹{totalAmount}
                     </span>
                   </div>
-                  <span className="font-16 weight-700 green">
-                    ₹{totalAmount}
-                  </span>
                 </div>
               </motion.div>
 
@@ -1340,13 +1602,7 @@ function UPIPaymentModal({
           </button>
         </div>
 
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "16px",
-          }}
-        >
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
@@ -1361,48 +1617,8 @@ function UPIPaymentModal({
               gap: "8px",
             }}
           >
-            {/* <div className="flex justify-between font-13">
-              <span className="dark-50">Books Subtotal</span>
-              <span className="weight-500">₹{finalPayable}</span>
-            </div>
-            <div className="flex justify-between font-13">
-              <span className="dark-50">
-                {fasterDelivery ? "Faster Delivery" : "Delivery"}
-              </span>
-              <span
-                className="weight-500"
-                style={{
-                  color: fasterDelivery
-                    ? "var(--tertiary)"
-                    : standardDeliveryCharge > 0
-                      ? "var(--dark-50)"
-                      : "var(--success)",
-                }}
-              >
-                {fasterDelivery
-                  ? `+₹${fasterDeliveryCharge}`
-                  : standardDeliveryCharge > 0
-                    ? `+₹${standardDeliveryCharge}`
-                    : "FREE"}
-              </span>
-            </div>
-            {giftWrap && giftWrapCharge > 0 && (
-              <div className="flex justify-between font-13">
-                <span className="dark-50">🎁 Gift Wrap</span>
-                <span
-                  className="weight-500"
-                  style={{ color: "var(--tertiary)" }}
-                >
-                  +₹{giftWrapCharge}
-                </span>
-              </div>
-            )} */}
             <div
-              style={{
-                // borderTop: "1px dashed var(--dark-20)",
-                paddingTop: 8,
-                marginTop: 4,
-              }}
+              style={{ paddingTop: 8, marginTop: 4 }}
               className="flex justify-between items-center"
             >
               <span className="font-14 weight-600">Total to Pay</span>

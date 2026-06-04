@@ -981,7 +981,9 @@ function CODHandlingFeeModal({
         style={{ maxHeight: "92vh", overflowY: "auto" }}
       >
         <div className="bill-header">
-          <span className="weight-600 font-16">A small heads up</span>
+          <span className="weight-600 font-16">
+            Continue with Cash on Delivery
+          </span>
           <span className="cursor-pointer" onClick={onClose}>
             <X size={16} />
           </span>
@@ -989,7 +991,6 @@ function CODHandlingFeeModal({
 
         <div
           style={{
-            padding: "16px 20px 20px",
             display: "flex",
             flexDirection: "column",
             gap: 16,
@@ -1061,7 +1062,7 @@ function CODHandlingFeeModal({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.12 }}
             style={{
-              padding: 14,
+              padding: "12px",
               background: "var(--dark-4)",
               border: "1px solid var(--dark-10)",
               borderRadius: 10,
@@ -1106,7 +1107,7 @@ function CODHandlingFeeModal({
           </motion.div>
 
           {/* CTAs — emotionally-charged primary, neutral secondary */}
-          <div className="flex flex-col gap-10" style={{ marginTop: 4 }}>
+          <div className="flex flex-col gap-12" style={{ marginTop: 4 }}>
             <motion.button
               initial={{ scale: 0.96, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}

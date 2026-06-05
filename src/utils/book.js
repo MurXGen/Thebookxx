@@ -8342,4 +8342,19 @@ export const books = [
     originalPrice: calculateOriginalPrice(299),
     discountedPrice: 169,
   },
+  {
+    id: "bk-514",
+    name: "Trading in the Zone: Master the Market with Confidence, Discipline, and a Winning Attitude",
+    image: bookImages["trading-in-the-zone"],
+    description:
+      "Maximize your trading success by mastering your mindset with Mark Douglas's landmark bestseller 'Trading in the Zone' at TheBookX.in. This essential guide to trading psychology reveals why even the most skilled traders fail—not from lack of market knowledge, but from counterproductive thinking and emotional errors [citation:2][citation:5]. Douglas uncovers the underlying reasons for inconsistent results and helps you overcome ingrained mental habits that cost you money. He debunks market myths one by one, teaching you to look beyond random outcomes, understand the true realities of risk, and become comfortable with market probabilities. Learn why traders in the 'zone' don't need to know—or care—what the market will do next; they know what they will do next, and that makes all the difference [citation:2]. Adopt the core beliefs of a winner's mindset and leverage the power of the zone for unprecedented profits. Perfect for day traders, swing traders, options traders, and anyone serious about consistent success in the financial markets. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now—books starting at just ₹1 for a limited offer.",
+    author: "Mark Douglas",
+    pages: "240",
+    language: "English",
+    size: "Paperback",
+    stock: 20,
+    catalogue: ["non-fiction", "finance", "investing", "trading", "psychology"],
+    originalPrice: calculateOriginalPrice(200),
+    discountedPrice: 169,
+  },
 ];

@@ -193,17 +193,17 @@ export const getDeliveryLabel = (
   if (hasOneRupeeItem) {
     if (isFasterDelivery) {
       if (orderAmount >= 799) {
-        return "Priority Express + ₹1 Book Handling (15% + ₹100)";
+        return "Priority Express";
       }
-      return "Express Delivery + ₹1 Book Handling";
+      return "Express Delivery";
     } else {
       if (orderAmount >= 799) {
-        return "Bulk Order + ₹1 Book Handling (10% + ₹100)";
+        return "Bulk Order (10% + ₹100)";
       }
       if (orderAmount >= 599 && orderAmount < 799) {
-        return "Small Handling Fee + ₹1 Book Handling";
+        return "Small Handling Fee ";
       }
-      return "₹1 Book Handling Fee";
+      return "";
     }
   } else {
     // Original labels for orders without ₹1 items
@@ -214,7 +214,7 @@ export const getDeliveryLabel = (
       return "Express Delivery";
     } else {
       if (orderAmount >= 799) {
-        return "Bulk Order Handling (10% fee)";
+        return "Bulk Order Handling (small fee)";
       }
       if (orderAmount >= 599 && orderAmount < 799) {
         return "Small Handling Fee";
@@ -249,7 +249,7 @@ export const getDeliveryDescription = (
       if (orderAmount >= 599 && orderAmount < 799) {
         return "Small handling fee";
       }
-      return "₹100 handling fee for orders containing ₹1 books";
+      return "";
     }
   } else {
     // Original descriptions for orders without ₹1 items

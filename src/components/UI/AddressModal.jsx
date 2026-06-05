@@ -348,22 +348,32 @@ export default function AddressModal({
     try {
       const shortLink = await buildShortLink(paymentType, isFaster);
       const feeForThisOrder = paymentType === "COD" ? codHandlingFee : 0;
+      const deliveryChargeForOrder = getDeliveryCharge(isFaster);
+      const giftWrapOn = giftWrap || giftWrapSelected;
+      const giftWrapAmountForOrder = giftWrapOn ? giftWrapCharge : 0;
+
       trackOrderToGoogleForm({
         addressData: { name, phone, pincode, city, address },
         paymentType,
         fasterDeliveryChoice: isFaster,
-        giftWrapSelected: giftWrap || giftWrapSelected,
+        giftWrapSelected: giftWrapOn,
         shortLink,
         totalWithDelivery:
-          getTotalWithDelivery(isFaster) +
-          (giftWrap || giftWrapSelected ? giftWrapCharge : 0) +
+          finalPayable +
+          deliveryChargeForOrder +
+          giftWrapAmountForOrder +
           feeForThisOrder,
+        // Itemised values — match what the user sees in the success modal
+        subtotal: totalDiscounted,
         finalPayable,
         totalDiscounted,
         offerDiscount,
         offerLabel,
-        cartBooks,
+        deliveryCharge: deliveryChargeForOrder,
+        deliveryType: isFaster ? "Faster" : "Standard",
+        giftWrapCharge: giftWrapAmountForOrder,
         codHandlingFee: feeForThisOrder,
+        cartBooks,
       }).catch((err) => console.error("Google Form submit failed:", err));
     } catch (err) {
       console.error("Google Form submit threw:", err);
@@ -895,17 +905,25 @@ export default function AddressModal({
             city={city}
             pincode={pincode}
             fasterDelivery={fasterDelivery}
+            cartBooks={cartBooks}
+            // ---- breakdown fields ----
+            totalDiscounted={totalDiscounted}
+            offerDiscount={offerDiscount}
+            offerLabel={offerLabel}
+            deliveryCharge={getDeliveryCharge(fasterDelivery)}
+            giftWrap={giftWrap || giftWrapSelected}
+            giftWrapCharge={giftWrapCharge}
+            codFee={codHandlingFee}
+            // ---- totals derived from above for convenience ----
             baseAmount={
               getTotalWithDelivery(fasterDelivery) +
               (giftWrap ? giftWrapCharge : 0)
             }
-            codFee={codHandlingFee}
             totalAmount={
               getTotalWithDelivery(fasterDelivery) +
               (giftWrap ? giftWrapCharge : 0) +
               codHandlingFee
             }
-            cartBooks={cartBooks}
             onContinue={handleCODSuccessContinue}
             onClose={() => setShowCODSuccess(false)}
           />
@@ -981,9 +999,7 @@ function CODHandlingFeeModal({
         style={{ maxHeight: "92vh", overflowY: "auto" }}
       >
         <div className="bill-header">
-          <span className="weight-600 font-16">
-            Continue with Cash on Delivery
-          </span>
+          <span className="weight-600 font-16">Confirm Cash on Delivery</span>
           <span className="cursor-pointer" onClick={onClose}>
             <X size={16} />
           </span>
@@ -1049,8 +1065,7 @@ function CODHandlingFeeModal({
                   className="font-12 dark-50"
                   style={{ marginTop: 4, lineHeight: 1.45 }}
                 >
-                  Collected at the door, along with your order. Covers cash
-                  handling, secure delivery confirmation, and reconciliation.
+                  Collected at the door, along with your order.
                 </div>
               </div>
             </div>
@@ -1062,7 +1077,7 @@ function CODHandlingFeeModal({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.12 }}
             style={{
-              padding: "12px",
+              padding: 14,
               background: "var(--dark-4)",
               border: "1px solid var(--dark-10)",
               borderRadius: 10,
@@ -1163,6 +1178,13 @@ function CODSuccessModal({
   totalAmount,
   baseAmount = 0,
   codFee = 0,
+  // ---- itemised breakdown props ----
+  totalDiscounted = 0,
+  offerDiscount = 0,
+  offerLabel = "",
+  deliveryCharge = 0,
+  giftWrap = false,
+  giftWrapCharge = 0,
   cartBooks,
   onContinue,
   onClose,
@@ -1457,37 +1479,147 @@ function CODSuccessModal({
                   </div>
                 </div>
 
-                {/* Itemised amount breakdown — includes COD fee */}
+                {/* Itemised order breakdown — books + bill */}
                 <div
                   style={{
                     borderTop: "1px dashed var(--dark-20)",
                     paddingTop: 12,
                     display: "flex",
                     flexDirection: "column",
-                    gap: 6,
+                    gap: 10,
                   }}
                 >
-                  <div className="flex flex-row justify-between font-12">
-                    <span className="dark-50">Order amount</span>
-                    <span>₹{baseAmount}</span>
+                  {/* Books section header */}
+                  <div className="flex flex-row items-center gap-8">
+                    <Package size={14} style={{ color: "var(--tertiary)" }} />
+                    <span className="font-12 weight-700">
+                      Order Items ({cartBooks?.length || 0})
+                    </span>
                   </div>
-                  {codFee > 0 && (
+
+                  {/* Book line items */}
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 6,
+                      maxHeight: 180,
+                      overflowY: "auto",
+                    }}
+                  >
+                    {cartBooks?.map((book, idx) => (
+                      <div
+                        key={idx}
+                        className="flex flex-row justify-between items-start gap-8"
+                      >
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div
+                            className="font-12 weight-500"
+                            style={{
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
+                            }}
+                          >
+                            {idx + 1}. {book.name}
+                          </div>
+                          <span className="font-10 dark-50">
+                            {book.qty} × ₹{book.discountedPrice}
+                          </span>
+                        </div>
+                        <span className="font-12 weight-600">
+                          ₹{book.discountedPrice * book.qty}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Bill rows */}
+                  <div
+                    style={{
+                      borderTop: "1px dashed var(--dark-20)",
+                      paddingTop: 10,
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 6,
+                    }}
+                  >
                     <div className="flex flex-row justify-between font-12">
-                      <span className="dark-50">COD handling fee</span>
-                      <span className="orange weight-600">+₹{codFee}</span>
+                      <span className="dark-50">Subtotal</span>
+                      <span>₹{totalDiscounted}</span>
                     </div>
-                  )}
+
+                    {offerDiscount > 0 && (
+                      <div className="flex flex-row justify-between font-12">
+                        <span className="dark-50">
+                          Offer {offerLabel ? `(${offerLabel})` : ""}
+                        </span>
+                        <span
+                          className="weight-600"
+                          style={{ color: "var(--success)" }}
+                        >
+                          -₹{offerDiscount}
+                        </span>
+                      </div>
+                    )}
+
+                    <div className="flex flex-row justify-between font-12">
+                      <span className="dark-50">
+                        {fasterDelivery
+                          ? "Faster Delivery"
+                          : "Standard Delivery"}
+                      </span>
+                      <span
+                        className="weight-500"
+                        style={{
+                          color:
+                            deliveryCharge > 0
+                              ? "var(--foreground)"
+                              : "var(--success)",
+                        }}
+                      >
+                        {deliveryCharge > 0 ? `+₹${deliveryCharge}` : "FREE"}
+                      </span>
+                    </div>
+
+                    {giftWrap && giftWrapCharge > 0 && (
+                      <div className="flex flex-row justify-between font-12">
+                        <span className="dark-50">🎁 Gift Wrap</span>
+                        <span className="weight-500">+₹{giftWrapCharge}</span>
+                      </div>
+                    )}
+
+                    {codFee > 0 && (
+                      <div className="flex flex-row justify-between font-12">
+                        <span className="dark-50">COD handling fee</span>
+                        <span
+                          className="weight-600"
+                          style={{ color: "var(--tertiary)" }}
+                        >
+                          +₹{codFee}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Final total */}
                   <div
                     style={{
                       borderTop: "1px solid var(--dark-10)",
-                      paddingTop: 8,
-                      marginTop: 2,
+                      paddingTop: 10,
                     }}
                     className="flex flex-row justify-between items-center"
                   >
-                    <span className="font-14 weight-600">
-                      To pay at delivery
-                    </span>
+                    <div className="flex flex-col">
+                      <span className="font-14 weight-700">
+                        To pay at delivery
+                      </span>
+                      {codFee > 0 && (
+                        <span className="font-10 dark-50">
+                          Includes ₹{codFee} COD fee
+                        </span>
+                      )}
+                    </div>
                     <span className="font-18 weight-700 green">
                       ₹{totalAmount}
                     </span>

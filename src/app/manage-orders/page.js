@@ -806,90 +806,209 @@ export default function ManageOrdersPage() {
                   </div>
                 </div>
 
-                {/* Customer line — admin-only addition (sits between header and items) */}
-                <div className="admin-customer-line">
-                  <div className="flex flex-row gap-4 items-center">
-                    <User size={24} className="gray-500" />
-                    <span className="weight-600">{order["Customer Name"]}</span>
-                  </div>
-                  <div
-                    className="flex flex-row gap-4 items-center cursor-pointer"
-                    onClick={() =>
-                      copyToClipboard(order["Phone Number"], `phone-${idx}`)
-                    }
-                  >
-                    <span className="gray-500 font-12">
-                      {order["Phone Number"]}
+                {/* 1. Customer Details — first, prominent, copyable per field */}
+                <div
+                  style={{
+                    padding: "12px 14px",
+                    background: "var(--dark-4)",
+                    border: "1px solid var(--dark-10)",
+                    borderRadius: 10,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 8,
+                  }}
+                >
+                  <div className="flex flex-row items-center gap-6">
+                    <User
+                      size={14}
+                      style={{ color: "var(--tertiary, #fb8500)" }}
+                    />
+                    <span className="font-12 weight-700">Customer Details</span>
+                    <span
+                      className="font-10 dark-50"
+                      style={{ marginLeft: "auto" }}
+                    >
+                      Tap any row to copy
                     </span>
-                    {copiedId === `phone-${idx}` ? (
-                      <Check size={12} className="text-green" />
+                  </div>
+
+                  {/* Name */}
+                  <div
+                    onClick={() =>
+                      copyToClipboard(
+                        order["Customer Name"] || "",
+                        `name-${idx}`,
+                      )
+                    }
+                    className="cursor-pointer"
+                    style={{
+                      padding: "8px 10px",
+                      background: "var(--background, #fff)",
+                      border: "1px solid var(--dark-10)",
+                      borderRadius: 8,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                    }}
+                  >
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div
+                        className="font-10 dark-50"
+                        style={{ fontWeight: 500 }}
+                      >
+                        Name
+                      </div>
+                      <div className="font-13 weight-600">
+                        {order["Customer Name"] || "—"}
+                      </div>
+                    </div>
+                    {copiedId === `name-${idx}` ? (
+                      <Check size={14} className="text-green" />
                     ) : (
-                      <Copy size={12} className="gray-500" />
+                      <Copy size={14} className="gray-500" />
                     )}
                   </div>
-                </div>
 
-                {/* Items Preview */}
-                <div className="order-items-preview">
-                  <div className="items-icon">
-                    <Package size={16} />
-                  </div>
-                  <div className="items-list">
-                    {order.parsedBooks?.slice(0, 2).map((book, bidx) => (
-                      <span key={bidx} className="item-name">
-                        {book.name}
-                        {bidx === 0 &&
-                          order.parsedBooks?.length > 1 &&
-                          ` + ${order.parsedBooks.length - 1} more`}
-                      </span>
-                    ))}
-                    {(!order.parsedBooks || order.parsedBooks.length === 0) && (
-                      <span className="item-name">Books not listed</span>
+                  {/* Phone */}
+                  <div
+                    onClick={() =>
+                      copyToClipboard(
+                        String(order["Phone Number"] || ""),
+                        `phone-${idx}`,
+                      )
+                    }
+                    className="cursor-pointer"
+                    style={{
+                      padding: "8px 10px",
+                      background: "var(--background, #fff)",
+                      border: "1px solid var(--dark-10)",
+                      borderRadius: 8,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                    }}
+                  >
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div
+                        className="font-10 dark-50"
+                        style={{ fontWeight: 500 }}
+                      >
+                        Phone Number
+                      </div>
+                      <div className="font-13 weight-600">
+                        {order["Phone Number"]
+                          ? `+91 ${order["Phone Number"]}`
+                          : "—"}
+                      </div>
+                    </div>
+                    {copiedId === `phone-${idx}` ? (
+                      <Check size={14} className="text-green" />
+                    ) : (
+                      <Copy size={14} className="gray-500" />
                     )}
                   </div>
+
+                  {/* Pincode — separate copy for shipping labels */}
+                  {order["Pincode"] && (
+                    <div
+                      onClick={() =>
+                        copyToClipboard(
+                          String(order["Pincode"]),
+                          `pincode-${idx}`,
+                        )
+                      }
+                      className="cursor-pointer"
+                      style={{
+                        padding: "8px 10px",
+                        background: "var(--background, #fff)",
+                        border: "1px solid var(--dark-10)",
+                        borderRadius: 8,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 8,
+                      }}
+                    >
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div
+                          className="font-10 dark-50"
+                          style={{ fontWeight: 500 }}
+                        >
+                          Pincode
+                        </div>
+                        <div className="font-13 weight-600">
+                          {order["Pincode"]}
+                        </div>
+                      </div>
+                      {copiedId === `pincode-${idx}` ? (
+                        <Check size={14} className="text-green" />
+                      ) : (
+                        <Copy size={14} className="gray-500" />
+                      )}
+                    </div>
+                  )}
+
+                  {/* Full Delivery Address — combined for one-shot label copy */}
+                  {(() => {
+                    const fullAddress = [
+                      order["Address"],
+                      order["City"],
+                      order["State"],
+                    ]
+                      .filter(Boolean)
+                      .join(", ");
+                    const addressLine = order["Pincode"]
+                      ? `${fullAddress} - ${order["Pincode"]}`
+                      : fullAddress;
+                    if (!addressLine) return null;
+                    return (
+                      <div
+                        onClick={() =>
+                          copyToClipboard(addressLine, `address-${idx}`)
+                        }
+                        className="cursor-pointer"
+                        style={{
+                          padding: "8px 10px",
+                          background: "var(--background, #fff)",
+                          border: "1px solid var(--dark-10)",
+                          borderRadius: 8,
+                          display: "flex",
+                          alignItems: "flex-start",
+                          gap: 8,
+                        }}
+                      >
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div
+                            className="font-10 dark-50"
+                            style={{ fontWeight: 500 }}
+                          >
+                            Delivery Address
+                          </div>
+                          <div
+                            className="font-13 weight-500"
+                            style={{ lineHeight: 1.45 }}
+                          >
+                            {addressLine}
+                          </div>
+                        </div>
+                        {copiedId === `address-${idx}` ? (
+                          <Check
+                            size={14}
+                            className="text-green"
+                            style={{ marginTop: 2 }}
+                          />
+                        ) : (
+                          <Copy
+                            size={14}
+                            className="gray-500"
+                            style={{ marginTop: 2 }}
+                          />
+                        )}
+                      </div>
+                    );
+                  })()}
                 </div>
 
-                {/* Details Grid */}
-                <div className="order-details-grid">
-                  <div className="detail-item">
-                    <IndianRupee size={14} className="gray-500" />
-                    <div>
-                      <span className="detail-label">Total Amount</span>
-                      <span className="detail-value">
-                        ₹{order["Total Amount"]}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="detail-item">
-                    <Package size={14} className="gray-500" />
-                    <div>
-                      <span className="detail-label">Payment Method</span>
-                      <span className="detail-value">
-                        {order["Payment Type"]}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="detail-item">
-                    <Truck size={14} className="gray-500" />
-                    <div>
-                      <span className="detail-label">Delivery</span>
-                      <span className="detail-value">
-                        {order["Delivery Type"]}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="detail-item">
-                    <MapPin size={14} className="gray-500" />
-                    <div>
-                      <span className="detail-label">Address</span>
-                      <span className="detail-value">
-                        {order["City"]}, {order["Pincode"]}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Tracking + Order link actions */}
+                {/* 2. Action buttons — Track + View User Bag */}
                 {(() => {
                   const hasTracking =
                     order.shippingId && String(order.shippingId).trim() !== "";
@@ -955,6 +1074,57 @@ export default function ManageOrdersPage() {
                     </div>
                   );
                 })()}
+
+                {/* 3. Books / Order Items preview */}
+                <div className="order-items-preview">
+                  <div className="items-icon">
+                    <Package size={16} />
+                  </div>
+                  <div className="items-list">
+                    {order.parsedBooks?.slice(0, 2).map((book, bidx) => (
+                      <span key={bidx} className="item-name">
+                        {book.name}
+                        {bidx === 0 &&
+                          order.parsedBooks?.length > 1 &&
+                          ` + ${order.parsedBooks.length - 1} more`}
+                      </span>
+                    ))}
+                    {(!order.parsedBooks || order.parsedBooks.length === 0) && (
+                      <span className="item-name">Books not listed</span>
+                    )}
+                  </div>
+                </div>
+
+                {/* 4. Order Summary — Total, Payment, Delivery (Address removed — now in Customer Details above) */}
+                <div className="order-details-grid">
+                  <div className="detail-item">
+                    <IndianRupee size={14} className="gray-500" />
+                    <div>
+                      <span className="detail-label">Total Amount</span>
+                      <span className="detail-value">
+                        ₹{order["Total Amount"]}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="detail-item">
+                    <Package size={14} className="gray-500" />
+                    <div>
+                      <span className="detail-label">Payment Method</span>
+                      <span className="detail-value">
+                        {order["Payment Type"]}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="detail-item">
+                    <Truck size={14} className="gray-500" />
+                    <div>
+                      <span className="detail-label">Delivery</span>
+                      <span className="detail-value">
+                        {order["Delivery Type"]}
+                      </span>
+                    </div>
+                  </div>
+                </div>
 
                 {/* Expandable Details */}
                 <details className="order-details">

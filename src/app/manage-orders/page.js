@@ -436,8 +436,23 @@ export default function ManageOrdersPage() {
   const handleEditOrder = async () => {
     if (!selectedOrder) return;
 
-    const originalTimestamp =
-      selectedOrder["Timestamp"] || formatDateForSheet(new Date());
+    // Preserve the original order date — do NOT overwrite with the current time.
+    // The raw value from gviz can be either the serialized form
+    //   "Date(2026,4,20,23,14,14)"
+    // or the plain-text form
+    //   "20/05/2026 23:14:14"
+    // We normalize both via parseAnyDate, then re-emit in the same
+    // `dd/mm/yyyy hh:mm:ss` format that new orders use, so the sheet stays
+    // consistent. If parsing fails for any reason, fall back to the raw value
+    // (string) so we never accidentally stamp a fresh "now" onto an edit.
+    const originalRaw =
+      selectedOrder["Timestamp (D)"] || selectedOrder["Timestamp"] || "";
+    const parsedOriginal = parseAnyDate(originalRaw);
+    const originalTimestamp = parsedOriginal
+      ? formatDateForSheet(parsedOriginal)
+      : typeof originalRaw === "string" && originalRaw.trim()
+        ? originalRaw
+        : formatDateForSheet(new Date());
 
     const params = new URLSearchParams();
     params.append(FORM_FIELD_IDS.timestamp, originalTimestamp);
@@ -497,7 +512,7 @@ export default function ManageOrdersPage() {
       tinyUrl: order["TinyURL"] || "",
       orderStatus: order["Order Status"] || "Processing",
       shippingId: order["Shipping ID"] || "",
-      timestamp: order["Timestamp"] || "",
+      timestamp: order["Timestamp (D)"] || order["Timestamp"] || "",
     });
     setShowEditModal(true);
   };

@@ -24,6 +24,8 @@ import {
   Gift,
   ShieldCheck,
   ArrowLeft,
+  ExternalLink,
+  ShoppingBag,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
@@ -57,7 +59,6 @@ const FORM_FIELD_IDS = {
   offerApplied: "entry.1246399200",
   tinyUrl: "entry.76337166",
   orderStatus: "entry.1458161030",
-  advancePaid: "entry.392734436",
   userAgent: "entry.2060171385",
   shippingId: "entry.363127280",
 };
@@ -232,7 +233,7 @@ const getStatusColor = (status) => {
   if (statusLower.includes("out for delivery"))
     return "status-out-for-delivery";
   if (statusLower.includes("in transit")) return "status-in-transit";
-  return "status-Processing";
+  return "status-pending";
 };
 // --------------------------------------------------------------------
 
@@ -415,8 +416,6 @@ export default function ManageOrdersPage() {
     params.append(FORM_FIELD_IDS.orderStatus, formData.orderStatus);
     params.append(FORM_FIELD_IDS.userAgent, navigator.userAgent);
     params.append(FORM_FIELD_IDS.shippingId, formData.shippingId);
-    // In your checkout submission
-    params.append(FORM_FIELD_IDS.advancePaid, advancePaid ? "Yes" : "No");
 
     try {
       await fetch(FORM_SUBMIT_URL, {
@@ -461,7 +460,6 @@ export default function ManageOrdersPage() {
     params.append(FORM_FIELD_IDS.orderStatus, formData.orderStatus);
     params.append(FORM_FIELD_IDS.userAgent, navigator.userAgent);
     params.append(FORM_FIELD_IDS.shippingId, formData.shippingId);
-    params.append(FORM_FIELD_IDS.advancePaid, advancePaid ? "Yes" : "No");
 
     try {
       await fetch(FORM_SUBMIT_URL, {
@@ -876,21 +874,72 @@ export default function ManageOrdersPage() {
                   </div>
                 </div>
 
-                {/* Tracking Info */}
-                {order.shippingId && String(order.shippingId).trim() !== "" && (
-                  <div className="tracking-info-row">
-                    <div className="tracking-id-display">
-                      <span className="tracking-label">Tracking ID:</span>
-                      <span className="tracking-id">{order.shippingId}</span>
+                {/* Tracking + Order link actions */}
+                {(() => {
+                  const hasTracking =
+                    order.shippingId && String(order.shippingId).trim() !== "";
+                  const tinyUrl = order["TinyURL"];
+                  const hasTinyUrl = tinyUrl && String(tinyUrl).trim() !== "";
+                  if (!hasTracking && !hasTinyUrl) return null;
+
+                  return (
+                    <div className="tracking-info-row">
+                      {hasTracking ? (
+                        <div className="tracking-id-display">
+                          <span className="tracking-label">Tracking ID:</span>
+                          <span className="tracking-id">
+                            {order.shippingId}
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="tracking-id-display">
+                          <span className="tracking-label">Order link:</span>
+                          <span
+                            className="tracking-id"
+                            style={{
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              maxWidth: 220,
+                              whiteSpace: "nowrap",
+                            }}
+                          >
+                            {tinyUrl}
+                          </span>
+                        </div>
+                      )}
+
+                      <div className="flex flex-row gap-8">
+                        {hasTracking && (
+                          <button
+                            className="track-btn-small flex flex-row items-center gap-4"
+                            onClick={() => handleTrackPackage(order.shippingId)}
+                            title="Copy tracking ID and open India Post"
+                          >
+                            <Truck size={12} />
+                            Track here
+                          </button>
+                        )}
+                        {hasTinyUrl && (
+                          <button
+                            className="track-btn-small flex flex-row items-center gap-4"
+                            onClick={() =>
+                              window.open(
+                                tinyUrl,
+                                "_blank",
+                                "noopener,noreferrer",
+                              )
+                            }
+                            title="Open customer's order page"
+                          >
+                            <ShoppingBag size={12} />
+                            View User Bag
+                            <ExternalLink size={10} />
+                          </button>
+                        )}
+                      </div>
                     </div>
-                    <button
-                      className="track-btn-small"
-                      onClick={() => handleTrackPackage(order.shippingId)}
-                    >
-                      Track Package
-                    </button>
-                  </div>
-                )}
+                  );
+                })()}
 
                 {/* Expandable Details */}
                 <details className="order-details">

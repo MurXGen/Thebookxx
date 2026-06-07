@@ -26,6 +26,8 @@ import {
   Download,
   Gift,
   AlertTriangle,
+  FileText,
+  MessageCircle,
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -132,6 +134,7 @@ export default function ViewBagClient() {
   const [isFasterDelivery, setIsFasterDelivery] = useState(false);
   const [giftWrapCharge, setGiftWrapCharge] = useState(0);
   const [isGiftWrap, setIsGiftWrap] = useState(false);
+  const [codHandlingFee, setCodHandlingFee] = useState(0);
   const [standardOriginalCharge, setStandardOriginalCharge] = useState(null);
   const [fasterOriginalCharge, setFasterOriginalCharge] = useState(null);
   const [totalDiscounted, setTotalDiscounted] = useState(0);
@@ -189,6 +192,7 @@ export default function ViewBagClient() {
         setIsFasterDelivery(parsedOrder.fasterDelivery || false);
         setIsGiftWrap(parsedOrder.giftWrap || false);
         setGiftWrapCharge(parsedOrder.giftWrapCharge || 0);
+        setCodHandlingFee(parsedOrder.codHandlingFee || 0);
 
         if (parsedOrder.totalDiscounted) {
           setTotalDiscounted(parsedOrder.totalDiscounted);
@@ -368,7 +372,8 @@ export default function ViewBagClient() {
   };
 
   const deliveryCharge = getDeliveryChargeValue();
-  const totalWithDelivery = finalPayableValue + deliveryCharge + giftWrapCharge;
+  const totalWithDelivery =
+    finalPayableValue + deliveryCharge + giftWrapCharge + codHandlingFee;
 
   const getDeliveryChargeDisplay = () => {
     if (isFasterDelivery) return fasterCharge;
@@ -533,6 +538,320 @@ export default function ViewBagClient() {
     URL.revokeObjectURL(url);
   };
 
+  // ===== Canvas-based Invoice Export =====
+  // Draws an invoice on a hidden canvas and downloads it as PNG.
+  // Pure canvas — no external libraries.
+  const exportInvoice = () => {
+    if (!orderData || !cartBooks.length) {
+      alert("Order data not available");
+      return;
+    }
+
+    // Brand colors (match design tokens)
+    const COLORS = {
+      bg: "#ffffff",
+      text: "#0a0a0a",
+      muted: "#6b7280",
+      tertiary: "#fb8500",
+      success: "#008f0c",
+      border: "#e5e7eb",
+      stripe: "#fafafa",
+    };
+
+    // Dynamic height — calculated based on item count
+    const baseHeight = 700;
+    const perItemHeight = 32;
+    const extraForItems = Math.max(0, cartBooks.length - 3) * perItemHeight;
+    const W = 800;
+    const H = baseHeight + extraForItems + 200;
+
+    const canvas = document.createElement("canvas");
+    canvas.width = W * 2; // 2x for sharper output on retina
+    canvas.height = H * 2;
+    const ctx = canvas.getContext("2d");
+    ctx.scale(2, 2);
+
+    // Helpers
+    const text = (str, x, y, opts = {}) => {
+      ctx.font = opts.font || "14px Inter, system-ui, sans-serif";
+      ctx.fillStyle = opts.color || COLORS.text;
+      ctx.textAlign = opts.align || "left";
+      ctx.textBaseline = opts.baseline || "alphabetic";
+      ctx.fillText(str, x, y);
+    };
+    const line = (x1, y1, x2, y2, color = COLORS.border, width = 1) => {
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width;
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+    };
+    const rect = (x, y, w, h, fill) => {
+      ctx.fillStyle = fill;
+      ctx.fillRect(x, y, w, h);
+    };
+    const wrapText = (str, x, y, maxWidth, lineHeight, opts = {}) => {
+      ctx.font = opts.font || "14px Inter, system-ui, sans-serif";
+      ctx.fillStyle = opts.color || COLORS.text;
+      const words = String(str || "").split(" ");
+      let line = "";
+      let curY = y;
+      for (const w of words) {
+        const test = line + w + " ";
+        if (ctx.measureText(test).width > maxWidth && line !== "") {
+          ctx.fillText(line.trim(), x, curY);
+          line = w + " ";
+          curY += lineHeight;
+        } else {
+          line = test;
+        }
+      }
+      ctx.fillText(line.trim(), x, curY);
+      return curY;
+    };
+
+    // Background
+    rect(0, 0, W, H, COLORS.bg);
+
+    // Header band — orange brand strip
+    rect(0, 0, W, 8, COLORS.tertiary);
+
+    let y = 60;
+
+    // Brand + INVOICE
+    text("TheBookX", 40, y, {
+      font: "bold 30px Inter, sans-serif",
+      color: COLORS.tertiary,
+    });
+    text("INVOICE", W - 40, y, {
+      font: "bold 30px Inter, sans-serif",
+      color: COLORS.text,
+      align: "right",
+    });
+
+    y += 22;
+    text("thebookx.in", 40, y, {
+      font: "12px sans-serif",
+      color: COLORS.muted,
+    });
+    text(`Order #${orderData.orderId || "—"}`, W - 40, y, {
+      font: "12px sans-serif",
+      color: COLORS.muted,
+      align: "right",
+    });
+
+    y += 6;
+    const orderDate = orderData.orderDate
+      ? new Date(orderData.orderDate).toLocaleDateString("en-IN", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        })
+      : new Date().toLocaleDateString("en-IN", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        });
+    text(`Date: ${orderDate}`, W - 40, y + 14, {
+      font: "12px sans-serif",
+      color: COLORS.muted,
+      align: "right",
+    });
+
+    y += 36;
+    line(40, y, W - 40, y);
+
+    // BILL TO block
+    y += 30;
+    text("BILL TO", 40, y, {
+      font: "bold 11px sans-serif",
+      color: COLORS.muted,
+    });
+    y += 22;
+    text(orderData.name || "Customer", 40, y, {
+      font: "bold 16px sans-serif",
+    });
+    y += 22;
+    text(`+91 ${orderData.phone || ""}`, 40, y, {
+      font: "13px sans-serif",
+      color: COLORS.muted,
+    });
+    y += 18;
+    const fullAddr = [
+      orderData.address,
+      orderData.city,
+      orderData.state,
+      orderData.pincode ? `- ${orderData.pincode}` : "",
+    ]
+      .filter(Boolean)
+      .join(", ");
+    y = wrapText(fullAddr, 40, y, W - 80, 18, {
+      font: "13px sans-serif",
+      color: COLORS.text,
+    });
+
+    // PAYMENT / DELIVERY block — top right of bill-to row
+    const payX = W - 40;
+    let payY = y - 80;
+    text("PAYMENT", payX, payY, {
+      font: "bold 11px sans-serif",
+      color: COLORS.muted,
+      align: "right",
+    });
+    payY += 22;
+    text(orderData.paymentMethod || "—", payX, payY, {
+      font: "bold 14px sans-serif",
+      align: "right",
+    });
+    payY += 20;
+    text(
+      isFasterDelivery ? "Faster Delivery" : "Standard Delivery",
+      payX,
+      payY,
+      { font: "13px sans-serif", color: COLORS.muted, align: "right" },
+    );
+
+    y += 30;
+    line(40, y, W - 40, y);
+
+    // ITEMS table header
+    y += 28;
+    text("ITEMS", 40, y, {
+      font: "bold 11px sans-serif",
+      color: COLORS.muted,
+    });
+    text("QTY", 480, y, {
+      font: "bold 11px sans-serif",
+      color: COLORS.muted,
+      align: "center",
+    });
+    text("PRICE", 600, y, {
+      font: "bold 11px sans-serif",
+      color: COLORS.muted,
+      align: "right",
+    });
+    text("TOTAL", W - 40, y, {
+      font: "bold 11px sans-serif",
+      color: COLORS.muted,
+      align: "right",
+    });
+
+    y += 12;
+    line(40, y, W - 40, y);
+
+    // ITEMS rows
+    y += 12;
+    cartBooks.forEach((book, idx) => {
+      if (idx % 2 === 0) {
+        rect(40, y - 4, W - 80, 28, COLORS.stripe);
+      }
+      const itemTotal = book.discountedPrice * book.qty;
+      const nameTrimmed =
+        book.name.length > 38 ? book.name.slice(0, 38) + "…" : book.name;
+      text(nameTrimmed, 50, y + 14, { font: "13px sans-serif" });
+      text(String(book.qty), 480, y + 14, {
+        font: "13px sans-serif",
+        align: "center",
+      });
+      text(`₹${book.discountedPrice}`, 600, y + 14, {
+        font: "13px sans-serif",
+        align: "right",
+      });
+      text(`₹${itemTotal}`, W - 50, y + 14, {
+        font: "bold 13px sans-serif",
+        align: "right",
+      });
+      y += 28;
+    });
+
+    y += 10;
+    line(40, y, W - 40, y);
+
+    // Bill summary — right-aligned
+    y += 24;
+    const subtotalAmt = totalDiscountedValue;
+    const discountAmt = totalOriginal - totalDiscountedValue;
+    const summaryRow = (label, value, opts = {}) => {
+      text(label, 480, y, {
+        font: opts.bold ? "bold 13px sans-serif" : "13px sans-serif",
+        color: opts.color || COLORS.muted,
+      });
+      text(value, W - 40, y, {
+        font: opts.bold ? "bold 13px sans-serif" : "13px sans-serif",
+        color: opts.valueColor || opts.color || COLORS.text,
+        align: "right",
+      });
+      y += 22;
+    };
+
+    summaryRow("Subtotal", `₹${totalOriginal}`);
+    if (discountAmt > 0) {
+      summaryRow("Discount", `-₹${discountAmt}`, {
+        valueColor: COLORS.success,
+      });
+    }
+    if (appliedOffer && offerDiscountValue > 0) {
+      summaryRow(`Offer (${offerLabelValue})`, `-₹${offerDiscountValue}`, {
+        valueColor: COLORS.success,
+      });
+    }
+    summaryRow(
+      isFasterDelivery ? "Faster Delivery" : "Standard Delivery",
+      deliveryCharge > 0 ? `+₹${deliveryCharge}` : "FREE",
+      { valueColor: deliveryCharge > 0 ? COLORS.text : COLORS.success },
+    );
+    if (isGiftWrap && giftWrapCharge > 0) {
+      summaryRow("Gift Wrap", `+₹${giftWrapCharge}`);
+    }
+    if (codHandlingFee > 0) {
+      summaryRow("COD Handling Fee", `+₹${codHandlingFee}`, {
+        valueColor: COLORS.tertiary,
+      });
+    }
+
+    y += 6;
+    line(480, y, W - 40, y, COLORS.text, 2);
+    y += 28;
+
+    // TOTAL row — bold
+    text("TOTAL", 480, y, { font: "bold 18px sans-serif" });
+    text(`₹${totalWithDelivery}`, W - 40, y, {
+      font: "bold 22px sans-serif",
+      color: COLORS.tertiary,
+      align: "right",
+    });
+
+    // Footer
+    y += 50;
+    line(40, y, W - 40, y);
+    y += 28;
+    text("Thank you for shopping with TheBookX!", W / 2, y, {
+      font: "italic 13px sans-serif",
+      color: COLORS.muted,
+      align: "center",
+    });
+    y += 18;
+    text("For any queries: support@thebookx.in  |  +91 77108 92108", W / 2, y, {
+      font: "11px sans-serif",
+      color: COLORS.muted,
+      align: "center",
+    });
+
+    // Download
+    canvas.toBlob((blob) => {
+      if (!blob) return;
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `invoice_${orderData.orderId || Date.now()}.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, "image/png");
+  };
+
   const sendWhatsAppMessage = (phoneNumber, messageType) => {
     let message = "";
     let formattedNumber = phoneNumber;
@@ -550,40 +869,72 @@ export default function ViewBagClient() {
       }
     }
 
-    const deliveryDays = isFasterDelivery ? "3-5" : "5-7";
-    const deliveryText = isFasterDelivery
-      ? `delivered in ${deliveryDays} business days (Priority Shipping)`
-      : `delivered in ${deliveryDays} business days`;
+    // ---- Shared building blocks for the new branded message format ----
+    const customerName = orderData?.name || "there";
+    const orderId = orderData?.orderId || "N/A";
+    const itemsSummary = cartBooks
+      .map((b) => `${b.name}${b.qty > 1 ? ` × ${b.qty}` : ""}`)
+      .join(", ");
+    const shippingAddress = orderData
+      ? [
+          orderData.address,
+          orderData.city,
+          orderData.state,
+          orderData.pincode ? `- ${orderData.pincode}` : "",
+        ]
+          .filter(Boolean)
+          .join(", ")
+      : "";
 
-    if (messageType === "shipped") {
+    const orderStatusUrl = "https://thebookx.in/profile";
+    const deliveryDays = isFasterDelivery ? "3-5" : "5-7";
+
+    // The "Check Order Status" footer — appears on every message, mirrors the
+    // CTA from the reference screenshot.
+    const footer =
+      `\n\n🔗 *Check Order Status:* ${orderStatusUrl}\n` +
+      `\nReply STOP to unsubscribe`;
+
+    if (messageType === "shipping") {
+      // Order received, not yet shipped — mirrors the reference screenshot
       message = encodeURIComponent(
-        `📚 *Order Update from TheBookX*\n\n` +
-          `Dear ${orderData?.name || "Customer"},\n\n` +
-          `Your order #${orderData?.orderId} has been shipped and will be ${deliveryText}.\n\n` +
-          `📦 Tracking ID: ${savedTrackingId || "Not available"}\n\n` +
-          `Here is the link to track : https://www.indiapost.gov.in \n\n` +
-          `Thank you for shopping with TheBookX! Happy reading! 📖✨\n\n` +
-          `For any queries, feel free to reach out to us.`,
+        `Hello ${customerName},\n\n` +
+          `Your order has been successfully received.\n\n` +
+          `*Order Details:*\n` +
+          `Order ID: #${orderId}\n` +
+          `Order Total: ₹${totalWithDelivery}\n` +
+          `Items: ${itemsSummary || "Your items"}\n` +
+          `Shipping Address: ${shippingAddress || "On file"}\n\n` +
+          `You will be notified once your order is shipped.\n\n` +
+          `_*Please re-check your address and let us know at the earliest in case of changes. Due to a high influx of orders, your order will be shipped in 3-4 days._` +
+          footer,
       );
-    } else if (messageType === "shipping") {
+    } else if (messageType === "shipped") {
       message = encodeURIComponent(
-        `📚 *Order Update from TheBookX*\n\n` +
-          `Dear ${orderData?.name || "Customer"},\n\n` +
-          `Your order #${orderData?.orderId} is confirmed and will be shipped within 1-2 business days.\n\n` +
-          `Expected delivery: ${deliveryDays} business days after shipping.\n\n` +
-          `You will receive a tracking ID once shipped.\n\n` +
-          `Thank you for your patience! 📖✨\n\n` +
-          `For any queries, feel free to reach out to us.`,
+        `Hello ${customerName},\n\n` +
+          `Your order has been shipped! 🚚\n\n` +
+          `*Order Details:*\n` +
+          `Order ID: #${orderId}\n` +
+          `Tracking ID: ${savedTrackingId || "Will share soon"}\n` +
+          `Order Total: ₹${totalWithDelivery}\n` +
+          `Items: ${itemsSummary || "Your items"}\n\n` +
+          `Expected delivery in ${deliveryDays} business days.\n` +
+          `Track your shipment: https://www.indiapost.gov.in\n\n` +
+          `Happy reading! 📖✨` +
+          footer,
       );
     } else if (messageType === "out_for_delivery") {
       message = encodeURIComponent(
-        `🚚 *Out for Delivery — TheBookX*\n\n` +
-          `Dear ${orderData?.name || "Customer"},\n\n` +
-          `Great news! Your order #${orderData?.orderId} is *out for delivery* today and will reach you soon.\n\n` +
-          `📦 Tracking ID: ${savedTrackingId || "Not available"}\n\n` +
-          `Please keep your phone reachable so the delivery agent can contact you. ` +
-          `If you're not available, kindly share a time slot or an alternate number.\n\n` +
-          `Thank you for shopping with TheBookX! 📖✨`,
+        `Hello ${customerName},\n\n` +
+          `Great news! Your order is *out for delivery* today. 🚚\n\n` +
+          `*Order Details:*\n` +
+          `Order ID: #${orderId}\n` +
+          `Tracking ID: ${savedTrackingId || "Not available"}\n` +
+          `Shipping Address: ${shippingAddress || "On file"}\n\n` +
+          `Please keep your phone reachable so our delivery partner can contact you. ` +
+          `If you're not available, kindly share an alternate number or a time slot.\n\n` +
+          `Thank you for shopping with TheBookX!` +
+          footer,
       );
     } else if (messageType === "unable_to_deliver") {
       const reasonObj = UNABLE_TO_DELIVER_REASONS.find(
@@ -594,12 +945,14 @@ export default function ViewBagClient() {
         "the delivery couldn't be completed. Could you reach out so we can sort this out and re-attempt the delivery?";
 
       message = encodeURIComponent(
-        `⚠️ *Delivery Issue — TheBookX*\n\n` +
-          `Dear ${orderData?.name || "Customer"},\n\n` +
-          `We tried to deliver your order #${orderData?.orderId} but ${reasonBlurb}\n\n` +
-          `📦 Tracking ID: ${savedTrackingId || "Not available"}\n\n` +
-          `Please reply to this message and we'll arrange a re-delivery right away.\n\n` +
-          `Thank you for your patience.\n— Team TheBookX`,
+        `Hello ${customerName},\n\n` +
+          `We tried to deliver your order today but ${reasonBlurb}\n\n` +
+          `*Order Details:*\n` +
+          `Order ID: #${orderId}\n` +
+          `Tracking ID: ${savedTrackingId || "Not available"}\n\n` +
+          `Please reply with the updated details and we'll arrange a re-delivery right away.\n\n` +
+          `Thank you for your patience.\n— Team TheBookX` +
+          footer,
       );
     }
 
@@ -757,6 +1110,15 @@ export default function ViewBagClient() {
                   <span className="font-14">Gift Wrap</span>
                   <span className="font-14 weight-500 orange">
                     🎁 Included (+₹{giftWrapCharge})
+                  </span>
+                </div>
+              )}
+
+              {codHandlingFee > 0 && (
+                <div className="flex justify-between items-center">
+                  <span className="font-14">COD Handling Fee</span>
+                  <span className="font-14 weight-500 orange">
+                    💵 +₹{codHandlingFee}
                   </span>
                 </div>
               )}
@@ -1260,6 +1622,12 @@ export default function ViewBagClient() {
             <span>+ ₹{giftWrapCharge}</span>
           </div>
         )}
+        {codHandlingFee > 0 && (
+          <div className="flex justify-between orange">
+            <span>💵 COD Handling Fee</span>
+            <span>+ ₹{codHandlingFee}</span>
+          </div>
+        )}
         <hr />
         <div className="flex justify-between weight-600 font-16">
           <span>Total Payable</span>
@@ -1268,6 +1636,31 @@ export default function ViewBagClient() {
       </div>
 
       <div className="flex flex-col gap-12">
+        {/* Primary CTA — chat with support, prefilled with order context */}
+        <a
+          href={`https://wa.me/917710892108?text=${encodeURIComponent(
+            `Hey hi 👋\n\nI need help with my order #${orderData?.orderId || "N/A"}.\n\nCould you please let me know when it will be shipped?\n\nThanks!`,
+          )}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="pri-big-btn flex items-center justify-center gap-8"
+          style={{ textAlign: "center" }}
+        >
+          <MessageCircle size={18} />
+          Chat on WhatsApp
+        </a>
+
+        {/* Export Invoice — canvas → PNG */}
+        <button
+          onClick={exportInvoice}
+          className="sec-big-btn flex items-center justify-center gap-8"
+          style={{ width: "100%" }}
+        >
+          <FileText size={18} />
+          Export Invoice
+        </button>
+
+        {/* Export CSV */}
         <button
           onClick={downloadOrderCSV}
           className="sec-big-btn flex items-center justify-center gap-8"
@@ -1275,23 +1668,6 @@ export default function ViewBagClient() {
         >
           <Download size={18} />
           Download Order Details (CSV)
-        </button>
-        <a
-          href={`https://wa.me/917710892108?text=${encodeURIComponent(
-            `Hi 👋 Here is my order details.\nOrder ID: ${orderData?.orderId || "N/A"}\nTotal: ₹${totalWithDelivery}`,
-          )}`}
-          target="_blank"
-          className="pri-big-btn"
-          style={{ textAlign: "center" }}
-        >
-          Continue on WhatsApp
-        </a>
-        <button
-          onClick={exportToCOList}
-          className="sec-big-btn flex items-center justify-center gap-8"
-          style={{ width: "100%" }}
-        >
-          Export to COList (Admin)
         </button>
       </div>
     </section>

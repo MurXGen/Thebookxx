@@ -23,7 +23,9 @@ const ADMIN_PATHS = ["/manage-orders", "/colist"];
 
 /* SEO Metadata - Essential Only */
 export const metadata = {
-  metadataBase: new URL("https://thebookx.in"),
+  // Served host is www.thebookx.in (the apex 301-redirects to www), so the
+  // canonical/OG host must match it to avoid canonicals pointing at a redirect.
+  metadataBase: new URL("https://www.thebookx.in"),
 
   title: {
     default:
@@ -74,25 +76,19 @@ export const metadata = {
     title: "TheBookX — Books Starting at Just ₹1 | Free Shipping",
     description:
       "Shop 300+ books at unbeatable prices. Free shipping across India. Trusted by 50,000+ readers. Limited time ₹1 book sale!",
-    url: "https://thebookx.in",
+    url: "https://www.thebookx.in",
     siteName: "TheBookX",
     locale: "en_IN",
     type: "website",
-    images: [
-      {
-        url: "/favicon.ico",
-        width: 1200,
-        height: 630,
-        alt: "TheBookX — Online Bookstore India",
-      },
-    ],
+    // Share image is provided by the dynamic app/opengraph-image.js route
+    // (a real branded 1200×630 card), replacing the old favicon-as-OG bug.
   },
 
   twitter: {
     card: "summary_large_image",
     title: "TheBookX — Buy Books Online at Best Prices",
     description: "Books starting at just ₹1. Free shipping across India.",
-    images: ["/favicon.ico"],
+    // Twitter image provided by app/twitter-image.js
   },
 
   verification: {
@@ -130,6 +126,55 @@ export default function RootLayout({ children }) {
           crossOrigin="anonymous"
         />
         <link rel="preload" as="image" href="/favicon.ico" />
+
+        {/* Organization + WebSite structured data (brand entity for SEO) */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "Organization",
+                  "@id": "https://www.thebookx.in/#organization",
+                  name: "TheBookX",
+                  alternateName: "TheBookX — Online Bookstore India",
+                  url: "https://www.thebookx.in",
+                  logo: {
+                    "@type": "ImageObject",
+                    url: "https://www.thebookx.in/intro-image.jpeg",
+                  },
+                  description:
+                    "TheBookX is India's trusted online bookstore offering bestselling books at unbeatable prices with free shipping and Cash on Delivery.",
+                  contactPoint: {
+                    "@type": "ContactPoint",
+                    contactType: "customer support",
+                    telephone: "+91-7710892108",
+                    areaServed: "IN",
+                    availableLanguage: ["English", "Hindi"],
+                  },
+                },
+                {
+                  "@type": "WebSite",
+                  "@id": "https://www.thebookx.in/#website",
+                  url: "https://www.thebookx.in",
+                  name: "TheBookX",
+                  publisher: { "@id": "https://www.thebookx.in/#organization" },
+                  inLanguage: "en-IN",
+                  potentialAction: {
+                    "@type": "SearchAction",
+                    target: {
+                      "@type": "EntryPoint",
+                      urlTemplate:
+                        "https://www.thebookx.in/books?q={search_term_string}",
+                    },
+                    "query-input": "required name=search_term_string",
+                  },
+                },
+              ],
+            }),
+          }}
+        />
 
         {/* Google Analytics — skipped on admin paths */}
         <Script id="ga-loader" strategy="lazyOnload">

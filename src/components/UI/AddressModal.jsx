@@ -11,6 +11,7 @@ import {
   Truck,
   X,
   MapPin,
+  Mail,
   AlertCircle,
   User,
   Zap,
@@ -81,6 +82,7 @@ export default function AddressModal({
 }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
   const [city, setCity] = useState("");
   const [pincode, setPincode] = useState("");
   const [address, setAddress] = useState("");
@@ -274,6 +276,7 @@ export default function AddressModal({
     if (saved) {
       setName(saved.name || "");
       setPhone(normalizePhone(saved.phone || ""));
+      setEmail(saved.email || "");
       setCity(saved.city || "");
       setPincode(saved.pincode || "");
       setAddress(saved.address || "");
@@ -290,6 +293,7 @@ export default function AddressModal({
         JSON.stringify({
           name,
           phone,
+          email,
           city,
           pincode,
           address,
@@ -302,6 +306,7 @@ export default function AddressModal({
   }, [
     name,
     phone,
+    email,
     city,
     pincode,
     address,
@@ -353,7 +358,7 @@ export default function AddressModal({
       const giftWrapAmountForOrder = giftWrapOn ? giftWrapCharge : 0;
 
       trackOrderToGoogleForm({
-        addressData: { name, phone, pincode, city, address },
+        addressData: { name, phone, email, pincode, city, address },
         paymentType,
         fasterDeliveryChoice: isFaster,
         giftWrapSelected: giftWrapOn,
@@ -696,6 +701,31 @@ export default function AddressModal({
                           <span className="font-10 red mt-4">{phoneError}</span>
                         )}
                       </div>
+                    </div>
+
+                    {/* Email — powers order confirmation + abandoned-cart recovery */}
+                    <div className="input-group" style={{ marginTop: 12 }}>
+                      <label className="flex flex-row gap-4 flex-center items-center">
+                        <Mail size={14} />
+                        Email <span className="gray-500">(for order updates)</span>
+                      </label>
+                      <input
+                        type="email"
+                        className="sec-mid-btn width100"
+                        placeholder="you@example.com"
+                        value={email}
+                        inputMode="email"
+                        autoComplete="email"
+                        onChange={(e) => setEmail(e.target.value.trim())}
+                      />
+                      {email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && (
+                        <span className="font-10 red mt-4">
+                          Please enter a valid email
+                        </span>
+                      )}
+                      <span className="font-10 gray-500 mt-4">
+                        We'll email your order confirmation &amp; tracking.
+                      </span>
                     </div>
                   </motion.div>
                 )}

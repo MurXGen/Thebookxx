@@ -19,10 +19,11 @@ export async function generateMetadata({ params }) {
   const categoryName = slug.replace(/-/g, " ");
 
   return {
-    title: `${categoryName.charAt(0).toUpperCase() + categoryName.slice(1)} Books | Buy Online at Best Price | TheBookX`,
+    // Brand suffix added once by the root title template ("%s | TheBookX").
+    title: `${categoryName.charAt(0).toUpperCase() + categoryName.slice(1)} Books | Buy Online at Best Price`,
     description: `Shop the best ${categoryName} books online at TheBookX. Wide collection of ${categoryName} books at unbeatable prices. Free shipping across India. Limited time ₹1 book sale!`,
     alternates: {
-      canonical: `https://thebookx.in/category/${slug}`,
+      canonical: `https://www.thebookx.in/category/${slug}`,
     },
   };
 }

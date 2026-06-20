@@ -4,6 +4,17 @@ const nextConfig = {
 
   async redirects() {
     return [
+      // Recover the intuitive (but previously 404ing) blog aliases.
+      {
+        source: "/blog",
+        destination: "/blogs",
+        permanent: true,
+      },
+      {
+        source: "/blog/:slug*",
+        destination: "/blogs/:slug*",
+        permanent: true,
+      },
       {
         source: "/books/bk-002",
         destination: "/books/the-art-of-clarity",
@@ -164,7 +175,7 @@ const nextConfig = {
     pagesBufferLength: 2,
   },
 
-  swcMinify: true,
+  // (swcMinify removed — it's enabled by default and invalid as a key in Next 16)
   poweredByHeader: false,
   compress: true,
   reactStrictMode: true,

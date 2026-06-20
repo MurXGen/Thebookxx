@@ -1,13 +1,13 @@
 // utils/book.js
 import { bookImages } from "./bookImages";
 
-// Helper function to calculate original price based on discounted price
+// Helper function to calculate original (MRP / compare-at) price.
+// Deterministic: the original price is always exactly 50% above the
+// selling price (original = sellingPrice × 1.5), rounded to the nearest ₹10.
+// This guarantees the strikethrough price NEVER fluctuates between renders.
+const ORIGINAL_PRICE_MULTIPLIER = 1.5;
 const calculateOriginalPrice = (discountedPrice) => {
-  const minMultiplier = 1.3;
-  const maxMultiplier = 1.8;
-  const randomMultiplier =
-    minMultiplier + Math.random() * (maxMultiplier - minMultiplier);
-  const calculatedPrice = Math.round(discountedPrice * randomMultiplier);
+  const calculatedPrice = discountedPrice * ORIGINAL_PRICE_MULTIPLIER;
   return Math.round(calculatedPrice / 10) * 10;
 };
 

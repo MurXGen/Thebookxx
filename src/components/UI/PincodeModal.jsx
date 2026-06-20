@@ -48,35 +48,43 @@ export default function PincodeModal() {
     }
   }, []);
 
-  // Check if modal should be shown (once every 24 hours)
+  // Decide whether the modal is *eligible* to show (once every 24h, and never
+  // if the user already gave a pincode). We no longer pop it on first paint —
+  // instead it triggers on the first engagement signal (scroll past the hero)
+  // or after a generous delay, so visitors always see the store first.
   useEffect(() => {
-    const checkAndShowModal = () => {
-      const lastShown = localStorage.getItem(PINCODE_STORAGE_KEY);
-      const savedPincode = localStorage.getItem(PINCODE_DATA_KEY);
+    const lastShown = localStorage.getItem(PINCODE_STORAGE_KEY);
+    const savedPincode = localStorage.getItem(PINCODE_DATA_KEY);
 
-      // If user already submitted pincode before, don't show modal
-      if (savedPincode) {
-        return;
-      }
+    if (savedPincode) return; // already captured — never nag
 
-      if (lastShown) {
-        const lastShownTime = parseInt(lastShown, 10);
-        const currentTime = Date.now();
-        const hoursPassed = (currentTime - lastShownTime) / (1000 * 60 * 60);
+    if (lastShown) {
+      const hoursPassed = (Date.now() - parseInt(lastShown, 10)) / (1000 * 60 * 60);
+      if (hoursPassed < 24) return; // shown recently — respect the cooldown
+    }
 
-        if (hoursPassed >= 24) {
-          setIsOpen(true);
-          setStartTime(Date.now());
-        }
-      } else {
-        // First time visitor
-        setIsOpen(true);
-        setStartTime(Date.now());
-      }
+    let done = false;
+    const open = () => {
+      if (done) return;
+      done = true;
+      setIsOpen(true);
+      setStartTime(Date.now());
+      cleanup();
     };
 
-    const timer = setTimeout(checkAndShowModal, 1000);
-    return () => clearTimeout(timer);
+    // Trigger on engagement (scrolled past the hero) …
+    const onScroll = () => {
+      if (window.scrollY > 600) open();
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    // … or after a generous delay so it never blocks the first impression.
+    const timer = setTimeout(open, 8000);
+
+    function cleanup() {
+      window.removeEventListener("scroll", onScroll);
+      clearTimeout(timer);
+    }
+    return cleanup;
   }, []);
 
   // Fetch location details based on pincode

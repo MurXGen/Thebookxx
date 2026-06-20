@@ -3,9 +3,13 @@ import Image from "next/image";
 import { getAllBlogs } from "@/utils/blogs";
 
 export const metadata = {
-  title: "Blogs | TheBookX - Insights from Murthy Thevar",
+  // `absolute` prevents the root template from appending a second "| TheBookX".
+  title: {
+    absolute: "Blog & Insights by Murthy Thevar | TheBookX",
+  },
   description:
-    "Explore articles and insights from Murthy Thevar, author of The Art of Clarity",
+    "Articles and insights on clarity, focus and self-improvement from Murthy Thevar, author of The Art of Clarity — curated by TheBookX.",
+  alternates: { canonical: "https://www.thebookx.in/blogs" },
 };
 
 export default function BlogsPage() {

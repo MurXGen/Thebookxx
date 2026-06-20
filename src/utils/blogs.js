@@ -1,5 +1,7 @@
 // utils/blogs.js
 
+import { listicleBlogs } from "./blogsListicles";
+
 // Blog content in structured JSON format
 export const blogsData = {
   "the-art-of-clarity": {
@@ -3311,16 +3313,19 @@ export const blogsData = {
   },
 };
 
+// Merge the in-depth posts with the listicle / round-up posts.
+const allBlogsData = { ...blogsData, ...listicleBlogs };
+
 export const getAllBlogSlugs = () => {
-  return Object.keys(blogsData).map((slug) => ({ slug }));
+  return Object.keys(allBlogsData).map((slug) => ({ slug }));
 };
 
 export const getBlogBySlug = (slug) => {
-  return blogsData[slug] || null;
+  return allBlogsData[slug] || null;
 };
 
 export const getAllBlogs = () => {
-  return Object.values(blogsData).sort(
+  return Object.values(allBlogsData).sort(
     (a, b) => new Date(b.publishDate) - new Date(a.publishDate),
   );
 };

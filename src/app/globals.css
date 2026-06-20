@@ -653,10 +653,11 @@ button:hover {
 .catalogue-section-2 {
   margin: var(--px-12);
   background: var(--white-100);
-  padding: var(--px-12);
-  border-radius: var(--px-12);
-  box-shadow: 1px 1px 12px var(--dark-20);
-  border: 1px solid var(--dark-10);
+  padding: var(--px-16);
+  border-radius: 16px;
+  /* light gray border + very light shadow */
+  border: 1px solid var(--hairline, #ececec);
+  box-shadow: var(--shadow-xs);
 }
 
 /* Trending books  */
@@ -8597,5 +8598,536 @@ input {
   .contact-card-icon {
     width: 36px;
     height: 36px;
+  }
+}
+
+/* =====================================================================
+   ✦ THEBOOKX 2026 MODERNIZATION LAYER  (additive — safe to revert)
+   Enhances the existing design tokens & components with elevation,
+   smooth interaction states, accessible focus, polished inputs/modals,
+   image skeletons (kills blank-flash), and responsive refinements.
+   All rules are appended last so they layer cleanly over the base.
+   ===================================================================== */
+
+:root {
+  /* Elevation */
+  --shadow-xs: 0 1px 2px rgba(10, 10, 10, 0.06);
+  --shadow-sm: 0 2px 8px rgba(10, 10, 10, 0.08);
+  --shadow-md: 0 6px 20px rgba(10, 10, 10, 0.10);
+  --shadow-lg: 0 14px 40px rgba(10, 10, 10, 0.16);
+  --shadow-brand: 0 8px 24px rgba(251, 133, 0, 0.28);
+
+  /* Radius scale */
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-pill: 999px;
+
+  /* Surfaces / hairlines */
+  --surface: #ffffff;
+  --surface-2: #faf9f7;
+  --hairline: #ececec;
+  --skeleton: #f1f0ee;
+  --ring: 0 0 0 3px rgba(251, 133, 0, 0.25);
+
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* Crisper type rendering site-wide */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Accessible, on-brand keyboard focus everywhere */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--tertiary);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Screen-reader-only utility (used for semantic H1s) */
+.sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- Buttons: smooth, tactile, elevated ---------- */
+.pri-big-btn,
+.sec-big-btn,
+.sec-mid-btn,
+.pri-mid-btn,
+.tertiary-btn,
+.plus-cart,
+.minus-cart {
+  cursor: pointer;
+  transition: transform 0.18s var(--ease), box-shadow 0.18s var(--ease),
+    background 0.18s var(--ease), border-color 0.18s var(--ease),
+    opacity 0.18s var(--ease);
+  -webkit-tap-highlight-color: transparent;
+}
+.pri-big-btn {
+  box-shadow: var(--shadow-sm);
+  letter-spacing: 0.2px;
+}
+.pri-big-btn:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+.pri-big-btn:active,
+.sec-big-btn:active,
+.sec-mid-btn:active,
+.plus-cart:active,
+.minus-cart:active {
+  transform: translateY(0) scale(0.985);
+}
+.sec-big-btn:hover,
+.sec-mid-btn:hover {
+  border-color: var(--dark);
+  background: var(--dark-4);
+}
+.plus-cart:hover {
+  filter: brightness(1.05);
+  box-shadow: 0 4px 14px rgba(0, 143, 12, 0.28);
+}
+.minus-cart:hover {
+  filter: brightness(1.15);
+}
+button:disabled,
+.disabled-btn {
+  opacity: 0.55 !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* ---------- Inputs: clear focus ring, softer borders ---------- */
+input,
+textarea,
+select {
+  transition: border-color 0.18s var(--ease), box-shadow 0.18s var(--ease),
+    background 0.18s var(--ease);
+}
+.sec-mid-btn:focus-within,
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+}
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  border-color: var(--tertiary) !important;
+  box-shadow: var(--ring);
+}
+.error-border {
+  border-color: var(--danger) !important;
+}
+
+/* ---------- Image skeletons: no more blank-white flashes ---------- */
+img {
+  background-color: var(--skeleton);
+  background-image: linear-gradient(
+    100deg,
+    var(--skeleton) 30%,
+    #f7f6f4 50%,
+    var(--skeleton) 70%
+  );
+  background-size: 200% 100%;
+  animation: bx-shimmer 1.3s linear infinite;
+}
+/* Stop shimmering once the image has actually painted */
+img[src],
+img.loaded,
+img[data-loaded="true"] {
+  animation: none;
+}
+@keyframes bx-shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* ---------- Modals / bottom-sheets: elevation, blur, grab handle ---------- */
+.bill-modal-overlay,
+.pay-online-modal-overlay {
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+.bill-modal {
+  box-shadow: var(--shadow-lg);
+  max-height: 92vh;
+  overflow-y: auto;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  -webkit-overflow-scrolling: touch;
+}
+.bill-modal::before {
+  content: "";
+  display: block;
+  width: 40px;
+  height: 4px;
+  border-radius: var(--r-pill);
+  background: var(--dark-20);
+  margin: 2px auto 12px;
+}
+
+/* ---------- Cards: gentle elevation on the common patterns ---------- */
+.delivery-option-card {
+  border-radius: var(--r-md);
+  transition: box-shadow 0.18s var(--ease), transform 0.18s var(--ease);
+}
+.delivery-option-card:hover {
+  box-shadow: var(--shadow-sm);
+}
+
+/* ---------- Respect reduced-motion preferences ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  img {
+    animation: none !important;
+  }
+}
+
+/* ---------- Small-screen polish ---------- */
+@media (max-width: 640px) {
+  .bill-modal {
+    border-radius: 20px 20px 0 0;
+  }
+  .pri-big-btn,
+  .sec-big-btn {
+    font-size: var(--px-14);
+  }
+}
+
+/* =====================================================================
+   ✦ HOME HERO  (static above-the-fold value proposition)
+   ===================================================================== */
+.home-hero {
+  padding: clamp(28px, 5vw, 56px) var(--px-24) clamp(8px, 2vw, 20px);
+  max-width: 1700px;
+  margin: 0 auto;
+}
+.home-hero-inner {
+  max-width: 760px;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+.home-hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--tertiary);
+  background: var(--tertiary-light-10);
+  border: 1px solid var(--tertiary-light-20);
+  padding: 6px 14px;
+  border-radius: var(--r-pill);
+}
+.home-hero-title {
+  font-size: clamp(28px, 6vw, 46px);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  font-weight: 800;
+  margin: 0;
+  color: var(--foreground);
+}
+.home-hero-accent {
+  color: var(--tertiary);
+  white-space: nowrap;
+}
+.home-hero-sub {
+  font-size: clamp(14px, 2.2vw, 16.5px);
+  color: var(--dark-50);
+  max-width: 620px;
+  line-height: 1.55;
+  margin: 0;
+}
+.home-hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 6px;
+}
+.home-hero-btn {
+  padding: 13px 22px !important;
+  font-size: var(--px-14) !important;
+}
+.home-hero-stats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px 18px;
+  margin-top: 14px;
+  padding-top: 16px;
+  border-top: 1px solid var(--hairline);
+  width: 100%;
+  max-width: 620px;
+}
+.home-hero-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--foreground);
+}
+.home-hero-stat-icon {
+  color: var(--success);
+}
+@media (max-width: 640px) {
+  .home-hero {
+    padding-left: var(--px-16);
+    padding-right: var(--px-16);
+  }
+  .home-hero-stats {
+    gap: 8px 14px;
+  }
+  .home-hero-stat {
+    font-size: 12px;
+  }
+}
+
+/* =====================================================================
+   ✦ BREADCRUMBS  (blog-style: left-aligned plain text, "/" separators)
+   reusable across category/books/PDP/bag/wishlist
+   ===================================================================== */
+.breadcrumbs-pro {
+  margin: 0;
+  padding: 16px var(--px-24) 0;
+  font-size: 14px;
+  color: var(--dark-50);
+  text-align: left;
+  align-self: flex-start; /* don't get centered inside flex-column parents */
+  width: 100%;
+}
+.breadcrumbs-pro .bc-item {
+  display: inline;
+}
+.breadcrumbs-pro .bc-link {
+  color: var(--tertiary);
+  font-weight: 500;
+  transition: color 0.18s var(--ease);
+}
+.breadcrumbs-pro .bc-link:hover {
+  text-decoration: underline;
+}
+.breadcrumbs-pro .bc-sep {
+  color: var(--dark-50);
+}
+.breadcrumbs-pro .bc-current {
+  color: var(--foreground);
+  font-weight: 600;
+}
+@media (max-width: 640px) {
+  .breadcrumbs-pro {
+    padding-left: var(--px-16);
+    padding-right: var(--px-16);
+  }
+}
+
+/* =====================================================================
+   ✦ MERGED BESTSELLER LABEL (hero carries the promo message now)
+   ===================================================================== */
+.bestseller-stage--merged {
+  padding-top: 4px;
+}
+.stage-eyebrow {
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--dark-50);
+  margin: 0 0 4px;
+}
+
+/* =====================================================================
+   ✦ ₹1 CLAIM STRIP — minimal, Stripe-style
+   ===================================================================== */
+.onerupee-strip {
+  position: relative;
+  max-width: 1700px;
+  margin: 20px var(--px-12);
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  /* frosted glass + warm tint */
+  background: linear-gradient(
+      135deg,
+      rgba(255, 183, 3, 0.16) 0%,
+      rgba(251, 133, 0, 0.06) 55%,
+      rgba(255, 255, 255, 0.3) 100%
+    ),
+    rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  box-shadow: 0 10px 30px rgba(251, 133, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  overflow: hidden;
+}
+/* soft colored glows behind the glass for depth */
+.onerupee-strip::before {
+  content: "";
+  position: absolute;
+  inset: -40%;
+  background: radial-gradient(
+      circle at 12% 25%,
+      rgba(255, 183, 3, 0.4),
+      transparent 45%
+    ),
+    radial-gradient(circle at 88% 75%, rgba(251, 133, 0, 0.28), transparent 50%);
+  filter: blur(28px);
+  z-index: 0;
+  pointer-events: none;
+}
+.onerupee-strip-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 22px;
+}
+.onerupee-strip-coin {
+  flex: none;
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--tertiary), var(--tertiary-light));
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  line-height: 1;
+  box-shadow: 0 4px 12px rgba(251, 133, 0, 0.25);
+}
+.onerupee-strip-coin-rupee {
+  font-size: 13px;
+  font-weight: 700;
+}
+.onerupee-strip-coin-num {
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1;
+}
+.onerupee-strip-text {
+  flex: 1;
+  min-width: 0;
+}
+.onerupee-strip-title {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0;
+  color: var(--foreground);
+}
+.onerupee-strip-accent {
+  color: var(--tertiary);
+}
+.onerupee-strip-subtitle {
+  font-size: 13px;
+  color: var(--dark-50);
+  margin: 2px 0 0;
+}
+.onerupee-strip-cta {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--foreground);
+  color: #fff;
+  border: none;
+  border-radius: var(--r-pill);
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.18s var(--ease), box-shadow 0.18s var(--ease);
+}
+.onerupee-strip-cta:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+@media (max-width: 560px) {
+  .onerupee-strip-content {
+    flex-wrap: wrap;
+  }
+  .onerupee-strip-text {
+    flex: 1 1 55%;
+  }
+  .onerupee-strip-cta {
+    width: 100%;
+    justify-content: center;
+    margin-top: 4px;
+  }
+}
+
+/* =====================================================================
+   ✦ CART — bordered grid panel + recommendations spacing
+   ===================================================================== */
+.cart-items-panel {
+  background: #ffffff;
+  border: 1px solid var(--hairline);
+  border-radius: 16px;
+  box-shadow: var(--shadow-xs);
+  padding: var(--px-16);
+}
+.cart-recommendations {
+  margin-top: 4px;
+}
+.cart-recommendations .books-section {
+  background: #ffffff;
+  border: 1px solid var(--hairline);
+  border-radius: 16px;
+  box-shadow: var(--shadow-xs);
+  padding: var(--px-16);
+}
+
+/* =====================================================================
+   ✦ FREE BOOKMARKS CHIP (compact badge beside Order History in cart)
+   ===================================================================== */
+.freebie-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--tertiary);
+  background: var(--tertiary-light-10);
+  border: 1px solid var(--tertiary-light-20);
+  border-radius: var(--r-pill);
+  padding: 7px 12px;
+  white-space: nowrap;
+}
+@media (max-width: 560px) {
+  .freebie-chip span {
+    display: none;
+  }
+  .freebie-chip {
+    padding: 7px 9px;
   }
 }

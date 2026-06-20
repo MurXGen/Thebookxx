@@ -12,6 +12,7 @@ import { Loader2 } from "lucide-react";
 import UnlockChip from "@/components/UI/UnlockChip";
 import StoreReviews from "@/components/StoreReviews";
 import OneRupeeHero from "@/components/OneRupeeHero";
+import HomeHero from "@/components/HomeHero";
 
 // Lazy load components with named exports
 const BestsellerStage = lazy(() => import("@/components/BestsellerStage"));
@@ -96,6 +97,9 @@ export default function HomePage() {
     return (
       <div className="min-h-screen flex flex-col gap-32">
         <Navbar />
+        <h1 className="sr-only">
+          Buy Books Online in India at Best Prices — TheBookX | Books Starting at ₹1
+        </h1>
         <LoadingFallback />
       </div>
     );
@@ -112,6 +116,9 @@ export default function HomePage() {
       <IntroVideo />
 
       <Navbar />
+
+      {/* Static hero — provides the visible H1 + value prop above the carousel */}
+      <HomeHero />
 
       <PincodeModal />
 

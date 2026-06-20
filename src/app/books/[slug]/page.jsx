@@ -37,13 +37,16 @@ export async function generateMetadata({ params }) {
     }
 
     return {
-      title: "Book Not Found | TheBookX",
+      // Brand suffix is added by the root title template ("%s | TheBookX").
+      title: "Book Not Found",
       description: "The requested book could not be found at TheBookX.",
     };
   }
 
-  const bookUrl = `https://thebookx.in/books/${slugify(book.name)}`;
-  const title = `${book.name} by ${book.author || "Various Authors"} | Buy Online at Best Price | TheBookX`;
+  const bookUrl = `https://www.thebookx.in/books/${slugify(book.name)}`;
+  // No trailing "| TheBookX" here — the root template appends it once,
+  // which fixes the previous doubled "| TheBookX | TheBookX" suffix.
+  const title = `${book.name} by ${book.author || "Various Authors"} | Buy Online at Best Price`;
   const description = `${book.description.substring(0, 155)} Shop now at TheBookX — India's most trusted online bookstore. Free shipping across India.`;
 
   return {

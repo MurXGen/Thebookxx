@@ -2199,7 +2199,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(209),
     discountedPrice: 209,
   },
-  },
   {
     id: "bk-137",
     name: "The Hidden Hindu: Book 1",

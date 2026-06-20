@@ -498,4 +498,5 @@ export const bookImages = {
   "trading-in-the-zone": `${BOOK_IMAGE_BASE_PATH}/trading-in-the-zone.jpeg`,
   "the-striker": `${BOOK_IMAGE_BASE_PATH}/the-striker.jpeg`,
   "the-defender": `${BOOK_IMAGE_BASE_PATH}/the-defender.jpeg`,
+  "thinking-fast-and-slow": `${BOOK_IMAGE_BASE_PATH}/thinking-fast-and-slow.jpeg`,
 };

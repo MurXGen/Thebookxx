@@ -200,6 +200,24 @@ export default async function BlogPage({ params }) {
   }
 
   const structuredData = generateStructuredData(blog);
+
+  // FAQPage schema — built from the post's FAQ section (rich-result eligible)
+  const faqStructuredData =
+    blog.faqs && blog.faqs.length > 0
+      ? {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: blog.faqs.map((faq) => ({
+            "@type": "Question",
+            name: faq.question,
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: faq.answer,
+            },
+          })),
+        }
+      : null;
+
   const book = authorData.publishedBooks[0];
 
   // Filter out current blog from related blogs
@@ -211,6 +229,14 @@ export default async function BlogPage({ params }) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
+      {faqStructuredData && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(faqStructuredData),
+          }}
+        />
+      )}
 
       <div className="section-1200" style={{ padding: "40px 20px" }}>
         <div className="blog-layout">

@@ -156,25 +156,13 @@ export default async function sitemap() {
       priority: 0.85,
     },
     {
-      url: `${baseUrl}/wishlist`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.5,
-    },
-    {
-      url: `${baseUrl}/cart`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.5,
-    },
-    {
       url: `${baseUrl}/terms`,
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.3,
     },
     {
-      url: `${baseUrl}/refunds`,
+      url: `${baseUrl}/refund`,
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.3,
@@ -186,13 +174,13 @@ export default async function sitemap() {
       priority: 0.3,
     },
     {
-      url: `${baseUrl}/about`,
+      url: `${baseUrl}/about-us`,
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.4,
     },
     {
-      url: `${baseUrl}/contact`,
+      url: `${baseUrl}/contact-us`,
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.4,

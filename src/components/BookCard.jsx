@@ -236,7 +236,7 @@ export default function BookCard({ book }) {
             >
               <Image
                 src={book.image}
-                alt={`${book.name} book cover - Buy online at TheBookX`}
+                alt={`${book.name}${book.author ? ` by ${book.author}` : ""} book cover — buy online at TheBookX`}
                 fill
                 className={`book-image ${imageLoaded ? "loaded" : ""}`}
                 onLoadingComplete={() => setImageLoaded(true)}

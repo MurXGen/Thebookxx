@@ -8399,4 +8399,25 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
   },
+  {
+    id: "bk-517",
+    name: "Thinking, Fast and Slow",
+    image: bookImages["thinking-fast-and-slow"],
+    description:
+      "Uncover the hidden forces that shape your decisions with Nobel laureate Daniel Kahneman's landmark bestseller 'Thinking, Fast and Slow' at TheBookX.in. This groundbreaking work of popular science takes you on a tour of the mind, explaining the two systems that drive the way we think [citation:2][citation:9]. 'System 1' is fast, intuitive, and emotional; 'System 2' is slower, more deliberative, and more logical [citation:2][citation:3][citation:9]. Kahneman exposes the extraordinary capabilities—and also the faults and biases—of fast thinking, and reveals the pervasive influence of intuitive impressions on our thoughts and behavior [citation:2][citation:5][citation:7]. Drawing on decades of research that launched the fields of behavioral economics and happiness studies, he offers practical insights into how choices are made in both our business and personal lives [citation:2][citation:4][citation:6]. Learn how to guard against cognitive biases, avoid costly mental glitches, and make more informed decisions. Perfect for anyone interested in psychology, economics, or simply understanding how their own mind works. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now—books starting at just ₹1 for a limited offer.",
+    author: "Daniel Kahneman",
+    pages: "499",
+    language: "English",
+    size: "Paperback",
+    stock: 20,
+    catalogue: [
+      "non-fiction",
+      "psychology",
+      "economics",
+      "bestseller",
+      "behavioral-science",
+    ],
+    originalPrice: calculateOriginalPrice(199),
+    discountedPrice: 199,
+  },
 ];

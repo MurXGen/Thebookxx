@@ -26,6 +26,7 @@ export default function Navbar() {
 
   // Menu links data
   const menuLinks = [
+    { name: "About us", path: "/about-us" },
     { name: "Terms and Conditions", path: "/terms" },
     { name: "Privacy Policy", path: "/privacy" },
     { name: "Refund Policy", path: "/refund" },

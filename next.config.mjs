@@ -10,6 +10,11 @@ const nextConfig = {
         destination: "/blogs",
         permanent: true,
       },
+      // Canonicalise legacy/short page URLs to the real routes.
+      { source: "/about", destination: "/about-us", permanent: true },
+      { source: "/contact", destination: "/contact-us", permanent: true },
+      { source: "/refunds", destination: "/refund", permanent: true },
+      { source: "/cart", destination: "/bag", permanent: true },
       {
         source: "/blog/:slug*",
         destination: "/blogs/:slug*",

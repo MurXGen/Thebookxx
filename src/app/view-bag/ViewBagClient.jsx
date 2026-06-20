@@ -107,7 +107,7 @@ const UNABLE_TO_DELIVER_REASONS = [
 ];
 
 // =================== Shipping document constants & helpers ===================
-// TheBookX sender details — used on every India Post CDF-I declaration and
+// TheBookX sender details, used on every India Post CDF-I declaration and
 // every customer address label exported from this page.
 const SENDER = {
   name: "TheBookX",
@@ -124,7 +124,7 @@ const SENDER = {
 
 // Build a 2× scaled canvas with consistent drawing helpers. Returns the
 // canvas, ctx, and a small toolkit (text, rect, wrap, download).
-// Lives at module level — pure, no component state.
+// Lives at module level, pure, no component state.
 function buildCanvas(W, H) {
   const canvas = document.createElement("canvas");
   canvas.width = W * 2;
@@ -250,12 +250,12 @@ function drawDeclarationForm(c, startY, data) {
   c.rect(X, y, COL_LEFT_W, 45);
   c.rect(X + COL_LEFT_W, y, W - COL_LEFT_W, 45);
   c.text("CUSTOMER ID", X + 10, y + 27, { font: "bold 11px sans-serif" });
-  c.text(orderId || "—", X + COL_LEFT_W + 10, y + 27, {
+  c.text(orderId || "", X + COL_LEFT_W + 10, y + 27, {
     font: "12px sans-serif",
   });
   y += 45;
 
-  // ----- Category row 1 — BOOKS/DOCUMENT is checked -----
+  // ----- Category row 1, BOOKS/DOCUMENT is checked -----
   const COL_W = W / 3;
   const H_CAT = 50;
   c.rect(X, y, COL_W, H_CAT);
@@ -314,7 +314,7 @@ function drawDeclarationForm(c, startY, data) {
     font: "11px sans-serif",
     align: "center",
   });
-  // YES [ ]   NO [X] — rendered as labels with drawn checkboxes for the icon
+  // YES [ ]   NO [X], rendered as labels with drawn checkboxes for the icon
   const cx = c.W / 2;
   c.text("YES", cx - 70, y + 71, { font: "bold 11px sans-serif" });
   c.drawCheckbox(cx - 42, y + 58, 14, false);
@@ -397,25 +397,25 @@ function drawDeclarationForm(c, startY, data) {
   const aX = X + COL_HALF + 10;
   let ay = y + 20;
   c.text("NAME:", aX, ay, { font: "bold 10px sans-serif", color: "#555" });
-  c.text(customerName || "—", aX + 50, ay, { font: "bold 12px sans-serif" });
+  c.text(customerName || "", aX + 50, ay, { font: "bold 12px sans-serif" });
   ay += 24;
   c.text("ADDRESS:", aX, ay, { font: "bold 10px sans-serif", color: "#555" });
-  c.wrap(customerAddress || "—", aX, ay + 16, COL_HALF - 20, 14, {
+  c.wrap(customerAddress || "", aX, ay + 16, COL_HALF - 20, 14, {
     font: "11px sans-serif",
   });
 
   ay = y + H_BODY - 70;
   c.text("STATE:", aX, ay, { font: "bold 10px sans-serif", color: "#555" });
-  c.text(customerState || "—", aX + 60, ay, { font: "11px sans-serif" });
+  c.text(customerState || "", aX + 60, ay, { font: "11px sans-serif" });
   ay += 20;
   c.text("PINCODE:", aX, ay, { font: "bold 10px sans-serif", color: "#555" });
-  c.text(customerPincode || "—", aX + 70, ay, { font: "11px sans-serif" });
+  c.text(customerPincode || "", aX + 70, ay, { font: "11px sans-serif" });
   ay += 20;
   c.text("MOBILE NO:", aX, ay, {
     font: "bold 10px sans-serif",
     color: "#555",
   });
-  c.text(customerPhone || "—", aX + 80, ay, { font: "11px sans-serif" });
+  c.text(customerPhone || "", aX + 80, ay, { font: "11px sans-serif" });
 
   y += H_BODY;
 
@@ -473,13 +473,13 @@ function drawAddressLabel(c, startY, data) {
 
   // Title row
   c.rect(X, y, W, 35);
-  c.text("SHIPPING LABEL  —  TheBookX", c.W / 2, y + 23, {
+  c.text("SHIPPING LABEL, TheBookX", c.W / 2, y + 23, {
     font: "bold 13px sans-serif",
     align: "center",
   });
   y += 35;
 
-  // COD callout — large bold text, only when this is a COD order.
+  // COD callout, large bold text, only when this is a COD order.
   // Sits between the title and the FROM/TO table so a courier sees the
   // cash-to-collect amount immediately on picking up the parcel.
   if (isCOD && codAmount) {
@@ -501,7 +501,7 @@ function drawAddressLabel(c, startY, data) {
   });
   y += 28;
 
-  // Body — 2 columns
+  // Body, 2 columns
   const H_BODY = 280;
   c.rect(X, y, COL_HALF, H_BODY);
   c.rect(X + COL_HALF, y, COL_HALF, H_BODY);
@@ -531,11 +531,11 @@ function drawAddressLabel(c, startY, data) {
   const aX = X + COL_HALF + 10;
   let ay = y + 18;
   c.text("NAME:", aX, ay, { font: "bold 10px sans-serif", color: "#555" });
-  c.text(customerName || "—", aX, ay + 16, { font: "bold 13px sans-serif" });
+  c.text(customerName || "", aX, ay + 16, { font: "bold 13px sans-serif" });
   ay += 42;
   c.text("ADDRESS:", aX, ay, { font: "bold 10px sans-serif", color: "#555" });
   const wrapEndY = c.wrap(
-    customerAddress || "—",
+    customerAddress || "",
     aX,
     ay + 16,
     COL_HALF - 20,
@@ -546,13 +546,13 @@ function drawAddressLabel(c, startY, data) {
   );
   ay = wrapEndY + 16;
   c.text("CITY:", aX, ay, { font: "bold 10px sans-serif", color: "#555" });
-  c.text(customerCity || "—", aX + 50, ay, { font: "12px sans-serif" });
+  c.text(customerCity || "", aX + 50, ay, { font: "12px sans-serif" });
   ay += 18;
   c.text("PINCODE:", aX, ay, {
     font: "bold 10px sans-serif",
     color: "#555",
   });
-  c.text(customerPincode || "—", aX + 60, ay, { font: "12px sans-serif" });
+  c.text(customerPincode || "", aX + 60, ay, { font: "12px sans-serif" });
   ay += 18;
   c.text("MOBILE:", aX, ay, { font: "bold 10px sans-serif", color: "#555" });
   c.text(`+91 ${customerPhone || ""}`, aX + 55, ay, {
@@ -563,7 +563,7 @@ function drawAddressLabel(c, startY, data) {
 
   // Footer with order ID + date
   c.rect(X, y, W, 30);
-  c.text(`ORDER ID: ${orderId || "—"}`, X + 10, y + 20, {
+  c.text(`ORDER ID: ${orderId || ""}`, X + 10, y + 20, {
     font: "bold 11px sans-serif",
   });
   c.text(
@@ -594,7 +594,7 @@ export default function ViewBagClient() {
     isDelivered: false,
     advancePaid: false,
     isUnableToDeliver: false, // NEW
-    unableToDeliverReason: "", // NEW — stores the reason key
+    unableToDeliverReason: "", // NEW, stores the reason key
   });
   const [trackingId, setTrackingId] = useState("");
   const [showTrackingInput, setShowTrackingInput] = useState(false);
@@ -865,7 +865,7 @@ export default function ViewBagClient() {
     return standardOriginal;
   };
 
-  // Generic helper — persist the new orderStatus to localStorage
+  // Generic helper, persist the new orderStatus to localStorage
   const persistStatus = (newStatus) => {
     setOrderStatus(newStatus);
     if (orderData) {
@@ -880,7 +880,7 @@ export default function ViewBagClient() {
     persistStatus({ ...orderStatus, [field]: value });
   };
 
-  // Toggle "Unable to Deliver" — when turning OFF, clear the reason too
+  // Toggle "Unable to Deliver", when turning OFF, clear the reason too
   const handleUnableToDeliverToggle = (checked) => {
     persistStatus({
       ...orderStatus,
@@ -1015,7 +1015,7 @@ export default function ViewBagClient() {
 
   // ===== Canvas-based Invoice Export =====
   // Draws an invoice on a hidden canvas and downloads it as PNG.
-  // Pure canvas — no external libraries.
+  // Pure canvas, no external libraries.
   const exportInvoice = () => {
     if (!orderData || !cartBooks.length) {
       alert("Order data not available");
@@ -1033,7 +1033,7 @@ export default function ViewBagClient() {
       stripe: "#fafafa",
     };
 
-    // Dynamic height — calculated based on item count
+    // Dynamic height, calculated based on item count
     const baseHeight = 700;
     const perItemHeight = 32;
     const extraForItems = Math.max(0, cartBooks.length - 3) * perItemHeight;
@@ -1089,7 +1089,7 @@ export default function ViewBagClient() {
     // Background
     rect(0, 0, W, H, COLORS.bg);
 
-    // Header band — orange brand strip
+    // Header band, orange brand strip
     rect(0, 0, W, 8, COLORS.tertiary);
 
     let y = 60;
@@ -1110,7 +1110,7 @@ export default function ViewBagClient() {
       font: "12px sans-serif",
       color: COLORS.muted,
     });
-    text(`Order #${orderData.orderId || "—"}`, W - 40, y, {
+    text(`Order #${orderData.orderId || ""}`, W - 40, y, {
       font: "12px sans-serif",
       color: COLORS.muted,
       align: "right",
@@ -1166,7 +1166,7 @@ export default function ViewBagClient() {
       color: COLORS.text,
     });
 
-    // PAYMENT / DELIVERY block — top right of bill-to row
+    // PAYMENT / DELIVERY block, top right of bill-to row
     const payX = W - 40;
     let payY = y - 80;
     text("PAYMENT", payX, payY, {
@@ -1175,7 +1175,7 @@ export default function ViewBagClient() {
       align: "right",
     });
     payY += 22;
-    text(orderData.paymentMethod || "—", payX, payY, {
+    text(orderData.paymentMethod || "", payX, payY, {
       font: "bold 14px sans-serif",
       align: "right",
     });
@@ -1243,7 +1243,7 @@ export default function ViewBagClient() {
     y += 10;
     line(40, y, W - 40, y);
 
-    // Bill summary — right-aligned
+    // Bill summary, right-aligned
     y += 24;
     const subtotalAmt = totalDiscountedValue;
     const discountAmt = totalOriginal - totalDiscountedValue;
@@ -1289,7 +1289,7 @@ export default function ViewBagClient() {
     line(480, y, W - 40, y, COLORS.text, 2);
     y += 28;
 
-    // TOTAL row — bold
+    // TOTAL row, bold
     text("TOTAL", 480, y, { font: "bold 18px sans-serif" });
     text(`₹${totalWithDelivery}`, W - 40, y, {
       font: "bold 22px sans-serif",
@@ -1331,7 +1331,7 @@ export default function ViewBagClient() {
   // Plain lined form matching the official India Post CDF-I layout.
   // Sender block is pre-filled with TheBookX details; addressee block uses
   // customer data from this order. COD orders get a highlighted "Cash on
-  // Delivery — Collect from Addressee" row with the total amount.
+  // Delivery, Collect from Addressee" row with the total amount.
   const exportIndianPostDeclaration = () => {
     if (!orderData || !cartBooks.length) {
       alert("Order data not available");
@@ -1355,7 +1355,7 @@ export default function ViewBagClient() {
   };
 
   // ===== Simple FROM / TO address label (canvas → PNG) =====
-  // No frills — just a lined table with sender (TheBookX) on the left and
+  // No frills, just a lined table with sender (TheBookX) on the left and
   // the customer addressee on the right. Good for cutting and pasting onto
   // a parcel.
   const exportAddressLabel = () => {
@@ -1379,7 +1379,7 @@ export default function ViewBagClient() {
     c.download(`address_label_${orderData.orderId || Date.now()}.png`);
   };
 
-  // ===== Combined frame — declaration + address label stacked vertically =====
+  // ===== Combined frame, declaration + address label stacked vertically =====
   // Single PNG containing both documents one above the other, with a small
   // gap between them. Saves a print step when shipping.
   const exportShippingDocsCombined = () => {
@@ -1457,14 +1457,14 @@ export default function ViewBagClient() {
     const orderStatusUrl = "https://thebookx.in/profile";
     const deliveryDays = isFasterDelivery ? "3-5" : "5-7";
 
-    // The "Check Order Status" footer — appears on every message, mirrors the
+    // The "Check Order Status" footer, appears on every message, mirrors the
     // CTA from the reference screenshot.
     const footer =
       `\n\n🔗 *Check Order Status:* ${orderStatusUrl}\n` +
       `\nReply STOP to unsubscribe`;
 
     if (messageType === "shipping") {
-      // Order received, not yet shipped — mirrors the reference screenshot
+      // Order received, not yet shipped, mirrors the reference screenshot
       message = encodeURIComponent(
         `Hello ${customerName},\n\n` +
           `Your order has been successfully received.\n\n` +
@@ -1519,7 +1519,7 @@ export default function ViewBagClient() {
           `Order ID: #${orderId}\n` +
           `Tracking ID: ${savedTrackingId || "Not available"}\n\n` +
           `Please reply with the updated details and we'll arrange a re-delivery right away.\n\n` +
-          `Thank you for your patience.\n— Team TheBookX` +
+          `Thank you for your patience.\n, Team TheBookX` +
           footer,
       );
     }
@@ -1794,7 +1794,7 @@ export default function ViewBagClient() {
                       <span className="font-14">Item Delivered</span>
                     </label>
 
-                    {/* NEW: Unable to Deliver — only shown if not yet delivered */}
+                    {/* NEW: Unable to Deliver, only shown if not yet delivered */}
                     {!orderStatus.isDelivered && (
                       <div className="mt-12">
                         <label className="flex items-center gap-8 cursor-pointer">
@@ -1883,7 +1883,7 @@ export default function ViewBagClient() {
                           <input
                             type="text"
                             className="sec-mid-btn flex-grow"
-                            placeholder="Enter tracking ID (e.g., SBK123456789)"
+                            placeholder="Enter tracking ID (e.g. SBK123456789)"
                             value={trackingId}
                             onChange={(e) => setTrackingId(e.target.value)}
                             style={{ flex: 1 }}
@@ -1905,7 +1905,7 @@ export default function ViewBagClient() {
 
               {/* ===== Reminder buttons (priority order) ===== */}
               <div className="reminder-buttons-section mt-16 flex flex-col gap-8">
-                {/* Unable to Deliver — takes top priority when active */}
+                {/* Unable to Deliver, takes top priority when active */}
                 {orderStatus.isUnableToDeliver &&
                   orderStatus.unableToDeliverReason && (
                     <button
@@ -2020,7 +2020,7 @@ export default function ViewBagClient() {
                       Unable to deliver
                       {orderStatus.unableToDeliverReason && (
                         <>
-                          {" — "}
+                          {", "}
                           {
                             UNABLE_TO_DELIVER_REASONS.find(
                               (r) =>
@@ -2204,7 +2204,7 @@ export default function ViewBagClient() {
       </div>
 
       <div className="flex flex-col gap-12">
-        {/* Primary CTA — chat with support, prefilled with order context */}
+        {/* Primary CTA, chat with support, prefilled with order context */}
         <a
           href={`https://wa.me/917710892108?text=${encodeURIComponent(
             `Hey hi 👋\n\nI need help with my order #${orderData?.orderId || "N/A"}.\n\nCould you please let me know when it will be shipped?\n\nThanks!`,
@@ -2218,7 +2218,7 @@ export default function ViewBagClient() {
           Chat on WhatsApp
         </a>
 
-        {/* Export Invoice — canvas → PNG */}
+        {/* Export Invoice, canvas → PNG */}
         <button
           onClick={exportInvoice}
           className="sec-big-btn flex items-center justify-center gap-8"

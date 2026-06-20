@@ -29,7 +29,7 @@ import { FaWhatsapp } from "react-icons/fa";
 import Link from "next/link";
 import { FcDocument } from "react-icons/fc";
 
-// COD handling fee — added to total only when payment method is COD.
+// COD handling fee, added to total only when payment method is COD.
 // Disclosed transparently after delivery selection via CODHandlingFeeModal.
 const COD_HANDLING_FEE = 29;
 
@@ -593,7 +593,7 @@ _Thank you for shopping with TheBookX! 📚✨_
         <div className="cart-recommendations">
           <YouMayLike
             title="Readers who picked these also loved…"
-            subtitle="Hand-picked for you — add one more and make it a reading you'll remember ❤️"
+            subtitle="Hand-picked for you, add one more and make it a reading you'll remember ❤️"
             items={recommendedBooks}
             renderItem={(b) => <BookCard key={b.id} book={b} />}
             showLoadMore={false}

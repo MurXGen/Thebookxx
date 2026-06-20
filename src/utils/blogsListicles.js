@@ -50,7 +50,7 @@ export const listicleBlogs = {
     publishDate: "2026-06-18",
     hero: IMG.money,
     excerpt:
-      "Five personal-finance books that change how you think about money — from behavioural investing to building lasting wealth. Curated by Murthy Thevar.",
+      "Five personal-finance books that change how you think about money, from behavioural investing to building lasting wealth. Curated by Murthy Thevar.",
     keywords: [
       "best money books",
       "personal finance books india",
@@ -62,12 +62,12 @@ export const listicleBlogs = {
       {
         type: "paragraph",
         content:
-          "Money problems are rarely about maths — they're about behaviour. These five books, all available on TheBookX, rewire how you think about earning, saving and investing. Read them in this order and you'll have a complete personal-finance education for less than the cost of one dinner out.",
+          "Money problems are rarely about maths, they're about behaviour. These five books, all available on TheBookX, rewire how you think about earning, saving and investing. Read them in this order and you'll have a complete personal-finance education for less than the cost of one dinner out.",
       },
       {
         type: "heading",
         level: 2,
-        content: `1. ${L("the-psychology-of-money", "The Psychology of Money")} — Morgan Housel`,
+        content: `1. ${L("the-psychology-of-money", "The Psychology of Money")}, Morgan Housel`,
       },
       {
         type: "paragraph",
@@ -76,17 +76,17 @@ export const listicleBlogs = {
       {
         type: "heading",
         level: 2,
-        content: `2. ${L("the-almanack-of-naval-ravikant", "The Almanack of Naval Ravikant")} — Eric Jorgenson`,
+        content: `2. ${L("the-almanack-of-naval-ravikant", "The Almanack of Naval Ravikant")}, Eric Jorgenson`,
       },
       {
         type: "paragraph",
         content:
-          "A curated collection of Naval Ravikant's wisdom on wealth and happiness. Short, dense and endlessly quotable — the chapter on 'specific knowledge' alone is worth it. <strong>From ₹159.</strong>",
+          "A curated collection of Naval Ravikant's wisdom on wealth and happiness. Short, dense and endlessly quotable, the chapter on 'specific knowledge' alone is worth it. <strong>From ₹159.</strong>",
       },
       {
         type: "heading",
         level: 2,
-        content: `3. ${L("the-5-types-of-wealth", "The 5 Types of Wealth")} — Sahil Bloom`,
+        content: `3. ${L("the-5-types-of-wealth", "The 5 Types of Wealth")}, Sahil Bloom`,
       },
       {
         type: "paragraph",
@@ -96,7 +96,7 @@ export const listicleBlogs = {
       {
         type: "heading",
         level: 2,
-        content: `4. ${L("make-epic-money", "Make Epic Money")} — Ankur Warikoo`,
+        content: `4. ${L("make-epic-money", "Make Epic Money")}, Ankur Warikoo`,
       },
       {
         type: "paragraph",
@@ -106,25 +106,25 @@ export const listicleBlogs = {
       {
         type: "heading",
         level: 2,
-        content: `5. ${L("the-intelligent-investor", "The Intelligent Investor")} — Benjamin Graham`,
+        content: `5. ${L("the-intelligent-investor", "The Intelligent Investor")}, Benjamin Graham`,
       },
       {
         type: "paragraph",
         content:
-          "The classic Warren Buffett calls 'by far the best book on investing ever written.' Dense but foundational — read it once you've built the mindset from the first four. <strong>From ₹239.</strong>",
+          "The classic Warren Buffett calls 'by far the best book on investing ever written.' Dense but foundational, read it once you've built the mindset from the first four. <strong>From ₹239.</strong>",
       },
       {
         type: "callout",
         style: "info",
         title: "Build your money shelf",
-        content: `Browse the full ${C("finance", "Finance collection")} on TheBookX — free delivery, Cash on Delivery, and books starting at ₹1.`,
+        content: `Browse the full ${C("finance", "Finance collection")} on TheBookX, free delivery, Cash on Delivery, and books starting at ₹1.`,
       },
     ],
     faqs: [
       {
         question: "Which money book should a complete beginner read first?",
         answer:
-          "Start with The Psychology of Money — it's the most readable and fixes your money mindset before you touch any investing tactics.",
+          "Start with The Psychology of Money, it's the most readable and fixes your money mindset before you touch any investing tactics.",
       },
       {
         question: "Are these finance books relevant for Indian readers?",
@@ -142,7 +142,7 @@ export const listicleBlogs = {
     publishDate: "2026-06-16",
     hero: IMG.clarity,
     excerpt:
-      "The 10 most life-changing self-help books to read this year — habits, mindset, decision-making and clarity. Hand-picked by Murthy Thevar.",
+      "The 10 most life-changing self-help books to read this year, habits, mindset, decision-making and clarity. Hand-picked by Murthy Thevar.",
     keywords: [
       "best self help books 2026",
       "top self help books",
@@ -160,16 +160,16 @@ export const listicleBlogs = {
         type: "list",
         style: "ordered",
         items: [
-          `${L("atomic-habits", "Atomic Habits")} — James Clear · the definitive guide to tiny changes that compound. <strong>₹139</strong>`,
-          `${L("the-subtle-art-of-not-giving-a-f-ck", "The Subtle Art of Not Giving a F*ck")} — Mark Manson · choose what to care about. <strong>₹129</strong>`,
-          `${L("the-courage-to-be-disliked", "The Courage to Be Disliked")} — Kishimi & Koga · freedom through Adlerian psychology. <strong>₹159</strong>`,
-          `${L("the-art-of-clarity", "The Art of Clarity")} — Murthy Thevar · think and communicate without confusion. <strong>₹159</strong>`,
-          `${L("surrounded-by-idiots", "Surrounded by Idiots")} — Thomas Erikson · understand the 4 personality types. <strong>₹139</strong>`,
-          `${L("don-t-sweat-the-small-stuff", "Don't Sweat the Small Stuff")} — Richard Carlson · stop stressing over little things. <strong>₹129</strong>`,
-          `${L("the-laws-of-human-nature", "The Laws of Human Nature")} — Robert Greene · master human behaviour. <strong>₹329</strong>`,
-          `${L("the-48-laws-of-power", "The 48 Laws of Power")} — Robert Greene · timeless strategy. <strong>₹319</strong>`,
-          `${L("diary-of-a-ceo", "Diary of a CEO")} — Steven Bartlett · 33 laws for work and life. <strong>₹179</strong>`,
-          `${L("the-art-of-spending-money", "The Art of Spending Money")} — Morgan Housel · spend intentionally. <strong>₹159</strong>`,
+          `${L("atomic-habits", "Atomic Habits")}, James Clear · the definitive guide to tiny changes that compound. <strong>₹139</strong>`,
+          `${L("the-subtle-art-of-not-giving-a-f-ck", "The Subtle Art of Not Giving a F*ck")}, Mark Manson · choose what to care about. <strong>₹129</strong>`,
+          `${L("the-courage-to-be-disliked", "The Courage to Be Disliked")}, Kishimi & Koga · freedom through Adlerian psychology. <strong>₹159</strong>`,
+          `${L("the-art-of-clarity", "The Art of Clarity")}, Murthy Thevar · think and communicate without confusion. <strong>₹159</strong>`,
+          `${L("surrounded-by-idiots", "Surrounded by Idiots")}, Thomas Erikson · understand the 4 personality types. <strong>₹139</strong>`,
+          `${L("don-t-sweat-the-small-stuff", "Don't Sweat the Small Stuff")}, Richard Carlson · stop stressing over little things. <strong>₹129</strong>`,
+          `${L("the-laws-of-human-nature", "The Laws of Human Nature")}, Robert Greene · master human behaviour. <strong>₹329</strong>`,
+          `${L("the-48-laws-of-power", "The 48 Laws of Power")}, Robert Greene · timeless strategy. <strong>₹319</strong>`,
+          `${L("diary-of-a-ceo", "Diary of a CEO")}, Steven Bartlett · 33 laws for work and life. <strong>₹179</strong>`,
+          `${L("the-art-of-spending-money", "The Art of Spending Money")}, Morgan Housel · spend intentionally. <strong>₹159</strong>`,
         ],
       },
       {
@@ -179,13 +179,13 @@ export const listicleBlogs = {
       },
       {
         type: "paragraph",
-        content: `If you only read one, make it ${L("atomic-habits", "Atomic Habits")} — it gives you the engine to act on everything else. Pair it with ${L("the-art-of-clarity", "The Art of Clarity")} to fix the thinking behind the habits.`,
+        content: `If you only read one, make it ${L("atomic-habits", "Atomic Habits")}, it gives you the engine to act on everything else. Pair it with ${L("the-art-of-clarity", "The Art of Clarity")} to fix the thinking behind the habits.`,
       },
       {
         type: "callout",
         style: "info",
         title: "Explore more",
-        content: `See the complete ${C("self-help", "Self-Help collection")} — 100+ titles starting at ₹1.`,
+        content: `See the complete ${C("self-help", "Self-Help collection")}, 100+ titles starting at ₹1.`,
       },
     ],
     faqs: [
@@ -210,7 +210,7 @@ export const listicleBlogs = {
     publishDate: "2026-06-14",
     hero: IMG.overthink,
     excerpt:
-      "Five gripping psychological thrillers with twists you won't see coming — perfect for a one-sitting read. Curated by Murthy Thevar.",
+      "Five gripping psychological thrillers with twists you won't see coming, perfect for a one-sitting read. Curated by Murthy Thevar.",
     keywords: [
       "best thriller books",
       "psychological thriller novels",
@@ -222,12 +222,12 @@ export const listicleBlogs = {
       {
         type: "paragraph",
         content:
-          "Looking for a book you'll finish in one weekend? These five thrillers are masterclasses in suspense — twisty, fast and impossible to put down. All in stock on TheBookX.",
+          "Looking for a book you'll finish in one weekend? These five thrillers are masterclasses in suspense, twisty, fast and impossible to put down. All in stock on TheBookX.",
       },
       {
         type: "heading",
         level: 2,
-        content: `1. ${L("the-housemaid", "The Housemaid")} — Freida McFadden`,
+        content: `1. ${L("the-housemaid", "The Housemaid")}, Freida McFadden`,
       },
       {
         type: "paragraph",
@@ -236,7 +236,7 @@ export const listicleBlogs = {
       {
         type: "heading",
         level: 2,
-        content: `2. ${L("the-inmate", "The Inmate")} — Freida McFadden`,
+        content: `2. ${L("the-inmate", "The Inmate")}, Freida McFadden`,
       },
       {
         type: "paragraph",
@@ -246,7 +246,7 @@ export const listicleBlogs = {
       {
         type: "heading",
         level: 2,
-        content: `3. ${L("never-lie", "Never Lie")} — Freida McFadden`,
+        content: `3. ${L("never-lie", "Never Lie")}, Freida McFadden`,
       },
       {
         type: "paragraph",
@@ -256,7 +256,7 @@ export const listicleBlogs = {
       {
         type: "heading",
         level: 2,
-        content: `4. ${L("dark-matter", "Dark Matter")} — Blake Crouch`,
+        content: `4. ${L("dark-matter", "Dark Matter")}, Blake Crouch`,
       },
       {
         type: "paragraph",
@@ -266,7 +266,7 @@ export const listicleBlogs = {
       {
         type: "heading",
         level: 2,
-        content: `5. ${L("the-locked-door", "The Locked Door")} — Freida McFadden`,
+        content: `5. ${L("the-locked-door", "The Locked Door")}, Freida McFadden`,
       },
       {
         type: "paragraph",
@@ -284,7 +284,7 @@ export const listicleBlogs = {
       {
         question: "What is the best thriller book to start with?",
         answer:
-          "The Housemaid by Freida McFadden — it's the most accessible, addictive and twist-packed entry point into modern psychological thrillers.",
+          "The Housemaid by Freida McFadden, it's the most accessible, addictive and twist-packed entry point into modern psychological thrillers.",
       },
     ],
   }),
@@ -297,7 +297,7 @@ export const listicleBlogs = {
     publishDate: "2026-06-12",
     hero: IMG.morning,
     excerpt:
-      "Seven brilliant retellings of Indian mythology — from the Mahabharata's Draupadi to Amish's Shiva Trilogy. Curated by Murthy Thevar.",
+      "Seven brilliant retellings of Indian mythology, from the Mahabharata's Draupadi to Amish's Shiva Trilogy. Curated by Murthy Thevar.",
     keywords: [
       "best indian mythology books",
       "amish tripathi books",
@@ -315,13 +315,13 @@ export const listicleBlogs = {
         type: "list",
         style: "ordered",
         items: [
-          `${L("the-palace-of-illusions", "The Palace of Illusions")} — Chitra Banerjee Divakaruni · the Mahabharata through Draupadi's eyes. <strong>₹159</strong>`,
-          `${L("the-immortals-of-meluha", "The Immortals of Meluha")} — Amish Tripathi · book 1 of the legendary Shiva Trilogy. <strong>₹159</strong>`,
-          `${L("sita-warrior-of-mithila", "Sita: Warrior of Mithila")} — Amish Tripathi · a fierce, reimagined Sita. <strong>₹189</strong>`,
-          `${L("ram-scion-of-ikshvaku", "Ram: Scion of Ikshvaku")} — Amish Tripathi · the Ramayana, reborn. <strong>₹159</strong>`,
-          `${L("mahagatha-100-tales-from-the-puranas", "Mahagatha: 100 Tales from the Puranas")} — Satyarth Nayak. <strong>₹189</strong>`,
-          `${L("myth-mythya", "Myth = Mithya")} — Devdutt Pattanaik · decode Hindu mythology. <strong>₹149</strong>`,
-          `${L("ram-sita-raavan", "Ram Sita Raavan")} — Devdutt Pattanaik · a beautiful illustrated edition. <strong>₹509</strong>`,
+          `${L("the-palace-of-illusions", "The Palace of Illusions")}, Chitra Banerjee Divakaruni · the Mahabharata through Draupadi's eyes. <strong>₹159</strong>`,
+          `${L("the-immortals-of-meluha", "The Immortals of Meluha")}, Amish Tripathi · book 1 of the legendary Shiva Trilogy. <strong>₹159</strong>`,
+          `${L("sita-warrior-of-mithila", "Sita: Warrior of Mithila")}, Amish Tripathi · a fierce, reimagined Sita. <strong>₹189</strong>`,
+          `${L("ram-scion-of-ikshvaku", "Ram: Scion of Ikshvaku")}, Amish Tripathi · the Ramayana, reborn. <strong>₹159</strong>`,
+          `${L("mahagatha-100-tales-from-the-puranas", "Mahagatha: 100 Tales from the Puranas")}, Satyarth Nayak. <strong>₹189</strong>`,
+          `${L("myth-mythya", "Myth = Mithya")}, Devdutt Pattanaik · decode Hindu mythology. <strong>₹149</strong>`,
+          `${L("ram-sita-raavan", "Ram Sita Raavan")}, Devdutt Pattanaik · a beautiful illustrated edition. <strong>₹509</strong>`,
         ],
       },
       {
@@ -352,7 +352,7 @@ export const listicleBlogs = {
     publishDate: "2026-06-09",
     hero: IMG.saying_no,
     excerpt:
-      "Five books that quiet a racing mind and help you stop overthinking — practical, calming and genuinely useful. By Murthy Thevar.",
+      "Five books that quiet a racing mind and help you stop overthinking, practical, calming and genuinely useful. By Murthy Thevar.",
     keywords: [
       "books for overthinkers",
       "how to stop overthinking",
@@ -364,12 +364,12 @@ export const listicleBlogs = {
       {
         type: "paragraph",
         content:
-          "If your mind never switches off, you're not alone — and the right book can genuinely help. These five reads give you tools to quiet mental chatter and make decisions with confidence.",
+          "If your mind never switches off, you're not alone, and the right book can genuinely help. These five reads give you tools to quiet mental chatter and make decisions with confidence.",
       },
       {
         type: "heading",
         level: 2,
-        content: `1. ${L("don-t-believe-everything-you-think", "Don't Believe Everything You Think")} — Joseph Nguyen`,
+        content: `1. ${L("don-t-believe-everything-you-think", "Don't Believe Everything You Think")}, Joseph Nguyen`,
       },
       {
         type: "paragraph",
@@ -379,7 +379,7 @@ export const listicleBlogs = {
       {
         type: "heading",
         level: 2,
-        content: `2. ${L("the-art-of-not-overthinking", "The Art of Not Overthinking")} — Nick Trenton`,
+        content: `2. ${L("the-art-of-not-overthinking", "The Art of Not Overthinking")}, Nick Trenton`,
       },
       {
         type: "paragraph",
@@ -389,17 +389,17 @@ export const listicleBlogs = {
       {
         type: "heading",
         level: 2,
-        content: `3. ${L("the-courage-to-be-disliked", "The Courage to Be Disliked")} — Kishimi & Koga`,
+        content: `3. ${L("the-courage-to-be-disliked", "The Courage to Be Disliked")}, Kishimi & Koga`,
       },
       {
         type: "paragraph",
         content:
-          "A dialogue-style book that frees you from worrying what others think — a major source of overthinking. <strong>From ₹159.</strong>",
+          "A dialogue-style book that frees you from worrying what others think, a major source of overthinking. <strong>From ₹159.</strong>",
       },
       {
         type: "heading",
         level: 2,
-        content: `4. ${L("the-let-them-theory", "The Let Them Theory")} — Mel Robbins`,
+        content: `4. ${L("the-let-them-theory", "The Let Them Theory")}, Mel Robbins`,
       },
       {
         type: "paragraph",
@@ -409,7 +409,7 @@ export const listicleBlogs = {
       {
         type: "heading",
         level: 2,
-        content: `5. ${L("the-art-of-clarity", "The Art of Clarity")} — Murthy Thevar`,
+        content: `5. ${L("the-art-of-clarity", "The Art of Clarity")}, Murthy Thevar`,
       },
       {
         type: "paragraph",
@@ -440,7 +440,7 @@ export const listicleBlogs = {
     publishDate: "2026-06-06",
     hero: IMG.speech,
     excerpt:
-      "Eight swoon-worthy romance novels — from spicy Twisted series to heartfelt Indian love stories. Curated by Murthy Thevar.",
+      "Eight swoon-worthy romance novels, from spicy Twisted series to heartfelt Indian love stories. Curated by Murthy Thevar.",
     keywords: [
       "best romance novels",
       "romance books to read",
@@ -458,14 +458,14 @@ export const listicleBlogs = {
         type: "list",
         style: "ordered",
         items: [
-          `${L("twisted-love", "Twisted Love")} — Ana Huang · the viral grumpy-meets-sunshine series opener. <strong>₹159</strong>`,
-          `${L("red-flags-and-rishtas", "Red Flags and Rishtas")} — Rashmi Sharma · a desi rom-com you'll devour. <strong>₹159</strong>`,
-          `${L("we-are-there-for-each-other", "We Are There for Each Other")} — Anshul Sharma · a heartwarming Indian love story. <strong>₹149</strong>`,
-          `${L("too-good-to-be-true", "Too Good to Be True")} — Carola Lovering · a twisty romance with secrets. <strong>₹159</strong>`,
-          `${L("can-we-be-strangers-again", "Can We Be Strangers Again")} — Rithvik Singh · poetry for the heartbroken. <strong>₹139</strong>`,
-          `${L("i-don-t-love-you-anymore", "I Don't Love You Anymore")} — Rithvik Singh · moving on, beautifully written. <strong>₹109</strong>`,
-          `${L("all-he-ll-ever-be", "All He'll Ever Be")} — W. Winters · an intense, emotional read. <strong>₹239</strong>`,
-          `${L("thank-you-for-leaving", "Thank You for Leaving")} — Rithvik Singh · healing after heartbreak. <strong>₹129</strong>`,
+          `${L("twisted-love", "Twisted Love")}, Ana Huang · the viral grumpy-meets-sunshine series opener. <strong>₹159</strong>`,
+          `${L("red-flags-and-rishtas", "Red Flags and Rishtas")}, Rashmi Sharma · a desi rom-com you'll devour. <strong>₹159</strong>`,
+          `${L("we-are-there-for-each-other", "We Are There for Each Other")}, Anshul Sharma · a heartwarming Indian love story. <strong>₹149</strong>`,
+          `${L("too-good-to-be-true", "Too Good to Be True")}, Carola Lovering · a twisty romance with secrets. <strong>₹159</strong>`,
+          `${L("can-we-be-strangers-again", "Can We Be Strangers Again")}, Rithvik Singh · poetry for the heartbroken. <strong>₹139</strong>`,
+          `${L("i-don-t-love-you-anymore", "I Don't Love You Anymore")}, Rithvik Singh · moving on, beautifully written. <strong>₹109</strong>`,
+          `${L("all-he-ll-ever-be", "All He'll Ever Be")}, W. Winters · an intense, emotional read. <strong>₹239</strong>`,
+          `${L("thank-you-for-leaving", "Thank You for Leaving")}, Rithvik Singh · healing after heartbreak. <strong>₹129</strong>`,
         ],
       },
       {
@@ -492,7 +492,7 @@ export const listicleBlogs = {
     publishDate: "2026-06-03",
     hero: IMG.money,
     excerpt:
-      "Five timeless classics that belong on every bookshelf — from The Alchemist to Crime and Punishment. Curated by Murthy Thevar.",
+      "Five timeless classics that belong on every bookshelf, from The Alchemist to Crime and Punishment. Curated by Murthy Thevar.",
     keywords: [
       "best classic books",
       "timeless classic novels",
@@ -504,12 +504,12 @@ export const listicleBlogs = {
       {
         type: "paragraph",
         content:
-          "Some books never go out of style. These five classics have shaped readers for generations — and each is available on TheBookX at an unbeatable price.",
+          "Some books never go out of style. These five classics have shaped readers for generations, and each is available on TheBookX at an unbeatable price.",
       },
       {
         type: "heading",
         level: 2,
-        content: `1. ${L("the-alchemist", "The Alchemist")} — Paulo Coelho`,
+        content: `1. ${L("the-alchemist", "The Alchemist")}, Paulo Coelho`,
       },
       {
         type: "paragraph",
@@ -519,7 +519,7 @@ export const listicleBlogs = {
       {
         type: "heading",
         level: 2,
-        content: `2. ${L("crime-and-punishment", "Crime and Punishment")} — Fyodor Dostoevsky`,
+        content: `2. ${L("crime-and-punishment", "Crime and Punishment")}, Fyodor Dostoevsky`,
       },
       {
         type: "paragraph",
@@ -528,7 +528,7 @@ export const listicleBlogs = {
       {
         type: "heading",
         level: 2,
-        content: `3. ${L("pride-and-prejudice", "Pride and Prejudice")} — Jane Austen`,
+        content: `3. ${L("pride-and-prejudice", "Pride and Prejudice")}, Jane Austen`,
       },
       {
         type: "paragraph",
@@ -538,7 +538,7 @@ export const listicleBlogs = {
       {
         type: "heading",
         level: 2,
-        content: `4. ${L("the-metamorphosis", "The Metamorphosis")} — Franz Kafka`,
+        content: `4. ${L("the-metamorphosis", "The Metamorphosis")}, Franz Kafka`,
       },
       {
         type: "paragraph",
@@ -547,12 +547,12 @@ export const listicleBlogs = {
       {
         type: "heading",
         level: 2,
-        content: `5. ${L("and-then-there-were-none", "And Then There Were None")} — Agatha Christie`,
+        content: `5. ${L("and-then-there-were-none", "And Then There Were None")}, Agatha Christie`,
       },
       {
         type: "paragraph",
         content:
-          "The best-selling mystery of all time — ten strangers, one island, no escape. <strong>From ₹159.</strong>",
+          "The best-selling mystery of all time, ten strangers, one island, no escape. <strong>From ₹159.</strong>",
       },
       {
         type: "callout",
@@ -565,7 +565,7 @@ export const listicleBlogs = {
       {
         question: "Which classic book should I read first?",
         answer:
-          "The Alchemist — it's short, uplifting and accessible, making it the ideal gateway into reading classics.",
+          "The Alchemist, it's short, uplifting and accessible, making it the ideal gateway into reading classics.",
       },
     ],
   }),
@@ -578,7 +578,7 @@ export const listicleBlogs = {
     publishDate: "2026-05-31",
     hero: IMG.clarity,
     excerpt:
-      "Seven essential business and startup books for founders and aspiring entrepreneurs — strategy, building and leadership. By Murthy Thevar.",
+      "Seven essential business and startup books for founders and aspiring entrepreneurs, strategy, building and leadership. By Murthy Thevar.",
     keywords: [
       "best business books",
       "startup books for founders",
@@ -590,19 +590,19 @@ export const listicleBlogs = {
       {
         type: "paragraph",
         content:
-          "Building something? These seven books cover the full founder journey — idea, build, scale and lead. Every one is available on TheBookX.",
+          "Building something? These seven books cover the full founder journey, idea, build, scale and lead. Every one is available on TheBookX.",
       },
       {
         type: "list",
         style: "ordered",
         items: [
-          `${L("zero-to-one", "Zero to One")} — Peter Thiel · how to build the future, not copy it. <strong>₹149</strong>`,
-          `${L("the-lean-startup", "The Lean Startup")} — Eric Ries · build-measure-learn, the modern playbook. <strong>₹159</strong>`,
-          `${L("the-100-startup", "The $100 Startup")} — Chris Guillebeau · launch lean, on a shoestring. <strong>₹149</strong>`,
-          `${L("the-hard-thing-about-hard-things", "The Hard Thing About Hard Things")} — Ben Horowitz · the brutal truths of running a company. <strong>₹189</strong>`,
-          `${L("blue-ocean-strategy", "Blue Ocean Strategy")} — Kim & Mauborgne · create uncontested market space. <strong>₹189</strong>`,
-          `${L("the-first-90-days", "The First 90 Days")} — Michael Watkins · nail any new leadership role. <strong>₹189</strong>`,
-          `${L("diary-of-a-ceo", "Diary of a CEO")} — Steven Bartlett · 33 laws for business and life. <strong>₹179</strong>`,
+          `${L("zero-to-one", "Zero to One")}, Peter Thiel · how to build the future, not copy it. <strong>₹149</strong>`,
+          `${L("the-lean-startup", "The Lean Startup")}, Eric Ries · build-measure-learn, the modern playbook. <strong>₹159</strong>`,
+          `${L("the-100-startup", "The $100 Startup")}, Chris Guillebeau · launch lean, on a shoestring. <strong>₹149</strong>`,
+          `${L("the-hard-thing-about-hard-things", "The Hard Thing About Hard Things")}, Ben Horowitz · the brutal truths of running a company. <strong>₹189</strong>`,
+          `${L("blue-ocean-strategy", "Blue Ocean Strategy")}, Kim & Mauborgne · create uncontested market space. <strong>₹189</strong>`,
+          `${L("the-first-90-days", "The First 90 Days")}, Michael Watkins · nail any new leadership role. <strong>₹189</strong>`,
+          `${L("diary-of-a-ceo", "Diary of a CEO")}, Steven Bartlett · 33 laws for business and life. <strong>₹179</strong>`,
         ],
       },
       {

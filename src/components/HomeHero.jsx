@@ -6,7 +6,7 @@ import { books } from "@/utils/book";
 
 // Static, above-the-fold hero. Gives the homepage a clear value proposition and
 // a real H1 before the animated Bestsellers carousel. All stats are derived
-// from the catalogue / policies — no invented numbers.
+// from the catalogue / policies, no invented numbers.
 export default function HomeHero() {
   const titleCount = Math.max(100, Math.floor(books.length / 100) * 100);
 
@@ -23,7 +23,7 @@ export default function HomeHero() {
         <span className="home-hero-eyebrow">📚 India’s friendly online bookstore</span>
 
         <h1 className="home-hero-title">
-          Buy Books Online in India —{" "}
+          Buy Books Online in India, {" "}
           <span className="home-hero-accent">Starting at ₹1</span>
         </h1>
 

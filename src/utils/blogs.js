@@ -51,7 +51,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "The first lesson from Murthy Thevar's philosophy is that clarity begins with simplification. Before adding more information, remove what's unnecessary. This counterintuitive approach forms the foundation of all clear communication. As Murthy Thevar often says in his speaking events and workshops, 'Clarity isn't about adding more—it's about removing what doesn't matter.'",
+          "The first lesson from Murthy Thevar's philosophy is that clarity begins with simplification. Before adding more information, remove what's unnecessary. This counterintuitive approach forms the foundation of all clear communication. As Murthy Thevar often says in his speaking events and workshops, 'Clarity isn't about adding more, it's about removing what doesn't matter.'",
       },
       {
         type: "heading",
@@ -97,7 +97,7 @@ export const blogsData = {
       {
         type: "blockquote",
         content:
-          "This book changed how I approach every conversation. Murthy Thevar doesn't just theorize about clarity—he shows you exactly how to achieve it. The practical exercises in Chapter 3 alone are worth the price of the book. - Verified Reader Review",
+          "This book changed how I approach every conversation. Murthy Thevar doesn't just theorize about clarity, he shows you exactly how to achieve it. The practical exercises in Chapter 3 alone are worth the price of the book. - Verified Reader Review",
       },
       {
         type: "blockquote",
@@ -396,7 +396,7 @@ export const blogsData = {
         style: "info",
         title: "6. Six Slippery Snails",
         content:
-          "<strong>Focus:</strong> S, SL, SN combinations<br/><br/><em>\"Six slippery snails slid slowly down the slippery slope. Six slippery snails slid slowly down the slope.\"</em><br/><br/>💡 <strong>Tip:</strong> Slow down on 'slippery snails'—feel the transition between 'S' and 'L.'",
+          "<strong>Focus:</strong> S, SL, SN combinations<br/><br/><em>\"Six slippery snails slid slowly down the slippery slope. Six slippery snails slid slowly down the slope.\"</em><br/><br/>💡 <strong>Tip:</strong> Slow down on 'slippery snails', feel the transition between 'S' and 'L.'",
       },
 
       {
@@ -423,7 +423,7 @@ export const blogsData = {
         style: "info",
         title: "9. I Saw Susie Sitting",
         content:
-          "<strong>Focus:</strong> S, Z, and posture awareness<br/><br/><em>\"I saw Susie sitting in a shoe shine shop. Where she sits she shines, and where she shines she sits.\"</em><br/><br/>💡 <strong>Tip:</strong> Sit up straight! Proper posture significantly improves breath support and clarity. This is a key principle from 'The Art of Clarity'—your physical state affects your communication.",
+          "<strong>Focus:</strong> S, Z, and posture awareness<br/><br/><em>\"I saw Susie sitting in a shoe shine shop. Where she sits she shines, and where she shines she sits.\"</em><br/><br/>💡 <strong>Tip:</strong> Sit up straight! Proper posture significantly improves breath support and clarity. This is a key principle from 'The Art of Clarity', your physical state affects your communication.",
       },
       {
         type: "callout",
@@ -468,7 +468,7 @@ export const blogsData = {
         style: "unordered",
         items: [
           "Pick 2-3 tongue twisters from the list above",
-          "Practice each 10 times—5 times slowly, 3 times at medium speed, 2 times as fast as possible",
+          "Practice each 10 times, 5 times slowly, 3 times at medium speed, 2 times as fast as possible",
           "Record yourself using your phone (this is crucial!)",
           "Listen back and identify areas for improvement",
         ],
@@ -628,7 +628,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "As Murthy Thevar writes in the conclusion of 'The Art of Clarity': '<strong>Clarity in speech is not a gift—it's a skill.</strong> The tongue twisters and techniques you've learned here are tools. But like any tool, they only work when you use them consistently. Start today. Practice for just 15 minutes. Your future self—the one speaking with confidence, making an impact, and being truly heard—will thank you.'",
+          "As Murthy Thevar writes in the conclusion of 'The Art of Clarity': '<strong>Clarity in speech is not a gift, it's a skill.</strong> The tongue twisters and techniques you've learned here are tools. But like any tool, they only work when you use them consistently. Start today. Practice for just 15 minutes. Your future self, the one speaking with confidence, making an impact, and being truly heard, will thank you.'",
       },
       {
         type: "paragraph",
@@ -703,7 +703,7 @@ export const blogsData = {
       {
         question: "Can tongue twisters really improve my everyday speech?",
         answer:
-          "Absolutely! Tongue twisters train the muscle memory of your articulators (tongue, lips, jaw). This training transfers directly to normal speech. Think of it as a workout for your mouth—the stronger and more coordinated these muscles become, the clearer your everyday speech will be.",
+          "Absolutely! Tongue twisters train the muscle memory of your articulators (tongue, lips, jaw). This training transfers directly to normal speech. Think of it as a workout for your mouth, the stronger and more coordinated these muscles become, the clearer your everyday speech will be.",
       },
       {
         question: "What's the best tongue twister to start with?",
@@ -723,7 +723,7 @@ export const blogsData = {
       {
         question: "How is this related to 'The Art of Clarity' book?",
         answer:
-          "This articulation practice is a core component of Chapter 6 in 'The Art of Clarity.' The book provides the complete framework for achieving clarity in all aspects of communication—verbal, written, and mental. These tongue twisters are the practical application of the book's principles.",
+          "This articulation practice is a core component of Chapter 6 in 'The Art of Clarity.' The book provides the complete framework for achieving clarity in all aspects of communication, verbal, written, and mental. These tongue twisters are the practical application of the book's principles.",
       },
       {
         question: "Can children practice these tongue twisters?",
@@ -760,7 +760,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "In <strong>'The Art of Clarity'</strong>, Murthy Thevar dedicates an entire chapter to breaking free from overthinking. As he writes: <em>'Overthinking is not thinking—it's fear disguised as preparation. Real thinking leads to action. Overthinking leads to more overthinking.'</em>",
+          "In <strong>'The Art of Clarity'</strong>, Murthy Thevar dedicates an entire chapter to breaking free from overthinking. As he writes: <em>'Overthinking is not thinking, it's fear disguised as preparation. Real thinking leads to action. Overthinking leads to more overthinking.'</em>",
       },
       {
         type: "paragraph",
@@ -795,7 +795,7 @@ export const blogsData = {
         style: "info",
         title: "📊 The 5-Minute Rule Research",
         content:
-          "Studies show that decisions made within 5 minutes of conscious consideration are 87% as good as decisions made after hours of overthinking. Extra time rarely produces better outcomes—it just produces more anxiety.",
+          "Studies show that decisions made within 5 minutes of conscious consideration are 87% as good as decisions made after hours of overthinking. Extra time rarely produces better outcomes, it just produces more anxiety.",
       },
 
       {
@@ -819,7 +819,7 @@ export const blogsData = {
         style: "info",
         title: "⚡ How It Works",
         content:
-          "When you catch yourself overthinking, count backward: 5-4-3-2-1-GO. Then take one small physical action—stand up, write one word, send one email. The physical interruption breaks the thought loop.",
+          "When you catch yourself overthinking, count backward: 5-4-3-2-1-GO. Then take one small physical action, stand up, write one word, send one email. The physical interruption breaks the thought loop.",
       },
       {
         type: "paragraph",
@@ -842,7 +842,7 @@ export const blogsData = {
         style: "info",
         title: "⏱️ How It Works",
         content:
-          "Give yourself exactly 2 minutes to make a decision. Use a physical timer. When it goes off, you MUST commit to a choice and take the first action step—no matter how small.",
+          "Give yourself exactly 2 minutes to make a decision. Use a physical timer. When it goes off, you MUST commit to a choice and take the first action step, no matter how small.",
       },
       {
         type: "paragraph",
@@ -889,7 +889,7 @@ export const blogsData = {
         style: "info",
         title: "🎯 How It Works",
         content:
-          "Don't wait for 100% certainty—it never comes. Make decisions when you have 70% of the information you'd ideally want. Take action at 70% confidence. The remaining 30% will reveal itself through action.",
+          "Don't wait for 100% certainty, it never comes. Make decisions when you have 70% of the information you'd ideally want. Take action at 70% confidence. The remaining 30% will reveal itself through action.",
       },
       {
         type: "paragraph",
@@ -963,7 +963,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "This technique trains your brain that overthinking isn't an emergency—it's a scheduled activity. Most worries won't survive the 24-hour wait.",
+          "This technique trains your brain that overthinking isn't an emergency, it's a scheduled activity. Most worries won't survive the 24-hour wait.",
       },
       {
         type: "paragraph",
@@ -986,7 +986,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "Overthinking lives in your head. This technique brings you back to your body and the present moment—where overthinking cannot survive.",
+          "Overthinking lives in your head. This technique brings you back to your body and the present moment, where overthinking cannot survive.",
       },
       {
         type: "paragraph",
@@ -1027,7 +1027,7 @@ export const blogsData = {
         style: "info",
         title: "🔒 How It Works",
         content:
-          "Once you make a decision, announce it to someone (or write it down with a timestamp). Then implement a 'revision lock'—you cannot reconsider for at least 24 hours. This prevents the back-and-forth that fuels overthinking.",
+          "Once you make a decision, announce it to someone (or write it down with a timestamp). Then implement a 'revision lock', you cannot reconsider for at least 24 hours. This prevents the back-and-forth that fuels overthinking.",
       },
       {
         type: "paragraph",
@@ -1207,17 +1207,17 @@ export const blogsData = {
       {
         type: "blockquote",
         content:
-          "I was stuck for 3 months on a career decision. The 2-Minute Timer forced me to choose. I picked one path and committed. Within 2 weeks, I knew it was right. The overthinking was the only problem, not the decision. — Priya, Software Engineer",
+          "I was stuck for 3 months on a career decision. The 2-Minute Timer forced me to choose. I picked one path and committed. Within 2 weeks, I knew it was right. The overthinking was the only problem, not the decision. Priya, Software Engineer",
       },
       {
         type: "blockquote",
         content:
-          "The 70% Rule changed my life. I launched my business at 70% ready. It wasn't perfect, but customers loved it. I made $10k in the first month. If I waited for perfection, I'd still be planning. — Rahul, Entrepreneur",
+          "The 70% Rule changed my life. I launched my business at 70% ready. It wasn't perfect, but customers loved it. I made $10k in the first month. If I waited for perfection, I'd still be planning. Rahul, Entrepreneur",
       },
       {
         type: "blockquote",
         content:
-          "I used to re-read every email 5 times before sending. The 'Done is Better' mantra helped me send this email after 2 reads. Nothing bad happened. Now I average 1.5 reads. Saving hours weekly. — Anjali, Marketing Director",
+          "I used to re-read every email 5 times before sending. The 'Done is Better' mantra helped me send this email after 2 reads. Nothing bad happened. Now I average 1.5 reads. Saving hours weekly. Anjali, Marketing Director",
       },
 
       {
@@ -1267,7 +1267,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "As Murthy Thevar concludes in <strong>'The Art of Clarity'</strong>: <em>'You are not your thoughts. You are the observer of your thoughts—and you have the power to choose which ones to follow and which ones to release. Overthinking is not a character flaw. It's a habit. And like any habit, it can be unlearned. Start with one strategy today. Just one. Then another tomorrow. Within 30 days, you won't recognize the calm, decisive, action-oriented person you've become.'</em>",
+          "As Murthy Thevar concludes in <strong>'The Art of Clarity'</strong>: <em>'You are not your thoughts. You are the observer of your thoughts, and you have the power to choose which ones to follow and which ones to release. Overthinking is not a character flaw. It's a habit. And like any habit, it can be unlearned. Start with one strategy today. Just one. Then another tomorrow. Within 30 days, you won't recognize the calm, decisive, action-oriented person you've become.'</em>",
       },
       {
         type: "paragraph",
@@ -1371,7 +1371,7 @@ export const blogsData = {
       {
         question: "What if I overthink about overthinking?",
         answer:
-          "This is common! Apply Strategy #6 (visual cue) the moment you notice. Say 'STOP' aloud. Then do Strategy #8 (physical anchoring). You're learning a new skill—it takes practice to override the old pattern.",
+          "This is common! Apply Strategy #6 (visual cue) the moment you notice. Say 'STOP' aloud. Then do Strategy #8 (physical anchoring). You're learning a new skill, it takes practice to override the old pattern.",
       },
       {
         question: "Does 'The Art of Clarity' cover overthinking in more depth?",
@@ -1381,7 +1381,7 @@ export const blogsData = {
       {
         question: "Is it normal to relapse into overthinking?",
         answer:
-          "Yes! Progress isn't linear. You might have great days and difficult days. The goal isn't perfection—it's catching yourself faster each time. Murthy Thevar says: 'Measure your recovery time, not your fall.'",
+          "Yes! Progress isn't linear. You might have great days and difficult days. The goal isn't perfection, it's catching yourself faster each time. Murthy Thevar says: 'Measure your recovery time, not your fall.'",
       },
       {
         question: "Can children use these strategies?",
@@ -1413,13 +1413,13 @@ export const blogsData = {
     lastModified: "2026-05-29",
 
     excerpt:
-      "We consume 74GB of information daily—but retain almost nothing. Murthy Thevar reveals 10 proven strategies from 'The Art of Clarity' to filter noise, focus on what matters, and make better decisions with less information.",
+      "We consume 74GB of information daily, but retain almost nothing. Murthy Thevar reveals 10 proven strategies from 'The Art of Clarity' to filter noise, focus on what matters, and make better decisions with less information.",
 
     content: [
       {
         type: "paragraph",
         content:
-          "Every day, you're exposed to the equivalent of 74 gigabytes of information—enough to fill 16 novels. Your social media feed. News alerts. Work emails. Podcasts. Group chats. Push notifications. By some estimates, we process more information in a single day than our grandparents did in an entire year.",
+          "Every day, you're exposed to the equivalent of 74 gigabytes of information, enough to fill 16 novels. Your social media feed. News alerts. Work emails. Podcasts. Group chats. Push notifications. By some estimates, we process more information in a single day than our grandparents did in an entire year.",
       },
       {
         type: "paragraph",
@@ -1429,7 +1429,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "In <strong>'The Art of Clarity'</strong>, Murthy Thevar dedicates an entire section to information filtering. As he writes: <em>'The most important skill of the 21st century isn't finding information—it's knowing what to ignore. Clarity isn't about having more data. It's about having the right data.'</em>",
+          "In <strong>'The Art of Clarity'</strong>, Murthy Thevar dedicates an entire section to information filtering. As he writes: <em>'The most important skill of the 21st century isn't finding information, it's knowing what to ignore. Clarity isn't about having more data. It's about having the right data.'</em>",
       },
       {
         type: "paragraph",
@@ -1464,7 +1464,7 @@ export const blogsData = {
         style: "info",
         title: "📊 The 74GB Reality",
         content:
-          "Researchers estimate we consume 74GB of information daily—that's equivalent to watching 16 movies. But here's the kicker: We actively remember less than 1% of it by the next day. Most of what you consume is instantly forgotten, yet it still drains your mental energy.",
+          "Researchers estimate we consume 74GB of information daily, that's equivalent to watching 16 movies. But here's the kicker: We actively remember less than 1% of it by the next day. Most of what you consume is instantly forgotten, yet it still drains your mental energy.",
       },
 
       {
@@ -1498,7 +1498,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice today:</strong> Apply this filter to everything you consume for one day. You'll be shocked at how much you skip—and how much time you save.",
+          "💡 <strong>Practice today:</strong> Apply this filter to everything you consume for one day. You'll be shocked at how much you skip, and how much time you save.",
       },
 
       {
@@ -1511,7 +1511,7 @@ export const blogsData = {
         style: "info",
         title: "📚 How It Works",
         content:
-          "Apply the Pareto Principle to your information consumption: <strong>80% of valuable insights come from 20% of your sources.</strong> Identify that 20%—your top sources that provide real value—and eliminate or drastically reduce the rest.",
+          "Apply the Pareto Principle to your information consumption: <strong>80% of valuable insights come from 20% of your sources.</strong> Identify that 20%, your top sources that provide real value, and eliminate or drastically reduce the rest.",
       },
       {
         type: "paragraph",
@@ -1539,7 +1539,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "<strong>Example:</strong> A celebrity breakup trends on Twitter. So what? Unless you're their publicist or therapist, this information is entertainment, not useful. Treat it accordingly—consume intentionally, not automatically.",
+          "<strong>Example:</strong> A celebrity breakup trends on Twitter. So what? Unless you're their publicist or therapist, this information is entertainment, not useful. Treat it accordingly, consume intentionally, not automatically.",
       },
       {
         type: "paragraph",
@@ -1696,12 +1696,12 @@ export const blogsData = {
         style: "info",
         title: "⏳ How It Works",
         content:
-          "At the start of each day, budget your information consumption time: <strong>30 minutes for news, 20 minutes for social media, 45 minutes for professional reading.</strong> Set timers. When time runs out, stop—even if you haven't finished. The unfinished material was probably unimportant.",
+          "At the start of each day, budget your information consumption time: <strong>30 minutes for news, 20 minutes for social media, 45 minutes for professional reading.</strong> Set timers. When time runs out, stop, even if you haven't finished. The unfinished material was probably unimportant.",
       },
       {
         type: "paragraph",
         content:
-          "From 'The Art of Clarity': <em>'Your attention is your most valuable asset. Spend it like money—with intention, limits, and awareness. Would you hand your credit card to a stranger? Then why hand your attention to algorithms?'</em>",
+          "From 'The Art of Clarity': <em>'Your attention is your most valuable asset. Spend it like money, with intention, limits, and awareness. Would you hand your credit card to a stranger? Then why hand your attention to algorithms?'</em>",
       },
       {
         type: "paragraph",
@@ -1723,7 +1723,7 @@ export const blogsData = {
         style: "info",
         title: "🔝 Stage 1: ALL Information (100%)",
         content:
-          "Everything available—news, social media, emails, podcasts, articles, videos, books.",
+          "Everything available, news, social media, emails, podcasts, articles, videos, books.",
       },
       {
         type: "callout",
@@ -1850,7 +1850,7 @@ export const blogsData = {
       {
         type: "blockquote",
         content:
-          "I will not check notifications before I complete my most important task.\n\nI will ask 'So what?' before consuming anything.\n\nI will unsubscribe, unfollow, and delete without guilt.\n\nI will remember that my attention is my property.\n\nI will choose clarity over curiosity.\n\nI will be informed enough, not overwhelmed.\n\nI will filter first, read second.\n\nI will protect my focus like the precious resource it is.\n\n— Murthy Thevar, The Art of Clarity",
+          "I will not check notifications before I complete my most important task.\n\nI will ask 'So what?' before consuming anything.\n\nI will unsubscribe, unfollow, and delete without guilt.\n\nI will remember that my attention is my property.\n\nI will choose clarity over curiosity.\n\nI will be informed enough, not overwhelmed.\n\nI will filter first, read second.\n\nI will protect my focus like the precious resource it is.\n\n, Murthy Thevar, The Art of Clarity",
       },
 
       {
@@ -1906,17 +1906,17 @@ export const blogsData = {
       {
         type: "blockquote",
         content:
-          "I used to spend 3 hours daily on news and Twitter. After applying the 80/20 filter, I identified that 80% of value came from just 3 sources. I unsubscribed from 47 newsletters. I now spend 30 minutes daily on information. My productivity doubled. — Vikram, Product Manager",
+          "I used to spend 3 hours daily on news and Twitter. After applying the 80/20 filter, I identified that 80% of value came from just 3 sources. I unsubscribed from 47 newsletters. I now spend 30 minutes daily on information. My productivity doubled. Vikram, Product Manager",
       },
       {
         type: "blockquote",
         content:
-          "The weekly information fast changed my relationship with my phone. I used to check it unconsciously 100+ times daily. Now I check intentionally 2-3 times. My anxiety is down 70%. — Sneha, Entrepreneur",
+          "The weekly information fast changed my relationship with my phone. I used to check it unconsciously 100+ times daily. Now I check intentionally 2-3 times. My anxiety is down 70%. Sneha, Entrepreneur",
       },
       {
         type: "blockquote",
         content:
-          "I was drowning in saved articles—over 2000 bookmarks. The expiration date strategy helped me delete 1800 of them. I haven't missed a single one. The clarity folder system ensures I actually read what matters. — Raj, Student",
+          "I was drowning in saved articles, over 2000 bookmarks. The expiration date strategy helped me delete 1800 of them. I haven't missed a single one. The clarity folder system ensures I actually read what matters. Raj, Student",
       },
 
       {
@@ -1927,12 +1927,12 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "As Murthy Thevar concludes in <strong>'The Art of Clarity'</strong>: <em>'Information is not wisdom. Data is not insight. The most successful people aren't the best-informed—they're the best-filtered. They know what to ignore as much as what to know. This week, I challenge you to consume 50% less information. Then 50% less next week. Notice how much clearer your thinking becomes. Notice how much more time you have for deep work and real relationships. Notice how decisions that once took hours now take minutes. That's the power of filtering. That's the art of clarity.'</em>",
+          "As Murthy Thevar concludes in <strong>'The Art of Clarity'</strong>: <em>'Information is not wisdom. Data is not insight. The most successful people aren't the best-informed, they're the best-filtered. They know what to ignore as much as what to know. This week, I challenge you to consume 50% less information. Then 50% less next week. Notice how much clearer your thinking becomes. Notice how much more time you have for deep work and real relationships. Notice how decisions that once took hours now take minutes. That's the power of filtering. That's the art of clarity.'</em>",
       },
       {
         type: "paragraph",
         content:
-          "Your first filter starts now. Close this tab. Yes, right now. Come back tomorrow for the next strategy. But for now, take everything you've learned and apply one thing. Just one. Today. Because clarity isn't knowing more—it's doing more with less.",
+          "Your first filter starts now. Close this tab. Yes, right now. Come back tomorrow for the next strategy. But for now, take everything you've learned and apply one thing. Just one. Today. Because clarity isn't knowing more, it's doing more with less.",
       },
       {
         type: "callout",
@@ -2025,7 +2025,7 @@ export const blogsData = {
       {
         question: "Won't I miss important news if I filter aggressively?",
         answer:
-          "Here's the truth: If news is truly important, you'll hear about it through conversations, not notifications. Major events break through filters naturally. Everything else? It can wait—or it wasn't important. Murthy Thevar calls this 'Trusting the information ecosystem.' Try it for a week. You won't miss what matters.",
+          "Here's the truth: If news is truly important, you'll hear about it through conversations, not notifications. Major events break through filters naturally. Everything else? It can wait, or it wasn't important. Murthy Thevar calls this 'Trusting the information ecosystem.' Try it for a week. You won't miss what matters.",
       },
       {
         question:
@@ -2069,7 +2069,7 @@ export const blogsData = {
       {
         question: "How do I stop the urge to check my phone constantly?",
         answer:
-          "Use the 'Phone Foyer Method': Keep your phone in a different room while working. Turn off all non-essential notifications. Use grayscale mode (makes the phone less stimulating). Set 3 specific 'check-in times' daily (e.g., 10 AM, 1 PM, 4 PM). Delete addictive apps from your home screen. Murthy Thevar's 'Clarity Phone Setup' in Chapter 4 provides a complete system.",
+          "Use the 'Phone Foyer Method': Keep your phone in a different room while working. Turn off all non-essential notifications. Use grayscale mode (makes the phone less stimulating). Set 3 specific 'check-in times' daily (e.g. 10 AM, 1 PM, 4 PM). Delete addictive apps from your home screen. Murthy Thevar's 'Clarity Phone Setup' in Chapter 4 provides a complete system.",
       },
     ],
   },
@@ -2138,7 +2138,7 @@ export const blogsData = {
         style: "info",
         title: "📊 The Yes/No Math",
         content:
-          "If you say 'yes' to just 2 extra commitments per week, that's 104 unwanted commitments per year. If each takes 2 hours, that's 208 hours—more than 8 full days—spent annually on things you never wanted to do. Imagine what you could do with 8 extra days of focused time.",
+          "If you say 'yes' to just 2 extra commitments per week, that's 104 unwanted commitments per year. If each takes 2 hours, that's 208 hours, more than 8 full days, spent annually on things you never wanted to do. Imagine what you could do with 8 extra days of focused time.",
       },
 
       {
@@ -2404,7 +2404,7 @@ export const blogsData = {
         items: [
           "Track every request made to you",
           "Note your internal reaction (excited, neutral, reluctant, resentful)",
-          "Notice patterns—who asks too much? What types of requests drain you?",
+          "Notice patterns, who asks too much? What types of requests drain you?",
           "Goal: Awareness without action, just data collection",
         ],
       },
@@ -2466,7 +2466,7 @@ export const blogsData = {
       {
         type: "blockquote",
         content:
-          "I have the right to say no without explanation.\n\nI have the right to protect my time and energy.\n\nI have the right to change my mind.\n\nI have the right to prioritize my own needs.\n\nI have the right to decline without feeling guilty.\n\nI have the right to not answer immediately.\n\nI have the right to be unavailable.\n\nI have the right to choose how I spend my time.\n\n— Murthy Thevar, The Art of Clarity",
+          "I have the right to say no without explanation.\n\nI have the right to protect my time and energy.\n\nI have the right to change my mind.\n\nI have the right to prioritize my own needs.\n\nI have the right to decline without feeling guilty.\n\nI have the right to not answer immediately.\n\nI have the right to be unavailable.\n\nI have the right to choose how I spend my time.\n\n, Murthy Thevar, The Art of Clarity",
       },
 
       {
@@ -2549,17 +2549,17 @@ export const blogsData = {
       {
         type: "blockquote",
         content:
-          "I was the 'yes' person at work and home. Everyone's go-to. I was miserable. The Boundary Script helped me tell my team I could only handle 3 projects at once. They respected it. My stress dropped 70%. I wish I'd done this years ago. — Priya, Project Manager",
+          "I was the 'yes' person at work and home. Everyone's go-to. I was miserable. The Boundary Script helped me tell my team I could only handle 3 projects at once. They respected it. My stress dropped 70%. I wish I'd done this years ago. Priya, Project Manager",
       },
       {
         type: "blockquote",
         content:
-          "My mother-in-law constantly asked for favors. I dreaded her calls. The Boundary Script felt terrifying, but I used it. I said I could help once a week, not daily. She was surprised but adjusted. Our relationship is actually better now. No more hidden resentment. — Meera, Teacher",
+          "My mother-in-law constantly asked for favors. I dreaded her calls. The Boundary Script felt terrifying, but I used it. I said I could help once a week, not daily. She was surprised but adjusted. Our relationship is actually better now. No more hidden resentment. Meera, Teacher",
       },
       {
         type: "blockquote",
         content:
-          "The Energy Audit was eye-opening. I realized 60% of my commitments drained me AND provided zero value. I quit 3 volunteer positions and stopped attending optional meetings. I gained back 15 hours per week. My only regret is not doing this sooner. — Vikram, Entrepreneur",
+          "The Energy Audit was eye-opening. I realized 60% of my commitments drained me AND provided zero value. I quit 3 volunteer positions and stopped attending optional meetings. I gained back 15 hours per week. My only regret is not doing this sooner. Vikram, Entrepreneur",
       },
 
       {
@@ -2698,23 +2698,23 @@ export const blogsData = {
       {
         question: "What if people get angry when I say no?",
         answer:
-          "Their anger is not your responsibility. If someone gets angry at your boundary, that tells you more about them than about you. Reasonable people respect boundaries. Unreasonable people get angry—and that anger is proof you needed the boundary. From 'The Art of Clarity': 'The people who get angry at your boundaries are the ones who benefited from you having none.'",
+          "Their anger is not your responsibility. If someone gets angry at your boundary, that tells you more about them than about you. Reasonable people respect boundaries. Unreasonable people get angry, and that anger is proof you needed the boundary. From 'The Art of Clarity': 'The people who get angry at your boundaries are the ones who benefited from you having none.'",
       },
       {
         question: "How do I say no to my boss without risking my job?",
         answer:
-          "Use the 'No, But...' strategy with professional framing: 'I can't take on this new project right now because I'm focused on [current priority]. However, I can revisit this next quarter. Or we can reprioritize—which existing project should I deprioritize to make room?' This shows willingness while protecting your capacity. Most managers will either wait or reprioritize for you.",
+          "Use the 'No, But...' strategy with professional framing: 'I can't take on this new project right now because I'm focused on [current priority]. However, I can revisit this next quarter. Or we can reprioritize, which existing project should I deprioritize to make room?' This shows willingness while protecting your capacity. Most managers will either wait or reprioritize for you.",
       },
       {
         question: "I'm a natural people-pleaser. Can I really change?",
         answer:
-          "Yes. People-pleasing is a learned behavior, and learned behaviors can be unlearned. Start small—say no to low-stakes requests first. Each no builds your 'no muscle.' Within 30 days of consistent practice, people-pleasing patterns weaken significantly. 'The Art of Clarity' includes a complete people-pleasing recovery program.",
+          "Yes. People-pleasing is a learned behavior, and learned behaviors can be unlearned. Start small, say no to low-stakes requests first. Each no builds your 'no muscle.' Within 30 days of consistent practice, people-pleasing patterns weaken significantly. 'The Art of Clarity' includes a complete people-pleasing recovery program.",
       },
       {
         question:
           "What about family obligations? I can't just say no to family.",
         answer:
-          "You absolutely can—with love. Family boundaries aren't about refusing to help. They're about sustainable help. Use the Boundary Script adapted for family: 'I love you and want to help. Going forward, I can help with X but not Y. This lets me show up better when I do help.' Clear boundaries actually improve family relationships by removing hidden resentment.",
+          "You absolutely can, with love. Family boundaries aren't about refusing to help. They're about sustainable help. Use the Boundary Script adapted for family: 'I love you and want to help. Going forward, I can help with X but not Y. This lets me show up better when I do help.' Clear boundaries actually improve family relationships by removing hidden resentment.",
       },
       {
         question: "How does saying no relate to 'The Art of Clarity'?",
@@ -2724,7 +2724,7 @@ export const blogsData = {
       {
         question: "Will I lose friends if I start saying no?",
         answer:
-          "You might lose some acquaintances—and that's okay. True friendships survive boundaries. In fact, they often improve because they become more balanced. If someone stops being your friend because you set a reasonable boundary, they weren't a friend—they were a taker. 'The Art of Clarity' calls this 'The Boundary Filter': boundaries reveal who truly values you versus who values what you do for them.'",
+          "You might lose some acquaintances, and that's okay. True friendships survive boundaries. In fact, they often improve because they become more balanced. If someone stops being your friend because you set a reasonable boundary, they weren't a friend, they were a taker. 'The Art of Clarity' calls this 'The Boundary Filter': boundaries reveal who truly values you versus who values what you do for them.'",
       },
       {
         question: "How do I deal with the guilt of saying no?",
@@ -2739,7 +2739,7 @@ export const blogsData = {
       {
         question: "How long until saying no feels natural?",
         answer:
-          "For most people, 30-60 days of consistent practice. The first 5-10 nos feel uncomfortable. The next 20 feel easier. By 50 nos, it becomes automatic. Start with low-stakes requests to build momentum. Track your 'no count' as a measure of progress. Celebrate every no—each one is a victory for your mental clarity.",
+          "For most people, 30-60 days of consistent practice. The first 5-10 nos feel uncomfortable. The next 20 feel easier. By 50 nos, it becomes automatic. Start with low-stakes requests to build momentum. Track your 'no count' as a measure of progress. Celebrate every no, each one is a victory for your mental clarity.",
       },
     ],
   },
@@ -2760,17 +2760,17 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "What's the first thing you do when you wake up? Check your phone? Hit snooze? Lie in bed worrying about the day ahead? If so, you're not alone—but you're also starting your day in a reactive state that sets the tone for everything that follows.",
+          "What's the first thing you do when you wake up? Check your phone? Hit snooze? Lie in bed worrying about the day ahead? If so, you're not alone, but you're also starting your day in a reactive state that sets the tone for everything that follows.",
       },
       {
         type: "paragraph",
         content:
-          "Research shows that the first hour after waking—often called the 'Golden Hour'—has a disproportionate impact on your mental clarity, decision-making ability, and emotional state for the remaining 23 hours. Neuroscientists have found that your brain is most susceptible to patterning and habit formation during this window.",
+          "Research shows that the first hour after waking, often called the 'Golden Hour', has a disproportionate impact on your mental clarity, decision-making ability, and emotional state for the remaining 23 hours. Neuroscientists have found that your brain is most susceptible to patterning and habit formation during this window.",
       },
       {
         type: "paragraph",
         content:
-          "In <strong>'The Art of Clarity'</strong>, Murthy Thevar dedicates an entire chapter to the power of morning routines. As he writes: <em>'The first hour of your day is the foundation upon which everything else is built. Start it with intention, or spend the rest of the day playing catch-up. Your morning routine isn't just about waking up—it's about waking up to your potential.'</em>",
+          "In <strong>'The Art of Clarity'</strong>, Murthy Thevar dedicates an entire chapter to the power of morning routines. As he writes: <em>'The first hour of your day is the foundation upon which everything else is built. Start it with intention, or spend the rest of the day playing catch-up. Your morning routine isn't just about waking up, it's about waking up to your potential.'</em>",
       },
       {
         type: "paragraph",
@@ -2804,7 +2804,7 @@ export const blogsData = {
         style: "info",
         title: "📊 The 2.5 Hour Reality",
         content:
-          "Research from the Journal of Applied Psychology shows that people who design intentional morning routines are 2.5x more likely to report high productivity and mental clarity throughout the day. That's not a small difference—that's the difference between thriving and just surviving.",
+          "Research from the Journal of Applied Psychology shows that people who design intentional morning routines are 2.5x more likely to report high productivity and mental clarity throughout the day. That's not a small difference, that's the difference between thriving and just surviving.",
       },
 
       {
@@ -2856,12 +2856,12 @@ export const blogsData = {
         style: "info",
         title: "⏰ How It Works",
         content:
-          "Set your alarm for the time you actually need to wake up—not earlier. <strong>When it goes off, get up immediately.</strong> No snooze. No 'five more minutes.' No bargaining with yourself.",
+          "Set your alarm for the time you actually need to wake up, not earlier. <strong>When it goes off, get up immediately.</strong> No snooze. No 'five more minutes.' No bargaining with yourself.",
       },
       {
         type: "paragraph",
         content:
-          "The snooze button fragments your sleep architecture, particularly REM sleep. Those 9-minute snooze intervals don't give you restful sleep—they give you confused brain waves that create sleep inertia lasting hours.",
+          "The snooze button fragments your sleep architecture, particularly REM sleep. Those 9-minute snooze intervals don't give you restful sleep, they give you confused brain waves that create sleep inertia lasting hours.",
       },
       {
         type: "paragraph",
@@ -2908,7 +2908,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "This practice combines gratitude (which rewires your brain for positivity), priority setting (which prevents reactive mode), and intention setting (which activates your prefrontal cortex). Five minutes is enough—more time leads to rumination.",
+          "This practice combines gratitude (which rewires your brain for positivity), priority setting (which prevents reactive mode), and intention setting (which activates your prefrontal cortex). Five minutes is enough, more time leads to rumination.",
       },
       {
         type: "paragraph",
@@ -2926,7 +2926,7 @@ export const blogsData = {
         style: "info",
         title: "☀️ How It Works",
         content:
-          "Within 30 minutes of waking, get 10-15 minutes of natural sunlight exposure. Go outside. Open a window. Sit near a bright window. <strong>No sunglasses—your eyes need the full spectrum.</strong>",
+          "Within 30 minutes of waking, get 10-15 minutes of natural sunlight exposure. Go outside. Open a window. Sit near a bright window. <strong>No sunglasses, your eyes need the full spectrum.</strong>",
       },
       {
         type: "paragraph",
@@ -3029,7 +3029,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "This counterintuitive strategy acknowledges that worry will happen—so you might as well control when. Contained worry prevents the all-day anxiety drip that undermines mental clarity.",
+          "This counterintuitive strategy acknowledges that worry will happen, so you might as well control when. Contained worry prevents the all-day anxiety drip that undermines mental clarity.",
       },
       {
         type: "paragraph",
@@ -3052,12 +3052,12 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "Examples: Make your bed. Wash your face with cold water. Open the blinds. Light a candle. Write one sentence. The specific action doesn't matter—consistency does. This action becomes a psychological trigger that says 'The day has begun.'",
+          "Examples: Make your bed. Wash your face with cold water. Open the blinds. Light a candle. Write one sentence. The specific action doesn't matter, consistency does. This action becomes a psychological trigger that says 'The day has begun.'",
       },
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice tomorrow:</strong> Choose your First Action Ritual. Do it every morning for 30 days. By Day 30, it will be automatic—and so will your morning clarity.",
+          "💡 <strong>Practice tomorrow:</strong> Choose your First Action Ritual. Do it every morning for 30 days. By Day 30, it will be automatic, and so will your morning clarity.",
       },
 
       {
@@ -3189,17 +3189,17 @@ export const blogsData = {
       {
         type: "blockquote",
         content:
-          "I was a chronic snoozer—sometimes 7-8 times per morning. The 'Wake Once' protocol felt impossible. But I tried it. First week was hard. By week 3, I was waking naturally before my alarm. My afternoon energy crashes disappeared. I'm getting more done by 10 AM than I used to do all day. — Amit, Software Engineer",
+          "I was a chronic snoozer, sometimes 7-8 times per morning. The 'Wake Once' protocol felt impossible. But I tried it. First week was hard. By week 3, I was waking naturally before my alarm. My afternoon energy crashes disappeared. I'm getting more done by 10 AM than I used to do all day. Amit, Software Engineer",
       },
       {
         type: "blockquote",
         content:
-          "The phone-first morning was ruining me. I'd scroll Instagram for 30 minutes, then feel anxious and behind before I even stood up. The 90-minute no-phone rule changed everything. My anxiety dropped 80%. I actually have energy for my family now. — Neha, Marketing Manager",
+          "The phone-first morning was ruining me. I'd scroll Instagram for 30 minutes, then feel anxious and behind before I even stood up. The 90-minute no-phone rule changed everything. My anxiety dropped 80%. I actually have energy for my family now. Neha, Marketing Manager",
       },
       {
         type: "blockquote",
         content:
-          "I thought morning routines were for productivity influencers. Then I tried the 5-minute clarity journal. That 5 minutes helped me identify that I was spending hours on low-priority tasks. I restructured my entire workday. Got a promotion in 3 months. — Karthik, Sales Director",
+          "I thought morning routines were for productivity influencers. Then I tried the 5-minute clarity journal. That 5 minutes helped me identify that I was spending hours on low-priority tasks. I restructured my entire workday. Got a promotion in 3 months. Karthik, Sales Director",
       },
 
       {
@@ -3210,7 +3210,7 @@ export const blogsData = {
       {
         type: "blockquote",
         content:
-          "My morning belongs to me.\n\nI will not give it to my phone, my email, or other people's emergencies.\n\nI will wake once, fully, without bargaining.\n\nI will hydrate before I caffeinate.\n\nI will move my body before I move my mouse.\n\nI will see the sun before I see a screen.\n\nI will set my priorities before I respond to others'.\n\nI will build clarity before I face chaos.\n\nMy morning routine is my superpower.\n\n— Murthy Thevar, The Art of Clarity",
+          "My morning belongs to me.\n\nI will not give it to my phone, my email, or other people's emergencies.\n\nI will wake once, fully, without bargaining.\n\nI will hydrate before I caffeinate.\n\nI will move my body before I move my mouse.\n\nI will see the sun before I see a screen.\n\nI will set my priorities before I respond to others'.\n\nI will build clarity before I face chaos.\n\nMy morning routine is my superpower.\n\n, Murthy Thevar, The Art of Clarity",
       },
 
       {

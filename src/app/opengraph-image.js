@@ -3,7 +3,7 @@ import { ImageResponse } from "next/og";
 // Branded social share card (1200×630). Replaces the previous favicon-as-OG bug
 // so links shared on WhatsApp / Twitter / Facebook render a real preview.
 export const runtime = "edge";
-export const alt = "TheBookX — Buy Books Online in India, Starting at ₹1";
+export const alt = "TheBookX, Buy Books Online in India, Starting at ₹1";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -45,7 +45,7 @@ export default function OpengraphImage() {
             maxWidth: 940,
           }}
         >
-          Buy Books Online in India — Starting at ₹1
+          Buy Books Online in India, Starting at ₹1
         </div>
         <div
           style={{

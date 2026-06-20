@@ -5,7 +5,7 @@ import Link from "next/link";
  * left-aligned plain text, "/" separators, orange links, dark current page.
  *
  * props:
- *  - items: [{ label, href }] — the trail AFTER Home. Last item = current page.
+ *  - items: [{ label, href }], the trail AFTER Home. Last item = current page.
  *  - jsonLd: also emit a BreadcrumbList structured-data block when true.
  *    (Leave false on pages that already emit their own BreadcrumbList.)
  */

@@ -3,7 +3,7 @@ import AdminLock from "@/components/AdminLock";
 
 export const metadata = {
   title: "Manage Orders",
-  // This is the primary noindex signal — Next.js will emit
+  // This is the primary noindex signal, Next.js will emit
   // <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
   robots: {
     index: false,

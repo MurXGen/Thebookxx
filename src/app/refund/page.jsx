@@ -52,7 +52,7 @@ export default function RefundCancellationPolicy() {
         <ul>
           <li>
             <strong>Before dispatch:</strong> full refund of the amount paid,
-            processed within 5–7 business days.
+            processed within 5-7 business days.
           </li>
           <li>
             <strong>After dispatch:</strong> cancellation is no longer possible.
@@ -79,7 +79,7 @@ export default function RefundCancellationPolicy() {
         <p>
           In such cases, the full amount paid (excluding any non-refundable
           advance, where applicable) shall be refunded to the original payment
-          method within 5–7 business days.
+          method within 5-7 business days.
         </p>
 
         <h3>2.3 Refusal of Delivery</h3>
@@ -115,7 +115,7 @@ export default function RefundCancellationPolicy() {
         <ul>
           <li>
             <strong>Adjusted</strong> against the total order value at the time
-            of delivery — the balance amount is paid in cash to the delivery
+            of delivery, the balance amount is paid in cash to the delivery
             agent
           </li>
           <li>
@@ -243,31 +243,31 @@ export default function RefundCancellationPolicy() {
             the issue
           </li>
           <li>
-            <strong>Share supporting evidence</strong> — photographs or unboxing
+            <strong>Share supporting evidence</strong>, photographs or unboxing
             video as applicable to your claim (refer to Section 4)
           </li>
           <li>
-            <strong>Wait for confirmation</strong> — our customer support team
+            <strong>Wait for confirmation</strong>, our customer support team
             will review your request and respond within 2 business days
           </li>
           <li>
-            <strong>Pack and ship the return</strong> — once approved, you will
+            <strong>Pack and ship the return</strong>, once approved, you will
             receive return shipping instructions. The product must be packed
             securely in its original packaging where possible.
           </li>
           <li>
-            <strong>Share the return tracking ID</strong> — once shipped, share
+            <strong>Share the return tracking ID</strong>, once shipped, share
             the courier tracking details with our support team
           </li>
         </ol>
         <p>Return shipping costs are borne by:</p>
         <ul>
           <li>
-            <strong>TheBookX</strong> — where the return is due to damage, wrong
+            <strong>TheBookX</strong>, where the return is due to damage, wrong
             product, or manufacturing defect on our part
           </li>
           <li>
-            <strong>The customer</strong> — where the return is due to reasons
+            <strong>The customer</strong>, where the return is due to reasons
             attributable to the customer (e.g. change of mind), in cases where
             we have agreed to accept such returns at our discretion
           </li>
@@ -278,12 +278,12 @@ export default function RefundCancellationPolicy() {
         <h2>7. Inspection &amp; Verification</h2>
         <p>
           Upon receipt of the returned product, our quality team will inspect
-          the item to verify the claim. Inspection typically takes 2–3 business
+          the item to verify the claim. Inspection typically takes 2-3 business
           days from the date the return is received at our facility.
         </p>
         <p>
           If the return is approved, your refund or replacement will be
-          processed as described in Sections 8–10. If the return is rejected
+          processed as described in Sections 8-10. If the return is rejected
           (for example, if the product shows signs of use or the damage does not
           match the original claim), the product will be returned to you at your
           cost, and no refund will be issued.
@@ -333,23 +333,23 @@ export default function RefundCancellationPolicy() {
           <tbody>
             <tr>
               <td>UPI</td>
-              <td>1–3 days</td>
+              <td>1-3 days</td>
             </tr>
             <tr>
               <td>Credit / Debit Card</td>
-              <td>5–7 days</td>
+              <td>5-7 days</td>
             </tr>
             <tr>
               <td>Net Banking</td>
-              <td>3–5 days</td>
+              <td>3-5 days</td>
             </tr>
             <tr>
               <td>Wallets (Paytm, PhonePe, etc.)</td>
-              <td>1–3 days</td>
+              <td>1-3 days</td>
             </tr>
             <tr>
               <td>COD refund via UPI / Bank transfer</td>
-              <td>3–7 days</td>
+              <td>3-7 days</td>
             </tr>
           </tbody>
         </table>
@@ -376,10 +376,10 @@ export default function RefundCancellationPolicy() {
           </li>
           <li>
             If the same product is in stock, a replacement is dispatched within
-            2–3 business days.
+            2-3 business days.
           </li>
           <li>
-            Standard delivery timelines (3–7 business days) apply to the
+            Standard delivery timelines (3-7 business days) apply to the
             replacement shipment.
           </li>
           <li>
@@ -394,7 +394,7 @@ export default function RefundCancellationPolicy() {
         <p>A partial refund may be issued in the following situations:</p>
         <ul>
           <li>
-            Where a multi-item order is partially returned — only the cost of
+            Where a multi-item order is partially returned, only the cost of
             the returned item(s) and a proportionate share of any discounts
             applied is refunded
           </li>
@@ -403,13 +403,13 @@ export default function RefundCancellationPolicy() {
             handling not amounting to use, at our discretion
           </li>
           <li>
-            Where promotional discounts or cashbacks are involved — the refund
+            Where promotional discounts or cashbacks are involved, the refund
             is calculated on the net amount actually paid by the customer,
             excluding any promotional value
           </li>
           <li>
             Where the order included a free gift, gift-wrap charge, or
-            non-refundable advance — these components are excluded from the
+            non-refundable advance, these components are excluded from the
             refund amount
           </li>
         </ul>
@@ -424,7 +424,7 @@ export default function RefundCancellationPolicy() {
         </p>
         <ul>
           <li>
-            Most payment processors automatically reverse the amount within 3–7
+            Most payment processors automatically reverse the amount within 3-7
             business days
           </li>
           <li>
@@ -442,7 +442,7 @@ export default function RefundCancellationPolicy() {
           billed twice), notify us immediately at{" "}
           <a href="mailto:uskillbook@gmail.com">uskillbook@gmail.com</a> with
           the two transaction reference numbers. The duplicate amount will be
-          refunded within 5–7 business days of verification.
+          refunded within 5-7 business days of verification.
         </p>
       </section>
 
@@ -453,7 +453,7 @@ export default function RefundCancellationPolicy() {
           received it, please notify us within{" "}
           <strong>48 hours of the marked delivery time</strong>. We will
           coordinate with the courier partner to investigate the matter. The
-          investigation typically takes 5–7 business days.
+          investigation typically takes 5-7 business days.
         </p>
         <p>
           If the courier confirms the parcel is lost in transit, we will, at

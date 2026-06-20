@@ -8,7 +8,7 @@ export const metadata = {
     absolute: "Blog & Insights by Murthy Thevar | TheBookX",
   },
   description:
-    "Articles and insights on clarity, focus and self-improvement from Murthy Thevar, author of The Art of Clarity — curated by TheBookX.",
+    "Articles and insights on clarity, focus and self-improvement from Murthy Thevar, author of The Art of Clarity, curated by TheBookX.",
   alternates: { canonical: "https://www.thebookx.in/blogs" },
 };
 

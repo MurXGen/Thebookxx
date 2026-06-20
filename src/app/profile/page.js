@@ -40,7 +40,7 @@ const SHEET_ID = "1ovqFn50d0TKjV0nm4q1lb3N9XvimUgIsHCOlHh6QRdg";
 const SUPPORT_WHATSAPP = "917710892108";
 
 // =====================================================================
-// Module-level date parser — handles every format the Google Sheet emits
+// Module-level date parser, handles every format the Google Sheet emits
 // =====================================================================
 // The "Timestamp" / "Timestamp (D)" columns can hold any of:
 //   "20/05/2026 23:14:14"        (dd/mm/yyyy, 24-hour, NO am/pm, NO comma)
@@ -58,7 +58,7 @@ function parseSheetDate(input) {
   const str = String(input).trim();
   if (!str) return null;
 
-  // Google Sheets Date() literal — months ALREADY 0-based
+  // Google Sheets Date() literal, months ALREADY 0-based
   if (str.startsWith("Date(")) {
     const m = str.match(/Date\((\d+),(\d+),(\d+)(?:,(\d+),(\d+),(\d+))?/);
     if (m) {
@@ -75,7 +75,7 @@ function parseSheetDate(input) {
   }
 
   // dd/mm/yyyy [optional HH:mm:ss [am/pm]]
-  // [,\s]+ matches " ", ", ", "," — handles all separators
+  // [,\s]+ matches " ", ", ", ",", handles all separators
   if (str.includes("/")) {
     const m = str.match(
       /^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[,\s]+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?\s*(am|pm)?)?/i,
@@ -102,7 +102,7 @@ function parseSheetDate(input) {
   return isNaN(d.getTime()) ? null : d;
 }
 
-// Order date lookup — sheet column header has a SPACE: "Timestamp (D)"
+// Order date lookup, sheet column header has a SPACE: "Timestamp (D)"
 function getOrderDateValue(order) {
   return (
     order["Timestamp (D)"] ||
@@ -143,7 +143,7 @@ function OrderTrackingTimeline({ order }) {
     : null;
 
   const shortDate = (d) => {
-    if (!d) return "—";
+    if (!d) return "Pending";
     return d.toLocaleDateString("en-IN", {
       day: "2-digit",
       month: "short",
@@ -151,7 +151,7 @@ function OrderTrackingTimeline({ order }) {
   };
 
   const longDate = (d) => {
-    if (!d) return "—";
+    if (!d) return "Pending";
     return d.toLocaleDateString("en-IN", {
       weekday: "short",
       day: "2-digit",
@@ -160,11 +160,11 @@ function OrderTrackingTimeline({ order }) {
   };
 
   const deliveryRangeLabel = (() => {
-    if (!minDeliveryDate || !maxDeliveryDate) return "—";
-    return `${shortDate(minDeliveryDate)} – ${shortDate(maxDeliveryDate)}`;
+    if (!minDeliveryDate || !maxDeliveryDate) return "Pending";
+    return `${shortDate(minDeliveryDate)}-${shortDate(maxDeliveryDate)}`;
   })();
 
-  const orderedDate = orderDate ? shortDate(orderDate) : "—";
+  const orderedDate = orderDate ? shortDate(orderDate) : "Pending";
   const shippedDate =
     activeStage >= 1
       ? shortDate(orderDate ? new Date(orderDate.getTime() + 1 * DAY_MS) : null)
@@ -174,13 +174,13 @@ function OrderTrackingTimeline({ order }) {
       ? shortDate(estimatedDelivery)
       : estimatedDelivery
         ? shortDate(estimatedDelivery)
-        : "—";
+        : "Pending";
   const deliveredDate =
     activeStage >= 3
       ? shortDate(new Date())
       : estimatedDelivery
         ? shortDate(estimatedDelivery)
-        : "—";
+        : "Pending";
 
   const steps = [
     { key: "ordered", label: "Ordered", date: orderedDate },
@@ -449,7 +449,7 @@ export default function MyOrdersPage() {
           comment: order["Comment for this order"] || order["Comment"] || "",
         };
       });
-      // Compute wallet balance — read from the "Wallet" column.
+      // Compute wallet balance, read from the "Wallet" column.
       // Take the max across rows so blank cells in older orders don't
       // overwrite a positive balance from a more recent row.
       const walletValue = parsedOrders.reduce((max, order) => {
@@ -587,7 +587,7 @@ export default function MyOrdersPage() {
     };
   };
 
-  // ===== NEW — Cancel & Reschedule handlers =====
+  // ===== NEW, Cancel & Reschedule handlers =====
 
   const handleCancelOrder = (order) => {
     const ok = window.confirm(
@@ -610,7 +610,7 @@ I'd like to *cancel* my order. Here are the details:
 💳 *Payment:* ${order["Payment Type"] || ""}
 
 📦 *Items:*
-${itemsList || "—"}
+${itemsList || ""}
 
 Please cancel this order. Thank you 🙏`;
 
@@ -636,7 +636,7 @@ Please cancel this order. Thank you 🙏`;
     const order = rescheduleOrder;
     if (!order) return;
 
-    // Format date nicely — "Saturday, 14 June 2026"
+    // Format date nicely, "Saturday, 14 June 2026"
     const formattedDate = new Date(rescheduleDate).toLocaleDateString("en-IN", {
       weekday: "long",
       day: "2-digit",
@@ -678,7 +678,7 @@ Please cancel this order. Thank you 🙏`;
     if (!dateString) return "Date not available";
     const d = parseSheetDate(dateString);
     if (d) return formatDateToCustomString(d);
-    // Last resort — show the raw string so the user sees *something*
+    // Last resort, show the raw string so the user sees *something*
     return String(dateString);
   };
 
@@ -784,7 +784,7 @@ Please cancel this order. Thank you 🙏`;
                   </button>
                 </div>
 
-                {/* Wallet balance strip — only shown when balance > 0 */}
+                {/* Wallet balance strip, only shown when balance > 0 */}
                 {walletBalance > 0 && (
                   <motion.div
                     initial={{ opacity: 0, y: 8 }}
@@ -977,7 +977,7 @@ Please cancel this order. Thank you 🙏`;
                     )}
                   </div>
 
-                  {/* ===== NEW — Cancel + Reschedule actions for Pending orders ===== */}
+                  {/* ===== NEW, Cancel + Reschedule actions for Pending orders ===== */}
                   {isPending && (
                     <div
                       className="pending-actions-row"
@@ -1194,7 +1194,7 @@ Please cancel this order. Thank you 🙏`;
         )}
       </div>
 
-      {/* ========== Payment Modal — unchanged ========== */}
+      {/* ========== Payment Modal, unchanged ========== */}
       <AnimatePresence>
         {showPaymentModal && selectedOrder && (
           <motion.div
@@ -1299,7 +1299,7 @@ Please cancel this order. Thank you 🙏`;
         )}
       </AnimatePresence>
 
-      {/* ========== Reschedule Modal — NEW ========== */}
+      {/* ========== Reschedule Modal, NEW ========== */}
       <AnimatePresence>
         {showRescheduleModal && rescheduleOrder && (
           <motion.div
@@ -1381,14 +1381,14 @@ Please cancel this order. Thank you 🙏`;
                     onChange={(e) => setRescheduleTime(e.target.value)}
                   >
                     <option value="">Any time</option>
-                    <option value="Morning (9am – 12pm)">
-                      Morning (9am – 12pm)
+                    <option value="Morning (9am-12pm)">
+                      Morning (9am-12pm)
                     </option>
-                    <option value="Afternoon (12pm – 4pm)">
-                      Afternoon (12pm – 4pm)
+                    <option value="Afternoon (12pm-4pm)">
+                      Afternoon (12pm-4pm)
                     </option>
-                    <option value="Evening (4pm – 8pm)">
-                      Evening (4pm – 8pm)
+                    <option value="Evening (4pm-8pm)">
+                      Evening (4pm-8pm)
                     </option>
                   </select>
                 </div>

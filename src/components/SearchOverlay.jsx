@@ -50,7 +50,7 @@ export default function SearchOverlay({ open, onClose }) {
     }
   }, [open]);
 
-  // Debounce the query — keeps filtering off the main thread on every keystroke
+  // Debounce the query, keeps filtering off the main thread on every keystroke
   // so typing stays smooth even on large book lists. The loader shows during
   // the debounce window so the user gets visual feedback that search is happening.
   useEffect(() => {
@@ -67,7 +67,7 @@ export default function SearchOverlay({ open, onClose }) {
     return () => clearTimeout(t);
   }, [query]);
 
-  // ESC key close — but don't close SearchOverlay if RecommendationModal is open
+  // ESC key close, but don't close SearchOverlay if RecommendationModal is open
   useEffect(() => {
     const handler = (e) => {
       if (e.key === "Escape" && !showRecommendationModal) {
@@ -88,7 +88,7 @@ export default function SearchOverlay({ open, onClose }) {
     };
   }, [open]);
 
-  // Clean state when the modal closes — next open starts fresh
+  // Clean state when the modal closes, next open starts fresh
   useEffect(() => {
     if (!open) {
       setQuery("");
@@ -170,7 +170,7 @@ export default function SearchOverlay({ open, onClose }) {
               transition={{ duration: 0.25, ease: "easeOut" }}
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Header — input with inline clear-X (only when typing) */}
+              {/* Header, input with inline clear-X (only when typing) */}
               <div className="search-header">
                 <div
                   className="search-input-wrapper"
@@ -226,7 +226,7 @@ export default function SearchOverlay({ open, onClose }) {
                 </div>
               </div>
 
-              {/* Body — animated between placeholder / loader / empty / results */}
+              {/* Body, animated between placeholder / loader / empty / results */}
               <div className="search-body" style={{ paddingBottom: 100 }}>
                 <AnimatePresence mode="wait">
                   {!query ? (
@@ -372,7 +372,7 @@ export default function SearchOverlay({ open, onClose }) {
                 </AnimatePresence>
               </div>
 
-              {/* Fixed bottom-right close FAB — always visible, even when scrolled */}
+              {/* Fixed bottom-right close FAB, always visible, even when scrolled */}
               <motion.button
                 type="button"
                 key="close-fab"
@@ -409,7 +409,7 @@ export default function SearchOverlay({ open, onClose }) {
         )}
       </AnimatePresence>
 
-      {/* Recommendation modal — rendered as sibling so it layers above search */}
+      {/* Recommendation modal, rendered as sibling so it layers above search */}
       <RecommendationModal
         isOpen={showRecommendationModal}
         onClose={() => setShowRecommendationModal(false)}

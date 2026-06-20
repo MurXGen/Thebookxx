@@ -9131,3 +9131,44 @@ img[data-loaded="true"] {
     padding: 7px 9px;
   }
 }
+
+/* =====================================================================
+   ✦ ABOUT PAGE — keep buttons on-brand (override the generic legal-page
+   link styling so CTA buttons don't inherit orange/underline link colors)
+   ===================================================================== */
+.about-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 18px;
+}
+.about-cta-btn {
+  padding: 13px 22px !important;
+  font-size: var(--px-14) !important;
+}
+/* primary = solid dark (matches the homepage hero CTA) */
+.legal-page .pri-big-btn,
+.legal-page .pri-big-btn:hover {
+  color: var(--white-100);
+  text-decoration: none;
+  background: #0a0a0a;
+}
+/* secondary = clean outline */
+.legal-page .sec-big-btn,
+.legal-page .sec-big-btn:hover {
+  color: var(--foreground);
+  background: transparent;
+  border: 1px solid var(--dark) !important;
+  text-decoration: none;
+}
+.legal-page .about-policy-line {
+  margin-top: 22px;
+  font-size: 13px;
+  color: var(--dark-50);
+}
+
+/* About page: header spacing is handled by the flex gap-24 wrapper,
+   so drop the legal-header's own margin-bottom to avoid a double gap. */
+.about-page .legal-header {
+  margin-bottom: 0;
+}

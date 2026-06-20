@@ -94,7 +94,7 @@ export default function UrgencyOffer() {
                 <div className="flex flex-col">
                   <h4 className="urgency-title">Flat ₹100 OFF</h4>
                   <span className="urgency-desc">
-                    Limited-time savings — <strong>Don’t miss out</strong>
+                    Limited-time savings, <strong>Don’t miss out</strong>
                   </span>
                 </div>
               </div>

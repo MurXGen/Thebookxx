@@ -18,7 +18,7 @@ const poppins = Poppins({
   fallback: ["system-ui", "Arial", "sans-serif"],
 });
 
-// Paths that are admin-only — analytics, pixels, and indexing all disabled here
+// Paths that are admin-only, analytics, pixels, and indexing all disabled here
 const ADMIN_PATHS = ["/manage-orders", "/colist"];
 
 /* SEO Metadata - Essential Only */
@@ -29,12 +29,12 @@ export const metadata = {
 
   title: {
     default:
-      "TheBookX — Buy Books Online at Best Prices in India | ₹1 Book Sale",
+      "TheBookX, Buy Books Online at Best Prices in India | ₹1 Book Sale",
     template: "%s | TheBookX",
   },
 
   description:
-    "TheBookX is India's most trusted online bookstore offering 300+ books at unbeatable prices. Shop novels, self-help, business, finance, classics with FREE shipping across India. Limited time offer — books starting at just ₹1! Delivered securely via Delhivery & Indian Post.",
+    "TheBookX is India's most trusted online bookstore offering 300+ books at unbeatable prices. Shop novels, self-help, business, finance, classics with FREE shipping across India. Limited time offer, books starting at just ₹1! Delivered securely via Delhivery & Indian Post.",
 
   keywords: [
     "buy books online",
@@ -51,7 +51,7 @@ export const metadata = {
   creator: "TheBookX",
   publisher: "TheBookX",
 
-  // Default to indexable — the page-level layouts for /manage-orders and /colist
+  // Default to indexable, the page-level layouts for /manage-orders and /colist
   // override this with their own robots: { index: false } metadata.
   robots: {
     index: true,
@@ -73,7 +73,7 @@ export const metadata = {
   },
 
   openGraph: {
-    title: "TheBookX — Books Starting at Just ₹1 | Free Shipping",
+    title: "TheBookX, Books Starting at Just ₹1 | Free Shipping",
     description:
       "Shop 300+ books at unbeatable prices. Free shipping across India. Trusted by 50,000+ readers. Limited time ₹1 book sale!",
     url: "https://www.thebookx.in",
@@ -86,7 +86,7 @@ export const metadata = {
 
   twitter: {
     card: "summary_large_image",
-    title: "TheBookX — Buy Books Online at Best Prices",
+    title: "TheBookX, Buy Books Online at Best Prices",
     description: "Books starting at just ₹1. Free shipping across India.",
     // Twitter image provided by app/twitter-image.js
   },
@@ -97,7 +97,7 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
-  // Inline guard string — evaluated at the top of each analytics script
+  // Inline guard string, evaluated at the top of each analytics script
   // so admin paths skip tracking entirely. Kept as a small string so it
   // can be reused in every <Script> block without duplication.
   const ADMIN_GUARD = `
@@ -138,7 +138,7 @@ export default function RootLayout({ children }) {
                   "@type": "Organization",
                   "@id": "https://www.thebookx.in/#organization",
                   name: "TheBookX",
-                  alternateName: "TheBookX — Online Bookstore India",
+                  alternateName: "TheBookX, Online Bookstore India",
                   url: "https://www.thebookx.in",
                   logo: {
                     "@type": "ImageObject",
@@ -176,7 +176,7 @@ export default function RootLayout({ children }) {
           }}
         />
 
-        {/* Google Analytics — skipped on admin paths */}
+        {/* Google Analytics, skipped on admin paths */}
         <Script id="ga-loader" strategy="lazyOnload">
           {`
             if (!${ADMIN_GUARD}) {
@@ -202,7 +202,7 @@ export default function RootLayout({ children }) {
           `}
         </Script>
 
-        {/* ✅ Meta Pixel Code — skipped on admin paths */}
+        {/* ✅ Meta Pixel Code, skipped on admin paths */}
         <Script id="meta-pixel" strategy="afterInteractive">
           {`
             if (!${ADMIN_GUARD}) {

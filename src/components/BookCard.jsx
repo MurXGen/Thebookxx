@@ -104,7 +104,7 @@ export default function BookCard({ book }) {
   }, [book, isOneRupee, cartTotal, hasTrackedView]);
 
   const handleAddToCart = () => {
-    // Allotment rule — only one ₹1 book per cart
+    // Allotment rule, only one ₹1 book per cart
     if (isOneRupeeLimitReached) {
       showToast("Maximum book limit reached for Rs.1", "info");
       return;
@@ -133,7 +133,7 @@ export default function BookCard({ book }) {
     setTimeout(() => setConfetti(false), 50);
   };
 
-  // Plus button — for ₹1 books, never allow quantity > 1
+  // Plus button, for ₹1 books, never allow quantity > 1
   const handleIncreaseQty = () => {
     if (isOneRupee) {
       showToast("Maximum book allotted reached for Rs.1", "info");
@@ -236,7 +236,7 @@ export default function BookCard({ book }) {
             >
               <Image
                 src={book.image}
-                alt={`${book.name}${book.author ? ` by ${book.author}` : ""} book cover — buy online at TheBookX`}
+                alt={`${book.name}${book.author ? ` by ${book.author}` : ""} book cover, buy online at TheBookX`}
                 fill
                 className={`book-image ${imageLoaded ? "loaded" : ""}`}
                 onLoadingComplete={() => setImageLoaded(true)}
@@ -390,7 +390,7 @@ export default function BookCard({ book }) {
           {/* Stock Status Display */}
           {book.stock && book.stock < 10 && book.stock > 0 && (
             <div className="font-10 orange">
-              ⚡ Only {book.stock} left — order soon!
+              ⚡ Only {book.stock} left, order soon!
             </div>
           )}
 

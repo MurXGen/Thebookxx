@@ -49,18 +49,17 @@ export default function PincodeModal() {
   }, []);
 
   // Decide whether the modal is *eligible* to show (once every 24h, and never
-  // if the user already gave a pincode). We no longer pop it on first paint —
-  // instead it triggers on the first engagement signal (scroll past the hero)
+  // if the user already gave a pincode). We no longer pop it on first paint,   // instead it triggers on the first engagement signal (scroll past the hero)
   // or after a generous delay, so visitors always see the store first.
   useEffect(() => {
     const lastShown = localStorage.getItem(PINCODE_STORAGE_KEY);
     const savedPincode = localStorage.getItem(PINCODE_DATA_KEY);
 
-    if (savedPincode) return; // already captured — never nag
+    if (savedPincode) return; // already captured, never nag
 
     if (lastShown) {
       const hoursPassed = (Date.now() - parseInt(lastShown, 10)) / (1000 * 60 * 60);
-      if (hoursPassed < 24) return; // shown recently — respect the cooldown
+      if (hoursPassed < 24) return; // shown recently, respect the cooldown
     }
 
     let done = false;

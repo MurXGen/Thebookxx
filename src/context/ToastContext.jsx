@@ -20,7 +20,7 @@ import {
 
 const ToastContext = createContext(null);
 
-// Module-level showToast — set once the Provider mounts so it can be
+// Module-level showToast, set once the Provider mounts so it can be
 // imported and called from anywhere (utils, async handlers, non-React code).
 let _showToast = null;
 

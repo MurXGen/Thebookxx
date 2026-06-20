@@ -133,7 +133,7 @@ export default function CategoryListing({ books = [], displayName = "" }) {
                   value={priceMin}
                   onChange={(e) => setPriceMin(e.target.value)}
                 />
-                <span className="dark-50">—</span>
+                <span className="dark-50">, </span>
                 <input
                   className="sec-mid-btn"
                   style={{ maxWidth: 120 }}

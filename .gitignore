@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# FUSE mount temp artifacts (safe to delete)
+.fuse_hidden*
+**/.fuse_hidden*

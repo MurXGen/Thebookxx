@@ -122,7 +122,7 @@ export default function AdminLock({ children, pageName = "Admin" }) {
           {error && (
             <span className="admin-lock-error">
               {error}
-              {attempts >= 3 && " — Check with admin if you forgot."}
+              {attempts >= 3 && ", Check with admin if you forgot."}
             </span>
           )}
 

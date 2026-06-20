@@ -363,7 +363,7 @@ export default function AddressModal({
           deliveryChargeForOrder +
           giftWrapAmountForOrder +
           feeForThisOrder,
-        // Itemised values — match what the user sees in the success modal
+        // Itemised values, match what the user sees in the success modal
         subtotal: totalDiscounted,
         finalPayable,
         totalDiscounted,
@@ -380,7 +380,7 @@ export default function AddressModal({
     }
   };
 
-  // After delivery-speed selection — UPI users go straight to UPI modal,
+  // After delivery-speed selection, UPI users go straight to UPI modal,
   // COD users now go through the COD fee disclosure modal first.
   const handleProceedWithFasterDelivery = () => {
     setFasterDelivery(true);
@@ -390,7 +390,7 @@ export default function AddressModal({
       delivery_charge: fasterDeliveryCharge,
       cart_total: finalPayable,
     });
-    // Sheet write happens HERE — after user has picked delivery speed.
+    // Sheet write happens HERE, after user has picked delivery speed.
     // Passing `true` explicitly because setFasterDelivery is async.
     submitToGoogleForm(tempPaymentMethod, true);
     if (tempPaymentMethod === "COD") {
@@ -421,7 +421,7 @@ export default function AddressModal({
     setShowCODSuccess(true);
   };
 
-  // NEW — user confirmed they'll pay the COD fee
+  // NEW, user confirmed they'll pay the COD fee
   const handleConfirmCODWithFee = () => {
     setShowCODFeeModal(false);
     trackFunnelEvent(EVENTS.PAYMENT_METHOD_SELECTED, {
@@ -432,7 +432,7 @@ export default function AddressModal({
     triggerCODSuccess(fasterDelivery);
   };
 
-  // NEW — user switched to UPI from the COD fee modal (the deflection success path)
+  // NEW, user switched to UPI from the COD fee modal (the deflection success path)
   const handleSwitchToUPIFromCODFee = () => {
     setShowCODFeeModal(false);
     trackFunnelEvent(EVENTS.PAYMENT_METHOD_SELECTED, {
@@ -471,7 +471,7 @@ export default function AddressModal({
 
   const handleCODClick = () => {
     if (!isFormValid()) return;
-    // NOTE: Form submission is intentionally NOT here — it now fires inside
+    // NOTE: Form submission is intentionally NOT here, it now fires inside
     // handleProceedWithFasterDelivery / handleProceedWithoutFasterDelivery
     // so that the sheet captures the user's actual delivery-speed choice.
     setTempPaymentMethod("COD");
@@ -484,7 +484,7 @@ export default function AddressModal({
 
   const handleUPIClick = () => {
     if (!isFormValid()) return;
-    // NOTE: Form submission is intentionally NOT here — see handleCODClick.
+    // NOTE: Form submission is intentionally NOT here, see handleCODClick.
     setTempPaymentMethod("UPI");
     setShowFasterDeliveryModal(true);
     trackFunnelEvent(EVENTS.PAYMENT_METHOD_SELECTED, {
@@ -1012,7 +1012,7 @@ function CODHandlingFeeModal({
             gap: 16,
           }}
         >
-          {/* Fee disclosure hero — orange-tinted, bouncing wallet icon */}
+          {/* Fee disclosure hero, orange-tinted, bouncing wallet icon */}
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
@@ -1071,7 +1071,7 @@ function CODHandlingFeeModal({
             </div>
           </motion.div>
 
-          {/* Cost comparison — UPI on top (green), COD below (with +fee in orange) */}
+          {/* Cost comparison, UPI on top (green), COD below (with +fee in orange) */}
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
@@ -1121,7 +1121,7 @@ function CODHandlingFeeModal({
             </div>
           </motion.div>
 
-          {/* CTAs — emotionally-charged primary, neutral secondary */}
+          {/* CTAs, emotionally-charged primary, neutral secondary */}
           <div className="flex flex-col gap-12" style={{ marginTop: 4 }}>
             <motion.button
               initial={{ scale: 0.96, opacity: 0 }}
@@ -1139,7 +1139,7 @@ function CODHandlingFeeModal({
               }}
             >
               <Sparkles size={16} />
-              Skip the ₹{codFee} fee — Pay via UPI
+              Skip the ₹{codFee} fee, Pay via UPI
               <ArrowRight size={16} />
             </motion.button>
 
@@ -1157,7 +1157,7 @@ function CODHandlingFeeModal({
             className="font-10 dark-50"
             style={{ textAlign: "center", marginTop: 2 }}
           >
-            Pay UPI from any app — Google Pay, PhonePe, Paytm, BHIM
+            Pay UPI from any app, Google Pay, PhonePe, Paytm, BHIM
           </span>
         </div>
       </motion.div>
@@ -1199,8 +1199,8 @@ function CODSuccessModal({
   }, []);
 
   const deliveryWindow = fasterDelivery
-    ? "2–5 business days"
-    : "3–9 business days";
+    ? "2-5 business days"
+    : "3-9 business days";
 
   const handleNeedHelp = () => {
     const itemsList = cartBooks
@@ -1318,7 +1318,7 @@ function CODSuccessModal({
                 className="font-12 dark-50"
                 style={{ margin: 0 }}
               >
-                Just a moment — confirming your details
+                Just a moment, confirming your details
               </motion.p>
 
               <div className="flex flex-row gap-6" style={{ marginTop: 12 }}>
@@ -1479,7 +1479,7 @@ function CODSuccessModal({
                   </div>
                 </div>
 
-                {/* Itemised order breakdown — books + bill */}
+                {/* Itemised order breakdown, books + bill */}
                 <div
                   style={{
                     borderTop: "1px dashed var(--dark-20)",
@@ -1917,7 +1917,7 @@ function UPIPaymentModal({
                 className="font-11 dark-50"
                 style={{ textAlign: "center", lineHeight: 1.5 }}
               >
-                Pay using any UPI app — Google Pay, PhonePe, Paytm, BHIM, or any
+                Pay using any UPI app, Google Pay, PhonePe, Paytm, BHIM, or any
                 bank app
               </span>
 
@@ -1935,7 +1935,7 @@ function UPIPaymentModal({
                   }}
                 >
                   {canVerify
-                    ? "✅ I've completed payment — Verify"
+                    ? "✅ I've completed payment, Verify"
                     : `Verifying in ${verifyTimer}s…`}
                 </button>
                 <span className="font-10 dark-50">

@@ -83,7 +83,7 @@ const formatDateForSheet = (date) => {
 // Parses every timestamp format we receive from Google Sheets
 // (the `Date(y,m,d,h,m,s)` string, the `dd/mm/yyyy hh:mm:ss` string,
 // raw Date objects, and ISO strings) into a real Date instance.
-// Returns null if it can't be parsed — callers use that to push the
+// Returns null if it can't be parsed, callers use that to push the
 // row to the bottom of the sort.
 const parseAnyDate = (value) => {
   if (!value) return null;
@@ -178,8 +178,8 @@ const getOrderDate = (order) =>
 
 // Parse a simple cost formula like "10+20+30+21" or "100-25+50" into a number.
 // Only supports +, -, digits, and decimals. Returns 0 for empty/invalid input
-// so a missing cost doesn't break P&L math. We never eval() — too risky for
-// localStorage-sourced strings — instead we extract signed-number tokens via
+// so a missing cost doesn't break P&L math. We never eval(), too risky for
+// localStorage-sourced strings, instead we extract signed-number tokens via
 // regex and sum them.
 const parseCostFormula = (formula) => {
   if (!formula || typeof formula !== "string") return 0;
@@ -205,7 +205,7 @@ const sortByDate = (list, order = "desc") =>
       : da.getTime() - db.getTime();
   });
 
-// Backwards-compat alias — some callers still expect the old name.
+// Backwards-compat alias, some callers still expect the old name.
 const sortByDateDesc = (list) => sortByDate(list, "desc");
 
 const parseBooksList = (booksStr) => {
@@ -335,7 +335,7 @@ export default function ManageOrdersPage() {
         return order;
       });
 
-      // Initial sort — the filter useEffect immediately re-sorts using the
+      // Initial sort, the filter useEffect immediately re-sorts using the
       // current sortOrder, so this is just a placeholder.
       const sorted = sortByDateDesc(parsedOrders);
 
@@ -352,7 +352,7 @@ export default function ManageOrdersPage() {
     fetchOrders();
   }, [fetchOrders]);
 
-  // Apply filters — re-sort at the end so search/filter results stay newest-first
+  // Apply filters, re-sort at the end so search/filter results stay newest-first
   useEffect(() => {
     let filtered = [...orders];
 
@@ -409,7 +409,7 @@ export default function ManageOrdersPage() {
     });
   };
 
-  // Save a new cost formula for an order — updates state and localStorage.
+  // Save a new cost formula for an order, updates state and localStorage.
   const updateCostFormula = (orderId, formula) => {
     setCostFormulas((prev) => {
       const next = { ...prev, [orderId]: formula };
@@ -505,7 +505,7 @@ export default function ManageOrdersPage() {
   const handleEditOrder = async () => {
     if (!selectedOrder) return;
 
-    // Preserve the original order date — do NOT overwrite with the current time.
+    // Preserve the original order date, do NOT overwrite with the current time.
     // The raw value from gviz can be either the serialized form
     //   "Date(2026,4,20,23,14,14)"
     // or the plain-text form
@@ -679,7 +679,7 @@ export default function ManageOrdersPage() {
   return (
     <div className="my-orders-page">
       <div className="section-1200 flex flex-col gap-24">
-        {/* Header — same shape as my-orders */}
+        {/* Header, same shape as my-orders */}
         <div className="orders-header">
           <Link href="/" className="flex flex-row gap-8 items-center">
             <ArrowLeft size={18} />
@@ -692,7 +692,7 @@ export default function ManageOrdersPage() {
           </Link>
         </div>
 
-        {/* Admin info card — same shape as the "Welcome back" card */}
+        {/* Admin info card, same shape as the "Welcome back" card */}
         <div className="customer-info-section">
           <div className="customer-info-card">
             <div className=" flex flex-row gap-12">
@@ -755,7 +755,7 @@ export default function ManageOrdersPage() {
           </div>
         </div>
 
-        {/* Search + Filter row — matches phone-search-section pattern */}
+        {/* Search + Filter row, matches phone-search-section pattern */}
         <div className="phone-search-section">
           <div className="flex flex-row gap-12 width100">
             <input
@@ -784,8 +784,8 @@ export default function ManageOrdersPage() {
               style={{ maxWidth: "fit-content" }}
               title={
                 sortOrder === "desc"
-                  ? "Showing latest first — click for oldest first"
-                  : "Showing oldest first — click for latest first"
+                  ? "Showing latest first, click for oldest first"
+                  : "Showing oldest first, click for latest first"
               }
             >
               <ArrowUpDown size={14} />
@@ -860,7 +860,7 @@ export default function ManageOrdersPage() {
           </AnimatePresence>
         </div>
 
-        {/* Quick stats row — minimal, matches the lightweight feel */}
+        {/* Quick stats row, minimal, matches the lightweight feel */}
         <div className="admin-stats-row">
           <div className="admin-stat">
             <span className="admin-stat-value">{filteredOrders.length}</span>
@@ -880,7 +880,7 @@ export default function ManageOrdersPage() {
           </div>
         </div>
 
-        {/* Orders list — same card structure as my-orders */}
+        {/* Orders list, same card structure as my-orders */}
         {filteredOrders.length > 0 ? (
           <div className="flex flex-col gap-4">
             <div className="orders-list-header">
@@ -899,7 +899,7 @@ export default function ManageOrdersPage() {
 
               return (
                 <div key={idx} className="order-card">
-                  {/* ===== Collapsed header — always visible.
+                  {/* ===== Collapsed header, always visible.
                        Clicking anywhere here toggles the accordion EXCEPT
                        the copyable name/phone chips (they stopPropagation). */}
                   <div
@@ -959,7 +959,7 @@ export default function ManageOrdersPage() {
                       />
                     </div>
 
-                    {/* Name + Phone — independently copyable chips */}
+                    {/* Name + Phone, independently copyable chips */}
                     <div className="flex flex-row gap-8 items-center flex-wrap">
                       <div
                         onClick={(e) => {
@@ -980,7 +980,7 @@ export default function ManageOrdersPage() {
                       >
                         <User size={13} className="gray-500" />
                         <span className="font-12 weight-600">
-                          {order["Customer Name"] || "—"}
+                          {order["Customer Name"] || ""}
                         </span>
                         {copiedId === `name-${idx}` ? (
                           <Check size={12} className="text-green" />
@@ -1024,7 +1024,7 @@ export default function ManageOrdersPage() {
                           <span>{order.status}</span>
                         </div>
 
-                        {/* Inline P&L pip — visible even when collapsed if cost is set */}
+                        {/* Inline P&L pip, visible even when collapsed if cost is set */}
                         {cost > 0 && (
                           <span
                             className="font-12 weight-700 flex flex-row gap-4 items-center"
@@ -1298,7 +1298,7 @@ export default function ManageOrdersPage() {
                             </div>
                           </div>
 
-                          {/* Order Summary — Total, Payment, Delivery */}
+                          {/* Order Summary, Total, Payment, Delivery */}
                           <div className="order-details-grid">
                             <div className="detail-item">
                               <IndianRupee size={14} className="gray-500" />
@@ -1559,7 +1559,7 @@ export default function ManageOrdersPage() {
         )}
       </div>
 
-      {/* Add/Edit Modal — kept as-is, uses existing bill-modal classes */}
+      {/* Add/Edit Modal, kept as-is, uses existing bill-modal classes */}
       <AnimatePresence>
         {(showAddModal || showEditModal) && (
           <motion.div
@@ -1791,7 +1791,7 @@ export default function ManageOrdersPage() {
                       type="text"
                       name="offerApplied"
                       className="sec-mid-btn width100"
-                      placeholder="e.g., ₹100 OFF"
+                      placeholder="e.g. ₹100 OFF"
                       value={formData.offerApplied}
                       onChange={handleInputChange}
                     />
@@ -1824,7 +1824,7 @@ export default function ManageOrdersPage() {
                     type="text"
                     name="shippingId"
                     className="sec-mid-btn width100"
-                    placeholder="e.g., CM160465548IN or tracking number"
+                    placeholder="e.g. CM160465548IN or tracking number"
                     value={formData.shippingId}
                     onChange={handleInputChange}
                   />

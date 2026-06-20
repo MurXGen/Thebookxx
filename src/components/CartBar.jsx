@@ -193,7 +193,7 @@ export default function CartBar() {
     router.push("/bag");
   };
 
-  // Fallback handler (used inside locked modal CTA — scrolls to catalogue)
+  // Fallback handler (used inside locked modal CTA, scrolls to catalogue)
   const handleAddBooksClick = () => {
     trackFunnelEvent("add_books_button_clicked", {
       cart_total: cartTotal,
@@ -204,7 +204,7 @@ export default function CartBar() {
     booksSection?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // Open the ₹1 modal — replaces the previous scroll-to-catalogue behavior
+  // Open the ₹1 modal, replaces the previous scroll-to-catalogue behavior
   const handleOpenOneRupeeModal = () => {
     trackFunnelEvent("one_rupee_modal_opened", {
       cart_total: cartTotal,

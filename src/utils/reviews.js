@@ -361,7 +361,7 @@ export const reviewsData = [
     reviewerImage: "/review/reviewers/reviewer-fallback-image.jpeg",
     rating: 5,
     comment:
-      "I've struggled with anxiety and overthinking for years. This book didn't just motivate me—it gave me actual exercises to rewire my thinking. Life-changing doesn't even begin to describe it.",
+      "I've struggled with anxiety and overthinking for years. This book didn't just motivate me, it gave me actual exercises to rewire my thinking. Life-changing doesn't even begin to describe it.",
     bookId: "bk-002",
     bookName: "The Art of Clarity",
     authorName: "Murthy Thevar",
@@ -431,7 +431,7 @@ export const reviewsData = [
     reviewerImage: "/review/reviewers/reviewer-fallback-image.jpeg",
     rating: 5,
     comment:
-      "I've read over 50 self-help books. This one stands out because it's not just theory—it's a practical manual. The 'Clarity Audit' exercise alone is worth re-reading the book for.",
+      "I've read over 50 self-help books. This one stands out because it's not just theory, it's a practical manual. The 'Clarity Audit' exercise alone is worth re-reading the book for.",
     bookId: "bk-002",
     bookName: "The Art of Clarity",
     authorName: "Murthy Thevar",

@@ -201,7 +201,7 @@ export default async function BlogPage({ params }) {
 
   const structuredData = generateStructuredData(blog);
 
-  // FAQPage schema — built from the post's FAQ section (rich-result eligible)
+  // FAQPage schema, built from the post's FAQ section (rich-result eligible)
   const faqStructuredData =
     blog.faqs && blog.faqs.length > 0
       ? {

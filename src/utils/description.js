@@ -69,7 +69,7 @@ export function bookMetaDescription(book) {
 export function brandPromoLine(book) {
   const name = book?.name || "this book";
   const author = book?.author ? ` by ${book.author}` : "";
-  return `Buy ${name}${author} online at TheBookX — India's trusted online bookstore offering free delivery, Cash on Delivery, and books starting at ₹1.`;
+  return `Buy ${name}${author} online at TheBookX, India's trusted online bookstore offering free delivery, Cash on Delivery, and books starting at ₹1.`;
 }
 
 // Full on-page / schema description: unique cleaned content first (best for SEO

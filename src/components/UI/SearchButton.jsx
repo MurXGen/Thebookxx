@@ -103,7 +103,7 @@ export default function SearchButton({ onClick }) {
               <StarsIcon className="rotate-icon" size={20} color="#fb8500" />
             </div>
 
-            {/* PWA install icon — only shows when the app is installable */}
+            {/* PWA install icon, only shows when the app is installable */}
             {canInstall && (
               <div
                 onClick={handleInstallClick}

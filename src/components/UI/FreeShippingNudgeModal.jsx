@@ -18,14 +18,14 @@ const LOAD_MORE_COUNT = 8;
  *   - cart is below ₹399 AND
  *   - they haven't already chosen to skip this nudge
  *
- * Visual style mirrors the "Claim Now" sliding strip — orange gradient hero,
- * pulsing shadow, wiggling icon — to draw attention without using fake urgency
+ * Visual style mirrors the "Claim Now" sliding strip, orange gradient hero,
+ * pulsing shadow, wiggling icon, to draw attention without using fake urgency
  * or manipulative copy. Books are shown using <BookCard /> for consistency
  * with the rest of the catalogue.
  *
  * Props:
  *   open                 : boolean
- *   onClose              : () => void     // X button — stays on bag page
+ *   onClose              : () => void     // X button, stays on bag page
  *   onSkip               : () => void     // "I'm fine to pay delivery"
  *   onProceedAfterUnlock : () => void     // cart reached ₹399 inside this modal
  *   cartBooks            : array          // current cart books (live)
@@ -39,7 +39,7 @@ export default function FreeShippingNudgeModal({
   cartBooks = [],
   totalDiscounted = 0,
 }) {
-  // Capture cart at open time — keeps suggestion list stable as user adds
+  // Capture cart at open time, keeps suggestion list stable as user adds
   const [initialCartIds, setInitialCartIds] = useState(new Set());
 
   // Lazy loading states
@@ -263,7 +263,7 @@ export default function FreeShippingNudgeModal({
                 gap: 20,
               }}
             >
-              {/* ===== Energetic Hero — Claim-Now style ===== */}
+              {/* ===== Energetic Hero, Claim-Now style ===== */}
               <motion.div
                 animate={
                   hasUnlocked
@@ -352,7 +352,7 @@ export default function FreeShippingNudgeModal({
                             marginTop: 4,
                           }}
                         >
-                          Shipping is on us — ready to checkout
+                          Shipping is on us, ready to checkout
                         </div>
                       </>
                     ) : (

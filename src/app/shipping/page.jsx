@@ -48,7 +48,7 @@ export default function ShippingDeliveryPolicy() {
           </li>
           <li>
             If non-serviceability is identified after order placement, the order
-            shall be cancelled and a full refund issued within 5–7 business days
+            shall be cancelled and a full refund issued within 5-7 business days
           </li>
           <li>
             Where partial serviceability is available, we may reach out to
@@ -70,28 +70,28 @@ export default function ShippingDeliveryPolicy() {
         </p>
         <ol>
           <li>
-            <strong>Order confirmation</strong> — issued via WhatsApp, SMS, or
+            <strong>Order confirmation</strong>, issued via WhatsApp, SMS, or
             email within a few hours of order placement
           </li>
           <li>
-            <strong>Order processing</strong> — your order is picked, packed,
-            and quality-checked at our facility, typically within 1–2 business
+            <strong>Order processing</strong>, your order is picked, packed,
+            and quality-checked at our facility, typically within 1-2 business
             days
           </li>
           <li>
-            <strong>Dispatch</strong> — the order is handed over to our
+            <strong>Dispatch</strong>, the order is handed over to our
             logistics partner. You will receive a tracking ID at this stage.
           </li>
           <li>
-            <strong>In transit</strong> — the parcel moves through the courier's
+            <strong>In transit</strong>, the parcel moves through the courier's
             network
           </li>
           <li>
-            <strong>Out for delivery</strong> — the courier's delivery agent
+            <strong>Out for delivery</strong>, the courier's delivery agent
             attempts delivery to your address
           </li>
           <li>
-            <strong>Delivered</strong> — the parcel is handed over to you or an
+            <strong>Delivered</strong>, the parcel is handed over to you or an
             authorised recipient at the address
           </li>
         </ol>
@@ -152,23 +152,23 @@ export default function ShippingDeliveryPolicy() {
           <tbody>
             <tr>
               <td>Standard Delivery (Metro cities)</td>
-              <td>3–5 days</td>
+              <td>3-5 days</td>
             </tr>
             <tr>
               <td>Standard Delivery (Non-Metro cities)</td>
-              <td>5–7 days</td>
+              <td>5-7 days</td>
             </tr>
             <tr>
               <td>Standard Delivery (Remote / North-East / J&amp;K)</td>
-              <td>7–12 days</td>
+              <td>7-12 days</td>
             </tr>
             <tr>
               <td>Express Delivery (where available)</td>
-              <td>2–5 days</td>
+              <td>2-5 days</td>
             </tr>
             <tr>
               <td>Cash on Delivery</td>
-              <td>5–10 days</td>
+              <td>5-10 days</td>
             </tr>
           </tbody>
         </table>
@@ -176,7 +176,7 @@ export default function ShippingDeliveryPolicy() {
         <p>
           Timelines are calculated from the date of dispatch, not the date of
           order placement. Total delivery time is the sum of order processing
-          time (1–2 business days) and the in-transit time shown above.
+          time (1-2 business days) and the in-transit time shown above.
         </p>
 
         <div className="legal-note">
@@ -212,11 +212,11 @@ export default function ShippingDeliveryPolicy() {
               <td>Free (subject to applicable cart minimum)</td>
             </tr>
             <tr>
-              <td>₹399 – ₹599</td>
+              <td>₹399-₹599</td>
               <td>Free</td>
             </tr>
             <tr>
-              <td>₹599 – ₹799</td>
+              <td>₹599-₹799</td>
               <td>₹49 (small handling fee)</td>
             </tr>
             <tr>
@@ -337,7 +337,7 @@ export default function ShippingDeliveryPolicy() {
         <h2>10. Delivery Attempts</h2>
         <p>
           Our logistics partners typically make up to{" "}
-          <strong>2–3 delivery attempts</strong> on consecutive working days.
+          <strong>2-3 delivery attempts</strong> on consecutive working days.
           Before each attempt:
         </p>
         <ul>
@@ -435,7 +435,7 @@ export default function ShippingDeliveryPolicy() {
           received it, please notify us within{" "}
           <strong>48 hours of the marked delivery time</strong>. We will
           coordinate with the courier partner to investigate the matter.
-          Investigations typically take 5–7 business days.
+          Investigations typically take 5-7 business days.
         </p>
         <p>
           If the courier confirms the parcel is lost in transit, we will, at
@@ -472,7 +472,7 @@ export default function ShippingDeliveryPolicy() {
             to the delivery agent at the time of delivery.
           </li>
           <li>
-            COD orders may take an additional 1–2 business days for processing
+            COD orders may take an additional 1-2 business days for processing
             compared to prepaid orders.
           </li>
           <li>

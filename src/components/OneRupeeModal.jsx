@@ -7,7 +7,7 @@ import { X, Sparkles, Clock, Lock } from "lucide-react";
 import { useEffect, useMemo } from "react";
 
 /**
- * OneRupeeModal — sliding bottom-sheet that lists all ₹1 books.
+ * OneRupeeModal, sliding bottom-sheet that lists all ₹1 books.
  *
  * Props:
  *   isOpen          : boolean

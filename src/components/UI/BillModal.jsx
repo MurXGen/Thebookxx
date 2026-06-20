@@ -17,7 +17,7 @@ export default function BillModal({
   totalWithDelivery = null,
   giftWrapCharge = 0,
   giftWrapSelected = false,
-  // NEW — when true, hide all delivery-related rows AND exclude delivery
+  // NEW, when true, hide all delivery-related rows AND exclude delivery
   // from the displayed "You Pay" total. Used when the user hasn't yet
   // committed to shipping (i.e. the nudge modal is still pending).
   hideDeliveryCharges = false,
@@ -98,7 +98,7 @@ export default function BillModal({
           </div>
         )}
 
-        {/* Delivery rows — hidden until user accepts shipping */}
+        {/* Delivery rows, hidden until user accepts shipping */}
         {!hideDeliveryCharges && (
           <>
             {deliveryCharge > 0 && (

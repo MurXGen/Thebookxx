@@ -171,7 +171,7 @@ export default function TermsAndConditions() {
         <p>
           In the event of an Order being rejected after payment has been
           received, the full payment shall be refunded to the original payment
-          method within 5–7 business days.
+          method within 5-7 business days.
         </p>
       </section>
 
@@ -212,9 +212,9 @@ export default function TermsAndConditions() {
         <p>
           Shipping is offered across India through partner courier services
           including India Post, Delhivery, and other reputable logistics
-          providers. Standard delivery typically takes 3–7 business days
+          providers. Standard delivery typically takes 3-7 business days
           depending on your location and product availability. Express delivery,
-          where available, takes 2–5 business days.
+          where available, takes 2-5 business days.
         </p>
         <p>
           Delivery timelines are estimates and not guarantees. We are not liable
@@ -245,7 +245,7 @@ export default function TermsAndConditions() {
           </li>
           <li>
             Approved refunds shall be processed to the original payment method
-            within 5–7 business days of return verification.
+            within 5-7 business days of return verification.
           </li>
         </ul>
       </section>
@@ -253,9 +253,9 @@ export default function TermsAndConditions() {
       <section id="intellectual">
         <h2>9. Intellectual Property</h2>
         <p>
-          All content available on the Website — including but not limited to
+          All content available on the Website, including but not limited to
           text, graphics, logos, images, software, page layouts, and the
-          underlying source code — is the property of TheBookX or its licensors
+          underlying source code, is the property of TheBookX or its licensors
           and is protected by Indian and international copyright, trademark, and
           other intellectual property laws.
         </p>

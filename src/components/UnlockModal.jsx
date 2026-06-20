@@ -230,7 +230,7 @@ export default function UnlockModal({
               transition={{ delay: 0.2, duration: 0.4 }}
             >
               {!showTimer
-                ? "Grab any ₹1 book for the next few minutes! This exclusive offer won't last long — start exploring now!"
+                ? "Grab any ₹1 book for the next few minutes! This exclusive offer won't last long, start exploring now!"
                 : "You've successfully unlocked ₹1 books! Add them to your cart within the next 10 minutes. Happy reading! 📚"}
             </motion.p>
 

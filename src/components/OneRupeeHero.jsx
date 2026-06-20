@@ -12,7 +12,7 @@ import { useEffect, useMemo, useState } from "react";
 import OneRupeeModal from "./OneRupeeModal";
 
 /**
- * OneRupeeHero — celebratory home page section promoting ₹1 books.
+ * OneRupeeHero, celebratory home page section promoting ₹1 books.
  * Short height (~160px), animated background, opens OneRupeeModal on click.
  */
 export default function OneRupeeHero() {
@@ -53,7 +53,7 @@ export default function OneRupeeHero() {
     return () => clearInterval(i);
   }, [isTimerActive]);
 
-  // Confetti dots — generated once
+  // Confetti dots, generated once
   const confettiDots = useMemo(
     () =>
       Array.from({ length: 12 }).map((_, i) => ({
@@ -70,7 +70,7 @@ export default function OneRupeeHero() {
   return (
     <>
       <section className="onerupee-strip">
-        {/* Content row — minimal, Stripe-style */}
+        {/* Content row, minimal, Stripe-style */}
         <div className="onerupee-strip-content">
           {/* ₹1 coin badge */}
           <div className="onerupee-strip-coin">
@@ -85,7 +85,7 @@ export default function OneRupeeHero() {
             </h2>
             <p className="onerupee-strip-subtitle">
               {uiState === "permanentUnlocked"
-                ? `Unlocked — ${oneRupeeCount} books waiting for you`
+                ? `Unlocked, ${oneRupeeCount} books waiting for you`
                 : uiState === "timerActive"
                   ? `Hurry! ${Math.floor(liveRemainingTime / 60)}:${(liveRemainingTime % 60).toString().padStart(2, "0")} left to claim`
                   : `Grab bestsellers at just ₹1`}

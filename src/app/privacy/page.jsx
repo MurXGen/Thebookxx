@@ -228,28 +228,28 @@ export default function PrivacyPolicy() {
         <ul>
           <li>
             <strong>Logistics &amp; courier partners</strong> (India Post,
-            Delhivery, etc.) — to facilitate delivery of your order. Shared data
+            Delhivery, etc.), to facilitate delivery of your order. Shared data
             is limited to name, delivery address, contact number, and order
             details.
           </li>
           <li>
             <strong>Payment gateways</strong> (Razorpay, PhonePe, Cashfree, or
-            equivalent) — to process payments securely. These processors are
+            equivalent), to process payments securely. These processors are
             PCI-DSS certified and handle payment credentials independently.
           </li>
           <li>
-            <strong>Cloud &amp; hosting providers</strong> — for secure storage
+            <strong>Cloud &amp; hosting providers</strong>, for secure storage
             of order data and website infrastructure. All hosting providers are
             bound by data protection agreements.
           </li>
           <li>
             <strong>Communication tools</strong> (WhatsApp Business, SMS
-            providers) — for order updates and customer support, limited to
+            providers), for order updates and customer support, limited to
             phone numbers and order references.
           </li>
           <li>
             <strong>Analytics services</strong> (Google Analytics, Meta Pixel,
-            or equivalent) — to understand aggregated usage trends. Data is
+            or equivalent), to understand aggregated usage trends. Data is
             anonymised wherever possible.
           </li>
         </ul>

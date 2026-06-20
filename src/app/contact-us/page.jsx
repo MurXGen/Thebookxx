@@ -32,7 +32,7 @@ export default function ContactUs() {
         </div>
       </div>
 
-      {/* Primary contact methods — visual grid */}
+      {/* Primary contact methods, visual grid */}
       <section id="contact-channels">
         <h2>Get In Touch</h2>
 
@@ -51,7 +51,7 @@ export default function ContactUs() {
               <span className="contact-card-title">WhatsApp</span>
               <span className="contact-card-value">+91 77108 92108</span>
               <span className="contact-card-meta">
-                Fastest response · 10 AM – 7 PM
+                Fastest response · 10 AM-7 PM
               </span>
             </div>
           </a>
@@ -79,7 +79,7 @@ export default function ContactUs() {
               <span className="contact-card-title">Phone</span>
               <span className="contact-card-value">+91 77108 92108</span>
               <span className="contact-card-meta">
-                Mon – Sat, 10 AM – 7 PM IST
+                Mon-Sat, 10 AM-7 PM IST
               </span>
             </div>
           </a>
@@ -98,12 +98,12 @@ export default function ContactUs() {
           </thead>
           <tbody>
             <tr>
-              <td>Monday – Friday</td>
-              <td>10:00 AM – 7:00 PM</td>
+              <td>Monday-Friday</td>
+              <td>10:00 AM-7:00 PM</td>
             </tr>
             <tr>
               <td>Saturday</td>
-              <td>10:00 AM – 5:00 PM</td>
+              <td>10:00 AM-5:00 PM</td>
             </tr>
             <tr>
               <td>Sunday &amp; Public Holidays</td>
@@ -141,7 +141,7 @@ export default function ContactUs() {
             <div>
               <span className="contact-topic-title">Delivery Issues</span>
               <p>
-                Delayed, missing, or damaged shipment — see our{" "}
+                Delayed, missing, or damaged shipment, see our{" "}
                 <a href="/shipping">Shipping Policy</a>
               </p>
             </div>
@@ -152,7 +152,7 @@ export default function ContactUs() {
             <div>
               <span className="contact-topic-title">Refunds &amp; Returns</span>
               <p>
-                Cancellations, refunds, returns — see our{" "}
+                Cancellations, refunds, returns, see our{" "}
                 <a href="/refund">Refund Policy</a>
               </p>
             </div>
@@ -171,7 +171,7 @@ export default function ContactUs() {
             <div>
               <span className="contact-topic-title">Privacy &amp; Data</span>
               <p>
-                Access, correction, or deletion of personal data — see our{" "}
+                Access, correction, or deletion of personal data, see our{" "}
                 <a href="/privacy">Privacy Policy</a>
               </p>
             </div>
@@ -182,7 +182,7 @@ export default function ContactUs() {
             <div>
               <span className="contact-topic-title">Bulk Orders</span>
               <p>
-                Schools, libraries, and institutional purchases — email us for
+                Schools, libraries, and institutional purchases, email us for
                 custom pricing
               </p>
             </div>

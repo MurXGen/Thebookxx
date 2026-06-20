@@ -154,7 +154,7 @@ export default function BookDetailsModal({ book }) {
 
   const handleWishlist = () => {
     toggleWishlist(book.id);
-    // Stay on page — only toast feedback
+    // Stay on page, only toast feedback
     showToast(
       inWishlist ? "Removed from wishlist" : "Added to wishlist",
       "success",
@@ -196,7 +196,7 @@ export default function BookDetailsModal({ book }) {
         showToast("Link copied to clipboard", "success");
       }
     } catch (error) {
-      // User dismissed share sheet — not an error
+      // User dismissed share sheet, not an error
       if (error?.name !== "AbortError") {
         console.error("Share failed:", error);
       }
@@ -233,7 +233,7 @@ export default function BookDetailsModal({ book }) {
             "@id": canonicalUrl,
             url: canonicalUrl,
             name: book.name,
-            description: `${book.description} Shop now at TheBookX — India's most trusted online bookstore.`,
+            description: `${book.description} Shop now at TheBookX, India's most trusted online bookstore.`,
             image: book.image,
             brand: { "@type": "Brand", name: "TheBookX" },
             sku: book.id,
@@ -440,7 +440,7 @@ export default function BookDetailsModal({ book }) {
                 <div className="flex flex-col justify-center items-center gap-24">
                   <Image
                     src={book.image}
-                    alt={`${book.name} book cover — Buy online at TheBookX, India's trusted bookstore`}
+                    alt={`${book.name} book cover, Buy online at TheBookX, India's trusted bookstore`}
                     width={240}
                     height={340}
                     priority
@@ -562,7 +562,7 @@ export default function BookDetailsModal({ book }) {
                         className="bd-stock-icon-warning"
                       />
                       <span className="bd-stock-text bd-text-warning">
-                        Only {book.stock} left — order soon
+                        Only {book.stock} left, order soon
                       </span>
                     </>
                   ) : (
@@ -572,7 +572,7 @@ export default function BookDetailsModal({ book }) {
                         className="bd-stock-icon-success"
                       />
                       <span className="bd-stock-text bd-text-success">
-                        In stock — delivers in 3-7 days
+                        In stock, delivers in 3-7 days
                       </span>
                     </>
                   )}

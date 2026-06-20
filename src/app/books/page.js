@@ -38,7 +38,7 @@ export default function BooksPage() {
   const [showFilters, setShowFilters] = useState(false);
   const [priceRange, setPriceRange] = useState({ min: 0, max: 5000 });
   // Text query from ?q= (powers the Google sitelinks search box without the
-  // useSearchParams Suspense requirement — read straight from the URL).
+  // useSearchParams Suspense requirement, read straight from the URL).
   const [textQuery, setTextQuery] = useState("");
   const loadMoreRef = useRef(null);
 

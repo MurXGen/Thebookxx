@@ -479,7 +479,7 @@ export default function ReadingTrackerPage() {
             <h4 className="font-24">Reading Tip</h4>
             <p>
               Reading just 20 pages a day means you'll finish 7,300 pages in a
-              year — that's about 30 books!
+              year, that's about 30 books!
             </p>
           </div>
         </div>

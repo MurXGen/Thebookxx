@@ -8,10 +8,6 @@ const FORM_FIELD_IDS = {
   orderId: "entry.1840449230",
   customerName: "entry.669641354",
   phone: "entry.1941153221",
-  // 📧 EMAIL CAPTURE: add an "Email" short-answer question to your Google Form,
-  // copy its entry ID (entry.XXXXXXXXX) and paste it below to start saving
-  // emails to the sheet. Until then, email is captured in localStorage only.
-  // email: "entry.REPLACE_WITH_YOUR_EMAIL_FIELD_ID",
   pincode: "entry.778741327",
   city: "entry.1428299588",
   state: "entry.1558326929",
@@ -138,7 +134,6 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
     orderId: `ORD${Date.now()}`,
     customerName: addressData.name || "",
     phone: addressData.phone || "",
-    email: addressData.email || "",
     pincode: addressData.pincode || "",
     city: addressData.city || "",
     state: addressData.state || "",

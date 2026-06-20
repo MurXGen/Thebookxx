@@ -93,31 +93,9 @@ export default function BestsellerStage() {
   const currentStat = orderStats[currentStatIndex];
 
   return (
-    <section className="bestseller-stage">
-      {/* Header */}
-      <div className="stage-header">
-        <h2 className="stage-title">Bestsellers</h2>
-        <p className="stage-subtitle">Loved by readers across India</p>
-      </div>
-
-      {/* Order Stats Section */}
-      <motion.div
-        className="order-stats-section"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <div className="flex flex-row gap-12">
-          <div className="green-check">
-            <BsCash size={16} fill="#22c55e" stroke="#22c55e" />
-            <span>COD Available</span>
-          </div>
-          <div className="trust-badge">
-            <ShieldCheck size={16} />
-            <span>100% Trusted</span>
-          </div>
-        </div>
-      </motion.div>
+    <section className="bestseller-stage bestseller-stage--merged">
+      {/* Promo message lives in the hero above; the duplicated header,
+          trust chips and label were removed to avoid repetition. */}
 
       {/* Horizontal Carousel */}
       <div className="carousel-container">

@@ -229,10 +229,7 @@ export default function RootLayout({ children }) {
           />
         </noscript>
       </head>
-      <body
-        className={poppins.variable}
-        style={{ maxWidth: "980px", margin: "auto" }}
-      >
+      <body className={poppins.variable} style={{ width: "100%", margin: "0 auto" }}>
         <ToastProvider>
           <StoreProvider>
             <PLProvider>

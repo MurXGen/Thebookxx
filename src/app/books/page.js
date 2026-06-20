@@ -17,6 +17,7 @@ import Script from "next/script";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import CartBar from "@/components/CartBar";
+import Breadcrumbs from "@/components/UI/Breadcrumbs";
 
 // Slugify function for URLs
 function slugify(text) {
@@ -36,7 +37,16 @@ export default function BooksPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [priceRange, setPriceRange] = useState({ min: 0, max: 5000 });
+  // Text query from ?q= (powers the Google sitelinks search box without the
+  // useSearchParams Suspense requirement — read straight from the URL).
+  const [textQuery, setTextQuery] = useState("");
   const loadMoreRef = useRef(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const q = new URLSearchParams(window.location.search).get("q") || "";
+    if (q) setTextQuery(q);
+  }, []);
 
   /* 📚 Extract unique categories */
   const categories = useMemo(() => {
@@ -51,6 +61,16 @@ export default function BooksPage() {
 
     if (selectedCategory !== "all") {
       data = data.filter((b) => b.catalogue?.includes(selectedCategory));
+    }
+
+    // Free-text query (name or category) from the URL ?q= parameter
+    const q = textQuery.trim().toLowerCase();
+    if (q) {
+      data = data.filter(
+        (b) =>
+          b.name?.toLowerCase().includes(q) ||
+          b.catalogue?.some((c) => c.toLowerCase().includes(q)),
+      );
     }
 
     data = data.filter(
@@ -68,7 +88,7 @@ export default function BooksPage() {
     }
 
     return data;
-  }, [selectedCategory, sortType, priceRange]);
+  }, [selectedCategory, sortType, priceRange, textQuery]);
 
   const visibleBooks = useMemo(() => {
     return filteredBooks.slice(0, visibleCount);
@@ -192,6 +212,8 @@ export default function BooksPage() {
           }),
         }}
       />
+
+      <Breadcrumbs items={[{ label: "All Books" }]} jsonLd />
 
       <header className="books-page-header">
         <div className="header-content">

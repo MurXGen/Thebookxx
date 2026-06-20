@@ -40,6 +40,7 @@ export default function SearchOverlay({ open, onClose }) {
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
+  const [sortType, setSortType] = useState("relevance");
   const [showRecommendationModal, setShowRecommendationModal] = useState(false);
 
   // Auto focus input
@@ -128,6 +129,19 @@ export default function SearchOverlay({ open, onClose }) {
 
         return nameMatch || catalogueMatch || priceMatch;
       });
+
+  // Apply the chosen sort to the matched results (relevance keeps match order)
+  const sortedBooks = (() => {
+    const data = [...filteredBooks];
+    if (sortType === "low") data.sort((a, b) => a.discountedPrice - b.discountedPrice);
+    else if (sortType === "high") data.sort((a, b) => b.discountedPrice - a.discountedPrice);
+    else if (sortType === "discount")
+      data.sort(
+        (a, b) =>
+          b.originalPrice - b.discountedPrice - (a.originalPrice - a.discountedPrice),
+      );
+    return data;
+  })();
 
   // Encode search term for WhatsApp
   const whatsappMessage = `Hey hi! I'm looking for a book related to "${query}" but couldn't find it on TheBookX. Could you please help me find it?`;
@@ -302,13 +316,43 @@ export default function SearchOverlay({ open, onClose }) {
                   ) : (
                     <motion.div
                       key={`results-${debouncedQuery}`}
-                      className="book-grid"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.15 }}
                     >
-                      {filteredBooks.map((book, idx) => (
+                      {/* Result count + sort controls */}
+                      <div
+                        className="flex flex-row items-center justify-between flex-wrap gap-8"
+                        style={{ padding: "4px 4px 14px" }}
+                      >
+                        <span className="font-12 dark-50">
+                          <b style={{ color: "var(--foreground)" }}>
+                            {sortedBooks.length}
+                          </b>{" "}
+                          {sortedBooks.length === 1 ? "result" : "results"} for
+                          &ldquo;{debouncedQuery}&rdquo;
+                        </span>
+                        <div className="flex flex-row flex-wrap gap-8">
+                          {[
+                            { k: "relevance", l: "Relevance" },
+                            { k: "low", l: "Price ↑" },
+                            { k: "high", l: "Price ↓" },
+                            { k: "discount", l: "Discount" },
+                          ].map((s) => (
+                            <button
+                              key={s.k}
+                              className={`sec-mid-btn ${sortType === s.k ? "active" : ""}`}
+                              onClick={() => setSortType(s.k)}
+                            >
+                              {s.l}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="book-grid">
+                        {sortedBooks.map((book, idx) => (
                         <motion.div
                           key={book.id}
                           initial={{ opacity: 0, y: 14 }}
@@ -321,7 +365,8 @@ export default function SearchOverlay({ open, onClose }) {
                         >
                           <BookCard book={book} />
                         </motion.div>
-                      ))}
+                        ))}
+                      </div>
                     </motion.div>
                   )}
                 </AnimatePresence>

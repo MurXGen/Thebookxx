@@ -402,9 +402,6 @@ export default function TermsAndConditions() {
         <div className="legal-card">
           <h3 className="legal-card-title">Business Information</h3>
           <dl>
-            <dt>Legal Name</dt>
-            <dd>Murthy Poothapandi Thevar</dd>
-
             <dt>Trade Name</dt>
             <dd>TheBookX</dd>
 

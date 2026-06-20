@@ -4,6 +4,7 @@
 import { useStore } from "@/context/StoreContext";
 import { showToast } from "@/context/ToastContext";
 import { books } from "@/utils/book";
+import Breadcrumbs from "./UI/Breadcrumbs";
 import {
   ArrowLeft,
   Heart,
@@ -379,6 +380,23 @@ export default function BookDetailsModal({ book }) {
 
       <div className="bd-page" itemScope itemType="https://schema.org/Book">
         <div className="bd-container">
+          <Breadcrumbs
+            jsonLd
+            items={[
+              { label: "Books", href: "/books" },
+              ...(book.catalogue?.[0]
+                ? [
+                    {
+                      label: book.catalogue[0]
+                        .replace(/-/g, " ")
+                        .replace(/\b\w/g, (c) => c.toUpperCase()),
+                      href: `/category/${book.catalogue[0]}`,
+                    },
+                  ]
+                : []),
+              { label: book.name },
+            ]}
+          />
           {/* ===== Top bar (in-flow) ===== */}
           <div className="bd-topbar">
             <button

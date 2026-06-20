@@ -64,6 +64,18 @@ export default function BagPage() {
 
   const hasOneRupeeItem = cartBooks.some((book) => book.discountedPrice === 1);
 
+  // Recommendations drawn from the categories already in the cart
+  const cartIds = new Set(cartBooks.map((b) => b.id));
+  const cartCategories = new Set(cartBooks.flatMap((b) => b.catalogue || []));
+  const recommendedBooks = books
+    .filter(
+      (b) =>
+        !cartIds.has(b.id) &&
+        b.discountedPrice !== 1 &&
+        (b.catalogue || []).some((c) => cartCategories.has(c)),
+    )
+    .slice(0, 8);
+
   const MIN_CHECKOUT_AMOUNT = 151;
   const cartOffers = getCartOffers(hasOneRupeeItem);
 
@@ -508,7 +520,7 @@ _Thank you for shopping with TheBookX! 📚✨_
           <div className="flex flex-row gap-12 items-center justify-between">
             <ArrowLeft size={20} onClick={() => router.push("/")} />
             <div className="flex flex-col">
-              <h2 className="font-24 weight-600">Your Bag</h2>
+              <h1 className="font-24 weight-600">Your Bag</h1>
               <span className="font-12 dark-50">
                 {cartBooks.length} book{cartBooks.length > 1 ? "s" : ""} in cart
               </span>
@@ -550,25 +562,44 @@ _Thank you for shopping with TheBookX! 📚✨_
         <div className="flex flec-row gap-12 items-center">
           <ArrowLeft size={20} onClick={() => router.push("/")} />
           <div className="flex flex-col">
-            <h2 className="font-24 weight-600">Your Bag</h2>
+            <h1 className="font-24 weight-600">Your Bag</h1>
             <span className="font-12 dark-50">
               {cartBooks.length} book{cartBooks.length > 1 ? "s" : ""} in cart
             </span>
           </div>
         </div>
-        <Link href="/profile" className="sec-mid-btn">
-          Order History
-        </Link>
+        <div className="flex flex-row gap-8 items-center">
+          <span className="freebie-chip">
+            <Gift size={13} />
+            <span>Free bookmarks + gifts</span>
+          </span>
+          <Link href="/profile" className="sec-mid-btn">
+            Order History
+          </Link>
+        </div>
       </div>
 
       <CartOfferStrip discountedAmount={totalDiscounted} />
-      <FreebieBadge />
 
-      <div className="grid-2">
-        {cartBooks.map((book) => (
-          <BookCard key={book.id} book={book} />
-        ))}
+      <div className="cart-items-panel">
+        <div className="grid-2">
+          {cartBooks.map((book) => (
+            <BookCard key={book.id} book={book} />
+          ))}
+        </div>
       </div>
+
+      {recommendedBooks.length > 0 && (
+        <div className="cart-recommendations">
+          <YouMayLike
+            title="Readers who picked these also loved…"
+            subtitle="Hand-picked for you — add one more and make it a reading you'll remember ❤️"
+            items={recommendedBooks}
+            renderItem={(b) => <BookCard key={b.id} book={b} />}
+            showLoadMore={false}
+          />
+        </div>
+      )}
 
       <div className={`gift-wrap-section ${giftWrap ? "selected" : ""}`}>
         <label className="gift-wrap-label">

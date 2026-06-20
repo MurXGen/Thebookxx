@@ -69,92 +69,38 @@ export default function OneRupeeHero() {
 
   return (
     <>
-      <section className="onerupee-hero">
-        {/* Animated gradient background */}
-        <div className="onerupee-hero-bg" aria-hidden="true" />
-
-        {/* Floating confetti dots */}
-        <div className="onerupee-hero-confetti" aria-hidden="true">
-          {confettiDots.map((dot) => (
-            <motion.span
-              key={dot.id}
-              className="onerupee-hero-dot"
-              style={{
-                left: `${dot.left}%`,
-                width: `${dot.size}px`,
-                height: `${dot.size}px`,
-                background: dot.color,
-              }}
-              initial={{ y: -10, opacity: 0 }}
-              animate={{
-                y: ["0%", "200%"],
-                opacity: [0, 1, 1, 0],
-                rotate: [0, 360],
-              }}
-              transition={{
-                duration: dot.duration,
-                delay: dot.delay,
-                repeat: Infinity,
-                ease: "linear",
-              }}
-            />
-          ))}
-        </div>
-
-        {/* Content row */}
-        <div className="onerupee-hero-content">
-          {/* Bouncing coin badge */}
-          <motion.div
-            className="onerupee-hero-coin"
-            animate={{
-              y: [0, -6, 0],
-              rotate: [-3, 3, -3],
-            }}
-            transition={{
-              duration: 2.2,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          >
-            <span className="onerupee-hero-coin-rupee">₹</span>
-            <span className="onerupee-hero-coin-num">1</span>
-          </motion.div>
+      <section className="onerupee-strip">
+        {/* Content row — minimal, Stripe-style */}
+        <div className="onerupee-strip-content">
+          {/* ₹1 coin badge */}
+          <div className="onerupee-strip-coin">
+            <span className="onerupee-strip-coin-rupee">₹</span>
+            <span className="onerupee-strip-coin-num">1</span>
+          </div>
 
           {/* Headline + sub */}
-          <div className="onerupee-hero-text">
-            <motion.div
-              className="onerupee-hero-badge"
-              initial={{ opacity: 0, y: -4 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-            >
-              <Sparkles size={12} />
-              <span>Hot deal</span>
-            </motion.div>
-            <h2 className="onerupee-hero-title">
-              Books for just <span className="onerupee-hero-emoji">₹1</span>{" "}
-              each
+          <div className="onerupee-strip-text">
+            <h2 className="onerupee-strip-title">
+              Books for just <span className="onerupee-strip-accent">₹1</span> each
             </h2>
-            <p className="onerupee-hero-subtitle">
+            <p className="onerupee-strip-subtitle">
               {uiState === "permanentUnlocked"
                 ? `Unlocked — ${oneRupeeCount} books waiting for you`
                 : uiState === "timerActive"
                   ? `Hurry! ${Math.floor(liveRemainingTime / 60)}:${(liveRemainingTime % 60).toString().padStart(2, "0")} left to claim`
-                  : ``}
+                  : `Grab bestsellers at just ₹1`}
             </p>
           </div>
 
           {/* CTA */}
-          <motion.button
-            className="onerupee-hero-cta"
+          <button
+            className="onerupee-strip-cta"
             onClick={() => setShowModal(true)}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.96 }}
             aria-label="View ₹1 book deals"
           >
             <span>Claim now</span>
             <ArrowRight size={16} />
-          </motion.button>
+          </button>
         </div>
       </section>
 

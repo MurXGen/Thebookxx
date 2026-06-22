@@ -118,13 +118,8 @@ export default function BookReviews({ bookId, bookName, authorName }) {
 
   return (
     <>
-      {/* JSON-LD Structured Data for SEO */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(generateReviewStructuredData()),
-        }}
-      />
+      {/* Review JSON-LD is emitted once by the product page's main
+          Product/Book schema to avoid a duplicate/conflicting Product entity. */}
 
       <div className="reviews-section-wrapper flex flex-col gap-24">
         {/* Rating Distribution with Schema */}

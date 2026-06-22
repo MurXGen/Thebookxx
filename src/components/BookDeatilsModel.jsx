@@ -34,6 +34,7 @@ import BookCard from "./BookCard";
 import Link from "next/link";
 import YouMayLike from "./UI/YouMayLike";
 import BookReviews from "./UI/BookReviews";
+import { getReviewsByBook, getAverageRating } from "@/utils/reviews";
 
 // Slugify function
 function slugify(text) {
@@ -126,8 +127,17 @@ export default function BookDetailsModal({ book }) {
   const isOutOfStock = book.stock === 0;
   const isAddDisabled = isOneRupeeLimitReached || isOutOfStock;
 
-  const rating = book.rating || getStableRating(book.id);
-  const reviewCount = book.reviewCount || getStableReviewCount(book.id);
+  // Use real customer reviews when they exist (genuine, consistent rating
+  // shown in the pill, the schema and the reviews section); otherwise fall
+  // back to the stable synthetic rating so every book still shows stars.
+  const bookReviews = getReviewsByBook(book.id);
+  const hasRealReviews = bookReviews.length > 0;
+  const rating = hasRealReviews
+    ? Number(getAverageRating(bookReviews))
+    : book.rating || getStableRating(book.id);
+  const reviewCount = hasRealReviews
+    ? bookReviews.length
+    : book.reviewCount || getStableReviewCount(book.id);
 
   // Related books based on same category
   const relatedBooks = useMemo(() => {
@@ -229,7 +239,7 @@ export default function BookDetailsModal({ book }) {
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
-            "@type": "Product",
+            "@type": ["Product", "Book"],
             "@id": canonicalUrl,
             url: canonicalUrl,
             name: book.name,
@@ -241,6 +251,10 @@ export default function BookDetailsModal({ book }) {
               "@type": "Person",
               name: book.author || "Various Authors",
             },
+            inLanguage: book.language || "English",
+            bookFormat: `https://schema.org/${
+              /hard/i.test(book.size || "") ? "Hardcover" : "Paperback"
+            }`,
             offers: {
               "@type": "Offer",
               "@id": `${canonicalUrl}#offer`,
@@ -303,6 +317,20 @@ export default function BookDetailsModal({ book }) {
               bestRating: 5,
               worstRating: 1,
             },
+            ...(hasRealReviews && {
+              review: bookReviews.slice(0, 20).map((rv) => ({
+                "@type": "Review",
+                author: { "@type": "Person", name: rv.reviewerName },
+                datePublished: rv.date,
+                reviewBody: rv.comment,
+                reviewRating: {
+                  "@type": "Rating",
+                  ratingValue: rv.rating,
+                  bestRating: 5,
+                  worstRating: 1,
+                },
+              })),
+            }),
           }),
         }}
       />
@@ -691,7 +719,7 @@ export default function BookDetailsModal({ book }) {
               </dl>
             </Accordion>
 
-            <Accordion icon={Star} title="Reviews">
+            <Accordion icon={Star} title="Reviews" defaultOpen>
               <BookReviews
                 bookId={book.id}
                 bookName={book.name}

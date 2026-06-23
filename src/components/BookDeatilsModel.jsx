@@ -514,7 +514,12 @@ export default function BookDetailsModal({ book }) {
                 </h1>
 
                 {book.author && (
-                  <p className="bd-author" itemProp="author">
+                  <p
+                    className="bd-author"
+                    itemProp="author"
+                    itemScope
+                    itemType="https://schema.org/Person"
+                  >
                     by{" "}
                     <Link
                       href={`/authors/${book.authorSlug || slugify(book.author)}`}

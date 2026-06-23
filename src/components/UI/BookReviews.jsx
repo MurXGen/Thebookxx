@@ -122,18 +122,8 @@ export default function BookReviews({ bookId, bookName, authorName }) {
           Product/Book schema to avoid a duplicate/conflicting Product entity. */}
 
       <div className="reviews-section-wrapper flex flex-col gap-24">
-        {/* Rating Distribution with Schema */}
-        <div
-          className="rating-distribution-schema"
-          itemScope
-          itemType="https://schema.org/AggregateRating"
-        >
-          <meta itemProp="ratingValue" content={avgRating} />
-          <meta itemProp="reviewCount" content={totalReviews} />
-          <meta itemProp="bestRating" content="5" />
-          <meta itemProp="worstRating" content="1" />
-          <meta itemProp="itemReviewed" content={bookName} />
-        </div>
+        {/* Structured data is emitted as JSON-LD in the product page's main
+            Product/Book schema, so no (error-prone) microdata is used here. */}
 
         {/* Hidden SEO content for better keyword density */}
         <div
@@ -161,8 +151,6 @@ export default function BookReviews({ bookId, bookName, authorName }) {
             return (
               <div
                 key={review.id}
-                itemScope
-                itemType="https://schema.org/Review"
                 style={{
                   minWidth: "300px",
                   padding: "12px",
@@ -171,20 +159,6 @@ export default function BookReviews({ bookId, bookName, authorName }) {
                 }}
                 className="flex flex-col gap-12"
               >
-                <meta itemProp="itemReviewed" content={bookName} />
-                <meta itemProp="author" content={review.reviewerName} />
-                <meta itemProp="reviewBody" content={review.comment} />
-                <meta itemProp="datePublished" content={review.date} />
-
-                <div
-                  itemProp="reviewRating"
-                  itemScope
-                  itemType="https://schema.org/Rating"
-                >
-                  <meta itemProp="ratingValue" content={review.rating} />
-                  <meta itemProp="bestRating" content="5" />
-                </div>
-
                 <div className="review-header">
                   <div className="reviewer-info flex flex-row gap-12 items-center">
                     <div className="reviewer-avatar">
@@ -204,9 +178,7 @@ export default function BookReviews({ bookId, bookName, authorName }) {
                       )}
                     </div>
                     <div className="reviewer-details">
-                      <h4 className="reviewer-name" itemProp="name">
-                        {review.reviewerName}
-                      </h4>
+                      <h4 className="reviewer-name">{review.reviewerName}</h4>
                       <div className="review-meta font-12">
                         <div className="review-stars flex flex-row gap-8">
                           <div className="rating-value">{review.rating}.0</div>

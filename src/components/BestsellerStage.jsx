@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { BsCash } from "react-icons/bs";
 
 const SWAP_INTERVAL = 3000;
@@ -45,8 +45,27 @@ export default function BestsellerStage() {
   const [isStatTransitioning, setIsStatTransitioning] = useState(false);
   const [direction, setDirection] = useState(1);
 
-  // Rotate order stats with smooth transition
+  // Only animate while the section is actually on screen (saves CPU/battery
+  // and pauses the carousel when scrolled out of view).
+  const sectionRef = useRef(null);
+  const [inView, setInView] = useState(true);
+
   useEffect(() => {
+    const el = sectionRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { threshold: 0.15 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  const isAnimating = isPlaying && inView;
+
+  // Rotate order stats with smooth transition (paused when off-screen)
+  useEffect(() => {
+    if (!inView) return;
     const timer = setInterval(() => {
       setIsStatTransitioning(true);
       setTimeout(() => {
@@ -55,17 +74,17 @@ export default function BestsellerStage() {
       }, 300);
     }, STATS_ROTATION_INTERVAL);
     return () => clearInterval(timer);
-  }, []);
+  }, [inView]);
 
-  // Auto-rotate books with pause/resume support
+  // Auto-rotate books with pause/resume + in-view support
   useEffect(() => {
-    if (bestsellerBooks.length < 2 || !isPlaying) return;
+    if (bestsellerBooks.length < 2 || !isAnimating) return;
     const timer = setInterval(() => {
       setDirection(1);
       setCurrentIndex((i) => (i + 1) % bestsellerBooks.length);
     }, SWAP_INTERVAL);
     return () => clearInterval(timer);
-  }, [bestsellerBooks.length, isPlaying]);
+  }, [bestsellerBooks.length, isAnimating]);
 
   const handlePauseResume = useCallback(() => {
     setIsPlaying((prev) => !prev);
@@ -93,7 +112,7 @@ export default function BestsellerStage() {
   const currentStat = orderStats[currentStatIndex];
 
   return (
-    <section className="bestseller-stage bestseller-stage--merged">
+    <section ref={sectionRef} className="bestseller-stage bestseller-stage--merged">
       {/* Promo message lives in the hero above; the duplicated header,
           trust chips and label were removed to avoid repetition. */}
 

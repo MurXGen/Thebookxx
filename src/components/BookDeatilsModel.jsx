@@ -74,10 +74,10 @@ function Accordion({ icon: Icon, title, defaultOpen = false, children }) {
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
       >
-        <span className="bd-accordion-title">
+        <h2 className="bd-accordion-title" style={{ margin: 0 }}>
           {Icon && <Icon size={18} className="bd-accordion-icon" />}
           {title}
-        </span>
+        </h2>
         {open ? (
           <ChevronUp size={18} className="bd-accordion-chevron" />
         ) : (

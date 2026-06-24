@@ -74,6 +74,33 @@ export default async function CategoryPage({ params }) {
         }}
       />
 
+      {/* CollectionPage + ItemList — tells Google this is a category listing
+          and surfaces the books (deep links) it contains. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "@id": `https://www.thebookx.in/category/${slug}`,
+            url: `https://www.thebookx.in/category/${slug}`,
+            name: `${displayName} Books`,
+            description: `Shop the best ${categoryName} books online at TheBookX at unbeatable prices, with free delivery and Cash on Delivery across India.`,
+            isPartOf: { "@id": "https://www.thebookx.in/#website" },
+            mainEntity: {
+              "@type": "ItemList",
+              numberOfItems: categoryBooks.length,
+              itemListElement: categoryBooks.slice(0, 60).map((book, i) => ({
+                "@type": "ListItem",
+                position: i + 1,
+                url: `https://www.thebookx.in/books/${slugify(book.name)}`,
+                name: book.name,
+              })),
+            },
+          }),
+        }}
+      />
+
       <CategoryListing books={categoryBooks} displayName={displayName} />
     </>
   );

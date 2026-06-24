@@ -47,7 +47,7 @@ export const listicleBlogs = {
     id: "blog-101",
     title: "Read These 5 Books to Finally Master Your Money",
     slug: "best-money-books-to-read",
-    publishDate: "2026-06-18",
+    publishDate: "2026-05-29",
     hero: IMG.money,
     excerpt:
       "Five personal-finance books that change how you think about money, from behavioural investing to building lasting wealth. Curated by Murthy Thevar.",
@@ -139,7 +139,7 @@ export const listicleBlogs = {
     id: "blog-102",
     title: "Top 10 Self-Help Books to Read in 2026",
     slug: "top-10-self-help-books-2026",
-    publishDate: "2026-06-16",
+    publishDate: "2026-05-27",
     hero: IMG.clarity,
     excerpt:
       "The 10 most life-changing self-help books to read this year, habits, mindset, decision-making and clarity. Hand-picked by Murthy Thevar.",
@@ -207,7 +207,7 @@ export const listicleBlogs = {
     id: "blog-103",
     title: "5 Page-Turner Thrillers You Won't Be Able to Put Down",
     slug: "best-thriller-books-page-turners",
-    publishDate: "2026-06-14",
+    publishDate: "2026-05-25",
     hero: IMG.overthink,
     excerpt:
       "Five gripping psychological thrillers with twists you won't see coming, perfect for a one-sitting read. Curated by Murthy Thevar.",
@@ -294,7 +294,7 @@ export const listicleBlogs = {
     id: "blog-104",
     title: "Top 7 Indian Mythology Books Every Reader Should Own",
     slug: "best-indian-mythology-books",
-    publishDate: "2026-06-12",
+    publishDate: "2026-05-23",
     hero: IMG.morning,
     excerpt:
       "Seven brilliant retellings of Indian mythology, from the Mahabharata's Draupadi to Amish's Shiva Trilogy. Curated by Murthy Thevar.",
@@ -349,7 +349,7 @@ export const listicleBlogs = {
     id: "blog-105",
     title: "5 Books to Read If You Overthink Everything",
     slug: "books-for-overthinkers",
-    publishDate: "2026-06-09",
+    publishDate: "2026-05-21",
     hero: IMG.saying_no,
     excerpt:
       "Five books that quiet a racing mind and help you stop overthinking, practical, calming and genuinely useful. By Murthy Thevar.",
@@ -437,7 +437,7 @@ export const listicleBlogs = {
     id: "blog-106",
     title: "8 Romance Novels to Fall in Love With",
     slug: "best-romance-novels-to-read",
-    publishDate: "2026-06-06",
+    publishDate: "2026-05-19",
     hero: IMG.speech,
     excerpt:
       "Eight swoon-worthy romance novels, from spicy Twisted series to heartfelt Indian love stories. Curated by Murthy Thevar.",
@@ -489,7 +489,7 @@ export const listicleBlogs = {
     id: "blog-107",
     title: "5 Timeless Classic Books Every Reader Should Own",
     slug: "timeless-classic-books-to-own",
-    publishDate: "2026-06-03",
+    publishDate: "2026-05-17",
     hero: IMG.money,
     excerpt:
       "Five timeless classics that belong on every bookshelf, from The Alchemist to Crime and Punishment. Curated by Murthy Thevar.",
@@ -575,7 +575,7 @@ export const listicleBlogs = {
     id: "blog-108",
     title: "7 Best Business & Startup Books for Founders",
     slug: "best-business-startup-books-founders",
-    publishDate: "2026-05-31",
+    publishDate: "2026-05-15",
     hero: IMG.clarity,
     excerpt:
       "Seven essential business and startup books for founders and aspiring entrepreneurs, strategy, building and leadership. By Murthy Thevar.",
@@ -630,7 +630,7 @@ export const listicleBlogs = {
     id: "blog-109",
     title: "Best Books Under ₹199 to Read in 2026",
     slug: "best-books-under-199",
-    publishDate: "2026-06-30",
+    publishDate: "2026-06-10",
     hero: IMG.money,
     excerpt:
       "Great books don't have to be expensive. Here are the best books under ₹199 you can buy online in India, from bestselling self-help to gripping fiction.",
@@ -793,7 +793,7 @@ export const listicleBlogs = {
     id: "blog-110",
     title: "Books Like Atomic Habits: 7 Reads to Build Better Habits",
     slug: "books-like-atomic-habits",
-    publishDate: "2026-06-28",
+    publishDate: "2026-06-08",
     hero: IMG.clarity,
     excerpt:
       "Loved Atomic Habits? Here are 7 books like Atomic Habits on habits, clarity and self-discipline, with the lessons that make each one worth reading next.",
@@ -930,7 +930,7 @@ export const listicleBlogs = {
     id: "blog-111",
     title: "Freida McFadden Books in Order: The Complete Reading Guide",
     slug: "freida-mcfadden-books-in-order",
-    publishDate: "2026-06-26",
+    publishDate: "2026-06-06",
     hero: IMG.overthink,
     excerpt:
       "A complete guide to reading Freida McFadden's psychological thrillers in order, including The Housemaid series and her best standalone novels.",
@@ -1095,7 +1095,7 @@ export const listicleBlogs = {
     id: "blog-112",
     title: "Best Books to Read in Your 20s",
     slug: "best-books-to-read-in-your-20s",
-    publishDate: "2026-06-24",
+    publishDate: "2026-06-04",
     hero: IMG.morning,
     excerpt:
       "The best books to read in your 20s, from money and habits to mindset and fiction, that will shape how you think, earn and live for decades.",
@@ -1234,7 +1234,7 @@ export const listicleBlogs = {
     id: "blog-113",
     title: "Atomic Habits Summary: Key Lessons and Takeaways",
     slug: "atomic-habits-summary",
-    publishDate: "2026-06-22",
+    publishDate: "2026-06-02",
     hero: IMG.clarity,
     excerpt:
       "A clear Atomic Habits summary covering James Clear's four laws of behaviour change and the key lessons you can apply today.",
@@ -1384,7 +1384,7 @@ export const listicleBlogs = {
     id: "blog-114",
     title: "7 Best Finance Books for Beginners in India",
     slug: "best-finance-books-for-beginners-india",
-    publishDate: "2026-06-20",
+    publishDate: "2026-05-31",
     hero: IMG.money,
     excerpt:
       "The best finance books for beginners in India, from money mindset to investing basics, chosen to be simple, practical and affordable.",
@@ -1528,7 +1528,7 @@ export const listicleBlogs = {
     id: "blog-115",
     title: "Buy Books at ₹1: Inside TheBookX Exclusive ₹1 Deals",
     slug: "buy-books-at-1-rupee-online",
-    publishDate: "2026-07-02",
+    publishDate: "2026-06-12",
     hero: IMG.money,
     excerpt:
       "Yes, you can buy real bestselling books for just ₹1 on TheBookX. Here is how our exclusive ₹1 book deals work, which titles to grab, and how to make the most of them.",
@@ -1675,7 +1675,7 @@ export const listicleBlogs = {
     id: "blog-116",
     title: "How to Find Clarity When Life Feels Overwhelming",
     slug: "how-to-find-clarity-when-life-feels-overwhelming",
-    publishDate: "2026-07-04",
+    publishDate: "2026-06-14",
     hero: IMG.clarity,
     excerpt:
       "Everyone is fighting a battle you cannot see. Here is how people quietly carry life's hardest problems, and how finding clarity helps you move forward when everything feels heavy.",

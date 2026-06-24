@@ -48,7 +48,7 @@ export async function generateMetadata({ params }) {
   // which fixes the previous doubled "| TheBookX | TheBookX" suffix.
   // Title/meta surface the actual price + value keywords ("lowest price",
   // "cash on delivery") to rank for price-led searches.
-  const title = `Buy ${book.name} by ${book.author || "Various Authors"} Online at Lowest Price ₹${book.discountedPrice}`;
+  const title = `Buy ${book.name} by ${book.author || "Various Authors"} Online at Lowest Price ₹${book.discountedPrice}, Books Starting at ₹1`;
   const description = `Buy ${book.name}${book.author ? ` by ${book.author}` : ""} online at the lowest price of ₹${book.discountedPrice} on TheBookX. Free delivery, Cash on Delivery and easy 7-day returns across India. ${book.description.substring(0, 70)}`;
 
   return {

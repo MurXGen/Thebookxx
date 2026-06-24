@@ -263,6 +263,8 @@ export default function BookCard({ book }) {
               onClick={handleBookClick}
               className="book-title-link"
               itemProp="url"
+              aria-label={`Buy ${book.name}${book.author ? ` by ${book.author}` : ""} online at ₹${book.discountedPrice}${savings > 0 ? ` (save ₹${savings})` : ""} on TheBookX`}
+              title={`${book.name} — buy online at lowest price ₹${book.discountedPrice}`}
             >
               {book.name}
             </Link>

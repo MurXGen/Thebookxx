@@ -139,6 +139,37 @@ export default function BookDetailsModal({ book }) {
     ? bookReviews.length
     : book.reviewCount || getStableReviewCount(book.id);
 
+  // Price/value FAQ — targets long-tail searches like "price of <book>",
+  // "buy <book> at lowest price in India", "<book> cash on delivery".
+  const discountPct =
+    book.originalPrice > book.discountedPrice
+      ? Math.round(
+          ((book.originalPrice - book.discountedPrice) / book.originalPrice) *
+            100,
+        )
+      : 0;
+  const byAuthor = book.author ? ` by ${book.author}` : "";
+  const bookFaqs = [
+    {
+      q: `What is the price of ${book.name}?`,
+      a: `${book.name}${byAuthor} is available at just ₹${book.discountedPrice} on TheBookX${
+        discountPct ? ` (${discountPct}% off the ₹${book.originalPrice} MRP)` : ""
+      }, one of the lowest prices for this book online in India.`,
+    },
+    {
+      q: `Where can I buy ${book.name} at the lowest price in India?`,
+      a: `You can buy ${book.name} online at TheBookX for ₹${book.discountedPrice}, with free delivery and Cash on Delivery available across India.`,
+    },
+    {
+      q: `Is ${book.name} available with Cash on Delivery (COD)?`,
+      a: `Yes. ${book.name} can be ordered with Cash on Delivery or fast UPI, and ships free in 3 to 7 days via Delhivery and India Post.`,
+    },
+    {
+      q: `Is this a genuine, original copy of ${book.name}?`,
+      a: `Yes, every copy is authentic and ships in pristine condition, backed by an easy 7-day return policy.`,
+    },
+  ];
+
   // Related books based on same category
   const relatedBooks = useMemo(() => {
     if (!book.catalogue || book.catalogue.length === 0) return [];
@@ -331,6 +362,23 @@ export default function BookDetailsModal({ book }) {
                 },
               })),
             }),
+          }),
+        }}
+      />
+
+      {/* FAQ schema — price / lowest-price / COD long-tail */}
+      <Script
+        id={`book-faq-schema-${book.id}`}
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: bookFaqs.map((f) => ({
+              "@type": "Question",
+              name: f.q,
+              acceptedAnswer: { "@type": "Answer", text: f.a },
+            })),
           }),
         }}
       />
@@ -769,6 +817,21 @@ export default function BookDetailsModal({ book }) {
                     </p>
                   </div>
                 </div>
+              </div>
+            </Accordion>
+
+            <Accordion
+              icon={MessageSquare}
+              title="Frequently Asked Questions"
+              defaultOpen
+            >
+              <div className="bd-faq-list">
+                {bookFaqs.map((f, i) => (
+                  <div key={i} className="bd-faq-item">
+                    <h3 className="bd-faq-q">{f.q}</h3>
+                    <p className="bd-faq-a">{f.a}</p>
+                  </div>
+                ))}
               </div>
             </Accordion>
           </div>

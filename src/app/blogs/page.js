@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import { getAllBlogs } from "@/utils/blogs";
 
 export const metadata = {
@@ -39,35 +38,36 @@ export default function BlogsPage() {
           >
             <div
               style={{
-                background: "white",
-                borderRadius: "12px",
-                overflow: "hidden",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                transition: "transform 0.3s",
+                background: "#fff",
+                borderRadius: "14px",
+                border: "1px solid var(--hairline, #ececec)",
+                boxShadow: "var(--shadow-xs)",
+                padding: "22px",
+                height: "100%",
               }}
             >
-              <div style={{ position: "relative", paddingBottom: "60%" }}>
-                <Image
-                  src={blog.coverImage}
-                  alt={blog.title}
-                  fill
-                  style={{ objectFit: "cover" }}
-                />
+              <div className="flex items-center gap-8 margin-btm-8px">
+                <span className="font-12" style={{ color: "#fb8500" }}>
+                  {new Date(blog.publishDate).toLocaleDateString("en-IN", {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                  })}
+                </span>
+                <span className="font-12 dark-50">• {blog.author}</span>
               </div>
-              <div style={{ padding: "20px" }}>
-                <div className="flex items-center gap-8 margin-btm-8px">
-                  <span className="font-12" style={{ color: "#fb8500" }}>
-                    {new Date(blog.publishDate).toLocaleDateString()}
-                  </span>
-                  <span className="font-12 dark-50">• {blog.author}</span>
-                </div>
-                <h2 className="font-20 weight-600 margin-btm-12px">
-                  {blog.title}
-                </h2>
-                <p className="font-13 dark-50">
-                  {blog.excerpt.substring(0, 120)}...
-                </p>
-              </div>
+              <h2 className="font-20 weight-600 margin-btm-12px">
+                {blog.title}
+              </h2>
+              <p className="font-13 dark-50" style={{ lineHeight: 1.6 }}>
+                {blog.excerpt.substring(0, 150)}...
+              </p>
+              <span
+                className="font-13 weight-600"
+                style={{ color: "#fb8500", display: "inline-block", marginTop: "12px" }}
+              >
+                Read article →
+              </span>
             </div>
           </Link>
         ))}

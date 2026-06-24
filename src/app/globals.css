@@ -9172,3 +9172,32 @@ img[data-loaded="true"] {
 .about-page .legal-header {
   margin-bottom: 0;
 }
+
+/* =====================================================================
+   ✦ PDP FAQ list (price / lowest-price / COD long-tail content)
+   ===================================================================== */
+.bd-faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.bd-faq-item {
+  border-bottom: 1px solid var(--hairline);
+  padding-bottom: 12px;
+}
+.bd-faq-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.bd-faq-q {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--foreground);
+  margin: 0 0 4px;
+}
+.bd-faq-a {
+  font-size: 13px;
+  color: var(--dark-50);
+  line-height: 1.6;
+  margin: 0;
+}

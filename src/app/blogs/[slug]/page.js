@@ -1,8 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getBlogBySlug, getAllBlogSlugs, getAllBlogs } from "@/utils/blogs";
-import { authorData } from "@/utils/author";
 import {
   Star,
   BookOpen,
@@ -16,8 +14,6 @@ import {
   MapPin,
   Users,
   Camera,
-  ChevronLeft,
-  ChevronRight,
   Clock,
   Eye,
 } from "lucide-react";
@@ -57,19 +53,13 @@ export async function generateMetadata({ params }) {
       publishedTime: blog.publishDate,
       modifiedTime: blog.lastModified,
       authors: [blog.author],
-      images: [
-        {
-          url: blog.images[0]?.url || blog.coverImage,
-          width: 1200,
-          height: 630,
-        },
-      ],
+      // No per-post image: falls back to the site's branded OG card
+      // (app/opengraph-image.js).
     },
     twitter: {
       card: "summary_large_image",
       title: blog.title,
       description: blog.excerpt,
-      images: [blog.images[0]?.url || blog.coverImage],
     },
     alternates: {
       canonical: `https://www.thebookx.in/blogs/${blog.slug}`,
@@ -84,7 +74,7 @@ function generateStructuredData(blog) {
     "@type": "BlogPosting",
     headline: blog.title,
     description: blog.excerpt,
-    image: blog.images.map((img) => `https://www.thebookx.in${img.url}`),
+    image: ["https://www.thebookx.in/intro-image.jpeg"],
     datePublished: blog.publishDate,
     dateModified: blog.lastModified,
     author: {
@@ -218,7 +208,6 @@ export default async function BlogPage({ params }) {
         }
       : null;
 
-  const book = authorData.publishedBooks[0];
 
   // Filter out current blog from related blogs
   const relatedBlogs = allBlogs.filter((b) => b.slug !== slug).slice(0, 5);
@@ -258,237 +247,40 @@ export default async function BlogPage({ params }) {
               <span style={{ color: "#374151" }}>{blog.title}</span>
             </nav>
 
-            {/* Hero Section */}
-            <div
-              className="hero-section"
-              style={{ borderRadius: "12px", marginBottom: "32px" }}
-            >
-              <div
-                style={{
-                  width: "100%",
-                  borderRadius: "12px",
-                  background:
-                    "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                  overflow: "hidden",
-                  position: "relative",
-                }}
+            {/* Text-first article header (no cover image) */}
+            <header style={{ marginBottom: "28px" }}>
+              <h1
+                className="font-32 weight-700"
+                style={{ lineHeight: 1.2, marginBottom: "12px" }}
               >
-                <Image
-                  src={blog.images[0]?.url || blog.coverImage}
-                  alt={blog.images[0]?.alt || blog.title}
-                  width={1200}
-                  height={500}
-                  style={{ objectFit: "cover", width: "100%", height: "500px" }}
-                  priority
-                />
-                <div
-                  style={{
-                    position: "absolute",
-                    inset: 0,
-                    background:
-                      "linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0) 100%)",
-                    zIndex: 1,
-                  }}
-                />
-                <div
-                  className="flex flex-col gap-24"
-                  style={{
-                    position: "absolute",
-                    bottom: "24px",
-                    left: "24px",
-                    zIndex: 2,
-                    color: "white",
-                  }}
-                >
-                  <h1 className="font-32 weight-700">{blog.title}</h1>
-                  <div className="flex flex-row gap-16 flex-wrap font-16 margin-tp-12px ">
-                    <span className="flex items-center gap-4">
-                      By
-                      <Link
-                        href={`/author/${blog.authorSlug}`}
-                        style={{ color: "white" }}
-                      >
-                        {blog.author}
-                      </Link>
-                    </span>
-                    <span className="flex items-center gap-4">
-                      <Calendar size={16} />
-                      {new Date(blog.publishDate).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })}
-                    </span>
-                  </div>
-                </div>
+                {blog.title}
+              </h1>
+              <div className="flex flex-row gap-16 flex-wrap font-14 dark-50">
+                <span className="flex items-center gap-4">
+                  By{" "}
+                  <Link
+                    href={`/author/${blog.authorSlug}`}
+                    style={{ color: "#fb8500", fontWeight: 600 }}
+                  >
+                    {blog.author}
+                  </Link>
+                </span>
+                <span className="flex items-center gap-4">
+                  <Calendar size={14} />
+                  {new Date(blog.publishDate).toLocaleDateString("en-IN", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </span>
               </div>
-            </div>
-
-            {/* Resource Links */}
-            <div
-              className="flex flex-row gap-16 justify-between"
-              style={{ marginBottom: "32px" }}
-            >
-              <Link
-                href={`/author/${blog.authorSlug}`}
-                className="pri-big-btn flex flex-col width100"
-              >
-                <span>About the Author:</span>
-                <span>{blog.author}</span>
-              </Link>
-              <Link
-                href="/books/the-art-of-clarity"
-                className="sec-big-btn flex flex-col width100"
-              >
-                Get Your Copy of The Art of Clarity
-              </Link>
-            </div>
+            </header>
 
             {/* Blog Content - Rendered from JSON */}
             <div className="blog-content" style={{ marginBottom: "40px" }}>
               {blog.content.map((block, index) =>
                 renderContentBlock(block, index),
               )}
-            </div>
-
-            {/* Sources Gallery - Horizontal Scrollable */}
-            {blog.images.length > 0 && (
-              <div
-                className="flex flex-col gap-24"
-                style={{ marginBottom: "40px" }}
-              >
-                <div className="flex items-center gap-8">
-                  <h2 className="font-24 weight-600">
-                    Sources of {blog.author}
-                  </h2>
-                </div>
-                <p className="font-14 dark-50">
-                  Explore visual insights from {blog.author}'s journey and
-                  wisdom
-                </p>
-
-                <div
-                  style={{
-                    width: "100%",
-                    overflowX: "auto",
-                    overflowY: "hidden",
-                    scrollBehavior: "smooth",
-                    WebkitOverflowScrolling: "touch",
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: "20px",
-                      padding: "0.5rem 0 1.5rem 0",
-                      minWidth: "min-content",
-                    }}
-                  >
-                    {blog.images.map((image, idx) => (
-                      <div
-                        key={idx}
-                        style={{
-                          flex: "0 0 auto",
-                          width: "320px",
-                          background: "white",
-                          borderRadius: "12px",
-                          overflow: "hidden",
-                          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                        }}
-                      >
-                        <div
-                          style={{ position: "relative", paddingBottom: "75%" }}
-                        >
-                          <Image
-                            src={image.url}
-                            alt={image.alt}
-                            fill
-                            style={{ objectFit: "cover" }}
-                          />
-                        </div>
-                        <div style={{ padding: "12px" }}>
-                          <span
-                            style={{
-                              background: "#fb850020",
-                              padding: "2px 8px",
-                              borderRadius: "100px",
-                              fontSize: "10px",
-                            }}
-                          >
-                            📸 {image.category || "Visual"}
-                          </span>
-                          <p className="font-12 weight-500 margin-tp-8px">
-                            {image.caption}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div
-                  style={{
-                    textAlign: "center",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: "8px",
-                    color: "#6b7280",
-                  }}
-                >
-                  <ChevronLeft size={16} />
-                  <span className="font-12">Scroll to explore more</span>
-                  <ChevronRight size={16} />
-                </div>
-              </div>
-            )}
-
-            {/* Author Bio */}
-            <div
-              className="flex flex-col gap-24"
-              style={{ marginBottom: "40px" }}
-            >
-              <h2 className="font-24 weight-600">
-                About the Author: {blog.author}
-              </h2>
-              <div className="flex flex-row gap-24 flex-wrap">
-                <div
-                  style={{
-                    width: "120px",
-                    height: "120px",
-                    borderRadius: "50%",
-                    overflow: "hidden",
-                    flexShrink: 0,
-                  }}
-                >
-                  <Image
-                    src={authorData.authorImages[0]?.url}
-                    alt={blog.author}
-                    width={120}
-                    height={120}
-                    style={{ objectFit: "cover" }}
-                  />
-                </div>
-                <div className="flex flex-col gap-16" style={{ flex: 1 }}>
-                  <p className="font-14 dark-50" style={{ lineHeight: "1.8" }}>
-                    {authorData.bio}
-                  </p>
-                  <div className="flex flex-row gap-12 flex-wrap">
-                    <Link
-                      href={`/author/${blog.authorSlug}`}
-                      className="pri-small-btn"
-                    >
-                      View Author Page →
-                    </Link>
-                    <Link
-                      href="/books/the-art-of-clarity"
-                      className="sec-small-btn"
-                    >
-                      Buy the Book →
-                    </Link>
-                  </div>
-                </div>
-              </div>
             </div>
 
             {/* FAQ Section */}
@@ -529,20 +321,6 @@ export default async function BlogPage({ params }) {
               </div>
             )}
 
-            {/* CTA */}
-            {book && (
-              <div className="flex flex-col gap-24 text-center">
-                <h2 className="font-26 weight-600">
-                  Get Your Copy of "{book.name}" Today!
-                </h2>
-                <p className="font-15 margin-tp-12px">
-                  Join 50,000+ readers who have transformed their thinking
-                </p>
-                <Link href={`/books/${book.slug}`} className="pri-big-btn">
-                  Shop Now - ₹{book.price}
-                </Link>
-              </div>
-            )}
           </div>
 
           {/* Right Sidebar - All Blogs Container */}
@@ -561,17 +339,7 @@ export default async function BlogPage({ params }) {
                     className="blog-item"
                   >
                     <div className="blog-item-image">
-                      {relatedBlog.images[0]?.url ? (
-                        <Image
-                          src={relatedBlog.images[0].url}
-                          alt={relatedBlog.title}
-                          width={80}
-                          height={80}
-                          style={{ objectFit: "cover" }}
-                        />
-                      ) : (
-                        <div className="blog-item-placeholder">📖</div>
-                      )}
+                      <div className="blog-item-placeholder">📖</div>
                     </div>
                     <div className="blog-item-content">
                       <h4 className="blog-item-title">{relatedBlog.title}</h4>

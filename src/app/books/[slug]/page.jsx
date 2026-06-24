@@ -46,13 +46,15 @@ export async function generateMetadata({ params }) {
   const bookUrl = `https://www.thebookx.in/books/${slugify(book.name)}`;
   // No trailing "| TheBookX" here, the root template appends it once,
   // which fixes the previous doubled "| TheBookX | TheBookX" suffix.
-  const title = `${book.name} by ${book.author || "Various Authors"} | Buy Online at Best Price`;
-  const description = `${book.description.substring(0, 155)} Shop now at TheBookX, India's most trusted online bookstore. Free shipping across India.`;
+  // Title/meta surface the actual price + value keywords ("lowest price",
+  // "cash on delivery") to rank for price-led searches.
+  const title = `Buy ${book.name} by ${book.author || "Various Authors"} Online at Lowest Price ₹${book.discountedPrice}`;
+  const description = `Buy ${book.name}${book.author ? ` by ${book.author}` : ""} online at the lowest price of ₹${book.discountedPrice} on TheBookX. Free delivery, Cash on Delivery and easy 7-day returns across India. ${book.description.substring(0, 70)}`;
 
   return {
     title,
     description,
-    keywords: `${book.name}, ${book.author}, ${book.catalogue?.join(", ")}, buy book online, TheBookX`,
+    keywords: `${book.name}, ${book.author}, ${book.name} price, ${book.name} lowest price, buy ${book.name} online, ${book.name} cash on delivery, ${book.catalogue?.join(", ")}, cheap books online, low price books, TheBookX`,
     authors: [{ name: book.author || "Various Authors" }],
     alternates: { canonical: bookUrl },
     openGraph: {

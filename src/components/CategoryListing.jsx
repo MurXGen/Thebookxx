@@ -65,7 +65,7 @@ export default function CategoryListing({ books = [], displayName = "" }) {
           <h1 className="font-24 weight-600">{displayName} Books</h1>
           <span className="font-12 dark-50">
             Browse our collection of {books.length} {displayName} books. Shop
-            online at best prices with free shipping across India.
+            online at the lowest prices, with books starting at just ₹1 and free shipping across India.
           </span>
         </div>
       </div>

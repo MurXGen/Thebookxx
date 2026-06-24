@@ -29,12 +29,12 @@ export const metadata = {
 
   title: {
     default:
-      "TheBookX, Buy Books Online at Best Prices in India | ₹1 Book Sale",
+      "TheBookX, Buy Books Online at Lowest Prices in India | Books Starting at ₹1",
     template: "%s | TheBookX",
   },
 
   description:
-    "TheBookX is India's most trusted online bookstore offering 300+ books at unbeatable prices. Shop novels, self-help, business, finance, classics with FREE shipping across India. Limited time offer, books starting at just ₹1! Delivered securely via Delhivery & Indian Post.",
+    "TheBookX is India's most trusted online bookstore offering 300+ books at the lowest prices. Shop novels, self-help, business, finance, classics with FREE shipping across India. Limited time offer, books starting at just ₹1! Delivered securely via Delhivery & Indian Post.",
 
   keywords: [
     "buy books online",
@@ -75,7 +75,7 @@ export const metadata = {
   openGraph: {
     title: "TheBookX, Books Starting at Just ₹1 | Free Shipping",
     description:
-      "Shop 300+ books at unbeatable prices. Free shipping across India. Trusted by 50,000+ readers. Limited time ₹1 book sale!",
+      "Shop 300+ books at the lowest prices, starting at just ₹1. Free shipping across India. Trusted by 50,000+ readers. Limited time ₹1 book sale!",
     url: "https://www.thebookx.in",
     siteName: "TheBookX",
     locale: "en_IN",
@@ -86,7 +86,7 @@ export const metadata = {
 
   twitter: {
     card: "summary_large_image",
-    title: "TheBookX, Buy Books Online at Best Prices",
+    title: "TheBookX, Buy Books Online at Lowest Prices, Starting at ₹1",
     description: "Books starting at just ₹1. Free shipping across India.",
     // Twitter image provided by app/twitter-image.js
   },
@@ -145,7 +145,7 @@ export default function RootLayout({ children }) {
                     url: "https://www.thebookx.in/intro-image.jpeg",
                   },
                   description:
-                    "TheBookX is India's trusted online bookstore offering bestselling books at unbeatable prices with free shipping and Cash on Delivery.",
+                    "TheBookX is India's trusted online bookstore offering bestselling books at the lowest prices, starting at ₹1, with free shipping and Cash on Delivery.",
                   contactPoint: {
                     "@type": "ContactPoint",
                     contactType: "customer support",

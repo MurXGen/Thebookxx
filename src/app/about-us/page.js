@@ -11,12 +11,12 @@ import {
 export const metadata = {
   title: "About TheBookX, India's Friendly Online Bookstore",
   description:
-    "TheBookX makes great books affordable for every Indian reader, curated bestsellers at unbeatable prices, free delivery, Cash on Delivery, and books starting at ₹1.",
+    "TheBookX makes great books affordable for every Indian reader, curated bestsellers at the lowest prices, free delivery, Cash on Delivery, and books starting at ₹1.",
   alternates: { canonical: "https://www.thebookx.in/about-us" },
   openGraph: {
     title: "About TheBookX, India's Friendly Online Bookstore",
     description:
-      "Curated bestsellers at unbeatable prices, free delivery, Cash on Delivery, and books starting at ₹1, delivered across India.",
+      "Curated bestsellers at the lowest prices, free delivery, Cash on Delivery, and books starting at ₹1, delivered across India.",
     url: "https://www.thebookx.in/about-us",
     type: "website",
   },
@@ -25,8 +25,8 @@ export const metadata = {
 const PROMISES = [
   {
     icon: Tag,
-    title: "Unbeatable prices",
-    text: "Bestsellers, self-help and fiction at everyday-low prices, plus our limited-period ₹1 book sale.",
+    title: "Lowest prices, books from ₹1",
+    text: "Bestsellers, self-help and fiction at the lowest prices, with books starting at just ₹1 in our limited-period sale.",
   },
   {
     icon: Truck,

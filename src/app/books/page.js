@@ -144,7 +144,7 @@ export default function BooksPage() {
             "@id": "https://thebookx.in/books",
             name: "All Books | TheBookX Online Bookstore",
             description:
-              "Browse our complete collection of 300+ books including novels, self-help, business, finance, classics, and trending books. Shop online at best prices with free shipping across India.",
+              "Browse our complete collection of 300+ books including novels, self-help, business, finance, classics, and trending books. Shop online at the lowest prices, with books starting at just ₹1 and free shipping across India.",
             url: "https://thebookx.in/books",
             publisher: {
               "@type": "Organization",

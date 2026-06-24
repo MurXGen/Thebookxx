@@ -98,7 +98,7 @@ export default function HomePage() {
       <div className="min-h-screen flex flex-col gap-32">
         <Navbar />
         <h1 className="sr-only">
-          Buy Books Online in India at Best Prices, TheBookX | Books Starting at ₹1
+          Buy Books Online in India at Lowest Prices, TheBookX | Books Starting at ₹1
         </h1>
         <LoadingFallback />
       </div>

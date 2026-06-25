@@ -35,6 +35,7 @@ import {
 import Image from "next/image";
 import { FaWhatsapp } from "react-icons/fa";
 import Link from "next/link";
+import PageHeader from "@/components/UI/PageHeader";
 
 const SHEET_ID = "1ovqFn50d0TKjV0nm4q1lb3N9XvimUgIsHCOlHh6QRdg";
 const SUPPORT_WHATSAPP = "917710892108";
@@ -715,15 +716,10 @@ Please cancel this order. Thank you 🙏`;
       <div className="section-1200 flex flex-col gap-24">
         {/* Header */}
         <div className="orders-header">
-          <Link href="/" className="flex flex-row gap-8 items-center">
-            <ArrowLeft size={18} />
-            <div className="flex flex-col">
-              <h1 className="font-24">Profile</h1>
-              <p className="font-12 dark-50">
-                Manage your profile and orders history.
-              </p>
-            </div>
-          </Link>
+          <PageHeader
+            title="Profile"
+            subtitle="Manage your profile and orders history."
+          />
         </div>
 
         <AnimatePresence mode="wait">

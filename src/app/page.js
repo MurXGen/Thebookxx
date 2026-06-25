@@ -13,6 +13,7 @@ import UnlockChip from "@/components/UI/UnlockChip";
 import StoreReviews from "@/components/StoreReviews";
 import OneRupeeHero from "@/components/OneRupeeHero";
 import HomeHero from "@/components/HomeHero";
+import LiveOrdersStrip from "@/components/LiveOrdersStrip";
 
 // Lazy load components with named exports
 const BestsellerStage = lazy(() => import("@/components/BestsellerStage"));
@@ -117,6 +118,9 @@ export default function HomePage() {
 
       <Navbar />
 
+      {/* Live-orders social proof, just below the search bar */}
+      <LiveOrdersStrip />
+
       {/* Static hero, provides the visible H1 + value prop above the carousel */}
       <HomeHero />
 
@@ -125,7 +129,8 @@ export default function HomePage() {
       {/* <UnlockModal /> */}
 
       <BestsellerStage />
-      <OneRupeeHero />
+      {/* Floating ₹1 gift box temporarily removed */}
+      {/* <OneRupeeHero /> */}
 
       <StoreReviews />
 
@@ -137,19 +142,19 @@ export default function HomePage() {
         </Suspense>
       </LazySection>
 
-      {/* <OffersGift /> */}
-      <LazySection threshold={0.05}>
-        <Suspense fallback={<LoadingFallback delay={0.7} />}>
-          <SmoothAppear delay={0.7}>
-            <OneRupeeDeals />
-          </SmoothAppear>
-        </Suspense>
-      </LazySection>
-
       <LazySection threshold={0.05}>
         <Suspense fallback={<LoadingFallback delay={0.6} />}>
           <SmoothAppear delay={0.6}>
             <CatalogueSection />
+          </SmoothAppear>
+        </Suspense>
+      </LazySection>
+
+      {/* ₹1 books deals carousel, placed below the categories */}
+      <LazySection threshold={0.05}>
+        <Suspense fallback={<LoadingFallback delay={0.7} />}>
+          <SmoothAppear delay={0.7}>
+            <OneRupeeDeals />
           </SmoothAppear>
         </Suspense>
       </LazySection>

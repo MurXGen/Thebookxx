@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, ChevronRight, BookOpen } from "lucide-react";
+import PageHeader from "@/components/UI/PageHeader";
 import {
   getCatalogueData,
   getCategoryColor,
@@ -55,18 +56,11 @@ export default function CategoriesPage() {
     <div className="categories-page">
       <div className="section-1200 flex flex-col gap-12">
         {/* Header */}
-        <div className="categories-header flex flex-col gap-12">
-          <div className="flex flex-row gap-12 items-center">
-            <Link href="/" className="cursor-pointer">
-              <ArrowLeft size={20} />
-            </Link>
-            <div className="flex flex-col">
-              <h2 className="font-24 weight-600">All Categories</h2>
-              <span className="font-12 dark-50">
-                Explore genres and find your next favorite book
-              </span>
-            </div>
-          </div>
+        <div className="categories-header">
+          <PageHeader
+            title="All Categories"
+            subtitle="Explore genres and find your next favorite book"
+          />
         </div>
 
         {/* Categories Grid */}

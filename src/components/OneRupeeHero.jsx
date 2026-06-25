@@ -7,7 +7,7 @@ import {
   getRemainingOfferTime,
 } from "@/utils/book";
 import { motion } from "framer-motion";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { Gift } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import OneRupeeModal from "./OneRupeeModal";
 
@@ -53,56 +53,68 @@ export default function OneRupeeHero() {
     return () => clearInterval(i);
   }, [isTimerActive]);
 
-  // Confetti dots, generated once
-  const confettiDots = useMemo(
+  // A couple of ₹1 book covers to "pop out" of the gift box
+  const popCovers = useMemo(
     () =>
-      Array.from({ length: 12 }).map((_, i) => ({
-        id: i,
-        left: Math.random() * 100,
-        size: 4 + Math.random() * 6,
-        delay: Math.random() * 4,
-        duration: 4 + Math.random() * 3,
-        color: ["#fb8500", "#ffb703", "#ef4444", "#fb8500"][i % 4],
-      })),
+      books
+        .filter((b) => b.discountedPrice === 1 && b.image)
+        .slice(0, 2)
+        .map((b) => b.image),
     [],
   );
+  const srcOf = (c) => (typeof c === "string" ? c : c?.src);
 
   return (
     <>
-      <section className="onerupee-strip">
-        {/* Content row, minimal, Stripe-style */}
-        <div className="onerupee-strip-content">
-          {/* ₹1 coin badge */}
-          <div className="onerupee-strip-coin">
-            <span className="onerupee-strip-coin-rupee">₹</span>
-            <span className="onerupee-strip-coin-num">1</span>
-          </div>
+      {/* Floating gift box (bottom-right). Shakes, pops ₹1 books, opens modal. */}
+      <div className="gift-fab-wrap">
+        {popCovers.map((c, idx) => (
+          <motion.img
+            key={idx}
+            className="gift-pop"
+            src={srcOf(c)}
+            alt=""
+            aria-hidden="true"
+            initial={{ opacity: 0, y: 8, scale: 0.5 }}
+            animate={{
+              y: [8, -34, -34],
+              opacity: [0, 1, 0],
+              scale: [0.5, 1, 0.85],
+              rotate: idx ? 16 : -16,
+            }}
+            transition={{
+              duration: 2.4,
+              repeat: Infinity,
+              repeatDelay: 1.4,
+              delay: idx * 0.55,
+              ease: "easeOut",
+            }}
+            style={{ left: idx ? "auto" : "8px", right: idx ? "8px" : "auto" }}
+          />
+        ))}
 
-          {/* Headline + sub */}
-          <div className="onerupee-strip-text">
-            <h2 className="onerupee-strip-title">
-              Books for just <span className="onerupee-strip-accent">₹1</span> each
-            </h2>
-            <p className="onerupee-strip-subtitle">
-              {uiState === "permanentUnlocked"
-                ? `Unlocked, ${oneRupeeCount} books waiting for you`
-                : uiState === "timerActive"
-                  ? `Hurry! ${Math.floor(liveRemainingTime / 60)}:${(liveRemainingTime % 60).toString().padStart(2, "0")} left to claim`
-                  : `Grab bestsellers at just ₹1`}
-            </p>
-          </div>
-
-          {/* CTA */}
-          <button
-            className="onerupee-strip-cta"
-            onClick={() => setShowModal(true)}
-            aria-label="View ₹1 book deals"
+        <button
+          className="gift-fab"
+          onClick={() => setShowModal(true)}
+          aria-label="Open ₹1 book deals"
+        >
+          <motion.span
+            className="gift-fab-icon"
+            animate={{ rotate: [0, -10, 10, -8, 8, -4, 4, 0] }}
+            transition={{ duration: 0.8, repeat: Infinity, repeatDelay: 2.2 }}
           >
-            <span>Claim now</span>
-            <ArrowRight size={16} />
-          </button>
-        </div>
-      </section>
+            <Gift size={28} />
+          </motion.span>
+          <span className="gift-fab-badge">₹1</span>
+          <span className="gift-fab-pulse" aria-hidden="true" />
+        </button>
+
+        <span className="gift-fab-label">
+          {uiState === "timerActive"
+            ? `${Math.floor(liveRemainingTime / 60)}:${(liveRemainingTime % 60).toString().padStart(2, "0")} left`
+            : `Books at ₹1`}
+        </span>
+      </div>
 
       {/* Modal */}
       <OneRupeeModal

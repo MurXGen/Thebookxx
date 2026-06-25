@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react";
 import CatalogueCard from "./UI/CatalogueCard";
 import LabelDivider from "./UI/LineDivider";
-import { getCatalogueData } from "@/utils/catalogueUtils";
+import { getCatalogueData, getBooksByCategory } from "@/utils/catalogueUtils";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -16,9 +16,15 @@ export default function CatalogueSection() {
 
   useEffect(() => {
     const data = getCatalogueData();
-    // Take top 6 categories
-    const topCategories = data.slice(0, 6);
-    setCatalogueData(topCategories);
+    // Show ALL categories, each enriched with a few real book covers
+    const enriched = data.map((cat) => ({
+      ...cat,
+      covers: getBooksByCategory(cat.key)
+        .filter((b) => b.image)
+        .slice(0, 3)
+        .map((b) => b.image),
+    }));
+    setCatalogueData(enriched);
     setLoading(false);
   }, []);
 
@@ -47,29 +53,28 @@ export default function CatalogueSection() {
       <div className="section-1200 flex flex-col gap-12">
         <LabelDivider label="Explore Categories" />
 
-        {/* Categories Grid */}
-        <div className="catalogue-grid">
+        {/* Horizontally scrollable 3D category cards (books pop out) */}
+        <div className="catalogue-scroll">
           {catalogueData.map((cat) => (
             <CatalogueCard
               key={cat.key}
-              emoji={cat.emoji}
               label={cat.label}
               count={cat.count}
+              covers={cat.covers}
               onClick={() => handleCategoryClick(cat.key)}
               color={cat.color}
             />
           ))}
-        </div>
 
-        {/* View All Button */}
-        <Link
-          href="/category"
-          className="sec-mid-btn flex flex-row gap-8 justify-center items-center"
-          style={{ marginTop: "8px" }}
-        >
-          View All Categories
-          <ChevronRight size={16} />
-        </Link>
+          {/* View-all card pinned at the end of the strip */}
+          <Link href="/category" className="cat3d-viewall" aria-label="View all categories">
+            <span className="cat3d-viewall-icon">
+              <ChevronRight size={22} />
+            </span>
+            <span className="cat3d-viewall-label">View all</span>
+            <span className="cat3d-viewall-sub">categories</span>
+          </Link>
+        </div>
       </div>
     </div>
   );

@@ -1,6 +1,8 @@
 "use client";
 
 import BookCard from "@/components/BookCard";
+import CartItemRow from "@/components/CartItemRow";
+import PageHeader from "@/components/UI/PageHeader";
 import RecentlyViewed from "@/components/RecentlyViewed";
 import RecommendationModal from "@/components/RecommendationModal";
 import AddressModal from "@/components/UI/AddressModal";
@@ -516,19 +518,16 @@ _Thank you for shopping with TheBookX! 📚✨_
   if (!cartBooks.length) {
     return (
       <>
-        <div className="section-1200 flex flex-row gap-12 items-center justify-between">
-          <div className="flex flex-row gap-12 items-center justify-between">
-            <ArrowLeft size={20} onClick={() => router.push("/")} />
-            <div className="flex flex-col">
-              <h1 className="font-24 weight-600">Your Bag</h1>
-              <span className="font-12 dark-50">
-                {cartBooks.length} book{cartBooks.length > 1 ? "s" : ""} in cart
-              </span>
-            </div>
-          </div>
-          <Link href="/profile" className="sec-mid-btn">
-            Order History
-          </Link>
+        <div className="section-680">
+          <PageHeader
+            title="Your Bag"
+            subtitle={`${cartBooks.length} book${cartBooks.length === 1 ? "" : "s"} in cart`}
+            right={
+              <Link href="/profile" className="sec-mid-btn">
+                Order History
+              </Link>
+            }
+          />
         </div>
         <div
           className="flex flex-col gap-12 justify-center items-center"
@@ -557,37 +556,36 @@ _Thank you for shopping with TheBookX! 📚✨_
   }
 
   return (
-    <section className="section-1200 flex flex-col gap-24">
-      <div className="flex flex-row justify-between ">
-        <div className="flex flec-row gap-12 items-center">
-          <ArrowLeft size={20} onClick={() => router.push("/")} />
-          <div className="flex flex-col">
-            <h1 className="font-24 weight-600">Your Bag</h1>
-            <span className="font-12 dark-50">
-              {cartBooks.length} book{cartBooks.length > 1 ? "s" : ""} in cart
-            </span>
-          </div>
-        </div>
-        <div className="flex flex-row gap-8 items-center">
-          <span className="freebie-chip">
-            <Gift size={13} />
-            <span>Free bookmarks + gifts</span>
-          </span>
+    <section className="section-680 flex flex-col gap-24">
+      <PageHeader
+        title="Your Bag"
+        subtitle={`${cartBooks.length} book${cartBooks.length > 1 ? "s" : ""} in cart`}
+        right={
           <Link href="/profile" className="sec-mid-btn">
             Order History
           </Link>
-        </div>
-      </div>
+        }
+      />
 
       <CartOfferStrip discountedAmount={totalDiscounted} />
 
       <div className="cart-items-panel">
-        <div className="grid-2">
+        <div className="cart-items-list">
           {cartBooks.map((book) => (
-            <BookCard key={book.id} book={book} />
+            <CartItemRow key={book.id} book={book} />
           ))}
         </div>
       </div>
+
+      {recommendedBooks.length > 0 && (
+        <div className="cart-sep">
+          <span className="cart-sep-line" />
+          <span className="cart-sep-label">
+            <Sparkles size={13} /> You may also add
+          </span>
+          <span className="cart-sep-line" />
+        </div>
+      )}
 
       {recommendedBooks.length > 0 && (
         <div className="cart-recommendations">

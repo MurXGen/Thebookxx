@@ -218,7 +218,7 @@ export default function CartBar() {
   const shouldShowUnlockMessage = !hasNeverUnlocked;
 
   return (
-    <div className="cart-bar" style={{ maxWidth: "1700px", margin: "0 auto" }}>
+    <div className="cart-bar" style={{ maxWidth: "680px", margin: "0 auto" }}>
       {/* 🎁 OFFER STRIP */}
       <AnimatePresence mode="wait">
         {hasCart && (

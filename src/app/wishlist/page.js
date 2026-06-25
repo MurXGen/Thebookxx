@@ -1,6 +1,7 @@
 "use client";
 
 import BookCard from "@/components/BookCard";
+import PageHeader from "@/components/UI/PageHeader";
 import { useStore } from "@/context/StoreContext";
 import { books } from "@/utils/book";
 import { ArrowLeft } from "lucide-react";
@@ -15,20 +16,11 @@ export default function WishlistPage() {
   if (!wishlistBooks.length) {
     return (
       <>
-        <div className="section-1200 flex flex-row gap-12 items-center">
-          <ArrowLeft
-            size={20}
-            onClick={() => router.push("/")}
-            className="cursor-pointer"
+        <div className="section-680">
+          <PageHeader
+            title="Your Wishlist"
+            subtitle={`${wishlistBooks.length} book${wishlistBooks.length === 1 ? "" : "s"} in wishlist`}
           />
-
-          <div className="flex flex-col">
-            <h1 className="font-24 weight-600">Your Wishlist</h1>
-            <span className="font-12 dark-50">
-              {wishlistBooks.length} book
-              {wishlistBooks.length > 1 ? "s" : ""} in wishlist
-            </span>
-          </div>
         </div>
 
         <div
@@ -46,22 +38,11 @@ export default function WishlistPage() {
   }
 
   return (
-    <section className="section-1200 flex flex-col gap-24">
-      <div className="flex flex-row gap-12 items-center">
-        <ArrowLeft
-          size={20}
-          onClick={() => router.push("/")}
-          className="cursor-pointer"
-        />
-
-        <div className="flex flex-col">
-          <h1 className="font-24 weight-600">Your Wishlist</h1>
-          <span className="font-12 dark-50">
-            {wishlistBooks.length} book
-            {wishlistBooks.length > 1 ? "s" : ""} in wishlist
-          </span>
-        </div>
-      </div>
+    <section className="section-680 flex flex-col gap-24">
+      <PageHeader
+        title="Your Wishlist"
+        subtitle={`${wishlistBooks.length} book${wishlistBooks.length === 1 ? "" : "s"} in wishlist`}
+      />
 
       <div className="grid-2 flex flex-col gap-24">
         {wishlistBooks.map((b) => (

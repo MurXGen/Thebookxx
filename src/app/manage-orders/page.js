@@ -176,20 +176,6 @@ const getOrderDate = (order) =>
   parseAnyDate(order["Timestamp"]) ||
   parseAnyDate(order["Order Date"]);
 
-// Parse a simple cost formula like "10+20+30+21" or "100-25+50" into a number.
-// Only supports +, -, digits, and decimals. Returns 0 for empty/invalid input
-// so a missing cost doesn't break P&L math. We never eval(), too risky for
-// localStorage-sourced strings, instead we extract signed-number tokens via
-// regex and sum them.
-const parseCostFormula = (formula) => {
-  if (!formula || typeof formula !== "string") return 0;
-  const cleaned = formula.replace(/\s/g, "");
-  if (!cleaned) return 0;
-  if (!/^[\d+\-.]+$/.test(cleaned)) return 0;
-  const tokens = cleaned.match(/[+-]?\d+(\.\d+)?/g);
-  if (!tokens) return 0;
-  return tokens.reduce((sum, t) => sum + (parseFloat(t) || 0), 0);
-};
 
 // Sort orders by date. order = "desc" → newest first, "asc" → oldest first.
 // Rows without a parseable date always go to the bottom.
@@ -276,9 +262,19 @@ export default function ManageOrdersPage() {
   const [paymentFilter, setPaymentFilter] = useState("all");
   const [copiedId, setCopiedId] = useState(null);
   const [sortOrder, setSortOrder] = useState("desc"); // "desc" = latest first
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
   const [expandedOrders, setExpandedOrders] = useState(new Set());
-  // localStorage-backed map: orderId → cost formula string (e.g. "10+20+30")
-  const [costFormulas, setCostFormulas] = useState({});
+  const [prefsLoaded, setPrefsLoaded] = useState(false);
+
+  const toggleExpanded = (orderId) => {
+    setExpandedOrders((prev) => {
+      const next = new Set(prev);
+      if (next.has(orderId)) next.delete(orderId);
+      else next.add(orderId);
+      return next;
+    });
+  };
   const [formData, setFormData] = useState({
     orderId: "",
     customerName: "",
@@ -332,6 +328,9 @@ export default function ManageOrdersPage() {
         order.parsedBooks = parseBooksList(order["Books List"]);
         order.shippingId = order["Shipping ID"] || "";
         order.status = order["Order Status"] || "Processing";
+        order.revenue = parseFloat(order["Total Amount"]) || 0;
+        order.totalCost = parseFloat(order["Total Cost"]) || 0;
+        order.pnl = order.revenue - order.totalCost;
         return order;
       });
 
@@ -351,6 +350,48 @@ export default function ManageOrdersPage() {
   useEffect(() => {
     fetchOrders();
   }, [fetchOrders]);
+
+  // Restore saved filter/search preferences on mount
+  useEffect(() => {
+    try {
+      const p = JSON.parse(
+        localStorage.getItem("manage_orders_prefs") || "{}",
+      );
+      if (p.searchQuery) setSearchQuery(p.searchQuery);
+      if (p.statusFilter) setStatusFilter(p.statusFilter);
+      if (p.paymentFilter) setPaymentFilter(p.paymentFilter);
+      if (p.dateFrom) setDateFrom(p.dateFrom);
+      if (p.dateTo) setDateTo(p.dateTo);
+      if (p.sortOrder) setSortOrder(p.sortOrder);
+    } catch (_) {}
+    setPrefsLoaded(true);
+  }, []);
+
+  // Persist filter/search preferences whenever they change (after load)
+  useEffect(() => {
+    if (!prefsLoaded) return;
+    try {
+      localStorage.setItem(
+        "manage_orders_prefs",
+        JSON.stringify({
+          searchQuery,
+          statusFilter,
+          paymentFilter,
+          dateFrom,
+          dateTo,
+          sortOrder,
+        }),
+      );
+    } catch (_) {}
+  }, [
+    prefsLoaded,
+    searchQuery,
+    statusFilter,
+    paymentFilter,
+    dateFrom,
+    dateTo,
+    sortOrder,
+  ]);
 
   // Apply filters, re-sort at the end so search/filter results stay newest-first
   useEffect(() => {
@@ -384,46 +425,34 @@ export default function ManageOrdersPage() {
       );
     }
 
-    setFilteredOrders(sortByDate(filtered, sortOrder));
-  }, [searchQuery, orders, statusFilter, paymentFilter, sortOrder]);
-
-  // Hydrate the cost-formula map from localStorage on mount.
-  // Stored shape: { "ORD123": "10+20+30", "ORD456": "50+50" }
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem("manage_orders_cost_formulas");
-      if (saved) setCostFormulas(JSON.parse(saved));
-    } catch (e) {
-      console.error("Failed to load cost formulas from localStorage:", e);
+    // Date-range filter (inclusive) on the order date
+    if (dateFrom) {
+      const from = new Date(dateFrom);
+      from.setHours(0, 0, 0, 0);
+      filtered = filtered.filter((o) => {
+        const d = getOrderDate(o);
+        return d && d >= from;
+      });
     }
-  }, []);
+    if (dateTo) {
+      const to = new Date(dateTo);
+      to.setHours(23, 59, 59, 999);
+      filtered = filtered.filter((o) => {
+        const d = getOrderDate(o);
+        return d && d <= to;
+      });
+    }
 
-  // Toggle a single order's accordion. We key by orderId (not idx) so the
-  // expanded set stays correct across re-sorts and re-filters.
-  const toggleExpanded = (orderId) => {
-    setExpandedOrders((prev) => {
-      const next = new Set(prev);
-      if (next.has(orderId)) next.delete(orderId);
-      else next.add(orderId);
-      return next;
-    });
-  };
-
-  // Save a new cost formula for an order, updates state and localStorage.
-  const updateCostFormula = (orderId, formula) => {
-    setCostFormulas((prev) => {
-      const next = { ...prev, [orderId]: formula };
-      try {
-        localStorage.setItem(
-          "manage_orders_cost_formulas",
-          JSON.stringify(next),
-        );
-      } catch (e) {
-        console.error("Failed to persist cost formulas:", e);
-      }
-      return next;
-    });
-  };
+    setFilteredOrders(sortByDate(filtered, sortOrder));
+  }, [
+    searchQuery,
+    orders,
+    statusFilter,
+    paymentFilter,
+    sortOrder,
+    dateFrom,
+    dateTo,
+  ]);
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -638,11 +667,16 @@ export default function ManageOrdersPage() {
     URL.revokeObjectURL(url);
   };
 
-  // Stats
-  const totalRevenue = filteredOrders.reduce(
-    (sum, o) => sum + (parseFloat(o["Total Amount"]) || 0),
-    0,
-  );
+  // Highest order value (for value-based card tinting)
+  const maxRevenue = Math.max(1, ...filteredOrders.map((o) => o.revenue || 0));
+
+  // Stats (all read straight from the sheet columns)
+  const totalRevenue = filteredOrders.reduce((sum, o) => sum + o.revenue, 0);
+  const totalCost = filteredOrders.reduce((sum, o) => sum + o.totalCost, 0);
+  const totalPnL = totalRevenue - totalCost;
+  const marginPct =
+    totalRevenue > 0 ? Math.round((totalPnL / totalRevenue) * 100) : 0;
+
   const deliveredCount = filteredOrders.filter(
     (o) => o["Order Status"] === "Delivered",
   ).length;
@@ -654,14 +688,26 @@ export default function ManageOrdersPage() {
     (o) => o["Shipping ID"] && String(o["Shipping ID"]).trim() !== "",
   ).length;
 
-  // Total cost = sum of every order's parsed cost formula.
-  // Total P&L = revenue − cost. Both refresh whenever filteredOrders or
-  // costFormulas change, so editing one cost updates the header live.
-  const totalCost = filteredOrders.reduce((sum, o) => {
-    const formula = costFormulas[o["Order ID"]] || "";
-    return sum + parseCostFormula(formula);
-  }, 0);
-  const totalPnL = totalRevenue - totalCost;
+  // Status breakdown for the chart / progress bars
+  const STATUS_META = [
+    { key: "Processing", color: "#fb8500" },
+    { key: "Shipped", color: "#3b6fe0" },
+    { key: "In Transit", color: "#7c4dff" },
+    { key: "Out for Delivery", color: "#0ea5e9" },
+    { key: "Delivered", color: "#008f0c" },
+    { key: "Cancelled", color: "#ef4444" },
+  ];
+  const statusCounts = STATUS_META.map((s) => ({
+    ...s,
+    count: filteredOrders.filter((o) => o["Order Status"] === s.key).length,
+  }));
+  const maxStatusCount = Math.max(1, ...statusCounts.map((s) => s.count));
+
+  // Payment split
+  const codCount = filteredOrders.filter((o) =>
+    String(o["Payment Type"] || "").includes("Cash"),
+  ).length;
+  const prepaidCount = filteredOrders.length - codCount;
 
   if (loading) {
     return (
@@ -692,71 +738,117 @@ export default function ManageOrdersPage() {
           </Link>
         </div>
 
-        {/* Admin info card, same shape as the "Welcome back" card */}
-        <div className="customer-info-section">
-          <div className="customer-info-card">
-            <div className=" flex flex-row gap-12">
-              <div className="customer-details flex flex-col gap-16">
-                <div className="flex flex-row justify-between items-center">
-                  <div className="flex flex-col">
-                    <span className="customer-label">Admin Panel</span>
-                    <span className="customer-name">
-                      {filteredOrders.length} Orders
-                    </span>
+        {/* ===== Colorful dashboard ===== */}
+        <div className="admin-dash">
+          <div className="admin-dash-top">
+            <span className="admin-dash-title">Dashboard overview</span>
+            <div className="flex flex-row gap-8">
+              <button className="sec-mid-btn" onClick={() => fetchOrders()} title="Refresh">
+                <RefreshCw size={14} /> Refresh
+              </button>
+              <button className="sec-mid-btn" onClick={exportToCSV} title="Export CSV">
+                <Download size={14} /> Export
+              </button>
+            </div>
+          </div>
+
+          {/* KPI cards */}
+          <div className="admin-kpis">
+            <div className="kpi kpi-orders">
+              <div className="kpi-ic"><ShoppingBag size={18} /></div>
+              <span className="kpi-value">{filteredOrders.length}</span>
+              <span className="kpi-label">Orders</span>
+            </div>
+            <div className="kpi kpi-rev">
+              <div className="kpi-ic"><IndianRupee size={18} /></div>
+              <span className="kpi-value">₹{totalRevenue.toLocaleString()}</span>
+              <span className="kpi-label">Revenue</span>
+            </div>
+            <div className="kpi kpi-cost">
+              <div className="kpi-ic"><Package size={18} /></div>
+              <span className="kpi-value">₹{totalCost.toLocaleString()}</span>
+              <span className="kpi-label">Total cost</span>
+            </div>
+            <div className={`kpi ${totalPnL >= 0 ? "kpi-profit" : "kpi-loss"}`}>
+              <div className="kpi-ic">
+                {totalPnL >= 0 ? <TrendingUp size={18} /> : <TrendingDown size={18} />}
+              </div>
+              <span className="kpi-value">
+                {totalPnL >= 0 ? "+" : "−"}₹{Math.abs(totalPnL).toLocaleString()}
+              </span>
+              <span className="kpi-label">Profit · {marginPct}% margin</span>
+            </div>
+          </div>
+
+          {/* Charts row */}
+          <div className="admin-charts">
+            <div className="admin-chart-card">
+              <div className="chart-title">Orders by status</div>
+              <div className="status-bars">
+                {statusCounts.map((s) => (
+                  <div key={s.key} className="status-bar-row">
+                    <span className="sb-label">{s.key}</span>
+                    <div className="sb-track">
+                      <div
+                        className="sb-fill"
+                        style={{
+                          width: `${(s.count / maxStatusCount) * 100}%`,
+                          background: s.color,
+                        }}
+                      />
+                    </div>
+                    <span className="sb-count">{s.count}</span>
                   </div>
-                  <div className="flex flex-row gap-8">
-                    <button
-                      className="sec-mid-btn"
-                      style={{ maxHeight: "fit-content" }}
-                      onClick={() => fetchOrders()}
-                      title="Refresh"
-                    >
-                      <RefreshCw size={14} />
-                      Refresh
-                    </button>
-                    <button
-                      className="sec-mid-btn"
-                      style={{ maxHeight: "fit-content" }}
-                      onClick={exportToCSV}
-                      title="Export CSV"
-                    >
-                      <Download size={14} />
-                      Export
-                    </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="admin-chart-card">
+              <div className="chart-title">Payment & fulfilment</div>
+              <div className="pay-split">
+                <div
+                  className="pay-donut"
+                  style={{
+                    background: `conic-gradient(#fb8500 0 ${
+                      filteredOrders.length
+                        ? Math.round((prepaidCount / filteredOrders.length) * 100)
+                        : 0
+                    }%, #0a0a0a 0)`,
+                  }}
+                >
+                  <span>{filteredOrders.length}</span>
+                </div>
+                <div className="pay-legend">
+                  <div>
+                    <span className="dot" style={{ background: "#fb8500" }} />
+                    Prepaid {prepaidCount}
+                  </div>
+                  <div>
+                    <span className="dot" style={{ background: "#0a0a0a" }} />
+                    COD {codCount}
                   </div>
                 </div>
-
-                <div className="flex flex-row justify-between width100">
-                  <span className="customer-phone">
-                    Total Revenue ₹{totalRevenue.toLocaleString()}
-                  </span>
-                  <span
-                    className="font-12 flex flex-row gap-4 items-center"
-                    style={{
-                      color:
-                        totalPnL >= 0
-                          ? "var(--success, #008f0c)"
-                          : "var(--danger, #ef4444)",
-                      fontWeight: 600,
-                    }}
-                    title={`Revenue ₹${totalRevenue.toLocaleString()} − Cost ₹${totalCost.toLocaleString()}`}
-                  >
-                    {totalPnL >= 0 ? (
-                      <TrendingUp size={14} />
-                    ) : (
-                      <TrendingDown size={14} />
-                    )}
-                    Total P&amp;L {totalPnL >= 0 ? "+" : "−"}₹
-                    {Math.abs(totalPnL).toLocaleString()}
-                  </span>
+              </div>
+              <div className="dash-mini">
+                <div>
+                  <span>Delivered</span>
+                  <strong>{deliveredCount}</strong>
+                </div>
+                <div>
+                  <span>In transit</span>
+                  <strong>{inTransitCount}</strong>
+                </div>
+                <div>
+                  <span>Tracking</span>
+                  <strong>{withTrackingCount}</strong>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Search + Filter row, matches phone-search-section pattern */}
-        <div className="phone-search-section">
+        {/* Search + Filter row */}
+        <div className="admin-search">
           <div className="flex flex-row gap-12 width100">
             <input
               type="text"
@@ -772,9 +864,10 @@ export default function ManageOrdersPage() {
             >
               <Filter size={16} />
               Filters
-              {(statusFilter !== "all" || paymentFilter !== "all") && (
-                <span className="orange weight-600">●</span>
-              )}
+              {(statusFilter !== "all" ||
+                paymentFilter !== "all" ||
+                dateFrom ||
+                dateTo) && <span className="orange weight-600">●</span>}
             </button>
             <button
               className="sec-mid-btn"
@@ -843,12 +936,35 @@ export default function ManageOrdersPage() {
                       <option value="Card Payment">Card Payment</option>
                     </select>
                   </div>
-                  {(statusFilter !== "all" || paymentFilter !== "all") && (
+                  <div className="filter-group-inline">
+                    <label className="font-12 dark-50">From date</label>
+                    <input
+                      type="date"
+                      className="sec-mid-btn width100"
+                      value={dateFrom}
+                      onChange={(e) => setDateFrom(e.target.value)}
+                    />
+                  </div>
+                  <div className="filter-group-inline">
+                    <label className="font-12 dark-50">To date</label>
+                    <input
+                      type="date"
+                      className="sec-mid-btn width100"
+                      value={dateTo}
+                      onChange={(e) => setDateTo(e.target.value)}
+                    />
+                  </div>
+                  {(statusFilter !== "all" ||
+                    paymentFilter !== "all" ||
+                    dateFrom ||
+                    dateTo) && (
                     <button
                       className="sec-mid-btn"
                       onClick={() => {
                         setStatusFilter("all");
                         setPaymentFilter("all");
+                        setDateFrom("");
+                        setDateTo("");
                       }}
                     >
                       <X size={14} /> Clear
@@ -860,27 +976,7 @@ export default function ManageOrdersPage() {
           </AnimatePresence>
         </div>
 
-        {/* Quick stats row, minimal, matches the lightweight feel */}
-        <div className="admin-stats-row">
-          <div className="admin-stat">
-            <span className="admin-stat-value">{filteredOrders.length}</span>
-            <span className="admin-stat-label">Total</span>
-          </div>
-          <div className="admin-stat">
-            <span className="admin-stat-value">{deliveredCount}</span>
-            <span className="admin-stat-label">Delivered</span>
-          </div>
-          <div className="admin-stat">
-            <span className="admin-stat-value">{inTransitCount}</span>
-            <span className="admin-stat-label">In Transit</span>
-          </div>
-          <div className="admin-stat">
-            <span className="admin-stat-value">{withTrackingCount}</span>
-            <span className="admin-stat-label">With Tracking</span>
-          </div>
-        </div>
-
-        {/* Orders list, same card structure as my-orders */}
+        {/* Orders list, flattened single cards */}
         {filteredOrders.length > 0 ? (
           <div className="flex flex-col gap-4">
             <div className="orders-list-header">
@@ -891,169 +987,109 @@ export default function ManageOrdersPage() {
             </div>
             {filteredOrders.map((order, idx) => {
               const orderId = order["Order ID"];
+              const books = order.parsedBooks || [];
+              const pnl = order.pnl;
+              const hasTracking =
+                order.shippingId && String(order.shippingId).trim() !== "";
+              const tinyUrl = order["TinyURL"];
+              const hasTinyUrl = tinyUrl && String(tinyUrl).trim() !== "";
+              const fullAddress = [
+                order["Address"],
+                order["City"],
+                order["State"],
+              ]
+                .filter(Boolean)
+                .join(", ");
+              const addressLine = order["Pincode"]
+                ? `${fullAddress} - ${order["Pincode"]}`
+                : fullAddress;
+
               const isExpanded = expandedOrders.has(orderId);
-              const costFormula = costFormulas[orderId] || "";
-              const cost = parseCostFormula(costFormula);
-              const revenue = parseFloat(order["Total Amount"]) || 0;
-              const pnl = revenue - cost;
+              const tintA = (0.05 + (order.revenue / maxRevenue) * 0.16).toFixed(3);
+              const cardStyle = {
+                background: `linear-gradient(135deg, #ffffff 0%, rgba(251,133,0,${tintA}) 100%)`,
+              };
 
               return (
-                <div key={idx} className="order-card">
-                  {/* ===== Collapsed header, always visible.
-                       Clicking anywhere here toggles the accordion EXCEPT
-                       the copyable name/phone chips (they stopPropagation). */}
+                <div
+                  key={orderId || idx}
+                  className="admin-order-card"
+                  style={cardStyle}
+                >
                   <div
+                    className="aoc-head"
                     onClick={() => toggleExpanded(orderId)}
-                    style={{
-                      cursor: "pointer",
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: 10,
-                      padding: "16px",
-                    }}
+                    style={{ cursor: "pointer" }}
                   >
-                    {/* Top line: order id + date + chevron */}
-                    <div className="flex flex-row justify-between items-center">
-                      <div className="flex flex-row gap-8 items-center flex-wrap">
-                        <span
-                          className="font-10 weight-700"
-                          style={{
-                            letterSpacing: 0.4,
-                            color: "var(--tertiary, #fb8500)",
-                            background: "var(--tertiary-10, #fb850010)",
-                            padding: "3px 8px",
-                            borderRadius: 6,
-                          }}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            copyToClipboard(orderId, `order-${idx}`);
-                          }}
-                          title="Tap to copy Order ID"
-                        >
-                          {orderId}
-                          {copiedId === `order-${idx}` && (
-                            <Check
-                              size={10}
-                              className="text-green"
-                              style={{ marginLeft: 4, display: "inline" }}
-                            />
-                          )}
-                        </span>
-                        <Calendar size={11} className="gray-500" />
-                        <span className="font-10 dark-50">
-                          {formatDate(
-                            order["Timestamp(D)"] || order["Timestamp"],
-                          )}
-                        </span>
+                    <div className="aoc-head-left">
+                      <span
+                        className="aoc-id"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          copyToClipboard(orderId, `order-${idx}`);
+                        }}
+                        title="Tap to copy Order ID"
+                      >
+                        {orderId}
+                        {copiedId === `order-${idx}` && (
+                          <Check size={10} className="text-green" style={{ marginLeft: 4 }} />
+                        )}
+                      </span>
+                      <span className="aoc-date">
+                        <Calendar size={11} />
+                        {formatDate(order["Timestamp(D)"] || order["Timestamp"])}
+                      </span>
+                    </div>
+                    <div className="aoc-head-right">
+                      <span className="aoc-rev-pill">
+                        ₹{order.revenue.toLocaleString()}
+                      </span>
+                      <div className={`order-status-badge ${getStatusColor(order.status)}`}>
+                        {getStatusIcon(order.status)}
+                        <span>{order.status}</span>
                       </div>
                       <ChevronDown
-                        size={20}
+                        size={18}
+                        className="aoc-chev"
                         style={{
-                          transform: isExpanded
-                            ? "rotate(180deg)"
-                            : "rotate(0deg)",
-                          transition: "transform 0.28s ease",
-                          color: "var(--dark-50, #0a0a0a80)",
-                          flexShrink: 0,
+                          transform: isExpanded ? "rotate(180deg)" : "none",
+                          transition: "transform 0.25s ease",
                         }}
                       />
                     </div>
-
-                    {/* Name + Phone, independently copyable chips */}
-                    <div className="flex flex-row gap-8 items-center flex-wrap">
-                      <div
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          copyToClipboard(
-                            order["Customer Name"] || "",
-                            `name-${idx}`,
-                          );
-                        }}
-                        className="flex flex-row gap-8 items-center cursor-pointer"
-                        style={{
-                          padding: "8px 12px",
-                          background: "var(--background, #fff)",
-                          border: "1px solid var(--dark-10)",
-                          borderRadius: 8,
-                        }}
-                        title="Tap to copy name"
-                      >
-                        <User size={13} className="gray-500" />
-                        <span className="font-12 weight-600">
-                          {order["Customer Name"] || ""}
-                        </span>
-                        {copiedId === `name-${idx}` ? (
-                          <Check size={12} className="text-green" />
-                        ) : (
-                          <Copy size={12} className="gray-500" />
-                        )}
-                      </div>
-
-                      <div
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          copyToClipboard(
-                            String(order["Phone Number"] || ""),
-                            `phone-${idx}`,
-                          );
-                        }}
-                        className="flex flex-row gap-8 items-center cursor-pointer"
-                        style={{
-                          padding: "8px 12px",
-                          background: "var(--background, #fff)",
-                          border: "1px solid var(--dark-10)",
-                          borderRadius: 8,
-                        }}
-                        title="Tap to copy phone"
-                      >
-                        <Phone size={13} className="gray-500" />
-                        <span className="font-12 weight-500">
-                          +91 {order["Phone Number"]}
-                        </span>
-                        {copiedId === `phone-${idx}` ? (
-                          <Check size={12} className="text-green" />
-                        ) : (
-                          <Copy size={12} className="gray-500" />
-                        )}
-                      </div>
-                      <div className="flex flex-row justify-between width100">
-                        <div
-                          className={`order-status-badge ${getStatusColor(order.status)}`}
-                        >
-                          {getStatusIcon(order.status)}
-                          <span>{order.status}</span>
-                        </div>
-
-                        {/* Inline P&L pip, visible even when collapsed if cost is set */}
-                        {cost > 0 && (
-                          <span
-                            className="font-12 weight-700 flex flex-row gap-4 items-center"
-                            style={{
-                              padding: "4px 10px",
-                              borderRadius: 12,
-                              background:
-                                pnl >= 0
-                                  ? "rgba(0,143,12,0.10)"
-                                  : "rgba(239,68,68,0.10)",
-                              color:
-                                pnl >= 0
-                                  ? "var(--success, #090b09)"
-                                  : "var(--danger, #ef4444)",
-                            }}
-                          >
-                            {pnl >= 0 ? (
-                              <TrendingUp size={11} />
-                            ) : (
-                              <TrendingDown size={11} />
-                            )}
-                            {pnl >= 0 ? "+" : "−"}₹{Math.abs(pnl).toFixed(0)}
-                          </span>
-                        )}
-                      </div>
-                    </div>
                   </div>
 
-                  {/* ===== Animated expandable body ===== */}
+                  <div className="aoc-chips">
+                    <button
+                      type="button"
+                      className="aoc-chip"
+                      onClick={() => copyToClipboard(order["Customer Name"] || "", `name-${idx}`)}
+                      title="Copy name"
+                    >
+                      <User size={13} />
+                      <span>{order["Customer Name"] || "—"}</span>
+                      {copiedId === `name-${idx}` ? (
+                        <Check size={12} className="text-green" />
+                      ) : (
+                        <Copy size={12} className="gray-500" />
+                      )}
+                    </button>
+                    <button
+                      type="button"
+                      className="aoc-chip"
+                      onClick={() => copyToClipboard(String(order["Phone Number"] || ""), `phone-${idx}`)}
+                      title="Copy phone"
+                    >
+                      <Phone size={13} />
+                      <span>+91 {order["Phone Number"]}</span>
+                      {copiedId === `phone-${idx}` ? (
+                        <Check size={12} className="text-green" />
+                      ) : (
+                        <Copy size={12} className="gray-500" />
+                      )}
+                    </button>
+                  </div>
+
                   <AnimatePresence initial={false}>
                     {isExpanded && (
                       <motion.div
@@ -1061,485 +1097,135 @@ export default function ManageOrdersPage() {
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        transition={{
-                          duration: 0.3,
-                          ease: [0.32, 0.72, 0, 1],
-                        }}
+                        transition={{ duration: 0.28, ease: [0.32, 0.72, 0, 1] }}
                         style={{ overflow: "hidden" }}
                       >
-                        <div
-                          style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: 12,
-                            paddingTop: 14,
-                            marginTop: 4,
-                            borderTop: "1px dashed var(--dark-10)",
-                          }}
-                        >
-                          {/* Customer Details (Pincode + Full Address) */}
-                          <div
-                            style={{
-                              padding: "12px 14px",
-                              background: "var(--dark-4)",
-                              border: "1px solid var(--dark-10)",
-                              borderRadius: 10,
-                              display: "flex",
-                              flexDirection: "column",
-                              gap: 8,
-                            }}
-                          >
-                            <div className="flex flex-row items-center gap-8">
-                              <MapPin
-                                size={14}
-                                style={{ color: "var(--tertiary, #fb8500)" }}
-                              />
-                              <span className="font-12">Shipping Info</span>
-                              <span
-                                className="font-10 dark-50"
-                                style={{ marginLeft: "auto" }}
-                              >
-                                Tap any row to copy
-                              </span>
-                            </div>
-
-                            {order["Pincode"] && (
-                              <div
-                                onClick={() =>
-                                  copyToClipboard(
-                                    String(order["Pincode"]),
-                                    `pincode-${idx}`,
-                                  )
-                                }
-                                className="cursor-pointer"
-                                style={{
-                                  padding: "8px 10px",
-                                  background: "var(--background, #fff)",
-                                  border: "1px solid var(--dark-10)",
-                                  borderRadius: 8,
-                                  display: "flex",
-                                  alignItems: "center",
-                                  gap: 8,
-                                }}
-                              >
-                                <div style={{ flex: 1, minWidth: 0 }}>
-                                  <div className="font-10 dark-50">Pincode</div>
-                                  <div className="font-12 weight-600">
-                                    {order["Pincode"]}
-                                  </div>
-                                </div>
-                                {copiedId === `pincode-${idx}` ? (
-                                  <Check size={14} className="text-green" />
-                                ) : (
-                                  <Copy size={14} className="gray-500" />
-                                )}
-                              </div>
-                            )}
-
-                            {(() => {
-                              const fullAddress = [
-                                order["Address"],
-                                order["City"],
-                                order["State"],
-                              ]
-                                .filter(Boolean)
-                                .join(", ");
-                              const addressLine = order["Pincode"]
-                                ? `${fullAddress} - ${order["Pincode"]}`
-                                : fullAddress;
-                              if (!addressLine) return null;
-                              return (
-                                <div
-                                  onClick={() =>
-                                    copyToClipboard(
-                                      addressLine,
-                                      `address-${idx}`,
-                                    )
-                                  }
-                                  className="cursor-pointer"
-                                  style={{
-                                    padding: "8px 10px",
-                                    background: "var(--background, #fff)",
-                                    border: "1px solid var(--dark-10)",
-                                    borderRadius: 8,
-                                    display: "flex",
-                                    alignItems: "flex-start",
-                                    gap: 8,
-                                  }}
-                                >
-                                  <div style={{ flex: 1, minWidth: 0 }}>
-                                    <div className="font-10 dark-50">
-                                      Delivery Address
-                                    </div>
-                                    <div
-                                      className="font-12 weight-500"
-                                      style={{ lineHeight: 1.45 }}
-                                    >
-                                      {addressLine}
-                                    </div>
-                                  </div>
-                                  {copiedId === `address-${idx}` ? (
-                                    <Check
-                                      size={14}
-                                      className="text-green"
-                                      style={{ marginTop: 2 }}
-                                    />
-                                  ) : (
-                                    <Copy
-                                      size={14}
-                                      className="gray-500"
-                                      style={{ marginTop: 2 }}
-                                    />
-                                  )}
-                                </div>
-                              );
-                            })()}
-                          </div>
-
-                          {/* Tracking + View User Bag (conditional) */}
-                          {(() => {
-                            const hasTracking =
-                              order.shippingId &&
-                              String(order.shippingId).trim() !== "";
-                            const tinyUrl = order["TinyURL"];
-                            const hasTinyUrl =
-                              tinyUrl && String(tinyUrl).trim() !== "";
-                            if (!hasTracking && !hasTinyUrl) return null;
-
-                            return (
-                              <div className="tracking-info-row">
-                                {hasTracking ? (
-                                  <div className="tracking-id-display">
-                                    <span className="tracking-label">
-                                      Tracking ID:
-                                    </span>
-                                    <span className="tracking-id">
-                                      {order.shippingId}
-                                    </span>
-                                  </div>
-                                ) : (
-                                  <div className="tracking-id-display">
-                                    <span className="tracking-label">
-                                      Order link:
-                                    </span>
-                                    <span
-                                      className="tracking-id"
-                                      style={{
-                                        overflow: "hidden",
-                                        textOverflow: "ellipsis",
-                                        maxWidth: 220,
-                                        whiteSpace: "nowrap",
-                                      }}
-                                    >
-                                      {tinyUrl}
-                                    </span>
-                                  </div>
-                                )}
-
-                                <div className="flex flex-row gap-8">
-                                  {hasTracking && (
-                                    <button
-                                      className="track-btn-small flex flex-row items-center gap-4"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleTrackPackage(order.shippingId);
-                                      }}
-                                      title="Copy tracking ID and open India Post"
-                                    >
-                                      <Truck size={12} />
-                                      Track here
-                                    </button>
-                                  )}
-                                  {hasTinyUrl && (
-                                    <button
-                                      className="track-btn-small flex flex-row items-center gap-4"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        window.open(
-                                          tinyUrl,
-                                          "_blank",
-                                          "noopener,noreferrer",
-                                        );
-                                      }}
-                                      title="Open customer's order page"
-                                    >
-                                      <ShoppingBag size={12} />
-                                      View User Bag
-                                      <ExternalLink size={10} />
-                                    </button>
-                                  )}
-                                </div>
-                              </div>
-                            );
-                          })()}
-
-                          {/* Books preview */}
-                          <div className="order-items-preview">
-                            <div className="items-icon">
-                              <Package size={16} />
-                            </div>
-                            <div className="items-list">
-                              {order.parsedBooks
-                                ?.slice(0, 2)
-                                .map((book, bidx) => (
-                                  <span key={bidx} className="item-name">
-                                    {book.name}
-                                    {bidx === 0 &&
-                                      order.parsedBooks?.length > 1 &&
-                                      ` + ${order.parsedBooks.length - 1} more`}
-                                  </span>
-                                ))}
-                              {(!order.parsedBooks ||
-                                order.parsedBooks.length === 0) && (
-                                <span className="item-name">
-                                  Books not listed
-                                </span>
-                              )}
-                            </div>
-                          </div>
-
-                          {/* Order Summary, Total, Payment, Delivery */}
-                          <div className="order-details-grid">
-                            <div className="detail-item">
-                              <IndianRupee size={14} className="gray-500" />
-                              <div>
-                                <span className="detail-label">
-                                  Total Amount
-                                </span>
-                                <span className="detail-value">
-                                  ₹{order["Total Amount"]}
-                                </span>
-                              </div>
-                            </div>
-                            <div className="detail-item">
-                              <Package size={14} className="gray-500" />
-                              <div>
-                                <span className="detail-label">
-                                  Payment Method
-                                </span>
-                                <span className="detail-value">
-                                  {order["Payment Type"]}
-                                </span>
-                              </div>
-                            </div>
-                            <div className="detail-item">
-                              <Truck size={14} className="gray-500" />
-                              <div>
-                                <span className="detail-label">Delivery</span>
-                                <span className="detail-value">
-                                  {order["Delivery Type"]}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* ===== Cost & P&L card ===== */}
-                          <div
-                            style={{
-                              padding: "12px 14px",
-                              background: "var(--dark-4)",
-                              border: "1px solid var(--dark-10)",
-                              borderRadius: 10,
-                              display: "flex",
-                              flexDirection: "column",
-                              gap: 10,
-                            }}
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <div className="flex flex-row items-center gap-8">
-                              <IndianRupee
-                                size={14}
-                                style={{ color: "var(--tertiary, #fb8500)" }}
-                              />
-                              <span className="font-12 weight-700">
-                                Cost &amp; Profit
-                              </span>
-                              <span
-                                className="font-10 dark-50"
-                                style={{ marginLeft: "auto" }}
-                              >
-                                Enter book costs like 10+20+30
-                              </span>
-                            </div>
-
-                            <div className="flex flex-row gap-8 items-center">
-                              <input
-                                type="text"
-                                placeholder="e.g. 10+20+30+21"
-                                value={costFormula}
-                                onChange={(e) =>
-                                  updateCostFormula(orderId, e.target.value)
-                                }
-                                onClick={(e) => e.stopPropagation()}
-                                className="sec-mid-btn"
-                                style={{ flex: 1, fontFamily: "monospace" }}
-                              />
-                              <span
-                                className="font-12 weight-600"
-                                style={{
-                                  minWidth: 70,
-                                  textAlign: "right",
-                                  color: "var(--tertiary, #fb8500)",
-                                }}
-                              >
-                                = ₹{cost.toFixed(0)}
-                              </span>
-                            </div>
-
-                            <div className="flex flex-col gap-4">
-                              <div className="flex flex-row justify-between font-12">
-                                <span className="dark-50">Revenue</span>
-                                <span className="weight-500">
-                                  ₹{revenue.toFixed(0)}
-                                </span>
-                              </div>
-                              <div className="flex flex-row justify-between font-12">
-                                <span className="dark-50">Cost</span>
-                                <span className="weight-500">
-                                  −₹{cost.toFixed(0)}
-                                </span>
-                              </div>
-                              <div
-                                className="flex flex-row justify-between font-14 weight-700"
-                                style={{
-                                  paddingTop: 6,
-                                  borderTop: "1px solid var(--dark-10)",
-                                }}
-                              >
-                                <span className="flex flex-row gap-4 items-center">
-                                  {pnl >= 0 ? (
-                                    <TrendingUp
-                                      size={13}
-                                      style={{
-                                        color: "var(--success, #008f0c)",
-                                      }}
-                                    />
-                                  ) : (
-                                    <TrendingDown
-                                      size={13}
-                                      style={{
-                                        color: "var(--danger, #ef4444)",
-                                      }}
-                                    />
-                                  )}
-                                  P&amp;L
-                                </span>
-                                <span
-                                  style={{
-                                    color:
-                                      pnl >= 0
-                                        ? "var(--success, #008f0c)"
-                                        : "var(--danger, #ef4444)",
-                                  }}
-                                >
-                                  {pnl >= 0 ? "+" : "−"}₹
-                                  {Math.abs(pnl).toFixed(0)}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Extra details (full books list, charges, gift wrap, offer, tiny url) */}
-                          {(order.parsedBooks?.length > 0 ||
-                            order["Delivery Charge"] > 0 ||
-                            order["Gift Wrap"] === "Yes" ||
-                            order["Offer Applied"] ||
-                            order["TinyURL"]) && (
-                            <details className="order-details">
-                              <summary
-                                className="order-details-summary"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                <span>View Full Details</span>
-                                <ChevronRight size={16} />
-                              </summary>
-                              <div
-                                className="order-details-content"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                {order.parsedBooks?.length > 0 && (
-                                  <div className="all-books">
-                                    <h4>
-                                      Order Items ({order.parsedBooks.length})
-                                    </h4>
-                                    {order.parsedBooks.map((book, bidx) => (
-                                      <div key={bidx} className="book-row">
-                                        <span className="book-name">
-                                          {book.name}
-                                        </span>
-                                        <div className="flex flex-row items-center gap-12 font-12 justify-between width100">
-                                          <div className="flex flex-row gap-12">
-                                            {book.quantity > 0 && (
-                                              <span>Qty: {book.quantity}</span>
-                                            )}
-                                            {book.price > 0 && (
-                                              <span>₹{book.price} each</span>
-                                            )}
-                                          </div>
-                                          {book.total > 0 && (
-                                            <span className="book-total">
-                                              ₹{book.total}
-                                            </span>
-                                          )}
-                                        </div>
-                                      </div>
-                                    ))}
-                                  </div>
-                                )}
-
-                                {order["Delivery Charge"] > 0 && (
-                                  <div className="delivery-charge">
-                                    <span>Delivery Charge</span>
-                                    <span>+₹{order["Delivery Charge"]}</span>
-                                  </div>
-                                )}
-
-                                {order["Gift Wrap"] === "Yes" && (
-                                  <div className="gift-wrap-info">
-                                    <Gift size={14} />
-                                    <span>
-                                      Gift Wrap included (+₹
-                                      {order["Gift Wrap Charge"]})
-                                    </span>
-                                  </div>
-                                )}
-
-                                {order["Offer Applied"] && (
-                                  <div className="delivery-charge">
-                                    <span>Offer Applied</span>
-                                    <span>{order["Offer Applied"]}</span>
-                                  </div>
-                                )}
-
-                                {order["TinyURL"] && (
-                                  <div className="full-address">
-                                    <h4>Order Link</h4>
-                                    <a
-                                      href={order["TinyURL"]}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                    >
-                                      {order["TinyURL"]}
-                                    </a>
-                                  </div>
-                                )}
-                              </div>
-                            </details>
-                          )}
-
-                          {/* Edit button */}
-                          <div className="admin-edit-row">
+                        <div className="aoc-body">
+                  <div className="aoc-section">
+                    <div className="aoc-section-title">
+                      <MapPin size={13} /> Shipping
+                    </div>
+                    {addressLine && (
+                      <button
+                        type="button"
+                        className="aoc-rowline"
+                        onClick={() => copyToClipboard(addressLine, `address-${idx}`)}
+                        title="Copy address"
+                      >
+                        <span className="aoc-rowline-text">{addressLine}</span>
+                        {copiedId === `address-${idx}` ? (
+                          <Check size={13} className="text-green" />
+                        ) : (
+                          <Copy size={13} className="gray-500" />
+                        )}
+                      </button>
+                    )}
+                    {(hasTracking || hasTinyUrl) && (
+                      <div className="aoc-track">
+                        {hasTracking ? (
+                          <span className="aoc-track-id">
+                            Tracking: <strong>{order.shippingId}</strong>
+                          </span>
+                        ) : (
+                          <span className="aoc-track-id">Order link ready</span>
+                        )}
+                        <div className="flex flex-row gap-8">
+                          {hasTracking && (
                             <button
-                              className="pri-big-btn width100"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                openEditModal(order);
-                              }}
+                              type="button"
+                              className="track-btn-small flex flex-row items-center gap-4"
+                              onClick={() => handleTrackPackage(order.shippingId)}
                             >
-                              <Edit size={14} />
-                              Edit Order
+                              <Truck size={12} /> Track
                             </button>
+                          )}
+                          {hasTinyUrl && (
+                            <button
+                              type="button"
+                              className="track-btn-small flex flex-row items-center gap-4"
+                              onClick={() => window.open(tinyUrl, "_blank", "noopener,noreferrer")}
+                            >
+                              <ShoppingBag size={12} /> User bag <ExternalLink size={10} />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="aoc-section">
+                    <div className="aoc-section-title">
+                      <Package size={13} /> Items ({books.length})
+                    </div>
+                    <div className="aoc-table">
+                      {books.length > 0 ? (
+                        books.map((b, bi) => (
+                          <div key={bi} className="aoc-trow">
+                            <span className="aoc-tname">{b.name}</span>
+                            <span className="aoc-tqty">×{b.quantity}</span>
+                            <span className="aoc-tprice">
+                              {b.total > 0 ? `₹${b.total}` : b.price > 0 ? `₹${b.price}` : "—"}
+                            </span>
                           </div>
+                        ))
+                      ) : (
+                        <div className="aoc-trow">
+                          <span className="aoc-tname">Books not listed</span>
+                          <span />
+                          <span />
+                        </div>
+                      )}
+                    </div>
+                    {(order["Delivery Charge"] > 0 ||
+                      order["Gift Wrap"] === "Yes" ||
+                      order["Offer Applied"]) && (
+                      <div className="aoc-extras">
+                        {order["Delivery Charge"] > 0 && (
+                          <span className="aoc-extra">Delivery +₹{order["Delivery Charge"]}</span>
+                        )}
+                        {order["Gift Wrap"] === "Yes" && (
+                          <span className="aoc-extra">
+                            <Gift size={11} /> Gift wrap +₹{order["Gift Wrap Charge"] || 0}
+                          </span>
+                        )}
+                        {order["Offer Applied"] && (
+                          <span className="aoc-extra">Offer: {order["Offer Applied"]}</span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="aoc-money">
+                    <div className="aoc-money-cell">
+                      <span>Revenue</span>
+                      <strong>₹{order.revenue.toLocaleString()}</strong>
+                    </div>
+                    <div className="aoc-money-cell">
+                      <span>Cost</span>
+                      <strong>₹{order.totalCost.toLocaleString()}</strong>
+                    </div>
+                    <div className={`aoc-money-cell ${pnl >= 0 ? "pos" : "neg"}`}>
+                      <span>Profit</span>
+                      <strong>
+                        {pnl >= 0 ? "+" : "−"}₹{Math.abs(pnl).toLocaleString()}
+                      </strong>
+                    </div>
+                  </div>
+
+                  <div className="aoc-foot">
+                    <div className="aoc-meta">
+                      <span>{order["Payment Type"] || "—"}</span>
+                      <span className="aoc-dot">·</span>
+                      <span>{order["Delivery Type"] || "—"}</span>
+                    </div>
+                    <button
+                      type="button"
+                      className="aoc-edit"
+                      onClick={() => openEditModal(order)}
+                    >
+                      <Edit size={14} /> Edit
+                    </button>
+                  </div>
                         </div>
                       </motion.div>
                     )}

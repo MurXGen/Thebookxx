@@ -13,6 +13,7 @@ const PALETTE = [
 ];
 
 const RAW = [
+  { name: "Aishu", city: "Coimbatore", amount: 419, books: 2, minsAgo: 50 },
   { name: "Priya", city: "Mumbai", amount: 427, books: 3, minsAgo: 2 },
   { name: "Rahul", city: "Delhi", amount: 312, books: 2, minsAgo: 4 },
   { name: "Aisha", city: "Bengaluru", amount: 189, books: 1, minsAgo: 6 },

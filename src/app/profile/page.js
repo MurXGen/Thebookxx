@@ -31,6 +31,7 @@ import {
   CalendarClock,
   AlertTriangle,
   Wallet,
+  ClipboardPaste,
 } from "lucide-react";
 import Image from "next/image";
 import { FaWhatsapp } from "react-icons/fa";
@@ -233,7 +234,7 @@ function OrderTrackingTimeline({ order }) {
           <div
             className="tracking-tooltip"
             style={{
-              left: `calc(${(tooltipStage / (steps.length - 1)) * 100}% - 0px)`,
+              left: `${((tooltipStage + 0.5) / steps.length) * 100}%`,
             }}
           >
             <div className="tracking-tooltip-content">
@@ -316,6 +317,7 @@ export default function MyOrdersPage() {
   const [showPhoneInput, setShowPhoneInput] = useState(true);
   const [customerName, setCustomerName] = useState("");
   const [walletBalance, setWalletBalance] = useState(0);
+  const [savedPhones, setSavedPhones] = useState([]);
 
   // ----- NEW state for cancel + reschedule -----
   const [showRescheduleModal, setShowRescheduleModal] = useState(false);
@@ -336,6 +338,12 @@ export default function MyOrdersPage() {
   useEffect(() => {
     const savedPhone = localStorage.getItem("track_orders_phone");
     const savedName = localStorage.getItem("track_orders_name");
+    try {
+      const list = JSON.parse(
+        localStorage.getItem("track_orders_saved_phones") || "[]",
+      );
+      if (Array.isArray(list)) setSavedPhones(list);
+    } catch (_) {}
     if (savedPhone) {
       setPhoneNumber(savedPhone);
       if (savedName) setCustomerName(savedName);
@@ -343,6 +351,200 @@ export default function MyOrdersPage() {
       setShowPhoneInput(false);
     }
   }, []);
+
+  // Persist a phone number to the saved list (most-recent first, max 5)
+  const savePhoneNumber = (num) => {
+    if (!num || num.length !== 10) return;
+    setSavedPhones((prev) => {
+      const next = [num, ...prev.filter((p) => p !== num)].slice(0, 5);
+      localStorage.setItem("track_orders_saved_phones", JSON.stringify(next));
+      return next;
+    });
+  };
+
+  const removeSavedPhone = (num) => {
+    setSavedPhones((prev) => {
+      const next = prev.filter((p) => p !== num);
+      localStorage.setItem("track_orders_saved_phones", JSON.stringify(next));
+      return next;
+    });
+  };
+
+  const useSavedPhone = (num) => {
+    setPhoneNumber(num);
+    fetchOrders(num);
+  };
+
+  // Strip spaces / +91 / any non-digits from a pasted/typed value and keep the
+  // last 10 digits, e.g. "+91 98989 89898" -> "9898989898".
+  const normalizePhone = (raw) => {
+    let d = (raw || "").replace(/\D/g, "");
+    if (d.length > 10) d = d.slice(-10);
+    return d;
+  };
+
+  const handlePasteClick = async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      const n = normalizePhone(text);
+      if (n) {
+        setPhoneNumber(n);
+        setError("");
+      }
+    } catch (_) {
+      setError("Couldn't read clipboard. Please paste manually.");
+    }
+  };
+
+  // Render + download a PNG invoice for an order (canvas, no dependencies).
+  const downloadInvoice = (order) => {
+    const items = order.parsedBooks || [];
+    const sub = items.reduce(
+      (s, b) => s + (b.total || b.price * b.quantity || 0),
+      0,
+    );
+    const grand = parseFloat(order["Total Amount"]) || sub;
+    const isFree = (order["Delivery Type"] || "").toLowerCase().includes("free");
+    const diff = grand - sub;
+
+    const W = 700;
+    const P = 44;
+    const rowH = 32;
+    const scale = 2;
+    const summaryCount = (sub > 0 ? 1 : 0) + 1 + (diff < 0 ? 1 : 0);
+    const H =
+      300 + items.length * rowH + summaryCount * 26 + 70 + 70;
+
+    const canvas = document.createElement("canvas");
+    canvas.width = W * scale;
+    canvas.height = H * scale;
+    const ctx = canvas.getContext("2d");
+    ctx.scale(scale, scale);
+    ctx.textBaseline = "alphabetic";
+
+    // background
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, W, H);
+
+    let y = P + 10;
+    ctx.fillStyle = "#fb8500";
+    ctx.font = "700 30px Arial";
+    ctx.fillText("TheBookX", P, y);
+    y += 26;
+    ctx.fillStyle = "#888888";
+    ctx.font = "13px Arial";
+    ctx.fillText(`Invoice  ·  Order ${order["Order ID"] || ""}`, P, y);
+    y += 18;
+    ctx.fillText(`${order["Timestamp"] || ""}`, P, y);
+    y += 18;
+    ctx.fillText(
+      `${customerName || ""}  ·  ${phoneNumber || order["Phone"] || ""}`,
+      P,
+      y,
+    );
+    y += 18;
+    const addr = `${order["Address"] || ""}, ${order["City"] || ""} ${order["Pincode"] || ""}`;
+    ctx.fillText(addr.slice(0, 84), P, y);
+    y += 26;
+
+    // table head
+    ctx.strokeStyle = "#eeeeee";
+    ctx.beginPath();
+    ctx.moveTo(P, y);
+    ctx.lineTo(W - P, y);
+    ctx.stroke();
+    y += 22;
+    ctx.fillStyle = "#888888";
+    ctx.font = "700 11px Arial";
+    ctx.fillText("ITEM", P, y);
+    ctx.textAlign = "right";
+    ctx.fillText("AMOUNT", W - P, y);
+    ctx.textAlign = "left";
+    y += 8;
+    ctx.beginPath();
+    ctx.moveTo(P, y);
+    ctx.lineTo(W - P, y);
+    ctx.stroke();
+
+    // item rows
+    items.forEach((b) => {
+      y += rowH;
+      ctx.fillStyle = "#0a0a0a";
+      ctx.font = "600 14px Arial";
+      ctx.fillText(`${b.name} × ${b.quantity}`.slice(0, 50), P, y - 9);
+      ctx.textAlign = "right";
+      ctx.font = "700 14px Arial";
+      ctx.fillText(`₹${b.total || b.price * b.quantity || 0}`, W - P, y - 9);
+      ctx.textAlign = "left";
+      ctx.strokeStyle = "#f2f2f2";
+      ctx.beginPath();
+      ctx.moveTo(P, y);
+      ctx.lineTo(W - P, y);
+      ctx.stroke();
+    });
+
+    // summary
+    const sumLine = (label, val, color) => {
+      y += 26;
+      ctx.fillStyle = "#666666";
+      ctx.font = "13px Arial";
+      ctx.fillText(label, P, y);
+      ctx.textAlign = "right";
+      ctx.fillStyle = color || "#0a0a0a";
+      ctx.font = "600 13px Arial";
+      ctx.fillText(val, W - P, y);
+      ctx.textAlign = "left";
+    };
+    y += 8;
+    if (sub > 0) sumLine(`Subtotal (${items.length} items)`, `₹${sub}`);
+    sumLine(
+      "Delivery",
+      isFree ? "FREE" : diff > 0 ? `+₹${diff}` : "—",
+      isFree ? "#008f0c" : "#0a0a0a",
+    );
+    if (diff < 0) sumLine("Discount", `−₹${-diff}`, "#008f0c");
+
+    // total
+    y += 18;
+    ctx.strokeStyle = "#cccccc";
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(P, y);
+    ctx.lineTo(W - P, y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    y += 28;
+    ctx.fillStyle = "#0a0a0a";
+    ctx.font = "700 17px Arial";
+    ctx.fillText("Total paid", P, y);
+    ctx.textAlign = "right";
+    ctx.fillText(`₹${grand}`, W - P, y);
+    ctx.textAlign = "left";
+
+    // footer
+    y += 36;
+    ctx.fillStyle = "#888888";
+    ctx.font = "12px Arial";
+    ctx.fillText(
+      `Payment: ${order["Payment Type"] || ""}  ·  Delivery: ${order["Delivery Type"] || ""}`,
+      P,
+      y,
+    );
+    y += 20;
+    ctx.fillText("Thank you for shopping with TheBookX.", P, y);
+
+    canvas.toBlob((blob) => {
+      if (!blob) return;
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `TheBookX-Invoice-${order["Order ID"] || "order"}.png`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }, "image/png");
+  };
 
   const parseBooksList = (booksStr) => {
     if (!booksStr) return [];
@@ -380,6 +582,8 @@ export default function MyOrdersPage() {
       setError("Please enter a valid 10-digit phone number");
       return;
     }
+    // Remember every submitted number (chip), regardless of result.
+    savePhoneNumber(phone);
     setLoading(true);
     setError("");
     setSearched(true);
@@ -466,6 +670,7 @@ export default function MyOrdersPage() {
       } else {
         setShowPhoneInput(false);
         localStorage.setItem("track_orders_phone", phone);
+        savePhoneNumber(phone);
       }
     } catch (err) {
       console.error("Error fetching orders:", err);
@@ -713,7 +918,7 @@ Please cancel this order. Thank you 🙏`;
 
   return (
     <div className="my-orders-page">
-      <div className="section-1200 flex flex-col gap-24">
+      <div className="section-680 flex flex-col gap-24">
         {/* Header */}
         <div className="orders-header">
           <PageHeader
@@ -731,28 +936,91 @@ Please cancel this order. Thank you 🙏`;
               exit={{ opacity: 0, y: -20 }}
               className="phone-search-section"
             >
-              <div className="flex flex-row gap-12 width100">
-                <input
-                  type="tel"
-                  className="sec-mid-btn width100"
-                  placeholder="Enter your 10-digit mobile number"
-                  value={phoneNumber}
-                  maxLength={10}
-                  onChange={(e) =>
-                    setPhoneNumber(e.target.value.replace(/\D/g, ""))
-                  }
-                  onKeyPress={(e) => e.key === "Enter" && fetchOrders()}
-                />
-                <button
-                  className="pri-big-btn width100"
-                  onClick={() => fetchOrders()}
-                  style={{ maxWidth: "fit-content" }}
-                  disabled={loading}
+              <div className="phone-card">
+                <div className="phone-card-icon">
+                  <Phone size={22} />
+                </div>
+                <h2 className="phone-card-title">Track your orders</h2>
+                <p className="phone-card-sub">
+                  Enter the mobile number you used at checkout to see your
+                  orders and wallet.
+                </p>
+
+                <div className="phone-card-row">
+                  <div className="phone-input-wrap">
+                    <input
+                      type="tel"
+                      inputMode="numeric"
+                      className="phone-card-input"
+                      placeholder="10-digit mobile number"
+                      value={phoneNumber}
+                      onChange={(e) =>
+                        setPhoneNumber(normalizePhone(e.target.value))
+                      }
+                      onKeyDown={(e) => e.key === "Enter" && fetchOrders()}
+                    />
+                    <button
+                      type="button"
+                      className="phone-paste"
+                      onClick={handlePasteClick}
+                      title="Paste from clipboard"
+                      aria-label="Paste from clipboard"
+                    >
+                      <ClipboardPaste size={16} />
+                    </button>
+                  </div>
+                  <button
+                    className="phone-card-submit"
+                    onClick={() => fetchOrders()}
+                    disabled={loading || phoneNumber.length !== 10}
+                  >
+                    {loading ? "Searching..." : "Submit"}
+                  </button>
+                </div>
+
+                {error && <p className="error-message">{error}</p>}
+
+                {/* Saved numbers (localStorage) */}
+                {savedPhones.length > 0 && (
+                  <div className="phone-saved">
+                    <span className="phone-saved-label">Saved numbers</span>
+                    <div className="phone-saved-chips">
+                      {savedPhones.map((num) => (
+                        <span key={num} className="phone-chip">
+                          <button
+                            type="button"
+                            className="phone-chip-use"
+                            onClick={() => useSavedPhone(num)}
+                            aria-label={`Use ${num}`}
+                          >
+                            <Phone size={12} />
+                            {num}
+                          </button>
+                          <button
+                            type="button"
+                            className="phone-chip-remove"
+                            onClick={() => removeSavedPhone(num)}
+                            aria-label={`Remove ${num}`}
+                          >
+                            <X size={13} />
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* WhatsApp help */}
+                <a
+                  href="https://wa.me/917710892108?text=Hi%2C%20I%20need%20help%20with%20my%20order%20on%20TheBookX"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="phone-card-help"
                 >
-                  {loading ? "Searching..." : <span>Submit</span>}
-                </button>
+                  <FaWhatsapp size={16} color="#25D366" />
+                  Facing an issue? Chat with us
+                </a>
               </div>
-              {error && <p className="error-message">{error}</p>}
             </motion.div>
           ) : (
             <motion.div
@@ -912,25 +1180,83 @@ Please cancel this order. Thank you 🙏`;
 
                   <OrderTrackingTimeline order={order} />
 
-                  <div className="order-items-preview">
-                    <div className="items-icon">
-                      <Package size={16} />
-                    </div>
-                    <div className="items-list">
-                      {order.parsedBooks?.slice(0, 2).map((book, bidx) => (
-                        <span key={bidx} className="item-name">
-                          {book.name}
-                          {bidx === 0 &&
-                            order.parsedBooks?.length > 1 &&
-                            ` + ${order.parsedBooks.length - 1} more`}
-                        </span>
-                      ))}
-                      {(!order.parsedBooks ||
-                        order.parsedBooks.length === 0) && (
-                        <span className="item-name">Books not listed</span>
-                      )}
-                    </div>
-                  </div>
+                  {(() => {
+                    const items = order.parsedBooks || [];
+                    const sub = items.reduce(
+                      (s, b) => s + (b.total || b.price * b.quantity || 0),
+                      0,
+                    );
+                    const grand = parseFloat(order["Total Amount"]) || sub;
+                    const isFree = (order["Delivery Type"] || "")
+                      .toLowerCase()
+                      .includes("free");
+                    const diff = grand - sub;
+                    return (
+                      <div className="order-invoice">
+                        <div className="order-invoice-table">
+                          <div className="oit-head">
+                            <span>Item</span>
+                            <span>Qty</span>
+                            <span>Price</span>
+                          </div>
+                          {items.length > 0 ? (
+                            items.map((b, bidx) => (
+                              <div key={bidx} className="oit-row">
+                                <span className="oit-name">{b.name}</span>
+                                <span className="oit-qty">×{b.quantity}</span>
+                                <span className="oit-price">
+                                  ₹{b.total || b.price * b.quantity || 0}
+                                </span>
+                              </div>
+                            ))
+                          ) : (
+                            <div className="oit-row">
+                              <span className="oit-name">Books not listed</span>
+                              <span className="oit-qty" />
+                              <span className="oit-price" />
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="order-invoice-summary">
+                          {sub > 0 && (
+                            <div className="ois-row">
+                              <span>Subtotal ({items.length} items)</span>
+                              <span>₹{sub}</span>
+                            </div>
+                          )}
+                          <div className="ois-row">
+                            <span>Delivery</span>
+                            {isFree ? (
+                              <span className="ois-free">FREE</span>
+                            ) : diff > 0 ? (
+                              <span>+₹{diff}</span>
+                            ) : (
+                              <span>—</span>
+                            )}
+                          </div>
+                          {diff < 0 && (
+                            <div className="ois-row">
+                              <span>Discount</span>
+                              <span className="ois-free">−₹{-diff}</span>
+                            </div>
+                          )}
+                          <div className="ois-row ois-total">
+                            <span>Total paid</span>
+                            <span>₹{grand}</span>
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          className="invoice-download-btn"
+                          onClick={() => downloadInvoice(order)}
+                        >
+                          <Download size={16} /> Download invoice
+                        </button>
+                      </div>
+                    );
+                  })()}
 
                   <div className="order-details-grid">
                     <div className="detail-item">
@@ -1074,62 +1400,6 @@ Please cancel this order. Thank you 🙏`;
                       </div>
                     )}
 
-                  <details className="order-details">
-                    <summary className="order-details-summary">
-                      <span>View Order Details</span>
-                      <ChevronRight size={16} />
-                    </summary>
-                    <div className="order-details-content">
-                      <div className="full-address">
-                        <h4>Delivery Address</h4>
-                        <p>
-                          {order["Address"]}, {order["City"]}, {order["State"]}{" "}
-                          - {order["Pincode"]}
-                        </p>
-                      </div>
-                      <div className="all-books">
-                        <h4>Order Items ({order.parsedBooks?.length || 0})</h4>
-                        {order.parsedBooks && order.parsedBooks.length > 0 ? (
-                          order.parsedBooks.map((book, bidx) => (
-                            <div key={bidx} className="book-row">
-                              <span className="book-name">{book.name}</span>
-                              <div className="flex flex-row items-center gap-12 font-12 justify-between width100">
-                                <div className="flex flex-row gap-12">
-                                  {book.quantity > 0 && (
-                                    <span>Qty: {book.quantity}</span>
-                                  )}
-                                  {book.price > 0 && (
-                                    <span>₹{book.price} each</span>
-                                  )}
-                                </div>
-                                {book.total > 0 && (
-                                  <span className="book-total">
-                                    ₹{book.total}
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                          ))
-                        ) : (
-                          <p className="no-books">Book details not available</p>
-                        )}
-                      </div>
-                      {order["Delivery Charge"] > 0 && (
-                        <div className="delivery-charge">
-                          <span>Delivery Charge</span>
-                          <span>+₹{order["Delivery Charge"]}</span>
-                        </div>
-                      )}
-                      {order["Gift Wrap"] === "Yes" && (
-                        <div className="gift-wrap-info">
-                          <Gift size={14} />
-                          <span>
-                            Gift Wrap included (+₹{order["Gift Wrap Charge"]})
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </details>
                 </div>
               );
             })}

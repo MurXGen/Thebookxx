@@ -8,7 +8,7 @@ import Navbar from "@/components/Navbar";
 import PincodeModal from "@/components/UI/PincodeModal";
 import CountdownTimer from "@/components/UI/CountDownTimer";
 import LabelDivider from "@/components/UI/LineDivider";
-import { Loader2 } from "lucide-react";
+import BookLoader from "@/components/UI/BookLoader";
 import UnlockChip from "@/components/UI/UnlockChip";
 import StoreReviews from "@/components/StoreReviews";
 import OneRupeeHero from "@/components/OneRupeeHero";
@@ -40,12 +40,7 @@ const LoadingFallback = ({ delay = 0 }) => (
     transition={{ duration: 0.4, delay }}
     className="flex justify-center items-center py-12"
   >
-    <motion.div
-      animate={{ rotate: 360 }}
-      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-    >
-      <Loader2 size={32} className="text-gray-400" />
-    </motion.div>
+    <BookLoader />
   </motion.div>
 );
 

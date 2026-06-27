@@ -1,4 +1,73 @@
 // utils/author.js
+import { books } from "./book";
+
+function slugifyAuthor(text) {
+  return text
+    ?.toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
+function slugifyTitle(text) {
+  return slugifyAuthor(text);
+}
+
+// Every distinct author slug derived from the catalogue (for static params
+// + making sure every author in the sitemap has a real, rendering page).
+export const getAllAuthorSlugs = () => {
+  const set = new Set();
+  books.forEach((b) => {
+    if (b.author) set.add(slugifyAuthor(b.author));
+  });
+  return Array.from(set);
+};
+
+// Returns a full author profile for any author in the catalogue.
+// Murthy Thevar gets the rich, hand-authored profile; everyone else gets a
+// generated profile that lists ALL of their books.
+export const getAuthorProfile = (slug) => {
+  const rich = getAuthorBySlug(slug);
+  if (rich) return { ...rich, isRich: true };
+
+  const authored = books.filter(
+    (b) => b.author && slugifyAuthor(b.author) === slug,
+  );
+  if (authored.length === 0) return null;
+
+  const name = authored[0].author;
+  const genres = Array.from(
+    new Set(
+      authored.flatMap((b) =>
+        (b.catalogue || []).filter(
+          (c) => !["bestseller", "trending", "set"].includes(c),
+        ),
+      ),
+    ),
+  );
+  return {
+    isRich: false,
+    name,
+    slug,
+    bookCount: authored.length,
+    genres,
+    bio: `${name} is the author of ${authored.length} ${
+      authored.length === 1 ? "title" : "titles"
+    } available at TheBookX${
+      genres.length ? `, spanning ${genres.slice(0, 4).join(", ")}` : ""
+    }. Browse and buy ${name}'s books online at the lowest prices in India — with books starting at just ₹1, free shipping and Cash on Delivery.`,
+    publishedBooks: authored.map((b) => ({
+      id: b.id,
+      name: b.name,
+      slug: slugifyTitle(b.name),
+      image: b.image,
+      description: b.description || "",
+      price: b.discountedPrice,
+      ratings: { thebookx: b.rating || 4.6 },
+    })),
+  };
+};
+
 export const authorData = {
   id: "author-murthy-thevar",
   name: "Murthy Thevar",

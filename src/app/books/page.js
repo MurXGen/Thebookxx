@@ -10,6 +10,7 @@ import Script from "next/script";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import CartBar from "@/components/CartBar";
+import { getCategoryLabel } from "@/utils/catalogueUtils";
 
 // Slugify function for URLs
 function slugify(text) {
@@ -202,7 +203,9 @@ export default function BooksPage() {
         <div className="header-content">
           <h1 className="page-title flex flex-row items-center">
             <ArrowLeft size={20} onClick={() => router.push("/")} />
-            {selectedCategory === "all" ? "All Books" : titleCase(selectedCategory)}
+            {selectedCategory === "all"
+              ? "All Books"
+              : getCategoryLabel(selectedCategory)}
             <span className="page-title-count">{filteredBooks.length} books</span>
           </h1>
           <div className="header-actions">
@@ -287,7 +290,7 @@ export default function BooksPage() {
                   />
                 ))}
               </span>
-              <span className="cat-rail-name">{titleCase(c.key)}</span>
+              <span className="cat-rail-name">{getCategoryLabel(c.key)}</span>
               <span className="cat-rail-count">{c.count}</span>
             </a>
           ))}

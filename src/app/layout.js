@@ -236,7 +236,7 @@ export default function RootLayout({ children }) {
               <RegisterSW />
               <GlobalHaptics />
               <AnalyticsTracker />
-              {children}
+              <div className="app-shell">{children}</div>
             </PLProvider>
           </StoreProvider>
         </ToastProvider>

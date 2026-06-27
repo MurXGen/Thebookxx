@@ -8,6 +8,7 @@ import { useMemo, useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import CartBar from "./CartBar";
+import BookLoader from "./UI/BookLoader";
 
 const SORT_OPTIONS = [
   { key: "default", label: "Default" },
@@ -293,9 +294,7 @@ export default function AllBooks() {
           }}
         >
           {isLoading ? (
-            <div className="loading-spinner">
-              <span>Loading more books...</span>
-            </div>
+            <BookLoader compact label="Loading more books…" />
           ) : (
             <button
               onClick={loadMore}

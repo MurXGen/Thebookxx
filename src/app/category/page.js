@@ -4,14 +4,20 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, ChevronRight, BookOpen } from "lucide-react";
+import { BookOpen } from "lucide-react";
 import PageHeader from "@/components/UI/PageHeader";
 import {
   getCatalogueData,
-  getCategoryColor,
-  getCategoryEmoji,
-  getCategoryLabel,
+  getBooksByCategory,
 } from "@/utils/catalogueUtils";
+
+function slugify(text) {
+  return text
+    ?.toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
 
 export default function CategoriesPage() {
   const router = useRouter();
@@ -20,102 +26,88 @@ export default function CategoriesPage() {
 
   useEffect(() => {
     const data = getCatalogueData();
-    // Sort by count (highest first)
-    const sortedData = [...data].sort((a, b) => b.count - a.count);
-    setCategories(sortedData);
+    const enriched = [...data]
+      .sort((a, b) => b.count - a.count)
+      .map((c) => {
+        const covers = getBooksByCategory(c.key)
+          .filter((b) => b.image)
+          .slice(0, 3)
+          .map((b) => b.image);
+        return { ...c, covers };
+      });
+    setCategories(enriched);
     setLoading(false);
   }, []);
 
-  const handleCategoryClick = (categoryKey) => {
-    router.push(`/category/${categoryKey}`);
-  };
-
-  if (loading) {
-    return (
-      <div className="categories-page">
-        <div className="section-1200">
-          <div className="categories-header">
-            <div className="animate-pulse">
-              <div className="h-8 bg-gray-200 rounded w-48 mb-4"></div>
-              <div className="h-4 bg-gray-200 rounded w-64"></div>
-            </div>
-          </div>
-          <div className="categories-grid">
-            {[...Array(12)].map((_, i) => (
-              <div key={i} className="animate-pulse">
-                <div className="h-28 bg-gray-200 rounded-2xl"></div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const srcOf = (c) => (typeof c === "string" ? c : c?.src);
 
   return (
     <div className="categories-page">
-      <div className="section-1200 flex flex-col gap-12">
-        {/* Header */}
+      <div className="section-1200 flex flex-col gap-16">
         <div className="categories-header">
           <PageHeader
             title="All Categories"
-            subtitle="Explore genres and find your next favorite book"
+            subtitle="Explore genres and find your next favourite book"
           />
         </div>
 
-        {/* Categories Grid */}
-        <div className="categories-grid">
-          {categories.map((category) => (
-            <button
-              key={category.key}
-              className="category-card"
-              onClick={() => handleCategoryClick(category.key)}
-              style={{
-                background: `linear-gradient(135deg, ${category.color}15, ${category.color}05)`,
-                borderColor: `${category.color}30`,
-              }}
-            >
-              <div className="category-card-content">
-                <div
-                  className="category-emoji"
-                  style={{
-                    background: `${category.color}20`,
-                    color: category.color,
-                  }}
-                >
-                  {category.emoji}
+        <div className="cat-gallery-grid">
+          {(loading ? Array.from({ length: 9 }) : categories).map((category, i) => {
+            if (loading) {
+              return (
+                <div key={i} className="catg-card">
+                  <div className="catg-head">
+                    <span
+                      className="skeleton-box"
+                      style={{ width: 90, height: 16, borderRadius: 6 }}
+                    />
+                  </div>
+                  <div className="catg-stage skeleton-box" />
                 </div>
-                <div className="category-info">
-                  <h3 className="category-name">{category.label}</h3>
-                  <p className="category-book-count">
-                    <BookOpen size={12} />
-                    {category.count} books
-                  </p>
+              );
+            }
+            const covers = category.covers || [];
+            // index 0 = center (forward), 1 = right (behind), 2 = left (behind)
+            const posFor = (idx) =>
+              idx === 0 ? "center" : idx === 1 ? "right" : "left";
+            return (
+              <Link
+                key={category.key}
+                href={`/category/${slugify(category.key)}`}
+                className="catg-card"
+                aria-label={`Browse ${category.label} books`}
+                style={{
+                  background: `linear-gradient(160deg, ${category.color}1a, ${category.color}07)`,
+                }}
+              >
+                <div className="catg-head">
+                  <span className="catg-title">{category.label}</span>
+                  <span className="catg-count">{category.count}</span>
                 </div>
-                <ChevronRight size={18} className="category-arrow" />
-              </div>
-            </button>
-          ))}
-        </div>
-
-        {/* Trust Section */}
-        <div className="categories-trust-section">
-          <div className="trust-item">
-            <span>📚</span>
-            <span>1000+ Books</span>
-          </div>
-          <div className="trust-item">
-            <span>🚚</span>
-            <span>Free Delivery*</span>
-          </div>
-          <div className="trust-item">
-            <span>💳</span>
-            <span>COD Available</span>
-          </div>
-          <div className="trust-item">
-            <span>⭐</span>
-            <span>4.8/5 Rating</span>
-          </div>
+                <div className="catg-stage">
+                  {covers.length > 0 ? (
+                    covers.map((c, idx) => (
+                      <img
+                        key={idx}
+                        src={srcOf(c)}
+                        alt=""
+                        aria-hidden="true"
+                        loading="lazy"
+                        className={`catg-cover ${posFor(idx)}`}
+                      />
+                    ))
+                  ) : (
+                    <span
+                      className="catg-ph"
+                      style={{ color: category.color }}
+                    >
+                      <BookOpen size={30} />
+                    </span>
+                  )}
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </div>
     </div>

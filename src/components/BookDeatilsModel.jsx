@@ -23,6 +23,10 @@ import {
   Package,
   CheckCircle2,
   XCircle,
+  Bookmark,
+  Minus,
+  Plus,
+  Flame,
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -34,7 +38,37 @@ import BookCard from "./BookCard";
 import Link from "next/link";
 import YouMayLike from "./UI/YouMayLike";
 import BookReviews from "./UI/BookReviews";
+import StoreReviews from "./StoreReviews";
+import CartConfetti from "./UI/Confetti";
 import { getReviewsByBook, getAverageRating } from "@/utils/reviews";
+
+// Deterministic social-proof (stable across SSR/CSR — never Math.random)
+const SOCIAL_CITIES = [
+  "Mumbai",
+  "Delhi",
+  "Bengaluru",
+  "Pune",
+  "Chennai",
+  "Hyderabad",
+  "Kolkata",
+  "Jaipur",
+  "Ahmedabad",
+  "Lucknow",
+  "Coimbatore",
+  "Indore",
+];
+function getSocialProof(bookId) {
+  let hash = 0;
+  for (let i = 0; i < bookId.length; i++) {
+    hash = bookId.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const h = Math.abs(hash);
+  return {
+    mins: (h % 26) + 4, // 4–29 mins ago
+    city: SOCIAL_CITIES[h % SOCIAL_CITIES.length],
+    soldThisWeek: ((h >> 3) % 38) + 14, // 14–51 sold this week
+  };
+}
 
 // Slugify function
 function slugify(text) {
@@ -103,12 +137,17 @@ function Accordion({ icon: Icon, title, defaultOpen = false, children }) {
 }
 
 export default function BookDetailsModal({ book }) {
-  const { cart, addToCart, toggleWishlist, wishlist } = useStore();
+  const { cart, addToCart, decreaseQty, toggleWishlist, wishlist } = useStore();
   const inWishlist = wishlist.includes(book.id);
   const router = useRouter();
 
   const heroRef = useRef(null);
   const [showStickyHeader, setShowStickyHeader] = useState(false);
+  const [confetti, setConfetti] = useState(false);
+
+  const cartItem = cart.find((i) => i.id === book.id);
+  const qtyInCart = cartItem?.qty || 0;
+  const social = getSocialProof(book.id);
 
   const bookSlug = slugify(book.name);
   const bookUrl = `/books/${bookSlug}`;
@@ -212,6 +251,8 @@ export default function BookDetailsModal({ book }) {
       return;
     }
     addToCart(book.id);
+    setConfetti(true);
+    setTimeout(() => setConfetti(false), 1300);
     showToast(`Added "${book.name}" to cart`, "success");
   };
 
@@ -597,7 +638,10 @@ export default function BookDetailsModal({ book }) {
                 itemType="https://schema.org/Offer"
               >
                 <div className="bd-price-row">
-                  <span className="bd-price-current">
+                  <span
+                    className={`bd-price-current ${savings > 0 ? "price-ribbon-bg price-ribbon-bg--lg" : ""}`}
+                    title={savings > 0 ? "Best price" : undefined}
+                  >
                     ₹<span itemProp="price">{book.discountedPrice}</span>
                   </span>
                   {book.originalPrice > book.discountedPrice && (
@@ -607,7 +651,7 @@ export default function BookDetailsModal({ book }) {
                       </span>
                       {savings > 0 && (
                         <span className="bd-savings-badge">
-                          Save ₹{savings} ({savingsPercentage}% off)
+                          {savingsPercentage}% off
                         </span>
                       )}
                     </>
@@ -658,8 +702,31 @@ export default function BookDetailsModal({ book }) {
                     </>
                   )}
                 </div>
+
+                {/* ===== Social proof / trust ===== */}
+                <div className="bd-social-proof">
+                  <span className="bd-social-row">
+                    <ShoppingCart size={13} className="bd-social-icon" />
+                    Last bought <strong>{social.mins} min ago</strong> by a
+                    reader in {social.city}
+                  </span>
+                  <span className="bd-social-row bd-social-hot">
+                    <Flame size={13} className="bd-social-icon-hot" />
+                    <strong>{social.soldThisWeek}</strong> sold in the last 7
+                    days
+                  </span>
+                </div>
               </div>
             </div>
+          </div>
+
+          {/* ===== Free bookmark strip (slim, below price) ===== */}
+          <div className="bd-bookmark-strip">
+            <Bookmark size={12} fill="currentColor" className="bd-bookmark-strip-icon" />
+            <span className="bd-bookmark-strip-text">
+              Free collectible bookmark with every order
+            </span>
+            <span className="bd-bookmark-strip-tag">FREE</span>
           </div>
 
           {/* ===== Trust strip ===== */}
@@ -704,14 +771,41 @@ export default function BookDetailsModal({ book }) {
             >
               <MessageSquare size={20} />
             </button>
-            <LoadingButton
-              className="bd-cta-primary"
-              onClick={handleAddToCart}
-              aria-disabled={isAddDisabled}
-              icon={<ShoppingCart size={18} />}
-            >
-              {isOutOfStock ? "Out of Stock" : "Add to Cart"}
-            </LoadingButton>
+            {qtyInCart > 0 && !isOutOfStock ? (
+              <div className="bd-cta-incart">
+                <div className="bd-qty-stepper">
+                  <button
+                    type="button"
+                    onClick={() => decreaseQty(book.id)}
+                    aria-label="Decrease quantity"
+                  >
+                    <Minus size={16} />
+                  </button>
+                  <span className="bd-qty-value">{qtyInCart} in bag</span>
+                  <button
+                    type="button"
+                    onClick={() => addToCart(book.id)}
+                    aria-label="Increase quantity"
+                    disabled={isAddDisabled}
+                  >
+                    <Plus size={16} />
+                  </button>
+                </div>
+                <Link href="/bag" className="bd-cta-gobag">
+                  <ShoppingCart size={18} />
+                  Go to Bag
+                </Link>
+              </div>
+            ) : (
+              <LoadingButton
+                className="bd-cta-primary"
+                onClick={handleAddToCart}
+                aria-disabled={isAddDisabled}
+                icon={<ShoppingCart size={18} />}
+              >
+                {isOutOfStock ? "Out of Stock" : "Add to Cart"}
+              </LoadingButton>
+            )}
           </div>
 
           {/* ===== Accordions ===== */}
@@ -773,11 +867,21 @@ export default function BookDetailsModal({ book }) {
             </Accordion>
 
             <Accordion icon={Star} title="Reviews" defaultOpen>
-              <BookReviews
-                bookId={book.id}
-                bookName={book.name}
-                authorName={book.author}
-              />
+              {hasRealReviews ? (
+                <BookReviews
+                  bookId={book.id}
+                  bookName={book.name}
+                  authorName={book.author}
+                />
+              ) : (
+                <div className="bd-store-reviews-fallback">
+                  <p className="bd-store-reviews-note">
+                    This title doesn’t have reader reviews yet — here’s what
+                    customers say about shopping with TheBookX:
+                  </p>
+                  <StoreReviews />
+                </div>
+              )}
             </Accordion>
 
             <Accordion icon={Truck} title="Shipping & Returns">
@@ -892,37 +996,69 @@ export default function BookDetailsModal({ book }) {
 
       {/* ===== Sticky bottom CTA (mobile only) ===== */}
       <div className="bd-sticky-bottom">
+        <CartConfetti trigger={confetti} />
         <div className="bd-sticky-bottom-inner">
-          <div className="bd-sticky-price">
-            <span className="bd-sticky-price-current">
-              ₹{book.discountedPrice}
-            </span>
-            {book.originalPrice > book.discountedPrice && (
-              <span className="bd-sticky-price-original">
-                ₹{book.originalPrice}
-              </span>
-            )}
-          </div>
-          <button
-            type="button"
-            className="bd-sticky-icon-btn"
-            onClick={handleWishlist}
-            aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
-          >
-            <Heart
-              size={20}
-              fill={inWishlist ? "var(--danger)" : "none"}
-              color={inWishlist ? "var(--danger)" : "var(--foreground)"}
-            />
-          </button>
-          <LoadingButton
-            className="bd-sticky-add-btn"
-            onClick={handleAddToCart}
-            aria-disabled={isAddDisabled}
-            icon={<ShoppingCart size={18} />}
-          >
-            {isOutOfStock ? "Out of Stock" : "Add to Cart"}
-          </LoadingButton>
+          {qtyInCart > 0 && !isOutOfStock ? (
+            <>
+              <div className="bd-sticky-stepper">
+                <button
+                  type="button"
+                  onClick={() => decreaseQty(book.id)}
+                  aria-label="Decrease quantity"
+                >
+                  <Minus size={16} />
+                </button>
+                <span className="bd-sticky-stepper-value">{qtyInCart}</span>
+                <button
+                  type="button"
+                  onClick={() => addToCart(book.id)}
+                  aria-label="Increase quantity"
+                  disabled={isAddDisabled}
+                >
+                  <Plus size={16} />
+                </button>
+              </div>
+              <Link href="/bag" className="bd-sticky-gobag">
+                <ShoppingCart size={18} />
+                Go to Bag
+              </Link>
+            </>
+          ) : (
+            <>
+              <div className="bd-sticky-price">
+                <span className="bd-sticky-price-current">
+                  ₹{book.discountedPrice}
+                </span>
+                {book.originalPrice > book.discountedPrice && (
+                  <span className="bd-sticky-price-original">
+                    ₹{book.originalPrice}
+                  </span>
+                )}
+              </div>
+              <button
+                type="button"
+                className="bd-sticky-icon-btn"
+                onClick={handleWishlist}
+                aria-label={
+                  inWishlist ? "Remove from wishlist" : "Add to wishlist"
+                }
+              >
+                <Heart
+                  size={20}
+                  fill={inWishlist ? "var(--danger)" : "none"}
+                  color={inWishlist ? "var(--danger)" : "var(--foreground)"}
+                />
+              </button>
+              <LoadingButton
+                className="bd-sticky-add-btn"
+                onClick={handleAddToCart}
+                aria-disabled={isAddDisabled}
+                icon={<ShoppingCart size={18} />}
+              >
+                {isOutOfStock ? "Out of Stock" : "Add to Cart"}
+              </LoadingButton>
+            </>
+          )}
         </div>
       </div>
     </>

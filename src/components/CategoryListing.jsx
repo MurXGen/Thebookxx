@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, SlidersHorizontal } from "lucide-react";
 import BookCard from "@/components/BookCard";
+import LazyBookGrid from "@/components/UI/LazyBookGrid";
 import Breadcrumbs from "@/components/UI/Breadcrumbs";
 
 const SORTS = [
@@ -56,17 +57,38 @@ export default function CategoryListing({ books = [], displayName = "" }) {
           { label: `${displayName} Books` },
         ]}
       />
-      <div className="flex flex-row gap-12 items-center section-1200">
-        <Link href="/category" className="cursor-pointer" aria-label="Back to categories">
-          <ArrowLeft size={20} />
-        </Link>
-        <div className="flex flex-col">
-          {/* Real H1 for SEO (was a styled h2 before) */}
-          <h1 className="font-24 weight-600">{displayName} Books</h1>
-          <span className="font-12 dark-50">
-            Browse our collection of {books.length} {displayName} books. Shop
-            online at the lowest prices, with books starting at just ₹1 and free shipping across India.
-          </span>
+      <div className="section-1200">
+        <div className="cat-hero">
+          <Link
+            href="/category"
+            className="cat-hero-back"
+            aria-label="Back to categories"
+          >
+            <ArrowLeft size={18} />
+          </Link>
+          <div className="cat-hero-text">
+            {/* Real H1 for SEO */}
+            <h1 className="cat-hero-title">{displayName} Books</h1>
+            <span className="cat-hero-sub">
+              {books.length} books · lowest prices, from ₹1 · free delivery
+              across India
+            </span>
+          </div>
+          <div className="cat-hero-thumbs">
+            {books
+              .filter((b) => b.image)
+              .slice(0, 3)
+              .map((b, i) => (
+                <img
+                  key={i}
+                  src={typeof b.image === "string" ? b.image : b.image?.src}
+                  alt=""
+                  aria-hidden="true"
+                  className="cat-hero-thumb"
+                  loading="lazy"
+                />
+              ))}
+          </div>
         </div>
       </div>
 
@@ -166,11 +188,7 @@ export default function CategoryListing({ books = [], displayName = "" }) {
           </button>
         </div>
       ) : (
-        <div className="books-grid">
-          {filtered.map((book) => (
-            <BookCard key={book.id} book={book} />
-          ))}
-        </div>
+        <LazyBookGrid items={filtered} batch={20} />
       )}
     </div>
   );

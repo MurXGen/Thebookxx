@@ -2,6 +2,7 @@
 
 import BookCard from "@/components/BookCard";
 import CartItemRow from "@/components/CartItemRow";
+import LazyBookGrid from "@/components/UI/LazyBookGrid";
 import PageHeader from "@/components/UI/PageHeader";
 import RecentlyViewed from "@/components/RecentlyViewed";
 import RecommendationModal from "@/components/RecommendationModal";
@@ -10,7 +11,6 @@ import BillModal from "@/components/UI/BillModal";
 import CartOfferStrip from "@/components/UI/CartOfferStrip";
 import FreeShippingNudgeModal from "@/components/UI/FreeShippingNudgeModal";
 import HorizontalScroll from "@/components/UI/HorizontalScroll";
-import YouMayLike from "@/components/UI/YouMayLike";
 import { useStore } from "@/context/StoreContext";
 import { showToast } from "@/context/ToastContext";
 import { books } from "@/utils/book";
@@ -49,7 +49,7 @@ export default function BagPage() {
   const [paymentMethod, setPaymentMethod] = useState(null);
   const [isShortening, setIsShortening] = useState(false);
   const [giftWrap, setGiftWrap] = useState(false);
-  const GIFT_WRAP_CHARGE = 15;
+  const GIFT_WRAP_CHARGE = 25;
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -69,14 +69,12 @@ export default function BagPage() {
   // Recommendations drawn from the categories already in the cart
   const cartIds = new Set(cartBooks.map((b) => b.id));
   const cartCategories = new Set(cartBooks.flatMap((b) => b.catalogue || []));
-  const recommendedBooks = books
-    .filter(
-      (b) =>
-        !cartIds.has(b.id) &&
-        b.discountedPrice !== 1 &&
-        (b.catalogue || []).some((c) => cartCategories.has(c)),
-    )
-    .slice(0, 8);
+  const recommendedBooks = books.filter(
+    (b) =>
+      !cartIds.has(b.id) &&
+      b.discountedPrice !== 1 &&
+      (b.catalogue || []).some((c) => cartCategories.has(c)),
+  );
 
   const MIN_CHECKOUT_AMOUNT = 151;
   const cartOffers = getCartOffers(hasOneRupeeItem);
@@ -561,9 +559,21 @@ _Thank you for shopping with TheBookX! 📚✨_
         title="Your Bag"
         subtitle={`${cartBooks.length} book${cartBooks.length > 1 ? "s" : ""} in cart`}
         right={
-          <Link href="/profile" className="sec-mid-btn">
-            Order History
-          </Link>
+          <div className="bag-header-actions">
+            <a
+              href="https://wa.me/917710892108?text=Hi%2C%20I%20need%20help%20with%20my%20order%20from%20TheBookX"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bag-help-btn"
+              aria-label="Need any help? Chat on WhatsApp"
+            >
+              <FaWhatsapp size={16} color="#25D366" />
+              <span>Need help?</span>
+            </a>
+            <Link href="/profile" className="sec-mid-btn">
+              Order History
+            </Link>
+          </div>
         }
       />
 
@@ -576,28 +586,6 @@ _Thank you for shopping with TheBookX! 📚✨_
           ))}
         </div>
       </div>
-
-      {recommendedBooks.length > 0 && (
-        <div className="cart-sep">
-          <span className="cart-sep-line" />
-          <span className="cart-sep-label">
-            <Sparkles size={13} /> You may also add
-          </span>
-          <span className="cart-sep-line" />
-        </div>
-      )}
-
-      {recommendedBooks.length > 0 && (
-        <div className="cart-recommendations">
-          <YouMayLike
-            title="Readers who picked these also loved…"
-            subtitle="Hand-picked for you, add one more and make it a reading you'll remember ❤️"
-            items={recommendedBooks}
-            renderItem={(b) => <BookCard key={b.id} book={b} />}
-            showLoadMore={false}
-          />
-        </div>
-      )}
 
       <div className={`gift-wrap-section ${giftWrap ? "selected" : ""}`}>
         <label className="gift-wrap-label">
@@ -632,39 +620,30 @@ _Thank you for shopping with TheBookX! 📚✨_
         </label>
       </div>
 
-      <div className="whatsapp-help-section">
-        <a
-          href="https://wa.me/917710892108?text=Hi%2C%20I%20need%20help%20with%20my%20order%20from%20TheBookX"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="whatsapp-help-link"
-        >
-          <div className="whatsapp-help-content">
-            <div className="whatsapp-help-icon">
-              <FaWhatsapp size={24} color="#25D366" />
-            </div>
-            <div className="whatsapp-help-text">
-              <span className="whatsapp-help-title">Need any help?</span>
-              <span className="whatsapp-help-desc">
-                Chat with us on WhatsApp for quick support
-              </span>
-            </div>
-            <div className="whatsapp-help-arrow">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <line x1="5" y1="12" x2="19" y2="12" />
-                <polyline points="12 5 19 12 12 19" />
-              </svg>
-            </div>
+      {recommendedBooks.length > 0 && (
+        <div className="cart-sep">
+          <span className="cart-sep-line" />
+          <span className="cart-sep-label">
+            <Sparkles size={13} /> You may also add
+          </span>
+          <span className="cart-sep-line" />
+        </div>
+      )}
+
+      {recommendedBooks.length > 0 && (
+        <div className="cart-recommendations">
+          <div className="cart-rec-head">
+            <span className="cart-rec-title">
+              Readers who picked these also loved…
+            </span>
+            <span className="cart-rec-sub">
+              Hand-picked for you, add one more and make it a reading you'll
+              remember ❤️
+            </span>
           </div>
-        </a>
-      </div>
+          <LazyBookGrid items={recommendedBooks} batch={20} />
+        </div>
+      )}
 
       <div className="fixed-bill-bar flex flex-col">
         <div className="flex flex-row justify-between width100 items-center">

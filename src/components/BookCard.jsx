@@ -306,7 +306,10 @@ export default function BookCard({ book }) {
               itemType="https://schema.org/Offer"
             >
               <div className="price-row">
-                <span className="discounted">
+                <span
+                  className={`discounted ${savings > 0 ? "price-ribbon-bg" : ""}`}
+                  title={savings > 0 ? "Best price" : undefined}
+                >
                   ₹<span itemProp="price">{book.discountedPrice}</span>
                 </span>
                 <meta itemProp="priceCurrency" content="INR" />

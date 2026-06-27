@@ -1,23 +1,15 @@
 // app/books/page.js
 "use client";
 
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { books } from "@/utils/book";
-import BookCard from "@/components/BookCard";
+import LazyBookGrid from "@/components/UI/LazyBookGrid";
 import SearchOverlay from "@/components/SearchOverlay";
-import {
-  Filter,
-  X,
-  ChevronDown,
-  ChevronUp,
-  Search,
-  ArrowLeft,
-} from "lucide-react";
+import { Filter, X, ChevronDown, ChevronUp, Search, ArrowLeft, LayoutGrid } from "lucide-react";
 import Script from "next/script";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import CartBar from "@/components/CartBar";
-import Breadcrumbs from "@/components/UI/Breadcrumbs";
 
 // Slugify function for URLs
 function slugify(text) {
@@ -28,19 +20,19 @@ function slugify(text) {
     .replace(/(^-|-$)/g, "");
 }
 
+const titleCase = (s) =>
+  (s || "").replace(/(^|[\s-])\w/g, (m) => m.toUpperCase());
+
 export default function BooksPage() {
   const router = useRouter();
   const [searchOpen, setSearchOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [sortType, setSortType] = useState(null);
-  const [visibleCount, setVisibleCount] = useState(10);
-  const [isLoading, setIsLoading] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [priceRange, setPriceRange] = useState({ min: 0, max: 5000 });
   // Text query from ?q= (powers the Google sitelinks search box without the
   // useSearchParams Suspense requirement, read straight from the URL).
   const [textQuery, setTextQuery] = useState("");
-  const loadMoreRef = useRef(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -48,12 +40,29 @@ export default function BooksPage() {
     if (q) setTextQuery(q);
   }, []);
 
-  /* 📚 Extract unique categories */
-  const categories = useMemo(() => {
-    const set = new Set();
-    books.forEach((b) => b.catalogue?.forEach((c) => set.add(c)));
-    return ["all", ...Array.from(set)];
+  /* 📚 Categories with a representative cover + count for the side rail */
+  const railCategories = useMemo(() => {
+    const map = new Map();
+    books.forEach((b) => {
+      (b.catalogue || []).forEach((c) => {
+        if (!map.has(c)) map.set(c, { key: c, count: 0, covers: [] });
+        const entry = map.get(c);
+        entry.count += 1;
+        if (entry.covers.length < 2 && b.image) entry.covers.push(b.image);
+      });
+    });
+    return Array.from(map.values()).sort((a, b) => b.count - a.count);
   }, []);
+
+  const categories = useMemo(
+    () => ["all", ...railCategories.map((c) => c.key)],
+    [railCategories],
+  );
+
+  const allCovers = useMemo(
+    () => books.filter((b) => b.image).slice(0, 2).map((b) => b.image),
+    [],
+  );
 
   /* 🔄 Filter + Sort books */
   const filteredBooks = useMemo(() => {
@@ -90,44 +99,22 @@ export default function BooksPage() {
     return data;
   }, [selectedCategory, sortType, priceRange, textQuery]);
 
-  const visibleBooks = useMemo(() => {
-    return filteredBooks.slice(0, visibleCount);
-  }, [filteredBooks, visibleCount]);
+  const hasActiveFilters =
+    selectedCategory !== "all" ||
+    sortType ||
+    priceRange.min > 0 ||
+    priceRange.max < 5000;
 
-  const hasMore = visibleCount < filteredBooks.length;
-
-  const loadMore = () => {
-    if (isLoading) return;
-    setIsLoading(true);
-    setTimeout(() => {
-      setVisibleCount((prev) => Math.min(prev + 10, filteredBooks.length));
-      setIsLoading(false);
-    }, 300);
+  const clearFilters = () => {
+    setSelectedCategory("all");
+    setSortType(null);
+    setPriceRange({ min: 0, max: 5000 });
   };
 
-  useEffect(() => {
-    if (!loadMoreRef.current || !hasMore) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && !isLoading) {
-          loadMore();
-        }
-      },
-      { threshold: 0.1, rootMargin: "100px" },
-    );
-
-    observer.observe(loadMoreRef.current);
-    return () => {
-      if (loadMoreRef.current) {
-        observer.unobserve(loadMoreRef.current);
-      }
-    };
-  }, [hasMore, isLoading, visibleCount]);
-
-  useEffect(() => {
-    setVisibleCount(10);
-  }, [selectedCategory, sortType, priceRange]);
+  const selectCategory = (cat) => {
+    setSelectedCategory(cat);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   if (!books.length) return null;
 
@@ -201,225 +188,218 @@ export default function BooksPage() {
             "@type": "ItemList",
             name: "Book Categories",
             description: "Browse books by category at TheBookX",
-            itemListElement: categories
-              .filter((c) => c !== "all")
-              .map((category, index) => ({
-                "@type": "ListItem",
-                position: index + 1,
-                name: category.charAt(0).toUpperCase() + category.slice(1),
-                url: `https://thebookx.in/category/${slugify(category)}`,
-              })),
+            itemListElement: railCategories.map((c, index) => ({
+              "@type": "ListItem",
+              position: index + 1,
+              name: titleCase(c.key),
+              url: `https://thebookx.in/category/${slugify(c.key)}`,
+            })),
           }),
         }}
       />
 
-      <Breadcrumbs items={[{ label: "All Books" }]} jsonLd />
-
       <header className="books-page-header">
         <div className="header-content">
           <h1 className="page-title flex flex-row items-center">
-            {" "}
             <ArrowLeft size={20} onClick={() => router.push("/")} />
-            All Books
+            {selectedCategory === "all" ? "All Books" : titleCase(selectedCategory)}
+            <span className="page-title-count">{filteredBooks.length} books</span>
           </h1>
           <div className="header-actions">
             <button
-              className="sec-big-btn flex flex-row flex-center"
+              className={`sec-big-btn flex flex-row flex-center ${showFilters ? "active" : ""}`}
               onClick={() => setShowFilters(!showFilters)}
               aria-label="Toggle filters"
             >
               <Filter size={14} />
-              {showFilters ? (
-                <ChevronUp size={14} />
-              ) : (
-                <ChevronDown size={14} />
-              )}
+              {showFilters ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
             </button>
-            <button className="sec-big-btn flex flex-row flex-center">
-              <Search size={14} onClick={() => setSearchOpen(true)} />
+            {hasActiveFilters && (
+              <button
+                className="sec-big-btn flex flex-row flex-center"
+                onClick={clearFilters}
+                aria-label="Clear filters"
+              >
+                <X size={14} />
+              </button>
+            )}
+            <button
+              className="sec-big-btn flex flex-row flex-center"
+              onClick={() => setSearchOpen(true)}
+              aria-label="Search books"
+            >
+              <Search size={14} />
             </button>
           </div>
         </div>
       </header>
 
-      {/* Filters Panel */}
-      {showFilters && (
-        <div className="filters-panel">
-          <div className="filters-content">
-            {/* Category Navigation - SEO Friendly Links to Category Pages */}
-            <div className="category-navigation">
-              <div className="category-nav-header">
-                <span className="font-12 gray-500">Browse by Category:</span>
-              </div>
-              <div className="category-links">
-                {categories
-                  .filter((c) => c !== "all")
-                  .map((category) => (
-                    <Link
-                      key={category}
-                      href={`/category/${slugify(category)}`}
-                      className="category-nav-link"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setSelectedCategory(category);
-                        window.scrollTo({ top: 0, behavior: "smooth" });
-                      }}
-                    >
-                      {category.charAt(0).toUpperCase() + category.slice(1)}
-                    </Link>
-                  ))}
-              </div>
-            </div>
-
-            <div className="filter-group">
-              <label className="filter-label">Price Range</label>
-              <div className="price-range">
-                <div className="price-inputs">
-                  <input
-                    type="number"
-                    placeholder="Min"
-                    value={priceRange.min}
-                    onChange={(e) =>
-                      setPriceRange({
-                        ...priceRange,
-                        min: Number(e.target.value) || 0,
-                      })
-                    }
-                    className="price-input"
+      {/* Two-column browse shell: scrollable category rail + book grid */}
+      <div className="books-shell">
+        {/* ── Category rail ── */}
+        <aside className="cat-rail" aria-label="Browse by category">
+          <button
+            type="button"
+            className={`cat-rail-item ${selectedCategory === "all" ? "active" : ""}`}
+            onClick={() => selectCategory("all")}
+            aria-pressed={selectedCategory === "all"}
+          >
+            <span className="cat-rail-thumb cat-rail-thumb--all">
+              {allCovers.length > 0 ? (
+                allCovers.map((src, i) => (
+                  <img
+                    key={i}
+                    src={src}
+                    alt=""
+                    aria-hidden="true"
+                    loading="lazy"
+                    className={`crt-cover crt-cover-${i}`}
                   />
-                  <span>to</span>
-                  <input
-                    type="number"
-                    placeholder="Max"
-                    value={priceRange.max}
-                    onChange={(e) =>
-                      setPriceRange({
-                        ...priceRange,
-                        max: Number(e.target.value) || 5000,
-                      })
-                    }
-                    className="price-input"
-                  />
-                </div>
-                <input
-                  type="range"
-                  min="0"
-                  max="5000"
-                  value={priceRange.max}
-                  onChange={(e) =>
-                    setPriceRange({
-                      ...priceRange,
-                      max: Number(e.target.value),
-                    })
-                  }
-                  className="price-slider"
-                />
-              </div>
-            </div>
+                ))
+              ) : (
+                <LayoutGrid size={18} />
+              )}
+            </span>
+            <span className="cat-rail-name">All</span>
+            <span className="cat-rail-count">{books.length}</span>
+          </button>
 
-            <div className="filter-group">
-              <label className="filter-label">Sort By</label>
-              <div className="sort-options">
-                <button
-                  className={`sort-btn ${sortType === "low" ? "active" : ""}`}
-                  onClick={() => setSortType(sortType === "low" ? null : "low")}
-                >
-                  Price: Low to High
-                </button>
-                <button
-                  className={`sort-btn ${sortType === "high" ? "active" : ""}`}
-                  onClick={() =>
-                    setSortType(sortType === "high" ? null : "high")
-                  }
-                >
-                  Price: High to Low
-                </button>
-                <button
-                  className={`sort-btn ${sortType === "name" ? "active" : ""}`}
-                  onClick={() =>
-                    setSortType(sortType === "name" ? null : "name")
-                  }
-                >
-                  Name A-Z
-                </button>
-              </div>
-            </div>
-
-            {(selectedCategory !== "all" ||
-              sortType ||
-              priceRange.min > 0 ||
-              priceRange.max < 5000) && (
-              <button
-                className="clear-filters-btn"
-                onClick={() => {
-                  setSelectedCategory("all");
-                  setSortType(null);
-                  setPriceRange({ min: 0, max: 5000 });
-                }}
-              >
-                <X size={16} />
-                Clear All Filters
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Results Info */}
-      <div className="results-info">
-        <span className="result-count">
-          Showing {visibleBooks.length} of {filteredBooks.length} books
-        </span>
-      </div>
-
-      {/* Books Grid */}
-      <div className="books-grid">
-        {visibleBooks.map((book) => (
-          <BookCard key={book.id} book={book} />
-        ))}
-      </div>
-
-      {/* Load More */}
-      {hasMore && (
-        <div ref={loadMoreRef} className="load-more-trigger">
-          {isLoading ? (
-            <div className="loading-spinner">
-              <div className="spinner"></div>
-              <span>Loading more books...</span>
-            </div>
-          ) : (
-            <button onClick={loadMore} className="load-more-btn">
-              Load More Books
-            </button>
-          )}
-        </div>
-      )}
-
-      {!hasMore && visibleBooks.length > 0 && (
-        <div className="end-message">
-          ✨ You've seen all {visibleBooks.length} books ✨
-        </div>
-      )}
-
-      {filteredBooks.length === 0 && (
-        <div className="no-results">
-          <div className="no-results-content">
-            <span className="no-results-icon">📚</span>
-            <h3>No books found</h3>
-            <p>Try adjusting your filters or search criteria</p>
-            <button
-              className="reset-filters-btn"
-              onClick={() => {
-                setSelectedCategory("all");
-                setSortType(null);
-                setPriceRange({ min: 0, max: 5000 });
+          {railCategories.map((c) => (
+            <a
+              key={c.key}
+              href={`/category/${slugify(c.key)}`}
+              className={`cat-rail-item ${selectedCategory === c.key ? "active" : ""}`}
+              aria-pressed={selectedCategory === c.key}
+              onClick={(e) => {
+                e.preventDefault();
+                selectCategory(c.key);
               }}
             >
-              Reset Filters
-            </button>
-          </div>
+              <span className="cat-rail-thumb">
+                {c.covers.map((src, i) => (
+                  <img
+                    key={i}
+                    src={src}
+                    alt=""
+                    aria-hidden="true"
+                    loading="lazy"
+                    className={`crt-cover crt-cover-${i}`}
+                  />
+                ))}
+              </span>
+              <span className="cat-rail-name">{titleCase(c.key)}</span>
+              <span className="cat-rail-count">{c.count}</span>
+            </a>
+          ))}
+        </aside>
+
+        {/* ── Main content ── */}
+        <div className="books-main">
+          {/* Filters Panel */}
+          {showFilters && (
+            <div className="filters-panel filters-panel--inline">
+              <div className="filters-content">
+                <div className="filter-group">
+                  <label className="filter-label">Price Range</label>
+                  <div className="price-range">
+                    <div className="price-inputs">
+                      <input
+                        type="number"
+                        placeholder="Min"
+                        value={priceRange.min}
+                        onChange={(e) =>
+                          setPriceRange({
+                            ...priceRange,
+                            min: Number(e.target.value) || 0,
+                          })
+                        }
+                        className="price-input"
+                      />
+                      <span>to</span>
+                      <input
+                        type="number"
+                        placeholder="Max"
+                        value={priceRange.max}
+                        onChange={(e) =>
+                          setPriceRange({
+                            ...priceRange,
+                            max: Number(e.target.value) || 5000,
+                          })
+                        }
+                        className="price-input"
+                      />
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="5000"
+                      value={priceRange.max}
+                      onChange={(e) =>
+                        setPriceRange({
+                          ...priceRange,
+                          max: Number(e.target.value),
+                        })
+                      }
+                      className="price-slider"
+                    />
+                  </div>
+                </div>
+
+                <div className="filter-group">
+                  <label className="filter-label">Sort By</label>
+                  <div className="sort-options">
+                    <button
+                      className={`sort-btn ${sortType === "low" ? "active" : ""}`}
+                      onClick={() => setSortType(sortType === "low" ? null : "low")}
+                    >
+                      Price: Low to High
+                    </button>
+                    <button
+                      className={`sort-btn ${sortType === "high" ? "active" : ""}`}
+                      onClick={() => setSortType(sortType === "high" ? null : "high")}
+                    >
+                      Price: High to Low
+                    </button>
+                    <button
+                      className={`sort-btn ${sortType === "name" ? "active" : ""}`}
+                      onClick={() => setSortType(sortType === "name" ? null : "name")}
+                    >
+                      Name A-Z
+                    </button>
+                  </div>
+                </div>
+
+                {hasActiveFilters && (
+                  <button className="clear-filters-btn" onClick={clearFilters}>
+                    <X size={16} />
+                    Clear All Filters
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Books Grid (2-up mobile / 3-up desktop) with scroll lazy-load */}
+          {filteredBooks.length > 0 ? (
+            <LazyBookGrid
+              items={filteredBooks}
+              batch={20}
+              className="books-grid books-grid--browse"
+            />
+          ) : (
+            <div className="no-results">
+              <div className="no-results-content">
+                <span className="no-results-icon">📚</span>
+                <h3>No books found</h3>
+                <p>Try adjusting your filters or search criteria</p>
+                <button className="reset-filters-btn" onClick={clearFilters}>
+                  Reset Filters
+                </button>
+              </div>
+            </div>
+          )}
         </div>
-      )}
+      </div>
 
       {/* Internal Linking Section - Helps Google discover all pages */}
       <div className="internal-linking-section">
@@ -445,7 +425,7 @@ export default function BooksPage() {
                   href={`/category/${cat}`}
                   className="popular-category-link"
                 >
-                  {cat.charAt(0).toUpperCase() + cat.slice(1)} ({bookCount})
+                  {titleCase(cat)} ({bookCount})
                 </Link>
               );
             }

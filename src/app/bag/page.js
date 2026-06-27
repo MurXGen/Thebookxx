@@ -161,16 +161,6 @@ export default function BagPage() {
     ? finalPayable + (giftWrap ? GIFT_WRAP_CHARGE : 0)
     : totalWithStandardDeliveryGift;
 
-  const isDesktop = () => {
-    if (typeof window === "undefined") return false;
-    const userAgent = navigator.userAgent.toLowerCase();
-    const isMobile =
-      /android|webos|iphone|ipad|ipod|blackberry|windows phone/i.test(
-        userAgent,
-      );
-    return !isMobile;
-  };
-
   // Returns the COD fee amount only when paymentType is COD
   const getCodFeeForPayment = (paymentType) =>
     paymentType === "COD" ? COD_HANDLING_FEE : 0;
@@ -301,6 +291,10 @@ _Thank you for shopping with TheBookX! 📚✨_
       await fetch("https://api.journalx.app/api/bookxTelegram/order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        // keepalive lets the request finish even when the page immediately
+        // navigates to the WhatsApp app (critical on mobile, where the
+        // redirect would otherwise cancel the in-flight request).
+        keepalive: true,
         body: JSON.stringify({
           orderDetails: orderMessage,
           customerName: addressData.name,
@@ -413,15 +407,15 @@ _Thank you for shopping with TheBookX! 📚✨_
     const shortLink = await shortenUrl(viewBagLinkWithDetails);
     setIsShortening(false);
 
-    if (isDesktop()) {
-      sendOrderToTelegram(
-        addressData,
-        "COD",
-        fasterDeliveryChoice,
-        giftWrapSelected,
-        shortLink,
-      );
-    }
+    // Notify on every order — mobile and desktop. The fetch uses keepalive so
+    // it completes even though redirectToWhatsApp navigates away right after.
+    await sendOrderToTelegram(
+      addressData,
+      "COD",
+      fasterDeliveryChoice,
+      giftWrapSelected,
+      shortLink,
+    );
 
     redirectToWhatsApp(
       addressData,
@@ -453,15 +447,15 @@ _Thank you for shopping with TheBookX! 📚✨_
     const shortLink = await shortenUrl(viewBagLinkWithDetails);
     setIsShortening(false);
 
-    if (isDesktop()) {
-      sendOrderToTelegram(
-        addressData,
-        "UPI",
-        fasterDeliveryChoice,
-        giftWrapSelected,
-        shortLink,
-      );
-    }
+    // Notify on every order — mobile and desktop. The fetch uses keepalive so
+    // it completes even though redirectToWhatsApp navigates away right after.
+    await sendOrderToTelegram(
+      addressData,
+      "UPI",
+      fasterDeliveryChoice,
+      giftWrapSelected,
+      shortLink,
+    );
 
     redirectToWhatsApp(
       addressData,

@@ -11828,3 +11828,8 @@ img[data-loaded="true"] {
   .bl-spin { animation-duration: 1.6s; }
   .bl-label { animation: none; -webkit-text-fill-color: var(--dark-50, #6b7280); }
 }
+
+
+/* live-orders social proof inside PDP price block */
+.bd-liveorders{ margin:10px 0 0; }
+.bd-liveorders .live-orders-wrap{ margin:0; padding:0; max-width:none; }

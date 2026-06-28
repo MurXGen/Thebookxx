@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TheBookX — New Book Image Checklist</title>
+<style>
+  :root{
+    --orange:#fb8500; --green:#0a8f0c; --ink:#0a0a0a; --muted:#6b7280;
+    --line:#ececec; --bg:#f7f7f8;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:#fff;padding:24px;}
+  .wrap{max-width:1000px;margin:0 auto}
+  h1{font-size:24px;margin:0 0 4px}
+  .sub{color:var(--muted);font-size:14px;margin:0 0 18px}
+  .bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+  .search-input{flex:1;min-width:220px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;font-size:14px;outline:none}
+  .search-input:focus{border-color:var(--orange)}
+  .count{font-size:13px;color:var(--muted)}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+  th{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);position:sticky;top:0;background:#fff}
+  tr.book-row{cursor:pointer}
+  tr:hover{background:var(--bg)}
+  tr.book-row.visited{background:#fcfcfc}
+  tr.book-row.visited .name::after{content:" ✓";color:var(--green);font-weight:700}
+  tr.book-row.last{background:#fff4e2;box-shadow:inset 3px 0 0 var(--orange)}
+  tr.book-row.last:hover{background:#ffedd2}
+  .last-pill{display:inline-block;margin-left:8px;font-size:10px;font-weight:800;letter-spacing:.04em;color:#fff;background:var(--orange);border-radius:999px;padding:2px 8px;vertical-align:middle}
+  .sr{color:var(--muted);width:44px}
+  .name{font-weight:600}
+  .slug{display:inline-flex;align-items:center;gap:8px}
+  code{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:3px 8px;font-size:12.5px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;white-space:nowrap}
+  button{cursor:pointer;border:none;font-family:inherit}
+  .copy-btn{background:#fff;border:1px solid var(--line);border-radius:7px;padding:5px 9px;font-size:12px;font-weight:600;color:var(--ink);transition:.15s}
+  .copy-btn:hover{border-color:var(--orange);color:var(--orange)}
+  .copy-btn.done{background:var(--green);border-color:var(--green);color:#fff}
+  .search-btn{display:inline-flex;align-items:center;gap:6px;background:var(--orange);color:#fff;border-radius:8px;padding:7px 12px;font-size:12.5px;font-weight:700;text-decoration:none}
+  .search-btn:hover{opacity:.92}
+  .empty{text-align:center;color:var(--muted);padding:30px}
+  .foot{margin-top:18px;font-size:12.5px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>TheBookX — New Book Image Checklist</h1>
+  <p class="sub">91 new titles. Copy the file name (slug + .png), then save each cover into <code>/public/books/</code>. “Find cover” opens an image search in a new tab and auto-copies the file name.</p>
+
+  <div class="bar">
+    <input id="q" class="search-input" type="text" placeholder="Filter by title or slug…" />
+    <span class="count" id="count"></span>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th class="sr">#</th><th>Book name</th><th>Image file (slug.png)</th><th>Find cover</th></tr>
+    </thead>
+    <tbody id="rows"></tbody>
+  </table>
+
+  <p class="foot">Tip: “Find cover” copies <code>slug.png</code> to your clipboard and opens the search in a new tab, so you can save the file with the right name instantly.</p>
+
+  <h1 style="margin-top:36px">⚠️ Still need a cover image</h1>
+  <p class="sub">These books are already in the catalogue but have <strong>no image yet</strong> in <code>/public/books/</code>. Download a cover and save it with the file name shown.</p>
+  <table>
+    <thead>
+      <tr><th class="sr">#</th><th>Book name</th><th>Image file (slug.png)</th><th>Find cover</th></tr>
+    </thead>
+    <tbody id="rows2"></tbody>
+  </table>
+</div>
+
+<script>
+const BOOKS = [
+  ["It Ends with Us","it-ends-with-us"],
+  ["The Song of Achilles","the-song-of-achilles"],
+  ["A Court of Thorns and Roses","a-court-of-thorns-and-roses"],
+  ["1984","1984"],
+  ["To Kill a Mockingbird","to-kill-a-mockingbird"],
+  ["The Great Gatsby","the-great-gatsby"],
+  ["How to Win Friends and Influence People","how-to-win-friends-and-influence-people"],
+  ["Think and Grow Rich","think-and-grow-rich"],
+  ["Man's Search for Meaning","mans-search-for-meaning"],
+  ["The Power of Your Subconscious Mind","the-power-of-your-subconscious-mind"],
+  ["Where the Crawdads Sing","where-the-crawdads-sing"],
+  ["Five Point Someone","five-point-someone"],
+  ["2 States","2-states"],
+  ["The 3 Mistakes of My Life","the-3-mistakes-of-my-life"],
+  ["Half Girlfriend","half-girlfriend"],
+  ["Revolution 2020","revolution-2020"],
+  ["The Blue Umbrella","the-blue-umbrella"],
+  ["The Room on the Roof","the-room-on-the-roof"],
+  ["A Flight of Pigeons","a-flight-of-pigeons"],
+  ["Malgudi Days","malgudi-days"],
+  ["The Guide","the-guide"],
+  ["The Monk Who Sold His Ferrari","the-monk-who-sold-his-ferrari"],
+  ["The 5 AM Club","the-5-am-club"],
+  ["The Power of Now","the-power-of-now"],
+  ["Jaya: An Illustrated Retelling of the Mahabharata","jaya-illustrated-mahabharata"],
+  ["Sita: An Illustrated Retelling of the Ramayana","sita-illustrated-ramayana"],
+  ["I Too Had a Love Story","i-too-had-a-love-story"],
+  ["November 9","november-9"],
+  ["Confess","confess"],
+  ["All Your Perfects","all-your-perfects"],
+  ["Maybe Someday","maybe-someday"],
+  ["Layla","layla"],
+  ["Beach Read","beach-read"],
+  ["Book Lovers","book-lovers"],
+  ["Happy Place","happy-place"],
+  ["Funny Story","funny-story"],
+  ["Not in Love","not-in-love"],
+  ["Bride","bride"],
+  ["Check & Mate","check-and-mate"],
+  ["Deep End","deep-end"],
+  ["Daisy Jones & The Six","daisy-jones-and-the-six"],
+  ["Malibu Rising","malibu-rising"],
+  ["Carrie Soto Is Back","carrie-soto-is-back"],
+  ["Things We Hide from the Light","things-we-hide-from-the-light"],
+  ["Things We Left Behind","things-we-left-behind"],
+  ["Throne of Glass","throne-of-glass"],
+  ["Six of Crows","six-of-crows"],
+  ["Shadow and Bone","shadow-and-bone"],
+  ["Mistborn: The Final Empire","mistborn-the-final-empire"],
+  ["The Way of Kings","the-way-of-kings"],
+  ["Dune","dune"],
+  ["The Name of the Wind","the-name-of-the-wind"],
+  ["Red Queen","red-queen"],
+  ["Gone Girl","gone-girl"],
+  ["Sharp Objects","sharp-objects"],
+  ["The Da Vinci Code","the-da-vinci-code"],
+  ["Angels & Demons","angels-and-demons"],
+  ["Inferno","inferno"],
+  ["The Girl with the Dragon Tattoo","the-girl-with-the-dragon-tattoo"],
+  ["Shutter Island","shutter-island"],
+  ["Lessons in Chemistry","lessons-in-chemistry"],
+  ["Tomorrow, and Tomorrow, and Tomorrow","tomorrow-and-tomorrow-and-tomorrow"],
+  ["Yellowface","yellowface"],
+  ["Babel","babel"],
+  ["Klara and the Sun","klara-and-the-sun"],
+  ["Never Let Me Go","never-let-me-go"],
+  ["The Catcher in the Rye","the-catcher-in-the-rye"],
+  ["Brave New World","brave-new-world"],
+  ["Little Women","little-women"],
+  ["Jane Eyre","jane-eyre"],
+  ["Wuthering Heights","wuthering-heights"],
+  ["The Picture of Dorian Gray","the-picture-of-dorian-gray"],
+  ["Anna Karenina","anna-karenina"],
+  ["War and Peace","war-and-peace"],
+  ["Outliers","outliers"],
+  ["Blink","blink"],
+  ["Talking to Strangers","talking-to-strangers"],
+  ["The Tipping Point","the-tipping-point"],
+  ["The 4-Hour Workweek","the-4-hour-workweek"],
+  ["The Obstacle Is the Way","the-obstacle-is-the-way"],
+  ["Ego Is the Enemy","ego-is-the-enemy"],
+  ["Show Your Work","show-your-work"],
+  ["Eat That Frog","eat-that-frog"],
+  ["Dopamine Nation","dopamine-nation"],
+  ["Demon Slayer: Kimetsu no Yaiba","demon-slayer"],
+  ["Naruto","naruto"],
+  ["Death Note","death-note"],
+  ["Attack on Titan","attack-on-titan"],
+  ["My Hero Academia","my-hero-academia"],
+  ["Berserk","berserk"],
+  ["Tokyo Ghoul","tokyo-ghoul"]
+];
+
+const rowsEl = document.getElementById('rows');
+const countEl = document.getElementById('count');
+const qEl = document.getElementById('q');
+
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+
+// --- persistence: remember last clicked + visited rows ---
+let lastSlug = "";
+let visited = new Set();
+try { lastSlug = localStorage.getItem('tbx_last') || ""; } catch(e){}
+try { visited = new Set(JSON.parse(localStorage.getItem('tbx_visited') || "[]")); } catch(e){}
+function persist(){
+  try {
+    localStorage.setItem('tbx_last', lastSlug);
+    localStorage.setItem('tbx_visited', JSON.stringify([...visited]));
+  } catch(e){}
+}
+
+// Books already in the catalogue that still need a cover image uploaded.
+const MISSING = [
+  ["Advice & Dissent","advice-and-dissent"],
+  ["An Equal Music","an-equal-music"],
+  ["And Then One Day","and-then-one-day"],
+  ["Durand's Curse","durands-curse"],
+  ["Everything Is F*cked","everything-is-fucked"],
+  ["First Man In","first-man-in"],
+  ["Know How","know-how"],
+  ["My Autobiography","my-autobiography"],
+  ["Never Finished","never-finished"],
+  ["Street Smarts","street-smarts"],
+  ["The Accidental Billionaires","the-accidental-billionaires"],
+  ["The Dark Hours","the-dark-hours"],
+  ["The Defector","the-defector"],
+  ["The Greed Merchants","the-greed-merchants"],
+  ["The Naturals Set","the-naturals-set"],
+  ["The Target","the-target"],
+  ["Tintin","tintin"],
+  ["We Don't Die","we-dont-die"],
+  ["Who Will Cry When You Die?","who-will-cry-when-you-die"],
+  ["Wings of Fire","wings-of-fire"],
+  ["Wise Guy","wise-guy"],
+  ["Your Money & Your Brain","your-money-and-your-brain"]
+];
+
+const rowsEl2 = document.getElementById('rows2');
+
+function buildRow(name, slug, srno){
+  const file = slug + ".png";
+  const url = "https://www.google.com/search?tbm=isch&q=" + encodeURIComponent(name + " book cover");
+  const tr = document.createElement('tr');
+  tr.className = "book-row" + (visited.has(slug) ? " visited" : "") + (slug === lastSlug ? " last" : "");
+  tr.dataset.url = url;
+  tr.dataset.file = file;
+  tr.dataset.slug = slug;
+  tr.title = "Click row to find cover & copy " + file;
+  tr.innerHTML = `
+    <td class="sr">${srno}</td>
+    <td class="name">${esc(name)}${slug === lastSlug ? '<span class="last-pill">LAST VIEWED</span>' : ''}</td>
+    <td><span class="slug"><code>${file}</code>
+      <button class="copy-btn" data-file="${file}">Copy</button></span></td>
+    <td><button type="button" class="search-btn">Find cover ↗</button></td>`;
+  return tr;
+}
+
+function render(filter=""){
+  const f = filter.trim().toLowerCase();
+  rowsEl.innerHTML = ""; rowsEl2.innerHTML = "";
+  let n = 0, m = 0;
+  BOOKS.forEach(([name, slug], i) => {
+    if (f && !(name.toLowerCase().includes(f) || slug.includes(f))) return;
+    n++; rowsEl.appendChild(buildRow(name, slug, i + 1));
+  });
+  MISSING.forEach(([name, slug], i) => {
+    if (f && !(name.toLowerCase().includes(f) || slug.includes(f))) return;
+    m++; rowsEl2.appendChild(buildRow(name, slug, BOOKS.length + i + 1));
+  });
+  countEl.textContent = (n + m) + " of " + (BOOKS.length + MISSING.length) + " shown · " + visited.size + " viewed";
+  if (n === 0) rowsEl.innerHTML = '<tr><td colspan="4" class="empty">No matches</td></tr>';
+  if (m === 0) rowsEl2.innerHTML = '<tr><td colspan="4" class="empty">No matches</td></tr>';
+  const lastRow = document.querySelector('.book-row.last');
+  if (lastRow) lastRow.scrollIntoView({ block: "center" });
+}
+
+document.addEventListener('click', (e) => {
+  // Copy button — only copies, does NOT open a tab
+  const btn = e.target.closest('.copy-btn');
+  if (btn) {
+    e.stopPropagation();
+    navigator.clipboard.writeText(btn.dataset.file).then(() => {
+      const t = btn.textContent;
+      btn.textContent = "Copied ✓";
+      btn.classList.add('done');
+      setTimeout(() => { btn.textContent = t; btn.classList.remove('done'); }, 1200);
+    });
+    return;
+  }
+  // Clicking anywhere on a row opens the search in a new tab AND copies slug.png
+  const row = e.target.closest('.book-row');
+  if (!row) return;
+  navigator.clipboard.writeText(row.dataset.file).catch(() => {});
+  window.open(row.dataset.url, '_blank', 'noopener');
+
+  lastSlug = row.dataset.slug;
+  visited.add(row.dataset.slug);
+  persist();
+  document.querySelectorAll('.book-row.last').forEach(r => {
+    r.classList.remove('last');
+    const p = r.querySelector('.last-pill'); if (p) p.remove();
+  });
+  row.classList.add('visited', 'last');
+  if (!row.querySelector('.last-pill')) {
+    const pill = document.createElement('span');
+    pill.className = 'last-pill';
+    pill.textContent = 'LAST VIEWED';
+    row.querySelector('.name').appendChild(pill);
+  }
+  countEl.textContent = countEl.textContent.replace(/· \d+ viewed/, "· " + visited.size + " viewed");
+});
+
+qEl.addEventListener('input', () => render(qEl.value));
+render();
+</script>
+</body>
+</html>

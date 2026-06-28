@@ -26,7 +26,6 @@ import {
   Bookmark,
   Minus,
   Plus,
-  Flame,
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -39,36 +38,9 @@ import Link from "next/link";
 import YouMayLike from "./UI/YouMayLike";
 import BookReviews from "./UI/BookReviews";
 import StoreReviews from "./StoreReviews";
+import LiveOrdersStrip from "./LiveOrdersStrip";
 import CartConfetti from "./UI/Confetti";
 import { getReviewsByBook, getAverageRating } from "@/utils/reviews";
-
-// Deterministic social-proof (stable across SSR/CSR — never Math.random)
-const SOCIAL_CITIES = [
-  "Mumbai",
-  "Delhi",
-  "Bengaluru",
-  "Pune",
-  "Chennai",
-  "Hyderabad",
-  "Kolkata",
-  "Jaipur",
-  "Ahmedabad",
-  "Lucknow",
-  "Coimbatore",
-  "Indore",
-];
-function getSocialProof(bookId) {
-  let hash = 0;
-  for (let i = 0; i < bookId.length; i++) {
-    hash = bookId.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  const h = Math.abs(hash);
-  return {
-    mins: (h % 26) + 4, // 4–29 mins ago
-    city: SOCIAL_CITIES[h % SOCIAL_CITIES.length],
-    soldThisWeek: ((h >> 3) % 38) + 14, // 14–51 sold this week
-  };
-}
 
 // Slugify function
 function slugify(text) {
@@ -147,7 +119,6 @@ export default function BookDetailsModal({ book }) {
 
   const cartItem = cart.find((i) => i.id === book.id);
   const qtyInCart = cartItem?.qty || 0;
-  const social = getSocialProof(book.id);
 
   const bookSlug = slugify(book.name);
   const bookUrl = `/books/${bookSlug}`;
@@ -704,17 +675,8 @@ export default function BookDetailsModal({ book }) {
                 </div>
 
                 {/* ===== Social proof / trust ===== */}
-                <div className="bd-social-proof">
-                  <span className="bd-social-row">
-                    <ShoppingCart size={13} className="bd-social-icon" />
-                    Last bought <strong>{social.mins} min ago</strong> by a
-                    reader in {social.city}
-                  </span>
-                  <span className="bd-social-row bd-social-hot">
-                    <Flame size={13} className="bd-social-icon-hot" />
-                    <strong>{social.soldThisWeek}</strong> sold in the last 7
-                    days
-                  </span>
+                <div className="bd-liveorders">
+                  <LiveOrdersStrip />
                 </div>
               </div>
             </div>

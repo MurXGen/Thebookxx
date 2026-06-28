@@ -11833,3 +11833,12 @@ img[data-loaded="true"] {
 /* live-orders social proof inside PDP price block */
 .bd-liveorders{ margin:10px 0 0; }
 .bd-liveorders .live-orders-wrap{ margin:0; padding:0; max-width:none; }
+
+/* PDP: prevent horizontal overflow + even spacing for the right-column blocks */
+.bd-page{ overflow-x:hidden; }
+.bd-liveorders, .bd-liveorders .live-orders-wrap, .bd-liveorders .live-orders{ min-width:0; max-width:100%; }
+.bd-liveorders .live-orders{ overflow:hidden; }
+.bd-liveorders .live-orders-track{ min-width:0; }
+.width100 > .bd-bookmark-strip{ margin:14px 0 0; }
+.width100 > .bd-quick-chips{ margin-top:14px; }
+.bd-quick-chips{ flex-wrap:wrap; }

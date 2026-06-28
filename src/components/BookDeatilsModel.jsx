@@ -535,27 +535,6 @@ export default function BookDetailsModal({ book }) {
                     itemProp="image"
                     className="bd-cover"
                   />
-                  {/* ===== Quick info chips ===== */}
-                  <div className="bd-quick-chips">
-                    {book.size && (
-                      <div className="bd-chip">
-                        <Package size={14} className="bd-chip-icon" />
-                        <span className="bd-chip-text">{book.size}</span>
-                      </div>
-                    )}
-                    {book.pages && (
-                      <div className="bd-chip">
-                        <FileText size={14} className="bd-chip-icon" />
-                        <span className="bd-chip-text">{book.pages} pages</span>
-                      </div>
-                    )}
-                    {book.language && (
-                      <div className="bd-chip">
-                        <Globe size={14} className="bd-chip-icon" />
-                        <span className="bd-chip-text">{book.language}</span>
-                      </div>
-                    )}
-                  </div>
                 </div>
               ) : (
                 <div className="bd-cover-placeholder">
@@ -679,18 +658,39 @@ export default function BookDetailsModal({ book }) {
                   <LiveOrdersStrip />
                 </div>
               </div>
+
+              <div className="bd-bookmark-strip">
+                <Bookmark size={12} fill="currentColor" className="bd-bookmark-strip-icon" />
+                <span className="bd-bookmark-strip-text">
+                  Free collectible bookmark with every order
+                </span>
+                <span className="bd-bookmark-strip-tag">FREE</span>
+              </div>
+
+              <div className="bd-quick-chips">
+                {book.size && (
+                  <div className="bd-chip">
+                    <Package size={14} className="bd-chip-icon" />
+                    <span className="bd-chip-text">{book.size}</span>
+                  </div>
+                )}
+                {book.pages && (
+                  <div className="bd-chip">
+                    <FileText size={14} className="bd-chip-icon" />
+                    <span className="bd-chip-text">{book.pages} pages</span>
+                  </div>
+                )}
+                {book.language && (
+                  <div className="bd-chip">
+                    <Globe size={14} className="bd-chip-icon" />
+                    <span className="bd-chip-text">{book.language}</span>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
           {/* ===== Free bookmark strip (slim, below price) ===== */}
-          <div className="bd-bookmark-strip">
-            <Bookmark size={12} fill="currentColor" className="bd-bookmark-strip-icon" />
-            <span className="bd-bookmark-strip-text">
-              Free collectible bookmark with every order
-            </span>
-            <span className="bd-bookmark-strip-tag">FREE</span>
-          </div>
-
           {/* ===== Trust strip ===== */}
           <div className="bd-trust-strip">
             <div className="bd-trust-item">

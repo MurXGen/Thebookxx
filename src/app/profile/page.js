@@ -26,6 +26,7 @@ import {
   Check,
   Zap,
   MessageSquare,
+  RefreshCw,
   Notebook,
   XCircle,
   CalendarClock,
@@ -325,6 +326,17 @@ export default function MyOrdersPage() {
   const [rescheduleDate, setRescheduleDate] = useState("");
   const [rescheduleTime, setRescheduleTime] = useState("");
   const [rescheduleNote, setRescheduleNote] = useState("");
+  // ===== Edit-address bottom sheet =====
+  const [showAddressEditModal, setShowAddressEditModal] = useState(false);
+  const [addressEditOrder, setAddressEditOrder] = useState(null);
+  const [addrEdit, setAddrEdit] = useState({
+    name: "",
+    phone: "",
+    address: "",
+    city: "",
+    state: "",
+    pincode: "",
+  });
 
   const UPI_ID = "7977960242-1@okbizaxis";
 
@@ -834,6 +846,48 @@ Please cancel this order. Thank you 🙏`;
     setShowRescheduleModal(true);
   };
 
+  const handleEditAddressClick = (order) => {
+    setAddressEditOrder(order);
+    setAddrEdit({
+      name: order["Customer Name"] || customerName || "",
+      phone: String(order["Phone Number"] || phoneNumber || ""),
+      address: order["Address"] || "",
+      city: order["City"] || "",
+      state: order["State"] || "",
+      pincode: String(order["Pincode"] || ""),
+    });
+    setShowAddressEditModal(true);
+  };
+
+  const handleAddressEditSubmit = () => {
+    if (!addrEdit.address.trim() || !addrEdit.phone.trim()) {
+      alert("Please fill in at least the address and phone number.");
+      return;
+    }
+    const order = addressEditOrder;
+    const lines = [
+      "Hi TheBookX 👋",
+      "",
+      "I'd like to *update the delivery details* for my order.",
+      "",
+      `📋 *Order ID:* ${order?.["Order ID"] || ""}`,
+      `👤 *Name:* ${addrEdit.name || ""}`,
+      `📞 *Phone:* ${addrEdit.phone || ""}`,
+      "",
+      "*📍 Updated Address*",
+      `🏠 ${addrEdit.address || ""}`,
+      `🏙️ ${addrEdit.city || ""}${addrEdit.state ? `, ${addrEdit.state}` : ""}`,
+      `📮 Pincode: ${addrEdit.pincode || ""}`,
+      "",
+      "Please update my order with these details. Thank you 🙏",
+    ];
+    window.open(
+      `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(lines.join("\n"))}`,
+      "_blank",
+    );
+    setShowAddressEditModal(false);
+  };
+
   const handleRescheduleSubmit = () => {
     if (!rescheduleDate) {
       alert("Please pick a preferred delivery date.");
@@ -1042,10 +1096,24 @@ Please cancel this order. Thank you 🙏`;
                     </span>
                     <span className="customer-phone">{phoneNumber}</span>
                   </div>
-                  <button className="sec-mid-btn" onClick={handleNewSearch}>
-                    <LogOut size={14} />
-                    Logout
-                  </button>
+                  <div className="flex flex-row gap-8 items-center">
+                    <button
+                      className="profile-refresh-btn"
+                      onClick={() => fetchOrders(phoneNumber)}
+                      disabled={loading}
+                      aria-label="Refresh orders"
+                      title="Refresh orders"
+                    >
+                      <RefreshCw
+                        size={15}
+                        className={loading ? "cr-spin" : ""}
+                      />
+                    </button>
+                    <button className="sec-mid-btn" onClick={handleNewSearch}>
+                      <LogOut size={14} />
+                      Logout
+                    </button>
+                  </div>
                 </div>
 
                 {/* Wallet balance strip, only shown when balance > 0 */}
@@ -1357,6 +1425,16 @@ Please cancel this order. Thank you 🙏`;
                       </button>
                     </div>
                   )}
+
+                  {/* Edit address — available on every order */}
+                  <button
+                    type="button"
+                    className="edit-address-btn"
+                    onClick={() => handleEditAddressClick(order)}
+                  >
+                    <MapPin size={13} />
+                    Edit delivery address
+                  </button>
 
                   {order.shippingId && (
                     <div className="tracking-info-row">
@@ -1717,6 +1795,190 @@ Please cancel this order. Thank you 🙏`;
                   <button
                     type="button"
                     onClick={() => setShowRescheduleModal(false)}
+                    className="sec-mid-btn width100"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ========== Edit Address Modal (bottom sheet) ========== */}
+      <AnimatePresence>
+        {showAddressEditModal && addressEditOrder && (
+          <motion.div
+            className="bill-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowAddressEditModal(false)}
+          >
+            <motion.div
+              className="bill-modal"
+              style={{ maxWidth: 500, maxHeight: "90vh", overflowY: "auto" }}
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="bill-header">
+                <span className="weight-600 font-16 flex items-center gap-8">
+                  <MapPin
+                    size={18}
+                    style={{ color: "var(--tertiary, #fb8500)" }}
+                  />
+                  Edit delivery address
+                </span>
+                <span
+                  className="cursor-pointer"
+                  onClick={() => setShowAddressEditModal(false)}
+                >
+                  <X size={16} />
+                </span>
+              </div>
+
+              <div
+                className="address-form-content"
+                style={{ display: "flex", flexDirection: "column", gap: 14 }}
+              >
+                <div
+                  style={{
+                    padding: "10px 12px",
+                    background: "var(--dark-4)",
+                    border: "1px solid var(--dark-10)",
+                    borderRadius: 8,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 2,
+                  }}
+                >
+                  <span className="font-10 dark-50">Order ID</span>
+                  <span className="font-14 weight-600">
+                    {addressEditOrder["Order ID"]}
+                  </span>
+                </div>
+
+                <div className="input-group">
+                  <label className="flex flex-row gap-4 items-center">
+                    <User size={14} /> Full name
+                  </label>
+                  <input
+                    type="text"
+                    className="sec-mid-btn width100"
+                    value={addrEdit.name}
+                    onChange={(e) =>
+                      setAddrEdit((p) => ({ ...p, name: e.target.value }))
+                    }
+                    placeholder="Recipient name"
+                  />
+                </div>
+
+                <div className="input-group">
+                  <label className="flex flex-row gap-4 items-center">
+                    <MessageSquare size={14} /> Phone number{" "}
+                    <span className="red">*</span>
+                  </label>
+                  <input
+                    type="tel"
+                    inputMode="numeric"
+                    className="sec-mid-btn width100"
+                    value={addrEdit.phone}
+                    onChange={(e) =>
+                      setAddrEdit((p) => ({
+                        ...p,
+                        phone: e.target.value.replace(/[^\d+]/g, ""),
+                      }))
+                    }
+                    placeholder="10-digit mobile number"
+                  />
+                </div>
+
+                <div className="input-group">
+                  <label className="flex flex-row gap-4 items-center">
+                    <MapPin size={14} /> Address <span className="red">*</span>
+                  </label>
+                  <textarea
+                    className="sec-mid-btn textarea"
+                    rows={2}
+                    value={addrEdit.address}
+                    onChange={(e) =>
+                      setAddrEdit((p) => ({ ...p, address: e.target.value }))
+                    }
+                    placeholder="House / flat, street, area, landmark"
+                  />
+                </div>
+
+                <div className="flex flex-row gap-12">
+                  <div className="input-group" style={{ flex: 1 }}>
+                    <label>City</label>
+                    <input
+                      type="text"
+                      className="sec-mid-btn width100"
+                      value={addrEdit.city}
+                      onChange={(e) =>
+                        setAddrEdit((p) => ({ ...p, city: e.target.value }))
+                      }
+                      placeholder="City"
+                    />
+                  </div>
+                  <div className="input-group" style={{ flex: 1 }}>
+                    <label>State</label>
+                    <input
+                      type="text"
+                      className="sec-mid-btn width100"
+                      value={addrEdit.state}
+                      onChange={(e) =>
+                        setAddrEdit((p) => ({ ...p, state: e.target.value }))
+                      }
+                      placeholder="State"
+                    />
+                  </div>
+                </div>
+
+                <div className="input-group">
+                  <label>Pincode</label>
+                  <input
+                    type="tel"
+                    inputMode="numeric"
+                    className="sec-mid-btn width100"
+                    value={addrEdit.pincode}
+                    onChange={(e) =>
+                      setAddrEdit((p) => ({
+                        ...p,
+                        pincode: e.target.value.replace(/\D/g, ""),
+                      }))
+                    }
+                    placeholder="6-digit pincode"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-8 mt-8">
+                  <button
+                    type="button"
+                    onClick={handleAddressEditSubmit}
+                    disabled={!addrEdit.address.trim() || !addrEdit.phone.trim()}
+                    className="pri-big-btn width100 flex flex-row items-center justify-center gap-8"
+                    style={{
+                      opacity:
+                        addrEdit.address.trim() && addrEdit.phone.trim()
+                          ? 1
+                          : 0.6,
+                      cursor:
+                        addrEdit.address.trim() && addrEdit.phone.trim()
+                          ? "pointer"
+                          : "not-allowed",
+                    }}
+                  >
+                    <MessageSquare size={16} />
+                    Submit & send on WhatsApp
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowAddressEditModal(false)}
                     className="sec-mid-btn width100"
                   >
                     Cancel

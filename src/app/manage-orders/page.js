@@ -1079,35 +1079,6 @@ export default function ManageOrdersPage() {
                   </div>
                 </div>
 
-                {/* Orders calendar */}
-                <div className="admin-cal-wrap">
-                  <OrdersCalendar
-                    calMonth={calMonth}
-                    setCalMonth={setCalMonth}
-                    ordersByDay={ordersByDay}
-                    selectedDate={selectedDate}
-                    setSelectedDate={setSelectedDate}
-                  />
-                  {selectedDate && (
-                    <div className="admin-cal-selected">
-                      Showing orders for{" "}
-                      <strong>
-                        {new Date(selectedDate + "T00:00:00").toLocaleDateString(
-                          "en-IN",
-                          { day: "numeric", month: "short", year: "numeric" },
-                        )}
-                      </strong>
-                      <button
-                        type="button"
-                        className="admin-cal-clear"
-                        onClick={() => setSelectedDate("")}
-                      >
-                        <X size={13} /> Show all
-                      </button>
-                    </div>
-                  )}
-                </div>
-
                 {(statusFilter !== "all" ||
                   paymentFilter !== "all" ||
                   dateFrom ||
@@ -1129,6 +1100,35 @@ export default function ManageOrdersPage() {
               </motion.div>
             )}
           </AnimatePresence>
+        </div>
+
+        {/* Orders calendar — always visible */}
+        <div className="admin-cal-wrap admin-cal-standalone">
+          <OrdersCalendar
+            calMonth={calMonth}
+            setCalMonth={setCalMonth}
+            ordersByDay={ordersByDay}
+            selectedDate={selectedDate}
+            setSelectedDate={setSelectedDate}
+          />
+          {selectedDate && (
+            <div className="admin-cal-selected">
+              Showing orders for{" "}
+              <strong>
+                {new Date(selectedDate + "T00:00:00").toLocaleDateString(
+                  "en-IN",
+                  { day: "numeric", month: "short", year: "numeric" },
+                )}
+              </strong>
+              <button
+                type="button"
+                className="admin-cal-clear"
+                onClick={() => setSelectedDate("")}
+              >
+                <X size={13} /> Show all
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Orders list, flattened single cards */}

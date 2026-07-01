@@ -362,8 +362,8 @@ export default function BookCard({ book }) {
                   onClick={handleAddToCart}
                   aria-label={`Add ${book.name} to cart`}
                   aria-disabled={isOneRupeeLimitReached}
-                  icon={<ShoppingCart size={16} />}
                 >
+                  <ShoppingCart size={16} />
                   <span className="sr-only">Add to cart</span>
                 </LoadingButton>
               ) : (

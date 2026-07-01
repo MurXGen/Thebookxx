@@ -1,7 +1,7 @@
 // app/manage-orders/page.js
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import {
   Search,
   Download,
@@ -169,6 +169,15 @@ const formatDate = (dateString) => {
   return typeof dateString === "string" ? dateString : "Date not available";
 };
 
+// Local "YYYY-MM-DD" key for a Date (used to group/compare calendar days).
+const dayKey = (d) => {
+  if (!d) return "";
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+};
+
 // Pick the best timestamp field on an order and return it as a Date (or null).
 // We check the timestamp fields in order of preference.
 const getOrderDate = (order) =>
@@ -249,6 +258,89 @@ const getStatusColor = (status) => {
 };
 // --------------------------------------------------------------------
 
+// ── Orders calendar: per-day counts, click-to-filter, blinking "today" ──
+function OrdersCalendar({
+  calMonth,
+  setCalMonth,
+  ordersByDay,
+  selectedDate,
+  setSelectedDate,
+}) {
+  const { y, m } = calMonth;
+  const todayKey = dayKey(new Date());
+  const first = new Date(y, m, 1);
+  const startDow = first.getDay();
+  const daysInMonth = new Date(y, m + 1, 0).getDate();
+  const monthLabel = first.toLocaleString("en-IN", {
+    month: "long",
+    year: "numeric",
+  });
+
+  const cells = [];
+  for (let i = 0; i < startDow; i++) cells.push(null);
+  for (let d = 1; d <= daysInMonth; d++) cells.push(d);
+
+  let monthTotal = 0;
+  Object.keys(ordersByDay).forEach((k) => {
+    if (k.startsWith(`${y}-${String(m + 1).padStart(2, "0")}-`))
+      monthTotal += ordersByDay[k];
+  });
+
+  const prev = () =>
+    setCalMonth(({ y, m }) => (m === 0 ? { y: y - 1, m: 11 } : { y, m: m - 1 }));
+  const next = () =>
+    setCalMonth(({ y, m }) => (m === 11 ? { y: y + 1, m: 0 } : { y, m: m + 1 }));
+
+  return (
+    <div className="oc">
+      <div className="oc-head">
+        <button type="button" className="oc-nav" onClick={prev} aria-label="Previous month">
+          ‹
+        </button>
+        <div className="oc-title">
+          <span className="oc-month">{monthLabel}</span>
+          <span className="oc-total">{monthTotal} orders this month</span>
+        </div>
+        <button type="button" className="oc-nav" onClick={next} aria-label="Next month">
+          ›
+        </button>
+      </div>
+      <div className="oc-grid oc-dow">
+        {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((d) => (
+          <span key={d} className="oc-dow-cell">
+            {d}
+          </span>
+        ))}
+      </div>
+      <div className="oc-grid">
+        {cells.map((d, i) => {
+          if (d === null) return <span key={i} className="oc-cell oc-empty" />;
+          const key = `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+          const count = ordersByDay[key] || 0;
+          const isToday = key === todayKey;
+          const isSel = key === selectedDate;
+          return (
+            <button
+              type="button"
+              key={i}
+              className={`oc-cell${count ? " has-orders" : ""}${isToday ? " today" : ""}${isSel ? " selected" : ""}`}
+              onClick={() => setSelectedDate(isSel ? "" : key)}
+              title={
+                count
+                  ? `${count} order${count > 1 ? "s" : ""} on ${key}`
+                  : `No orders on ${key}`
+              }
+            >
+              <span className="oc-day">{d}</span>
+              {count > 0 && <span className="oc-count">{count}</span>}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export default function ManageOrdersPage() {
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
@@ -264,6 +356,11 @@ export default function ManageOrdersPage() {
   const [sortOrder, setSortOrder] = useState("desc"); // "desc" = latest first
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
+  const [selectedDate, setSelectedDate] = useState(""); // "YYYY-MM-DD" from calendar
+  const [calMonth, setCalMonth] = useState(() => {
+    const d = new Date();
+    return { y: d.getFullYear(), m: d.getMonth() };
+  });
   const [expandedOrders, setExpandedOrders] = useState(new Set());
   const [prefsLoaded, setPrefsLoaded] = useState(false);
 
@@ -443,6 +540,14 @@ export default function ManageOrdersPage() {
       });
     }
 
+    // Calendar day filter — show only orders received on the clicked date
+    if (selectedDate) {
+      filtered = filtered.filter((o) => {
+        const d = getOrderDate(o);
+        return d && dayKey(d) === selectedDate;
+      });
+    }
+
     setFilteredOrders(sortByDate(filtered, sortOrder));
   }, [
     searchQuery,
@@ -452,7 +557,21 @@ export default function ManageOrdersPage() {
     sortOrder,
     dateFrom,
     dateTo,
+    selectedDate,
   ]);
+
+  // Orders received per calendar day → { "YYYY-MM-DD": count }
+  const ordersByDay = useMemo(() => {
+    const map = {};
+    orders.forEach((o) => {
+      const d = getOrderDate(o);
+      if (d) {
+        const k = dayKey(d);
+        map[k] = (map[k] || 0) + 1;
+      }
+    });
+    return map;
+  }, [orders]);
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -906,71 +1025,107 @@ export default function ManageOrdersPage() {
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.2 }}
               >
-                <div className="filter-row-inline">
-                  <div className="filter-group-inline">
-                    <label className="font-12 dark-50">Order Status</label>
-                    <select
-                      className="sec-mid-btn width100"
-                      value={statusFilter}
-                      onChange={(e) => setStatusFilter(e.target.value)}
-                    >
-                      <option value="all">All Statuses</option>
-                      <option value="Processing">Processing</option>
-                      <option value="Shipped">Shipped</option>
-                      <option value="In Transit">In Transit</option>
-                      <option value="Out for Delivery">Out for Delivery</option>
-                      <option value="Delivered">Delivered</option>
-                      <option value="Cancelled">Cancelled</option>
-                    </select>
+                <div className="admin-filter-grid">
+                  <div className="admin-field">
+                    <label className="admin-field-label">Order Status</label>
+                    <div className="admin-select-wrap">
+                      <select
+                        className="admin-select"
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                      >
+                        <option value="all">All Statuses</option>
+                        <option value="Processing">Processing</option>
+                        <option value="Shipped">Shipped</option>
+                        <option value="In Transit">In Transit</option>
+                        <option value="Out for Delivery">Out for Delivery</option>
+                        <option value="Delivered">Delivered</option>
+                        <option value="Cancelled">Cancelled</option>
+                      </select>
+                    </div>
                   </div>
-                  <div className="filter-group-inline">
-                    <label className="font-12 dark-50">Payment Type</label>
-                    <select
-                      className="sec-mid-btn width100"
-                      value={paymentFilter}
-                      onChange={(e) => setPaymentFilter(e.target.value)}
-                    >
-                      <option value="all">All Payments</option>
-                      <option value="COD">Cash on Delivery</option>
-                      <option value="UPI Payment">UPI Payment</option>
-                      <option value="Card Payment">Card Payment</option>
-                    </select>
+                  <div className="admin-field">
+                    <label className="admin-field-label">Payment Type</label>
+                    <div className="admin-select-wrap">
+                      <select
+                        className="admin-select"
+                        value={paymentFilter}
+                        onChange={(e) => setPaymentFilter(e.target.value)}
+                      >
+                        <option value="all">All Payments</option>
+                        <option value="COD">Cash on Delivery</option>
+                        <option value="UPI Payment">UPI Payment</option>
+                        <option value="Card Payment">Card Payment</option>
+                      </select>
+                    </div>
                   </div>
-                  <div className="filter-group-inline">
-                    <label className="font-12 dark-50">From date</label>
+                  <div className="admin-field">
+                    <label className="admin-field-label">From date</label>
                     <input
                       type="date"
-                      className="sec-mid-btn width100"
+                      className="admin-input"
                       value={dateFrom}
                       onChange={(e) => setDateFrom(e.target.value)}
                     />
                   </div>
-                  <div className="filter-group-inline">
-                    <label className="font-12 dark-50">To date</label>
+                  <div className="admin-field">
+                    <label className="admin-field-label">To date</label>
                     <input
                       type="date"
-                      className="sec-mid-btn width100"
+                      className="admin-input"
                       value={dateTo}
                       onChange={(e) => setDateTo(e.target.value)}
                     />
                   </div>
-                  {(statusFilter !== "all" ||
-                    paymentFilter !== "all" ||
-                    dateFrom ||
-                    dateTo) && (
-                    <button
-                      className="sec-mid-btn"
-                      onClick={() => {
-                        setStatusFilter("all");
-                        setPaymentFilter("all");
-                        setDateFrom("");
-                        setDateTo("");
-                      }}
-                    >
-                      <X size={14} /> Clear
-                    </button>
+                </div>
+
+                {/* Orders calendar */}
+                <div className="admin-cal-wrap">
+                  <OrdersCalendar
+                    calMonth={calMonth}
+                    setCalMonth={setCalMonth}
+                    ordersByDay={ordersByDay}
+                    selectedDate={selectedDate}
+                    setSelectedDate={setSelectedDate}
+                  />
+                  {selectedDate && (
+                    <div className="admin-cal-selected">
+                      Showing orders for{" "}
+                      <strong>
+                        {new Date(selectedDate + "T00:00:00").toLocaleDateString(
+                          "en-IN",
+                          { day: "numeric", month: "short", year: "numeric" },
+                        )}
+                      </strong>
+                      <button
+                        type="button"
+                        className="admin-cal-clear"
+                        onClick={() => setSelectedDate("")}
+                      >
+                        <X size={13} /> Show all
+                      </button>
+                    </div>
                   )}
                 </div>
+
+                {(statusFilter !== "all" ||
+                  paymentFilter !== "all" ||
+                  dateFrom ||
+                  dateTo ||
+                  selectedDate) && (
+                  <button
+                    className="admin-clear-all"
+                    onClick={() => {
+                      setStatusFilter("all");
+                      setPaymentFilter("all");
+                      setDateFrom("");
+                      setDateTo("");
+                      setSelectedDate("");
+                    }}
+                  >
+                    <X size={14} /> Clear all filters
+                  </button>
+                )}
               </motion.div>
             )}
           </AnimatePresence>

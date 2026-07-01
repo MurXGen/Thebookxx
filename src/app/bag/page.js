@@ -287,25 +287,44 @@ ${paymentType === "COD" ? `💵 Cash on Delivery (incl. ₹${codFee} fee)` : "�
 _Thank you for shopping with TheBookX! 📚✨_
     `;
 
+    const url = "https://api.journalx.app/api/bookxTelegram/order";
+    const payload = JSON.stringify({
+      orderDetails: orderMessage,
+      customerName: addressData.name,
+      customerPhone: addressData.phone,
+      totalAmount: totalWithDelivery,
+      paymentMethod: paymentType,
+      codHandlingFee: codFee,
+    });
+
+    // 1) Try sendBeacon first — it is designed to reliably deliver data even
+    //    when the page immediately navigates away (the WhatsApp redirect on
+    //    mobile was killing the old fetch before it left the device).
+    let delivered = false;
     try {
-      await fetch("https://api.journalx.app/api/bookxTelegram/order", {
+      if (typeof navigator !== "undefined" && navigator.sendBeacon) {
+        const blob = new Blob([payload], { type: "application/json" });
+        delivered = navigator.sendBeacon(url, blob);
+      }
+    } catch {
+      delivered = false;
+    }
+
+    // 2) Fallback: keepalive fetch (also survives navigation). Fire-and-forget
+    //    so it never blocks/delays the WhatsApp redirect.
+    if (!delivered) {
+      fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        // keepalive lets the request finish even when the page immediately
-        // navigates to the WhatsApp app (critical on mobile, where the
-        // redirect would otherwise cancel the in-flight request).
         keepalive: true,
-        body: JSON.stringify({
-          orderDetails: orderMessage,
-          customerName: addressData.name,
-          customerPhone: addressData.phone,
-          totalAmount: totalWithDelivery,
-          paymentMethod: paymentType,
-          codHandlingFee: codFee,
-        }),
-      });
-    } catch (error) {
-      console.error("Error sending order to Telegram:", error);
+        body: payload,
+      })
+        .then((r) => {
+          if (!r.ok) console.error("Telegram notify HTTP", r.status);
+        })
+        .catch((error) =>
+          console.error("Telegram order notification failed:", error),
+        );
     }
   };
 

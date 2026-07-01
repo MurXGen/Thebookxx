@@ -1802,4 +1802,318 @@ export const listicleBlogs = {
       },
     ],
   }),
+
+  // 17 ──────────────────────────────────────────────────────────────────────
+  "best-booktok-books-2026": mk({
+    id: "blog-117",
+    title: "10 Best BookTok Books to Read in 2026 (Starting at ₹1)",
+    slug: "best-booktok-books-2026",
+    publishDate: "2026-06-02",
+    hero: IMG.overthink,
+    excerpt:
+      "The viral BookTok reads everyone is talking about, from romantasy and dark romance to unputdownable thrillers. All available on TheBookX with free delivery and books starting at ₹1.",
+    keywords: [
+      "booktok books 2026",
+      "best booktok books",
+      "viral books to read",
+      "romantasy books",
+      "trending books india",
+    ],
+    content: [
+      {
+        type: "paragraph",
+        content: `If your feed is full of book recommendations, you're not alone, BookTok has become the biggest force in publishing. Here are ten of the most-loved viral reads, spanning ${C("romance", "romance")}, ${C("fantasy-scifi", "fantasy")} and ${C("thriller", "thrillers")}, all in stock on TheBookX.`,
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: `1. ${L("it-ends-with-us", "It Ends with Us")}, Colleen Hoover`,
+      },
+      {
+        type: "paragraph",
+        content:
+          "The book that defined a generation of BookTok. An emotional, unforgettable story about love, courage and breaking cycles. Start here if you're new to Colleen Hoover.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: `2. ${L("fourth-wing", "Fourth Wing")}, Rebecca Yarros`,
+      },
+      {
+        type: "paragraph",
+        content:
+          "Dragons, rivals-to-lovers and a brutal war college, the romantasy phenomenon that topped every 2025 chart and is still flying off shelves in 2026.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: `3. ${L("a-court-of-thorns-and-roses", "A Court of Thorns and Roses")}, Sarah J. Maas`,
+      },
+      {
+        type: "paragraph",
+        content:
+          "The fae fantasy series that launched a thousand fan edits. Lush world-building and slow-burn romance make ACOTAR a gateway into the whole romantasy genre.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: `4. ${L("the-song-of-achilles", "The Song of Achilles")}, Madeline Miller`,
+      },
+      {
+        type: "paragraph",
+        content:
+          "A luminous, heartbreaking retelling of the Iliad. If you loved Circe, this is the tear-jerker BookTok warned you about, in the best way.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: `5. ${L("twisted-love", "Twisted Love")}, Ana Huang`,
+      },
+      {
+        type: "paragraph",
+        content:
+          "The opener of the addictive Twisted series, a grumpy-sunshine, brother's-best-friend romance that readers binge in a single weekend.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: `6. ${L("the-housemaid", "The Housemaid")}, Freida McFadden`,
+      },
+      {
+        type: "paragraph",
+        content:
+          "The queen of the twist. This propulsive thriller has a mid-book reveal that broke BookTok, and it reads in one sitting.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: `7. ${L("the-seven-husbands-of-evelyn-hugo", "The Seven Husbands of Evelyn Hugo")}, Taylor Jenkins Reid`,
+      },
+      {
+        type: "paragraph",
+        content:
+          "Old-Hollywood glamour, secrets and a love story you won't see coming. A modern classic that keeps topping reader polls.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: `8. ${L("icebreaker", "Icebreaker")}, Hannah Grace`,
+      },
+      {
+        type: "paragraph",
+        content:
+          "A figure-skater-meets-hockey-captain rom-com that's equal parts sweet and spicy, comfort reading at its finest.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: `9. ${L("verity", "Verity")}, Colleen Hoover`,
+      },
+      {
+        type: "paragraph",
+        content:
+          "A dark, twisty romantic thriller with an ending readers still argue about. Proof Colleen Hoover can do menace as well as heartbreak.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: `10. ${L("the-silent-patient", "The Silent Patient")}, Alex Michaelides`,
+      },
+      {
+        type: "paragraph",
+        content:
+          "A psychotherapist, a silent patient and a jaw-dropping final twist. The gateway thriller that turns non-readers into readers.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "Start your BookTok shelf",
+        content: `Explore the full ${C("romance", "Romance")}, ${C("fantasy-scifi", "Fantasy & Sci-Fi")} and ${C("thriller", "Thriller")} collections on TheBookX, free delivery, Cash on Delivery, and books starting at just ₹1.`,
+      },
+    ],
+    faqs: [
+      {
+        question: "What is BookTok?",
+        answer:
+          "BookTok is the book-loving corner of TikTok where readers share reviews and recommendations. It has turned titles like It Ends with Us and Fourth Wing into global bestsellers.",
+      },
+      {
+        question: "Which BookTok book should I read first?",
+        answer:
+          "For contemporary romance start with It Ends with Us; for fantasy start with Fourth Wing or A Court of Thorns and Roses; for a thriller start with The Housemaid.",
+      },
+      {
+        question: "Are these books available in India at a low price?",
+        answer:
+          "Yes. All ten are in stock on TheBookX with free delivery, Cash on Delivery, and prices starting from ₹1 on selected titles.",
+      },
+    ],
+  }),
+
+  // 18 ──────────────────────────────────────────────────────────────────────
+  "best-books-under-200": mk({
+    id: "blog-118",
+    title: "12 Best Books Under ₹200 to Start Your Reading Journey",
+    slug: "best-books-under-200",
+    publishDate: "2026-06-04",
+    hero: IMG.morning,
+    excerpt:
+      "Great books don't have to be expensive. Here are twelve life-changing reads you can buy for under ₹200 on TheBookX, with books starting at just ₹1.",
+    keywords: [
+      "best books under 200",
+      "cheap books online india",
+      "affordable books",
+      "best self help books",
+      "books starting at 1 rupee",
+    ],
+    content: [
+      {
+        type: "paragraph",
+        content: `A great book is the best value in the world, a lifetime of someone's wisdom for the price of a snack. Every title below is available on TheBookX for under ₹200, and many drop as low as ₹1. Here's where to start across ${C("self-help", "self-help")}, ${C("finance", "finance")} and ${C("fiction", "fiction")}.`,
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: `1. ${L("atomic-habits", "Atomic Habits")}, James Clear`,
+      },
+      {
+        type: "paragraph",
+        content:
+          "The definitive guide to building good habits and breaking bad ones, one tiny change at a time. If you read only one self-improvement book this year, make it this one.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: `2. ${L("the-psychology-of-money", "The Psychology of Money")}, Morgan Housel`,
+      },
+      {
+        type: "paragraph",
+        content:
+          "Nineteen short stories that quietly change how you think about money, saving and greed. Endlessly readable and endlessly recommended.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: `3. ${L("ikigai", "Ikigai")}, Héctor García & Francesc Miralles`,
+      },
+      {
+        type: "paragraph",
+        content:
+          "The Japanese secret to a long and happy life. A gentle, beautiful read about finding your reason to get up in the morning.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: `4. ${L("the-alchemist", "The Alchemist")}, Paulo Coelho`,
+      },
+      {
+        type: "paragraph",
+        content:
+          "A modern fable about following your dreams that has sold tens of millions of copies. Short, magical and endlessly re-readable.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: `5. ${L("rich-dad-poor-dad", "Rich Dad Poor Dad")}, Robert Kiyosaki`,
+      },
+      {
+        type: "paragraph",
+        content:
+          "The book that reframes how millions think about assets, income and financial freedom. A perfect first money book.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: `6. ${L("the-power-of-your-subconscious-mind", "The Power of Your Subconscious Mind")}, Joseph Murphy`,
+      },
+      {
+        type: "paragraph",
+        content:
+          "A timeless classic on how your inner beliefs shape your outer life, one of the most gifted self-help books in India.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: `7. ${L("think-and-grow-rich", "Think and Grow Rich")}, Napoleon Hill`,
+      },
+      {
+        type: "paragraph",
+        content:
+          "Nearly a century old and still on bestseller lists, the original success philosophy distilled from studying the greatest achievers.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: `8. ${L("man-s-search-for-meaning", "Man's Search for Meaning")}, Viktor Frankl`,
+      },
+      {
+        type: "paragraph",
+        content:
+          "A profound, slim memoir on finding purpose even in the darkest circumstances. Life-changing and quietly hopeful.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: `9. ${L("do-epic-shit", "Do Epic Shit")}, Ankur Warikoo`,
+      },
+      {
+        type: "paragraph",
+        content:
+          "Bite-sized, India-first wisdom on money, careers and self-belief from one of the country's most followed creators.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: `10. ${L("the-monk-who-sold-his-ferrari", "The Monk Who Sold His Ferrari")}, Robin Sharma`,
+      },
+      {
+        type: "paragraph",
+        content:
+          "A fable about a burned-out lawyer who trades success for meaning. A gentle introduction to living with intention.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: `11. ${L("the-subtle-art-of-not-giving-a-f-ck", "The Subtle Art of Not Giving a F*ck")}, Mark Manson`,
+      },
+      {
+        type: "paragraph",
+        content:
+          "A refreshingly blunt take on caring less about the wrong things so you can care more about what matters.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: `12. ${L("the-art-of-clarity", "The Art of Clarity")}, Murthy Thevar`,
+      },
+      {
+        type: "paragraph",
+        content:
+          "A practical guide to cutting through mental noise and thinking clearly under pressure, a fitting finish for a starter shelf.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "Build your library for less",
+        content: `Browse hundreds more titles under ₹200 on TheBookX, with free delivery, Cash on Delivery, and books starting at just ₹1.`,
+      },
+    ],
+    faqs: [
+      {
+        question: "Can I really buy good books for under ₹200 in India?",
+        answer:
+          "Yes. TheBookX stocks hundreds of bestsellers and classics under ₹200, with selected titles starting at just ₹1 and free delivery across India.",
+      },
+      {
+        question: "Which cheap book is best for a beginner?",
+        answer:
+          "Atomic Habits by James Clear is the ideal starting point, it's practical, easy to read and immediately useful.",
+      },
+      {
+        question: "Do these books ship with Cash on Delivery?",
+        answer:
+          "Yes, every title on TheBookX is available with Cash on Delivery and free shipping across India.",
+      },
+    ],
+  }),
 };

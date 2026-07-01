@@ -3,7 +3,7 @@
 import { useStore } from "@/context/StoreContext";
 import { trackAddToCart } from "@/lib/ga";
 import { books } from "@/utils/book";
-import { Book, Minus, Plus, Share2 } from "lucide-react";
+import { Book, Minus, Plus, Share2, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -358,12 +358,13 @@ export default function BookCard({ book }) {
             <div className="flex gap-12 align-center card-button">
               {qty === 0 ? (
                 <LoadingButton
-                  className="sec-mid-btn width100"
+                  className="pri-mid-btn width100"
                   onClick={handleAddToCart}
                   aria-label={`Add ${book.name} to cart`}
                   aria-disabled={isOneRupeeLimitReached}
+                  icon={<ShoppingCart size={16} />}
                 >
-                  <span>Add </span>
+                  <span className="sr-only">Add to cart</span>
                 </LoadingButton>
               ) : (
                 <div className="width100 gap-12 items-center flex flex-row justify-between">

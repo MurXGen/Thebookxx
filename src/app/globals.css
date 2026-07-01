@@ -11973,3 +11973,28 @@ img[data-loaded="true"] {
 }
 .edit-address-btn:hover{ background:#fff4e6; border-color:var(--tertiary,#fb8500); color:var(--tertiary,#fb8500); }
 .edit-address-btn svg{ color:var(--tertiary,#fb8500); }
+
+/* Book card — Add to cart icon button (matches the +/- stepper circles) */
+.bookcard-add-btn{
+  flex:0 0 auto;
+  width:46px;height:46px;
+  border-radius:50%;
+  background:#0a0a0a;
+  color:#fff;
+  border:none;
+  cursor:pointer;
+  box-shadow:0 6px 16px -7px rgba(0,0,0,.55);
+  transition:transform .15s ease, box-shadow .18s ease, background .18s ease;
+  -webkit-tap-highlight-color:transparent;
+}
+.bookcard-add-btn svg{ color:#fff; }
+.bookcard-add-btn:hover{
+  background:var(--tertiary,#fb8500);
+  transform:translateY(-2px);
+  box-shadow:0 10px 20px -8px rgba(251,133,0,.6);
+}
+.bookcard-add-btn:active{ transform:scale(.93); }
+.bookcard-add-btn[aria-disabled="true"]{ opacity:.5; cursor:not-allowed; }
+@media (max-width:480px){
+  .bookcard-add-btn{ width:44px;height:44px; }
+}

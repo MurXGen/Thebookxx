@@ -358,12 +358,12 @@ export default function BookCard({ book }) {
             <div className="flex gap-12 align-center card-button">
               {qty === 0 ? (
                 <LoadingButton
-                  className="pri-mid-btn width100"
+                  className="bookcard-add-btn"
                   onClick={handleAddToCart}
                   aria-label={`Add ${book.name} to cart`}
                   aria-disabled={isOneRupeeLimitReached}
                 >
-                  <ShoppingCart size={16} />
+                  <ShoppingCart size={18} />
                   <span className="sr-only">Add to cart</span>
                 </LoadingButton>
               ) : (

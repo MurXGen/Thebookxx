@@ -7726,6 +7726,13 @@ input {
   font-weight: var(--weight-500);
 }
 
+/* Estimated delivery detail — emphasized (bold + slightly bigger) */
+.tracking-eta {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--foreground);
+}
+
 /* ---------- Stepper ---------- */
 .tracking-stepper {
   position: relative;
@@ -10492,6 +10499,37 @@ img[data-loaded="true"] {
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
+}
+
+/* ---------- WhatsApp per-order quick messages ---------- */
+.aoc-wa-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+.aoc-wa-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #0a8f0c;
+  background: rgba(37, 211, 102, 0.1);
+  border: 1px solid rgba(37, 211, 102, 0.38);
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background 0.18s ease,
+    transform 0.1s ease;
+}
+.aoc-wa-btn:hover {
+  background: rgba(37, 211, 102, 0.2);
+}
+.aoc-wa-btn:active {
+  transform: scale(0.97);
 }
 @media (max-width: 720px) {
   .admin-kpis {

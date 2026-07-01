@@ -31,9 +31,56 @@ import {
   Phone,
   TrendingUp,
   TrendingDown,
+  MessageCircle,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+
+// ---- WhatsApp quick-message helpers ----
+// Opens WhatsApp chat with the customer, pre-filled with a stage message.
+const openWhatsApp = (phone, text) => {
+  const digits = String(phone || "").replace(/\D/g, "");
+  if (!digits) {
+    alert("No phone number on this order.");
+    return;
+  }
+  const num = digits.length === 10 ? `91${digits}` : digits;
+  const url = `https://wa.me/${num}?text=${encodeURIComponent(text)}`;
+  window.open(url, "_blank", "noopener,noreferrer");
+};
+
+// Prefilled messages for each order stage.
+const waMessages = (name, orderId) => {
+  const hi = `Hi ${name ? String(name).trim() : "there"}`;
+  const id = orderId ? ` (Order ${orderId})` : "";
+  return [
+    {
+      key: "confirm",
+      label: "✅ Confirm order",
+      text: `${hi}, this is TheBookX 📚. We've received your order${id}. Please confirm your order by replying YES. Thank you!`,
+    },
+    {
+      key: "about",
+      label: "📦 About to ship",
+      text: `${hi}, good news! Your TheBookX order${id} is packed and about to ship. We'll share the tracking details shortly. 📦`,
+    },
+    {
+      key: "shipped",
+      label: "🚚 Shipped",
+      text: `${hi}, your TheBookX order${id} has been shipped 🚚. It should be delivered within 5 to 9 days. Delivery may be slightly delayed if the weather doesn't support — thank you for your patience!`,
+    },
+    {
+      key: "ofd",
+      label: "🛵 Out for delivery",
+      text: `${hi}, your TheBookX order${id} is out for delivery today 🛵. Please keep your phone reachable so our delivery partner can reach you.`,
+    },
+    {
+      key: "delivered",
+      label: "🎉 Delivered",
+      text: `${hi}, your TheBookX order${id} has been delivered ✅. We hope you love your books! A quick review would mean a lot to us. 💛`,
+    },
+  ];
+};
 
 // Google Sheet ID and configuration
 const SHEET_ID = "1ovqFn50d0TKjV0nm4q1lb3N9XvimUgIsHCOlHh6QRdg";
@@ -1306,6 +1353,28 @@ export default function ManageOrdersPage() {
                         </div>
                       </div>
                     )}
+                  </div>
+
+                  <div className="aoc-section">
+                    <div className="aoc-section-title">
+                      <MessageCircle size={13} /> WhatsApp the customer
+                    </div>
+                    <div className="aoc-wa-grid">
+                      {waMessages(order["Customer Name"], orderId).map((m) => (
+                        <button
+                          key={m.key}
+                          type="button"
+                          className="aoc-wa-btn"
+                          title={m.text}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openWhatsApp(order["Phone Number"], m.text);
+                          }}
+                        >
+                          {m.label}
+                        </button>
+                      ))}
+                    </div>
                   </div>
 
                   <div className="aoc-section">

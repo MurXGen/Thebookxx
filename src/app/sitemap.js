@@ -217,6 +217,24 @@ export default async function sitemap() {
     return route;
   });
 
+  // Author-scoped book aliases (/author/<author>/<book>) — canonical to /books/<slug>
+  const authorBookSeen = new Set();
+  const authorBookRoutes = [];
+  books.forEach((book) => {
+    if (!book.author || book.author === "Unknown") return;
+    const aSlug = slugify(book.author);
+    const bSlug = slugify(book.name);
+    const key = `${aSlug}/${bSlug}`;
+    if (authorBookSeen.has(key)) return;
+    authorBookSeen.add(key);
+    authorBookRoutes.push({
+      url: `${baseUrl}/author/${aSlug}/${bSlug}`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.6,
+    });
+  });
+
   // Dynamic routes for all blogs with enhanced metadata
   const blogRoutes = allBlogs.map((blog) => {
     const route = {
@@ -348,6 +366,7 @@ export default async function sitemap() {
   return [
     ...staticRoutes,
     ...bookRoutes,
+    ...authorBookRoutes,
     ...blogRoutes,
     ...authorRoutes,
     ...categoryRoutes,

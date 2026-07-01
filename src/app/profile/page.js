@@ -223,9 +223,17 @@ function OrderTrackingTimeline({ order }) {
             {activeStage === 3 ? "Delivered" : "Order Placed"}
           </span>
           <span className="tracking-subtitle">
-            {activeStage === 3
-              ? `Delivered on ${longDate(new Date())}`
-              : `Delivery expected ${deliveryRangeLabel}`}
+            {activeStage === 3 ? (
+              <>
+                Delivered on{" "}
+                <strong className="tracking-eta">{longDate(new Date())}</strong>
+              </>
+            ) : (
+              <>
+                Delivery expected{" "}
+                <strong className="tracking-eta">{deliveryRangeLabel}</strong>
+              </>
+            )}
           </span>
         </div>
       </div>

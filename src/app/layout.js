@@ -29,7 +29,7 @@ export const metadata = {
 
   title: {
     default:
-      "TheBookX, Buy Books Online at Lowest Prices in India | Books Starting at ₹1",
+      "TheBookX | Buy Books Online in India at the Lowest Prices | Books Starting at ₹1",
     template: "%s | TheBookX",
   },
 
@@ -73,7 +73,7 @@ export const metadata = {
   },
 
   openGraph: {
-    title: "TheBookX, Books Starting at Just ₹1 | Free Shipping",
+    title: "TheBookX | Books Starting at Just ₹1 | Free Shipping",
     description:
       "Shop 300+ books at the lowest prices, starting at just ₹1. Free shipping across India. Trusted by 50,000+ readers. Limited time ₹1 book sale!",
     url: "https://www.thebookx.in",
@@ -86,7 +86,7 @@ export const metadata = {
 
   twitter: {
     card: "summary_large_image",
-    title: "TheBookX, Buy Books Online at Lowest Prices, Starting at ₹1",
+    title: "TheBookX | Buy Books Online in India at the Lowest Prices",
     description: "Books starting at just ₹1. Free shipping across India.",
     // Twitter image provided by app/twitter-image.js
   },
@@ -138,7 +138,7 @@ export default function RootLayout({ children }) {
                   "@type": "Organization",
                   "@id": "https://www.thebookx.in/#organization",
                   name: "TheBookX",
-                  alternateName: "TheBookX, Online Bookstore India",
+                  alternateName: "TheBookX — Online Bookstore India",
                   url: "https://www.thebookx.in",
                   logo: {
                     "@type": "ImageObject",

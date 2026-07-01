@@ -3,7 +3,7 @@
 import OpengraphImage from "./opengraph-image";
 
 export const runtime = "edge";
-export const alt = "TheBookX, Buy Books Online in India, Starting at ₹1";
+export const alt = "TheBookX — Buy Books Online in India, Starting at ₹1";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 

@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TheBookX — Book-Page Carousels</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+  :root{--paper:#f2ede1;--paper-2:#eae2d1;--ink:#1a1916;--ink-soft:#4b463c;
+    --accent:#c0392f;--accent-deep:#9e2a22;--hi:#d8f64b;--line:#d8d0bf;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:#1c1b18;font-family:'Poppins','Helvetica Neue',Arial,sans-serif;color:var(--ink);
+    min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:24px 16px 80px;-webkit-font-smoothing:antialiased;}
+  .page-head{color:#e9e4d8;text-align:center;margin-bottom:14px;}
+  .page-head h1{font-weight:700;font-size:17px;}
+  .page-head p{font-size:12px;opacity:.55;margin-top:4px;max-width:400px;}
+
+  .switch{display:inline-flex;background:#262320;border:1px solid #38332c;border-radius:40px;padding:4px;margin-bottom:24px;gap:4px;}
+  .switch a{text-decoration:none;font-weight:600;font-size:12.5px;letter-spacing:.3px;color:#cfc8ba;padding:9px 18px;border-radius:30px;transition:background .2s,color .2s;}
+  .switch a.active{background:var(--accent);color:#fff;}
+
+  .theme-pom{--accent:#2f7d6b;--accent-deep:#235e50;}
+  .theme-courage{--accent:#c0392f;--accent-deep:#8f1d12;}
+
+  /* ===== carousel shell ===== */
+  .carouselCard{display:flex;flex-direction:column;align-items:center;}
+  .viewport{position:relative;width:min(90vw,432px);aspect-ratio:4/5;overflow:hidden;border-radius:20px;
+    box-shadow:0 30px 80px -30px rgba(0,0,0,.7);}
+  .track{display:flex;height:100%;transition:transform .5s cubic-bezier(.7,.02,.2,1);}
+  .slide{flex:0 0 100%;height:100%;position:relative;overflow:hidden;
+    background:linear-gradient(180deg,var(--paper) 0%, var(--paper-2) 100%);
+    padding:64px 46px 54px;display:flex;flex-direction:column;}
+  /* book spine on the left edge */
+  .slide::after{content:"";position:absolute;top:0;bottom:0;left:0;width:9px;
+    background:linear-gradient(90deg, var(--accent) 0%, rgba(0,0,0,.15) 100%);opacity:.85;}
+  /* faint bleed-through text from the back of the page */
+  .ghost{position:absolute;inset:44px 40px;pointer-events:none;transform:scaleX(-1);
+    color:rgba(26,25,22,.055);font-size:15px;line-height:2.05;font-weight:500;overflow:hidden;}
+  .pageno{position:absolute;top:22px;right:24px;z-index:3;font-weight:700;font-size:12px;
+    color:#fff;background:rgba(26,25,22,.62);padding:5px 12px;border-radius:30px;letter-spacing:.5px;}
+
+  .content{position:relative;z-index:2;display:flex;flex-direction:column;height:100%;}
+  .content.center{justify-content:center;}
+
+  .hl{background:linear-gradient(180deg,transparent 10%,var(--hi) 10%,var(--hi) 90%,transparent 90%);
+    color:#141310;padding:0 .06em;box-decoration-break:clone;-webkit-box-decoration-break:clone;}
+
+  .ptitle{font-weight:900;font-size:clamp(34px,9vw,52px);line-height:1.06;letter-spacing:-1px;color:var(--ink);}
+  .ptitle .hl{padding:.02em .1em;}
+  .hook{font-weight:600;font-size:clamp(17px,4.4vw,21px);line-height:1.4;color:var(--ink);margin-top:26px;}
+
+  .phead{font-weight:800;font-size:clamp(24px,6.4vw,32px);line-height:1.2;letter-spacing:-.4px;margin-bottom:22px;align-self:flex-start;}
+  .phead .hl{padding:.04em .12em;}
+  .body p{font-weight:500;font-size:clamp(15px,4vw,18px);line-height:1.5;color:var(--ink);margin-bottom:15px;}
+  .body p b{font-weight:800;}
+  .body p.kick{color:var(--ink);}
+
+  /* CTA slide */
+  .ctaLabel{font-weight:700;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--accent-deep);margin-bottom:14px;}
+  .content.cta .phead{font-size:clamp(30px,8vw,44px);}
+  .booktitle{font-weight:700;font-size:clamp(16px,4.2vw,20px);color:var(--ink);margin-top:2px;}
+  .booktitle span{color:var(--ink-soft);font-weight:500;}
+  .ctaPill{align-self:flex-start;margin-top:26px;font-weight:700;font-size:14px;color:#fff;background:var(--accent);
+    padding:13px 22px;border-radius:30px;}
+  .ctaPill b{color:#ffe9b0;}
+  .follow{margin-top:22px;font-weight:600;font-size:14px;color:var(--ink-soft);}
+  .brandmark{margin-top:auto;padding-top:20px;font-weight:800;font-size:15px;color:var(--ink);}
+  .brandmark span{color:var(--accent);}
+  .content.cta{justify-content:flex-start;padding-top:6px;}
+
+  /* nav + dots + controls */
+  .nav{position:absolute;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:50%;border:none;cursor:pointer;
+    background:rgba(26,25,22,.72);color:#fff;font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;z-index:6;
+    transition:background .2s,opacity .2s;}
+  .nav:hover{background:var(--accent);}
+  .nav.prev{left:12px;}.nav.next{right:12px;}
+  .nav:disabled{opacity:.25;cursor:default;}
+  .dots{display:flex;gap:8px;justify-content:center;margin-top:18px;flex-wrap:wrap;max-width:432px;}
+  .dots button{width:8px;height:8px;border-radius:50%;border:none;background:#5c574c;cursor:pointer;padding:0;transition:all .25s;}
+  .dots button.on{background:var(--accent);width:24px;border-radius:6px;}
+  .ctrls{display:flex;gap:12px;margin-top:16px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;border:none;cursor:pointer;font-family:inherit;font-weight:600;font-size:12.5px;
+    padding:12px 18px;border-radius:40px;transition:transform .15s,filter .2s;color:#fff;}
+  .btn svg{width:15px;height:15px;}
+  .btn.one{background:var(--accent);box-shadow:0 12px 30px -8px rgba(0,0,0,.45);}
+  .btn.all{background:#3a352e;}
+  .btn:hover{transform:translateY(-2px);filter:brightness(1.07);}
+  .btn:disabled{opacity:.65;cursor:wait;transform:none;}
+
+  .separator{width:min(90vw,432px);display:flex;align-items:center;gap:14px;margin:48px 0 24px;}
+  .separator .ln{flex:1;height:1px;background:#3a352e;}
+  .separator .lbl{font-weight:700;font-size:11px;letter-spacing:2.4px;text-transform:uppercase;color:#8a8478;}
+  .note{color:#9a948a;font-size:11px;margin-top:30px;text-align:center;max-width:420px;line-height:1.55;}
+</style>
+</head>
+<body>
+  <div class="page-head">
+    <h1>TheBookX — Book-Page Carousels</h1>
+    <p>Viral highlighter book-page style. Swipe through, then export each slide as a 1080&times;1350 PNG.</p>
+  </div>
+
+  <div class="switch">
+    <a href="the-art-of-clarity-poster.html">Posters</a>
+    <a href="the-art-of-clarity-story.html">Stories</a>
+    <a href="the-art-of-clarity-carousel.html" class="active">Carousels</a>
+  </div>
+
+  <!-- =============== CAROUSEL 1 — THE ART OF CLARITY =============== -->
+  <div class="carouselCard">
+    <div class="viewport">
+      <div class="track">
+        <div class="slide"><div class="pageno">1/7</div><div class="ghost">People chase clarity in noise, in more tabs, more plans, more opinions. But clarity is subtraction, not addition. The mind clears the moment you stop feeding it every passing thought and start choosing what deserves your attention today.</div>
+          <div class="content center">
+            <h2 class="ptitle"><span class="hl">The Art of</span><br><span class="hl">Clarity</span></h2>
+            <p class="hook">because a busy mind is not the same as a clear one...</p>
+          </div>
+        </div>
+        <div class="slide"><div class="pageno">2/7</div><div class="ghost">The mind is loud by default. It confuses movement with meaning and urgency with importance. Naming the noise is the first act of control.</div>
+          <div class="content center"><h2 class="phead"><span class="hl">1. Name the noise</span></h2>
+            <div class="body"><p>Most confusion isn't a lack of options. It's too many, all talking at once.</p><p>Get them out of your head and onto paper.</p><p><b>Clarity starts where the noise ends.</b></p></div>
+          </div>
+        </div>
+        <div class="slide"><div class="pageno">3/7</div><div class="ghost">Overthinking is a comfortable way to avoid the discomfort of deciding. It looks productive and costs you everything.</div>
+          <div class="content center"><h2 class="phead"><span class="hl">2. Stop marinating</span></h2>
+            <div class="body"><p>Overthinking feels like progress. It isn't.</p><p>A decision delayed just drains you. Give it a deadline.</p><p><b>Choose, then adjust.</b></p></div>
+          </div>
+        </div>
+        <div class="slide"><div class="pageno">4/7</div><div class="ghost">A full calendar is not a meaningful life. Effort aimed at the wrong things is just expensive noise.</div>
+          <div class="content center"><h2 class="phead"><span class="hl">3. Do what matters</span></h2>
+            <div class="body"><p>Being busy is easy. Being effective is rare.</p><p>Cut the tasks that only look productive.</p><p><b>Protect the vital few.</b></p></div>
+          </div>
+        </div>
+        <div class="slide"><div class="pageno">5/7</div><div class="ghost">Attention is the rarest currency you own. Split it, and everything you make turns out half-finished.</div>
+          <div class="content center"><h2 class="phead"><span class="hl">4. One thing at a time</span></h2>
+            <div class="body"><p>A scattered mind multiplies mistakes.</p><p>Single-task the one thing that moves the needle.</p><p><b>Depth beats speed.</b></p></div>
+          </div>
+        </div>
+        <div class="slide"><div class="pageno">6/7</div><div class="ghost">You cannot think your way to certainty. Clarity is a reward for starting, not a condition for it.</div>
+          <div class="content center"><h2 class="phead"><span class="hl">5. Action creates clarity</span></h2>
+            <div class="body"><p>You can't think your way out of fog. You act your way out.</p><p>Take the smallest next step.</p><p><b>Motion reveals the path.</b></p></div>
+          </div>
+        </div>
+        <div class="slide"><div class="pageno">7/7</div><div class="ghost">One idea, lived, is worth a thousand saved for later.</div>
+          <div class="content cta"><div class="ctaLabel">The Book</div><h2 class="phead"><span class="hl">Read it. Live it.</span></h2>
+            <div class="booktitle">The Art of Clarity <span>&mdash; Murthy Thevar</span></div>
+            <div class="ctaPill">Get it on thebookx.in &middot; from <b>&#8377;1</b></div>
+            <p class="follow">Follow @thebookx for a book worth reading, every day.</p>
+            <div class="brandmark">TheBook<span>X</span></div>
+          </div>
+        </div>
+      </div>
+      <button class="nav prev" aria-label="Previous">&#8249;</button>
+      <button class="nav next" aria-label="Next">&#8250;</button>
+    </div>
+    <div class="dots"></div>
+    <div class="ctrls">
+      <button class="btn one" data-slug="art-of-clarity"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg>Download slide</button>
+      <button class="btn all" data-slug="art-of-clarity"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v12H4zM8 20h8"/></svg>Download all</button>
+    </div>
+  </div>
+
+  <div class="separator"><span class="ln"></span><span class="lbl">More Bestsellers</span><span class="ln"></span></div>
+
+  <!-- =============== CAROUSEL 2 — THE PSYCHOLOGY OF MONEY =============== -->
+  <div class="carouselCard theme-pom">
+    <div class="viewport">
+      <div class="track">
+        <div class="slide"><div class="pageno">1/7</div><div class="ghost">Money is less about spreadsheets and more about stories we tell ourselves. Two people with the same income can end up worlds apart, purely because of how they behave when no one is watching.</div>
+          <div class="content center">
+            <h2 class="ptitle"><span class="hl">The Psychology</span><br><span class="hl">of Money</span></h2>
+            <p class="hook">because getting rich and staying rich are two very different skills...</p>
+          </div>
+        </div>
+        <div class="slide"><div class="pageno">2/7</div><div class="ghost">Genius that loses control is worthless. Ordinary discipline, repeated, beats brilliance that blows up.</div>
+          <div class="content center"><h2 class="phead"><span class="hl">1. Behaviour beats brains</span></h2>
+            <div class="body"><p>Doing well with money has little to do with how smart you are.</p><p>It's how you behave under fear and greed.</p><p><b>Temperament wins.</b></p></div>
+          </div>
+        </div>
+        <div class="slide"><div class="pageno">3/7</div><div class="ghost">The spent dollar is gone and seen. The saved dollar is quiet and invisible, and that is exactly where wealth hides.</div>
+          <div class="content center"><h2 class="phead"><span class="hl">2. Wealth is unseen</span></h2>
+            <div class="body"><p>Wealth is the income you choose not to spend.</p><p>The car not bought. The flex resisted.</p><p><b>Wealth is what you don't see.</b></p></div>
+          </div>
+        </div>
+        <div class="slide"><div class="pageno">4/7</div><div class="ghost">Savings without a goal is still the most valuable asset you can build: the freedom to say no and to wait.</div>
+          <div class="content center"><h2 class="phead"><span class="hl">3. Save anyway</span></h2>
+            <div class="body"><p>You don't need a specific reason to save.</p><p>Savings buy you options, time and calm.</p><p><b>Flexibility is the real return.</b></p></div>
+          </div>
+        </div>
+        <div class="slide"><div class="pageno">5/7</div><div class="ghost">The eighth wonder of the world is patience. Most people underestimate what a long, boring time horizon can do.</div>
+          <div class="content center"><h2 class="phead"><span class="hl">4. Let it compound</span></h2>
+            <div class="body"><p>The magic isn't huge returns. It's good returns left alone for a very long time.</p><p><b>Time does the heavy lifting.</b></p></div>
+          </div>
+        </div>
+        <div class="slide"><div class="pageno">6/7</div><div class="ghost">There is no finish line if the goalpost keeps moving. Contentment is the only reliable exit.</div>
+          <div class="content center"><h2 class="phead"><span class="hl">5. Know your enough</span></h2>
+            <div class="body"><p>The hardest financial skill is stopping the goalpost from moving.</p><p><b>Enough is a superpower.</b></p></div>
+          </div>
+        </div>
+        <div class="slide"><div class="pageno">7/7</div><div class="ghost">Wealth built slowly is rarely lost quickly.</div>
+          <div class="content cta"><div class="ctaLabel">The Book</div><h2 class="phead"><span class="hl">Read it. Live it.</span></h2>
+            <div class="booktitle">The Psychology of Money <span>&mdash; Morgan Housel</span></div>
+            <div class="ctaPill">Get it on thebookx.in &middot; from <b>&#8377;1</b></div>
+            <p class="follow">Follow @thebookx for a book worth reading, every day.</p>
+            <div class="brandmark">TheBook<span>X</span></div>
+          </div>
+        </div>
+      </div>
+      <button class="nav prev" aria-label="Previous">&#8249;</button>
+      <button class="nav next" aria-label="Next">&#8250;</button>
+    </div>
+    <div class="dots"></div>
+    <div class="ctrls">
+      <button class="btn one" data-slug="psychology-of-money"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg>Download slide</button>
+      <button class="btn all" data-slug="psychology-of-money"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v12H4zM8 20h8"/></svg>Download all</button>
+    </div>
+  </div>
+
+  <div class="separator"><span class="ln"></span><span class="lbl">More Bestsellers</span><span class="ln"></span></div>
+
+  <!-- =============== CAROUSEL 3 — THE COURAGE TO BE DISLIKED =============== -->
+  <div class="carouselCard theme-courage">
+    <div class="viewport">
+      <div class="track">
+        <div class="slide"><div class="pageno">1/7</div><div class="ghost">We spend years auditioning for approval that never quite arrives, editing ourselves to fit rooms we never chose. Freedom is not being liked by everyone. It is no longer needing to be.</div>
+          <div class="content center">
+            <h2 class="ptitle"><span class="hl">The Courage</span><br><span class="hl">to Be Disliked</span></h2>
+            <p class="hook">because a life spent chasing approval was never really yours...</p>
+          </div>
+        </div>
+        <div class="slide"><div class="pageno">2/7</div><div class="ghost">The past is fixed, but its meaning is not. We are not products of our experiences, but of the stories we choose to tell about them.</div>
+          <div class="content center"><h2 class="phead"><span class="hl">1. Your past isn't a prison</span></h2>
+            <div class="body"><p>You are not shaped by what happened to you, but by the meaning you give it.</p><p>The past doesn't decide today.</p><p><b>You do.</b></p></div>
+          </div>
+        </div>
+        <div class="slide"><div class="pageno">3/7</div><div class="ghost">Look closely at any anxiety and you will usually find another person inside it. The gaze of others is the weight we carry.</div>
+          <div class="content center"><h2 class="phead"><span class="hl">2. All problems are relationships</span></h2>
+            <div class="body"><p>Nearly every worry traces back to other people.</p><p>Freedom begins when their opinion stops running your life.</p><p><b>Detach from approval.</b></p></div>
+          </div>
+        </div>
+        <div class="slide"><div class="pageno">4/7</div><div class="ghost">Much of our suffering comes from carrying tasks that were never ours to carry, and abandoning the ones that were.</div>
+          <div class="content center"><h2 class="phead"><span class="hl">3. Separate the tasks</span></h2>
+            <div class="body"><p>Ask whose task it really is. You handle yours; let others handle theirs.</p><p><b>What they think of you is their task, not yours.</b></p></div>
+          </div>
+        </div>
+        <div class="slide"><div class="pageno">5/7</div><div class="ghost">A life lived for applause is a life lived on someone else's script, chasing a standard that keeps moving.</div>
+          <div class="content center"><h2 class="phead"><span class="hl">4. Stop seeking recognition</span></h2>
+            <div class="body"><p>Living to be praised is living by someone else's rules.</p><p>Act because it's right, not to be seen.</p><p><b>Applause is a cage.</b></p></div>
+          </div>
+        </div>
+        <div class="slide"><div class="pageno">6/7</div><div class="ghost">Life is not a line to a distant destination. It is a series of moments, each one complete in itself.</div>
+          <div class="content center"><h2 class="phead"><span class="hl">5. Live in this moment</span></h2>
+            <div class="body"><p>Life isn't a race to a far-off goal. It's a series of nows.</p><p>Contribute where you stand.</p><p><b>Happiness is here, not later.</b></p></div>
+          </div>
+        </div>
+        <div class="slide"><div class="pageno">7/7</div><div class="ghost">The moment you stop performing for approval, your life quietly becomes your own.</div>
+          <div class="content cta"><div class="ctaLabel">The Book</div><h2 class="phead"><span class="hl">Read it. Live it.</span></h2>
+            <div class="booktitle">The Courage to Be Disliked <span>&mdash; Kishimi &amp; Koga</span></div>
+            <div class="ctaPill">Get it on thebookx.in &middot; from <b>&#8377;1</b></div>
+            <p class="follow">Follow @thebookx for a book worth reading, every day.</p>
+            <div class="brandmark">TheBook<span>X</span></div>
+          </div>
+        </div>
+      </div>
+      <button class="nav prev" aria-label="Previous">&#8249;</button>
+      <button class="nav next" aria-label="Next">&#8250;</button>
+    </div>
+    <div class="dots"></div>
+    <div class="ctrls">
+      <button class="btn one" data-slug="courage-to-be-disliked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg>Download slide</button>
+      <button class="btn all" data-slug="courage-to-be-disliked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v12H4zM8 20h8"/></svg>Download all</button>
+    </div>
+  </div>
+
+  <div class="note">Each slide exports as a 1080&times;1350 PNG. "Download all" saves every slide in order &mdash; your browser may ask to allow multiple downloads the first time.</div>
+
+<script>
+  function exportSlide(slide, filename){
+    return html2canvas(slide, { backgroundColor:'#f2ede1', scale: Math.max(2, Math.ceil(1080/slide.offsetWidth)),
+      useCORS:true, logging:false, width:slide.offsetWidth, height:slide.offsetHeight })
+    .then(function(canvas){
+      var out=document.createElement('canvas'); out.width=1080; out.height=1350;
+      var ctx=out.getContext('2d'); ctx.fillStyle='#f2ede1'; ctx.fillRect(0,0,1080,1350);
+      var tR=1080/1350, sR=canvas.width/canvas.height, sw,sh,sx,sy;
+      if(sR>tR){ sh=canvas.height; sw=sh*tR; } else { sw=canvas.width; sh=sw/tR; }
+      sx=(canvas.width-sw)/2; sy=(canvas.height-sh)/2;
+      ctx.drawImage(canvas,sx,sy,sw,sh,0,0,1080,1350);
+      return new Promise(function(res){ out.toBlob(function(b){
+        var a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=filename; a.click();
+        setTimeout(function(){ URL.revokeObjectURL(a.href); res(); }, 500);
+      },'image/png'); });
+    });
+  }
+
+  function setupCarousel(card){
+    var track=card.querySelector('.track');
+    var slides=Array.prototype.slice.call(card.querySelectorAll('.slide'));
+    var prev=card.querySelector('.nav.prev'), next=card.querySelector('.nav.next');
+    var dotsBox=card.querySelector('.dots');
+    var oneBtn=card.querySelector('.btn.one'), allBtn=card.querySelector('.btn.all');
+    var slug=oneBtn.getAttribute('data-slug');
+    var cur=0;
+    slides.forEach(function(_,i){ var b=document.createElement('button'); b.addEventListener('click',function(){go(i);}); dotsBox.appendChild(b); });
+    var dots=Array.prototype.slice.call(dotsBox.children);
+    function render(){ track.style.transform='translateX('+(-cur*100)+'%)';
+      dots.forEach(function(d,i){ d.className=i===cur?'on':''; });
+      prev.disabled=cur===0; next.disabled=cur===slides.length-1; }
+    function go(i){ cur=Math.max(0,Math.min(slides.length-1,i)); render(); }
+    prev.addEventListener('click',function(){go(cur-1);});
+    next.addEventListener('click',function(){go(cur+1);});
+    var x0=null, vp=card.querySelector('.viewport');
+    vp.addEventListener('touchstart',function(e){x0=e.touches[0].clientX;},{passive:true});
+    vp.addEventListener('touchend',function(e){ if(x0===null)return; var dx=e.changedTouches[0].clientX-x0; if(Math.abs(dx)>45)go(cur+(dx<0?1:-1)); x0=null; });
+
+    oneBtn.addEventListener('click', async function(){
+      var o=oneBtn.innerHTML; oneBtn.disabled=true; oneBtn.textContent='Rendering...';
+      await document.fonts.ready;
+      try{ await exportSlide(slides[cur], slug+'-slide-'+(cur+1)+'.png'); }
+      catch(err){ alert('Export failed: '+err.message); }
+      oneBtn.innerHTML=o; oneBtn.disabled=false;
+    });
+    allBtn.addEventListener('click', async function(){
+      var o=allBtn.innerHTML; allBtn.disabled=true; oneBtn.disabled=true;
+      await document.fonts.ready;
+      try{ for(var i=0;i<slides.length;i++){ allBtn.textContent='Saving '+(i+1)+'/'+slides.length; await exportSlide(slides[i], slug+'-slide-'+(i+1)+'.png'); } }
+      catch(err){ alert('Export failed: '+err.message); }
+      allBtn.innerHTML=o; allBtn.disabled=false; oneBtn.disabled=false;
+    });
+    render();
+  }
+  Array.prototype.slice.call(document.querySelectorAll('.carouselCard')).forEach(setupCarousel);
+</script>
+</body>
+</html>

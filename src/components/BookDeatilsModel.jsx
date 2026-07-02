@@ -39,6 +39,7 @@ import YouMayLike from "./UI/YouMayLike";
 import BookReviews from "./UI/BookReviews";
 import StoreReviews from "./StoreReviews";
 import LiveOrdersStrip from "./LiveOrdersStrip";
+import BookLinksStrip from "./BookLinksStrip";
 import CartConfetti from "./UI/Confetti";
 import { getReviewsByBook, getAverageRating } from "@/utils/reviews";
 
@@ -708,6 +709,11 @@ export default function BookDetailsModal({ book }) {
               <span className="bd-trust-label">7-Day Returns</span>
             </div>
           </div>
+
+          {/* ===== Related reads (Medium articles + TheBookX links), animated ===== */}
+          {book.links && book.links.length > 0 && (
+            <BookLinksStrip links={book.links} mediumUrl={book.mediumUrl} />
+          )}
 
           {/* ===== Inline CTA row (visible on desktop, hidden on mobile via CSS) ===== */}
           <div className="bd-cta-inline">

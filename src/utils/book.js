@@ -165,6 +165,30 @@ export const books = [
     pages: "190-210",
     language: "English",
     stock: 27,
+    // Related reads: Medium articles + TheBookX book-focused pages.
+    mediumUrl: "https://medium.com/@murthyofficial3",
+    links: [
+      {
+        title: "The Art of Clarity by Murthy Thevar: How to Think Clearly",
+        url: "https://medium.com/p/dae736e750fa",
+        source: "medium",
+      },
+      {
+        title: "How to Stop Overthinking: Lessons from The Art of Clarity",
+        url: "https://medium.com/p/36e8217977dc",
+        source: "medium",
+      },
+      {
+        title: "Buy The Art of Clarity by Murthy Thevar on TheBookX",
+        url: "https://www.thebookx.in/books/the-art-of-clarity",
+        source: "thebookx",
+      },
+      {
+        title: "The Art of Clarity by Murthy Thevar — author page",
+        url: "https://www.thebookx.in/author/murthy-thevar/the-art-of-clarity",
+        source: "thebookx",
+      },
+    ],
   },
   {
     id: "bk-003",

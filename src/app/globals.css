@@ -7214,6 +7214,114 @@ input {
   border-radius: var(--px-10);
 }
 
+/* ===== Related-reads strip (animated Medium + TheBookX links) ===== */
+.bls-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0 4px;
+  padding: 10px 14px;
+  border: 1px solid var(--hairline, #ececec);
+  border-radius: 14px;
+  background: linear-gradient(180deg, #ffffff 0%, #fafafb 100%);
+  box-shadow: var(--shadow-xs, 0 1px 3px rgba(0, 0, 0, 0.05));
+  overflow: hidden;
+}
+.bls-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--dark-50, #6b7280);
+  white-space: nowrap;
+}
+.bls-label-icon {
+  color: var(--tertiary, #fb8500);
+}
+.bls-track {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 22px;
+  overflow: hidden;
+}
+.bls-item {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  min-width: 0;
+}
+.bls-source {
+  flex: 0 0 auto;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  padding: 2px 7px;
+  border-radius: 999px;
+}
+.bls-item.is-medium .bls-source {
+  background: #0a0a0a;
+  color: #fff;
+}
+.bls-item.is-thebookx .bls-source {
+  background: rgba(251, 133, 0, 0.14);
+  color: #b45309;
+}
+.bls-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--foreground, #0a0a0a);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bls-item:hover .bls-title {
+  color: var(--tertiary, #fb8500);
+}
+.bls-ext {
+  flex: 0 0 auto;
+  color: var(--dark-50, #9aa0a6);
+}
+.bls-articles-btn {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 13px;
+  border-radius: 999px;
+  border: 1px solid var(--tertiary, #fb8500);
+  color: var(--tertiary, #fb8500);
+  background: transparent;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+.bls-articles-btn:hover {
+  background: var(--tertiary, #fb8500);
+  color: #fff;
+}
+@media (max-width: 560px) {
+  .bls-wrap {
+    flex-wrap: wrap;
+  }
+  .bls-track {
+    flex-basis: 100%;
+    order: 3;
+  }
+}
+
 .bd-trust-item {
   display: flex;
   flex-direction: column;

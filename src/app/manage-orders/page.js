@@ -35,6 +35,18 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { books as ALL_BOOKS } from "@/utils/book";
+
+// ---- Book cover lookup (order stores names; resolve to cover image) ----
+const BOOK_IMAGE_BY_NAME = (() => {
+  const map = {};
+  (ALL_BOOKS || []).forEach((b) => {
+    if (b?.name) map[String(b.name).trim().toLowerCase()] = b.image;
+  });
+  return map;
+})();
+const getBookImage = (name) =>
+  BOOK_IMAGE_BY_NAME[String(name || "").trim().toLowerCase()] || null;
 
 // ---- WhatsApp quick-message helpers ----
 // Opens WhatsApp chat with the customer, pre-filled with a stage message.
@@ -312,6 +324,10 @@ function OrdersCalendar({
   ordersByDay,
   selectedDate,
   setSelectedDate,
+  dateFrom,
+  dateTo,
+  setDateFrom,
+  setDateTo,
 }) {
   const { y, m } = calMonth;
   const todayKey = dayKey(new Date());
@@ -322,6 +338,10 @@ function OrdersCalendar({
     month: "long",
     year: "numeric",
   });
+
+  // Range-select mode: pick a start day, then an end day.
+  const [rangeMode, setRangeMode] = useState(false);
+  const [rangeStart, setRangeStart] = useState(""); // pending start while picking
 
   const cells = [];
   for (let i = 0; i < startDow; i++) cells.push(null);
@@ -338,6 +358,35 @@ function OrdersCalendar({
   const next = () =>
     setCalMonth(({ y, m }) => (m === 11 ? { y: y + 1, m: 0 } : { y, m: m + 1 }));
 
+  const toggleRangeMode = () => {
+    setRangeStart("");
+    setRangeMode((on) => {
+      const nextOn = !on;
+      if (nextOn) setSelectedDate(""); // range replaces single-day filter
+      return nextOn;
+    });
+  };
+
+  const handleCellClick = (key) => {
+    if (rangeMode) {
+      if (!rangeStart) {
+        // first click → start; clear any previous range
+        setRangeStart(key);
+        setDateFrom("");
+        setDateTo("");
+      } else {
+        // second click → complete range (ordered)
+        const [lo, hi] =
+          rangeStart <= key ? [rangeStart, key] : [key, rangeStart];
+        setDateFrom(lo);
+        setDateTo(hi);
+        setRangeStart("");
+      }
+    } else {
+      setSelectedDate(selectedDate === key ? "" : key);
+    }
+  };
+
   return (
     <div className="oc">
       <div className="oc-head">
@@ -352,6 +401,23 @@ function OrdersCalendar({
           ›
         </button>
       </div>
+
+      <div className="oc-toolbar">
+        <button
+          type="button"
+          className={`oc-range-btn${rangeMode ? " active" : ""}`}
+          onClick={toggleRangeMode}
+        >
+          <Calendar size={13} />
+          {rangeMode ? "Range mode on" : "Select range"}
+        </button>
+        {rangeMode && (
+          <span className="oc-range-hint">
+            {rangeStart ? "Now pick the end date" : "Pick the start date"}
+          </span>
+        )}
+      </div>
+
       <div className="oc-grid oc-dow">
         {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((d) => (
           <span key={d} className="oc-dow-cell">
@@ -366,12 +432,16 @@ function OrdersCalendar({
           const count = ordersByDay[key] || 0;
           const isToday = key === todayKey;
           const isSel = key === selectedDate;
+          const inRange = dateFrom && dateTo && key >= dateFrom && key <= dateTo;
+          const isRangeEnd =
+            (dateFrom && key === dateFrom) || (dateTo && key === dateTo);
+          const isPendingStart = rangeMode && key === rangeStart;
           return (
             <button
               type="button"
               key={i}
-              className={`oc-cell${count ? " has-orders" : ""}${isToday ? " today" : ""}${isSel ? " selected" : ""}`}
-              onClick={() => setSelectedDate(isSel ? "" : key)}
+              className={`oc-cell${count ? " has-orders" : ""}${isToday ? " today" : ""}${isSel ? " selected" : ""}${inRange ? " in-range" : ""}${isRangeEnd ? " range-end" : ""}${isPendingStart ? " range-start" : ""}`}
+              onClick={() => handleCellClick(key)}
               title={
                 count
                   ? `${count} order${count > 1 ? "s" : ""} on ${key}`
@@ -1157,6 +1227,10 @@ export default function ManageOrdersPage() {
             ordersByDay={ordersByDay}
             selectedDate={selectedDate}
             setSelectedDate={setSelectedDate}
+            dateFrom={dateFrom}
+            dateTo={dateTo}
+            setDateFrom={setDateFrom}
+            setDateTo={setDateTo}
           />
           {selectedDate && (
             <div className="admin-cal-selected">
@@ -1171,6 +1245,35 @@ export default function ManageOrdersPage() {
                 type="button"
                 className="admin-cal-clear"
                 onClick={() => setSelectedDate("")}
+              >
+                <X size={13} /> Show all
+              </button>
+            </div>
+          )}
+          {dateFrom && dateTo && (
+            <div className="admin-cal-selected">
+              Showing orders from{" "}
+              <strong>
+                {new Date(dateFrom + "T00:00:00").toLocaleDateString("en-IN", {
+                  day: "numeric",
+                  month: "short",
+                })}
+              </strong>{" "}
+              to{" "}
+              <strong>
+                {new Date(dateTo + "T00:00:00").toLocaleDateString("en-IN", {
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                })}
+              </strong>
+              <button
+                type="button"
+                className="admin-cal-clear"
+                onClick={() => {
+                  setDateFrom("");
+                  setDateTo("");
+                }}
               >
                 <X size={13} /> Show all
               </button>
@@ -1292,6 +1395,37 @@ export default function ManageOrdersPage() {
                     </button>
                   </div>
 
+                  {books.length > 0 && (
+                    <div className="aoc-cover-strip">
+                      {books.map((b, ci) => {
+                        const img = getBookImage(b.name);
+                        return (
+                          <div
+                            key={ci}
+                            className="aoc-cover"
+                            title={`${b.name} × ${b.quantity}`}
+                          >
+                            {img ? (
+                              <img
+                                src={img}
+                                alt={b.name}
+                                className="aoc-cover-img"
+                                loading="lazy"
+                              />
+                            ) : (
+                              <div className="aoc-cover-ph">
+                                <Package size={16} />
+                              </div>
+                            )}
+                            {b.quantity > 1 && (
+                              <span className="aoc-cover-qty">×{b.quantity}</span>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
                   <AnimatePresence initial={false}>
                     {isExpanded && (
                       <motion.div
@@ -1381,22 +1515,45 @@ export default function ManageOrdersPage() {
                     <div className="aoc-section-title">
                       <Package size={13} /> Items ({books.length})
                     </div>
-                    <div className="aoc-table">
+                    <div className="aoc-books-row">
                       {books.length > 0 ? (
-                        books.map((b, bi) => (
-                          <div key={bi} className="aoc-trow">
-                            <span className="aoc-tname">{b.name}</span>
-                            <span className="aoc-tqty">×{b.quantity}</span>
-                            <span className="aoc-tprice">
-                              {b.total > 0 ? `₹${b.total}` : b.price > 0 ? `₹${b.price}` : "—"}
-                            </span>
-                          </div>
-                        ))
+                        books.map((b, bi) => {
+                          const img = getBookImage(b.name);
+                          return (
+                            <div key={bi} className="aoc-book">
+                              <div className="aoc-book-thumb">
+                                {img ? (
+                                  <img
+                                    src={img}
+                                    alt={b.name}
+                                    className="aoc-book-img"
+                                    loading="lazy"
+                                  />
+                                ) : (
+                                  <div className="aoc-book-ph">
+                                    <Package size={20} />
+                                  </div>
+                                )}
+                                {b.quantity > 1 && (
+                                  <span className="aoc-book-qty">×{b.quantity}</span>
+                                )}
+                              </div>
+                              <span className="aoc-book-name" title={b.name}>
+                                {b.name}
+                              </span>
+                              <span className="aoc-book-price">
+                                {b.total > 0
+                                  ? `₹${b.total}`
+                                  : b.price > 0
+                                    ? `₹${b.price}`
+                                    : "—"}
+                              </span>
+                            </div>
+                          );
+                        })
                       ) : (
-                        <div className="aoc-trow">
-                          <span className="aoc-tname">Books not listed</span>
-                          <span />
-                          <span />
+                        <div className="aoc-book aoc-book-empty">
+                          Books not listed
                         </div>
                       )}
                     </div>

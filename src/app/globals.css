@@ -10531,6 +10531,126 @@ img[data-loaded="true"] {
 .aoc-wa-btn:active {
   transform: scale(0.97);
 }
+
+/* ---------- Order book covers (collapsed strip) ---------- */
+.aoc-cover-strip {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 8px 2px 4px;
+  scrollbar-width: thin;
+}
+.aoc-cover {
+  position: relative;
+  flex: 0 0 auto;
+  width: 38px;
+  height: 54px;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--hairline, #ececec);
+  background: var(--surface-2, #f5f5f6);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+.aoc-cover-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.aoc-cover-ph {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--dark-50, #9aa0a6);
+}
+.aoc-cover-qty {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  padding: 0 4px;
+  font-size: 9px;
+  font-weight: 800;
+  background: rgba(10, 10, 10, 0.82);
+  color: #fff;
+  border-top-left-radius: 6px;
+}
+
+/* ---------- Order items as horizontal book cards (expanded) ---------- */
+.aoc-books-row {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 6px 2px 10px;
+  scrollbar-width: thin;
+}
+.aoc-book {
+  flex: 0 0 auto;
+  width: 84px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  text-align: center;
+}
+.aoc-book-thumb {
+  position: relative;
+  width: 84px;
+  height: 120px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--hairline, #ececec);
+  background: var(--surface-2, #f5f5f6);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+.aoc-book-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.aoc-book-ph {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--dark-50, #9aa0a6);
+}
+.aoc-book-qty {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  min-width: 20px;
+  padding: 1px 5px;
+  border-radius: 999px;
+  background: var(--tertiary, #fb8500);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  box-shadow: 0 2px 5px -1px rgba(251, 133, 0, 0.6);
+}
+.aoc-book-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--foreground, #0a0a0a);
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.aoc-book-price {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--tertiary, #fb8500);
+}
+.aoc-book-empty {
+  color: var(--dark-50, #9aa0a6);
+  font-size: 12px;
+  width: auto;
+}
+
 @media (max-width: 720px) {
   .admin-kpis {
     grid-template-columns: repeat(2, 1fr);
@@ -11963,6 +12083,26 @@ img[data-loaded="true"] {
   background:var(--foreground,#0a0a0a);color:#fff;border-color:var(--foreground,#0a0a0a);
 }
 .oc-cell.selected .oc-count{ background:#fff;color:var(--foreground,#0a0a0a); }
+/* range select */
+.oc-toolbar{ display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap; }
+.oc-range-btn{
+  display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;
+  border:1px solid var(--hairline,#ececec);background:#fff;font-size:12px;font-weight:700;
+  color:var(--foreground,#0a0a0a);cursor:pointer;transition:background .15s ease,border-color .15s ease;
+}
+.oc-range-btn:hover{ border-color:var(--tertiary,#fb8500); }
+.oc-range-btn.active{ background:var(--tertiary,#fb8500);border-color:var(--tertiary,#fb8500);color:#fff; }
+.oc-range-hint{ font-size:11.5px;font-weight:600;color:var(--tertiary,#fb8500); }
+.oc-cell.in-range{ background:rgba(251,133,0,.14);border-radius:6px;color:#b45309;font-weight:800; }
+.oc-cell.in-range:hover{ background:rgba(251,133,0,.22); }
+.oc-cell.range-end{
+  background:var(--tertiary,#fb8500);color:#fff;border-color:var(--tertiary,#fb8500);
+  border-radius:12px;font-weight:800;
+}
+.oc-cell.range-end .oc-count{ background:#fff;color:var(--tertiary,#fb8500); }
+.oc-cell.range-start{
+  background:var(--foreground,#0a0a0a);color:#fff;border-color:var(--foreground,#0a0a0a);font-weight:800;
+}
 /* today — highlighted + blinking ring */
 .oc-cell.today{
   border-color:var(--tertiary,#fb8500);

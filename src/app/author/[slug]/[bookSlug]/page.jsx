@@ -1,5 +1,7 @@
-// app/author/[authorSlug]/[bookSlug]/page.jsx
+// app/author/[slug]/[bookSlug]/page.jsx
 // Author-scoped alias for a book page (e.g. /author/morgan-housel/the-psychology-of-money).
+// NOTE: the first segment MUST be [slug] to match /author/[slug] (Next requires a
+// consistent param name across sibling dynamic routes at the same path level).
 // Renders the full book detail but canonicalises to the primary /books/<slug> URL,
 // so ranking signal consolidates there (no duplicate-content split) while the
 // author-scoped URL stays crawlable and internally linked.
@@ -34,13 +36,13 @@ export async function generateStaticParams() {
     const key = `${authorSlug}/${bookSlug}`;
     if (seen.has(key)) return;
     seen.add(key);
-    params.push({ authorSlug, bookSlug });
+    params.push({ slug: authorSlug, bookSlug });
   });
   return params;
 }
 
 export async function generateMetadata({ params }) {
-  const { authorSlug, bookSlug } = await params;
+  const { slug: authorSlug, bookSlug } = await params;
   const book = findBook(authorSlug, bookSlug);
   if (!book) {
     return { title: "Book Not Found", robots: { index: false } };
@@ -71,7 +73,7 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function AuthorBookPage({ params }) {
-  const { authorSlug, bookSlug } = await params;
+  const { slug: authorSlug, bookSlug } = await params;
   const book = findBook(authorSlug, bookSlug);
   if (!book) notFound();
   return <BookDetailsModal book={book} />;

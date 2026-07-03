@@ -38,6 +38,19 @@ import Image from "next/image";
 import { FaWhatsapp } from "react-icons/fa";
 import Link from "next/link";
 import PageHeader from "@/components/UI/PageHeader";
+import InstallAppBar from "@/components/InstallAppBar";
+import { books as ALL_BOOKS } from "@/utils/book";
+
+// Resolve an order's book names to cover images (same approach as manage-orders).
+const BOOK_IMAGE_BY_NAME = (() => {
+  const map = {};
+  (ALL_BOOKS || []).forEach((b) => {
+    if (b?.name) map[String(b.name).trim().toLowerCase()] = b.image;
+  });
+  return map;
+})();
+const getBookImage = (name) =>
+  BOOK_IMAGE_BY_NAME[String(name || "").trim().toLowerCase()] || null;
 
 const SHEET_ID = "1ovqFn50d0TKjV0nm4q1lb3N9XvimUgIsHCOlHh6QRdg";
 const SUPPORT_WHATSAPP = "917710892108";
@@ -980,6 +993,7 @@ Please cancel this order. Thank you 🙏`;
 
   return (
     <div className="my-orders-page">
+      <InstallAppBar />
       <div className="section-680 flex flex-col gap-24">
         {/* Header */}
         <div className="orders-header">
@@ -1269,6 +1283,38 @@ Please cancel this order. Thank you 🙏`;
                     const diff = grand - sub;
                     return (
                       <div className="order-invoice">
+                        {items.length > 0 && (
+                          <div className="aoc-cover-strip">
+                            {items.map((b, ci) => {
+                              const img = getBookImage(b.name);
+                              return (
+                                <div
+                                  key={ci}
+                                  className="aoc-cover"
+                                  title={`${b.name} × ${b.quantity}`}
+                                >
+                                  {img ? (
+                                    <img
+                                      src={img}
+                                      alt={b.name}
+                                      className="aoc-cover-img"
+                                      loading="lazy"
+                                    />
+                                  ) : (
+                                    <div className="aoc-cover-ph">
+                                      <Package size={16} />
+                                    </div>
+                                  )}
+                                  {b.quantity > 1 && (
+                                    <span className="aoc-cover-qty">
+                                      ×{b.quantity}
+                                    </span>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
                         <div className="order-invoice-table">
                           <div className="oit-head">
                             <span>Item</span>

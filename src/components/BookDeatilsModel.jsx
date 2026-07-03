@@ -526,16 +526,20 @@ export default function BookDetailsModal({ book }) {
           <div ref={heroRef} className="bd-hero">
             <div className="bd-hero-image">
               {book.image ? (
-                <div className="flex flex-col justify-center items-center gap-24">
-                  <Image
-                    src={book.image}
-                    alt={`${book.name} book cover, Buy online at TheBookX, India's trusted bookstore`}
-                    width={240}
-                    height={340}
-                    priority
-                    itemProp="image"
-                    className="bd-cover"
-                  />
+                <div className="bd-cover-scroll">
+                  {[book.image, book.image].map((src, i) => (
+                    <div className="bd-cover-slide" key={i}>
+                      <Image
+                        src={src}
+                        alt={`${book.name} book cover, Buy online at TheBookX, India's trusted bookstore`}
+                        width={240}
+                        height={340}
+                        priority={i === 0}
+                        itemProp={i === 0 ? "image" : undefined}
+                        className="bd-cover"
+                      />
+                    </div>
+                  ))}
                 </div>
               ) : (
                 <div className="bd-cover-placeholder">

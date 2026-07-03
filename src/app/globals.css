@@ -7060,6 +7060,34 @@ input {
   background: var(--dark-4);
 }
 
+/* Fixed-width image scroller: shows one cover, swipe/scroll for the next */
+.bd-cover-scroll {
+  display: flex;
+  gap: var(--px-12);
+  width: 240px;
+  max-width: 100%;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  border-radius: var(--px-12);
+}
+.bd-cover-scroll::-webkit-scrollbar {
+  display: none;
+}
+.bd-cover-slide {
+  flex: 0 0 100%;
+  scroll-snap-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+@media (min-width: 769px) {
+  .bd-cover-scroll {
+    width: 280px;
+  }
+}
+
 .bd-cover-placeholder {
   width: 240px;
   height: 340px;
@@ -12285,4 +12313,120 @@ img[data-loaded="true"] {
 .bookcard-add-btn[aria-disabled="true"]{ opacity:.5; cursor:not-allowed; }
 @media (max-width:480px){
   .bookcard-add-btn{ width:44px;height:44px; }
+}
+
+/* ===== Install app — fixed bottom bar (profile page) ===== */
+.install-app-wrap {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  width: min(560px, calc(100% - 24px));
+  z-index: 9998;
+  pointer-events: none;
+}
+.install-app-bar {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px 10px 14px;
+  border-radius: 16px;
+  background: rgba(10, 10, 10, 0.96);
+  color: #fff;
+  box-shadow: 0 12px 34px -10px rgba(0, 0, 0, 0.55);
+  backdrop-filter: saturate(140%) blur(6px);
+}
+.install-app-icon {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: var(--tertiary, #fb8500);
+  color: #fff;
+}
+.install-app-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+.install-app-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.install-app-sub {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.66);
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.install-app-cta {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 14px;
+  border: none;
+  border-radius: 999px;
+  background: var(--tertiary, #fb8500);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.12s ease, filter 0.15s ease;
+}
+.install-app-cta:hover {
+  filter: brightness(1.06);
+}
+.install-app-cta:active {
+  transform: scale(0.96);
+}
+.install-app-close {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+}
+.install-app-close:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+.install-app-ioshint {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 8px;
+  padding: 9px 14px;
+  border-radius: 12px;
+  background: rgba(10, 10, 10, 0.92);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  box-shadow: 0 10px 28px -12px rgba(0, 0, 0, 0.5);
+}
+.install-app-ioshint strong {
+  font-weight: 800;
+}
+@media (max-width: 420px) {
+  .install-app-sub {
+    display: none;
+  }
 }

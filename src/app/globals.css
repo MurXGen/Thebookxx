@@ -548,7 +548,9 @@ button:hover {
 
   .book-content {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
     gap: 12px;
   }
   .grid-2 {

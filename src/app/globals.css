@@ -12263,10 +12263,6 @@ img[data-loaded="true"] {
 /* Book card — Add to cart icon button (matches the +/- stepper circles) */
 .bookcard-add-btn{
   flex:0 0 auto;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
   width:46px;height:46px;
   border-radius:50%;
   background:#0a0a0a;
@@ -12277,9 +12273,7 @@ img[data-loaded="true"] {
   transition:transform .15s ease, box-shadow .18s ease, background .18s ease;
   -webkit-tap-highlight-color:transparent;
 }
-.bookcard-add-btn svg{ color:#fff; flex:0 0 auto; }
-/* Text label: hidden on desktop (icon-only circle), shown on small screens */
-.bookcard-add-label{ display:none; font-size:14px; font-weight:700; white-space:nowrap; }
+.bookcard-add-btn svg{ color:#fff; }
 .bookcard-add-btn:hover{
   background:var(--tertiary,#fb8500);
   transform:translateY(-2px);
@@ -12287,13 +12281,6 @@ img[data-loaded="true"] {
 }
 .bookcard-add-btn:active{ transform:scale(.93); }
 .bookcard-add-btn[aria-disabled="true"]{ opacity:.5; cursor:not-allowed; }
-/* Small screens: full-width pill with icon + "Add to cart" text (as before) */
-@media (max-width:600px){
-  .bookcard-add-btn{
-    width:100%;
-    height:44px;
-    border-radius:999px;
-    padding:0 14px;
-  }
-  .bookcard-add-label{ display:inline; }
+@media (max-width:480px){
+  .bookcard-add-btn{ width:44px;height:44px; }
 }

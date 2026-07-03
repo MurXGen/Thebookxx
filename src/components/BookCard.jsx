@@ -364,7 +364,7 @@ export default function BookCard({ book }) {
                   aria-disabled={isOneRupeeLimitReached}
                 >
                   <ShoppingCart size={18} />
-                  <span className="bookcard-add-label">Add to cart</span>
+                  <span className="sr-only">Add to cart</span>
                 </LoadingButton>
               ) : (
                 <div className="width100 gap-12 items-center flex flex-row justify-between">

@@ -4,7 +4,6 @@
 import { useStore } from "@/context/StoreContext";
 import { showToast } from "@/context/ToastContext";
 import { books } from "@/utils/book";
-import Breadcrumbs from "./UI/Breadcrumbs";
 import {
   ArrowLeft,
   Heart,
@@ -469,22 +468,41 @@ export default function BookDetailsModal({ book }) {
 
       <div className="bd-page" itemScope itemType="https://schema.org/Book">
         <div className="bd-container">
-          <Breadcrumbs
-            jsonLd
-            items={[
-              { label: "Books", href: "/books" },
-              ...(book.catalogue?.[0]
-                ? [
-                    {
-                      label: book.catalogue[0]
-                        .replace(/-/g, " ")
-                        .replace(/\b\w/g, (c) => c.toUpperCase()),
-                      href: `/category/${book.catalogue[0]}`,
-                    },
-                  ]
-                : []),
-              { label: book.name },
-            ]}
+          {/* Breadcrumb kept as SEO structured data only — visible trail removed
+              per design; the BreadcrumbList schema below is unchanged. */}
+          <Script
+            id={`breadcrumb-schema-${book.id}`}
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "BreadcrumbList",
+                itemListElement: [
+                  { label: "Home", href: "/" },
+                  { label: "Books", href: "/books" },
+                  ...(book.catalogue?.[0]
+                    ? [
+                        {
+                          label: book.catalogue[0]
+                            .replace(/-/g, " ")
+                            .replace(/\b\w/g, (c) => c.toUpperCase()),
+                          href: `/category/${book.catalogue[0]}`,
+                        },
+                      ]
+                    : []),
+                  { label: book.name },
+                ].map((c, i) => ({
+                  "@type": "ListItem",
+                  position: i + 1,
+                  name: c.label,
+                  ...(c.href
+                    ? {
+                        item: `https://www.thebookx.in${c.href === "/" ? "" : c.href}`,
+                      }
+                    : {}),
+                })),
+              }),
+            }}
           />
           {/* ===== Top bar (in-flow) ===== */}
           <div className="bd-topbar">
@@ -526,20 +544,16 @@ export default function BookDetailsModal({ book }) {
           <div ref={heroRef} className="bd-hero">
             <div className="bd-hero-image">
               {book.image ? (
-                <div className="bd-cover-scroll">
-                  {[book.image, book.image].map((src, i) => (
-                    <div className="bd-cover-slide" key={i}>
-                      <Image
-                        src={src}
-                        alt={`${book.name} book cover, Buy online at TheBookX, India's trusted bookstore`}
-                        width={240}
-                        height={340}
-                        priority={i === 0}
-                        itemProp={i === 0 ? "image" : undefined}
-                        className="bd-cover"
-                      />
-                    </div>
-                  ))}
+                <div className="flex flex-col justify-center items-center gap-24">
+                  <Image
+                    src={book.image}
+                    alt={`${book.name} book cover, Buy online at TheBookX, India's trusted bookstore`}
+                    width={240}
+                    height={340}
+                    priority
+                    itemProp="image"
+                    className="bd-cover"
+                  />
                 </div>
               ) : (
                 <div className="bd-cover-placeholder">

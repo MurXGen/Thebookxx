@@ -237,10 +237,11 @@ export default function BookCard({ book }) {
               <Image
                 src={book.image}
                 alt={`${book.name}${book.author ? ` by ${book.author}` : ""} book cover, buy online at TheBookX`}
-                fill
+                width={160}
+                height={240}
                 className={`book-image ${imageLoaded ? "loaded" : ""}`}
                 onLoadingComplete={() => setImageLoaded(true)}
-                sizes="(max-width: 768px) 100vw, 240px"
+                sizes="(max-width: 768px) 40vw, 160px"
                 itemProp="image"
                 loading="lazy"
               />

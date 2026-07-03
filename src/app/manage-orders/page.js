@@ -61,35 +61,53 @@ const openWhatsApp = (phone, text) => {
   window.open(url, "_blank", "noopener,noreferrer");
 };
 
-// Prefilled messages for each order stage.
-const waMessages = (name, orderId) => {
-  const hi = `Hi ${name ? String(name).trim() : "there"}`;
+// Prefilled, nicely-formatted WhatsApp messages for each order stage.
+// Includes the tracking ID + India Post link (when a tracking ID exists)
+// and the customer's order-tracking profile link.
+const PROFILE_URL = "https://www.thebookx.in/profile";
+const INDIA_POST_URL = "https://www.indiapost.gov.in";
+
+const waMessages = (order) => {
+  const name = order?.["Customer Name"]
+    ? String(order["Customer Name"]).trim()
+    : "there";
+  const orderId = order?.["Order ID"] || "";
+  const tracking = String(order?.shippingId || order?.["Shipping ID"] || "").trim();
+  const hi = `Hi ${name}`;
   const id = orderId ? ` (Order ${orderId})` : "";
+
+  // Signature block appended to every message.
+  const profileLine = `\n\n🔎 View your order anytime: ${PROFILE_URL}\n— Team TheBookX 📚`;
+  // Tracking block, only when a tracking ID is present.
+  const trackBlock = tracking
+    ? `\n\n📦 Tracking ID: *${tracking}*\n🚚 Track on India Post: ${INDIA_POST_URL}`
+    : "";
+
   return [
     {
       key: "confirm",
       label: "✅ Confirm order",
-      text: `${hi}, this is TheBookX 📚. We've received your order${id}. Please confirm your order by replying YES. Thank you!`,
+      text: `${hi}, this is TheBookX 📚\n\nWe've received your order${id}. Please reply *YES* to confirm it, so we can pack and ship it right away.${profileLine}`,
     },
     {
       key: "about",
       label: "📦 About to ship",
-      text: `${hi}, good news! Your TheBookX order${id} is packed and about to ship. We'll share the tracking details shortly. 📦`,
+      text: `${hi}, good news! 🎉\n\nYour TheBookX order${id} is packed and about to ship. We'll share the tracking details with you shortly.${profileLine}`,
     },
     {
       key: "shipped",
       label: "🚚 Shipped",
-      text: `${hi}, your TheBookX order${id} has been shipped 🚚. It should be delivered within 5 to 9 days. Delivery may be slightly delayed if the weather doesn't support — thank you for your patience!`,
+      text: `${hi}, your TheBookX order${id} has been shipped 🚚\n\nExpected delivery is within *5 to 9 days*. It may be slightly delayed if the weather doesn't support — thank you for your patience!${trackBlock}${profileLine}`,
     },
     {
       key: "ofd",
       label: "🛵 Out for delivery",
-      text: `${hi}, your TheBookX order${id} is out for delivery today 🛵. Please keep your phone reachable so our delivery partner can reach you.`,
+      text: `${hi}, your TheBookX order${id} is out for delivery today 🛵\n\nPlease keep your phone reachable so our delivery partner can reach you.${trackBlock}${profileLine}`,
     },
     {
       key: "delivered",
       label: "🎉 Delivered",
-      text: `${hi}, your TheBookX order${id} has been delivered ✅. We hope you love your books! A quick review would mean a lot to us. 💛`,
+      text: `${hi}, your TheBookX order${id} has been delivered ✅\n\nWe hope you love your books! A quick review would mean a lot to us 💛${profileLine}`,
     },
   ];
 };
@@ -467,7 +485,7 @@ export default function ManageOrdersPage() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("active"); // default: pending + processing
   const [paymentFilter, setPaymentFilter] = useState("all");
   const [copiedId, setCopiedId] = useState(null);
   const [sortOrder, setSortOrder] = useState("desc"); // "desc" = latest first
@@ -480,6 +498,64 @@ export default function ManageOrdersPage() {
   });
   const [expandedOrders, setExpandedOrders] = useState(new Set());
   const [prefsLoaded, setPrefsLoaded] = useState(false);
+
+  // ── Book-picking (fulfilment) state ──
+  const [pickChecked, setPickChecked] = useState({}); // { "orderId::idx": true }
+  const [pickFilter, setPickFilter] = useState("all"); // all | pending | done
+  const [showPicking, setShowPicking] = useState(true);
+  const [pickHydrated, setPickHydrated] = useState(false);
+  const [packedOrders, setPackedOrders] = useState({}); // { orderId: true }
+  const [detailOrder, setDetailOrder] = useState(null); // order shown in detail modal
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("manage_orders_picks");
+      if (raw) setPickChecked(JSON.parse(raw) || {});
+      const rawP = localStorage.getItem("manage_orders_packed");
+      if (rawP) setPackedOrders(JSON.parse(rawP) || {});
+    } catch (_) {}
+    setPickHydrated(true);
+  }, []);
+  useEffect(() => {
+    if (!pickHydrated) return;
+    try {
+      localStorage.setItem("manage_orders_picks", JSON.stringify(pickChecked));
+      localStorage.setItem("manage_orders_packed", JSON.stringify(packedOrders));
+    } catch (_) {}
+  }, [pickChecked, packedOrders, pickHydrated]);
+
+  const togglePacked = (orderId) => {
+    setPackedOrders((prev) => {
+      const next = { ...prev };
+      if (next[orderId]) delete next[orderId];
+      else next[orderId] = true;
+      return next;
+    });
+  };
+
+  const bookKey = (orderId, idx) => `${orderId}::${idx}`;
+  const toggleBook = (orderId, idx) => {
+    setPickChecked((prev) => {
+      const k = bookKey(orderId, idx);
+      const next = { ...prev };
+      if (next[k]) delete next[k];
+      else next[k] = true;
+      return next;
+    });
+  };
+  const orderPickStats = (order) => {
+    const books = order.parsedBooks || [];
+    const oid = order["Order ID"] || order._rowIndex;
+    const checked = books.reduce(
+      (n, _b, i) => n + (pickChecked[bookKey(oid, i)] ? 1 : 0),
+      0,
+    );
+    return {
+      total: books.length,
+      checked,
+      done: books.length > 0 && checked === books.length,
+    };
+  };
 
   const toggleExpanded = (orderId) => {
     setExpandedOrders((prev) => {
@@ -627,7 +703,13 @@ export default function ManageOrdersPage() {
       );
     }
 
-    if (statusFilter !== "all") {
+    if (statusFilter === "active") {
+      // Default view: only pending / processing (and un-set) orders.
+      filtered = filtered.filter((order) => {
+        const s = (order["Order Status"] || "").toLowerCase();
+        return !s || s.includes("pending") || s.includes("processing");
+      });
+    } else if (statusFilter !== "all") {
       filtered = filtered.filter(
         (order) => order["Order Status"] === statusFilter,
       );
@@ -1151,6 +1233,7 @@ export default function ManageOrdersPage() {
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
                       >
+                        <option value="active">Active (Pending + Processing)</option>
                         <option value="all">All Statuses</option>
                         <option value="Processing">Processing</option>
                         <option value="Shipped">Shipped</option>
@@ -1281,15 +1364,177 @@ export default function ManageOrdersPage() {
           )}
         </div>
 
+        {/* ===== Book Picking (fulfilment) ===== */}
+        {filteredOrders.length > 0 &&
+          (() => {
+            const orderStats = filteredOrders.map((o) => ({
+              order: o,
+              stats: orderPickStats(o),
+            }));
+            const doneOrders = orderStats.filter((x) => x.stats.done).length;
+            const pendingOrders = orderStats.length - doneOrders;
+            const totalBooks = orderStats.reduce((n, x) => n + x.stats.total, 0);
+            const checkedBooks = orderStats.reduce(
+              (n, x) => n + x.stats.checked,
+              0,
+            );
+            const visible = orderStats.filter((x) =>
+              pickFilter === "all"
+                ? true
+                : pickFilter === "done"
+                  ? x.stats.done
+                  : !x.stats.done,
+            );
+            return (
+              <div className="pick-panel">
+                <button
+                  type="button"
+                  className="pick-head"
+                  onClick={() => setShowPicking((v) => !v)}
+                >
+                  <span className="pick-head-title">
+                    <Package size={16} /> Book Picking
+                    <span className="pick-head-sub">
+                      {checkedBooks}/{totalBooks} books · {doneOrders} done ·{" "}
+                      {pendingOrders} pending
+                    </span>
+                  </span>
+                  <ChevronDown
+                    size={18}
+                    style={{
+                      transform: showPicking ? "rotate(180deg)" : "none",
+                      transition: "transform .25s ease",
+                    }}
+                  />
+                </button>
+
+                <AnimatePresence initial={false}>
+                  {showPicking && (
+                    <motion.div
+                      key="pickbody"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.28, ease: [0.32, 0.72, 0, 1] }}
+                      style={{ overflow: "hidden" }}
+                    >
+                      <div className="pick-filters">
+                        {[
+                          { k: "all", label: `All (${orderStats.length})` },
+                          { k: "pending", label: `Pending (${pendingOrders})` },
+                          { k: "done", label: `Done (${doneOrders})` },
+                        ].map((f) => (
+                          <button
+                            key={f.k}
+                            type="button"
+                            className={`pick-filter-btn${pickFilter === f.k ? " active" : ""}`}
+                            onClick={() => setPickFilter(f.k)}
+                          >
+                            {f.label}
+                          </button>
+                        ))}
+                      </div>
+
+                      <div className="pick-orders">
+                        {visible.map(({ order, stats }) => {
+                          const oid = order["Order ID"] || order._rowIndex;
+                          const pbooks = order.parsedBooks || [];
+                          return (
+                            <div
+                              key={oid}
+                              className={`pick-order${stats.done ? " done" : ""}`}
+                            >
+                              <div className="pick-order-head">
+                                <span className="pick-order-name">
+                                  <User size={13} />{" "}
+                                  {order["Customer Name"] || "—"}
+                                </span>
+                                <span className="pick-order-id">{oid}</span>
+                                <span
+                                  className={`pick-badge ${stats.done ? "done" : "pending"}`}
+                                >
+                                  {stats.done ? (
+                                    <>
+                                      <Check size={12} /> Done
+                                    </>
+                                  ) : (
+                                    `${stats.checked}/${stats.total} picked`
+                                  )}
+                                </span>
+                              </div>
+                              <div className="pick-grid">
+                                {pbooks.length > 0 ? (
+                                  pbooks.map((b, i) => {
+                                    const img = getBookImage(b.name);
+                                    const isChecked =
+                                      !!pickChecked[bookKey(oid, i)];
+                                    return (
+                                      <button
+                                        key={i}
+                                        type="button"
+                                        className={`pick-book${isChecked ? " checked" : ""}`}
+                                        onClick={() => toggleBook(oid, i)}
+                                        title={b.name}
+                                      >
+                                        <div className="pick-book-thumb">
+                                          {img ? (
+                                            <img
+                                              src={img}
+                                              alt={b.name}
+                                              loading="lazy"
+                                            />
+                                          ) : (
+                                            <div className="pick-book-ph">
+                                              <Package size={20} />
+                                            </div>
+                                          )}
+                                          {b.quantity > 1 && (
+                                            <span className="pick-book-qty">
+                                              ×{b.quantity}
+                                            </span>
+                                          )}
+                                          <span className="pick-book-check">
+                                            <Check size={18} />
+                                          </span>
+                                        </div>
+                                        <span className="pick-book-name">
+                                          {b.name}
+                                        </span>
+                                      </button>
+                                    );
+                                  })
+                                ) : (
+                                  <div className="pick-empty">
+                                    No books listed
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                        {visible.length === 0 && (
+                          <div className="pick-empty-state">
+                            No orders in this view.
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            );
+          })()}
+
         {/* Orders list, flattened single cards */}
         {filteredOrders.length > 0 ? (
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-12">
             <div className="orders-list-header">
               <span className="orders-count">
                 {filteredOrders.length}{" "}
                 {filteredOrders.length === 1 ? "Order" : "Orders"}
               </span>
             </div>
+            <div className="admin-orders-grid">
             {filteredOrders.map((order, idx) => {
               const orderId = order["Order ID"];
               const books = order.parsedBooks || [];
@@ -1309,122 +1554,123 @@ export default function ManageOrdersPage() {
                 ? `${fullAddress} - ${order["Pincode"]}`
                 : fullAddress;
 
-              const isExpanded = expandedOrders.has(orderId);
-              const tintA = (0.05 + (order.revenue / maxRevenue) * 0.16).toFixed(3);
-              const cardStyle = {
-                background: `linear-gradient(135deg, #ffffff 0%, rgba(251,133,0,${tintA}) 100%)`,
-              };
+              const isExpanded = false; // details now open in a slide-up modal
+              const isPacked = !!packedOrders[orderId];
 
               return (
                 <div
                   key={orderId || idx}
-                  className="admin-order-card"
-                  style={cardStyle}
+                  className={`admin-order-card mo-card${isPacked ? " packed" : ""}`}
+                  style={{ cursor: "pointer" }}
+                  onClick={() => setDetailOrder(order)}
                 >
-                  <div
-                    className="aoc-head"
-                    onClick={() => toggleExpanded(orderId)}
-                    style={{ cursor: "pointer" }}
-                  >
-                    <div className="aoc-head-left">
-                      <span
-                        className="aoc-id"
+                  <div className="mo-card-top">
+                    <div className="mo-card-id">
+                      <div className="mo-name-row">
+                        <span className="mo-srno">{idx + 1}</span>
+                        <span className="mo-name">
+                          {order["Customer Name"] || "—"}
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        className="mo-meta"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          copyToClipboard(
+                            String(order["Phone Number"] || ""),
+                            `phone-${idx}`,
+                          );
+                        }}
+                        title="Copy phone"
+                      >
+                        <Phone size={12} />
+                        <span>+91 {order["Phone Number"]}</span>
+                        {copiedId === `phone-${idx}` ? (
+                          <Check size={12} className="text-green" />
+                        ) : (
+                          <Copy size={11} className="gray-500" />
+                        )}
+                      </button>
+                      <button
+                        type="button"
+                        className="mo-meta"
                         onClick={(e) => {
                           e.stopPropagation();
                           copyToClipboard(orderId, `order-${idx}`);
                         }}
-                        title="Tap to copy Order ID"
+                        title="Copy order ID"
                       >
-                        {orderId}
-                        {copiedId === `order-${idx}` && (
-                          <Check size={10} className="text-green" style={{ marginLeft: 4 }} />
+                        <span className="mo-meta-label">Order</span>
+                        <span>{orderId}</span>
+                        {copiedId === `order-${idx}` ? (
+                          <Check size={12} className="text-green" />
+                        ) : (
+                          <Copy size={11} className="gray-500" />
                         )}
-                      </span>
-                      <span className="aoc-date">
-                        <Calendar size={11} />
-                        {formatDate(order["Timestamp(D)"] || order["Timestamp"])}
-                      </span>
+                      </button>
                     </div>
-                    <div className="aoc-head-right">
-                      <span className="aoc-rev-pill">
-                        ₹{order.revenue.toLocaleString()}
-                      </span>
-                      <div className={`order-status-badge ${getStatusColor(order.status)}`}>
-                        {getStatusIcon(order.status)}
-                        <span>{order.status}</span>
+
+                    {books.length > 0 && (
+                      <div className="mo-stack">
+                        {books.slice(0, 5).map((b, ci) => {
+                          const img = getBookImage(b.name);
+                          return (
+                            <div
+                              key={ci}
+                              className="mo-stack-item"
+                              style={{ zIndex: 20 - ci }}
+                              title={`${b.name} × ${b.quantity}`}
+                            >
+                              {img ? (
+                                <img src={img} alt={b.name} loading="lazy" />
+                              ) : (
+                                <div className="mo-stack-ph">
+                                  <Package size={16} />
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
-                      <ChevronDown
-                        size={18}
-                        className="aoc-chev"
-                        style={{
-                          transform: isExpanded ? "rotate(180deg)" : "none",
-                          transition: "transform 0.25s ease",
-                        }}
-                      />
-                    </div>
+                    )}
                   </div>
 
-                  <div className="aoc-chips">
+                  <div className="mo-card-desc">
+                    <span className="mo-desc-item">
+                      <Calendar size={11} />
+                      {formatDate(order["Timestamp(D)"] || order["Timestamp"])}
+                    </span>
+                    <span className="aoc-dot">·</span>
+                    <span className="mo-desc-status">{order.status}</span>
+                    <span className="aoc-dot">·</span>
+                    <span>
+                      ₹{order.revenue.toLocaleString()} · {books.length} book
+                      {books.length > 1 ? "s" : ""}
+                    </span>
+                  </div>
+
+                  <div className="mo-card-foot2">
                     <button
                       type="button"
-                      className="aoc-chip"
-                      onClick={() => copyToClipboard(order["Customer Name"] || "", `name-${idx}`)}
-                      title="Copy name"
+                      className={`mo-pack-btn${isPacked ? " on" : ""}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        togglePacked(orderId);
+                      }}
+                      title={isPacked ? "Packed" : "Mark as packed"}
                     >
-                      <User size={13} />
-                      <span>{order["Customer Name"] || "—"}</span>
-                      {copiedId === `name-${idx}` ? (
-                        <Check size={12} className="text-green" />
+                      {isPacked ? (
+                        <>
+                          <Check size={14} /> Packed
+                        </>
                       ) : (
-                        <Copy size={12} className="gray-500" />
-                      )}
-                    </button>
-                    <button
-                      type="button"
-                      className="aoc-chip"
-                      onClick={() => copyToClipboard(String(order["Phone Number"] || ""), `phone-${idx}`)}
-                      title="Copy phone"
-                    >
-                      <Phone size={13} />
-                      <span>+91 {order["Phone Number"]}</span>
-                      {copiedId === `phone-${idx}` ? (
-                        <Check size={12} className="text-green" />
-                      ) : (
-                        <Copy size={12} className="gray-500" />
+                        <>
+                          <Package size={13} /> Mark as packed
+                        </>
                       )}
                     </button>
                   </div>
-
-                  {books.length > 0 && (
-                    <div className="aoc-cover-strip">
-                      {books.map((b, ci) => {
-                        const img = getBookImage(b.name);
-                        return (
-                          <div
-                            key={ci}
-                            className="aoc-cover"
-                            title={`${b.name} × ${b.quantity}`}
-                          >
-                            {img ? (
-                              <img
-                                src={img}
-                                alt={b.name}
-                                className="aoc-cover-img"
-                                loading="lazy"
-                              />
-                            ) : (
-                              <div className="aoc-cover-ph">
-                                <Package size={16} />
-                              </div>
-                            )}
-                            {b.quantity > 1 && (
-                              <span className="aoc-cover-qty">×{b.quantity}</span>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
 
                   <AnimatePresence initial={false}>
                     {isExpanded && (
@@ -1494,7 +1740,7 @@ export default function ManageOrdersPage() {
                       <MessageCircle size={13} /> WhatsApp the customer
                     </div>
                     <div className="aoc-wa-grid">
-                      {waMessages(order["Customer Name"], orderId).map((m) => (
+                      {waMessages(order).map((m) => (
                         <button
                           key={m.key}
                           type="button"
@@ -1614,6 +1860,7 @@ export default function ManageOrdersPage() {
                 </div>
               );
             })}
+            </div>
           </div>
         ) : (
           <div className="error-state">
@@ -1625,6 +1872,302 @@ export default function ManageOrdersPage() {
           </div>
         )}
       </div>
+
+      {/* ===== Order detail modal (slide-up, bill-modal style) ===== */}
+      <AnimatePresence>
+        {detailOrder &&
+          (() => {
+            const order = detailOrder;
+            const oid = order["Order ID"];
+            const dbooks = order.parsedBooks || [];
+            const dpnl = order.pnl;
+            const dHasTracking =
+              order.shippingId && String(order.shippingId).trim() !== "";
+            const dTiny = order["TinyURL"];
+            const dHasTiny = dTiny && String(dTiny).trim() !== "";
+            const dAddr = [order["Address"], order["City"], order["State"]]
+              .filter(Boolean)
+              .join(", ");
+            const dAddrLine = order["Pincode"]
+              ? `${dAddr} - ${order["Pincode"]}`
+              : dAddr;
+            const dPacked = !!packedOrders[oid];
+            return (
+              <motion.div
+                className="bill-modal-overlay"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setDetailOrder(null)}
+              >
+                <motion.div
+                  className="bill-modal"
+                  initial={{ y: "100%", opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: "100%", opacity: 0 }}
+                  transition={{ duration: 0.4, ease: "easeOut" }}
+                  onClick={(e) => e.stopPropagation()}
+                  style={{ maxWidth: "680px" }}
+                >
+                  <div className="bill-header">
+                    <div className="flex flex-col">
+                      <span className="weight-600 font-16">
+                        {order["Customer Name"] || "Order"}
+                      </span>
+                      <span className="font-12 gray-500">{oid}</span>
+                    </div>
+                    <span
+                      className="cursor-pointer"
+                      onClick={() => setDetailOrder(null)}
+                    >
+                      <X size={16} />
+                    </span>
+                  </div>
+
+                  <div
+                    className="address-form-content"
+                    style={{ maxHeight: "72vh", overflowY: "auto" }}
+                  >
+                    <div className="mo-modal-status">
+                      <div
+                        className={`order-status-badge ${getStatusColor(order.status)}`}
+                      >
+                        {getStatusIcon(order.status)}
+                        <span>{order.status}</span>
+                      </div>
+                      <span className="aoc-rev-pill">
+                        ₹{order.revenue.toLocaleString()}
+                      </span>
+                      <button
+                        type="button"
+                        className={`mo-pack-btn lg${dPacked ? " on" : ""}`}
+                        onClick={() => togglePacked(oid)}
+                      >
+                        {dPacked ? (
+                          <>
+                            <Check size={16} /> Packed
+                          </>
+                        ) : (
+                          <>
+                            <Package size={16} /> Mark as packed
+                          </>
+                        )}
+                      </button>
+                    </div>
+
+                    <div className="aoc-chips" style={{ marginTop: 12 }}>
+                      <button
+                        type="button"
+                        className="aoc-chip"
+                        onClick={() =>
+                          copyToClipboard(order["Customer Name"] || "", "m-name")
+                        }
+                        title="Copy name"
+                      >
+                        <User size={13} />
+                        <span>{order["Customer Name"] || "—"}</span>
+                        {copiedId === "m-name" ? (
+                          <Check size={12} className="text-green" />
+                        ) : (
+                          <Copy size={12} className="gray-500" />
+                        )}
+                      </button>
+                      <button
+                        type="button"
+                        className="aoc-chip"
+                        onClick={() =>
+                          copyToClipboard(
+                            String(order["Phone Number"] || ""),
+                            "m-phone",
+                          )
+                        }
+                        title="Copy phone"
+                      >
+                        <Phone size={13} />
+                        <span>+91 {order["Phone Number"]}</span>
+                        {copiedId === "m-phone" ? (
+                          <Check size={12} className="text-green" />
+                        ) : (
+                          <Copy size={12} className="gray-500" />
+                        )}
+                      </button>
+                    </div>
+
+                    <div className="aoc-section">
+                      <div className="aoc-section-title">
+                        <MapPin size={13} /> Shipping
+                      </div>
+                      {dAddrLine && (
+                        <button
+                          type="button"
+                          className="aoc-rowline"
+                          onClick={() => copyToClipboard(dAddrLine, "m-addr")}
+                          title="Copy address"
+                        >
+                          <span className="aoc-rowline-text">{dAddrLine}</span>
+                          {copiedId === "m-addr" ? (
+                            <Check size={13} className="text-green" />
+                          ) : (
+                            <Copy size={13} className="gray-500" />
+                          )}
+                        </button>
+                      )}
+                      {(dHasTracking || dHasTiny) && (
+                        <div className="aoc-track">
+                          {dHasTracking ? (
+                            <span className="aoc-track-id">
+                              Tracking: <strong>{order.shippingId}</strong>
+                            </span>
+                          ) : (
+                            <span className="aoc-track-id">Order link ready</span>
+                          )}
+                          <div className="flex flex-row gap-8">
+                            {dHasTracking && (
+                              <button
+                                type="button"
+                                className="track-btn-small flex flex-row items-center gap-4"
+                                onClick={() =>
+                                  handleTrackPackage(order.shippingId)
+                                }
+                              >
+                                <Truck size={12} /> Track
+                              </button>
+                            )}
+                            {dHasTiny && (
+                              <button
+                                type="button"
+                                className="track-btn-small flex flex-row items-center gap-4"
+                                onClick={() =>
+                                  window.open(
+                                    dTiny,
+                                    "_blank",
+                                    "noopener,noreferrer",
+                                  )
+                                }
+                              >
+                                <ShoppingBag size={12} /> User bag{" "}
+                                <ExternalLink size={10} />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="aoc-section">
+                      <div className="aoc-section-title">
+                        <MessageCircle size={13} /> WhatsApp the customer
+                      </div>
+                      <div className="aoc-wa-grid">
+                        {waMessages(order).map((m) => (
+                          <button
+                            key={m.key}
+                            type="button"
+                            className="aoc-wa-btn"
+                            title={m.text}
+                            onClick={() =>
+                              openWhatsApp(order["Phone Number"], m.text)
+                            }
+                          >
+                            {m.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="aoc-section">
+                      <div className="aoc-section-title">
+                        <Package size={13} /> Items ({dbooks.length})
+                      </div>
+                      <div className="aoc-books-row">
+                        {dbooks.length > 0 ? (
+                          dbooks.map((b, bi) => {
+                            const img = getBookImage(b.name);
+                            return (
+                              <div key={bi} className="aoc-book">
+                                <div className="aoc-book-thumb">
+                                  {img ? (
+                                    <img
+                                      src={img}
+                                      alt={b.name}
+                                      className="aoc-book-img"
+                                      loading="lazy"
+                                    />
+                                  ) : (
+                                    <div className="aoc-book-ph">
+                                      <Package size={20} />
+                                    </div>
+                                  )}
+                                  {b.quantity > 1 && (
+                                    <span className="aoc-book-qty">
+                                      ×{b.quantity}
+                                    </span>
+                                  )}
+                                </div>
+                                <span className="aoc-book-name" title={b.name}>
+                                  {b.name}
+                                </span>
+                                <span className="aoc-book-price">
+                                  {b.total > 0
+                                    ? `₹${b.total}`
+                                    : b.price > 0
+                                      ? `₹${b.price}`
+                                      : "—"}
+                                </span>
+                              </div>
+                            );
+                          })
+                        ) : (
+                          <div className="aoc-book aoc-book-empty">
+                            Books not listed
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="aoc-money">
+                      <div className="aoc-money-cell">
+                        <span>Revenue</span>
+                        <strong>₹{order.revenue.toLocaleString()}</strong>
+                      </div>
+                      <div className="aoc-money-cell">
+                        <span>Cost</span>
+                        <strong>₹{order.totalCost.toLocaleString()}</strong>
+                      </div>
+                      <div
+                        className={`aoc-money-cell ${dpnl >= 0 ? "pos" : "neg"}`}
+                      >
+                        <span>Profit</span>
+                        <strong>
+                          {dpnl >= 0 ? "+" : "−"}₹
+                          {Math.abs(dpnl).toLocaleString()}
+                        </strong>
+                      </div>
+                    </div>
+
+                    <div className="aoc-foot">
+                      <div className="aoc-meta">
+                        <span>{order["Payment Type"] || "—"}</span>
+                        <span className="aoc-dot">·</span>
+                        <span>{order["Delivery Type"] || "—"}</span>
+                      </div>
+                      <button
+                        type="button"
+                        className="aoc-edit"
+                        onClick={() => {
+                          setDetailOrder(null);
+                          openEditModal(order);
+                        }}
+                      >
+                        <Edit size={14} /> Edit
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              </motion.div>
+            );
+          })()}
+      </AnimatePresence>
 
       {/* Add/Edit Modal, kept as-is, uses existing bill-modal classes */}
       <AnimatePresence>

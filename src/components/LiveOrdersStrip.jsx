@@ -2,16 +2,34 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { getLiveOrders, getLast10MinSummary } from "@/utils/liveOrders";
+import {
+  getLiveOrders,
+  getLast10MinSummary,
+  fetchLiveOrders,
+} from "@/utils/liveOrders";
 
 /**
- * Slim auto-rotating "live orders" social-proof ticker, shown just below the
- * search bar on the homepage. Cycles through recent (sample) orders.
+ * Slim auto-rotating "live orders" social-proof ticker. Shows real recent
+ * orders pulled from the store's order sheet (first name + city only); starts
+ * with sample data so it renders instantly, then swaps in the real feed.
  */
 export default function LiveOrdersStrip() {
-  const orders = getLiveOrders();
-  const summary = getLast10MinSummary();
+  const [orders, setOrders] = useState(() => getLiveOrders());
+  const [summary, setSummary] = useState(() => getLast10MinSummary());
   const [i, setI] = useState(0);
+
+  useEffect(() => {
+    let alive = true;
+    fetchLiveOrders().then((data) => {
+      if (!alive || !data?.orders?.length) return;
+      setOrders(data.orders);
+      setSummary(data.summary);
+      setI(0);
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (orders.length <= 1) return;
@@ -55,7 +73,7 @@ export default function LiveOrdersStrip() {
         </div>
 
         <span className="live-summary">
-          {summary.books} books in last 10 min
+          {summary.books} books ordered recently
         </span>
       </div>
     </div>

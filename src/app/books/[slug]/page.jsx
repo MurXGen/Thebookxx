@@ -78,6 +78,24 @@ export async function generateMetadata({ params }) {
       description,
       images: [book.image],
     },
+    // Product-level Open Graph price/availability tags (mirrors the
+    // aggressive product markup e-commerce leaders emit) so crawlers and
+    // social/shopping surfaces read price + stock straight from the head.
+    other: {
+      "og:type": "product",
+      "product:brand": "TheBookX",
+      "product:availability": book.stock > 0 ? "in stock" : "out of stock",
+      "product:condition": "new",
+      "product:price:amount": String(book.discountedPrice),
+      "product:price:currency": "INR",
+      "og:price:amount": String(book.discountedPrice),
+      "og:price:currency": "INR",
+      ...(book.originalPrice > book.discountedPrice && {
+        "product:original_price:amount": String(book.originalPrice),
+        "product:original_price:currency": "INR",
+      }),
+      "product:retailer_item_id": book.id,
+    },
     robots: {
       index: true,
       follow: true,

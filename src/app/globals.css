@@ -12,13 +12,17 @@
 
   /* Spacing scale (px) */
   --px-4: 4px;
+  --px-6: 6px;
   --px-8: 8px;
   --px-10: 10px;
   --px-12: 12px;
+  --px-13: 13px;
   --px-14: 14px;
   --px-16: 16px;
+  --px-18: 18px;
   --px-20: 20px;
   --px-24: 24px;
+  --px-28: 28px;
   --px-32: 32px;
   --px-42: 42px;
   --px-56: 56px;
@@ -5552,13 +5556,17 @@ input {
 @media (max-width: 768px) {
   :root {
     --px-4: 4px;
+    --px-6: 6px;
     --px-8: 8px;
     --px-10: 10px;
     --px-12: 12px;
+    --px-13: 12px;
     --px-14: 12px;
     --px-16: 14px;
+    --px-18: 15px;
     --px-20: 16px;
     --px-24: 20px;
+    --px-28: 22px;
     --px-32: 24px;
     --px-42: 32px;
     --px-56: 42px;
@@ -7189,8 +7197,9 @@ input {
 }
 
 /* Visible separator + breathing room between major detail sections.
-   Dashed + darker so the division is clearly visible. */
-.bd-combo,
+   Bolder dashed + darker so the division is clearly visible. The combo
+   sits right under the trust badges (which already have a bottom border),
+   so it gets no top border of its own to avoid a doubled line. */
 .bd-occasions,
 .bd-reviews-section,
 .bd-section-block,
@@ -7198,7 +7207,12 @@ input {
 .bd-seo-block {
   padding-top: var(--px-32);
   margin-top: var(--px-16);
-  border-top: 1.5px dashed var(--dark-20);
+  border-top: 2px dashed var(--dark-20);
+}
+
+.bd-combo {
+  padding-top: var(--px-8);
+  margin-top: var(--px-16);
 }
 
 @media (max-width: 560px) {
@@ -7251,10 +7265,10 @@ input {
 }
 
 .bd-price-tax {
-  display: block;
+  align-self: center;
   font-size: 11px;
   color: var(--dark-50);
-  margin-top: var(--px-4);
+  white-space: nowrap;
 }
 
 /* ===== Trust badges (4-up grid) ===== */
@@ -7262,9 +7276,9 @@ input {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: var(--px-8);
-  padding: var(--px-18) 0;
-  border-top: 1.5px dashed var(--dark-20);
-  border-bottom: 1.5px dashed var(--dark-20);
+  padding: var(--px-20) 0;
+  border-top: 2px dashed var(--dark-20);
+  border-bottom: 2px dashed var(--dark-20);
 }
 
 .bd-badge {
@@ -7661,10 +7675,27 @@ input {
   color: var(--tertiary);
 }
 
+/* Title + rating on one row: title/author left, rating pinned top-right */
+.bd-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--px-12);
+  width: 100%;
+}
+
+.bd-title-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--px-6);
+  min-width: 0;
+}
+
 .bd-rating {
   display: inline-flex;
   align-items: center;
   gap: var(--px-8);
+  flex-shrink: 0;
   margin-top: var(--px-4);
 }
 
@@ -7690,6 +7721,7 @@ input {
   display: flex;
   flex-direction: column;
   gap: var(--px-12);
+  margin-top: var(--px-12);
 }
 
 .bd-price-row {
@@ -7722,14 +7754,48 @@ input {
 }
 
 .bd-stock-line {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: var(--px-8);
+  width: fit-content;
+  padding: var(--px-6) var(--px-12);
+  border-radius: 999px;
+  background: var(--dark-4);
+}
+
+.bd-stock-line:has(.bd-text-success) {
+  background: rgba(10, 143, 12, 0.1);
+}
+
+.bd-stock-line:has(.bd-text-warning) {
+  background: rgba(251, 133, 0, 0.1);
+}
+
+.bd-stock-line:has(.bd-text-danger) {
+  background: rgba(220, 38, 38, 0.1);
+}
+
+/* Pulsing "live" ring on the in-stock check */
+.bd-stock-icon-success {
+  border-radius: 50%;
+  animation: stockPulse 1.8s ease-out infinite;
+}
+
+@keyframes stockPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(10, 143, 12, 0.45);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(10, 143, 12, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(10, 143, 12, 0);
+  }
 }
 
 .bd-stock-text {
   font-size: 13px;
-  font-weight: var(--weight-500);
+  font-weight: var(--weight-600);
 }
 
 .bd-stock-icon-success,
@@ -8199,14 +8265,22 @@ input {
 /* Order-history ticker — the ONLY dark band in the sticky bar */
 .bd-sticky-orders {
   background: var(--foreground);
-  padding: var(--px-8) var(--px-12);
+  padding: var(--px-12) var(--px-16);
+}
+
+.bd-sticky-orders .live-orders-wrap {
+  margin: 0;
+  max-width: none;
+  padding: 0;
 }
 
 .bd-sticky-orders .live-orders {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.12);
+  background: transparent;
+  border: none;
+  border-radius: 0;
   box-shadow: none;
-  padding: var(--px-6) var(--px-12);
+  padding: 0;
+  width: 100%;
 }
 
 .bd-sticky-orders .live-msg {
@@ -12289,7 +12363,7 @@ img[data-loaded="true"] {
   display: flex;
   align-items: center;
   gap: var(--px-14);
-  margin: var(--px-4) 0;
+  margin: var(--px-16) 0 var(--px-4);
   padding: var(--px-14) var(--px-16);
   border-radius: var(--px-14);
   background: linear-gradient(105deg, #fff1dc 0%, #ffe6f2 100%);

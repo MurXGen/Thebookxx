@@ -866,36 +866,40 @@ export default function BookDetailsModal({ book }) {
 
             <div className="width100">
               <div className="bd-hero-info">
-                <h1 className="bd-title" itemProp="name">
-                  {book.name}
-                </h1>
+                <div className="bd-title-row">
+                  <div className="bd-title-block">
+                    <h1 className="bd-title" itemProp="name">
+                      {book.name}
+                    </h1>
 
-                {book.author && (
-                  <p
-                    className="bd-author"
-                    itemProp="author"
-                    itemScope
-                    itemType="https://schema.org/Person"
-                  >
-                    by{" "}
-                    <Link
-                      href={`/authors/${book.authorSlug || slugify(book.author)}`}
-                      className="bd-author-link"
-                      itemProp="url"
-                    >
-                      <span itemProp="name">{book.author}</span>
-                    </Link>
-                  </p>
-                )}
+                    {book.author && (
+                      <p
+                        className="bd-author"
+                        itemProp="author"
+                        itemScope
+                        itemType="https://schema.org/Person"
+                      >
+                        by{" "}
+                        <Link
+                          href={`/authors/${book.authorSlug || slugify(book.author)}`}
+                          className="bd-author-link"
+                          itemProp="url"
+                        >
+                          <span itemProp="name">{book.author}</span>
+                        </Link>
+                      </p>
+                    )}
+                  </div>
 
-                <div className="bd-rating">
-                  <span className="bd-rating-pill">
-                    <Star size={12} fill="currentColor" />
-                    {rating}
-                  </span>
-                  <span className="bd-rating-count">
-                    ({reviewCount.toLocaleString()} ratings)
-                  </span>
+                  <div className="bd-rating">
+                    <span className="bd-rating-pill">
+                      <Star size={12} fill="currentColor" />
+                      {rating}
+                    </span>
+                    <span className="bd-rating-count">
+                      ({reviewCount.toLocaleString()} ratings)
+                    </span>
+                  </div>
                 </div>
               </div>
               {/* ===== Price block ===== */}
@@ -924,8 +928,8 @@ export default function BookDetailsModal({ book }) {
                       )}
                     </>
                   )}
+                  <span className="bd-price-tax">Inclusive of all taxes</span>
                 </div>
-                <span className="bd-price-tax">Inclusive of all taxes</span>
                 <meta itemProp="priceCurrency" content="INR" />
                 <meta
                   itemProp="availability"
@@ -971,11 +975,6 @@ export default function BookDetailsModal({ book }) {
                     </>
                   )}
                 </div>
-
-                {/* ===== Social proof / trust ===== */}
-                <div className="bd-liveorders">
-                  <LiveOrdersStrip />
-                </div>
               </div>
 
               <div className="bd-bookmark-card">
@@ -989,7 +988,7 @@ export default function BookDetailsModal({ book }) {
                     Free collectible bookmark
                   </span>
                   <span className="bd-bookmark-sub">
-                    A handcrafted 3D bookmark comes free with every order
+                    A collectible bookmark, free with every order
                   </span>
                 </div>
                 <span className="bd-bookmark-tag">FREE</span>

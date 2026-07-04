@@ -476,6 +476,375 @@ function OrdersCalendar({
   );
 }
 
+// ── Daily order-volume area chart (self-contained SVG, no deps) ──
+function DailyVolumeChart({ ordersByDay, days = 14 }) {
+  const today = new Date();
+  const series = [];
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate() - i,
+    );
+    series.push({ d, count: ordersByDay[dayKey(d)] || 0 });
+  }
+  const max = Math.max(1, ...series.map((s) => s.count));
+  const total = series.reduce((n, s) => n + s.count, 0);
+  const peak = Math.max(0, ...series.map((s) => s.count));
+  const W = 600,
+    H = 172,
+    padX = 14,
+    padTop = 24,
+    padBottom = 26;
+  const iw = W - padX * 2;
+  const ih = H - padTop - padBottom;
+  const n = series.length;
+  const sx = (i) => padX + (n === 1 ? iw / 2 : (i * iw) / (n - 1));
+  const sy = (c) => padTop + ih - (c / max) * ih;
+  const line = series.map((s, i) => `${sx(i)},${sy(s.count)}`).join(" ");
+  const area =
+    `M ${sx(0)},${padTop + ih} ` +
+    series.map((s, i) => `L ${sx(i)},${sy(s.count)}`).join(" ") +
+    ` L ${sx(n - 1)},${padTop + ih} Z`;
+  const fmt = (d) => `${d.getDate()}/${d.getMonth() + 1}`;
+
+  return (
+    <div className="admin-chart-card vol-card">
+      <div className="chart-title">
+        Daily order volume
+        <span className="vol-sub">
+          {total} orders · peak {peak}/day · last {days} days
+        </span>
+      </div>
+      <svg className="vol-svg" viewBox={`0 0 ${W} ${H}`} role="img">
+        <defs>
+          <linearGradient id="volFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="rgba(251,133,0,0.32)" />
+            <stop offset="100%" stopColor="rgba(251,133,0,0)" />
+          </linearGradient>
+        </defs>
+        <line
+          x1={padX}
+          y1={padTop + ih}
+          x2={W - padX}
+          y2={padTop + ih}
+          stroke="var(--hairline,#ececec)"
+          strokeWidth="1"
+        />
+        <path d={area} fill="url(#volFill)" />
+        <polyline
+          points={line}
+          fill="none"
+          stroke="var(--tertiary,#fb8500)"
+          strokeWidth="2.5"
+          strokeLinejoin="round"
+          strokeLinecap="round"
+        />
+        {series.map((s, i) => (
+          <g key={i}>
+            {s.count > 0 && (
+              <>
+                <circle
+                  cx={sx(i)}
+                  cy={sy(s.count)}
+                  r="3"
+                  fill="#fff"
+                  stroke="var(--tertiary,#fb8500)"
+                  strokeWidth="2"
+                />
+                <text
+                  x={sx(i)}
+                  y={sy(s.count) - 8}
+                  textAnchor="middle"
+                  className="vol-num"
+                >
+                  {s.count}
+                </text>
+              </>
+            )}
+            {(i % 2 === 0 || i === n - 1) && (
+              <text x={sx(i)} y={H - 8} textAnchor="middle" className="vol-x">
+                {fmt(s.d)}
+              </text>
+            )}
+          </g>
+        ))}
+      </svg>
+    </div>
+  );
+}
+
+const MONTH_LABELS = [
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+];
+
+// Reusable collapsible accordion section.
+function Accordion({ id, title, icon, open, onToggle, right, children }) {
+  return (
+    <div className="acc">
+      <div className="acc-head" onClick={() => onToggle(id)}>
+        <span className="acc-title">
+          {icon}
+          {title}
+        </span>
+        <span className="acc-actions">
+          {right}
+          <ChevronDown
+            size={18}
+            className="acc-chev"
+            style={{
+              transform: open ? "rotate(180deg)" : "none",
+              transition: "transform 0.25s ease",
+            }}
+          />
+        </span>
+      </div>
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            key="acc-body"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.28, ease: [0.32, 0.72, 0, 1] }}
+            style={{ overflow: "hidden" }}
+          >
+            <div className="acc-body">{children}</div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// ── Yearly run-rate: one cumulative line per month (only months with orders) ──
+function RunRateChart({ orders }) {
+  const year = new Date().getFullYear();
+  const COLORS = [
+    "#fb8500", "#0a8f0c", "#2563eb", "#e11d48", "#7c3aed", "#0891b2",
+    "#d97706", "#db2777", "#16a34a", "#4f46e5", "#dc2626", "#0d9488",
+  ];
+  const byMonthDay = {};
+  orders.forEach((o) => {
+    const d = getOrderDate(o);
+    if (!d || d.getFullYear() !== year) return;
+    const m = d.getMonth();
+    const day = d.getDate();
+    byMonthDay[m] = byMonthDay[m] || {};
+    byMonthDay[m][day] = (byMonthDay[m][day] || 0) + 1;
+  });
+  const months = Object.keys(byMonthDay)
+    .map(Number)
+    .sort((a, b) => a - b);
+  if (months.length === 0) return null;
+
+  const maxDay = 31;
+  let maxCum = 1;
+  const seriesByMonth = {};
+  months.forEach((m) => {
+    let cum = 0;
+    const pts = [];
+    for (let day = 1; day <= maxDay; day++) {
+      cum += byMonthDay[m][day] || 0;
+      pts.push(cum);
+    }
+    seriesByMonth[m] = pts;
+    maxCum = Math.max(maxCum, cum);
+  });
+
+  const W = 600, H = 240, padL = 30, padR = 14, padTop = 14, padBottom = 26;
+  const iw = W - padL - padR;
+  const ih = H - padTop - padBottom;
+  const x = (day) => padL + ((day - 1) / (maxDay - 1)) * iw;
+  const y = (v) => padTop + ih - (v / maxCum) * ih;
+
+  return (
+    <div className="admin-chart-card rr-card">
+      <div className="chart-title">
+        Order run-rate · {year}
+        <span className="vol-sub">cumulative orders by day, per month</span>
+      </div>
+      <svg className="rr-svg" viewBox={`0 0 ${W} ${H}`} role="img">
+        {[0, 0.25, 0.5, 0.75, 1].map((f, i) => {
+          const yy = padTop + ih - f * ih;
+          return (
+            <g key={i}>
+              <line
+                x1={padL}
+                y1={yy}
+                x2={W - padR}
+                y2={yy}
+                stroke="var(--hairline,#ececec)"
+                strokeWidth="1"
+              />
+              <text x={padL - 6} y={yy + 3} textAnchor="end" className="rr-y">
+                {Math.round(maxCum * f)}
+              </text>
+            </g>
+          );
+        })}
+        {months.map((m) => (
+          <polyline
+            key={m}
+            points={seriesByMonth[m]
+              .map((v, di) => `${x(di + 1)},${y(v)}`)
+              .join(" ")}
+            fill="none"
+            stroke={COLORS[m % COLORS.length]}
+            strokeWidth="2.2"
+            strokeLinejoin="round"
+            strokeLinecap="round"
+          />
+        ))}
+      </svg>
+      <div className="rr-legend">
+        {months.map((m) => (
+          <span key={m} className="rr-leg">
+            <span
+              className="rr-swatch"
+              style={{ background: COLORS[m % COLORS.length] }}
+            />
+            {MONTH_LABELS[m]} <b>{seriesByMonth[m][maxDay - 1]}</b>
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── Weekly orders bar chart with prev/next week navigation ──
+function WeeklyBarChart({ orders }) {
+  const [weekOffset, setWeekOffset] = useState(0);
+  const now = new Date();
+  const base = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const dow = (base.getDay() + 6) % 7; // Monday = 0
+  const weekStart = new Date(base);
+  weekStart.setDate(base.getDate() - dow + weekOffset * 7);
+  const labels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+  const dayCounts = {};
+  orders.forEach((o) => {
+    const d = getOrderDate(o);
+    if (d) dayCounts[dayKey(d)] = (dayCounts[dayKey(d)] || 0) + 1;
+  });
+  const cols = [];
+  let total = 0;
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(weekStart);
+    d.setDate(weekStart.getDate() + i);
+    const c = dayCounts[dayKey(d)] || 0;
+    cols.push({ d, c });
+    total += c;
+  }
+  const max = Math.max(1, ...cols.map((c) => c.c));
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekStart.getDate() + 6);
+  const fmt = (d) => `${d.getDate()}/${d.getMonth() + 1}`;
+
+  return (
+    <div className="admin-chart-card wk-card">
+      <div className="wk-head">
+        <div className="chart-title">
+          Weekly orders <span className="vol-sub">{total} in this week</span>
+        </div>
+        <div className="wk-nav">
+          <button
+            type="button"
+            onClick={() => setWeekOffset((w) => w - 1)}
+            aria-label="Previous week"
+          >
+            ‹
+          </button>
+          <span className="wk-range">
+            {fmt(weekStart)} – {fmt(weekEnd)}
+          </span>
+          <button
+            type="button"
+            onClick={() => setWeekOffset((w) => Math.min(0, w + 1))}
+            aria-label="Next week"
+            disabled={weekOffset >= 0}
+          >
+            ›
+          </button>
+        </div>
+      </div>
+      <div className="wk-bars">
+        {cols.map((c, i) => (
+          <div key={i} className="wk-col" title={`${c.c} orders on ${fmt(c.d)}`}>
+            <div className="wk-bar-track">
+              <div
+                className="wk-bar"
+                style={{ height: `${(c.c / max) * 100}%` }}
+              >
+                {c.c > 0 && <span className="wk-val">{c.c}</span>}
+              </div>
+            </div>
+            <span className="wk-lbl">{labels[i]}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── Predicted monthly revenue (run-rate projection) ──
+function PredictedMRR({ orders }) {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = now.getMonth();
+  const daysInMonth = new Date(y, m + 1, 0).getDate();
+  const dayOfMonth = now.getDate();
+  let revSoFar = 0;
+  let ordSoFar = 0;
+  orders.forEach((o) => {
+    const d = getOrderDate(o);
+    if (d && d.getFullYear() === y && d.getMonth() === m) {
+      revSoFar += o.revenue || 0;
+      ordSoFar += 1;
+    }
+  });
+  const lm = new Date(y, m - 1, 1);
+  let lastRev = 0;
+  orders.forEach((o) => {
+    const d = getOrderDate(o);
+    if (d && d.getFullYear() === lm.getFullYear() && d.getMonth() === lm.getMonth())
+      lastRev += o.revenue || 0;
+  });
+  const projected =
+    dayOfMonth > 0 ? Math.round((revSoFar / dayOfMonth) * daysInMonth) : revSoFar;
+  const pace = lastRev > 0 ? Math.round(((projected - lastRev) / lastRev) * 100) : null;
+
+  return (
+    <div className="admin-chart-card mrr-card">
+      <div className="chart-title">Predicted monthly revenue (run-rate)</div>
+      <div className="mrr-grid">
+        <div className="mrr-cell">
+          <span>This month so far</span>
+          <strong>₹{revSoFar.toLocaleString()}</strong>
+          <em>
+            {ordSoFar} orders · day {dayOfMonth}/{daysInMonth}
+          </em>
+        </div>
+        <div className="mrr-cell hero">
+          <span>Projected month-end</span>
+          <strong>₹{projected.toLocaleString()}</strong>
+          <em>
+            {pace !== null
+              ? `${pace >= 0 ? "▲ +" : "▼ "}${pace}% vs last month`
+              : "run-rate estimate"}
+          </em>
+        </div>
+        <div className="mrr-cell">
+          <span>{MONTH_LABELS[lm.getMonth()]} (last month)</span>
+          <strong>₹{lastRev.toLocaleString()}</strong>
+          <em>actual</em>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function ManageOrdersPage() {
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
@@ -506,6 +875,12 @@ export default function ManageOrdersPage() {
   const [pickHydrated, setPickHydrated] = useState(false);
   const [packedOrders, setPackedOrders] = useState({}); // { orderId: true }
   const [detailOrder, setDetailOrder] = useState(null); // order shown in detail modal
+  const [accOpen, setAccOpen] = useState({
+    analytics: true,
+    calendar: false,
+    orders: true,
+  });
+  const toggleAcc = (id) => setAccOpen((p) => ({ ...p, [id]: !p[id] }));
 
   useEffect(() => {
     try {
@@ -513,6 +888,8 @@ export default function ManageOrdersPage() {
       if (raw) setPickChecked(JSON.parse(raw) || {});
       const rawP = localStorage.getItem("manage_orders_packed");
       if (rawP) setPackedOrders(JSON.parse(rawP) || {});
+      const rawA = localStorage.getItem("manage_orders_accordions");
+      if (rawA) setAccOpen((prev) => ({ ...prev, ...JSON.parse(rawA) }));
     } catch (_) {}
     setPickHydrated(true);
   }, []);
@@ -521,8 +898,12 @@ export default function ManageOrdersPage() {
     try {
       localStorage.setItem("manage_orders_picks", JSON.stringify(pickChecked));
       localStorage.setItem("manage_orders_packed", JSON.stringify(packedOrders));
+      localStorage.setItem(
+        "manage_orders_accordions",
+        JSON.stringify(accOpen),
+      );
     } catch (_) {}
-  }, [pickChecked, packedOrders, pickHydrated]);
+  }, [pickChecked, packedOrders, accOpen, pickHydrated]);
 
   const togglePacked = (orderId) => {
     setPackedOrders((prev) => {
@@ -1056,21 +1437,39 @@ export default function ManageOrdersPage() {
           </Link>
         </div>
 
-        {/* ===== Colorful dashboard ===== */}
-        <div className="admin-dash">
-          <div className="admin-dash-top">
-            <span className="admin-dash-title">Dashboard overview</span>
+        {/* ===== Analytics (accordion) ===== */}
+        <Accordion
+          id="analytics"
+          title="Analytics"
+          open={accOpen.analytics}
+          onToggle={toggleAcc}
+          right={
             <div className="flex flex-row gap-8">
-              <button className="sec-mid-btn" onClick={() => fetchOrders()} title="Refresh">
+              <button
+                className="sec-mid-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  fetchOrders();
+                }}
+                title="Refresh"
+              >
                 <RefreshCw size={14} /> Refresh
               </button>
-              <button className="sec-mid-btn" onClick={exportToCSV} title="Export CSV">
+              <button
+                className="sec-mid-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  exportToCSV();
+                }}
+                title="Export CSV"
+              >
                 <Download size={14} /> Export
               </button>
             </div>
-          </div>
-
-          {/* KPI cards */}
+          }
+        >
+          <div className="admin-dash">
+            {/* KPI cards */}
           <div className="admin-kpis">
             <div className="kpi kpi-orders">
               <div className="kpi-ic"><ShoppingBag size={18} /></div>
@@ -1097,6 +1496,9 @@ export default function ManageOrdersPage() {
               <span className="kpi-label">Profit · {marginPct}% margin</span>
             </div>
           </div>
+
+          {/* Daily order-volume area chart */}
+          <DailyVolumeChart ordersByDay={ordersByDay} />
 
           {/* Charts row */}
           <div className="admin-charts">
@@ -1163,7 +1565,13 @@ export default function ManageOrdersPage() {
               </div>
             </div>
           </div>
-        </div>
+
+            {/* Yearly run-rate + weekly orders + predicted MRR */}
+            <RunRateChart orders={orders} />
+            <WeeklyBarChart orders={orders} />
+            <PredictedMRR orders={orders} />
+          </div>
+        </Accordion>
 
         {/* Search + Filter row */}
         <div className="admin-search">
@@ -1302,7 +1710,13 @@ export default function ManageOrdersPage() {
           </AnimatePresence>
         </div>
 
-        {/* Orders calendar — always visible */}
+        {/* ===== Calendar (accordion) ===== */}
+        <Accordion
+          id="calendar"
+          title="Orders calendar"
+          open={accOpen.calendar}
+          onToggle={toggleAcc}
+        >
         <div className="admin-cal-wrap admin-cal-standalone">
           <OrdersCalendar
             calMonth={calMonth}
@@ -1363,6 +1777,7 @@ export default function ManageOrdersPage() {
             </div>
           )}
         </div>
+        </Accordion>
 
         {/* ===== Book Picking (fulfilment) ===== */}
         {filteredOrders.length > 0 &&
@@ -1525,7 +1940,14 @@ export default function ManageOrdersPage() {
             );
           })()}
 
-        {/* Orders list, flattened single cards */}
+        {/* ===== Orders (accordion) ===== */}
+        <Accordion
+          id="orders"
+          title="Orders"
+          open={accOpen.orders}
+          onToggle={toggleAcc}
+          right={<span className="acc-count">{filteredOrders.length}</span>}
+        >
         {filteredOrders.length > 0 ? (
           <div className="flex flex-col gap-12">
             <div className="orders-list-header">
@@ -1871,6 +2293,7 @@ export default function ManageOrdersPage() {
             </span>
           </div>
         )}
+        </Accordion>
       </div>
 
       {/* ===== Order detail modal (slide-up, bill-modal style) ===== */}

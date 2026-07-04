@@ -47,6 +47,8 @@ import BookReviews from "./UI/BookReviews";
 import StoreReviews from "./StoreReviews";
 import LiveOrdersStrip from "./LiveOrdersStrip";
 import BookLinksStrip from "./BookLinksStrip";
+import Navbar from "./Navbar";
+import Breadcrumbs from "./UI/Breadcrumbs";
 import CartConfetti from "./UI/Confetti";
 import { getReviewsByBook, getAverageRating } from "@/utils/reviews";
 
@@ -573,6 +575,9 @@ export default function BookDetailsModal({ book }) {
 
   return (
     <>
+      {/* Site navbar at the top — scrolls away naturally as you scroll down */}
+      <Navbar />
+
       {/* JSON-LD Schema for Book Details */}
       <Script
         id={`book-detail-schema-${book.id}`}
@@ -717,7 +722,8 @@ export default function BookDetailsModal({ book }) {
         />
       )}
 
-      {/* ===== Sticky top header (appears on scroll past hero) ===== */}
+      {/* ===== Book-details top bar — appears deeper down, after the navbar
+              has scrolled away past the hero ===== */}
       <AnimatePresence>
         {showStickyHeader && (
           <motion.div
@@ -802,6 +808,27 @@ export default function BookDetailsModal({ book }) {
               }),
             }}
           />
+
+          {/* ===== Visible breadcrumb (small), below navbar ===== */}
+          <div className="bd-breadcrumb-bar">
+            <Breadcrumbs
+              items={[
+                { label: "Books", href: "/books" },
+                ...(book.catalogue?.[0]
+                  ? [
+                      {
+                        label: book.catalogue[0]
+                          .replace(/-/g, " ")
+                          .replace(/\b\w/g, (c) => c.toUpperCase()),
+                        href: `/category/${book.catalogue[0]}`,
+                      },
+                    ]
+                  : []),
+                { label: book.name },
+              ]}
+            />
+          </div>
+
           {/* ===== Top bar (in-flow) ===== */}
           <div className="bd-topbar">
             <button

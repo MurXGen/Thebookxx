@@ -6987,6 +6987,215 @@ input {
   gap: var(--px-24);
 }
 
+/* ============================================
+   ₹1 Deals landing page (/deals) — ad-match LP
+   ============================================ */
+.deals-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--px-16) var(--px-56);
+}
+
+.deals-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--px-14);
+  padding: var(--px-32) var(--px-16) var(--px-28);
+}
+
+.deals-flag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--px-6);
+  font-size: 12px;
+  font-weight: var(--weight-700);
+  color: var(--tertiary);
+  background: rgba(251, 133, 0, 0.12);
+  padding: var(--px-6) var(--px-14);
+  border-radius: 999px;
+}
+
+.deals-title {
+  font-size: 34px;
+  line-height: 1.15;
+  font-weight: var(--weight-800, 800);
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: var(--foreground);
+}
+
+.deals-price {
+  color: var(--tertiary);
+}
+
+.deals-sub {
+  max-width: 560px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--dark-50);
+  margin: 0;
+}
+
+.deals-badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--px-16) var(--px-24);
+  margin-top: var(--px-8);
+}
+
+.deals-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--px-8);
+  font-size: 13px;
+  font-weight: var(--weight-600);
+  color: var(--foreground);
+}
+
+.deals-badge-icon {
+  color: var(--tertiary);
+}
+
+.deals-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: var(--px-8);
+  padding: var(--px-14) var(--px-32);
+  border-radius: 999px;
+  background: var(--tertiary);
+  color: var(--white-100);
+  font-size: 15px;
+  font-weight: var(--weight-700);
+  text-decoration: none;
+  box-shadow: 0 6px 20px rgba(251, 133, 0, 0.35);
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.deals-cta:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.deals-proof {
+  font-size: 12px;
+  color: var(--dark-50);
+  margin: 0;
+}
+
+.deals-section {
+  margin-top: var(--px-32);
+}
+
+.deals-section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--px-8);
+  margin-bottom: var(--px-16);
+}
+
+.deals-section-title {
+  font-size: 20px;
+  font-weight: var(--weight-800, 800);
+  color: var(--foreground);
+  margin: 0;
+}
+
+.deals-section-note {
+  font-size: 12px;
+  color: var(--dark-50);
+}
+
+.deals-faq {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--px-16);
+  margin-top: var(--px-16);
+}
+
+.deals-faq-item {
+  padding: var(--px-16);
+  border: 1px solid var(--hairline);
+  border-radius: var(--px-14);
+  background: var(--surface-2, var(--dark-4));
+}
+
+.deals-faq-q {
+  font-size: 14px;
+  font-weight: var(--weight-700);
+  color: var(--foreground);
+  margin: 0 0 var(--px-6);
+}
+
+.deals-faq-a {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--dark-50);
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .deals-title {
+    font-size: 28px;
+  }
+  .deals-faq {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Site navbar revealed on scroll-down (hidden at the top of the page) */
+.bd-scroll-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  background: var(--background);
+  box-shadow: 0 2px 12px var(--dark-10);
+}
+
+/* ---------- Visible breadcrumb bar (below navbar) ---------- */
+.bd-breadcrumb-bar {
+  padding: var(--px-6) 0 0;
+}
+
+.bd-breadcrumb-bar .breadcrumbs-pro {
+  font-size: 12px;
+  color: var(--dark-50);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.bd-breadcrumb-bar .bc-link {
+  color: var(--dark-50);
+  text-decoration: none;
+}
+
+.bd-breadcrumb-bar .bc-link:hover {
+  color: var(--tertiary);
+}
+
+.bd-breadcrumb-bar .bc-sep {
+  color: var(--dark-20);
+}
+
+.bd-breadcrumb-bar .bc-current {
+  color: var(--foreground);
+  font-weight: var(--weight-600);
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+  vertical-align: bottom;
+}
+
 /* ---------- Top bar (in-flow) ---------- */
 .bd-topbar {
   display: flex;
@@ -13823,4 +14032,274 @@ img[data-loaded="true"] {
 }
 .mrr-cell.hero > strong {
   color: #b45309;
+}
+
+/* =====================================================================
+   ✦ /1rupee — "Books at just ₹1" landing page
+   ===================================================================== */
+.or-page {
+  padding-bottom: 60px;
+}
+
+.or-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--px-12) var(--px-16) 0;
+}
+
+.or-breadcrumb {
+  padding: var(--px-8) 0;
+}
+
+.or-breadcrumb .breadcrumbs-pro {
+  font-size: 12px;
+  color: var(--dark-50);
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.or-breadcrumb .bc-link {
+  color: var(--dark-50);
+  text-decoration: none;
+}
+
+.or-breadcrumb .bc-current {
+  color: var(--foreground);
+  font-weight: var(--weight-600);
+}
+
+/* ---------- Hero ---------- */
+.or-hero {
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  border-radius: var(--px-24, 24px);
+  padding: 48px var(--px-20);
+  margin-top: var(--px-8);
+  background: radial-gradient(
+      120% 120% at 50% 0%,
+      #fff3e0 0%,
+      #ffe6f0 45%,
+      #fff 100%
+    );
+  border: 1px solid rgba(251, 133, 0, 0.25);
+}
+
+.or-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--foreground);
+  color: #fff;
+  font-size: 12px;
+  font-weight: var(--weight-700);
+  padding: 6px 14px;
+  border-radius: 999px;
+  margin-bottom: var(--px-16);
+}
+
+.or-hero-title {
+  font-size: 38px;
+  line-height: 1.1;
+  font-weight: var(--weight-800, 800);
+  letter-spacing: -0.02em;
+  color: var(--foreground);
+  margin: 0 0 var(--px-12);
+}
+
+.or-price-tag {
+  display: inline-block;
+  background: linear-gradient(135deg, #fb8500, #ff5d8f);
+  color: #fff;
+  padding: 0 14px;
+  border-radius: 12px;
+  box-shadow: 0 8px 22px rgba(251, 133, 0, 0.35);
+  transform: rotate(-3deg);
+}
+
+.or-hero-sub {
+  max-width: 560px;
+  margin: 0 auto var(--px-24);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--dark-50);
+}
+
+.or-hero-stats {
+  display: flex;
+  justify-content: center;
+  gap: var(--px-32);
+  flex-wrap: wrap;
+  margin-bottom: var(--px-20);
+}
+
+.or-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.or-stat-num {
+  font-size: 26px;
+  font-weight: var(--weight-800, 800);
+  color: var(--tertiary);
+  line-height: 1;
+}
+
+.or-stat-label {
+  font-size: 12px;
+  color: var(--dark-50);
+  margin-top: 4px;
+}
+
+.or-trust {
+  display: flex;
+  justify-content: center;
+  gap: var(--px-16);
+  flex-wrap: wrap;
+}
+
+.or-trust-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: var(--weight-600);
+  color: var(--foreground);
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--hairline);
+  padding: 6px 12px;
+  border-radius: 999px;
+}
+
+/* Sparkle decor */
+.or-spark {
+  position: absolute;
+  font-size: 20px;
+  opacity: 0.8;
+  animation: orTwinkle 2.4s ease-in-out infinite;
+  pointer-events: none;
+}
+.or-spark-1 {
+  top: 18px;
+  left: 24px;
+}
+.or-spark-2 {
+  top: 40px;
+  right: 40px;
+  animation-delay: 0.8s;
+  font-size: 26px;
+}
+.or-spark-3 {
+  bottom: 24px;
+  left: 50%;
+  animation-delay: 1.5s;
+}
+
+@keyframes orTwinkle {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.8) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2) rotate(15deg);
+  }
+}
+
+/* ---------- Sections ---------- */
+.or-section {
+  margin-top: 44px;
+}
+
+.or-section-title {
+  display: flex;
+  align-items: center;
+  gap: var(--px-8);
+  font-size: 20px;
+  font-weight: var(--weight-700);
+  color: var(--foreground);
+  margin: 0 0 var(--px-8);
+}
+
+.or-section-icon {
+  color: var(--tertiary);
+}
+
+.or-section-sub {
+  font-size: 13px;
+  color: var(--dark-50);
+  margin: 0 0 var(--px-16);
+}
+
+.or-empty {
+  font-size: 14px;
+  color: var(--dark-50);
+  padding: var(--px-24) 0;
+}
+
+/* Category chips */
+.or-cat-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--px-8);
+}
+
+.or-cat-chip {
+  font-size: 13px;
+  font-weight: var(--weight-500);
+  color: var(--foreground);
+  background: var(--dark-4);
+  border: 1px solid var(--hairline);
+  padding: 8px 14px;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.or-cat-chip:hover {
+  background: var(--tertiary);
+  color: #fff;
+  border-color: var(--tertiary);
+}
+
+/* FAQ */
+.or-faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--px-16);
+}
+
+.or-faq-q {
+  font-size: 15px;
+  font-weight: var(--weight-700);
+  color: var(--foreground);
+  margin: 0 0 4px;
+}
+
+.or-faq-a {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--dark-50);
+  margin: 0;
+}
+
+@media (max-width: 560px) {
+  .or-hero-title {
+    font-size: 28px;
+  }
+  .or-hero {
+    padding: 36px var(--px-16);
+  }
+  .or-hero-stats {
+    gap: var(--px-20);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .or-spark {
+    animation: none;
+  }
 }

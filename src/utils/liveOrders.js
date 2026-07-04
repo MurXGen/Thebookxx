@@ -18,22 +18,30 @@ const PALETTE = [
   { bg: "#f1ecff", fg: "#7c4dff" },
 ];
 
+// First-10 sample orders with a spread of freshness labels — "just now",
+// minutes-ago and hours-ago — shown before the real feed for a lively ticker.
 const RAW = [
-  { name: "Aishu", city: "Coimbatore", amount: 419, books: 2, minsAgo: 50 },
-  { name: "Priya", city: "Mumbai", amount: 427, books: 3, minsAgo: 2 },
-  { name: "Rahul", city: "Delhi", amount: 312, books: 2, minsAgo: 4 },
-  { name: "Aisha", city: "Bengaluru", amount: 189, books: 1, minsAgo: 6 },
-  { name: "Karthik", city: "Chennai", amount: 538, books: 4, minsAgo: 7 },
-  { name: "Sneha", city: "Pune", amount: 268, books: 2, minsAgo: 9 },
-  { name: "Arjun", city: "Hyderabad", amount: 159, books: 1, minsAgo: 10 },
-  { name: "Meera", city: "Kolkata", amount: 642, books: 5, minsAgo: 3 },
-  { name: "Vivek", city: "Jaipur", amount: 298, books: 2, minsAgo: 5 },
-  { name: "Ananya", city: "Ahmedabad", amount: 377, books: 3, minsAgo: 8 },
-  { name: "Rohit", city: "Lucknow", amount: 219, books: 2, minsAgo: 1 },
+  { name: "Priya", city: "Mumbai", amount: 427, books: 3, minsAgo: 0 },
+  { name: "Rohit", city: "Lucknow", amount: 219, books: 2, minsAgo: 2 },
+  { name: "Meera", city: "Kolkata", amount: 642, books: 5, minsAgo: 5 },
+  { name: "Rahul", city: "Delhi", amount: 312, books: 2, minsAgo: 12 },
+  { name: "Aisha", city: "Bengaluru", amount: 189, books: 1, minsAgo: 24 },
+  { name: "Sneha", city: "Pune", amount: 268, books: 2, minsAgo: 41 },
+  { name: "Karthik", city: "Chennai", amount: 538, books: 4, minsAgo: 78 },
+  { name: "Vivek", city: "Jaipur", amount: 298, books: 2, minsAgo: 135 },
+  { name: "Ananya", city: "Ahmedabad", amount: 377, books: 3, minsAgo: 200 },
+  { name: "Aishu", city: "Coimbatore", amount: 419, books: 2, minsAgo: 320 },
 ];
 
+function labelFromMins(mins) {
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins} mins ago`;
+  const hrs = Math.round(mins / 60);
+  return `${hrs} hr${hrs > 1 ? "s" : ""} ago`;
+}
+
 /**
- * Returns the list of recent orders, enriched with display fields (initials +
+ * Returns the list of sample orders, enriched with display fields (initials +
  * avatar colour). Ordered by most-recent first.
  */
 export function getLiveOrders() {
@@ -44,7 +52,7 @@ export function getLiveOrders() {
       initials: o.name.slice(0, 1).toUpperCase(),
       bg: c.bg,
       fg: c.fg,
-      timeLabel: o.minsAgo <= 1 ? "just now" : `${o.minsAgo} mins ago`,
+      timeLabel: labelFromMins(o.minsAgo),
     };
   }).sort((a, b) => a.minsAgo - b.minsAgo);
 }
@@ -158,7 +166,7 @@ export async function fetchLiveOrders({ limit = 12 } = {}) {
 
       if (!mapped.length) throw new Error("no rows");
 
-      const orders = mapped.map((o, i) => {
+      const realOrders = mapped.map((o, i) => {
         const c = PALETTE[i % PALETTE.length];
         return {
           ...o,
@@ -168,6 +176,10 @@ export async function fetchLiveOrders({ limit = 12 } = {}) {
           timeLabel: relTime(o.date),
         };
       });
+
+      // Show the 10 sample "just now / mins / hours ago" orders first, then
+      // the real feed after them.
+      const orders = [...getLiveOrders().slice(0, 10), ...realOrders];
 
       const books = orders.reduce((s, o) => s + o.books, 0);
       _cache = { orders, summary: { orders: orders.length, books } };

@@ -387,8 +387,11 @@ export default function BookDetailsModal({ book }) {
   const rating = hasRealReviews
     ? Number(getAverageRating(bookReviews))
     : book.rating || getStableRating(book.id);
+  // When a book has a configured reviewCount (e.g. a hero title with many
+  // reviews), use it as a floor so the displayed total reflects reality even
+  // if only a sample of review objects is stored.
   const reviewCount = hasRealReviews
-    ? bookReviews.length
+    ? Math.max(bookReviews.length, book.reviewCount || 0)
     : book.reviewCount || getStableReviewCount(book.id);
 
   // Price/value FAQ — targets long-tail searches like "price of <book>",
@@ -457,6 +460,17 @@ export default function BookDetailsModal({ book }) {
         const s = Math.max(1, Math.min(5, Math.round(r.rating)));
         d[s] += 1;
       });
+      // If the displayed total is larger than the stored reviews, scale the
+      // distribution up proportionally so the bars sum to reviewCount.
+      const real = bookReviews.length;
+      if (reviewCount > real && real > 0) {
+        let assigned = 0;
+        [5, 4, 3, 2].forEach((star) => {
+          d[star] = Math.round((d[star] / real) * reviewCount);
+          assigned += d[star];
+        });
+        d[1] = Math.max(0, reviewCount - assigned);
+      }
       return d;
     }
     const t = reviewCount;

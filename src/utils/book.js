@@ -165,6 +165,8 @@ export const books = [
     pages: "190-210",
     language: "English",
     stock: 27,
+    rating: 4.9,
+    reviewCount: 342,
     // Related reads: Medium articles + TheBookX book-focused pages.
     mediumUrl: "https://medium.com/@murthyofficial3",
     links: [

@@ -46,7 +46,11 @@ const BOOK_IMAGE_BY_NAME = (() => {
   return map;
 })();
 const getBookImage = (name) =>
-  BOOK_IMAGE_BY_NAME[String(name || "").trim().toLowerCase()] || null;
+  BOOK_IMAGE_BY_NAME[
+    String(name || "")
+      .trim()
+      .toLowerCase()
+  ] || null;
 
 // ---- WhatsApp quick-message helpers ----
 // Opens WhatsApp chat with the customer, pre-filled with a stage message.
@@ -72,7 +76,9 @@ const waMessages = (order) => {
     ? String(order["Customer Name"]).trim()
     : "there";
   const orderId = order?.["Order ID"] || "";
-  const tracking = String(order?.shippingId || order?.["Shipping ID"] || "").trim();
+  const tracking = String(
+    order?.shippingId || order?.["Shipping ID"] || "",
+  ).trim();
   const hi = `Hi ${name}`;
   const id = orderId ? ` (Order ${orderId})` : "";
 
@@ -262,7 +268,6 @@ const getOrderDate = (order) =>
   parseAnyDate(order["Timestamp"]) ||
   parseAnyDate(order["Order Date"]);
 
-
 // Sort orders by date. order = "desc" → newest first, "asc" → oldest first.
 // Rows without a parseable date always go to the bottom.
 const sortByDate = (list, order = "desc") =>
@@ -372,9 +377,13 @@ function OrdersCalendar({
   });
 
   const prev = () =>
-    setCalMonth(({ y, m }) => (m === 0 ? { y: y - 1, m: 11 } : { y, m: m - 1 }));
+    setCalMonth(({ y, m }) =>
+      m === 0 ? { y: y - 1, m: 11 } : { y, m: m - 1 },
+    );
   const next = () =>
-    setCalMonth(({ y, m }) => (m === 11 ? { y: y + 1, m: 0 } : { y, m: m + 1 }));
+    setCalMonth(({ y, m }) =>
+      m === 11 ? { y: y + 1, m: 0 } : { y, m: m + 1 },
+    );
 
   const toggleRangeMode = () => {
     setRangeStart("");
@@ -408,14 +417,24 @@ function OrdersCalendar({
   return (
     <div className="oc">
       <div className="oc-head">
-        <button type="button" className="oc-nav" onClick={prev} aria-label="Previous month">
+        <button
+          type="button"
+          className="oc-nav"
+          onClick={prev}
+          aria-label="Previous month"
+        >
           ‹
         </button>
         <div className="oc-title">
           <span className="oc-month">{monthLabel}</span>
           <span className="oc-total">{monthTotal} orders this month</span>
         </div>
-        <button type="button" className="oc-nav" onClick={next} aria-label="Next month">
+        <button
+          type="button"
+          className="oc-nav"
+          onClick={next}
+          aria-label="Next month"
+        >
           ›
         </button>
       </div>
@@ -450,7 +469,8 @@ function OrdersCalendar({
           const count = ordersByDay[key] || 0;
           const isToday = key === todayKey;
           const isSel = key === selectedDate;
-          const inRange = dateFrom && dateTo && key >= dateFrom && key <= dateTo;
+          const inRange =
+            dateFrom && dateTo && key >= dateFrom && key <= dateTo;
           const isRangeEnd =
             (dateFrom && key === dateFrom) || (dateTo && key === dateTo);
           const isPendingStart = rangeMode && key === rangeStart;
@@ -575,8 +595,18 @@ function DailyVolumeChart({ ordersByDay, days = 14 }) {
 }
 
 const MONTH_LABELS = [
-  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
 ];
 
 // Reusable collapsible accordion section.
@@ -622,8 +652,18 @@ function Accordion({ id, title, icon, open, onToggle, right, children }) {
 function RunRateChart({ orders }) {
   const year = new Date().getFullYear();
   const COLORS = [
-    "#fb8500", "#0a8f0c", "#2563eb", "#e11d48", "#7c3aed", "#0891b2",
-    "#d97706", "#db2777", "#16a34a", "#4f46e5", "#dc2626", "#0d9488",
+    "#fb8500",
+    "#0a8f0c",
+    "#2563eb",
+    "#e11d48",
+    "#7c3aed",
+    "#0891b2",
+    "#d97706",
+    "#db2777",
+    "#16a34a",
+    "#4f46e5",
+    "#dc2626",
+    "#0d9488",
   ];
   const byMonthDay = {};
   orders.forEach((o) => {
@@ -653,7 +693,12 @@ function RunRateChart({ orders }) {
     maxCum = Math.max(maxCum, cum);
   });
 
-  const W = 600, H = 240, padL = 30, padR = 14, padTop = 14, padBottom = 26;
+  const W = 600,
+    H = 240,
+    padL = 30,
+    padR = 14,
+    padTop = 14,
+    padBottom = 26;
   const iw = W - padL - padR;
   const ih = H - padTop - padBottom;
   const x = (day) => padL + ((day - 1) / (maxDay - 1)) * iw;
@@ -771,7 +816,11 @@ function WeeklyBarChart({ orders }) {
       </div>
       <div className="wk-bars">
         {cols.map((c, i) => (
-          <div key={i} className="wk-col" title={`${c.c} orders on ${fmt(c.d)}`}>
+          <div
+            key={i}
+            className="wk-col"
+            title={`${c.c} orders on ${fmt(c.d)}`}
+          >
             <div className="wk-bar-track">
               <div
                 className="wk-bar"
@@ -808,12 +857,19 @@ function PredictedMRR({ orders }) {
   let lastRev = 0;
   orders.forEach((o) => {
     const d = getOrderDate(o);
-    if (d && d.getFullYear() === lm.getFullYear() && d.getMonth() === lm.getMonth())
+    if (
+      d &&
+      d.getFullYear() === lm.getFullYear() &&
+      d.getMonth() === lm.getMonth()
+    )
       lastRev += o.revenue || 0;
   });
   const projected =
-    dayOfMonth > 0 ? Math.round((revSoFar / dayOfMonth) * daysInMonth) : revSoFar;
-  const pace = lastRev > 0 ? Math.round(((projected - lastRev) / lastRev) * 100) : null;
+    dayOfMonth > 0
+      ? Math.round((revSoFar / dayOfMonth) * daysInMonth)
+      : revSoFar;
+  const pace =
+    lastRev > 0 ? Math.round(((projected - lastRev) / lastRev) * 100) : null;
 
   return (
     <div className="admin-chart-card mrr-card">
@@ -897,11 +953,11 @@ export default function ManageOrdersPage() {
     if (!pickHydrated) return;
     try {
       localStorage.setItem("manage_orders_picks", JSON.stringify(pickChecked));
-      localStorage.setItem("manage_orders_packed", JSON.stringify(packedOrders));
       localStorage.setItem(
-        "manage_orders_accordions",
-        JSON.stringify(accOpen),
+        "manage_orders_packed",
+        JSON.stringify(packedOrders),
       );
+      localStorage.setItem("manage_orders_accordions", JSON.stringify(accOpen));
     } catch (_) {}
   }, [pickChecked, packedOrders, accOpen, pickHydrated]);
 
@@ -1025,9 +1081,7 @@ export default function ManageOrdersPage() {
   // Restore saved filter/search preferences on mount
   useEffect(() => {
     try {
-      const p = JSON.parse(
-        localStorage.getItem("manage_orders_prefs") || "{}",
-      );
+      const p = JSON.parse(localStorage.getItem("manage_orders_prefs") || "{}");
       if (p.searchQuery) setSearchQuery(p.searchQuery);
       if (p.statusFilter) setStatusFilter(p.statusFilter);
       if (p.paymentFilter) setPaymentFilter(p.paymentFilter);
@@ -1088,7 +1142,12 @@ export default function ManageOrdersPage() {
       // Default view: only pending / processing (and un-set) orders.
       filtered = filtered.filter((order) => {
         const s = (order["Order Status"] || "").toLowerCase();
-        return !s || s.includes("pending") || s.includes("processing");
+        return (
+          !s ||
+          s.includes("pending") ||
+          s.includes("processing") ||
+          s.includes("getting shipped...")
+        );
       });
     } else if (statusFilter !== "all") {
       filtered = filtered.filter(
@@ -1470,101 +1529,118 @@ export default function ManageOrdersPage() {
         >
           <div className="admin-dash">
             {/* KPI cards */}
-          <div className="admin-kpis">
-            <div className="kpi kpi-orders">
-              <div className="kpi-ic"><ShoppingBag size={18} /></div>
-              <span className="kpi-value">{filteredOrders.length}</span>
-              <span className="kpi-label">Orders</span>
-            </div>
-            <div className="kpi kpi-rev">
-              <div className="kpi-ic"><IndianRupee size={18} /></div>
-              <span className="kpi-value">₹{totalRevenue.toLocaleString()}</span>
-              <span className="kpi-label">Revenue</span>
-            </div>
-            <div className="kpi kpi-cost">
-              <div className="kpi-ic"><Package size={18} /></div>
-              <span className="kpi-value">₹{totalCost.toLocaleString()}</span>
-              <span className="kpi-label">Total cost</span>
-            </div>
-            <div className={`kpi ${totalPnL >= 0 ? "kpi-profit" : "kpi-loss"}`}>
-              <div className="kpi-ic">
-                {totalPnL >= 0 ? <TrendingUp size={18} /> : <TrendingDown size={18} />}
+            <div className="admin-kpis">
+              <div className="kpi kpi-orders">
+                <div className="kpi-ic">
+                  <ShoppingBag size={18} />
+                </div>
+                <span className="kpi-value">{filteredOrders.length}</span>
+                <span className="kpi-label">Orders</span>
               </div>
-              <span className="kpi-value">
-                {totalPnL >= 0 ? "+" : "−"}₹{Math.abs(totalPnL).toLocaleString()}
-              </span>
-              <span className="kpi-label">Profit · {marginPct}% margin</span>
+              <div className="kpi kpi-rev">
+                <div className="kpi-ic">
+                  <IndianRupee size={18} />
+                </div>
+                <span className="kpi-value">
+                  ₹{totalRevenue.toLocaleString()}
+                </span>
+                <span className="kpi-label">Revenue</span>
+              </div>
+              <div className="kpi kpi-cost">
+                <div className="kpi-ic">
+                  <Package size={18} />
+                </div>
+                <span className="kpi-value">₹{totalCost.toLocaleString()}</span>
+                <span className="kpi-label">Total cost</span>
+              </div>
+              <div
+                className={`kpi ${totalPnL >= 0 ? "kpi-profit" : "kpi-loss"}`}
+              >
+                <div className="kpi-ic">
+                  {totalPnL >= 0 ? (
+                    <TrendingUp size={18} />
+                  ) : (
+                    <TrendingDown size={18} />
+                  )}
+                </div>
+                <span className="kpi-value">
+                  {totalPnL >= 0 ? "+" : "−"}₹
+                  {Math.abs(totalPnL).toLocaleString()}
+                </span>
+                <span className="kpi-label">Profit · {marginPct}% margin</span>
+              </div>
             </div>
-          </div>
 
-          {/* Daily order-volume area chart */}
-          <DailyVolumeChart ordersByDay={ordersByDay} />
+            {/* Daily order-volume area chart */}
+            <DailyVolumeChart ordersByDay={ordersByDay} />
 
-          {/* Charts row */}
-          <div className="admin-charts">
-            <div className="admin-chart-card">
-              <div className="chart-title">Orders by status</div>
-              <div className="status-bars">
-                {statusCounts.map((s) => (
-                  <div key={s.key} className="status-bar-row">
-                    <span className="sb-label">{s.key}</span>
-                    <div className="sb-track">
-                      <div
-                        className="sb-fill"
-                        style={{
-                          width: `${(s.count / maxStatusCount) * 100}%`,
-                          background: s.color,
-                        }}
-                      />
+            {/* Charts row */}
+            <div className="admin-charts">
+              <div className="admin-chart-card">
+                <div className="chart-title">Orders by status</div>
+                <div className="status-bars">
+                  {statusCounts.map((s) => (
+                    <div key={s.key} className="status-bar-row">
+                      <span className="sb-label">{s.key}</span>
+                      <div className="sb-track">
+                        <div
+                          className="sb-fill"
+                          style={{
+                            width: `${(s.count / maxStatusCount) * 100}%`,
+                            background: s.color,
+                          }}
+                        />
+                      </div>
+                      <span className="sb-count">{s.count}</span>
                     </div>
-                    <span className="sb-count">{s.count}</span>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
 
-            <div className="admin-chart-card">
-              <div className="chart-title">Payment & fulfilment</div>
-              <div className="pay-split">
-                <div
-                  className="pay-donut"
-                  style={{
-                    background: `conic-gradient(#fb8500 0 ${
-                      filteredOrders.length
-                        ? Math.round((prepaidCount / filteredOrders.length) * 100)
-                        : 0
-                    }%, #0a0a0a 0)`,
-                  }}
-                >
-                  <span>{filteredOrders.length}</span>
+              <div className="admin-chart-card">
+                <div className="chart-title">Payment & fulfilment</div>
+                <div className="pay-split">
+                  <div
+                    className="pay-donut"
+                    style={{
+                      background: `conic-gradient(#fb8500 0 ${
+                        filteredOrders.length
+                          ? Math.round(
+                              (prepaidCount / filteredOrders.length) * 100,
+                            )
+                          : 0
+                      }%, #0a0a0a 0)`,
+                    }}
+                  >
+                    <span>{filteredOrders.length}</span>
+                  </div>
+                  <div className="pay-legend">
+                    <div>
+                      <span className="dot" style={{ background: "#fb8500" }} />
+                      Prepaid {prepaidCount}
+                    </div>
+                    <div>
+                      <span className="dot" style={{ background: "#0a0a0a" }} />
+                      COD {codCount}
+                    </div>
+                  </div>
                 </div>
-                <div className="pay-legend">
+                <div className="dash-mini">
                   <div>
-                    <span className="dot" style={{ background: "#fb8500" }} />
-                    Prepaid {prepaidCount}
+                    <span>Delivered</span>
+                    <strong>{deliveredCount}</strong>
                   </div>
                   <div>
-                    <span className="dot" style={{ background: "#0a0a0a" }} />
-                    COD {codCount}
+                    <span>In transit</span>
+                    <strong>{inTransitCount}</strong>
                   </div>
-                </div>
-              </div>
-              <div className="dash-mini">
-                <div>
-                  <span>Delivered</span>
-                  <strong>{deliveredCount}</strong>
-                </div>
-                <div>
-                  <span>In transit</span>
-                  <strong>{inTransitCount}</strong>
-                </div>
-                <div>
-                  <span>Tracking</span>
-                  <strong>{withTrackingCount}</strong>
+                  <div>
+                    <span>Tracking</span>
+                    <strong>{withTrackingCount}</strong>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
             {/* Yearly run-rate + weekly orders + predicted MRR */}
             <RunRateChart orders={orders} />
@@ -1641,12 +1717,16 @@ export default function ManageOrdersPage() {
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
                       >
-                        <option value="active">Active (Pending + Processing)</option>
+                        <option value="active">
+                          Active (Pending + Processing)
+                        </option>
                         <option value="all">All Statuses</option>
                         <option value="Processing">Processing</option>
                         <option value="Shipped">Shipped</option>
                         <option value="In Transit">In Transit</option>
-                        <option value="Out for Delivery">Out for Delivery</option>
+                        <option value="Out for Delivery">
+                          Out for Delivery
+                        </option>
                         <option value="Delivered">Delivered</option>
                         <option value="Cancelled">Cancelled</option>
                       </select>
@@ -1717,66 +1797,69 @@ export default function ManageOrdersPage() {
           open={accOpen.calendar}
           onToggle={toggleAcc}
         >
-        <div className="admin-cal-wrap admin-cal-standalone">
-          <OrdersCalendar
-            calMonth={calMonth}
-            setCalMonth={setCalMonth}
-            ordersByDay={ordersByDay}
-            selectedDate={selectedDate}
-            setSelectedDate={setSelectedDate}
-            dateFrom={dateFrom}
-            dateTo={dateTo}
-            setDateFrom={setDateFrom}
-            setDateTo={setDateTo}
-          />
-          {selectedDate && (
-            <div className="admin-cal-selected">
-              Showing orders for{" "}
-              <strong>
-                {new Date(selectedDate + "T00:00:00").toLocaleDateString(
-                  "en-IN",
-                  { day: "numeric", month: "short", year: "numeric" },
-                )}
-              </strong>
-              <button
-                type="button"
-                className="admin-cal-clear"
-                onClick={() => setSelectedDate("")}
-              >
-                <X size={13} /> Show all
-              </button>
-            </div>
-          )}
-          {dateFrom && dateTo && (
-            <div className="admin-cal-selected">
-              Showing orders from{" "}
-              <strong>
-                {new Date(dateFrom + "T00:00:00").toLocaleDateString("en-IN", {
-                  day: "numeric",
-                  month: "short",
-                })}
-              </strong>{" "}
-              to{" "}
-              <strong>
-                {new Date(dateTo + "T00:00:00").toLocaleDateString("en-IN", {
-                  day: "numeric",
-                  month: "short",
-                  year: "numeric",
-                })}
-              </strong>
-              <button
-                type="button"
-                className="admin-cal-clear"
-                onClick={() => {
-                  setDateFrom("");
-                  setDateTo("");
-                }}
-              >
-                <X size={13} /> Show all
-              </button>
-            </div>
-          )}
-        </div>
+          <div className="admin-cal-wrap admin-cal-standalone">
+            <OrdersCalendar
+              calMonth={calMonth}
+              setCalMonth={setCalMonth}
+              ordersByDay={ordersByDay}
+              selectedDate={selectedDate}
+              setSelectedDate={setSelectedDate}
+              dateFrom={dateFrom}
+              dateTo={dateTo}
+              setDateFrom={setDateFrom}
+              setDateTo={setDateTo}
+            />
+            {selectedDate && (
+              <div className="admin-cal-selected">
+                Showing orders for{" "}
+                <strong>
+                  {new Date(selectedDate + "T00:00:00").toLocaleDateString(
+                    "en-IN",
+                    { day: "numeric", month: "short", year: "numeric" },
+                  )}
+                </strong>
+                <button
+                  type="button"
+                  className="admin-cal-clear"
+                  onClick={() => setSelectedDate("")}
+                >
+                  <X size={13} /> Show all
+                </button>
+              </div>
+            )}
+            {dateFrom && dateTo && (
+              <div className="admin-cal-selected">
+                Showing orders from{" "}
+                <strong>
+                  {new Date(dateFrom + "T00:00:00").toLocaleDateString(
+                    "en-IN",
+                    {
+                      day: "numeric",
+                      month: "short",
+                    },
+                  )}
+                </strong>{" "}
+                to{" "}
+                <strong>
+                  {new Date(dateTo + "T00:00:00").toLocaleDateString("en-IN", {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                  })}
+                </strong>
+                <button
+                  type="button"
+                  className="admin-cal-clear"
+                  onClick={() => {
+                    setDateFrom("");
+                    setDateTo("");
+                  }}
+                >
+                  <X size={13} /> Show all
+                </button>
+              </div>
+            )}
+          </div>
         </Accordion>
 
         {/* ===== Book Picking (fulfilment) ===== */}
@@ -1788,7 +1871,10 @@ export default function ManageOrdersPage() {
             }));
             const doneOrders = orderStats.filter((x) => x.stats.done).length;
             const pendingOrders = orderStats.length - doneOrders;
-            const totalBooks = orderStats.reduce((n, x) => n + x.stats.total, 0);
+            const totalBooks = orderStats.reduce(
+              (n, x) => n + x.stats.total,
+              0,
+            );
             const checkedBooks = orderStats.reduce(
               (n, x) => n + x.stats.checked,
               0,
@@ -1948,351 +2034,401 @@ export default function ManageOrdersPage() {
           onToggle={toggleAcc}
           right={<span className="acc-count">{filteredOrders.length}</span>}
         >
-        {filteredOrders.length > 0 ? (
-          <div className="flex flex-col gap-12">
-            <div className="orders-list-header">
-              <span className="orders-count">
-                {filteredOrders.length}{" "}
-                {filteredOrders.length === 1 ? "Order" : "Orders"}
-              </span>
-            </div>
-            <div className="admin-orders-grid">
-            {filteredOrders.map((order, idx) => {
-              const orderId = order["Order ID"];
-              const books = order.parsedBooks || [];
-              const pnl = order.pnl;
-              const hasTracking =
-                order.shippingId && String(order.shippingId).trim() !== "";
-              const tinyUrl = order["TinyURL"];
-              const hasTinyUrl = tinyUrl && String(tinyUrl).trim() !== "";
-              const fullAddress = [
-                order["Address"],
-                order["City"],
-                order["State"],
-              ]
-                .filter(Boolean)
-                .join(", ");
-              const addressLine = order["Pincode"]
-                ? `${fullAddress} - ${order["Pincode"]}`
-                : fullAddress;
+          {filteredOrders.length > 0 ? (
+            <div className="flex flex-col gap-12">
+              <div className="orders-list-header">
+                <span className="orders-count">
+                  {filteredOrders.length}{" "}
+                  {filteredOrders.length === 1 ? "Order" : "Orders"}
+                </span>
+              </div>
+              <div className="admin-orders-grid">
+                {filteredOrders.map((order, idx) => {
+                  const orderId = order["Order ID"];
+                  const books = order.parsedBooks || [];
+                  const pnl = order.pnl;
+                  const hasTracking =
+                    order.shippingId && String(order.shippingId).trim() !== "";
+                  const tinyUrl = order["TinyURL"];
+                  const hasTinyUrl = tinyUrl && String(tinyUrl).trim() !== "";
+                  const fullAddress = [
+                    order["Address"],
+                    order["City"],
+                    order["State"],
+                  ]
+                    .filter(Boolean)
+                    .join(", ");
+                  const addressLine = order["Pincode"]
+                    ? `${fullAddress} - ${order["Pincode"]}`
+                    : fullAddress;
 
-              const isExpanded = false; // details now open in a slide-up modal
-              const isPacked = !!packedOrders[orderId];
+                  const isExpanded = false; // details now open in a slide-up modal
+                  const isPacked = !!packedOrders[orderId];
 
-              return (
-                <div
-                  key={orderId || idx}
-                  className={`admin-order-card mo-card${isPacked ? " packed" : ""}`}
-                  style={{ cursor: "pointer" }}
-                  onClick={() => setDetailOrder(order)}
-                >
-                  <div className="mo-card-top">
-                    <div className="mo-card-id">
-                      <div className="mo-name-row">
-                        <span className="mo-srno">{idx + 1}</span>
-                        <span className="mo-name">
-                          {order["Customer Name"] || "—"}
+                  return (
+                    <div
+                      key={orderId || idx}
+                      className={`admin-order-card mo-card${isPacked ? " packed" : ""}`}
+                      style={{ cursor: "pointer" }}
+                      onClick={() => setDetailOrder(order)}
+                    >
+                      <div className="mo-card-top">
+                        <div className="mo-card-id">
+                          <div className="mo-name-row">
+                            <span className="mo-srno">{idx + 1}</span>
+                            <span className="mo-name">
+                              {order["Customer Name"] || "—"}
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            className="mo-meta"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              copyToClipboard(
+                                String(order["Phone Number"] || ""),
+                                `phone-${idx}`,
+                              );
+                            }}
+                            title="Copy phone"
+                          >
+                            <Phone size={12} />
+                            <span>+91 {order["Phone Number"]}</span>
+                            {copiedId === `phone-${idx}` ? (
+                              <Check size={12} className="text-green" />
+                            ) : (
+                              <Copy size={11} className="gray-500" />
+                            )}
+                          </button>
+                          <button
+                            type="button"
+                            className="mo-meta"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              copyToClipboard(orderId, `order-${idx}`);
+                            }}
+                            title="Copy order ID"
+                          >
+                            <span className="mo-meta-label">Order</span>
+                            <span>{orderId}</span>
+                            {copiedId === `order-${idx}` ? (
+                              <Check size={12} className="text-green" />
+                            ) : (
+                              <Copy size={11} className="gray-500" />
+                            )}
+                          </button>
+                        </div>
+
+                        {books.length > 0 && (
+                          <div className="mo-stack">
+                            {books.slice(0, 5).map((b, ci) => {
+                              const img = getBookImage(b.name);
+                              return (
+                                <div
+                                  key={ci}
+                                  className="mo-stack-item"
+                                  style={{ zIndex: 20 - ci }}
+                                  title={`${b.name} × ${b.quantity}`}
+                                >
+                                  {img ? (
+                                    <img
+                                      src={img}
+                                      alt={b.name}
+                                      loading="lazy"
+                                    />
+                                  ) : (
+                                    <div className="mo-stack-ph">
+                                      <Package size={16} />
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="mo-card-desc">
+                        <span className="mo-desc-item">
+                          <Calendar size={11} />
+                          {formatDate(
+                            order["Timestamp(D)"] || order["Timestamp"],
+                          )}
+                        </span>
+                        <span className="aoc-dot">·</span>
+                        <span className="mo-desc-status">{order.status}</span>
+                        <span className="aoc-dot">·</span>
+                        <span>
+                          ₹{order.revenue.toLocaleString()} · {books.length}{" "}
+                          book
+                          {books.length > 1 ? "s" : ""}
                         </span>
                       </div>
-                      <button
-                        type="button"
-                        className="mo-meta"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          copyToClipboard(
-                            String(order["Phone Number"] || ""),
-                            `phone-${idx}`,
-                          );
-                        }}
-                        title="Copy phone"
-                      >
-                        <Phone size={12} />
-                        <span>+91 {order["Phone Number"]}</span>
-                        {copiedId === `phone-${idx}` ? (
-                          <Check size={12} className="text-green" />
-                        ) : (
-                          <Copy size={11} className="gray-500" />
-                        )}
-                      </button>
-                      <button
-                        type="button"
-                        className="mo-meta"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          copyToClipboard(orderId, `order-${idx}`);
-                        }}
-                        title="Copy order ID"
-                      >
-                        <span className="mo-meta-label">Order</span>
-                        <span>{orderId}</span>
-                        {copiedId === `order-${idx}` ? (
-                          <Check size={12} className="text-green" />
-                        ) : (
-                          <Copy size={11} className="gray-500" />
-                        )}
-                      </button>
-                    </div>
 
-                    {books.length > 0 && (
-                      <div className="mo-stack">
-                        {books.slice(0, 5).map((b, ci) => {
-                          const img = getBookImage(b.name);
-                          return (
-                            <div
-                              key={ci}
-                              className="mo-stack-item"
-                              style={{ zIndex: 20 - ci }}
-                              title={`${b.name} × ${b.quantity}`}
-                            >
-                              {img ? (
-                                <img src={img} alt={b.name} loading="lazy" />
-                              ) : (
-                                <div className="mo-stack-ph">
-                                  <Package size={16} />
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="mo-card-desc">
-                    <span className="mo-desc-item">
-                      <Calendar size={11} />
-                      {formatDate(order["Timestamp(D)"] || order["Timestamp"])}
-                    </span>
-                    <span className="aoc-dot">·</span>
-                    <span className="mo-desc-status">{order.status}</span>
-                    <span className="aoc-dot">·</span>
-                    <span>
-                      ₹{order.revenue.toLocaleString()} · {books.length} book
-                      {books.length > 1 ? "s" : ""}
-                    </span>
-                  </div>
-
-                  <div className="mo-card-foot2">
-                    <button
-                      type="button"
-                      className={`mo-pack-btn${isPacked ? " on" : ""}`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        togglePacked(orderId);
-                      }}
-                      title={isPacked ? "Packed" : "Mark as packed"}
-                    >
-                      {isPacked ? (
-                        <>
-                          <Check size={14} /> Packed
-                        </>
-                      ) : (
-                        <>
-                          <Package size={13} /> Mark as packed
-                        </>
-                      )}
-                    </button>
-                  </div>
-
-                  <AnimatePresence initial={false}>
-                    {isExpanded && (
-                      <motion.div
-                        key="body"
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.28, ease: [0.32, 0.72, 0, 1] }}
-                        style={{ overflow: "hidden" }}
-                      >
-                        <div className="aoc-body">
-                  <div className="aoc-section">
-                    <div className="aoc-section-title">
-                      <MapPin size={13} /> Shipping
-                    </div>
-                    {addressLine && (
-                      <button
-                        type="button"
-                        className="aoc-rowline"
-                        onClick={() => copyToClipboard(addressLine, `address-${idx}`)}
-                        title="Copy address"
-                      >
-                        <span className="aoc-rowline-text">{addressLine}</span>
-                        {copiedId === `address-${idx}` ? (
-                          <Check size={13} className="text-green" />
-                        ) : (
-                          <Copy size={13} className="gray-500" />
-                        )}
-                      </button>
-                    )}
-                    {(hasTracking || hasTinyUrl) && (
-                      <div className="aoc-track">
-                        {hasTracking ? (
-                          <span className="aoc-track-id">
-                            Tracking: <strong>{order.shippingId}</strong>
-                          </span>
-                        ) : (
-                          <span className="aoc-track-id">Order link ready</span>
-                        )}
-                        <div className="flex flex-row gap-8">
-                          {hasTracking && (
-                            <button
-                              type="button"
-                              className="track-btn-small flex flex-row items-center gap-4"
-                              onClick={() => handleTrackPackage(order.shippingId)}
-                            >
-                              <Truck size={12} /> Track
-                            </button>
-                          )}
-                          {hasTinyUrl && (
-                            <button
-                              type="button"
-                              className="track-btn-small flex flex-row items-center gap-4"
-                              onClick={() => window.open(tinyUrl, "_blank", "noopener,noreferrer")}
-                            >
-                              <ShoppingBag size={12} /> User bag <ExternalLink size={10} />
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="aoc-section">
-                    <div className="aoc-section-title">
-                      <MessageCircle size={13} /> WhatsApp the customer
-                    </div>
-                    <div className="aoc-wa-grid">
-                      {waMessages(order).map((m) => (
+                      <div className="mo-card-foot2">
                         <button
-                          key={m.key}
                           type="button"
-                          className="aoc-wa-btn"
-                          title={m.text}
+                          className={`mo-pack-btn${isPacked ? " on" : ""}`}
                           onClick={(e) => {
                             e.stopPropagation();
-                            openWhatsApp(order["Phone Number"], m.text);
+                            togglePacked(orderId);
                           }}
+                          title={isPacked ? "Packed" : "Mark as packed"}
                         >
-                          {m.label}
+                          {isPacked ? (
+                            <>
+                              <Check size={14} /> Packed
+                            </>
+                          ) : (
+                            <>
+                              <Package size={13} /> Mark as packed
+                            </>
+                          )}
                         </button>
-                      ))}
-                    </div>
-                  </div>
+                      </div>
 
-                  <div className="aoc-section">
-                    <div className="aoc-section-title">
-                      <Package size={13} /> Items ({books.length})
-                    </div>
-                    <div className="aoc-books-row">
-                      {books.length > 0 ? (
-                        books.map((b, bi) => {
-                          const img = getBookImage(b.name);
-                          return (
-                            <div key={bi} className="aoc-book">
-                              <div className="aoc-book-thumb">
-                                {img ? (
-                                  <img
-                                    src={img}
-                                    alt={b.name}
-                                    className="aoc-book-img"
-                                    loading="lazy"
-                                  />
-                                ) : (
-                                  <div className="aoc-book-ph">
-                                    <Package size={20} />
+                      <AnimatePresence initial={false}>
+                        {isExpanded && (
+                          <motion.div
+                            key="body"
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{
+                              duration: 0.28,
+                              ease: [0.32, 0.72, 0, 1],
+                            }}
+                            style={{ overflow: "hidden" }}
+                          >
+                            <div className="aoc-body">
+                              <div className="aoc-section">
+                                <div className="aoc-section-title">
+                                  <MapPin size={13} /> Shipping
+                                </div>
+                                {addressLine && (
+                                  <button
+                                    type="button"
+                                    className="aoc-rowline"
+                                    onClick={() =>
+                                      copyToClipboard(
+                                        addressLine,
+                                        `address-${idx}`,
+                                      )
+                                    }
+                                    title="Copy address"
+                                  >
+                                    <span className="aoc-rowline-text">
+                                      {addressLine}
+                                    </span>
+                                    {copiedId === `address-${idx}` ? (
+                                      <Check size={13} className="text-green" />
+                                    ) : (
+                                      <Copy size={13} className="gray-500" />
+                                    )}
+                                  </button>
+                                )}
+                                {(hasTracking || hasTinyUrl) && (
+                                  <div className="aoc-track">
+                                    {hasTracking ? (
+                                      <span className="aoc-track-id">
+                                        Tracking:{" "}
+                                        <strong>{order.shippingId}</strong>
+                                      </span>
+                                    ) : (
+                                      <span className="aoc-track-id">
+                                        Order link ready
+                                      </span>
+                                    )}
+                                    <div className="flex flex-row gap-8">
+                                      {hasTracking && (
+                                        <button
+                                          type="button"
+                                          className="track-btn-small flex flex-row items-center gap-4"
+                                          onClick={() =>
+                                            handleTrackPackage(order.shippingId)
+                                          }
+                                        >
+                                          <Truck size={12} /> Track
+                                        </button>
+                                      )}
+                                      {hasTinyUrl && (
+                                        <button
+                                          type="button"
+                                          className="track-btn-small flex flex-row items-center gap-4"
+                                          onClick={() =>
+                                            window.open(
+                                              tinyUrl,
+                                              "_blank",
+                                              "noopener,noreferrer",
+                                            )
+                                          }
+                                        >
+                                          <ShoppingBag size={12} /> User bag{" "}
+                                          <ExternalLink size={10} />
+                                        </button>
+                                      )}
+                                    </div>
                                   </div>
                                 )}
-                                {b.quantity > 1 && (
-                                  <span className="aoc-book-qty">×{b.quantity}</span>
+                              </div>
+
+                              <div className="aoc-section">
+                                <div className="aoc-section-title">
+                                  <MessageCircle size={13} /> WhatsApp the
+                                  customer
+                                </div>
+                                <div className="aoc-wa-grid">
+                                  {waMessages(order).map((m) => (
+                                    <button
+                                      key={m.key}
+                                      type="button"
+                                      className="aoc-wa-btn"
+                                      title={m.text}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        openWhatsApp(
+                                          order["Phone Number"],
+                                          m.text,
+                                        );
+                                      }}
+                                    >
+                                      {m.label}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+
+                              <div className="aoc-section">
+                                <div className="aoc-section-title">
+                                  <Package size={13} /> Items ({books.length})
+                                </div>
+                                <div className="aoc-books-row">
+                                  {books.length > 0 ? (
+                                    books.map((b, bi) => {
+                                      const img = getBookImage(b.name);
+                                      return (
+                                        <div key={bi} className="aoc-book">
+                                          <div className="aoc-book-thumb">
+                                            {img ? (
+                                              <img
+                                                src={img}
+                                                alt={b.name}
+                                                className="aoc-book-img"
+                                                loading="lazy"
+                                              />
+                                            ) : (
+                                              <div className="aoc-book-ph">
+                                                <Package size={20} />
+                                              </div>
+                                            )}
+                                            {b.quantity > 1 && (
+                                              <span className="aoc-book-qty">
+                                                ×{b.quantity}
+                                              </span>
+                                            )}
+                                          </div>
+                                          <span
+                                            className="aoc-book-name"
+                                            title={b.name}
+                                          >
+                                            {b.name}
+                                          </span>
+                                          <span className="aoc-book-price">
+                                            {b.total > 0
+                                              ? `₹${b.total}`
+                                              : b.price > 0
+                                                ? `₹${b.price}`
+                                                : "—"}
+                                          </span>
+                                        </div>
+                                      );
+                                    })
+                                  ) : (
+                                    <div className="aoc-book aoc-book-empty">
+                                      Books not listed
+                                    </div>
+                                  )}
+                                </div>
+                                {(order["Delivery Charge"] > 0 ||
+                                  order["Gift Wrap"] === "Yes" ||
+                                  order["Offer Applied"]) && (
+                                  <div className="aoc-extras">
+                                    {order["Delivery Charge"] > 0 && (
+                                      <span className="aoc-extra">
+                                        Delivery +₹{order["Delivery Charge"]}
+                                      </span>
+                                    )}
+                                    {order["Gift Wrap"] === "Yes" && (
+                                      <span className="aoc-extra">
+                                        <Gift size={11} /> Gift wrap +₹
+                                        {order["Gift Wrap Charge"] || 0}
+                                      </span>
+                                    )}
+                                    {order["Offer Applied"] && (
+                                      <span className="aoc-extra">
+                                        Offer: {order["Offer Applied"]}
+                                      </span>
+                                    )}
+                                  </div>
                                 )}
                               </div>
-                              <span className="aoc-book-name" title={b.name}>
-                                {b.name}
-                              </span>
-                              <span className="aoc-book-price">
-                                {b.total > 0
-                                  ? `₹${b.total}`
-                                  : b.price > 0
-                                    ? `₹${b.price}`
-                                    : "—"}
-                              </span>
+
+                              <div className="aoc-money">
+                                <div className="aoc-money-cell">
+                                  <span>Revenue</span>
+                                  <strong>
+                                    ₹{order.revenue.toLocaleString()}
+                                  </strong>
+                                </div>
+                                <div className="aoc-money-cell">
+                                  <span>Cost</span>
+                                  <strong>
+                                    ₹{order.totalCost.toLocaleString()}
+                                  </strong>
+                                </div>
+                                <div
+                                  className={`aoc-money-cell ${pnl >= 0 ? "pos" : "neg"}`}
+                                >
+                                  <span>Profit</span>
+                                  <strong>
+                                    {pnl >= 0 ? "+" : "−"}₹
+                                    {Math.abs(pnl).toLocaleString()}
+                                  </strong>
+                                </div>
+                              </div>
+
+                              <div className="aoc-foot">
+                                <div className="aoc-meta">
+                                  <span>{order["Payment Type"] || "—"}</span>
+                                  <span className="aoc-dot">·</span>
+                                  <span>{order["Delivery Type"] || "—"}</span>
+                                </div>
+                                <button
+                                  type="button"
+                                  className="aoc-edit"
+                                  onClick={() => openEditModal(order)}
+                                >
+                                  <Edit size={14} /> Edit
+                                </button>
+                              </div>
                             </div>
-                          );
-                        })
-                      ) : (
-                        <div className="aoc-book aoc-book-empty">
-                          Books not listed
-                        </div>
-                      )}
-                    </div>
-                    {(order["Delivery Charge"] > 0 ||
-                      order["Gift Wrap"] === "Yes" ||
-                      order["Offer Applied"]) && (
-                      <div className="aoc-extras">
-                        {order["Delivery Charge"] > 0 && (
-                          <span className="aoc-extra">Delivery +₹{order["Delivery Charge"]}</span>
+                          </motion.div>
                         )}
-                        {order["Gift Wrap"] === "Yes" && (
-                          <span className="aoc-extra">
-                            <Gift size={11} /> Gift wrap +₹{order["Gift Wrap Charge"] || 0}
-                          </span>
-                        )}
-                        {order["Offer Applied"] && (
-                          <span className="aoc-extra">Offer: {order["Offer Applied"]}</span>
-                        )}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="aoc-money">
-                    <div className="aoc-money-cell">
-                      <span>Revenue</span>
-                      <strong>₹{order.revenue.toLocaleString()}</strong>
+                      </AnimatePresence>
                     </div>
-                    <div className="aoc-money-cell">
-                      <span>Cost</span>
-                      <strong>₹{order.totalCost.toLocaleString()}</strong>
-                    </div>
-                    <div className={`aoc-money-cell ${pnl >= 0 ? "pos" : "neg"}`}>
-                      <span>Profit</span>
-                      <strong>
-                        {pnl >= 0 ? "+" : "−"}₹{Math.abs(pnl).toLocaleString()}
-                      </strong>
-                    </div>
-                  </div>
-
-                  <div className="aoc-foot">
-                    <div className="aoc-meta">
-                      <span>{order["Payment Type"] || "—"}</span>
-                      <span className="aoc-dot">·</span>
-                      <span>{order["Delivery Type"] || "—"}</span>
-                    </div>
-                    <button
-                      type="button"
-                      className="aoc-edit"
-                      onClick={() => openEditModal(order)}
-                    >
-                      <Edit size={14} /> Edit
-                    </button>
-                  </div>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              );
-            })}
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        ) : (
-          <div className="error-state">
-            <div className="error-icon">📭</div>
-            <p>No orders found</p>
-            <span className="font-12 gray-500">
-              Try adjusting your search or filters
-            </span>
-          </div>
-        )}
+          ) : (
+            <div className="error-state">
+              <div className="error-icon">📭</div>
+              <p>No orders found</p>
+              <span className="font-12 gray-500">
+                Try adjusting your search or filters
+              </span>
+            </div>
+          )}
         </Accordion>
       </div>
 
@@ -2383,7 +2519,10 @@ export default function ManageOrdersPage() {
                         type="button"
                         className="aoc-chip"
                         onClick={() =>
-                          copyToClipboard(order["Customer Name"] || "", "m-name")
+                          copyToClipboard(
+                            order["Customer Name"] || "",
+                            "m-name",
+                          )
                         }
                         title="Copy name"
                       >
@@ -2442,7 +2581,9 @@ export default function ManageOrdersPage() {
                               Tracking: <strong>{order.shippingId}</strong>
                             </span>
                           ) : (
-                            <span className="aoc-track-id">Order link ready</span>
+                            <span className="aoc-track-id">
+                              Order link ready
+                            </span>
                           )}
                           <div className="flex flex-row gap-8">
                             {dHasTracking && (

@@ -4,6 +4,279 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "daily-clarity-ritual-10-minute-practice": {
+    id: "blog-008",
+    title:
+      "The Daily Clarity Ritual: A 10-Minute Practice to Think Clearly Every Day",
+    slug: "daily-clarity-ritual-10-minute-practice",
+    author: "Murthy Thevar",
+    authorSlug: "murthy-thevar",
+    publishDate: "2026-07-05",
+    lastModified: "2026-07-05",
+    excerpt:
+      "Struggling with a noisy, cluttered mind? Discover the simple 10-minute daily clarity ritual from Murthy Thevar, author of 'The Art of Clarity', that helps you cut through the mental noise and start every day focused, calm, and decisive.",
+
+    content: [
+      {
+        type: "paragraph",
+        content:
+          "Most people don't have a focus problem. They have a clarity problem. When your mind is cluttered with a dozen half-finished thoughts, focus is impossible, no matter how hard you try. In <strong>'The Art of Clarity'</strong>, bestselling author and clarity coach <strong>Murthy Thevar</strong> argues that clarity is a daily practice, not a one-time decision. And like any practice, it works best when it's small, repeatable, and done at the same time every day.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Why a Daily Clarity Ritual Works",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Your brain is not designed to hold everything at once. When you carry unfinished thoughts around all day, they quietly drain your energy, a phenomenon psychologists call the Zeigarnik effect. A short daily ritual gives those thoughts a place to land, so your mind is free to focus on what actually matters right now.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The goal isn't to do more. It's to remove the mental noise that stops you from acting on what you already know. This is the core idea Murthy Thevar returns to again and again: clarity isn't about adding more, it's about removing what doesn't matter.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The 10-Minute Clarity Ritual (Step by Step)",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "Minute 1-3: Brain Dump",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Open a notebook or notes app and write down every thought, task, worry, and idea currently in your head. Don't organise, don't judge, just empty your mind onto the page. This single step is the fastest way to feel lighter and see clearly.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "Minute 4-6: Pick One Thing",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Read your list and circle the ONE thing that would make the biggest difference today. Not the easiest, not the most urgent, the most important. Clarity means choosing, and choosing means letting the rest wait.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "Minute 7-10: Plan the First Action",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Write the very first, smallest physical action for that one thing. Not the whole plan, just the first move. A clear first step removes hesitation and turns intention into momentum.",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<strong>Calmer mornings</strong> - you start the day in control instead of reacting",
+          "<strong>Fewer decisions</strong> - one clear priority beats ten competing ones",
+          "<strong>Less overthinking</strong> - thoughts on paper stop looping in your head",
+          "<strong>More momentum</strong> - a small first action builds unstoppable progress",
+          "<strong>Better sleep</strong> - a clear mind rests more easily at night",
+        ],
+      },
+      {
+        type: "blockquote",
+        content:
+          "I used to wake up already overwhelmed. Ten minutes of this ritual completely changed how my days feel. It's the most useful habit I've built this year. - Verified Reader Review",
+      },
+      {
+        type: "paragraph",
+        content:
+          "This ritual is a simplified version of the daily clarity framework Murthy Thevar teaches in <strong>The Art of Clarity</strong>. The book goes deeper, with templates, examples, and a 30-day plan to make clear thinking automatic.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "Try It With The Book",
+        content:
+          "• Title: The Art of Clarity<br/>• Author: Murthy Thevar<br/>• Focus: Practical daily clarity habits<br/>• Language: English<br/>• Price: from ₹149<br/>• Buy: https://www.thebookx.in/books/the-art-of-clarity",
+      },
+    ],
+
+    coverImage:
+      "/review/author/murthy-thevar-writing-the-art-of-clarity-in-home-office.jpeg",
+
+    images: [
+      {
+        url: "/review/author/murthy-thevar-writing-the-art-of-clarity-in-home-office.jpeg",
+        alt: "Murthy Thevar writing during his daily clarity ritual",
+        caption:
+          "Murthy Thevar practising his morning clarity ritual in his home office",
+        category: "Writing Process",
+      },
+      {
+        url: "/review/author/the-art-clarity-book-by-murthy-thevar.jpeg",
+        alt: "The Art of Clarity book cover",
+        caption: "The Art of Clarity by Murthy Thevar - available from ₹149",
+        category: "Book Cover",
+      },
+    ],
+
+    keywords: [
+      "daily clarity ritual",
+      "how to think clearly",
+      "morning clarity routine",
+      "Murthy Thevar",
+      "The Art of Clarity",
+      "stop overthinking",
+      "mental clarity",
+    ],
+
+    categories: ["Self-Help", "Productivity", "Mental Clarity"],
+
+    faqs: [
+      {
+        question: "What is a daily clarity ritual?",
+        answer:
+          "A short, repeatable daily practice (about 10 minutes) of emptying your mind, choosing one priority, and defining a first action, designed to reduce mental noise and improve focus.",
+      },
+      {
+        question: "How long before I see results?",
+        answer:
+          "Most people feel calmer and more focused from day one, with the biggest gains after 1-2 weeks of consistent practice.",
+      },
+      {
+        question: "Where can I learn the full framework?",
+        answer:
+          "The complete framework is in 'The Art of Clarity' by Murthy Thevar, available at https://www.thebookx.in/books/the-art-of-clarity",
+      },
+    ],
+  },
+
+  "declutter-your-mind-overwhelmed-to-focused": {
+    id: "blog-009",
+    title:
+      "From Overwhelmed to Focused: How to Declutter Your Mind in 2026",
+    slug: "declutter-your-mind-overwhelmed-to-focused",
+    author: "Murthy Thevar",
+    authorSlug: "murthy-thevar",
+    publishDate: "2026-07-05",
+    lastModified: "2026-07-05",
+    excerpt:
+      "Feeling mentally cluttered and pulled in every direction? Learn 6 practical ways to declutter your mind and move from overwhelmed to focused, inspired by Murthy Thevar's bestselling book 'The Art of Clarity'.",
+
+    content: [
+      {
+        type: "paragraph",
+        content:
+          "A cluttered desk is easy to see. A cluttered mind is not, and that's exactly why it's so dangerous. In 2026, we consume more information before breakfast than previous generations did in a week. In <strong>'The Art of Clarity'</strong>, <strong>Murthy Thevar</strong> shows that overwhelm is rarely about doing too much, it's about carrying too much mental clutter. Here's how to clear it.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "What Mental Clutter Really Is",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Mental clutter is every open loop you're holding: unmade decisions, unspoken worries, unfinished tasks, and unfiltered information. Each one takes a small slice of your attention. Add them up, and there's nothing left for the work that matters.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "6 Ways to Declutter Your Mind",
+      },
+      {
+        type: "list",
+        style: "ordered",
+        items: [
+          "<strong>Externalise everything</strong> - write down every open task and worry so your brain stops guarding them.",
+          "<strong>Decide the small things fast</strong> - most decisions don't deserve more than a minute. Deciding frees attention.",
+          "<strong>Set information boundaries</strong> - choose a few trusted sources and ignore the rest to stop input overload.",
+          "<strong>Batch similar tasks</strong> - switching context is exhausting; grouping similar work protects your focus.",
+          "<strong>Practise saying no</strong> - every yes is a commitment of future attention. Protect it.",
+          "<strong>End the day with a reset</strong> - a 5-minute review closes today's loops so tomorrow starts clear.",
+        ],
+      },
+      {
+        type: "paragraph",
+        content:
+          "Notice that none of these require more time or willpower. They simply remove friction, which is the essence of Murthy Thevar's clarity philosophy: subtract the noise, and focus takes care of itself.",
+      },
+      {
+        type: "blockquote",
+        content:
+          "I always thought I needed better time management. Turns out I needed less mental clutter. This shift alone made me twice as productive. - Early Reader Review",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Turning Clarity Into a Habit",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Decluttering your mind once feels great, keeping it clear is what changes your life. That's the promise of <strong>The Art of Clarity</strong>: a repeatable system for thinking clearly, deciding confidently, and living with less mental noise, whatever 2026 throws at you.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "Book Details",
+        content:
+          "• Title: The Art of Clarity<br/>• Author: Murthy Thevar<br/>• Focus: Clear thinking and mental decluttering<br/>• Language: English<br/>• Price: from ₹149<br/>• Buy: https://www.thebookx.in/books/the-art-of-clarity",
+      },
+    ],
+
+    coverImage:
+      "/review/author/murthy-thevar-planning-next-book-in-library.jpeg",
+
+    images: [
+      {
+        url: "/review/author/murthy-thevar-planning-next-book-in-library.jpeg",
+        alt: "Murthy Thevar planning with a clear, focused mind",
+        caption:
+          "Murthy Thevar mapping ideas in his library - clarity in action",
+        category: "Writing Process",
+      },
+      {
+        url: "/review/author/the-art-clarity-book-by-murthy-thevar-on-readers-table.jpeg",
+        alt: "The Art of Clarity on a reader's table",
+        caption:
+          "The Art of Clarity by Murthy Thevar - a practical guide to focus",
+        category: "Book Cover",
+      },
+    ],
+
+    keywords: [
+      "how to declutter your mind",
+      "overcome overwhelm",
+      "how to focus",
+      "Murthy Thevar",
+      "The Art of Clarity",
+      "mental clarity",
+      "self-help 2026",
+    ],
+
+    categories: ["Self-Help", "Personal Development", "Mental Clarity"],
+
+    faqs: [
+      {
+        question: "How do I declutter my mind quickly?",
+        answer:
+          "Start by writing down every open task and worry, then decide small things fast and set clear information boundaries. Externalising your thoughts is the quickest relief.",
+      },
+      {
+        question: "Why do I always feel overwhelmed?",
+        answer:
+          "Overwhelm usually comes from carrying too many unmade decisions and open loops at once, not from having too much to do. Reducing mental clutter reduces overwhelm.",
+      },
+      {
+        question: "Which book helps with mental clarity?",
+        answer:
+          "'The Art of Clarity' by Murthy Thevar offers a practical system for clear thinking and decluttering your mind. Buy it at https://www.thebookx.in/books/the-art-of-clarity",
+      },
+    ],
+  },
+
   "the-art-of-clarity": {
     id: "blog-001",
     title:

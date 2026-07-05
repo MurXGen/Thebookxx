@@ -35,7 +35,7 @@ const parsePriceQuery = (query) => {
   return null;
 };
 
-export default function SearchOverlay({ open, onClose }) {
+export default function SearchOverlay({ open, onClose, initialSuggest = false }) {
   const inputRef = useRef(null);
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
@@ -49,6 +49,11 @@ export default function SearchOverlay({ open, onClose }) {
       setTimeout(() => inputRef.current?.focus(), 50);
     }
   }, [open]);
+
+  // Open straight into the recommendation ("suggest") flow when requested.
+  useEffect(() => {
+    if (open && initialSuggest) setShowRecommendationModal(true);
+  }, [open, initialSuggest]);
 
   // Debounce the query, keeps filtering off the main thread on every keystroke
   // so typing stays smooth even on large book lists. The loader shows during

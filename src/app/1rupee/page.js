@@ -152,7 +152,7 @@ export default function OneRupeePage() {
         </div>
       </main>
 
-      {/* Sticky price + checkout cart bar (same as home) */}
+      {/* Sticky price + checkout cart bar (includes the Search + Suggest quick actions) */}
       <CartBar />
     </>
   );

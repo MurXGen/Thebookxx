@@ -3219,7 +3219,7 @@ input {
   align-items: center;
   gap: var(--px-12);
 
-  border-radius: 8px;
+  border-radius: 0;
   /* background: linear-gradient(135deg, var(--tertiary), var(--tertiary-light)); */
   background: var(--dark);
   color: white;
@@ -14369,4 +14369,59 @@ img[data-loaded="true"] {
   .or-spark {
     animation: none;
   }
+}
+
+/* =====================================================================
+   ✦ Cart quick actions (Suggest | Search) — inside CartBar, mobile only
+   ===================================================================== */
+.cart-fab {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .cart-fab {
+    position: fixed;
+    right: 16px;
+    bottom: 24px;
+    z-index: 95;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: rgba(251, 133, 0, 0.12);
+    border: 1px solid rgba(251, 133, 0, 0.55);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+    backdrop-filter: blur(6px);
+    transition: bottom 0.25s ease;
+  }
+
+  /* Lift above the cart bar (offer strip + checkout) when items are present */
+  .cart-fab.with-bar {
+    bottom: 150px;
+  }
+}
+
+.cart-fab-btn {
+  width: 30px;
+  height: 30px;
+  border: none;
+  background: transparent;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--tertiary);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.cart-fab-btn:active {
+  transform: scale(0.9);
+}
+
+.cart-fab-div {
+  width: 1px;
+  height: 18px;
+  background: rgba(251, 133, 0, 0.45);
 }

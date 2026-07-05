@@ -9,7 +9,8 @@ import LoadingButton from "./UI/LoadingButton";
 import { motion, AnimatePresence } from "framer-motion";
 import InstallPWA from "./InstallPWA";
 import { HiOutlineShoppingBag } from "react-icons/hi2";
-import { ArrowRight, Zap, Clock, Gift, Lock, Sparkles } from "lucide-react";
+import { ArrowRight, Zap, Clock, Gift, Lock, Sparkles, Search } from "lucide-react";
+import SearchOverlay from "./SearchOverlay";
 import { getRemainingOfferTime, getOneRupeeOfferData } from "@/utils/book";
 import { useEffect, useState, useRef } from "react";
 import { trackFunnelEvent } from "@/lib/analytics";
@@ -24,6 +25,7 @@ export default function CartBar() {
   const [showOneRupeeModal, setShowOneRupeeModal] = useState(false);
   const prevCartTotalRef = useRef(cartTotal);
   const hasTrackedMilestonesRef = useRef({});
+  const [qa, setQa] = useState({ open: false, suggest: false });
 
   const hasCart = cart.length > 0;
 
@@ -219,6 +221,32 @@ export default function CartBar() {
 
   return (
     <div className="cart-bar" style={{ maxWidth: "680px", margin: "0 auto" }}>
+      {/* Quick actions: Suggest + Search (mobile), above the strip */}
+      <div className={`cart-fab ${hasCart ? "with-bar" : ""}`}>
+        <button
+          type="button"
+          className="cart-fab-btn"
+          onClick={() => setQa({ open: true, suggest: true })}
+          aria-label="Get book suggestions"
+        >
+          <Sparkles size={18} />
+        </button>
+        <span className="cart-fab-div" />
+        <button
+          type="button"
+          className="cart-fab-btn"
+          onClick={() => setQa({ open: true, suggest: false })}
+          aria-label="Search books"
+        >
+          <Search size={18} />
+        </button>
+      </div>
+      <SearchOverlay
+        open={qa.open}
+        initialSuggest={qa.suggest}
+        onClose={() => setQa({ open: false, suggest: false })}
+      />
+
       {/* 🎁 OFFER STRIP */}
       <AnimatePresence mode="wait">
         {hasCart && (
@@ -228,7 +256,7 @@ export default function CartBar() {
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             exit={{ opacity: 0, y: -10, filter: "blur(10px)" }}
             transition={{ duration: 0.4, ease: "easeInOut" }}
-            style={{ margin: "16px 12px" }}
+            style={{ margin: 0 }}
           >
             <CartOfferStrip discountedAmount={discountedAmount} />
           </motion.div>

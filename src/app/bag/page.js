@@ -734,6 +734,7 @@ _Thank you for shopping with TheBookX! 📚✨_
         giftWrapSelected={giftWrap}
         handleCODCheckout={handleCODCheckout}
         handleUPICheckout={handleUPICheckout}
+        notifyTelegram={sendOrderToTelegram}
         cartBooks={cartBooks}
         generateViewBagLinkWithDetails={generateViewBagLinkWithDetails}
         shortenUrl={shortenUrl}

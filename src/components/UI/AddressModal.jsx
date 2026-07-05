@@ -67,6 +67,7 @@ export default function AddressModal({
   handleWhatsAppCheckout,
   handleCODCheckout,
   handleUPICheckout,
+  notifyTelegram,
   standardDeliveryCharge = 0,
   fasterDeliveryCharge = 119,
   totalWithStandardDelivery = 0,
@@ -430,6 +431,41 @@ export default function AddressModal({
       cod_fee: codHandlingFee,
     });
     triggerCODSuccess(fasterDelivery);
+    // Push the COD order to Telegram (previously only UPI notified — the COD
+    // success modal never invoked its onContinue handler). Fire-and-forget so
+    // it never blocks the success screen.
+    notifyCODToTelegram(fasterDelivery);
+  };
+
+  // Sends the Telegram notification for a COD order (no WhatsApp redirect).
+  const notifyCODToTelegram = async (isFaster) => {
+    if (!notifyTelegram) return;
+    try {
+      const addressData = {
+        name,
+        phone,
+        city,
+        pincode,
+        address,
+        district,
+        area,
+        fasterDelivery: isFaster,
+        giftWrap,
+      };
+      let shortLink = "";
+      if (generateViewBagLinkWithDetails && shortenUrl) {
+        const link = generateViewBagLinkWithDetails(
+          addressData,
+          "COD",
+          isFaster,
+          giftWrap,
+        );
+        shortLink = await shortenUrl(link);
+      }
+      await notifyTelegram(addressData, "COD", isFaster, giftWrap, shortLink);
+    } catch (e) {
+      console.error("COD Telegram notification failed:", e);
+    }
   };
 
   // NEW, user switched to UPI from the COD fee modal (the deflection success path)

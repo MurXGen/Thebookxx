@@ -11745,9 +11745,27 @@ img[data-loaded="true"] {
   font-weight: 600;
   color: var(--foreground);
   min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.oit-name-text {
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.oit-img {
+  flex-shrink: 0;
+  width: 30px;
+  height: 42px;
+  border-radius: 4px;
+  object-fit: cover;
+  background: var(--dark-4);
+  box-shadow: 0 1px 4px var(--dark-10);
+}
+.oit-img-ph {
+  display: inline-block;
 }
 .oit-qty {
   font-size: 13px;
@@ -13252,8 +13270,11 @@ img[data-loaded="true"] {
 /* ===== Install app — fixed bottom bar (profile page) ===== */
 .install-app-wrap {
   position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
+  /* Center via auto margins (not translateX) so framer-motion's animated
+     transform doesn't wipe out the horizontal centering. */
+  left: 0;
+  right: 0;
+  margin: 0 auto;
   bottom: calc(16px + env(safe-area-inset-bottom, 0px));
   width: min(560px, calc(100% - 24px));
   z-index: 9998;

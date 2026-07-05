@@ -39,6 +39,25 @@ import { FaWhatsapp } from "react-icons/fa";
 import Link from "next/link";
 import PageHeader from "@/components/UI/PageHeader";
 import InstallAppBar from "@/components/InstallAppBar";
+import { books as ALL_BOOKS } from "@/utils/book";
+
+// Match an order-item name to its book cover (order items come from the sheet,
+// so names may vary slightly — try exact then partial match).
+const normName = (s) =>
+  (s || "").toLowerCase().replace(/[^a-z0-9]+/g, "");
+const BOOK_IMAGE_BY_NAME = {};
+ALL_BOOKS.forEach((b) => {
+  if (b.image) BOOK_IMAGE_BY_NAME[normName(b.name)] = b.image;
+});
+function getBookImage(name) {
+  const n = normName(name);
+  if (!n) return null;
+  if (BOOK_IMAGE_BY_NAME[n]) return BOOK_IMAGE_BY_NAME[n];
+  const key = Object.keys(BOOK_IMAGE_BY_NAME).find(
+    (k) => k.includes(n) || n.includes(k),
+  );
+  return key ? BOOK_IMAGE_BY_NAME[key] : null;
+}
 
 const SHEET_ID = "1ovqFn50d0TKjV0nm4q1lb3N9XvimUgIsHCOlHh6QRdg";
 const SUPPORT_WHATSAPP = "917710892108";
@@ -1278,15 +1297,33 @@ Please cancel this order. Thank you 🙏`;
                             <span>Price</span>
                           </div>
                           {items.length > 0 ? (
-                            items.map((b, bidx) => (
-                              <div key={bidx} className="oit-row">
-                                <span className="oit-name">{b.name}</span>
-                                <span className="oit-qty">×{b.quantity}</span>
-                                <span className="oit-price">
-                                  ₹{b.total || b.price * b.quantity || 0}
-                                </span>
-                              </div>
-                            ))
+                            items.map((b, bidx) => {
+                              const cover = getBookImage(b.name);
+                              return (
+                                <div key={bidx} className="oit-row">
+                                  <span className="oit-name">
+                                    {cover ? (
+                                      <Image
+                                        src={cover}
+                                        alt={b.name}
+                                        width={30}
+                                        height={42}
+                                        className="oit-img"
+                                      />
+                                    ) : (
+                                      <span className="oit-img oit-img-ph" />
+                                    )}
+                                    <span className="oit-name-text">
+                                      {b.name}
+                                    </span>
+                                  </span>
+                                  <span className="oit-qty">×{b.quantity}</span>
+                                  <span className="oit-price">
+                                    ₹{b.total || b.price * b.quantity || 0}
+                                  </span>
+                                </div>
+                              );
+                            })
                           ) : (
                             <div className="oit-row">
                               <span className="oit-name">Books not listed</span>

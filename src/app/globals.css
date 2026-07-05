@@ -14446,3 +14446,405 @@ img[data-loaded="true"] {
   height: 18px;
   background: rgba(251, 133, 0, 0.45);
 }
+
+/* =====================================================================
+   ✦ /list-your-books — sell/list books with TheBookX
+   ===================================================================== */
+.lb-page {
+  padding-bottom: 60px;
+}
+.lb-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: var(--px-12) var(--px-16) 0;
+}
+.lb-breadcrumb .breadcrumbs-pro {
+  font-size: 12px;
+  color: var(--dark-50);
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  padding: var(--px-8) 0;
+}
+.lb-breadcrumb .bc-link {
+  color: var(--dark-50);
+  text-decoration: none;
+}
+.lb-breadcrumb .bc-current {
+  color: var(--foreground);
+  font-weight: var(--weight-600);
+}
+
+/* Hero */
+.lb-hero {
+  position: relative;
+  text-align: center;
+  border-radius: var(--px-16);
+  padding: 40px var(--px-20);
+  margin-top: var(--px-8);
+  background: linear-gradient(
+    135deg,
+    rgba(251, 133, 0, 0.12),
+    rgba(251, 133, 0, 0.02)
+  );
+  border: 1px solid rgba(251, 133, 0, 0.28);
+}
+.lb-hero-badge {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: var(--weight-700);
+  color: var(--foreground);
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--hairline);
+  padding: 5px 12px;
+  border-radius: 999px;
+  margin-bottom: var(--px-12);
+}
+.lb-hero-title {
+  font-size: 30px;
+  line-height: 1.15;
+  font-weight: var(--weight-800, 800);
+  letter-spacing: -0.01em;
+  color: var(--foreground);
+  margin: 0 0 var(--px-10);
+}
+.lb-accent {
+  color: var(--tertiary);
+}
+.lb-hero-sub {
+  max-width: 620px;
+  margin: 0 auto var(--px-20);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--dark-50);
+}
+.lb-hero-cta {
+  display: inline-block;
+  background: var(--foreground);
+  color: #fff;
+  font-size: 14px;
+  font-weight: var(--weight-700);
+  padding: 12px 22px;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+.lb-hero-cta:hover {
+  opacity: 0.9;
+}
+
+/* Sections */
+.lb-section {
+  margin-top: 44px;
+}
+.lb-section-title {
+  font-size: 20px;
+  font-weight: var(--weight-700);
+  color: var(--foreground);
+  margin: 0 0 var(--px-20);
+  text-align: center;
+}
+
+/* Benefits grid */
+.lb-benefits {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--px-16);
+}
+.lb-benefit {
+  border: 1px solid var(--hairline);
+  border-radius: var(--px-16);
+  padding: var(--px-20);
+  background: var(--surface-2, var(--dark-4));
+}
+.lb-benefit-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(251, 133, 0, 0.12);
+  color: var(--tertiary);
+  margin-bottom: var(--px-12);
+}
+.lb-benefit-title {
+  font-size: 15px;
+  font-weight: var(--weight-700);
+  color: var(--foreground);
+  margin: 0 0 var(--px-6);
+}
+.lb-benefit-desc {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--dark-50);
+  margin: 0;
+}
+
+/* Steps */
+.lb-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--px-16);
+}
+.lb-step {
+  text-align: center;
+  padding: var(--px-16);
+}
+.lb-step-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  background: var(--foreground);
+  color: #fff;
+  margin-bottom: var(--px-12);
+}
+.lb-step-title {
+  font-size: 15px;
+  font-weight: var(--weight-700);
+  color: var(--foreground);
+  margin: 0 0 var(--px-6);
+}
+.lb-step-desc {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--dark-50);
+  margin: 0;
+}
+
+/* Form */
+.lb-form-section {
+  scroll-margin-top: 80px;
+}
+.lb-form {
+  max-width: 640px;
+  margin: 0 auto;
+  border: 1px solid var(--hairline);
+  border-radius: var(--px-20);
+  padding: var(--px-24);
+  background: var(--background);
+  box-shadow: 0 8px 30px var(--dark-10);
+}
+.lb-form-title {
+  font-size: 20px;
+  font-weight: var(--weight-700);
+  margin: 0 0 var(--px-4);
+  color: var(--foreground);
+}
+.lb-form-sub {
+  font-size: 13px;
+  color: var(--dark-50);
+  margin: 0 0 var(--px-20);
+}
+.lb-label {
+  display: block;
+  font-size: 12.5px;
+  font-weight: var(--weight-600);
+  color: var(--foreground);
+  margin: var(--px-16) 0 var(--px-8);
+}
+.lb-optional {
+  font-weight: var(--weight-500);
+  color: var(--dark-50);
+}
+.lb-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--px-8);
+}
+.lb-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12.5px;
+  font-weight: var(--weight-600);
+  color: var(--foreground);
+  background: var(--dark-4);
+  border: 1px solid var(--hairline);
+  padding: 8px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.lb-chip.active {
+  background: var(--tertiary);
+  color: #fff;
+  border-color: var(--tertiary);
+}
+.lb-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--px-12);
+}
+.lb-field {
+  min-width: 0;
+}
+.lb-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.lb-input-icon {
+  position: absolute;
+  left: 12px;
+  color: var(--dark-50);
+}
+.lb-input {
+  width: 100%;
+  font-size: 14px;
+  color: var(--foreground);
+  background: var(--background);
+  border: 1px solid var(--hairline);
+  border-radius: var(--px-10);
+  /* !important overrides the global `input { padding: … !important }` rule */
+  padding: 11px 12px 11px 38px !important;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+.lb-input-plain {
+  padding: 11px 12px !important;
+}
+.lb-input:focus {
+  border-color: var(--tertiary);
+}
+.lb-textarea {
+  padding: 11px 12px !important;
+  resize: vertical;
+  font-family: inherit;
+}
+
+/* Add-ons */
+.lb-addons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--px-10);
+}
+.lb-addon {
+  position: relative;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: var(--px-14);
+  border: 1.5px solid var(--hairline);
+  border-radius: var(--px-14);
+  background: var(--background);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.lb-addon.active {
+  border-color: var(--tertiary);
+  background: rgba(251, 133, 0, 0.06);
+}
+.lb-addon-check {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  border: 1.5px solid var(--dark-20);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  color: #fff;
+}
+.lb-addon.active .lb-addon-check {
+  background: var(--tertiary);
+  border-color: var(--tertiary);
+}
+.lb-addon-icon {
+  color: var(--tertiary);
+}
+.lb-addon-label {
+  display: block;
+  font-size: 13px;
+  font-weight: var(--weight-700);
+  color: var(--foreground);
+}
+.lb-addon-desc {
+  display: block;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--dark-50);
+}
+.lb-error {
+  color: var(--danger);
+  font-size: 12.5px;
+  margin: var(--px-12) 0 0;
+}
+.lb-submit {
+  width: 100%;
+  margin-top: var(--px-20);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--px-8);
+  background: #25d366;
+  color: #fff;
+  border: none;
+  border-radius: var(--px-12);
+  padding: 14px 18px;
+  font-size: 15px;
+  font-weight: var(--weight-700);
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(37, 211, 102, 0.35);
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+.lb-submit:hover {
+  opacity: 0.92;
+}
+.lb-submit:active {
+  transform: scale(0.99);
+}
+.lb-note {
+  font-size: 11.5px;
+  color: var(--dark-50);
+  text-align: center;
+  margin: var(--px-10) 0 0;
+}
+
+/* FAQ */
+.lb-faq-list {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--px-16);
+}
+.lb-faq-q {
+  font-size: 15px;
+  font-weight: var(--weight-700);
+  color: var(--foreground);
+  margin: 0 0 4px;
+}
+.lb-faq-a {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--dark-50);
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .lb-benefits,
+  .lb-steps {
+    grid-template-columns: 1fr;
+  }
+  .lb-addons {
+    grid-template-columns: 1fr;
+  }
+  .lb-hero-title {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .lb-grid {
+    grid-template-columns: 1fr;
+  }
+}

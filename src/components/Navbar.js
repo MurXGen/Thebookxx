@@ -29,6 +29,7 @@ export default function Navbar() {
 
   // Menu links data
   const menuLinks = [
+    { name: "List your books", path: "/list-your-books" },
     { name: "About us", path: "/about-us" },
     { name: "Terms and Conditions", path: "/terms" },
     { name: "Privacy Policy", path: "/privacy" },

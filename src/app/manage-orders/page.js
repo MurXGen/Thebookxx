@@ -3,6 +3,10 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import {
+  downloadIndiaPostForm,
+  downloadAddressLabelForm,
+} from "@/utils/shippingForms";
+import {
   Search,
   Download,
   Plus,
@@ -1435,6 +1439,14 @@ export default function ManageOrdersPage() {
   const marginPct =
     totalRevenue > 0 ? Math.round((totalPnL / totalRevenue) * 100) : 0;
 
+  // Per-day run rate — orders & revenue averaged over the days that had orders
+  const runRateDays = Math.max(
+    1,
+    new Set(filteredOrders.map((o) => dayKey(getOrderDate(o)))).size,
+  );
+  const ordersPerDay = filteredOrders.length / runRateDays;
+  const revPerDay = totalRevenue / runRateDays;
+
   const deliveredCount = filteredOrders.filter(
     (o) => o["Order Status"] === "Delivered",
   ).length;
@@ -1449,6 +1461,7 @@ export default function ManageOrdersPage() {
   // Status breakdown for the chart / progress bars
   const STATUS_META = [
     { key: "Processing", color: "#fb8500" },
+    { key: "Getting Shipped", color: "#f59e0b" },
     { key: "Shipped", color: "#3b6fe0" },
     { key: "In Transit", color: "#7c4dff" },
     { key: "Out for Delivery", color: "#0ea5e9" },
@@ -1568,6 +1581,17 @@ export default function ManageOrdersPage() {
                   {Math.abs(totalPnL).toLocaleString()}
                 </span>
                 <span className="kpi-label">Profit · {marginPct}% margin</span>
+              </div>
+              <div className="kpi kpi-runrate">
+                <div className="kpi-ic">
+                  <TrendingUp size={18} />
+                </div>
+                <span className="kpi-value">
+                  {ordersPerDay.toFixed(1)}/day
+                </span>
+                <span className="kpi-label">
+                  Run rate · ₹{Math.round(revPerDay).toLocaleString()}/day
+                </span>
               </div>
             </div>
 
@@ -1722,6 +1746,7 @@ export default function ManageOrdersPage() {
                         </option>
                         <option value="all">All Statuses</option>
                         <option value="Processing">Processing</option>
+                        <option value="Getting Shipped">Getting shipped…</option>
                         <option value="Shipped">Shipped</option>
                         <option value="In Transit">In Transit</option>
                         <option value="Out for Delivery">
@@ -2064,6 +2089,27 @@ export default function ManageOrdersPage() {
 
                   const isExpanded = false; // details now open in a slide-up modal
                   const isPacked = !!packedOrders[orderId];
+                  const pickedCount = books.reduce(
+                    (n, _b, i) =>
+                      n + (pickChecked[bookKey(orderId, i)] ? 1 : 0),
+                    0,
+                  );
+                  const allPicked =
+                    books.length > 0 && pickedCount === books.length;
+                  const isCOD = /cash|cod/i.test(order["Payment Type"] || "");
+                  const oidStr = String(orderId || "");
+                  const formData = {
+                    orderId,
+                    customerName: order["Customer Name"],
+                    customerAddress: order["Address"],
+                    customerCity: order["City"],
+                    customerState: order["State"],
+                    customerPincode: order["Pincode"],
+                    customerPhone: order["Phone Number"],
+                    totalValueRs: order.revenue,
+                    isCOD,
+                    codAmount: order.revenue,
+                  };
 
                   return (
                     <div
@@ -2110,7 +2156,12 @@ export default function ManageOrdersPage() {
                             title="Copy order ID"
                           >
                             <span className="mo-meta-label">Order</span>
-                            <span>{orderId}</span>
+                            <span>
+                              {oidStr.slice(0, -3)}
+                              <span className="mo-oid-hl">
+                                {oidStr.slice(-3)}
+                              </span>
+                            </span>
                             {copiedId === `order-${idx}` ? (
                               <Check size={12} className="text-green" />
                             ) : (
@@ -2163,6 +2214,23 @@ export default function ManageOrdersPage() {
                           book
                           {books.length > 1 ? "s" : ""}
                         </span>
+                        {books.length > 0 && (
+                          <span
+                            className={`mo-pick-badge ${
+                              allPicked
+                                ? "done"
+                                : pickedCount > 0
+                                  ? "partial"
+                                  : ""
+                            }`}
+                          >
+                            {allPicked
+                              ? "✓ Picked"
+                              : pickedCount > 0
+                                ? `Picking ${pickedCount}/${books.length}`
+                                : "Not picked"}
+                          </span>
+                        )}
                       </div>
 
                       <div className="mo-card-foot2">
@@ -2184,6 +2252,32 @@ export default function ManageOrdersPage() {
                               <Package size={13} /> Mark as packed
                             </>
                           )}
+                        </button>
+                      </div>
+
+                      {/* Downloadable shipping documents (always available) */}
+                      <div className="mo-card-forms">
+                        <button
+                          type="button"
+                          className="mo-form-btn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            downloadIndiaPostForm(formData);
+                          }}
+                          title="Download India Post CDF-I form"
+                        >
+                          <Download size={13} /> India Post form
+                        </button>
+                        <button
+                          type="button"
+                          className="mo-form-btn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            downloadAddressLabelForm(formData);
+                          }}
+                          title="Download From / To address label"
+                        >
+                          <Download size={13} /> From / To label
                         </button>
                       </div>
 

@@ -13772,6 +13772,9 @@ img[data-loaded="true"] {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  /* Hug content so only the chip itself is clickable (was stretching to full
+     width in the flex column, which copied on any card tap). */
+  align-self: flex-start;
   max-width: 100%;
   padding: 0;
   border: none;
@@ -14847,4 +14850,73 @@ img[data-loaded="true"] {
   .lb-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* ===== Manage-orders card: orange border, order-id highlight, pick badge,
+   downloadable form buttons ===== */
+.admin-order-card.mo-card {
+  border: 1px solid rgba(251, 133, 0, 0.35);
+  border-radius: var(--px-14, 14px);
+}
+.admin-order-card.mo-card:hover {
+  border-color: rgba(251, 133, 0, 0.65);
+}
+
+/* Last 3 digits of the order id in brand orange */
+.mo-oid-hl {
+  color: var(--tertiary);
+  font-weight: 800;
+}
+
+/* Picking status badge */
+.mo-pick-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--dark-10);
+  color: var(--dark-50);
+}
+.mo-pick-badge.partial {
+  background: rgba(251, 133, 0, 0.14);
+  color: var(--tertiary);
+}
+.mo-pick-badge.done {
+  background: rgba(10, 143, 12, 0.14);
+  color: var(--success);
+}
+
+/* Downloadable shipping-document buttons (below the pack button) */
+.mo-card-forms {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--dark-20);
+}
+.mo-form-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--tertiary);
+  background: rgba(251, 133, 0, 0.08);
+  border: 1px solid rgba(251, 133, 0, 0.4);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.mo-form-btn:hover {
+  background: rgba(251, 133, 0, 0.16);
+}
+.mo-form-btn:active {
+  transform: scale(0.98);
 }

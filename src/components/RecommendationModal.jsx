@@ -374,6 +374,12 @@ export default function RecommendationModal({
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
             transition={{ duration: 0.4, ease: "easeOut" }}
+            drag="y"
+            dragConstraints={{ top: 0, bottom: 0 }}
+            dragElastic={{ top: 0, bottom: 0.6 }}
+            onDragEnd={(e, info) => {
+              if (info.offset.y > 120 || info.velocity.y > 600) handleClose();
+            }}
           >
             {/* Header */}
             <div className="bill-header">

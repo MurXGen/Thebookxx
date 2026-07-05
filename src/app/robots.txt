@@ -12,6 +12,9 @@ Disallow: /colist/
 # Sitemap location
 Sitemap: https://thebookx.in/sitemap.xml
 
+# AI / LLM guide (see https://llmstxt.org)
+# LLMs: https://thebookx.in/llms.txt
+
 # Crawl delay - be nice to the server
 Crawl-delay: 1
 

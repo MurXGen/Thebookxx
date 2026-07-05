@@ -410,6 +410,37 @@ button:hover {
   justify-content: flex-end;
 }
 
+/* Profile icon + cart with count badge */
+.nav-profile,
+.nav-cart {
+  display: inline-flex;
+  align-items: center;
+  color: var(--foreground);
+}
+
+.nav-cart {
+  position: relative;
+}
+
+.nav-cart-badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--tertiary);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  border-radius: 999px;
+  box-shadow: 0 0 0 2px var(--background);
+}
+
 /* Menu Button */
 
 .menu-button {
@@ -14048,10 +14079,11 @@ img[data-loaded="true"] {
 }
 
 .or-breadcrumb {
-  padding: var(--px-8) 0;
+  padding: 0;
 }
 
 .or-breadcrumb .breadcrumbs-pro {
+  padding: var(--px-8) 0;
   font-size: 12px;
   color: var(--dark-50);
   display: flex;
@@ -14069,21 +14101,20 @@ img[data-loaded="true"] {
   font-weight: var(--weight-600);
 }
 
-/* ---------- Hero ---------- */
+/* ---------- Hero (slim promo stripe, primary colours) ---------- */
 .or-hero {
   position: relative;
   overflow: hidden;
   text-align: center;
-  border-radius: var(--px-24, 24px);
-  padding: 48px var(--px-20);
+  border-radius: var(--px-16);
+  padding: var(--px-20);
   margin-top: var(--px-8);
-  background: radial-gradient(
-      120% 120% at 50% 0%,
-      #fff3e0 0%,
-      #ffe6f0 45%,
-      #fff 100%
-    );
-  border: 1px solid rgba(251, 133, 0, 0.25);
+  background: linear-gradient(
+    135deg,
+    rgba(251, 133, 0, 0.12),
+    rgba(251, 133, 0, 0.02)
+  );
+  border: 1px solid rgba(251, 133, 0, 0.28);
 }
 
 .or-hero-badge {
@@ -14092,37 +14123,37 @@ img[data-loaded="true"] {
   gap: 6px;
   background: var(--foreground);
   color: #fff;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: var(--weight-700);
-  padding: 6px 14px;
+  padding: 5px 12px;
   border-radius: 999px;
-  margin-bottom: var(--px-16);
+  margin-bottom: var(--px-10);
 }
 
 .or-hero-title {
-  font-size: 38px;
-  line-height: 1.1;
+  font-size: 22px;
+  line-height: 1.2;
   font-weight: var(--weight-800, 800);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
   color: var(--foreground);
-  margin: 0 0 var(--px-12);
+  margin: 0 0 var(--px-8);
 }
 
 .or-price-tag {
   display: inline-block;
-  background: linear-gradient(135deg, #fb8500, #ff5d8f);
+  background: linear-gradient(135deg, var(--tertiary), #e06f00);
   color: #fff;
-  padding: 0 14px;
-  border-radius: 12px;
-  box-shadow: 0 8px 22px rgba(251, 133, 0, 0.35);
+  padding: 0 12px;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(251, 133, 0, 0.35);
   transform: rotate(-3deg);
 }
 
 .or-hero-sub {
   max-width: 560px;
-  margin: 0 auto var(--px-24);
-  font-size: 15px;
-  line-height: 1.6;
+  margin: 0 auto var(--px-14);
+  font-size: 13px;
+  line-height: 1.55;
   color: var(--dark-50);
 }
 
@@ -14226,6 +14257,42 @@ img[data-loaded="true"] {
 
 .or-section-icon {
   color: var(--tertiary);
+}
+
+/* Grab heading + trailing dashed rule (matches the detail-page dashed style) */
+.or-grab-head {
+  display: flex;
+  align-items: center;
+  gap: var(--px-12);
+  margin-bottom: var(--px-14);
+}
+
+.or-grab-title {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--px-6);
+  font-size: 16px;
+  font-weight: var(--weight-700);
+  color: var(--foreground);
+  margin: 0;
+  white-space: nowrap;
+}
+
+.or-dash-rule {
+  flex: 1;
+  border-top: 2px dashed var(--dark-20);
+}
+
+/* ₹1 grid — no left/right padding on this page */
+.or-grid {
+  padding-left: 0;
+  padding-right: 0;
+  max-width: none;
+}
+
+/* AllBooks catalogue on this page should sit flush (no extra margin) */
+.or-page .catalogue-section-2 {
+  margin: 0 !important;
 }
 
 .or-section-sub {

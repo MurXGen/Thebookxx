@@ -1,6 +1,6 @@
 "use client";
 
-import { Heart, Star, Menu, X, MenuIcon } from "lucide-react";
+import { Heart, Star, Menu, X, MenuIcon, User } from "lucide-react";
 import { useState, useEffect } from "react";
 import { FaWhatsapp } from "react-icons/fa";
 import { HiOutlineShoppingBag } from "react-icons/hi2";
@@ -9,10 +9,13 @@ import { AnimatePresence, motion } from "framer-motion";
 import { CART_OFFERS } from "@/utils/cartOffers";
 import InstallPWA from "./InstallPWA";
 import Link from "next/link";
+import { useStore } from "@/context/StoreContext";
 
 export default function Navbar() {
   const [index, setIndex] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { cart } = useStore();
+  const cartCount = cart.reduce((sum, i) => sum + (i.qty || 1), 0);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -85,10 +88,14 @@ export default function Navbar() {
           </div>
 
           {/* CENTER LOGO */}
-          <div className="nav-center flex flex-col justify-center items-center">
+          <Link
+            href="/"
+            aria-label="TheBookX home"
+            className="nav-center flex flex-col justify-center items-center"
+          >
             <span className="logo-text">TheBookX</span>
             <span className="font-10">Formerly Uskillbook</span>
-          </div>
+          </Link>
 
           {/* RIGHT ICONS */}
           <div className="nav-right">
@@ -101,9 +108,18 @@ export default function Navbar() {
               <FaWhatsapp size={32} color="#25D366" />
             </a>
 
-            <a href="/bag" aria-label="Cart">
+            <Link href="/profile" aria-label="My profile" className="nav-profile">
+              <User size={28} />
+            </Link>
+
+            <Link href="/bag" aria-label="Cart" className="nav-cart">
               <HiOutlineShoppingBag size={32} />
-            </a>
+              {cartCount > 0 && (
+                <span className="nav-cart-badge">
+                  {cartCount > 99 ? "99+" : cartCount}
+                </span>
+              )}
+            </Link>
           </div>
         </nav>
         {/* 🔍 Search below navbar (mobile only) */}

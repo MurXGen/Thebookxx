@@ -28,6 +28,7 @@ import {
   Gift,
   ShieldCheck,
   ArrowLeft,
+  Bell,
   ExternalLink,
   ShoppingBag,
   ChevronDown,
@@ -935,6 +936,8 @@ export default function ManageOrdersPage() {
   const [pickHydrated, setPickHydrated] = useState(false);
   const [packedOrders, setPackedOrders] = useState({}); // { orderId: true }
   const [detailOrder, setDetailOrder] = useState(null); // order shown in detail modal
+  const [seenIds, setSeenIds] = useState(null); // order IDs seen on last visit
+  const [showNewModal, setShowNewModal] = useState(false);
   const [accOpen, setAccOpen] = useState({
     analytics: true,
     calendar: false,
@@ -1082,6 +1085,42 @@ export default function ManageOrdersPage() {
     fetchOrders();
   }, [fetchOrders]);
 
+  // Load the set of order IDs seen on the last visit
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("manage_orders_seen_ids");
+      setSeenIds(raw ? JSON.parse(raw) : null);
+    } catch (_) {
+      setSeenIds(null);
+    }
+  }, []);
+
+  // First ever visit → set a baseline so we don't flag every order as new
+  useEffect(() => {
+    if (!orders.length || seenIds !== null) return;
+    const ids = orders.map((o) => o["Order ID"]).filter(Boolean);
+    try {
+      localStorage.setItem("manage_orders_seen_ids", JSON.stringify(ids));
+    } catch (_) {}
+    setSeenIds(ids);
+  }, [orders, seenIds]);
+
+  // Orders present now that weren't there on the last visit
+  const newOrders = useMemo(() => {
+    if (!seenIds) return [];
+    const set = new Set(seenIds);
+    return orders.filter((o) => o["Order ID"] && !set.has(o["Order ID"]));
+  }, [orders, seenIds]);
+  const newOrderCount = newOrders.length;
+
+  const markOrdersSeen = () => {
+    const ids = orders.map((o) => o["Order ID"]).filter(Boolean);
+    try {
+      localStorage.setItem("manage_orders_seen_ids", JSON.stringify(ids));
+    } catch (_) {}
+    setSeenIds(ids);
+  };
+
   // Restore saved filter/search preferences on mount
   useEffect(() => {
     try {
@@ -1150,7 +1189,7 @@ export default function ManageOrdersPage() {
           !s ||
           s.includes("pending") ||
           s.includes("processing") ||
-          s.includes("getting shipped...")
+          s.includes("getting shipped")
         );
       });
     } else if (statusFilter !== "all") {
@@ -1497,7 +1536,7 @@ export default function ManageOrdersPage() {
     <div className="my-orders-page">
       <div className="section-1200 flex flex-col gap-24">
         {/* Header, same shape as my-orders */}
-        <div className="orders-header">
+        <div className="orders-header orders-header-row">
           <Link href="/" className="flex flex-row gap-8 items-center">
             <ArrowLeft size={18} />
             <div className="flex flex-col">
@@ -1507,6 +1546,24 @@ export default function ManageOrdersPage() {
               </p>
             </div>
           </Link>
+
+          <button
+            type="button"
+            className={`mo-bell${newOrderCount > 0 ? " has-new" : ""}`}
+            onClick={() => setShowNewModal(true)}
+            title={
+              newOrderCount > 0
+                ? `${newOrderCount} new order${newOrderCount > 1 ? "s" : ""} since your last visit`
+                : "No new orders since your last visit"
+            }
+          >
+            <Bell size={20} />
+            {newOrderCount > 0 && (
+              <span className="mo-bell-badge">
+                {newOrderCount > 99 ? "99+" : newOrderCount}
+              </span>
+            )}
+          </button>
         </div>
 
         {/* ===== Analytics (accordion) ===== */}
@@ -1742,11 +1799,11 @@ export default function ManageOrdersPage() {
                         onChange={(e) => setStatusFilter(e.target.value)}
                       >
                         <option value="active">
-                          Active (Pending + Processing)
+                          Active (Pending + Processing + Getting Shipped)
                         </option>
                         <option value="all">All Statuses</option>
                         <option value="Processing">Processing</option>
-                        <option value="Getting Shipped">Getting shipped…</option>
+                        <option value="Getting Shipped">Getting Shipped</option>
                         <option value="Shipped">Shipped</option>
                         <option value="In Transit">In Transit</option>
                         <option value="Out for Delivery">
@@ -2525,6 +2582,117 @@ export default function ManageOrdersPage() {
           )}
         </Accordion>
       </div>
+
+      {/* ===== New orders modal (slide-up) ===== */}
+      <AnimatePresence>
+        {showNewModal && (
+          <motion.div
+            className="bill-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => {
+              markOrdersSeen();
+              setShowNewModal(false);
+            }}
+          >
+            <motion.div
+              className="bill-modal"
+              initial={{ y: "100%", opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: "100%", opacity: 0 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+              style={{ maxWidth: "560px" }}
+            >
+              <div className="bill-header">
+                <div className="flex flex-col">
+                  <span className="weight-600 font-16 flex items-center gap-8">
+                    <Bell size={16} /> New orders
+                  </span>
+                  <span className="font-12 gray-500">
+                    {newOrderCount > 0
+                      ? `${newOrderCount} since your last visit`
+                      : "You're all caught up"}
+                  </span>
+                </div>
+                <span
+                  className="cursor-pointer"
+                  onClick={() => {
+                    markOrdersSeen();
+                    setShowNewModal(false);
+                  }}
+                >
+                  <X size={18} />
+                </span>
+              </div>
+
+              <div className="mo-new-list">
+                {newOrders.length > 0 ? (
+                  newOrders.map((o, i) => {
+                    const nb = o.parsedBooks || [];
+                    const nid = String(o["Order ID"] || "");
+                    return (
+                      <button
+                        key={nid || i}
+                        type="button"
+                        className="mo-new-item"
+                        onClick={() => {
+                          markOrdersSeen();
+                          setShowNewModal(false);
+                          setDetailOrder(o);
+                        }}
+                      >
+                        <div className="mo-new-top">
+                          <span className="mo-new-name">
+                            {o["Customer Name"] || "—"}
+                          </span>
+                          <span className="mo-new-amt">
+                            ₹{(o.revenue || 0).toLocaleString()}
+                          </span>
+                        </div>
+                        <div className="mo-new-sub">
+                          <span>
+                            {nid.slice(0, -3)}
+                            <span className="mo-oid-hl">{nid.slice(-3)}</span>
+                          </span>
+                          <span className="aoc-dot">·</span>
+                          <span>
+                            {formatDate(
+                              o["Timestamp(D)"] || o["Timestamp"],
+                            )}
+                          </span>
+                          <span className="aoc-dot">·</span>
+                          <span>
+                            {nb.length} book{nb.length > 1 ? "s" : ""}
+                          </span>
+                        </div>
+                      </button>
+                    );
+                  })
+                ) : (
+                  <p className="mo-new-empty">
+                    No new orders since your last visit 🎉
+                  </p>
+                )}
+              </div>
+
+              {newOrders.length > 0 && (
+                <button
+                  type="button"
+                  className="pri-big-btn width100"
+                  onClick={() => {
+                    markOrdersSeen();
+                    setShowNewModal(false);
+                  }}
+                >
+                  Mark all as seen
+                </button>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ===== Order detail modal (slide-up, bill-modal style) ===== */}
       <AnimatePresence>

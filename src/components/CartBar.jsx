@@ -11,6 +11,7 @@ import InstallPWA from "./InstallPWA";
 import { HiOutlineShoppingBag } from "react-icons/hi2";
 import { ArrowRight, Zap, Clock, Gift, Lock, Sparkles, Search } from "lucide-react";
 import SearchOverlay from "./SearchOverlay";
+import RecommendationModal from "./RecommendationModal";
 import { getRemainingOfferTime, getOneRupeeOfferData } from "@/utils/book";
 import { useEffect, useState, useRef } from "react";
 import { trackFunnelEvent } from "@/lib/analytics";
@@ -25,7 +26,8 @@ export default function CartBar() {
   const [showOneRupeeModal, setShowOneRupeeModal] = useState(false);
   const prevCartTotalRef = useRef(cartTotal);
   const hasTrackedMilestonesRef = useRef({});
-  const [qa, setQa] = useState({ open: false, suggest: false });
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [suggestOpen, setSuggestOpen] = useState(false);
 
   const hasCart = cart.length > 0;
 
@@ -226,7 +228,7 @@ export default function CartBar() {
         <button
           type="button"
           className="cart-fab-btn"
-          onClick={() => setQa({ open: true, suggest: true })}
+          onClick={() => setSuggestOpen(true)}
           aria-label="Get book suggestions"
         >
           <Sparkles size={18} />
@@ -235,16 +237,16 @@ export default function CartBar() {
         <button
           type="button"
           className="cart-fab-btn"
-          onClick={() => setQa({ open: true, suggest: false })}
+          onClick={() => setSearchOpen(true)}
           aria-label="Search books"
         >
           <Search size={18} />
         </button>
       </div>
-      <SearchOverlay
-        open={qa.open}
-        initialSuggest={qa.suggest}
-        onClose={() => setQa({ open: false, suggest: false })}
+      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
+      <RecommendationModal
+        isOpen={suggestOpen}
+        onClose={() => setSuggestOpen(false)}
       />
 
       {/* 🎁 OFFER STRIP */}

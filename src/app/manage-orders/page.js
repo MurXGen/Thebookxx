@@ -544,8 +544,8 @@ function DailyVolumeChart({ ordersByDay, days = 14 }) {
       <svg className="vol-svg" viewBox={`0 0 ${W} ${H}`} role="img">
         <defs>
           <linearGradient id="volFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="rgba(251,133,0,0.32)" />
-            <stop offset="100%" stopColor="rgba(251,133,0,0)" />
+            <stop offset="0%" stopColor="rgba(10,143,12,0.32)" />
+            <stop offset="100%" stopColor="rgba(10,143,12,0)" />
           </linearGradient>
         </defs>
         <line
@@ -560,7 +560,7 @@ function DailyVolumeChart({ ordersByDay, days = 14 }) {
         <polyline
           points={line}
           fill="none"
-          stroke="var(--tertiary,#fb8500)"
+          stroke="var(--success,#0a8f0c)"
           strokeWidth="2.5"
           strokeLinejoin="round"
           strokeLinecap="round"
@@ -574,7 +574,7 @@ function DailyVolumeChart({ ordersByDay, days = 14 }) {
                   cy={sy(s.count)}
                   r="3"
                   fill="#fff"
-                  stroke="var(--tertiary,#fb8500)"
+                  stroke="var(--success,#0a8f0c)"
                   strokeWidth="2"
                 />
                 <text
@@ -939,6 +939,7 @@ export default function ManageOrdersPage() {
   const [seenIds, setSeenIds] = useState(null); // order IDs seen on last visit
   const [showNewModal, setShowNewModal] = useState(false);
   const [analyticsPeriod, setAnalyticsPeriod] = useState("month"); // week | month | all
+  const [orderView, setOrderView] = useState("cards"); // cards | table
   const [accOpen, setAccOpen] = useState({
     analytics: true,
     calendar: false,
@@ -1120,6 +1121,53 @@ export default function ManageOrdersPage() {
       localStorage.setItem("manage_orders_seen_ids", JSON.stringify(ids));
     } catch (_) {}
     setSeenIds(ids);
+  };
+
+  // Build a printable "packing sheet" (save as PDF) of every book cover from
+  // orders NOT yet marked as packed — 2-per-row, full size, one image per unit
+  // (repeated by quantity), no quantity labels.
+  const exportPackingSheet = () => {
+    const abs = (u) => {
+      const s = typeof u === "string" ? u : u?.src || "";
+      if (!s) return "";
+      return s.startsWith("http") ? s : window.location.origin + s;
+    };
+    const cells = [];
+    filteredOrders.forEach((o) => {
+      if (packedOrders[o["Order ID"]]) return; // skip packed
+      (o.parsedBooks || []).forEach((b) => {
+        const src = abs(getBookImage(b.name));
+        const qty = Math.max(1, b.quantity || 1);
+        for (let k = 0; k < qty; k++)
+          cells.push(
+            src
+              ? `<div class="cell"><img src="${src}" alt=""/></div>`
+              : `<div class="cell"><div class="ph">${b.name}</div></div>`,
+          );
+      });
+    });
+    if (!cells.length) {
+      alert("No unpacked books to export.");
+      return;
+    }
+    const w = window.open("", "_blank");
+    if (!w) return;
+    w.document.write(
+      `<!doctype html><html><head><title>Packing sheet</title><meta charset="utf-8"/>
+      <style>
+        @page { margin: 10mm; }
+        * { box-sizing: border-box; }
+        body { font-family: system-ui, sans-serif; margin: 0; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10mm; padding: 10mm; }
+        .cell { break-inside: avoid; text-align: center; }
+        .cell img { width: 100%; height: auto; display: block; }
+        .ph { border: 1px dashed #999; padding: 60px 10px; color: #666; font-size: 13px; }
+      </style></head>
+      <body><div class="grid">${cells.join("")}</div>
+      <script>window.onload=function(){setTimeout(function(){window.print();},400);};<\/script>
+      </body></html>`,
+    );
+    w.document.close();
   };
 
   // Restore saved filter/search preferences on mount
@@ -2060,21 +2108,34 @@ export default function ManageOrdersPage() {
                       transition={{ duration: 0.28, ease: [0.32, 0.72, 0, 1] }}
                       style={{ overflow: "hidden" }}
                     >
-                      <div className="pick-filters">
-                        {[
-                          { k: "all", label: `All (${orderStats.length})` },
-                          { k: "pending", label: `Pending (${pendingOrders})` },
-                          { k: "done", label: `Done (${doneOrders})` },
-                        ].map((f) => (
-                          <button
-                            key={f.k}
-                            type="button"
-                            className={`pick-filter-btn${pickFilter === f.k ? " active" : ""}`}
-                            onClick={() => setPickFilter(f.k)}
-                          >
-                            {f.label}
-                          </button>
-                        ))}
+                      <div className="pick-toolbar">
+                        <div className="pick-filters">
+                          {[
+                            { k: "all", label: `All (${orderStats.length})` },
+                            {
+                              k: "pending",
+                              label: `Pending (${pendingOrders})`,
+                            },
+                            { k: "done", label: `Done (${doneOrders})` },
+                          ].map((f) => (
+                            <button
+                              key={f.k}
+                              type="button"
+                              className={`pick-filter-btn${pickFilter === f.k ? " active" : ""}`}
+                              onClick={() => setPickFilter(f.k)}
+                            >
+                              {f.label}
+                            </button>
+                          ))}
+                        </div>
+                        <button
+                          type="button"
+                          className="pick-export-btn"
+                          onClick={exportPackingSheet}
+                          title="Export a printable PDF of all unpacked book covers"
+                        >
+                          <Download size={14} /> Packing sheet (PDF)
+                        </button>
                       </div>
 
                       <div className="pick-orders">
@@ -2182,8 +2243,25 @@ export default function ManageOrdersPage() {
                   {filteredOrders.length}{" "}
                   {filteredOrders.length === 1 ? "Order" : "Orders"}
                 </span>
+                <div className="mo-view-toggle">
+                  <button
+                    type="button"
+                    className={`mo-view-btn${orderView === "cards" ? " active" : ""}`}
+                    onClick={() => setOrderView("cards")}
+                  >
+                    Cards
+                  </button>
+                  <button
+                    type="button"
+                    className={`mo-view-btn${orderView === "table" ? " active" : ""}`}
+                    onClick={() => setOrderView("table")}
+                  >
+                    Table
+                  </button>
+                </div>
               </div>
-              <div className="admin-orders-grid">
+              {orderView === "cards" ? (
+                <div className="admin-orders-grid">
                 {filteredOrders.map((order, idx) => {
                   const orderId = order["Order ID"];
                   const books = order.parsedBooks || [];
@@ -2242,48 +2320,60 @@ export default function ManageOrdersPage() {
                               {order["Customer Name"] || "—"}
                             </span>
                           </div>
-                          <button
-                            type="button"
+                          <div
                             className="mo-meta"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              copyToClipboard(
-                                String(order["Phone Number"] || ""),
-                                `phone-${idx}`,
-                              );
-                            }}
-                            title="Copy phone"
+                            onClick={(e) => e.stopPropagation()}
                           >
                             <Phone size={12} />
-                            <span>+91 {order["Phone Number"]}</span>
-                            {copiedId === `phone-${idx}` ? (
-                              <Check size={12} className="text-green" />
-                            ) : (
-                              <Copy size={11} className="gray-500" />
-                            )}
-                          </button>
-                          <button
-                            type="button"
+                            <span className="mo-meta-val">
+                              +91 {order["Phone Number"]}
+                            </span>
+                            <button
+                              type="button"
+                              className="mo-copy-ic"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                copyToClipboard(
+                                  String(order["Phone Number"] || ""),
+                                  `phone-${idx}`,
+                                );
+                              }}
+                              title="Copy phone"
+                            >
+                              {copiedId === `phone-${idx}` ? (
+                                <Check size={12} className="text-green" />
+                              ) : (
+                                <Copy size={11} className="gray-500" />
+                              )}
+                            </button>
+                          </div>
+                          <div
                             className="mo-meta"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              copyToClipboard(orderId, `order-${idx}`);
-                            }}
-                            title="Copy order ID"
+                            onClick={(e) => e.stopPropagation()}
                           >
                             <span className="mo-meta-label">Order</span>
-                            <span>
+                            <span className="mo-meta-val">
                               {oidStr.slice(0, -3)}
                               <span className="mo-oid-hl">
                                 {oidStr.slice(-3)}
                               </span>
                             </span>
-                            {copiedId === `order-${idx}` ? (
-                              <Check size={12} className="text-green" />
-                            ) : (
-                              <Copy size={11} className="gray-500" />
-                            )}
-                          </button>
+                            <button
+                              type="button"
+                              className="mo-copy-ic"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                copyToClipboard(orderId, `order-${idx}`);
+                              }}
+                              title="Copy order ID"
+                            >
+                              {copiedId === `order-${idx}` ? (
+                                <Check size={12} className="text-green" />
+                              ) : (
+                                <Copy size={11} className="gray-500" />
+                              )}
+                            </button>
+                          </div>
                         </div>
 
                         {books.length > 0 &&
@@ -2316,6 +2406,14 @@ export default function ManageOrdersPage() {
                         )}
                       </div>
 
+                      {/* Amount (big, green) + status badge — top priority */}
+                      <div className="mo-amount-row">
+                        <span className="mo-amount">
+                          ₹{order.revenue.toLocaleString()}
+                        </span>
+                        <span className="mo-status-pill">{order.status}</span>
+                      </div>
+
                       <div className="mo-card-desc">
                         <span className="mo-desc-item">
                           <Calendar size={11} />
@@ -2324,12 +2422,8 @@ export default function ManageOrdersPage() {
                           )}
                         </span>
                         <span className="aoc-dot">·</span>
-                        <span className="mo-desc-status">{order.status}</span>
-                        <span className="aoc-dot">·</span>
                         <span>
-                          ₹{order.revenue.toLocaleString()} · {books.length}{" "}
-                          book
-                          {books.length > 1 ? "s" : ""}
+                          {books.length} book{books.length > 1 ? "s" : ""}
                         </span>
                         {books.length > 0 && (
                           <span
@@ -2607,7 +2701,51 @@ export default function ManageOrdersPage() {
                     </div>
                   );
                 })}
-              </div>
+                </div>
+              ) : (
+                <div className="mo-table-wrap">
+                  <table className="mo-table">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Order</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredOrders.map((order, i) => (
+                        <tr
+                          key={order["Order ID"] || i}
+                          className="mo-trow"
+                          onClick={() => setDetailOrder(order)}
+                        >
+                          <td>{i + 1}</td>
+                          <td className="mo-td-name">
+                            {order["Customer Name"] || "—"}
+                          </td>
+                          <td className="mo-td-mono">
+                            {order["Phone Number"]}
+                          </td>
+                          <td className="mo-td-mono">
+                            …{String(order["Order ID"] || "").slice(-6)}
+                          </td>
+                          <td className="mo-td-amt">
+                            ₹{(order.revenue || 0).toLocaleString()}
+                          </td>
+                          <td>
+                            <span className="mo-status-pill sm">
+                              {order.status}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           ) : (
             <div className="error-state">
@@ -2860,19 +2998,11 @@ export default function ManageOrdersPage() {
                         <MapPin size={13} /> Shipping
                       </div>
                       {dAddrLine && (
-                        <button
-                          type="button"
-                          className="aoc-rowline"
-                          onClick={() => copyToClipboard(dAddrLine, "m-addr")}
-                          title="Copy address"
-                        >
-                          <span className="aoc-rowline-text">{dAddrLine}</span>
-                          {copiedId === "m-addr" ? (
-                            <Check size={13} className="text-green" />
-                          ) : (
-                            <Copy size={13} className="gray-500" />
-                          )}
-                        </button>
+                        <div className="aoc-rowline aoc-rowline-static">
+                          <span className="aoc-rowline-text mo-meta-val">
+                            {dAddrLine}
+                          </span>
+                        </div>
                       )}
                       {(dHasTracking || dHasTiny) && (
                         <div className="aoc-track">

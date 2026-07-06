@@ -1134,8 +1134,10 @@ export default function ManageOrdersPage() {
     };
     const cells = [];
     filteredOrders.forEach((o) => {
-      if (packedOrders[o["Order ID"]]) return; // skip packed
-      (o.parsedBooks || []).forEach((b) => {
+      const oid = o["Order ID"] || o._rowIndex;
+      (o.parsedBooks || []).forEach((b, i) => {
+        // Only include books NOT yet marked (touched) as picked
+        if (pickChecked[bookKey(oid, i)]) return;
         const src = abs(getBookImage(b.name));
         const qty = Math.max(1, b.quantity || 1);
         for (let k = 0; k < qty; k++)
@@ -1147,7 +1149,7 @@ export default function ManageOrdersPage() {
       });
     });
     if (!cells.length) {
-      alert("No unpacked books to export.");
+      alert("All books are already picked — nothing to export.");
       return;
     }
     const w = window.open("", "_blank");
@@ -2132,9 +2134,9 @@ export default function ManageOrdersPage() {
                           type="button"
                           className="pick-export-btn"
                           onClick={exportPackingSheet}
-                          title="Export a printable PDF of all unpacked book covers"
+                          title="Download a printable PDF of every book cover not yet picked"
                         >
-                          <Download size={14} /> Packing sheet (PDF)
+                          <Download size={14} /> Download un-picked covers (PDF)
                         </button>
                       </div>
 

@@ -15099,18 +15099,19 @@ img[data-loaded="true"] {
 /* ===== Book Picking toolbar + packing-sheet export button ===== */
 .pick-toolbar {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: stretch;
   gap: 10px;
-  flex-wrap: wrap;
   margin-bottom: 12px;
 }
 .pick-export-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 9px 14px;
-  font-size: 12.5px;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 11px 16px;
+  font-size: 13px;
   font-weight: 700;
   color: #fff;
   background: var(--success, #0a8f0c);

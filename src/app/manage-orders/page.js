@@ -938,6 +938,7 @@ export default function ManageOrdersPage() {
   const [detailOrder, setDetailOrder] = useState(null); // order shown in detail modal
   const [seenIds, setSeenIds] = useState(null); // order IDs seen on last visit
   const [showNewModal, setShowNewModal] = useState(false);
+  const [analyticsPeriod, setAnalyticsPeriod] = useState("month"); // week | month | all
   const [accOpen, setAccOpen] = useState({
     analytics: true,
     calendar: false,
@@ -1255,6 +1256,44 @@ export default function ManageOrdersPage() {
     return map;
   }, [orders]);
 
+  // Analytics are independent of the list's search/status/payment filters.
+  // They scope only to the chosen period: current week, current month, or all.
+  const analyticsOrders = useMemo(() => {
+    if (analyticsPeriod === "all") return orders;
+    const now = new Date();
+    if (analyticsPeriod === "week") {
+      const dow = (now.getDay() + 6) % 7; // Monday = 0
+      const monday = new Date(now);
+      monday.setHours(0, 0, 0, 0);
+      monday.setDate(now.getDate() - dow);
+      const nextMonday = new Date(monday);
+      nextMonday.setDate(monday.getDate() + 7);
+      return orders.filter((o) => {
+        const d = getOrderDate(o);
+        return d && d >= monday && d < nextMonday;
+      });
+    }
+    // month
+    const m = now.getMonth();
+    const y = now.getFullYear();
+    return orders.filter((o) => {
+      const d = getOrderDate(o);
+      return d && d.getMonth() === m && d.getFullYear() === y;
+    });
+  }, [orders, analyticsPeriod]);
+
+  const analyticsByDay = useMemo(() => {
+    const map = {};
+    analyticsOrders.forEach((o) => {
+      const d = getOrderDate(o);
+      if (d) {
+        const k = dayKey(d);
+        map[k] = (map[k] || 0) + 1;
+      }
+    });
+    return map;
+  }, [analyticsOrders]);
+
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -1472,8 +1511,8 @@ export default function ManageOrdersPage() {
   const maxRevenue = Math.max(1, ...filteredOrders.map((o) => o.revenue || 0));
 
   // Stats (all read straight from the sheet columns)
-  const totalRevenue = filteredOrders.reduce((sum, o) => sum + o.revenue, 0);
-  const totalCost = filteredOrders.reduce((sum, o) => sum + o.totalCost, 0);
+  const totalRevenue = analyticsOrders.reduce((sum, o) => sum + o.revenue, 0);
+  const totalCost = analyticsOrders.reduce((sum, o) => sum + o.totalCost, 0);
   const totalPnL = totalRevenue - totalCost;
   const marginPct =
     totalRevenue > 0 ? Math.round((totalPnL / totalRevenue) * 100) : 0;
@@ -1481,19 +1520,19 @@ export default function ManageOrdersPage() {
   // Per-day run rate — orders & revenue averaged over the days that had orders
   const runRateDays = Math.max(
     1,
-    new Set(filteredOrders.map((o) => dayKey(getOrderDate(o)))).size,
+    new Set(analyticsOrders.map((o) => dayKey(getOrderDate(o)))).size,
   );
-  const ordersPerDay = filteredOrders.length / runRateDays;
+  const ordersPerDay = analyticsOrders.length / runRateDays;
   const revPerDay = totalRevenue / runRateDays;
 
-  const deliveredCount = filteredOrders.filter(
+  const deliveredCount = analyticsOrders.filter(
     (o) => o["Order Status"] === "Delivered",
   ).length;
-  const inTransitCount = filteredOrders.filter(
+  const inTransitCount = analyticsOrders.filter(
     (o) =>
       o["Order Status"] === "In Transit" || o["Order Status"] === "Shipped",
   ).length;
-  const withTrackingCount = filteredOrders.filter(
+  const withTrackingCount = analyticsOrders.filter(
     (o) => o["Shipping ID"] && String(o["Shipping ID"]).trim() !== "",
   ).length;
 
@@ -1509,15 +1548,15 @@ export default function ManageOrdersPage() {
   ];
   const statusCounts = STATUS_META.map((s) => ({
     ...s,
-    count: filteredOrders.filter((o) => o["Order Status"] === s.key).length,
+    count: analyticsOrders.filter((o) => o["Order Status"] === s.key).length,
   }));
   const maxStatusCount = Math.max(1, ...statusCounts.map((s) => s.count));
 
   // Payment split
-  const codCount = filteredOrders.filter((o) =>
+  const codCount = analyticsOrders.filter((o) =>
     String(o["Payment Type"] || "").includes("Cash"),
   ).length;
-  const prepaidCount = filteredOrders.length - codCount;
+  const prepaidCount = analyticsOrders.length - codCount;
 
   if (loading) {
     return (
@@ -1598,13 +1637,33 @@ export default function ManageOrdersPage() {
           }
         >
           <div className="admin-dash">
+            {/* Period scope — analytics ignore the list's search/filters */}
+            <div className="an-period">
+              {[
+                { key: "week", label: "This week" },
+                { key: "month", label: "This month" },
+                { key: "all", label: "All time" },
+              ].map((p) => (
+                <button
+                  key={p.key}
+                  type="button"
+                  className={`an-period-btn${
+                    analyticsPeriod === p.key ? " active" : ""
+                  }`}
+                  onClick={() => setAnalyticsPeriod(p.key)}
+                >
+                  {p.label}
+                </button>
+              ))}
+            </div>
+
             {/* KPI cards */}
             <div className="admin-kpis">
               <div className="kpi kpi-orders">
                 <div className="kpi-ic">
                   <ShoppingBag size={18} />
                 </div>
-                <span className="kpi-value">{filteredOrders.length}</span>
+                <span className="kpi-value">{analyticsOrders.length}</span>
                 <span className="kpi-label">Orders</span>
               </div>
               <div className="kpi kpi-rev">
@@ -1653,7 +1712,7 @@ export default function ManageOrdersPage() {
             </div>
 
             {/* Daily order-volume area chart */}
-            <DailyVolumeChart ordersByDay={ordersByDay} />
+            <DailyVolumeChart ordersByDay={analyticsByDay} />
 
             {/* Charts row */}
             <div className="admin-charts">
@@ -1685,15 +1744,15 @@ export default function ManageOrdersPage() {
                     className="pay-donut"
                     style={{
                       background: `conic-gradient(#fb8500 0 ${
-                        filteredOrders.length
+                        analyticsOrders.length
                           ? Math.round(
-                              (prepaidCount / filteredOrders.length) * 100,
+                              (prepaidCount / analyticsOrders.length) * 100,
                             )
                           : 0
                       }%, #0a0a0a 0)`,
                     }}
                   >
-                    <span>{filteredOrders.length}</span>
+                    <span>{analyticsOrders.length}</span>
                   </div>
                   <div className="pay-legend">
                     <div>
@@ -2227,7 +2286,8 @@ export default function ManageOrdersPage() {
                           </button>
                         </div>
 
-                        {books.length > 0 && (
+                        {books.length > 0 &&
+                          /getting shipped/i.test(order.status || "") && (
                           <div className="mo-stack">
                             {books.slice(0, 5).map((b, ci) => {
                               const img = getBookImage(b.name);
@@ -2288,28 +2348,6 @@ export default function ManageOrdersPage() {
                                 : "Not picked"}
                           </span>
                         )}
-                      </div>
-
-                      <div className="mo-card-foot2">
-                        <button
-                          type="button"
-                          className={`mo-pack-btn${isPacked ? " on" : ""}`}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            togglePacked(orderId);
-                          }}
-                          title={isPacked ? "Packed" : "Mark as packed"}
-                        >
-                          {isPacked ? (
-                            <>
-                              <Check size={14} /> Packed
-                            </>
-                          ) : (
-                            <>
-                              <Package size={13} /> Mark as packed
-                            </>
-                          )}
-                        </button>
                       </div>
 
                       {/* Downloadable shipping documents (always available) */}

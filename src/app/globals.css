@@ -15036,3 +15036,30 @@ img[data-loaded="true"] {
   color: var(--dark-50);
   padding: 30px 0;
 }
+
+/* ===== Analytics period toggle (week / month / all) ===== */
+.an-period {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--dark-4);
+  border: 1px solid var(--hairline);
+  margin-bottom: 14px;
+}
+.an-period-btn {
+  border: none;
+  background: transparent;
+  padding: 7px 16px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--dark-50);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.an-period-btn.active {
+  background: var(--tertiary);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(251, 133, 0, 0.3);
+}

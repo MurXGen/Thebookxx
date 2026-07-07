@@ -23,7 +23,7 @@ import {
   getOriginalCharge,
   getMinCheckoutAmount,
 } from "@/utils/cartOffers";
-import { ArrowLeft, Gift, Sparkle, Sparkles } from "lucide-react";
+import { ArrowLeft, Gift, Sparkle, Sparkles, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { permanentlyUnlockOffer, areOneRupeeBooksEnabled } from "@/utils/book";
@@ -577,14 +577,19 @@ _Thank you for shopping with TheBookX! 📚✨_
               href="https://wa.me/917710892108?text=Hi%2C%20I%20need%20help%20with%20my%20order%20from%20TheBookX"
               target="_blank"
               rel="noopener noreferrer"
-              className="bag-help-btn"
-              aria-label="Need any help? Chat on WhatsApp"
+              className="bag-icon-btn"
+              aria-label="Need help? Chat on WhatsApp"
+              title="Need help? Chat on WhatsApp"
             >
-              <FaWhatsapp size={16} color="#25D366" />
-              <span>Need help?</span>
+              <FaWhatsapp size={20} color="#25D366" />
             </a>
-            <Link href="/profile" className="sec-mid-btn">
-              Order History
+            <Link
+              href="/profile"
+              className="bag-icon-btn"
+              aria-label="Order history / profile"
+              title="Order history"
+            >
+              <User size={20} />
             </Link>
           </div>
         }

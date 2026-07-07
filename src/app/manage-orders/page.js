@@ -1,7 +1,7 @@
 // app/manage-orders/page.js
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import {
   downloadIndiaPostForm,
   downloadAddressLabelForm,
@@ -655,6 +655,7 @@ function Accordion({ id, title, icon, open, onToggle, right, children }) {
 
 // ── Yearly run-rate: one cumulative line per month (only months with orders) ──
 function RunRateChart({ orders }) {
+  const [hoverDay, setHoverDay] = useState(null);
   const year = new Date().getFullYear();
   const COLORS = [
     "#fb8500",
@@ -670,6 +671,10 @@ function RunRateChart({ orders }) {
     "#dc2626",
     "#0d9488",
   ];
+  const now = new Date();
+  const curMonth = now.getMonth();
+  const today = now.getDate();
+
   const byMonthDay = {};
   orders.forEach((o) => {
     const d = getOrderDate(o);
@@ -688,15 +693,39 @@ function RunRateChart({ orders }) {
   let maxCum = 1;
   const seriesByMonth = {};
   months.forEach((m) => {
+    // Current month stops at today; past months run to their last day.
+    const lastDay = m === curMonth ? today : new Date(year, m + 1, 0).getDate();
     let cum = 0;
     const pts = [];
-    for (let day = 1; day <= maxDay; day++) {
-      cum += byMonthDay[m][day] || 0;
-      pts.push(cum);
+    for (let day = 1; day <= lastDay; day++) {
+      const c = byMonthDay[m][day] || 0;
+      cum += c;
+      pts.push({ day, cum, c });
     }
     seriesByMonth[m] = pts;
     maxCum = Math.max(maxCum, cum);
   });
+
+  // Metrics
+  const totalYear = months.reduce((n, m) => {
+    const s = seriesByMonth[m];
+    return n + (s.length ? s[s.length - 1].cum : 0);
+  }, 0);
+  const dayOfYear = Math.ceil(
+    (now - new Date(year, 0, 0)) / 86400000,
+  );
+  const perDayAvg = totalYear / Math.max(1, dayOfYear);
+  let bestDay = 0;
+  months.forEach((m) =>
+    Object.values(byMonthDay[m]).forEach((v) => {
+      if (v > bestDay) bestDay = v;
+    }),
+  );
+  const busiestMonth = months.reduce((best, m) => {
+    const t = seriesByMonth[m].slice(-1)[0]?.cum || 0;
+    const bt = seriesByMonth[best]?.slice(-1)[0]?.cum || 0;
+    return t > bt ? m : best;
+  }, months[0]);
 
   const W = 600,
     H = 240,
@@ -709,45 +738,143 @@ function RunRateChart({ orders }) {
   const x = (day) => padL + ((day - 1) / (maxDay - 1)) * iw;
   const y = (v) => padTop + ih - (v / maxCum) * ih;
 
+  const onMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const px = ((e.clientX - rect.left) / rect.width) * W;
+    let day = Math.round(((px - padL) / iw) * (maxDay - 1)) + 1;
+    day = Math.max(1, Math.min(maxDay, day));
+    setHoverDay(day);
+  };
+
+  const dayLabels = [1, 5, 10, 15, 20, 25, 31];
+
   return (
     <div className="admin-chart-card rr-card">
       <div className="chart-title">
         Order run-rate · {year}
         <span className="vol-sub">cumulative orders by day, per month</span>
       </div>
-      <svg className="rr-svg" viewBox={`0 0 ${W} ${H}`} role="img">
-        {[0, 0.25, 0.5, 0.75, 1].map((f, i) => {
-          const yy = padTop + ih - f * ih;
-          return (
-            <g key={i}>
-              <line
-                x1={padL}
-                y1={yy}
-                x2={W - padR}
-                y2={yy}
-                stroke="var(--hairline,#ececec)"
-                strokeWidth="1"
+
+      <div className="rr-plot">
+        <svg
+          className="rr-svg"
+          viewBox={`0 0 ${W} ${H}`}
+          role="img"
+          onMouseMove={onMove}
+          onMouseLeave={() => setHoverDay(null)}
+        >
+          {[0, 0.25, 0.5, 0.75, 1].map((f, i) => {
+            const yy = padTop + ih - f * ih;
+            return (
+              <g key={i}>
+                <line
+                  x1={padL}
+                  y1={yy}
+                  x2={W - padR}
+                  y2={yy}
+                  stroke="var(--hairline,#ececec)"
+                  strokeWidth="1"
+                />
+                <text x={padL - 6} y={yy + 3} textAnchor="end" className="rr-y">
+                  {Math.round(maxCum * f)}
+                </text>
+              </g>
+            );
+          })}
+
+          {/* X-axis date labels */}
+          {dayLabels.map((d) => (
+            <text key={d} x={x(d)} y={H - 8} textAnchor="middle" className="rr-x">
+              {d}
+            </text>
+          ))}
+
+          {/* Hover guide */}
+          {hoverDay && (
+            <line
+              x1={x(hoverDay)}
+              y1={padTop}
+              x2={x(hoverDay)}
+              y2={padTop + ih}
+              stroke="var(--dark-20,#ccc)"
+              strokeWidth="1"
+              strokeDasharray="3 3"
+            />
+          )}
+
+          {months.map((m) => (
+            <polyline
+              key={m}
+              points={seriesByMonth[m]
+                .map((p) => `${x(p.day)},${y(p.cum)}`)
+                .join(" ")}
+              fill="none"
+              stroke={COLORS[m % COLORS.length]}
+              strokeWidth="2.2"
+              strokeLinejoin="round"
+              strokeLinecap="round"
+            />
+          ))}
+
+          {/* Hover dots per month */}
+          {hoverDay &&
+            months.map((m) => {
+              const p = seriesByMonth[m].find((q) => q.day === hoverDay);
+              if (!p) return null;
+              return (
+                <circle
+                  key={`h${m}`}
+                  cx={x(hoverDay)}
+                  cy={y(p.cum)}
+                  r="3.5"
+                  fill="#fff"
+                  stroke={COLORS[m % COLORS.length]}
+                  strokeWidth="2"
+                />
+              );
+            })}
+
+          {/* Blinking dot: current month, today only */}
+          {(() => {
+            const s = seriesByMonth[curMonth];
+            if (!s || !s.length) return null;
+            const p = s[s.length - 1];
+            return (
+              <circle
+                cx={x(p.day)}
+                cy={y(p.cum)}
+                r="4.5"
+                fill={COLORS[curMonth % COLORS.length]}
+                className="rr-live-dot"
               />
-              <text x={padL - 6} y={yy + 3} textAnchor="end" className="rr-y">
-                {Math.round(maxCum * f)}
-              </text>
-            </g>
-          );
-        })}
-        {months.map((m) => (
-          <polyline
-            key={m}
-            points={seriesByMonth[m]
-              .map((v, di) => `${x(di + 1)},${y(v)}`)
-              .join(" ")}
-            fill="none"
-            stroke={COLORS[m % COLORS.length]}
-            strokeWidth="2.2"
-            strokeLinejoin="round"
-            strokeLinecap="round"
-          />
-        ))}
-      </svg>
+            );
+          })()}
+        </svg>
+
+        {hoverDay && (
+          <div
+            className="rr-tip"
+            style={{ left: `${(x(hoverDay) / W) * 100}%` }}
+          >
+            <div className="rr-tip-date">Day {hoverDay}</div>
+            {months.map((m) => {
+              const p = seriesByMonth[m].find((q) => q.day === hoverDay);
+              if (!p) return null;
+              return (
+                <div key={m} className="rr-tip-row">
+                  <span
+                    className="rr-swatch"
+                    style={{ background: COLORS[m % COLORS.length] }}
+                  />
+                  {MONTH_LABELS[m]}: <b>{p.cum}</b>
+                  {p.c > 0 && <span className="rr-tip-add">+{p.c}</span>}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
       <div className="rr-legend">
         {months.map((m) => (
           <span key={m} className="rr-leg">
@@ -755,9 +882,30 @@ function RunRateChart({ orders }) {
               className="rr-swatch"
               style={{ background: COLORS[m % COLORS.length] }}
             />
-            {MONTH_LABELS[m]} <b>{seriesByMonth[m][maxDay - 1]}</b>
+            {MONTH_LABELS[m]}{" "}
+            <b>{seriesByMonth[m].slice(-1)[0]?.cum || 0}</b>
           </span>
         ))}
+      </div>
+
+      {/* Meaningful metrics grid */}
+      <div className="rr-metrics">
+        <div className="rr-metric">
+          <span className="rr-metric-val">{perDayAvg.toFixed(1)}</span>
+          <span className="rr-metric-lbl">Avg orders / day</span>
+        </div>
+        <div className="rr-metric">
+          <span className="rr-metric-val">{bestDay}</span>
+          <span className="rr-metric-lbl">Best single day</span>
+        </div>
+        <div className="rr-metric">
+          <span className="rr-metric-val">{totalYear}</span>
+          <span className="rr-metric-lbl">Total in {year}</span>
+        </div>
+        <div className="rr-metric">
+          <span className="rr-metric-val">{MONTH_LABELS[busiestMonth]}</span>
+          <span className="rr-metric-lbl">Busiest month</span>
+        </div>
       </div>
     </div>
   );
@@ -1004,6 +1152,8 @@ export default function ManageOrdersPage() {
   const [showNewModal, setShowNewModal] = useState(false);
   const [analyticsPeriod, setAnalyticsPeriod] = useState("month"); // week | month | all
   const [orderView, setOrderView] = useState("cards"); // cards | table
+  const [orderPickFilter, setOrderPickFilter] = useState("all"); // all | picked | pending
+  const [selectedIds, setSelectedIds] = useState([]); // bulk-selected order IDs (table)
   const [accOpen, setAccOpen] = useState({
     analytics: true,
     calendar: false,
@@ -1187,6 +1337,16 @@ export default function ManageOrdersPage() {
     setSeenIds(ids);
   };
 
+  // Play a chime once when new orders are detected on this visit.
+  const newOrderAudioRef = useRef(null);
+  const soundPlayedRef = useRef(false);
+  useEffect(() => {
+    if (newOrderCount > 0 && !soundPlayedRef.current) {
+      soundPlayedRef.current = true;
+      newOrderAudioRef.current?.play?.().catch(() => {});
+    }
+  }, [newOrderCount]);
+
   // Print a 2-per-row, full-size cover sheet (save as PDF) from a list of
   // { src, name } cells. Shared by the per-order and all-orders exports.
   const printCoverCells = (cells) => {
@@ -1247,6 +1407,116 @@ export default function ManageOrdersPage() {
     const cells = [];
     filteredOrders.forEach((o) => cells.push(...coversForOrder(o)));
     printCoverCells(cells);
+  };
+
+  // Shipping-form payload for one order (India Post + address label).
+  const orderFormData = (o) => ({
+    orderId: o["Order ID"],
+    customerName: o["Customer Name"],
+    customerAddress: o["Address"],
+    customerCity: o["City"],
+    customerState: o["State"],
+    customerPincode: o["Pincode"],
+    customerPhone: o["Phone Number"],
+    totalValueRs: o.revenue,
+    isCOD: /cash|cod/i.test(o["Payment Type"] || ""),
+    codAmount: o.revenue,
+  });
+
+  // Bulk: download India Post + From/To forms for all selected orders.
+  const downloadSelectedForms = () => {
+    const chosen = filteredOrders.filter((o) =>
+      selectedIds.includes(o["Order ID"]),
+    );
+    if (!chosen.length) return;
+    let i = 0;
+    chosen.forEach((o) => {
+      const fd = orderFormData(o);
+      // stagger so the browser doesn't drop rapid downloads
+      setTimeout(() => downloadIndiaPostForm(fd), i * 400);
+      setTimeout(() => downloadAddressLabelForm(fd), i * 400 + 200);
+      i += 1;
+    });
+  };
+
+  // Whether every book in an order has been picked (touched).
+  const isOrderFullyPicked = (o) => {
+    const oid = o["Order ID"] || o._rowIndex;
+    const bks = o.parsedBooks || [];
+    return bks.length > 0 && bks.every((_b, i) => pickChecked[bookKey(oid, i)]);
+  };
+
+  // Global single-frame PNG grid of every un-picked book cover (dense grid,
+  // fits many covers per sheet). Async: waits for images to load.
+  const downloadCoversPNG = async () => {
+    const items = [];
+    filteredOrders.forEach((o) => {
+      const oid = o["Order ID"] || o._rowIndex;
+      (o.parsedBooks || []).forEach((b, i) => {
+        if (pickChecked[bookKey(oid, i)]) return;
+        const qty = Math.max(1, b.quantity || 1);
+        const src = getBookImage(b.name);
+        for (let k = 0; k < qty; k++) items.push({ src, name: b.name });
+      });
+    });
+    if (!items.length) {
+      alert("All books are already picked — nothing to export.");
+      return;
+    }
+    const COLS = 6;
+    const CW = 200;
+    const CH = 280;
+    const GAP = 12;
+    const PAD = 16;
+    const rows = Math.ceil(items.length / COLS);
+    const canvas = document.createElement("canvas");
+    canvas.width = PAD * 2 + COLS * CW + (COLS - 1) * GAP;
+    canvas.height = PAD * 2 + rows * CH + (rows - 1) * GAP;
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#fff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const load = (src) =>
+      new Promise((res) => {
+        if (!src) return res(null);
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.onload = () => res(img);
+        img.onerror = () => res(null);
+        img.src = src;
+      });
+
+    const imgs = await Promise.all(items.map((it) => load(it.src)));
+    imgs.forEach((img, idx) => {
+      const r = Math.floor(idx / COLS);
+      const c = idx % COLS;
+      const dx = PAD + c * (CW + GAP);
+      const dy = PAD + r * (CH + GAP);
+      if (img) {
+        ctx.drawImage(img, dx, dy, CW, CH);
+      } else {
+        ctx.strokeStyle = "#ccc";
+        ctx.strokeRect(dx, dy, CW, CH);
+        ctx.fillStyle = "#666";
+        ctx.font = "13px sans-serif";
+        ctx.fillText(
+          (items[idx].name || "").slice(0, 22),
+          dx + 8,
+          dy + CH / 2,
+        );
+      }
+    });
+    canvas.toBlob((blob) => {
+      if (!blob) return;
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `unpicked-covers-${Date.now()}.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, "image/png");
   };
 
   // Restore saved filter/search preferences on mount
@@ -1685,6 +1955,14 @@ export default function ManageOrdersPage() {
   ).length;
   const prepaidCount = analyticsOrders.length - codCount;
 
+  // Orders shown in the list/table, optionally narrowed by pick status
+  const listOrders = filteredOrders.filter((o) => {
+    if (orderPickFilter === "picked") return isOrderFullyPicked(o);
+    if (orderPickFilter === "pending") return !isOrderFullyPicked(o);
+    return true;
+  });
+  const pickedOrdersCount = filteredOrders.filter(isOrderFullyPicked).length;
+
   if (loading) {
     return (
       <div className="my-orders-page">
@@ -1700,6 +1978,12 @@ export default function ManageOrdersPage() {
 
   return (
     <div className="my-orders-page">
+      {/* New-order chime (drop the audio file at /public/sounds/new-order.mp3) */}
+      <audio
+        ref={newOrderAudioRef}
+        src="/sounds/new-order.mp3"
+        preload="auto"
+      />
       <div className="section-1200 flex flex-col gap-24">
         {/* Header, same shape as my-orders */}
         <div className="orders-header orders-header-row">
@@ -2143,8 +2427,11 @@ export default function ManageOrdersPage() {
             <div className="flex flex-col gap-12">
               <div className="orders-list-header">
                 <span className="orders-count">
-                  {filteredOrders.length}{" "}
-                  {filteredOrders.length === 1 ? "Order" : "Orders"}
+                  {listOrders.length}{" "}
+                  {listOrders.length === 1 ? "Order" : "Orders"}
+                  <span className="orders-picked-stat">
+                    · {pickedOrdersCount}/{filteredOrders.length} picked
+                  </span>
                 </span>
                 <div className="mo-view-toggle">
                   <button
@@ -2163,9 +2450,59 @@ export default function ManageOrdersPage() {
                   </button>
                 </div>
               </div>
+
+              <div className="orders-toolbar">
+                <div className="mo-view-toggle">
+                  {[
+                    { k: "all", label: "All" },
+                    { k: "pending", label: "Not picked" },
+                    { k: "picked", label: "Picked" },
+                  ].map((f) => (
+                    <button
+                      key={f.k}
+                      type="button"
+                      className={`mo-view-btn${orderPickFilter === f.k ? " active" : ""}`}
+                      onClick={() => setOrderPickFilter(f.k)}
+                    >
+                      {f.label}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  className="mo-form-btn mo-global-dl"
+                  onClick={downloadCoversPNG}
+                  title="Download every un-picked book cover as one PNG grid"
+                >
+                  <Download size={13} /> Un-picked covers (PNG)
+                </button>
+              </div>
+
+              {orderView === "table" && selectedIds.length > 0 && (
+                <div className="orders-bulk-bar">
+                  <span>{selectedIds.length} selected</span>
+                  <div className="orders-bulk-actions">
+                    <button
+                      type="button"
+                      className="mo-form-btn"
+                      onClick={downloadSelectedForms}
+                    >
+                      <Download size={13} /> Download forms (India Post + From/To)
+                    </button>
+                    <button
+                      type="button"
+                      className="mo-view-btn"
+                      onClick={() => setSelectedIds([])}
+                    >
+                      Clear
+                    </button>
+                  </div>
+                </div>
+              )}
+
               {orderView === "cards" ? (
                 <div className="admin-orders-grid">
-                {filteredOrders.map((order, idx) => {
+                {listOrders.map((order, idx) => {
                   const orderId = order["Order ID"];
                   const books = order.parsedBooks || [];
                   const pnl = order.pnl;
@@ -2639,6 +2976,25 @@ export default function ManageOrdersPage() {
                   <table className="mo-table">
                     <thead>
                       <tr>
+                        <th className="mo-th-check">
+                          <input
+                            type="checkbox"
+                            checked={
+                              listOrders.length > 0 &&
+                              listOrders.every((o) =>
+                                selectedIds.includes(o["Order ID"]),
+                              )
+                            }
+                            onChange={(e) =>
+                              setSelectedIds(
+                                e.target.checked
+                                  ? listOrders.map((o) => o["Order ID"])
+                                  : [],
+                              )
+                            }
+                            aria-label="Select all"
+                          />
+                        </th>
                         <th>#</th>
                         <th>Name</th>
                         <th>Phone</th>
@@ -2648,32 +3004,60 @@ export default function ManageOrdersPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {filteredOrders.map((order, i) => (
-                        <tr
-                          key={order["Order ID"] || i}
-                          className="mo-trow"
-                          onClick={() => setDetailOrder(order)}
-                        >
-                          <td>{i + 1}</td>
-                          <td className="mo-td-name">
-                            {order["Customer Name"] || "—"}
-                          </td>
-                          <td className="mo-td-mono">
-                            {order["Phone Number"]}
-                          </td>
-                          <td className="mo-td-mono">
-                            …{String(order["Order ID"] || "").slice(-6)}
-                          </td>
-                          <td className="mo-td-amt">
-                            ₹{(order.revenue || 0).toLocaleString()}
-                          </td>
-                          <td>
-                            <span className="mo-status-pill sm">
-                              {order.status}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
+                      {listOrders.map((order, i) => {
+                        const oid = order["Order ID"];
+                        const sel = selectedIds.includes(oid);
+                        return (
+                          <tr
+                            key={oid || i}
+                            className={`mo-trow${sel ? " sel" : ""}`}
+                          >
+                            <td
+                              className="mo-td-check"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <input
+                                type="checkbox"
+                                checked={sel}
+                                onChange={(e) =>
+                                  setSelectedIds((prev) =>
+                                    e.target.checked
+                                      ? [...prev, oid]
+                                      : prev.filter((x) => x !== oid),
+                                  )
+                                }
+                                aria-label="Select order"
+                              />
+                            </td>
+                            <td onClick={() => setDetailOrder(order)}>
+                              {i + 1}
+                            </td>
+                            <td
+                              className="mo-td-name"
+                              onClick={() => setDetailOrder(order)}
+                            >
+                              {order["Customer Name"] || "—"}
+                            </td>
+                            <td className="mo-td-mono">
+                              {order["Phone Number"]}
+                            </td>
+                            <td className="mo-td-mono">
+                              …{String(oid || "").slice(-6)}
+                            </td>
+                            <td
+                              className="mo-td-amt"
+                              onClick={() => setDetailOrder(order)}
+                            >
+                              ₹{(order.revenue || 0).toLocaleString()}
+                            </td>
+                            <td>
+                              <span className="mo-status-pill sm">
+                                {order.status}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>

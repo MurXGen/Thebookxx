@@ -11122,11 +11122,11 @@ img[data-loaded="true"] {
   gap: 12px;
 }
 .admin-chart-card {
-  background: #fff;
-  border: 1px solid var(--hairline);
-  border-radius: 16px;
-  padding: 16px;
-  box-shadow: var(--shadow-xs);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
 }
 .chart-title {
   font-size: 13px;
@@ -15243,4 +15243,74 @@ img[data-loaded="true"] {
   font-weight: 800;
   color: var(--success, #0a8f0c);
   white-space: nowrap;
+}
+
+/* ===== Order card: scrollable checkable book covers ===== */
+.mo-covers {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 10px 0 4px;
+  margin-top: 10px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+.mo-cover {
+  position: relative;
+  flex: 0 0 auto;
+  width: 52px;
+  height: 72px;
+  padding: 0;
+  border: 2px solid var(--hairline);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--dark-4);
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+.mo-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.mo-cover-ph {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--dark-50);
+}
+.mo-cover-check {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 143, 12, 0.55);
+  color: #fff;
+}
+.mo-cover.checked {
+  border-color: var(--success, #0a8f0c);
+}
+.mo-cover.checked .mo-cover-check {
+  display: flex;
+}
+.mo-covers-dl {
+  margin-top: 4px;
+}
+
+/* Weekly/Monthly chart controls */
+.wk-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.wk-bars-month .wk-col {
+  min-width: 0;
+}
+.wk-bars-month .wk-lbl {
+  font-size: 9px;
 }

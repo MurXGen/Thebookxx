@@ -763,63 +763,118 @@ function RunRateChart({ orders }) {
   );
 }
 
-// ── Weekly orders bar chart with prev/next week navigation ──
+// ── Weekly / Monthly orders bar chart with a Week|Month switch ──
 function WeeklyBarChart({ orders }) {
+  const [mode, setMode] = useState("week"); // week | month
   const [weekOffset, setWeekOffset] = useState(0);
+  const [monthOffset, setMonthOffset] = useState(0);
   const now = new Date();
-  const base = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const dow = (base.getDay() + 6) % 7; // Monday = 0
-  const weekStart = new Date(base);
-  weekStart.setDate(base.getDate() - dow + weekOffset * 7);
-  const labels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const fmt = (d) => `${d.getDate()}/${d.getMonth() + 1}`;
 
   const dayCounts = {};
   orders.forEach((o) => {
     const d = getOrderDate(o);
     if (d) dayCounts[dayKey(d)] = (dayCounts[dayKey(d)] || 0) + 1;
   });
-  const cols = [];
+
+  let cols = [];
   let total = 0;
-  for (let i = 0; i < 7; i++) {
-    const d = new Date(weekStart);
-    d.setDate(weekStart.getDate() + i);
-    const c = dayCounts[dayKey(d)] || 0;
-    cols.push({ d, c });
-    total += c;
+  let rangeLabel = "";
+  let canNext = false;
+
+  if (mode === "week") {
+    const base = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const dow = (base.getDay() + 6) % 7; // Monday = 0
+    const weekStart = new Date(base);
+    weekStart.setDate(base.getDate() - dow + weekOffset * 7);
+    const labels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(weekStart);
+      d.setDate(weekStart.getDate() + i);
+      const c = dayCounts[dayKey(d)] || 0;
+      cols.push({ d, c, label: labels[i], show: true });
+      total += c;
+    }
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6);
+    rangeLabel = `${fmt(weekStart)} – ${fmt(weekEnd)}`;
+    canNext = weekOffset < 0;
+  } else {
+    const m = new Date(now.getFullYear(), now.getMonth() + monthOffset, 1);
+    const y = m.getFullYear();
+    const mo = m.getMonth();
+    const days = new Date(y, mo + 1, 0).getDate();
+    for (let dd = 1; dd <= days; dd++) {
+      const d = new Date(y, mo, dd);
+      const c = dayCounts[dayKey(d)] || 0;
+      cols.push({
+        d,
+        c,
+        label: String(dd),
+        show: dd === 1 || dd % 5 === 0,
+      });
+      total += c;
+    }
+    rangeLabel = m.toLocaleString("en-IN", { month: "long", year: "numeric" });
+    canNext = monthOffset < 0;
   }
   const max = Math.max(1, ...cols.map((c) => c.c));
-  const weekEnd = new Date(weekStart);
-  weekEnd.setDate(weekStart.getDate() + 6);
-  const fmt = (d) => `${d.getDate()}/${d.getMonth() + 1}`;
 
   return (
     <div className="admin-chart-card wk-card">
       <div className="wk-head">
         <div className="chart-title">
-          Weekly orders <span className="vol-sub">{total} in this week</span>
-        </div>
-        <div className="wk-nav">
-          <button
-            type="button"
-            onClick={() => setWeekOffset((w) => w - 1)}
-            aria-label="Previous week"
-          >
-            ‹
-          </button>
-          <span className="wk-range">
-            {fmt(weekStart)} – {fmt(weekEnd)}
+          {mode === "week" ? "Weekly orders" : "Monthly orders"}{" "}
+          <span className="vol-sub">
+            {total} in this {mode}
           </span>
-          <button
-            type="button"
-            onClick={() => setWeekOffset((w) => Math.min(0, w + 1))}
-            aria-label="Next week"
-            disabled={weekOffset >= 0}
-          >
-            ›
-          </button>
+        </div>
+        <div className="wk-controls">
+          <div className="mo-view-toggle">
+            <button
+              type="button"
+              className={`mo-view-btn${mode === "week" ? " active" : ""}`}
+              onClick={() => setMode("week")}
+            >
+              Week
+            </button>
+            <button
+              type="button"
+              className={`mo-view-btn${mode === "month" ? " active" : ""}`}
+              onClick={() => setMode("month")}
+            >
+              Month
+            </button>
+          </div>
+          <div className="wk-nav">
+            <button
+              type="button"
+              onClick={() =>
+                mode === "week"
+                  ? setWeekOffset((w) => w - 1)
+                  : setMonthOffset((w) => w - 1)
+              }
+              aria-label={`Previous ${mode}`}
+            >
+              ‹
+            </button>
+            <span className="wk-range">{rangeLabel}</span>
+            <button
+              type="button"
+              onClick={() =>
+                mode === "week"
+                  ? setWeekOffset((w) => Math.min(0, w + 1))
+                  : setMonthOffset((w) => Math.min(0, w + 1))
+              }
+              aria-label={`Next ${mode}`}
+              disabled={!canNext}
+            >
+              ›
+            </button>
+          </div>
         </div>
       </div>
-      <div className="wk-bars">
+      <div className={`wk-bars${mode === "month" ? " wk-bars-month" : ""}`}>
         {cols.map((c, i) => (
           <div
             key={i}
@@ -831,10 +886,12 @@ function WeeklyBarChart({ orders }) {
                 className="wk-bar"
                 style={{ height: `${(c.c / max) * 100}%` }}
               >
-                {c.c > 0 && <span className="wk-val">{c.c}</span>}
+                {c.c > 0 && mode === "week" && (
+                  <span className="wk-val">{c.c}</span>
+                )}
               </div>
             </div>
-            <span className="wk-lbl">{labels[i]}</span>
+            {c.show && <span className="wk-lbl">{c.label}</span>}
           </div>
         ))}
       </div>
@@ -1123,35 +1180,20 @@ export default function ManageOrdersPage() {
     setSeenIds(ids);
   };
 
-  // Build a printable "packing sheet" (save as PDF) of every book cover from
-  // orders NOT yet marked as packed — 2-per-row, full size, one image per unit
-  // (repeated by quantity), no quantity labels.
-  const exportPackingSheet = () => {
-    const abs = (u) => {
-      const s = typeof u === "string" ? u : u?.src || "";
-      if (!s) return "";
-      return s.startsWith("http") ? s : window.location.origin + s;
-    };
-    const cells = [];
-    filteredOrders.forEach((o) => {
-      const oid = o["Order ID"] || o._rowIndex;
-      (o.parsedBooks || []).forEach((b, i) => {
-        // Only include books NOT yet marked (touched) as picked
-        if (pickChecked[bookKey(oid, i)]) return;
-        const src = abs(getBookImage(b.name));
-        const qty = Math.max(1, b.quantity || 1);
-        for (let k = 0; k < qty; k++)
-          cells.push(
-            src
-              ? `<div class="cell"><img src="${src}" alt=""/></div>`
-              : `<div class="cell"><div class="ph">${b.name}</div></div>`,
-          );
-      });
-    });
+  // Print a 2-per-row, full-size cover sheet (save as PDF) from a list of
+  // { src, name } cells. Shared by the per-order and all-orders exports.
+  const printCoverCells = (cells) => {
     if (!cells.length) {
       alert("All books are already picked — nothing to export.");
       return;
     }
+    const html = cells
+      .map((c) =>
+        c.src
+          ? `<div class="cell"><img src="${c.src}" alt=""/></div>`
+          : `<div class="cell"><div class="ph">${c.name}</div></div>`,
+      )
+      .join("");
     const w = window.open("", "_blank");
     if (!w) return;
     w.document.write(
@@ -1165,11 +1207,39 @@ export default function ManageOrdersPage() {
         .cell img { width: 100%; height: auto; display: block; }
         .ph { border: 1px dashed #999; padding: 60px 10px; color: #666; font-size: 13px; }
       </style></head>
-      <body><div class="grid">${cells.join("")}</div>
+      <body><div class="grid">${html}</div>
       <script>window.onload=function(){setTimeout(function(){window.print();},400);};<\/script>
       </body></html>`,
     );
     w.document.close();
+  };
+
+  const absImg = (u) => {
+    const s = typeof u === "string" ? u : u?.src || "";
+    if (!s) return "";
+    return s.startsWith("http") ? s : window.location.origin + s;
+  };
+
+  // Collect un-picked book covers (repeated by quantity) for one order.
+  const coversForOrder = (o) => {
+    const oid = o["Order ID"] || o._rowIndex;
+    const cells = [];
+    (o.parsedBooks || []).forEach((b, i) => {
+      if (pickChecked[bookKey(oid, i)]) return; // skip picked
+      const src = absImg(getBookImage(b.name));
+      const qty = Math.max(1, b.quantity || 1);
+      for (let k = 0; k < qty; k++) cells.push({ src, name: b.name });
+    });
+    return cells;
+  };
+
+  const exportOrderCovers = (o) => printCoverCells(coversForOrder(o));
+
+  // All-orders packing sheet: un-picked covers across the current list.
+  const exportPackingSheet = () => {
+    const cells = [];
+    filteredOrders.forEach((o) => cells.push(...coversForOrder(o)));
+    printCoverCells(cells);
   };
 
   // Restore saved filter/search preferences on mount
@@ -2053,182 +2123,6 @@ export default function ManageOrdersPage() {
           </div>
         </Accordion>
 
-        {/* ===== Book Picking (fulfilment) ===== */}
-        {filteredOrders.length > 0 &&
-          (() => {
-            const orderStats = filteredOrders.map((o) => ({
-              order: o,
-              stats: orderPickStats(o),
-            }));
-            const doneOrders = orderStats.filter((x) => x.stats.done).length;
-            const pendingOrders = orderStats.length - doneOrders;
-            const totalBooks = orderStats.reduce(
-              (n, x) => n + x.stats.total,
-              0,
-            );
-            const checkedBooks = orderStats.reduce(
-              (n, x) => n + x.stats.checked,
-              0,
-            );
-            const visible = orderStats.filter((x) =>
-              pickFilter === "all"
-                ? true
-                : pickFilter === "done"
-                  ? x.stats.done
-                  : !x.stats.done,
-            );
-            return (
-              <div className="pick-panel">
-                <button
-                  type="button"
-                  className="pick-head"
-                  onClick={() => setShowPicking((v) => !v)}
-                >
-                  <span className="pick-head-title">
-                    <Package size={16} /> Book Picking
-                    <span className="pick-head-sub">
-                      {checkedBooks}/{totalBooks} books · {doneOrders} done ·{" "}
-                      {pendingOrders} pending
-                    </span>
-                  </span>
-                  <ChevronDown
-                    size={18}
-                    style={{
-                      transform: showPicking ? "rotate(180deg)" : "none",
-                      transition: "transform .25s ease",
-                    }}
-                  />
-                </button>
-
-                <AnimatePresence initial={false}>
-                  {showPicking && (
-                    <motion.div
-                      key="pickbody"
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.28, ease: [0.32, 0.72, 0, 1] }}
-                      style={{ overflow: "hidden" }}
-                    >
-                      <div className="pick-toolbar">
-                        <div className="pick-filters">
-                          {[
-                            { k: "all", label: `All (${orderStats.length})` },
-                            {
-                              k: "pending",
-                              label: `Pending (${pendingOrders})`,
-                            },
-                            { k: "done", label: `Done (${doneOrders})` },
-                          ].map((f) => (
-                            <button
-                              key={f.k}
-                              type="button"
-                              className={`pick-filter-btn${pickFilter === f.k ? " active" : ""}`}
-                              onClick={() => setPickFilter(f.k)}
-                            >
-                              {f.label}
-                            </button>
-                          ))}
-                        </div>
-                        <button
-                          type="button"
-                          className="pick-export-btn"
-                          onClick={exportPackingSheet}
-                          title="Download a printable PDF of every book cover not yet picked"
-                        >
-                          <Download size={14} /> Download un-picked covers (PDF)
-                        </button>
-                      </div>
-
-                      <div className="pick-orders">
-                        {visible.map(({ order, stats }) => {
-                          const oid = order["Order ID"] || order._rowIndex;
-                          const pbooks = order.parsedBooks || [];
-                          return (
-                            <div
-                              key={oid}
-                              className={`pick-order${stats.done ? " done" : ""}`}
-                            >
-                              <div className="pick-order-head">
-                                <span className="pick-order-name">
-                                  <User size={13} />{" "}
-                                  {order["Customer Name"] || "—"}
-                                </span>
-                                <span className="pick-order-id">{oid}</span>
-                                <span
-                                  className={`pick-badge ${stats.done ? "done" : "pending"}`}
-                                >
-                                  {stats.done ? (
-                                    <>
-                                      <Check size={12} /> Done
-                                    </>
-                                  ) : (
-                                    `${stats.checked}/${stats.total} picked`
-                                  )}
-                                </span>
-                              </div>
-                              <div className="pick-grid">
-                                {pbooks.length > 0 ? (
-                                  pbooks.map((b, i) => {
-                                    const img = getBookImage(b.name);
-                                    const isChecked =
-                                      !!pickChecked[bookKey(oid, i)];
-                                    return (
-                                      <button
-                                        key={i}
-                                        type="button"
-                                        className={`pick-book${isChecked ? " checked" : ""}`}
-                                        onClick={() => toggleBook(oid, i)}
-                                        title={b.name}
-                                      >
-                                        <div className="pick-book-thumb">
-                                          {img ? (
-                                            <img
-                                              src={img}
-                                              alt={b.name}
-                                              loading="lazy"
-                                            />
-                                          ) : (
-                                            <div className="pick-book-ph">
-                                              <Package size={20} />
-                                            </div>
-                                          )}
-                                          {b.quantity > 1 && (
-                                            <span className="pick-book-qty">
-                                              ×{b.quantity}
-                                            </span>
-                                          )}
-                                          <span className="pick-book-check">
-                                            <Check size={18} />
-                                          </span>
-                                        </div>
-                                        <span className="pick-book-name">
-                                          {b.name}
-                                        </span>
-                                      </button>
-                                    );
-                                  })
-                                ) : (
-                                  <div className="pick-empty">
-                                    No books listed
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          );
-                        })}
-                        {visible.length === 0 && (
-                          <div className="pick-empty-state">
-                            No orders in this view.
-                          </div>
-                        )}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            );
-          })()}
 
         {/* ===== Orders (accordion) ===== */}
         <Accordion
@@ -2378,17 +2272,29 @@ export default function ManageOrdersPage() {
                           </div>
                         </div>
 
-                        {books.length > 0 &&
-                          /getting shipped/i.test(order.status || "") && (
-                          <div className="mo-stack">
-                            {books.slice(0, 5).map((b, ci) => {
+                      </div>
+
+                      {/* Book covers — scrollable row, tap to mark picked */}
+                      {books.length > 0 && (
+                        <>
+                          <div
+                            className="mo-covers"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            {books.map((b, ci) => {
                               const img = getBookImage(b.name);
+                              const checked =
+                                !!pickChecked[bookKey(orderId, ci)];
                               return (
-                                <div
+                                <button
                                   key={ci}
-                                  className="mo-stack-item"
-                                  style={{ zIndex: 20 - ci }}
-                                  title={`${b.name} × ${b.quantity}`}
+                                  type="button"
+                                  className={`mo-cover${checked ? " checked" : ""}`}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleBook(orderId, ci);
+                                  }}
+                                  title={b.name}
                                 >
                                   {img ? (
                                     <img
@@ -2397,16 +2303,30 @@ export default function ManageOrdersPage() {
                                       loading="lazy"
                                     />
                                   ) : (
-                                    <div className="mo-stack-ph">
-                                      <Package size={16} />
+                                    <div className="mo-cover-ph">
+                                      <Package size={18} />
                                     </div>
                                   )}
-                                </div>
+                                  <span className="mo-cover-check">
+                                    <Check size={16} />
+                                  </span>
+                                </button>
                               );
                             })}
                           </div>
-                        )}
-                      </div>
+                          <button
+                            type="button"
+                            className="mo-form-btn mo-covers-dl"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              exportOrderCovers(order);
+                            }}
+                            title="Download covers not yet picked"
+                          >
+                            <Download size={13} /> Download un-picked covers
+                          </button>
+                        </>
+                      )}
 
                       {/* Amount (big, green) + status badge — top priority */}
                       <div className="mo-amount-row">

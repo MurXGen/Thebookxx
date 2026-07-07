@@ -13616,14 +13616,11 @@ img[data-loaded="true"] {
   }
 }
 .mo-card {
-  transition:
-    transform 0.14s ease,
-    box-shadow 0.18s ease,
-    border-color 0.18s ease;
+  transition: border-color 0.18s ease;
+  min-width: 0;
 }
 .mo-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 28px -16px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-xs);
 }
 .mo-card.packed {
   border-color: rgba(10, 143, 12, 0.45) !important;
@@ -14020,48 +14017,59 @@ img[data-loaded="true"] {
   min-width: 96px;
   text-align: center;
 }
+.wk-scroll {
+  margin-top: 14px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 6px;
+  scrollbar-width: thin;
+}
 .wk-bars {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  display: flex;
   gap: 8px;
-  align-items: end;
-  height: 150px;
-  margin-top: 16px;
+  align-items: flex-end;
+  height: 168px;
+  min-width: 100%;
 }
 .wk-col {
+  flex: 1 0 auto;
+  min-width: 34px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 6px;
   height: 100%;
 }
+.wk-bars-month .wk-col,
+.wk-bars-year .wk-col {
+  min-width: 26px;
+}
 .wk-bar-track {
   flex: 1 1 auto;
   width: 100%;
   display: flex;
-  align-items: flex-end;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
 }
 .wk-bar {
-  width: 68%;
+  width: 72%;
+  max-width: 26px;
   min-height: 3px;
   border-radius: 6px 6px 0 0;
   background: linear-gradient(180deg, #fb8500, #ffb454);
-  position: relative;
-  display: flex;
-  justify-content: center;
 }
 .wk-val {
-  position: absolute;
-  top: -16px;
-  font-size: 10px;
+  font-size: 9.5px;
   font-weight: 800;
   color: var(--foreground, #0a0a0a);
+  margin-bottom: 3px;
 }
 .wk-lbl {
-  font-size: 10.5px;
+  font-size: 10px;
   font-weight: 700;
   color: var(--dark-50, #9aa0a6);
+  white-space: nowrap;
 }
 
 /* Predicted MRR */
@@ -15141,6 +15149,14 @@ img[data-loaded="true"] {
   font-weight: 800;
   color: var(--success, #0a8f0c);
   line-height: 1.1;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}
+.mo-amount:hover {
+  text-decoration: underline;
 }
 .mo-status-pill {
   display: inline-flex;
@@ -15308,9 +15324,7 @@ img[data-loaded="true"] {
   gap: 10px;
   flex-wrap: wrap;
 }
-.wk-bars-month .wk-col {
-  min-width: 0;
-}
-.wk-bars-month .wk-lbl {
+.wk-bars-month .wk-lbl,
+.wk-bars-year .wk-lbl {
   font-size: 9px;
 }

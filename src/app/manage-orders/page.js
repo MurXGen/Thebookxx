@@ -763,26 +763,38 @@ function RunRateChart({ orders }) {
   );
 }
 
-// ── Weekly / Monthly orders bar chart with a Week|Month switch ──
+// ── Orders bar chart with Week / Month / Year modes (mobile-scrollable) ──
 function WeeklyBarChart({ orders }) {
-  const [mode, setMode] = useState("week"); // week | month
+  const [mode, setMode] = useState("week"); // week | month | year
   const [weekOffset, setWeekOffset] = useState(0);
   const [monthOffset, setMonthOffset] = useState(0);
+  const [yearOffset, setYearOffset] = useState(0);
   const now = new Date();
   const fmt = (d) => `${d.getDate()}/${d.getMonth() + 1}`;
 
   const dayCounts = {};
+  const monthCounts = {};
   orders.forEach((o) => {
     const d = getOrderDate(o);
-    if (d) dayCounts[dayKey(d)] = (dayCounts[dayKey(d)] || 0) + 1;
+    if (!d) return;
+    dayCounts[dayKey(d)] = (dayCounts[dayKey(d)] || 0) + 1;
+    const mk = `${d.getFullYear()}-${d.getMonth()}`;
+    monthCounts[mk] = (monthCounts[mk] || 0) + 1;
   });
+
+  const MON = [
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+  ];
 
   let cols = [];
   let total = 0;
   let rangeLabel = "";
   let canNext = false;
+  let title = "";
 
   if (mode === "week") {
+    title = "Weekly orders";
     const base = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const dow = (base.getDay() + 6) % 7; // Monday = 0
     const weekStart = new Date(base);
@@ -792,14 +804,15 @@ function WeeklyBarChart({ orders }) {
       const d = new Date(weekStart);
       d.setDate(weekStart.getDate() + i);
       const c = dayCounts[dayKey(d)] || 0;
-      cols.push({ d, c, label: labels[i], show: true });
+      cols.push({ c, label: labels[i], hint: fmt(d) });
       total += c;
     }
     const weekEnd = new Date(weekStart);
     weekEnd.setDate(weekStart.getDate() + 6);
     rangeLabel = `${fmt(weekStart)} – ${fmt(weekEnd)}`;
     canNext = weekOffset < 0;
-  } else {
+  } else if (mode === "month") {
+    title = "Monthly orders";
     const m = new Date(now.getFullYear(), now.getMonth() + monthOffset, 1);
     const y = m.getFullYear();
     const mo = m.getMonth();
@@ -807,93 +820,87 @@ function WeeklyBarChart({ orders }) {
     for (let dd = 1; dd <= days; dd++) {
       const d = new Date(y, mo, dd);
       const c = dayCounts[dayKey(d)] || 0;
-      cols.push({
-        d,
-        c,
-        label: String(dd),
-        show: dd === 1 || dd % 5 === 0,
-      });
+      cols.push({ c, label: String(dd), hint: fmt(d) });
       total += c;
     }
     rangeLabel = m.toLocaleString("en-IN", { month: "long", year: "numeric" });
     canNext = monthOffset < 0;
+  } else {
+    title = "Yearly orders";
+    const yr = now.getFullYear() + yearOffset;
+    for (let mo = 0; mo < 12; mo++) {
+      const c = monthCounts[`${yr}-${mo}`] || 0;
+      cols.push({ c, label: MON[mo], hint: `${MON[mo]} ${yr}` });
+      total += c;
+    }
+    rangeLabel = String(yr);
+    canNext = yearOffset < 0;
   }
   const max = Math.max(1, ...cols.map((c) => c.c));
+
+  const prev = () =>
+    mode === "week"
+      ? setWeekOffset((w) => w - 1)
+      : mode === "month"
+        ? setMonthOffset((w) => w - 1)
+        : setYearOffset((w) => w - 1);
+  const next = () =>
+    mode === "week"
+      ? setWeekOffset((w) => Math.min(0, w + 1))
+      : mode === "month"
+        ? setMonthOffset((w) => Math.min(0, w + 1))
+        : setYearOffset((w) => Math.min(0, w + 1));
 
   return (
     <div className="admin-chart-card wk-card">
       <div className="wk-head">
         <div className="chart-title">
-          {mode === "week" ? "Weekly orders" : "Monthly orders"}{" "}
-          <span className="vol-sub">
-            {total} in this {mode}
-          </span>
+          {title} <span className="vol-sub">{total} orders</span>
         </div>
-        <div className="wk-controls">
-          <div className="mo-view-toggle">
+        <div className="mo-view-toggle">
+          {["week", "month", "year"].map((m) => (
             <button
+              key={m}
               type="button"
-              className={`mo-view-btn${mode === "week" ? " active" : ""}`}
-              onClick={() => setMode("week")}
+              className={`mo-view-btn${mode === m ? " active" : ""}`}
+              onClick={() => setMode(m)}
             >
-              Week
+              {m[0].toUpperCase() + m.slice(1)}
             </button>
-            <button
-              type="button"
-              className={`mo-view-btn${mode === "month" ? " active" : ""}`}
-              onClick={() => setMode("month")}
-            >
-              Month
-            </button>
-          </div>
-          <div className="wk-nav">
-            <button
-              type="button"
-              onClick={() =>
-                mode === "week"
-                  ? setWeekOffset((w) => w - 1)
-                  : setMonthOffset((w) => w - 1)
-              }
-              aria-label={`Previous ${mode}`}
-            >
-              ‹
-            </button>
-            <span className="wk-range">{rangeLabel}</span>
-            <button
-              type="button"
-              onClick={() =>
-                mode === "week"
-                  ? setWeekOffset((w) => Math.min(0, w + 1))
-                  : setMonthOffset((w) => Math.min(0, w + 1))
-              }
-              aria-label={`Next ${mode}`}
-              disabled={!canNext}
-            >
-              ›
-            </button>
-          </div>
+          ))}
         </div>
       </div>
-      <div className={`wk-bars${mode === "month" ? " wk-bars-month" : ""}`}>
-        {cols.map((c, i) => (
-          <div
-            key={i}
-            className="wk-col"
-            title={`${c.c} orders on ${fmt(c.d)}`}
-          >
-            <div className="wk-bar-track">
-              <div
-                className="wk-bar"
-                style={{ height: `${(c.c / max) * 100}%` }}
-              >
-                {c.c > 0 && mode === "week" && (
-                  <span className="wk-val">{c.c}</span>
-                )}
+
+      <div className="wk-nav">
+        <button type="button" onClick={prev} aria-label={`Previous ${mode}`}>
+          ‹
+        </button>
+        <span className="wk-range">{rangeLabel}</span>
+        <button
+          type="button"
+          onClick={next}
+          aria-label={`Next ${mode}`}
+          disabled={!canNext}
+        >
+          ›
+        </button>
+      </div>
+
+      <div className="wk-scroll">
+        <div className={`wk-bars wk-bars-${mode}`}>
+          {cols.map((c, i) => (
+            <div key={i} className="wk-col" title={`${c.c} orders · ${c.hint}`}>
+              <div className="wk-bar-track">
+                {c.c > 0 && <span className="wk-val">{c.c}</span>}
+                <div
+                  className="wk-bar"
+                  style={{ height: `${(c.c / max) * 100}%` }}
+                />
               </div>
+              <span className="wk-lbl">{c.label}</span>
             </div>
-            {c.show && <span className="wk-lbl">{c.label}</span>}
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -2205,8 +2212,6 @@ export default function ManageOrdersPage() {
                     <div
                       key={orderId || idx}
                       className={`admin-order-card mo-card${isPacked ? " packed" : ""}`}
-                      style={{ cursor: "pointer" }}
-                      onClick={() => setDetailOrder(order)}
                     >
                       <div className="mo-card-top">
                         <div className="mo-card-id">
@@ -2328,11 +2333,16 @@ export default function ManageOrdersPage() {
                         </>
                       )}
 
-                      {/* Amount (big, green) + status badge — top priority */}
+                      {/* Amount (big, green) opens the detail modal on click */}
                       <div className="mo-amount-row">
-                        <span className="mo-amount">
+                        <button
+                          type="button"
+                          className="mo-amount"
+                          onClick={() => setDetailOrder(order)}
+                          title="View order details"
+                        >
                           ₹{order.revenue.toLocaleString()}
-                        </span>
+                        </button>
                         <span className="mo-status-pill">{order.status}</span>
                       </div>
 

@@ -13819,6 +13819,11 @@ img[data-loaded="true"] {
   user-select: text;
   -webkit-user-select: text;
   cursor: text;
+  /* Show the full address (override .mo-meta-val nowrap/ellipsis) */
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  word-break: break-word;
 }
 .mo-card-top .mo-stack {
   flex: 0 0 auto;
@@ -15599,5 +15604,160 @@ img[data-loaded="true"] {
     font-size: 9px;
     top: -5px;
     right: -6px;
+  }
+}
+
+/* Orders toolbar action buttons (CSV + covers PNG) */
+.orders-toolbar-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.mo-global-csv {
+  background: var(--foreground);
+}
+.mo-global-csv:hover {
+  background: var(--foreground);
+  opacity: 0.9;
+}
+
+/* ===== India Post booking sheet (copy-paste) ===== */
+.ip-sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.ip-empty {
+  color: var(--gray-500, #6b7280);
+  font-size: var(--px-14);
+  padding: 8px 2px;
+}
+.ip-note {
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #7c2d12;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: var(--px-13);
+  line-height: 1.5;
+}
+.ip-order {
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--background, #fff);
+}
+.ip-order-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #f9fafb;
+  border-bottom: 1px solid var(--border, #e5e7eb);
+}
+.ip-order-sr {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  border-radius: 50%;
+  background: #0a8f0c;
+  color: #fff;
+  font-size: var(--px-13);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ip-order-name {
+  font-weight: 700;
+  font-size: var(--px-15);
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.ip-tag {
+  font-size: var(--px-12);
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.ip-tag.cod {
+  background: #dcfce7;
+  color: #166534;
+}
+.ip-tag.prepaid {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+.ip-fields {
+  display: flex;
+  flex-direction: column;
+}
+.ip-step {
+  font-size: var(--px-12);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #0a8f0c;
+  background: #f0fdf4;
+  padding: 6px 12px;
+  border-top: 1px solid #dcfce7;
+}
+.ip-step:first-child {
+  border-top: none;
+}
+.ip-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-top: 1px solid #f3f4f6;
+}
+.ip-field-label {
+  flex: 0 0 42%;
+  max-width: 42%;
+  font-size: var(--px-13);
+  color: var(--gray-500, #6b7280);
+}
+.ip-field-val {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: var(--px-14);
+  font-weight: 600;
+  color: var(--foreground, #111);
+  word-break: break-word;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.ip-field-hint {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: var(--px-13);
+  font-style: italic;
+  color: #9ca3af;
+}
+.ip-copy {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--border, #e5e7eb);
+  background: #fff;
+  color: #0a8f0c;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+.ip-copy:hover {
+  background: #f0fdf4;
+}
+.ip-copy:active {
+  transform: scale(0.9);
+}
+@media (max-width: 480px) {
+  .ip-field-label {
+    flex-basis: 38%;
+    max-width: 38%;
   }
 }

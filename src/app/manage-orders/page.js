@@ -615,6 +615,231 @@ const MONTH_LABELS = [
 ];
 
 // Reusable collapsible accordion section.
+// ── India Post copy-paste helpers ──────────────────────────────────────────
+// Strip anything the portal rejects (special chars) and collapse whitespace.
+function ipSanitize(s) {
+  return String(s || "")
+    .replace(/[^a-zA-Z0-9 ]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+// Break a sanitised string into <=`size`-char chunks at word boundaries.
+function ipChunks(s, size = 30) {
+  const words = ipSanitize(s).split(" ").filter(Boolean);
+  const out = [];
+  let cur = "";
+  for (let w of words) {
+    // hard-split any single word longer than the limit
+    while (w.length > size) {
+      if (cur) {
+        out.push(cur);
+        cur = "";
+      }
+      out.push(w.slice(0, size));
+      w = w.slice(size);
+    }
+    if (!cur) cur = w;
+    else if ((cur + " " + w).length <= size) cur += " " + w;
+    else {
+      out.push(cur);
+      cur = w;
+    }
+  }
+  if (cur) out.push(cur);
+  return out;
+}
+
+// One field row: label + value + copy icon (India Post booking sheet).
+function IpField({ label, value, hint, id, copiedId, onCopy }) {
+  const has = value !== undefined && value !== null && String(value) !== "";
+  return (
+    <div className="ip-field">
+      <span className="ip-field-label">{label}</span>
+      {has ? (
+        <span className="ip-field-val">{value}</span>
+      ) : (
+        <span className="ip-field-hint">{hint || "—"}</span>
+      )}
+      {has && (
+        <button
+          type="button"
+          className="ip-copy"
+          title="Copy"
+          aria-label={`Copy ${label}`}
+          onClick={() => onCopy(String(value), id)}
+        >
+          {copiedId === id ? <Check size={13} /> : <Copy size={13} />}
+        </button>
+      )}
+    </div>
+  );
+}
+
+// Per-order copy-paste block, ordered exactly like the India Post form flow.
+function IndiaPostSheet({ orders, copyToClipboard, copiedId }) {
+  const shipping = (orders || []).filter((o) =>
+    /getting shipped/i.test(o["Order Status"] || ""),
+  );
+  if (!shipping.length)
+    return <p className="ip-empty">No “Getting Shipped” orders right now.</p>;
+  return (
+    <div className="ip-sheet">
+      <div className="ip-note">
+        <b>Same for every parcel:</b> Drop-off pincode <b>400017</b> → pick{" "}
+        <b>Dharavi Road S.O</b> · after typing weight choose the lowest rate (
+        <b>India Post Parcel Retail</b>) · Mail Shape ={" "}
+        <b>Box Type (Non Roll Form)</b> · Delivery Type = <b>Normal Delivery</b>.
+      </div>
+      {shipping.map((o, i) => {
+        const books = (o.parsedBooks || []).length || 1;
+        const isCOD = /cash|cod/i.test(o["Payment Type"] || "");
+        const amount = o["Total Amount"] || o.revenue || "";
+        const chunks = ipChunks(o["Address"]);
+        const name = ipSanitize(o["Customer Name"]).slice(0, 30);
+        const line1 = chunks[0] || "";
+        const line2 = chunks[1] || "";
+        const landmark = chunks[2] || "";
+        const extras = chunks.slice(3);
+        const key = (k) => `ip-${i}-${k}`;
+        return (
+          <div className="ip-order" key={o["Order ID"] || i}>
+            <div className="ip-order-head">
+              <span className="ip-order-sr">{i + 1}</span>
+              <span className="ip-order-name">
+                {o["Customer Name"] || "—"}
+              </span>
+              <span className={`ip-tag ${isCOD ? "cod" : "prepaid"}`}>
+                {isCOD ? `COD ₹${amount}` : "Prepaid — no COD"}
+              </span>
+            </div>
+            <div className="ip-fields">
+              <div className="ip-step">1 · Article details</div>
+              <IpField
+                label="Destination Pincode"
+                value={o["Pincode"]}
+                id={key("pin1")}
+                copiedId={copiedId}
+                onCopy={copyToClipboard}
+              />
+              <IpField
+                label="Physical Weight (gms)"
+                value="500"
+                id={key("wt")}
+                copiedId={copiedId}
+                onCopy={copyToClipboard}
+              />
+              <div className="ip-step">2 · Parcel size (Box Type)</div>
+              <IpField
+                label="Length (cms)"
+                value="22"
+                id={key("len")}
+                copiedId={copiedId}
+                onCopy={copyToClipboard}
+              />
+              <IpField
+                label="Width (cms)"
+                value="13"
+                id={key("wid")}
+                copiedId={copiedId}
+                onCopy={copyToClipboard}
+              />
+              <IpField
+                label={`Height (cms) · ${books} book${books > 1 ? "s" : ""}`}
+                value={String(books)}
+                id={key("ht")}
+                copiedId={copiedId}
+                onCopy={copyToClipboard}
+              />
+              <div className="ip-step">3 · Payment</div>
+              {isCOD ? (
+                <IpField
+                  label="COD Retail amount (₹)"
+                  value={String(amount)}
+                  id={key("cod")}
+                  copiedId={copiedId}
+                  onCopy={copyToClipboard}
+                />
+              ) : (
+                <IpField
+                  label="COD"
+                  hint="Prepaid — leave COD unchecked"
+                />
+              )}
+              <div className="ip-step">4 · Receiver details</div>
+              <IpField
+                label="Name"
+                value={name}
+                id={key("name")}
+                copiedId={copiedId}
+                onCopy={copyToClipboard}
+              />
+              <IpField
+                label="Mobile"
+                value={o["Phone Number"]}
+                id={key("mob")}
+                copiedId={copiedId}
+                onCopy={copyToClipboard}
+              />
+              <IpField
+                label="Address Line 1"
+                value={line1}
+                id={key("a1")}
+                copiedId={copiedId}
+                onCopy={copyToClipboard}
+              />
+              <IpField
+                label="Address Line 2"
+                value={line2}
+                id={key("a2")}
+                copiedId={copiedId}
+                onCopy={copyToClipboard}
+              />
+              <IpField
+                label="Landmark"
+                value={landmark}
+                id={key("lm")}
+                copiedId={copiedId}
+                onCopy={copyToClipboard}
+              />
+              {extras.map((c, ci) => (
+                <IpField
+                  key={ci}
+                  label={`Address extra ${ci + 1}`}
+                  value={c}
+                  id={key(`ax${ci}`)}
+                  copiedId={copiedId}
+                  onCopy={copyToClipboard}
+                />
+              ))}
+              <IpField
+                label="City"
+                value={o["City"]}
+                id={key("city")}
+                copiedId={copiedId}
+                onCopy={copyToClipboard}
+              />
+              <IpField
+                label="State"
+                value={o["State"]}
+                id={key("state")}
+                copiedId={copiedId}
+                onCopy={copyToClipboard}
+              />
+              <IpField
+                label="Pincode"
+                value={o["Pincode"]}
+                id={key("pin2")}
+                copiedId={copiedId}
+                onCopy={copyToClipboard}
+              />
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function Accordion({ id, title, icon, open, onToggle, right, children }) {
   return (
     <div className="acc">
@@ -1157,6 +1382,7 @@ export default function ManageOrdersPage() {
   const [accOpen, setAccOpen] = useState({
     analytics: true,
     calendar: false,
+    indiapost: true,
     orders: true,
   });
   const toggleAcc = (id) => setAccOpen((p) => ({ ...p, [id]: !p[id] }));
@@ -1904,6 +2130,57 @@ export default function ManageOrdersPage() {
     URL.revokeObjectURL(url);
   };
 
+  // Full CSV of every "Getting Shipped" order (all columns incl. address +
+  // pincode) — for shipping/booking workflows.
+  const exportGettingShippedCSV = () => {
+    const headers = [
+      "Sr",
+      "Order ID",
+      "Name",
+      "Phone",
+      "Address",
+      "City",
+      "State",
+      "Pincode",
+      "Payment Type",
+      "Amount",
+      "Books Count",
+      "Book Titles",
+      "Order Date",
+    ];
+    const shipping = orders.filter((o) =>
+      /getting shipped/i.test(o["Order Status"] || ""),
+    );
+    const rows = shipping.map((o, i) => [
+      i + 1,
+      o["Order ID"] || "",
+      o["Customer Name"] || "",
+      o["Phone Number"] || "",
+      o["Address"] || "",
+      o["City"] || "",
+      o["State"] || "",
+      o["Pincode"] || "",
+      o["Payment Type"] || "",
+      o["Total Amount"] || "",
+      (o.parsedBooks || []).length,
+      (o.parsedBooks || []).map((b) => `${b.name} x${b.quantity}`).join("; "),
+      formatDate(o["Timestamp(D)"] || o["Timestamp"]),
+    ]);
+    let csvContent = headers.join(",") + "\n";
+    rows.forEach((row) => {
+      csvContent +=
+        row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(",") +
+        "\n";
+    });
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `getting-shipped_${new Date().toISOString().split("T")[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   // Highest order value (for value-based card tinting)
   const maxRevenue = Math.max(1, ...filteredOrders.map((o) => o.revenue || 0));
 
@@ -2415,6 +2692,30 @@ export default function ManageOrdersPage() {
         </Accordion>
 
 
+        {/* ===== India Post booking sheet (accordion) ===== */}
+        <Accordion
+          id="indiapost"
+          title="India Post booking (copy-paste)"
+          icon={<Truck size={16} />}
+          open={accOpen.indiapost}
+          onToggle={toggleAcc}
+          right={
+            <span className="acc-count">
+              {
+                orders.filter((o) =>
+                  /getting shipped/i.test(o["Order Status"] || ""),
+                ).length
+              }
+            </span>
+          }
+        >
+          <IndiaPostSheet
+            orders={orders}
+            copyToClipboard={copyToClipboard}
+            copiedId={copiedId}
+          />
+        </Accordion>
+
         {/* ===== Orders (accordion) ===== */}
         <Accordion
           id="orders"
@@ -2468,14 +2769,24 @@ export default function ManageOrdersPage() {
                     </button>
                   ))}
                 </div>
-                <button
-                  type="button"
-                  className="mo-form-btn mo-global-dl"
-                  onClick={downloadCoversPNG}
-                  title="Download every un-picked book cover as one PNG grid"
-                >
-                  <Download size={13} /> Un-picked covers (PNG)
-                </button>
+                <div className="orders-toolbar-actions">
+                  <button
+                    type="button"
+                    className="mo-form-btn mo-global-dl mo-global-csv"
+                    onClick={exportGettingShippedCSV}
+                    title="Download a CSV of all Getting Shipped orders (with full address + pincode)"
+                  >
+                    <Download size={13} /> Getting Shipped CSV
+                  </button>
+                  <button
+                    type="button"
+                    className="mo-form-btn mo-global-dl"
+                    onClick={downloadCoversPNG}
+                    title="Download every un-picked book cover as one PNG grid"
+                  >
+                    <Download size={13} /> Un-picked covers (PNG)
+                  </button>
+                </div>
               </div>
 
               {orderView === "table" && selectedIds.length > 0 && (

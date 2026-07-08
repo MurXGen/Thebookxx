@@ -669,7 +669,15 @@ export default function MyOrdersPage() {
 
       const userOrders = allOrders.filter((order) => {
         const orderPhone = order["Phone Number"];
-        return String(orderPhone).trim() === String(phone).trim();
+        // Hide "(unconfirmed)" drop-off rows from the customer's history —
+        // only orders the customer actually confirmed should appear.
+        const isUnconfirmed = /\(unconfirmed\)/i.test(
+          order["Customer Name"] || "",
+        );
+        return (
+          !isUnconfirmed &&
+          String(orderPhone).trim() === String(phone).trim()
+        );
       });
 
       // Sort newest-first using the proper sheet date parser

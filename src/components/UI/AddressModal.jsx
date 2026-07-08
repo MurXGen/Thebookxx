@@ -345,7 +345,11 @@ export default function AddressModal({
   // user's delivery-speed choice, because `setFasterDelivery` is async and
   // reading from `fasterDelivery` state inside this function can return the
   // pre-selection default. The default arg falls back to state for safety.
-  const submitToGoogleForm = async (paymentType, isFaster = fasterDelivery) => {
+  const submitToGoogleForm = async (
+    paymentType,
+    isFaster = fasterDelivery,
+    confirmed = false,
+  ) => {
     try {
       const shortLink = await buildShortLink(paymentType, isFaster);
       const feeForThisOrder = paymentType === "COD" ? codHandlingFee : 0;
@@ -353,8 +357,13 @@ export default function AddressModal({
       const giftWrapOn = giftWrap || giftWrapSelected;
       const giftWrapAmountForOrder = giftWrapOn ? giftWrapCharge : 0;
 
+      // Until the shopper reaches the final confirm step, the order is logged
+      // with a "(unconfirmed)" tag on the name so the dashboard can tell
+      // completed orders apart from drop-offs. Hidden from the customer profile.
+      const displayName = confirmed ? name : `${name} (unconfirmed)`;
+
       trackOrderToGoogleForm({
-        addressData: { name, phone, pincode, city, address },
+        addressData: { name: displayName, phone, pincode, city, address },
         paymentType,
         fasterDeliveryChoice: isFaster,
         giftWrapSelected: giftWrapOn,
@@ -431,6 +440,8 @@ export default function AddressModal({
       cod_fee: codHandlingFee,
     });
     triggerCODSuccess(fasterDelivery);
+    // Now log the CONFIRMED order (plain name, no "(unconfirmed)" tag).
+    submitToGoogleForm("COD", fasterDelivery, true);
     // Push the COD order to Telegram (previously only UPI notified — the COD
     // success modal never invoked its onContinue handler). Fire-and-forget so
     // it never blocks the success screen.
@@ -531,7 +542,7 @@ export default function AddressModal({
 
   const handleWhatsAppOrderClick = () => {
     if (!isFormValid()) return;
-    submitToGoogleForm("WhatsApp");
+    submitToGoogleForm("WhatsApp", fasterDelivery, true);
     trackFunnelEvent(EVENTS.PAYMENT_METHOD_SELECTED, {
       method: "WhatsApp",
       cart_total: finalPayable,
@@ -588,6 +599,8 @@ export default function AddressModal({
       amount: finalPayable,
       verification_time: verifyTimer,
     });
+    // Log the CONFIRMED UPI order (plain name, no "(unconfirmed)" tag).
+    submitToGoogleForm("UPI", fasterDelivery, true);
     if (handleUPICheckout) {
       handleUPICheckout(
         {

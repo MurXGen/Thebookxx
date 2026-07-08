@@ -229,6 +229,21 @@ export default async function sitemap() {
     return route;
   });
 
+  // ID-based book routes (/books/<book.id>) — mirrors the book id assigned in
+  // book.js. These resolve to the same detail page (redirect to the slug URL).
+  const bookIdRoutes = books.map((book) => {
+    const route = {
+      url: `${baseUrl}/books/${book.id}`,
+      lastModified: now,
+      changeFrequency: "daily",
+      priority: 0.6,
+    };
+    if (book.image) {
+      route.images = [getFullImageUrl(book.image, baseUrl)];
+    }
+    return route;
+  });
+
   // Author-scoped book aliases (/author/<author>/<book>) — canonical to /books/<slug>
   const authorBookSeen = new Set();
   const authorBookRoutes = [];
@@ -378,6 +393,7 @@ export default async function sitemap() {
   return [
     ...staticRoutes,
     ...bookRoutes,
+    ...bookIdRoutes,
     ...authorBookRoutes,
     ...blogRoutes,
     ...authorRoutes,

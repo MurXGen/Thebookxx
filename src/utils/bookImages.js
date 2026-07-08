@@ -591,4 +591,10 @@ export const bookImages = {
   "berserk": `${BOOK_IMAGE_BASE_PATH}/berserk.png`,
   "tokyo-ghoul": `${BOOK_IMAGE_BASE_PATH}/tokyo-ghoul.png`,
   "wings-of-fire": `${BOOK_IMAGE_BASE_PATH}/wings-of-fire.png`,
+  "a-random-walk-down-wall-street": `${BOOK_IMAGE_BASE_PATH}/a-random-walk-down-wall-street.jpeg`,
+  "when-haru-was-here": `${BOOK_IMAGE_BASE_PATH}/when-haru-was-here.jpeg`,
+  cosmos: `${BOOK_IMAGE_BASE_PATH}/cosmos.jpeg`,
+  "i-want-to-eat-your-pancreas": `${BOOK_IMAGE_BASE_PATH}/i-want-to-eat-your-pancreas.jpeg`,
+  "the-god-delusion": `${BOOK_IMAGE_BASE_PATH}/the-god-delusion.jpeg`,
+  "the-off-campus-set": `${BOOK_IMAGE_BASE_PATH}/the-off-campus-set.jpeg`,
 };

@@ -122,29 +122,39 @@ export default function BagPage() {
     router.replace("/bag");
   };
 
-  // Shared-bag slide-down modal (rendered in both empty & filled bag states)
+  // Shared-bag modal — slide-up bill-modal style (like the suggestion modal),
+  // scrollable list with fixed CTA buttons at the bottom.
   const sharedModal = (
     <AnimatePresence>
       {showSharedModal && (
         <motion.div
-          className="sharebag-overlay"
+          className="bill-modal-overlay"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={() => setShowSharedModal(false)}
         >
           <motion.div
-            className="sharebag-modal"
-            initial={{ y: "-100%", opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: "-100%", opacity: 0 }}
-            transition={{ duration: 0.38, ease: "easeOut" }}
+            className="bill-modal sharebag-sheet"
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "100%" }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
             onClick={(e) => e.stopPropagation()}
+            drag="y"
+            dragConstraints={{ top: 0, bottom: 0 }}
+            dragElastic={{ top: 0, bottom: 0.6 }}
+            onDragEnd={(e, info) => {
+              if (info.offset.y > 120 || info.velocity.y > 600)
+                setShowSharedModal(false);
+            }}
           >
-            <div className="sharebag-head">
-              <div>
-                <h2 className="sharebag-title">📚 A bag was shared with you</h2>
-                <p className="sharebag-sub">
+            <div className="bill-header">
+              <div className="flex flex-col">
+                <span className="weight-600 font-16 flex items-center gap-8">
+                  📚 A bag was shared with you
+                </span>
+                <span className="font-12 gray-500">
                   {sharedBooks.length} book
                   {sharedBooks.length > 1 ? "s" : ""} · ₹
                   {sharedBooks
@@ -153,16 +163,14 @@ export default function BagPage() {
                       0,
                     )
                     .toLocaleString()}
-                </p>
+                </span>
               </div>
-              <button
-                type="button"
-                className="sharebag-close"
+              <span
+                className="cursor-pointer"
                 onClick={() => setShowSharedModal(false)}
-                aria-label="Close"
               >
                 <X size={18} />
-              </button>
+              </span>
             </div>
 
             <div className="sharebag-list">

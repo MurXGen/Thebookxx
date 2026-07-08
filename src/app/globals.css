@@ -15883,3 +15883,23 @@ img[data-loaded="true"] {
   justify-content: center;
   gap: 6px;
 }
+
+/* Shared bag as a slide-up bill-modal sheet with fixed footer buttons */
+.sharebag-sheet {
+  display: flex;
+  flex-direction: column;
+  max-height: 85vh;
+}
+.sharebag-sheet .sharebag-list {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  margin-bottom: 0;
+  padding: 2px;
+}
+.sharebag-sheet .sharebag-cta {
+  flex-shrink: 0;
+  padding-top: 14px;
+  margin-top: 12px;
+  border-top: 1px solid var(--hairline);
+  background: var(--background);
+}

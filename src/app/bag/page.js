@@ -23,8 +23,18 @@ import {
   getOriginalCharge,
   getMinCheckoutAmount,
 } from "@/utils/cartOffers";
-import { ArrowLeft, Gift, Sparkle, Sparkles, User } from "lucide-react";
-import { useRouter } from "next/navigation";
+import {
+  ArrowLeft,
+  Gift,
+  Sparkle,
+  Sparkles,
+  User,
+  Share2,
+  ShoppingCart,
+  RotateCcw,
+  X,
+} from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { permanentlyUnlockOffer, areOneRupeeBooksEnabled } from "@/utils/book";
 import { FaWhatsapp } from "react-icons/fa";
@@ -36,13 +46,16 @@ import { FcDocument } from "react-icons/fc";
 const COD_HANDLING_FEE = 29;
 
 export default function BagPage() {
-  const { cart } = useStore();
+  const { cart, addToCart, clearCart } = useStore();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [siteOrigin, setSiteOrigin] = useState("");
   const [showBill, setShowBill] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [showRecommendationModal, setShowRecommendationModal] = useState(false);
   const [showFreeShippingNudge, setShowFreeShippingNudge] = useState(false);
+  const [sharedBooks, setSharedBooks] = useState([]); // [{ book, qty }]
+  const [showSharedModal, setShowSharedModal] = useState(false);
 
   const [hasAcceptedShipping, setHasAcceptedShipping] = useState(false);
 
@@ -56,6 +69,147 @@ export default function BagPage() {
       setSiteOrigin(window.location.origin);
     }
   }, []);
+
+  // A shared bag link: /bag?shared=bk-002:1,bk-005:2 → show the shared books
+  useEffect(() => {
+    const shared = searchParams.get("shared");
+    if (!shared) return;
+    const parsed = shared
+      .split(",")
+      .map((entry) => {
+        const [id, qty] = entry.split(":");
+        const book = books.find((b) => b.id === id);
+        return book ? { book, qty: Math.max(1, Number(qty) || 1) } : null;
+      })
+      .filter(Boolean);
+    if (parsed.length) {
+      setSharedBooks(parsed);
+      setShowSharedModal(true);
+    }
+  }, [searchParams]);
+
+  // Share the current bag as a link
+  const handleShareBag = async () => {
+    const enc = cart.map((i) => `${i.id}:${i.qty || 1}`).join(",");
+    const url = `${siteOrigin || (typeof window !== "undefined" ? window.location.origin : "")}/bag?shared=${encodeURIComponent(enc)}`;
+    try {
+      if (navigator.share && window.innerWidth <= 768) {
+        await navigator.share({
+          title: "My TheBookX bag",
+          text: "Check out the books I picked on TheBookX 📚",
+          url,
+        });
+      } else {
+        await navigator.clipboard.writeText(url);
+        showToast("Bag link copied — share it with anyone!", "success");
+      }
+    } catch (_) {
+      /* user dismissed share sheet */
+    }
+  };
+
+  // Add all shared books to the cart. When `reset`, clear the cart first.
+  const addAllShared = (reset) => {
+    if (reset) clearCart();
+    sharedBooks.forEach(({ book, qty }) => {
+      for (let i = 0; i < qty; i += 1) addToCart(book.id);
+    });
+    setShowSharedModal(false);
+    showToast(
+      reset ? "Cart reset & shared books added" : "Shared books added to cart",
+      "success",
+    );
+    router.replace("/bag");
+  };
+
+  // Shared-bag slide-down modal (rendered in both empty & filled bag states)
+  const sharedModal = (
+    <AnimatePresence>
+      {showSharedModal && (
+        <motion.div
+          className="sharebag-overlay"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={() => setShowSharedModal(false)}
+        >
+          <motion.div
+            className="sharebag-modal"
+            initial={{ y: "-100%", opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: "-100%", opacity: 0 }}
+            transition={{ duration: 0.38, ease: "easeOut" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="sharebag-head">
+              <div>
+                <h2 className="sharebag-title">📚 A bag was shared with you</h2>
+                <p className="sharebag-sub">
+                  {sharedBooks.length} book
+                  {sharedBooks.length > 1 ? "s" : ""} · ₹
+                  {sharedBooks
+                    .reduce(
+                      (s, { book, qty }) => s + book.discountedPrice * qty,
+                      0,
+                    )
+                    .toLocaleString()}
+                </p>
+              </div>
+              <button
+                type="button"
+                className="sharebag-close"
+                onClick={() => setShowSharedModal(false)}
+                aria-label="Close"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="sharebag-list">
+              {sharedBooks.map(({ book, qty }) => (
+                <div className="sharebag-item" key={book.id}>
+                  {book.image && (
+                    <img
+                      src={book.image}
+                      alt={book.name}
+                      className="sharebag-img"
+                    />
+                  )}
+                  <div className="sharebag-meta">
+                    <span className="sharebag-name">{book.name}</span>
+                    <span className="sharebag-cat">
+                      {book.catalogue?.[0] || "Book"}
+                    </span>
+                  </div>
+                  <div className="sharebag-price">
+                    <span className="sharebag-p">₹{book.discountedPrice}</span>
+                    {qty > 1 && <span className="sharebag-q">×{qty}</span>}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="sharebag-cta">
+              <button
+                type="button"
+                className="sec-mid-btn sharebag-btn"
+                onClick={() => addAllShared(true)}
+              >
+                <RotateCcw size={16} /> Reset & add all
+              </button>
+              <button
+                type="button"
+                className="pri-big-btn sharebag-btn"
+                onClick={() => addAllShared(false)}
+              >
+                <ShoppingCart size={16} /> Add all to cart
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
 
   const cartBooks = cart
     .map((item) => {
@@ -562,6 +716,8 @@ _Thank you for shopping with TheBookX! 📚✨_
           isOpen={showRecommendationModal}
           onClose={() => setShowRecommendationModal(false)}
         />
+
+        {sharedModal}
       </>
     );
   }
@@ -573,6 +729,15 @@ _Thank you for shopping with TheBookX! 📚✨_
         subtitle={`${cartBooks.length} book${cartBooks.length > 1 ? "s" : ""} in cart`}
         right={
           <div className="bag-header-actions">
+            <button
+              type="button"
+              className="bag-icon-btn"
+              onClick={handleShareBag}
+              aria-label="Share your bag"
+              title="Share your bag"
+            >
+              <Share2 size={19} />
+            </button>
             <a
               href="https://wa.me/917710892108?text=Hi%2C%20I%20need%20help%20with%20my%20order%20from%20TheBookX"
               target="_blank"
@@ -771,6 +936,8 @@ _Thank you for shopping with TheBookX! 📚✨_
         isOpen={showRecommendationModal}
         onClose={() => setShowRecommendationModal(false)}
       />
+
+      {sharedModal}
     </section>
   );
 }

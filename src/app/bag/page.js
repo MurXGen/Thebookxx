@@ -35,7 +35,7 @@ import {
   X,
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { permanentlyUnlockOffer, areOneRupeeBooksEnabled } from "@/utils/book";
 import { FaWhatsapp } from "react-icons/fa";
 import Link from "next/link";
@@ -45,7 +45,7 @@ import { FcDocument } from "react-icons/fc";
 // Disclosed transparently after delivery selection via CODHandlingFeeModal.
 const COD_HANDLING_FEE = 29;
 
-export default function BagPage() {
+function BagContent() {
   const { cart, addToCart, clearCart } = useStore();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -976,5 +976,14 @@ function FreebieBadge() {
         </div>
       </div>
     </motion.div>
+  );
+}
+
+// useSearchParams (shared-bag links) must live inside a Suspense boundary.
+export default function BagPage() {
+  return (
+    <Suspense fallback={null}>
+      <BagContent />
+    </Suspense>
   );
 }

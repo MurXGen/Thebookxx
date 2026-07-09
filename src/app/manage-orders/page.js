@@ -29,6 +29,7 @@ import {
   ShieldCheck,
   ArrowLeft,
   Bell,
+  Trash2,
   ExternalLink,
   ShoppingBag,
   ChevronDown,
@@ -131,6 +132,12 @@ const SHEET_API_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/t
 // Google Forms submit URL
 const FORM_SUBMIT_URL =
   "https://docs.google.com/forms/d/e/1FAIpQLSc3dUHr_S01ODuvQpok_8n0tG0ezfUPD5NLK0M_tyms25I-eQ/formResponse";
+
+// OPTIONAL: Google Apps Script Web App URL that can UPDATE / DELETE rows in the
+// sheet in place (edits without adding a new row). Deploy the script in
+// docs/sheet-edit-apps-script.gs and paste its /exec URL here. Leave empty to
+// keep the old append-on-edit behaviour.
+const SHEET_EDIT_API_URL = "";
 
 // Field mappings for Google Form
 const FORM_FIELD_IDS = {
@@ -1994,8 +2001,80 @@ export default function ManageOrdersPage() {
     }
   };
 
+  // Edit a row IN PLACE via the Apps Script web app (no new row appended).
+  const updateOrderRow = async (orderId, fields) => {
+    const body = new URLSearchParams({
+      action: "update",
+      orderId,
+      data: JSON.stringify(fields),
+    });
+    await fetch(SHEET_EDIT_API_URL, {
+      method: "POST",
+      mode: "no-cors",
+      body,
+    });
+  };
+
+  // Permanently remove a row (user-triggered, confirmed).
+  const deleteOrderRow = async (order) => {
+    const orderId = order["Order ID"];
+    if (!SHEET_EDIT_API_URL) {
+      alert(
+        "Delete needs the Sheet edit endpoint. Deploy docs/sheet-edit-apps-script.gs and set SHEET_EDIT_API_URL.",
+      );
+      return;
+    }
+    if (
+      !window.confirm(
+        `Delete order ${orderId} permanently from the sheet? This cannot be undone.`,
+      )
+    )
+      return;
+    try {
+      const body = new URLSearchParams({ action: "delete", orderId });
+      await fetch(SHEET_EDIT_API_URL, {
+        method: "POST",
+        mode: "no-cors",
+        body,
+      });
+      setDetailOrder(null);
+      setTimeout(fetchOrders, 1300);
+    } catch (e) {
+      console.error("Delete failed:", e);
+      alert("Failed to delete order");
+    }
+  };
+
   const handleEditOrder = async () => {
     if (!selectedOrder) return;
+
+    // Preferred path: edit the existing row in place via the Apps Script API.
+    if (SHEET_EDIT_API_URL) {
+      const fields = {
+        "Customer Name": formData.customerName,
+        "Phone Number": formData.phoneNumber,
+        Pincode: formData.pincode,
+        City: formData.city,
+        State: formData.state,
+        Address: formData.address,
+        "Books List": formData.booksList,
+        "Total Amount": formData.totalAmount,
+        "Payment Type": formData.paymentType,
+        "Delivery Type": formData.deliveryType,
+        "Order Status": formData.orderStatus,
+        "Shipping ID": formData.shippingId,
+        TinyURL: formData.tinyUrl,
+      };
+      try {
+        await updateOrderRow(formData.orderId, fields);
+        setShowEditModal(false);
+        setTimeout(fetchOrders, 1300);
+      } catch (e) {
+        console.error("Update failed:", e);
+        alert("Failed to update order");
+      }
+      return;
+    }
 
     // Preserve the original order date, do NOT overwrite with the current time.
     // The raw value from gviz can be either the serialized form
@@ -3772,16 +3851,25 @@ export default function ManageOrdersPage() {
                         <span className="aoc-dot">·</span>
                         <span>{order["Delivery Type"] || "—"}</span>
                       </div>
-                      <button
-                        type="button"
-                        className="aoc-edit"
-                        onClick={() => {
-                          setDetailOrder(null);
-                          openEditModal(order);
-                        }}
-                      >
-                        <Edit size={14} /> Edit
-                      </button>
+                      <div className="aoc-edit-row">
+                        <button
+                          type="button"
+                          className="aoc-edit"
+                          onClick={() => {
+                            setDetailOrder(null);
+                            openEditModal(order);
+                          }}
+                        >
+                          <Edit size={14} /> Edit
+                        </button>
+                        <button
+                          type="button"
+                          className="aoc-delete"
+                          onClick={() => deleteOrderRow(order)}
+                        >
+                          <Trash2 size={14} /> Delete
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </motion.div>

@@ -1,19 +1,70 @@
 "use client";
 
-import { Heart, Star, Menu, X, MenuIcon, User } from "lucide-react";
+import {
+  Heart,
+  Star,
+  Menu,
+  X,
+  MenuIcon,
+  User,
+  Search,
+  Truck,
+  Wallet,
+  ShieldCheck,
+  Sparkles,
+} from "lucide-react";
 import { useState, useEffect } from "react";
 import { FaWhatsapp } from "react-icons/fa";
 import { HiOutlineShoppingBag } from "react-icons/hi2";
 import SearchMain from "./UI/SearchMain";
+import SearchOverlay from "./SearchOverlay";
 import { AnimatePresence, motion } from "framer-motion";
 import { CART_OFFERS } from "@/utils/cartOffers";
 import InstallPWA from "./InstallPWA";
 import Link from "next/link";
 import { useStore } from "@/context/StoreContext";
 
+// Rotating trust promos shown in the black stripe below the navbar.
+// Meaningful, contextual one-liners (white text, colour-accented icon).
+const TRUST_PROMOS = [
+  { icon: Truck, label: "Free delivery on every order across India", color: "#22c55e" },
+  { icon: Wallet, label: "Pay cash on delivery — order worry-free", color: "#60a5fa" },
+  { icon: ShieldCheck, label: "Trusted by thousands of happy readers", color: "#fbbf24" },
+  { icon: Sparkles, label: "Grab bestselling books from just ₹1", color: "#f472b6" },
+];
+
+function RotatingTrust() {
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setI((p) => (p + 1) % TRUST_PROMOS.length), 2200);
+    return () => clearInterval(t);
+  }, []);
+  const { icon: Icon, label, color } = TRUST_PROMOS[i];
+  return (
+    <div className="nav-trust">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={i}
+          className="nav-trust-item"
+          initial={{ y: 14, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: -14, opacity: 0 }}
+          transition={{ duration: 0.35, ease: "easeOut" }}
+        >
+          <span className="nav-trust-ic">
+            <Icon size={15} strokeWidth={2.25} />
+          </span>
+          <span className="nav-trust-label">{label}</span>
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  );
+}
+
 export default function Navbar() {
   const [index, setIndex] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const { cart } = useStore();
   const cartCount = cart.reduce((sum, i) => sum + (i.qty || 1), 0);
 
@@ -72,49 +123,46 @@ export default function Navbar() {
         {/* 🔥 Mobile promo strip */}
 
         <nav className="navbar section-1200">
-          {/* LEFT (mobile: menu + wishlist) */}
+          {/* LEFT — menu + WhatsApp */}
           <div className="nav-left">
-            {/* Menu Icon */}
             <button
               onClick={() => setIsMenuOpen(true)}
               aria-label="Menu"
-              className="menu-button"
+              className="menu-button nav-ic"
             >
-              <MenuIcon size={32} />
+              <MenuIcon size={26} />
             </button>
-
-            <a href="/wishlist" aria-label="Wishlist">
-              <Heart fill="red" stroke="none" size={32} />
-            </a>
-          </div>
-
-          {/* CENTER LOGO */}
-          <Link
-            href="/"
-            aria-label="TheBookX home"
-            className="nav-center flex flex-col justify-center items-center"
-          >
-            <span className="logo-text">TheBookX</span>
-            <span className="font-10">Formerly Uskillbook</span>
-          </Link>
-
-          {/* RIGHT ICONS */}
-          <div className="nav-right">
             <a
               href="https://wa.me/917710892108"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="WhatsApp"
+              className="nav-ic"
             >
-              <FaWhatsapp size={32} color="#25D366" />
+              <FaWhatsapp size={24} color="#25D366" />
             </a>
+          </div>
 
-            <Link href="/profile" aria-label="My profile" className="nav-profile">
-              <User size={28} />
+          {/* CENTER — brand + former-name tagline */}
+          <div className="nav-center-brand">
+            <Link href="/" aria-label="TheBookX home" className="nav-brand">
+              <span className="logo-text">TheBookX</span>
+              <span className="nav-brand-sub">formerly Uskillbook</span>
             </Link>
+          </div>
 
-            <Link href="/bag" aria-label="Cart" className="nav-cart">
-              <HiOutlineShoppingBag size={32} />
+          {/* RIGHT — search + cart */}
+          <div className="nav-right">
+            <button
+              type="button"
+              className="nav-ic"
+              onClick={() => setSearchOpen(true)}
+              aria-label="Search books"
+            >
+              <Search size={24} />
+            </button>
+            <Link href="/bag" aria-label="Cart" className="nav-ic nav-cart">
+              <HiOutlineShoppingBag size={26} />
               {cartCount > 0 && (
                 <span className="nav-cart-badge">
                   {cartCount > 99 ? "99+" : cartCount}
@@ -123,11 +171,14 @@ export default function Navbar() {
             </Link>
           </div>
         </nav>
-        {/* 🔍 Search below navbar (mobile only) */}
-        <div className="mobile-search">
-          <SearchMain />
+
+        {/* Rotating trust promo — black one-line stripe stuck below the navbar */}
+        <div className="nav-trust-stripe">
+          <RotatingTrust />
         </div>
       </header>
+
+      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
 
       {/* Full Screen Menu Component */}
       <AnimatePresence>

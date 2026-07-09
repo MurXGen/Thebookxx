@@ -380,6 +380,9 @@ button:hover {
   width: 100%;
   background: #fff;
   border-bottom: 2px solid #eee;
+  position: sticky;
+  top: 0;
+  z-index: 50;
 }
 
 .navbar {
@@ -14453,16 +14456,48 @@ img[data-loaded="true"] {
     gap: 8px;
     padding: 5px 10px;
     border-radius: 999px;
-    background: rgba(251, 133, 0, 0.12);
+    background: #ffffff;
     border: 1px solid rgba(251, 133, 0, 0.55);
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
-    backdrop-filter: blur(6px);
     transition: bottom 0.25s ease;
   }
 
   /* Lift above the cart bar (offer strip + checkout) when items are present */
   .cart-fab.with-bar {
     bottom: 150px;
+  }
+
+  /* Attention shake — runs for ~3s when the user first becomes active */
+  .cart-fab.fab-shake {
+    animation: fabShake 0.6s ease-in-out 0s 5 both;
+  }
+}
+
+@keyframes fabShake {
+  0%,
+  100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  15% {
+    transform: translateX(-4px) rotate(-4deg);
+  }
+  30% {
+    transform: translateX(4px) rotate(4deg);
+  }
+  45% {
+    transform: translateX(-3px) rotate(-3deg);
+  }
+  60% {
+    transform: translateX(3px) rotate(3deg);
+  }
+  75% {
+    transform: translateX(-2px) rotate(-2deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cart-fab.fab-shake {
+    animation: none;
   }
 }
 
@@ -15902,4 +15937,422 @@ img[data-loaded="true"] {
   margin-top: 12px;
   border-top: 1px solid var(--hairline);
   background: var(--background);
+}
+
+/* Manage-orders: edit + delete row actions in the detail modal */
+.aoc-edit-row {
+  display: flex;
+  gap: 10px;
+}
+.aoc-edit-row .aoc-edit {
+  flex: 1;
+}
+.aoc-delete {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(220, 38, 38, 0.4);
+  background: rgba(220, 38, 38, 0.08);
+  color: var(--danger, #ef4444);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.aoc-delete:hover {
+  background: rgba(220, 38, 38, 0.16);
+}
+
+/* =====================================================================
+   ✦ Navbar redesign — brand left, rotating trust promo centre, icons right
+   ===================================================================== */
+.navbar {
+  grid-template-columns: 1fr auto 1fr;
+  gap: 8px;
+  align-items: center;
+}
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-start;
+}
+/* Centered brand column */
+.nav-center-brand {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.nav-center-brand .logo-text {
+  white-space: nowrap;
+}
+
+/* Black one-line trust stripe stuck under the navbar */
+.nav-trust-stripe {
+  position: relative;
+  background: var(--foreground, #0a0a0a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  overflow: hidden;
+}
+/* Full-width glance/shine sweeping the entire black stripe */
+.nav-trust-stripe::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -35%;
+  width: 35%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255, 255, 255, 0.22),
+    transparent
+  );
+  transform: skewX(-20deg);
+  animation: stripeShine 3.4s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 2;
+}
+@keyframes stripeShine {
+  0% {
+    left: -35%;
+  }
+  60%,
+  100% {
+    left: 135%;
+  }
+}
+.nav-trust-stripe .nav-trust {
+  max-width: 100%;
+  height: 100%;
+}
+.nav-trust-stripe .nav-trust-item {
+  background: transparent;
+  color: #fff;
+  padding: 4px 8px;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 12.5px;
+  letter-spacing: 0.2px;
+}
+.nav-trust-stripe .nav-trust-label {
+  color: #fff;
+}
+/* No chip — just a clean orange icon for a premium look */
+.nav-trust-stripe .nav-trust-ic {
+  width: auto;
+  height: auto;
+  background: transparent !important;
+  border-radius: 0;
+  color: #fb8500;
+  filter: drop-shadow(0 0 6px rgba(251, 133, 0, 0.35));
+}
+/* No per-item shine inside the stripe — the stripe-wide sweep covers it */
+.nav-trust-stripe .nav-trust-shine {
+  display: none;
+}
+.nav-brand {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+  text-decoration: none;
+  color: var(--foreground);
+  white-space: nowrap;
+}
+.nav-brand-sub {
+  margin-top: 2px;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  color: var(--text-muted, #8a8a8a);
+  text-transform: none;
+}
+.nav-center {
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+}
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  justify-content: flex-end;
+}
+.nav-ic {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: none;
+  background: transparent;
+  color: var(--foreground);
+  border-radius: 10px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.nav-ic:hover {
+  background: var(--dark-4);
+}
+
+/* Comfortable viewports (>420px): larger, easier-to-tap icons.
+   Navbar icons get a dedicated bump; every icon-button svg site-wide
+   gets a gentle scale-up so the whole UI feels less cramped. */
+@media (min-width: 421px) {
+  .nav-ic {
+    width: 42px;
+    height: 42px;
+  }
+  .nav-ic svg {
+    width: 26px;
+    height: 26px;
+  }
+  .nav-ic .nav-cart-badge {
+    transform: none;
+  }
+  button > svg,
+  a > svg {
+    transform: scale(1.1);
+  }
+}
+
+/* Rotating trust promo */
+.nav-trust {
+  position: relative;
+  min-width: 0;
+  max-width: 210px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.nav-trust-item {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  padding: 5px 12px 5px 5px;
+  border-radius: 999px;
+  background: var(--dark-4);
+  font-size: 12.5px;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.nav-trust-ic {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+.nav-trust-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.nav-trust-shine {
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 45%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255, 255, 255, 0.75),
+    transparent
+  );
+  transform: skewX(-20deg);
+  animation: navShine 2.2s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes navShine {
+  0% {
+    left: -60%;
+  }
+  55%,
+  100% {
+    left: 130%;
+  }
+}
+
+@media (max-width: 420px) {
+  .nav-right {
+    gap: 1px;
+  }
+  .nav-ic {
+    width: 30px;
+    height: 30px;
+  }
+  .nav-trust {
+    max-width: 150px;
+    height: 28px;
+  }
+  .nav-trust-item {
+    font-size: 11px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nav-trust-shine {
+    animation: none;
+    display: none;
+  }
+}
+
+/* =====================================================================
+   ✦ Wishlist strip — compact horizontal scroll of saved books
+   ===================================================================== */
+.wl-strip {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0; /* allow this flex item to shrink so the row scrolls,
+                   instead of pushing the whole page wide */
+  box-sizing: border-box;
+  margin: 0;
+}
+.wl-strip-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 0 2px;
+}
+.wl-strip-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--foreground);
+}
+.wl-strip-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+}
+.wl-row {
+  display: flex;
+  gap: 12px;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 6px 2px 12px;
+  scroll-snap-type: x proximity;
+  overscroll-behavior-x: contain; /* keep swipes from scrolling the page */
+  -webkit-overflow-scrolling: touch;
+}
+.wl-row::-webkit-scrollbar {
+  height: 5px;
+}
+.wl-row::-webkit-scrollbar-thumb {
+  background: var(--dark-4);
+  border-radius: 999px;
+}
+/* Horizontal card: [cover] [name + price] [add] on one row, fixed width */
+.wl-card {
+  flex: 0 0 auto;
+  width: 250px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  scroll-snap-align: start;
+  background: var(--background);
+  border: 1px solid var(--dark-4);
+  border-radius: 14px;
+  padding: 8px 10px 8px 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 6px 16px rgba(0, 0, 0, 0.06);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.wl-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06), 0 10px 24px rgba(0, 0, 0, 0.1);
+}
+.wl-card-img {
+  display: block;
+  flex: 0 0 auto;
+  width: 46px;
+  height: 62px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--dark-4);
+}
+.wl-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.wl-card-info {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.wl-card-name {
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--foreground);
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.wl-card-price {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--foreground);
+}
+.wl-card-add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 10px;
+  background: var(--foreground);
+  color: var(--background);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.15s ease;
+}
+.wl-card-add:active {
+  transform: scale(0.9);
+}
+@media (max-width: 420px) {
+  .wl-card {
+    width: 220px;
+    padding: 7px 9px 7px 7px;
+  }
+  .wl-card-img {
+    width: 42px;
+    height: 56px;
+  }
+  .wl-card-name {
+    font-size: 12.5px;
+  }
 }

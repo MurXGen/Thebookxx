@@ -28,6 +28,33 @@ export default function CartBar() {
   const hasTrackedMilestonesRef = useRef({});
   const [searchOpen, setSearchOpen] = useState(false);
   const [suggestOpen, setSuggestOpen] = useState(false);
+  const [fabShake, setFabShake] = useState(false);
+  const shakenRef = useRef(false);
+
+  // Draw attention to the Search/Suggest quick actions: the first time the
+  // user is active in the session (scroll / tap / key / pointer move), shake
+  // the pill for ~3 seconds, then never again this session.
+  useEffect(() => {
+    if (shakenRef.current) return;
+    let stopTimer;
+    const trigger = () => {
+      if (shakenRef.current) return;
+      shakenRef.current = true;
+      setFabShake(true);
+      stopTimer = setTimeout(() => setFabShake(false), 3000);
+      cleanup();
+    };
+    const events = ["scroll", "pointerdown", "keydown", "pointermove", "touchstart"];
+    const cleanup = () =>
+      events.forEach((e) => window.removeEventListener(e, trigger));
+    events.forEach((e) =>
+      window.addEventListener(e, trigger, { passive: true, once: false }),
+    );
+    return () => {
+      cleanup();
+      if (stopTimer) clearTimeout(stopTimer);
+    };
+  }, []);
 
   const hasCart = cart.length > 0;
 
@@ -224,7 +251,9 @@ export default function CartBar() {
   return (
     <div className="cart-bar" style={{ maxWidth: "680px", margin: "0 auto" }}>
       {/* Quick actions: Suggest + Search (mobile), above the strip */}
-      <div className={`cart-fab ${hasCart ? "with-bar" : ""}`}>
+      <div
+        className={`cart-fab ${hasCart ? "with-bar" : ""} ${fabShake ? "fab-shake" : ""}`}
+      >
         <button
           type="button"
           className="cart-fab-btn"

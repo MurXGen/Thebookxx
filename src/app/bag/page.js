@@ -11,6 +11,7 @@ import BillModal from "@/components/UI/BillModal";
 import CartOfferStrip from "@/components/UI/CartOfferStrip";
 import FreeShippingNudgeModal from "@/components/UI/FreeShippingNudgeModal";
 import HorizontalScroll from "@/components/UI/HorizontalScroll";
+import WishlistStrip from "@/components/WishlistStrip";
 import { useStore } from "@/context/StoreContext";
 import { showToast } from "@/context/ToastContext";
 import { books } from "@/utils/book";
@@ -777,6 +778,9 @@ _Thank you for shopping with TheBookX! 📚✨_
           ))}
         </div>
       </div>
+
+      {/* Wishlist — horizontal strip below the added books */}
+      <WishlistStrip />
 
       <div className={`gift-wrap-section ${giftWrap ? "selected" : ""}`}>
         <label className="gift-wrap-label">

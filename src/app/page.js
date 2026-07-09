@@ -113,9 +113,6 @@ export default function HomePage() {
 
       <Navbar />
 
-      {/* Live-orders social proof, just below the search bar */}
-      <LiveOrdersStrip />
-
       {/* Static hero, provides the visible H1 + value prop above the carousel */}
       <HomeHero />
 
@@ -126,6 +123,9 @@ export default function HomePage() {
       <BestsellerStage />
       {/* Floating ₹1 gift box temporarily removed */}
       {/* <OneRupeeHero /> */}
+
+      {/* Live-orders social proof — below the bestseller section, by reviews */}
+      <LiveOrdersStrip />
 
       <StoreReviews />
 

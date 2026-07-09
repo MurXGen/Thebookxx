@@ -54,27 +54,35 @@ const ICON_BY_TYPE = {
 
 function Toast({ toast, onDismiss }) {
   const Icon = ICON_BY_TYPE[toast.type] || Info;
+  const duration = toast.duration > 0 ? toast.duration : 3500;
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, y: -20, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: -10, scale: 0.95 }}
-      transition={{ duration: 0.25, ease: "easeOut" }}
+      initial={{ opacity: 0, y: -28, filter: "blur(6px)" }}
+      animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+      exit={{ opacity: 0, y: -18, filter: "blur(10px)" }}
+      transition={{ duration: 0.3, ease: "easeOut" }}
       className={`toast toast-${toast.type}`}
       role={toast.type === "error" ? "alert" : "status"}
       aria-live={toast.type === "error" ? "assertive" : "polite"}
     >
-      <Icon size={18} className="toast-icon" />
-      <span className="toast-message font-14">{toast.message}</span>
-      <button
-        type="button"
-        aria-label="Dismiss"
-        className="toast-close"
-        onClick={() => onDismiss(toast.id)}
-      >
-        <X size={14} />
-      </button>
+      <div className="toast-inner">
+        <Icon size={18} className="toast-icon" />
+        <span className="toast-message font-14">{toast.message}</span>
+        <button
+          type="button"
+          aria-label="Dismiss"
+          className="toast-close"
+          onClick={() => onDismiss(toast.id)}
+        >
+          <X size={15} />
+        </button>
+      </div>
+      {/* 3-second countdown progress bar */}
+      <span
+        className="toast-progress"
+        style={{ animationDuration: `${duration}ms` }}
+      />
     </motion.div>
   );
 }
@@ -100,9 +108,9 @@ export function ToastProvider({ children }) {
           : `t_${Date.now()}_${Math.random()}`;
 
       const duration =
-        typeof options.duration === "number" ? options.duration : 3500;
+        typeof options.duration === "number" ? options.duration : 3000;
 
-      setToasts((curr) => [...curr, { id, message, type }]);
+      setToasts((curr) => [...curr, { id, message, type, duration }]);
 
       if (duration > 0) {
         const timer = setTimeout(() => dismissToast(id), duration);

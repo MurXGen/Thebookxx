@@ -5837,18 +5837,18 @@ export const books = [
   },
   {
     id: "bk-408",
-    name: "Lucy Score",
+    name: "Lucy Score Book Set",
     image: bookImages["lucy-score"],
     description:
-      "Enjoy a heartwarming romance from bestselling author Lucy Score at TheBookX.in. A delightful contemporary love story about second chances, small towns, and finding happiness when you least expect it. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
+      "Enjoy a heartwarming romance book set from bestselling author Lucy Score at TheBookX.in. A delightful collection of contemporary love stories about second chances, small towns, and finding happiness when you least expect it. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
     author: "Lucy Score",
     pages: "384",
     language: "English",
     size: "Paperback",
     stock: 20,
-    catalogue: ["fiction", "romance", "bestseller"],
-    originalPrice: calculateOriginalPrice(209),
-    discountedPrice: 209,
+    catalogue: ["fiction", "romance", "bestseller", "set"],
+    originalPrice: calculateOriginalPrice(699),
+    discountedPrice: 699,
   },
   {
     id: "bk-410",

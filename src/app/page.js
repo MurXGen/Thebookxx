@@ -23,6 +23,7 @@ const RecommendationModal = lazy(
 const OffersGift = lazy(() => import("@/components/OffersGift"));
 const CatalogueSection = lazy(() => import("@/components/CatalogueSection"));
 const OneRupeeDeals = lazy(() => import("@/components/OneRupeeDeals"));
+const ComboDeals = lazy(() => import("@/components/ComboDeals"));
 const RecentlyViewed = lazy(() => import("@/components/RecentlyViewed"));
 const NewlyAddedBooks = lazy(() => import("@/components/NewlyAddedBooks"));
 const TrendingBooks = lazy(() => import("@/components/TrendingBooks"));
@@ -150,6 +151,15 @@ export default function HomePage() {
         <Suspense fallback={<LoadingFallback delay={0.7} />}>
           <SmoothAppear delay={0.7}>
             <OneRupeeDeals />
+          </SmoothAppear>
+        </Suspense>
+      </LazySection>
+
+      {/* Combo offers — curated multi-book bundles, right-scrolling rail */}
+      <LazySection threshold={0.05}>
+        <Suspense fallback={<LoadingFallback delay={0.75} />}>
+          <SmoothAppear delay={0.75}>
+            <ComboDeals />
           </SmoothAppear>
         </Suspense>
       </LazySection>

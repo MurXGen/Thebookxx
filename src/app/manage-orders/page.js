@@ -13,6 +13,8 @@ import {
   Edit,
   X,
   ChevronRight,
+  ChevronLeft,
+  SlidersHorizontal,
   RefreshCw,
   Filter,
   Truck,
@@ -327,6 +329,95 @@ const parseBooksList = (booksStr) => {
   }
   return parsedBooks;
 };
+
+// Fast name → book lookup (for genre/category attribution of order items).
+const BOOK_BY_NAME = {};
+ALL_BOOKS.forEach((b) => {
+  if (b?.name) BOOK_BY_NAME[b.name.toLowerCase().trim()] = b;
+});
+const WEEKDAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+// Toggleable analytics sections (Customize panel).
+// Top-level page sections for the scrollable navigation tabs.
+const SECTION_TABS = [
+  { key: "analytics", label: "Analytics" },
+  { key: "calendar", label: "Orders calendar" },
+  { key: "indiapost", label: "India Post booking" },
+  { key: "orders", label: "Orders" },
+];
+
+const ANALYTICS_SECTIONS = [
+  { key: "kpis", label: "Summary cards" },
+  { key: "profitCost", label: "Profit & cost" },
+  { key: "dailyVolume", label: "Daily order volume" },
+  { key: "ordersByStatus", label: "Orders by status" },
+  { key: "valueByStatus", label: "Order value by status" },
+  { key: "topBooks", label: "Top-selling books" },
+  { key: "categoryRevenue", label: "Revenue by category" },
+  { key: "paymentMix", label: "Payment mix" },
+  { key: "weekday", label: "Busiest weekdays" },
+  { key: "hours", label: "Peak order hours" },
+  { key: "pincodes", label: "Top delivery pincodes" },
+  { key: "runRate", label: "Yearly run-rate" },
+  { key: "health", label: "Operational health" },
+];
+
+// Reusable horizontal progress bars (top books, categories, pincodes …)
+function HBars({ items, accent = "var(--tertiary, #fb8500)" }) {
+  if (!items || items.length === 0) {
+    return <div className="sv-empty">No data in this period.</div>;
+  }
+  const max = Math.max(1, ...items.map((i) => i.value));
+  return (
+    <div className="ins-bars">
+      {items.map((it, i) => (
+        <div className="ins-row" key={i}>
+          <span className="ins-label" title={it.label}>
+            {it.label}
+          </span>
+          <div className="ins-track">
+            <div
+              className="ins-fill"
+              style={{
+                width: `${(it.value / max) * 100}%`,
+                background: it.color || accent,
+              }}
+            />
+          </div>
+          <span className="ins-val">{it.display}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// Reusable vertical column bars (weekday, hour-of-day …)
+function ColBars({ cols, accent = "var(--tertiary, #fb8500)", showValues = true }) {
+  const max = Math.max(1, ...cols.map((c) => c.value));
+  return (
+    <div className="ins-cols">
+      {cols.map((c, i) => (
+        <div
+          key={i}
+          className="ins-col"
+          title={`${c.hint || c.label}: ${c.value}`}
+        >
+          <div className="ins-col-track">
+            <div
+              className="ins-col-fill"
+              style={{ height: `${(c.value / max) * 100}%`, background: accent }}
+            >
+              {showValues && c.value > 0 && (
+                <span className="ins-col-v">{c.value}</span>
+              )}
+            </div>
+          </div>
+          <span className="ins-col-lbl">{c.label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 const getStatusIcon = (status) => {
   const statusLower = status?.toLowerCase() || "";
@@ -849,7 +940,7 @@ function IndiaPostSheet({ orders, copyToClipboard, copiedId }) {
 
 function Accordion({ id, title, icon, open, onToggle, right, children }) {
   return (
-    <div className="acc">
+    <div className="acc" id={`acc-${id}`}>
       <div className="acc-head" onClick={() => onToggle(id)}>
         <span className="acc-title">
           {icon}
@@ -881,6 +972,273 @@ function Accordion({ id, title, icon, open, onToggle, right, children }) {
           </motion.div>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+// ── Loading screen with rotating, learnable tips ──
+const LOADING_TIPS = [
+  "Confirming a COD order within 2 hours noticeably reduces cancellations.",
+  "Tip: bundle combos lift your average order value — push them on slow days.",
+  "Orders marked “Getting Shipped” should get a tracking ID the same day.",
+  "Reader insight: self-help and romance are our fastest-moving genres.",
+  "Add a tracking ID early — customers who can track rarely raise a ticket.",
+  "Prepaid (UPI) orders settle faster and carry zero COD handling cost.",
+  "Watch your run-rate: a steady orders/day trend beats one-off spikes.",
+  "Dispatch before the daily courier cut-off to shorten delivery time.",
+];
+
+function OrdersLoader() {
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    const t = setInterval(
+      () => setI((p) => (p + 1) % LOADING_TIPS.length),
+      2000,
+    );
+    return () => clearInterval(t);
+  }, []);
+  return (
+    <div className="my-orders-page">
+      <div className="section-1200 p-40">
+        <div className="orders-loader">
+          <div className="loading-spinner"></div>
+          <p className="orders-loader-title">Loading your orders…</p>
+          <AnimatePresence mode="wait">
+            <motion.p
+              key={i}
+              className="orders-loader-tip"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.35 }}
+            >
+              💡 {LOADING_TIPS[i]}
+            </motion.p>
+          </AnimatePresence>
+          <div className="orders-loader-dots">
+            {LOADING_TIPS.map((_, d) => (
+              <span key={d} className={d === i ? "on" : ""} />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Profit vs Cost stacked bars (day / week / month) with money stats ──
+function ProfitCostChart({ orders, period = "month", offset = 0 }) {
+  const [hover, setHover] = useState(null);
+  // Reference date shifts with the period navigation so the trailing
+  // buckets end at the selected day / week / month.
+  const realNow = new Date();
+  const now = new Date(realNow);
+  if (period === "day") now.setDate(realNow.getDate() + offset);
+  else if (period === "week") now.setDate(realNow.getDate() + offset * 7);
+  else if (period === "month") now.setMonth(realNow.getMonth() + offset);
+  const MON = [
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+  ];
+  const fmt = (d) => `${d.getDate()}/${d.getMonth() + 1}`;
+
+  const dayAgg = {};
+  const monthAgg = {};
+  let earliest = null;
+  const blank = () => ({ rev: 0, cost: 0, n: 0, qty: 0 });
+  orders.forEach((o) => {
+    const d = getOrderDate(o);
+    if (!d) return;
+    if (!earliest || d < earliest) earliest = d;
+    const rev = o.revenue || 0;
+    const cost = o.totalCost || 0;
+    const qty = (o.parsedBooks || []).reduce(
+      (s, b) => s + (b.quantity || 1),
+      0,
+    );
+    const dk = dayKey(d);
+    dayAgg[dk] = dayAgg[dk] || blank();
+    dayAgg[dk].rev += rev;
+    dayAgg[dk].cost += cost;
+    dayAgg[dk].n += 1;
+    dayAgg[dk].qty += qty;
+    const mk = `${d.getFullYear()}-${d.getMonth()}`;
+    monthAgg[mk] = monthAgg[mk] || blank();
+    monthAgg[mk].rev += rev;
+    monthAgg[mk].cost += cost;
+    monthAgg[mk].n += 1;
+    monthAgg[mk].qty += qty;
+  });
+
+  // Bucketing follows the global period tab.
+  let cols = [];
+  let granularityLabel = "";
+  if (period === "day") {
+    granularityLabel = "last 14 days";
+    for (let k = 13; k >= 0; k--) {
+      const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - k);
+      const a = dayAgg[dayKey(d)] || blank();
+      cols.push({ ...a, label: String(d.getDate()), hint: fmt(d) });
+    }
+  } else if (period === "week") {
+    granularityLabel = "last 8 weeks";
+    const base = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const dow = (base.getDay() + 6) % 7;
+    const thisMon = new Date(base);
+    thisMon.setDate(base.getDate() - dow);
+    for (let w = 7; w >= 0; w--) {
+      const ws = new Date(thisMon);
+      ws.setDate(thisMon.getDate() - w * 7);
+      const acc = blank();
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(ws);
+        d.setDate(ws.getDate() + i);
+        const a = dayAgg[dayKey(d)];
+        if (a) {
+          acc.rev += a.rev;
+          acc.cost += a.cost;
+          acc.n += a.n;
+          acc.qty += a.qty;
+        }
+      }
+      const we = new Date(ws);
+      we.setDate(ws.getDate() + 6);
+      cols.push({ ...acc, label: fmt(ws), hint: `${fmt(ws)} – ${fmt(we)}` });
+    }
+  } else {
+    // month + all → monthly bars (6 months, or full range for "all")
+    let months = 6;
+    if (period === "all" && earliest) {
+      months =
+        (now.getFullYear() - earliest.getFullYear()) * 12 +
+        (now.getMonth() - earliest.getMonth()) +
+        1;
+      months = Math.min(Math.max(months, 3), 12);
+    }
+    granularityLabel = period === "all" ? "monthly" : "last 6 months";
+    for (let m = months - 1; m >= 0; m--) {
+      const dt = new Date(now.getFullYear(), now.getMonth() - m, 1);
+      const a = monthAgg[`${dt.getFullYear()}-${dt.getMonth()}`] || blank();
+      cols.push({
+        ...a,
+        label: MON[dt.getMonth()],
+        hint: `${MON[dt.getMonth()]} ${dt.getFullYear()}`,
+      });
+    }
+  }
+
+  cols = cols.map((c) => ({ ...c, profit: c.rev - c.cost }));
+  const maxRev = Math.max(1, ...cols.map((c) => c.rev));
+  const totRev = cols.reduce((s, c) => s + c.rev, 0);
+  const totCost = cols.reduce((s, c) => s + c.cost, 0);
+  const totProfit = totRev - totCost;
+  const margin = totRev > 0 ? Math.round((totProfit / totRev) * 100) : 0;
+  const totOrders = cols.reduce((s, c) => s + (c.n || 0), 0);
+  const totQty = cols.reduce((s, c) => s + (c.qty || 0), 0);
+
+  return (
+    <div className="admin-chart-card pc-card">
+      <div className="wk-head">
+        <div className="chart-title">
+          Profit &amp; cost <span className="vol-sub">{granularityLabel}</span>
+        </div>
+        <div className="pc-legend">
+          <span>
+            <i className="pc-dot pc-dot-cost" /> Cost
+          </span>
+          <span>
+            <i className="pc-dot pc-dot-profit" /> Profit
+          </span>
+        </div>
+      </div>
+
+      {/* Single-row stats stripe — dividers, small label + big colourful value */}
+      <div className="pc-stripe">
+        <span className="pc-si pc-c-blue">
+          Revenue <b>₹{totRev.toLocaleString()}</b>
+        </span>
+        <span className="pc-si pc-c-slate">
+          Cost <b>₹{totCost.toLocaleString()}</b>
+        </span>
+        <span className="pc-si">
+          Profit{" "}
+          <b className={totProfit >= 0 ? "pc-pos" : "pc-neg"}>
+            ₹{totProfit.toLocaleString()}
+          </b>
+        </span>
+        <span className="pc-si pc-c-purple">
+          Margin <b>{margin}%</b>
+        </span>
+        <span className="pc-si pc-c-teal">
+          Orders <b>{totOrders}</b>
+        </span>
+        <span className="pc-si pc-c-orange">
+          Books <b>{totQty}</b>
+        </span>
+      </div>
+
+      <div className="wk-scroll">
+        <div className={`pc-bars pc-bars-${period}`}>
+          {cols.map((c, i) => {
+            const tipSide =
+              i >= cols.length - 2
+                ? "pc-tip-right"
+                : i <= 1
+                  ? "pc-tip-left"
+                  : "";
+            return (
+            <div
+              key={i}
+              className="pc-col"
+              onMouseEnter={() => setHover(i)}
+              onMouseLeave={() => setHover((h) => (h === i ? null : h))}
+              onClick={() => setHover((h) => (h === i ? null : i))}
+            >
+              {hover === i && (
+                <div className={`pc-tip ${tipSide}`}>
+                  <div className="pc-tip-h">{c.hint}</div>
+                  <div className="pc-tip-r">
+                    <span>Revenue</span>
+                    <b>₹{c.rev.toLocaleString()}</b>
+                  </div>
+                  <div className="pc-tip-r">
+                    <span>Cost</span>
+                    <b>₹{c.cost.toLocaleString()}</b>
+                  </div>
+                  <div className="pc-tip-r">
+                    <span>Profit</span>
+                    <b className={c.profit >= 0 ? "pc-pos" : "pc-neg"}>
+                      ₹{c.profit.toLocaleString()}
+                    </b>
+                  </div>
+                  <div className="pc-tip-r">
+                    <span>Orders</span>
+                    <b>{c.n || 0}</b>
+                  </div>
+                  <div className="pc-tip-r">
+                    <span>Books</span>
+                    <b>{c.qty || 0}</b>
+                  </div>
+                </div>
+              )}
+              <div className="pc-bar-track">
+                <div
+                  className="pc-seg pc-seg-profit"
+                  style={{
+                    height: `${(Math.max(0, c.profit) / maxRev) * 100}%`,
+                  }}
+                />
+                <div
+                  className="pc-seg pc-seg-cost"
+                  style={{ height: `${(c.cost / maxRev) * 100}%` }}
+                />
+              </div>
+              <span className="pc-lbl">{c.label}</span>
+            </div>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }
@@ -1382,7 +1740,37 @@ export default function ManageOrdersPage() {
   const [detailOrder, setDetailOrder] = useState(null); // order shown in detail modal
   const [seenIds, setSeenIds] = useState(null); // order IDs seen on last visit
   const [showNewModal, setShowNewModal] = useState(false);
-  const [analyticsPeriod, setAnalyticsPeriod] = useState("month"); // week | month | all
+  const [analyticsPeriod, setAnalyticsPeriod] = useState("month"); // day | week | month | all
+  const [periodOffset, setPeriodOffset] = useState(0); // 0 = current, -1 = previous …
+  const selectPeriod = (k) => {
+    setAnalyticsPeriod(k);
+    setPeriodOffset(0);
+  };
+
+  // Which analytics sections are visible (Customize panel, persisted).
+  const [showCustomize, setShowCustomize] = useState(false);
+  const [visibleCards, setVisibleCards] = useState(() =>
+    Object.fromEntries(ANALYTICS_SECTIONS.map((s) => [s.key, true])),
+  );
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(
+        localStorage.getItem("mo_analytics_cards") || "null",
+      );
+      if (saved && typeof saved === "object") {
+        setVisibleCards((v) => ({ ...v, ...saved }));
+      }
+    } catch {}
+  }, []);
+  const toggleCard = (key) => {
+    setVisibleCards((v) => {
+      const next = { ...v, [key]: !v[key] };
+      try {
+        localStorage.setItem("mo_analytics_cards", JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+  };
   const [orderView, setOrderView] = useState("cards"); // cards | table
   const [orderPickFilter, setOrderPickFilter] = useState("all"); // all | picked | pending
   const [selectedIds, setSelectedIds] = useState([]); // bulk-selected order IDs (table)
@@ -1393,6 +1781,22 @@ export default function ManageOrdersPage() {
     orders: true,
   });
   const toggleAcc = (id) => setAccOpen((p) => ({ ...p, [id]: !p[id] }));
+
+  // Scrollable section tabs — jump to a section, remembered across sessions.
+  const [activeTab, setActiveTab] = useState("analytics");
+  useEffect(() => {
+    try {
+      const t = localStorage.getItem("mo_active_tab");
+      if (t) setActiveTab(t);
+    } catch {}
+  }, []);
+  const goToTab = (key) => {
+    setActiveTab(key);
+    try {
+      localStorage.setItem("mo_active_tab", key);
+    } catch {}
+    setAccOpen((p) => ({ ...p, [key]: true }));
+  };
 
   useEffect(() => {
     try {
@@ -1886,31 +2290,67 @@ export default function ManageOrdersPage() {
     return map;
   }, [orders]);
 
-  // Analytics are independent of the list's search/status/payment filters.
-  // They scope only to the chosen period: current week, current month, or all.
-  const analyticsOrders = useMemo(() => {
-    if (analyticsPeriod === "all") return orders;
+  // The navigable window (start/end/label) for the chosen period + offset.
+  const periodWindow = useMemo(() => {
     const now = new Date();
+    if (analyticsPeriod === "all") {
+      return { start: null, end: null, label: "All time", canNext: false };
+    }
+    if (analyticsPeriod === "day") {
+      const start = new Date(now);
+      start.setHours(0, 0, 0, 0);
+      start.setDate(start.getDate() + periodOffset);
+      const end = new Date(start);
+      end.setDate(start.getDate() + 1);
+      return {
+        start,
+        end,
+        label: start.toLocaleDateString("en-IN", {
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+        }),
+        canNext: periodOffset < 0,
+      };
+    }
     if (analyticsPeriod === "week") {
       const dow = (now.getDay() + 6) % 7; // Monday = 0
       const monday = new Date(now);
       monday.setHours(0, 0, 0, 0);
-      monday.setDate(now.getDate() - dow);
-      const nextMonday = new Date(monday);
-      nextMonday.setDate(monday.getDate() + 7);
-      return orders.filter((o) => {
-        const d = getOrderDate(o);
-        return d && d >= monday && d < nextMonday;
-      });
+      monday.setDate(now.getDate() - dow + periodOffset * 7);
+      const end = new Date(monday);
+      end.setDate(monday.getDate() + 7);
+      const weekEnd = new Date(monday);
+      weekEnd.setDate(monday.getDate() + 6);
+      const fmt = (d) =>
+        d.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+      return {
+        start: monday,
+        end,
+        label: `${fmt(monday)} – ${fmt(weekEnd)}`,
+        canNext: periodOffset < 0,
+      };
     }
     // month
-    const m = now.getMonth();
-    const y = now.getFullYear();
+    const m = new Date(now.getFullYear(), now.getMonth() + periodOffset, 1);
+    const end = new Date(m.getFullYear(), m.getMonth() + 1, 1);
+    return {
+      start: m,
+      end,
+      label: m.toLocaleDateString("en-IN", { month: "long", year: "numeric" }),
+      canNext: periodOffset < 0,
+    };
+  }, [analyticsPeriod, periodOffset]);
+
+  // Analytics are independent of the list's search/status/payment filters.
+  // They scope to the selected, navigable period window (or all orders).
+  const analyticsOrders = useMemo(() => {
+    if (analyticsPeriod === "all" || !periodWindow.start) return orders;
     return orders.filter((o) => {
       const d = getOrderDate(o);
-      return d && d.getMonth() === m && d.getFullYear() === y;
+      return d && d >= periodWindow.start && d < periodWindow.end;
     });
-  }, [orders, analyticsPeriod]);
+  }, [orders, analyticsPeriod, periodWindow]);
 
   const analyticsByDay = useMemo(() => {
     const map = {};
@@ -1922,6 +2362,102 @@ export default function ManageOrdersPage() {
       }
     });
     return map;
+  }, [analyticsOrders]);
+
+  // Rich insights derived from the current period's orders.
+  const insights = useMemo(() => {
+    const src = analyticsOrders;
+    const bookMap = {};
+    const catMap = {};
+    const weekday = [0, 0, 0, 0, 0, 0, 0];
+    const hourArr = new Array(24).fill(0);
+    const pinMap = {};
+    const custMap = {};
+    let hasTime = false;
+    let delivered = 0;
+    let cancelled = 0;
+    let tracked = 0;
+    let codN = 0;
+    let upiN = 0;
+    let codV = 0;
+    let upiV = 0;
+
+    src.forEach((o) => {
+      (o.parsedBooks || []).forEach((b) => {
+        const key = b.name;
+        if (!bookMap[key]) bookMap[key] = { units: 0, revenue: 0 };
+        bookMap[key].units += b.quantity || 1;
+        bookMap[key].revenue += b.total || 0;
+        const bk = BOOK_BY_NAME[key.toLowerCase().trim()];
+        const cat = (bk?.catalogue && bk.catalogue[0]) || "other";
+        catMap[cat] = (catMap[cat] || 0) + (b.total || 0);
+      });
+      const d = getOrderDate(o);
+      if (d) {
+        weekday[(d.getDay() + 6) % 7] += 1;
+        hourArr[d.getHours()] += 1;
+        if (d.getHours() !== 0 || d.getMinutes() !== 0) hasTime = true;
+      }
+      const pin = String(o["Pincode"] || "").trim();
+      if (pin) pinMap[pin] = (pinMap[pin] || 0) + 1;
+      const ph = String(o["Phone Number"] || "").trim();
+      if (ph) custMap[ph] = (custMap[ph] || 0) + 1;
+      const st = String(o["Order Status"] || "").toLowerCase();
+      if (st.includes("delivered")) delivered += 1;
+      if (st.includes("cancel")) cancelled += 1;
+      if (String(o["Shipping ID"] || "").trim()) tracked += 1;
+      const isCod = /cash|cod/i.test(String(o["Payment Type"] || ""));
+      if (isCod) {
+        codN += 1;
+        codV += o.revenue || 0;
+      } else {
+        upiN += 1;
+        upiV += o.revenue || 0;
+      }
+    });
+
+    const topBooks = Object.entries(bookMap)
+      .map(([name, v]) => ({ name, ...v }))
+      .sort((a, b) => b.units - a.units)
+      .slice(0, 8);
+    const topCats = Object.entries(catMap)
+      .map(([c, rev]) => ({ c, rev }))
+      .sort((a, b) => b.rev - a.rev)
+      .slice(0, 6);
+    const topPins = Object.entries(pinMap)
+      .map(([p, c]) => ({ p, c }))
+      .sort((a, b) => b.c - a.c)
+      .slice(0, 6);
+    const uniqueCustomers = Object.keys(custMap).length;
+    const repeat = Object.values(custMap).filter((c) => c > 1).length;
+    const n = src.length;
+    const revenue = src.reduce((s, o) => s + (o.revenue || 0), 0);
+
+    return {
+      topBooks,
+      topCats,
+      topPins,
+      weekday,
+      hourArr,
+      hasTime,
+      delivered,
+      cancelled,
+      tracked,
+      uniqueCustomers,
+      repeat,
+      codN,
+      upiN,
+      codV,
+      upiV,
+      count: n,
+      aov: n ? Math.round(revenue / n) : 0,
+      deliveredPct: n ? Math.round((delivered / n) * 100) : 0,
+      cancelPct: n ? Math.round((cancelled / n) * 100) : 0,
+      trackedPct: n ? Math.round((tracked / n) * 100) : 0,
+      repeatPct: uniqueCustomers
+        ? Math.round((repeat / uniqueCustomers) * 100)
+        : 0,
+    };
   }, [analyticsOrders]);
 
   const handleInputChange = (e) => {
@@ -2306,10 +2842,33 @@ export default function ManageOrdersPage() {
   const maxStatusCount = Math.max(1, ...statusCounts.map((s) => s.count));
 
   // Payment split
-  const codCount = analyticsOrders.filter((o) =>
-    String(o["Payment Type"] || "").includes("Cash"),
-  ).length;
+  const isCODOrder = (o) => /cash|cod/i.test(String(o["Payment Type"] || ""));
+  const codCount = analyticsOrders.filter(isCODOrder).length;
   const prepaidCount = analyticsOrders.length - codCount;
+
+  // Per-status breakdown: count, total ₹ value, and UPI vs COD split.
+  // (Non-COD orders are treated as UPI / prepaid.)
+  const statusBreakdown = STATUS_META.map((s) => {
+    const rows = analyticsOrders.filter((o) => o["Order Status"] === s.key);
+    const cod = rows.filter(isCODOrder).length;
+    return {
+      ...s,
+      count: rows.length,
+      value: rows.reduce((sum, o) => sum + (o.revenue || 0), 0),
+      cod,
+      upi: rows.length - cod,
+    };
+  }).filter((s) => s.count > 0);
+
+  const breakdownTotals = statusBreakdown.reduce(
+    (acc, s) => ({
+      count: acc.count + s.count,
+      value: acc.value + s.value,
+      upi: acc.upi + s.upi,
+      cod: acc.cod + s.cod,
+    }),
+    { count: 0, value: 0, upi: 0, cod: 0 },
+  );
 
   // Orders shown in the list/table, optionally narrowed by pick status
   const listOrders = filteredOrders.filter((o) => {
@@ -2320,16 +2879,7 @@ export default function ManageOrdersPage() {
   const pickedOrdersCount = filteredOrders.filter(isOrderFullyPicked).length;
 
   if (loading) {
-    return (
-      <div className="my-orders-page">
-        <div className="section-1200 p-40">
-          <div className="loading-state">
-            <div className="loading-spinner"></div>
-            <p>Loading orders...</p>
-          </div>
-        </div>
-      </div>
-    );
+    return <OrdersLoader />;
   }
 
   return (
@@ -2372,14 +2922,53 @@ export default function ManageOrdersPage() {
           </button>
         </div>
 
+        {/* Section navigation tabs — switch which section is shown */}
+        <div className="mo-tabs">
+          {SECTION_TABS.map((t) => (
+            <button
+              key={t.key}
+              type="button"
+              className={`mo-tab${activeTab === t.key ? " active" : ""}`}
+              onClick={() => goToTab(t.key)}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Analytics period range nav — sits below the search section */}
+        {activeTab === "analytics" && analyticsPeriod !== "all" && (
+          <div className="an-nav an-nav-below">
+            <button
+              type="button"
+              className="an-nav-btn"
+              onClick={() => setPeriodOffset((o) => o - 1)}
+              aria-label={`Previous ${analyticsPeriod}`}
+            >
+              <ChevronLeft size={16} />
+            </button>
+            <span className="an-nav-label">{periodWindow.label}</span>
+            <button
+              type="button"
+              className="an-nav-btn"
+              onClick={() => setPeriodOffset((o) => Math.min(0, o + 1))}
+              disabled={!periodWindow.canNext}
+              aria-label={`Next ${analyticsPeriod}`}
+            >
+              <ChevronRight size={16} />
+            </button>
+          </div>
+        )}
+
         {/* ===== Analytics (accordion) ===== */}
+        {activeTab === "analytics" && (
         <Accordion
           id="analytics"
           title="Analytics"
           open={accOpen.analytics}
           onToggle={toggleAcc}
           right={
-            <div className="flex flex-row gap-8">
+            <div className="flex flex-row gap-8 an-actions">
               <button
                 className="sec-mid-btn"
                 onClick={(e) => {
@@ -2388,7 +2977,18 @@ export default function ManageOrdersPage() {
                 }}
                 title="Refresh"
               >
-                <RefreshCw size={14} /> Refresh
+                <RefreshCw size={14} /> <span className="an-btn-label">Refresh</span>
+              </button>
+              <button
+                className="sec-mid-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowCustomize((s) => !s);
+                }}
+                title="Customize analytics"
+              >
+                <SlidersHorizontal size={14} />{" "}
+                <span className="an-btn-label">Customize</span>
               </button>
               <button
                 className="sec-mid-btn"
@@ -2398,33 +2998,43 @@ export default function ManageOrdersPage() {
                 }}
                 title="Export CSV"
               >
-                <Download size={14} /> Export
+                <Download size={14} /> <span className="an-btn-label">Export</span>
               </button>
             </div>
           }
         >
           <div className="admin-dash">
-            {/* Period scope — analytics ignore the list's search/filters */}
-            <div className="an-period">
-              {[
-                { key: "week", label: "This week" },
-                { key: "month", label: "This month" },
-                { key: "all", label: "All time" },
-              ].map((p) => (
-                <button
-                  key={p.key}
-                  type="button"
-                  className={`an-period-btn${
-                    analyticsPeriod === p.key ? " active" : ""
-                  }`}
-                  onClick={() => setAnalyticsPeriod(p.key)}
-                >
-                  {p.label}
-                </button>
-              ))}
-            </div>
+            {/* Customize panel — show / hide analytics sections */}
+            {showCustomize && (
+              <div className="an-customize">
+                <div className="an-customize-head">
+                  <span>Show / hide analytics</span>
+                  <button
+                    type="button"
+                    className="an-customize-x"
+                    onClick={() => setShowCustomize(false)}
+                    aria-label="Close"
+                  >
+                    <X size={15} />
+                  </button>
+                </div>
+                <div className="an-customize-grid">
+                  {ANALYTICS_SECTIONS.map((s) => (
+                    <label key={s.key} className="an-customize-item">
+                      <input
+                        type="checkbox"
+                        checked={!!visibleCards[s.key]}
+                        onChange={() => toggleCard(s.key)}
+                      />
+                      {s.label}
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* KPI cards */}
+            {visibleCards.kpis && (
             <div className="admin-kpis">
               <div className="kpi kpi-orders">
                 <div className="kpi-ic">
@@ -2477,84 +3087,299 @@ export default function ManageOrdersPage() {
                 </span>
               </div>
             </div>
+            )}
 
-            {/* Daily order-volume area chart */}
-            <DailyVolumeChart ordersByDay={analyticsByDay} />
+            {/* ===== Bento analytics grid ===== */}
+            <div className="an-bento">
+              {/* Profit & cost — follows the global period tab */}
+              {visibleCards.profitCost && (
+              <div className="an-cell an-wide">
+                <ProfitCostChart
+                  orders={orders}
+                  period={analyticsPeriod}
+                  offset={periodOffset}
+                />
+              </div>
+              )}
 
-            {/* Charts row */}
-            <div className="admin-charts">
-              <div className="admin-chart-card">
-                <div className="chart-title">Orders by status</div>
-                <div className="status-bars">
-                  {statusCounts.map((s) => (
-                    <div key={s.key} className="status-bar-row">
-                      <span className="sb-label">{s.key}</span>
-                      <div className="sb-track">
+              {/* Daily order-volume area chart */}
+              {visibleCards.dailyVolume && (
+              <div className="an-cell an-wide">
+                <DailyVolumeChart ordersByDay={analyticsByDay} />
+              </div>
+              )}
+
+              {/* Orders by status */}
+              {visibleCards.ordersByStatus && (
+              <div className="an-cell">
+                <div className="admin-chart-card">
+                  <div className="chart-title">Orders by status</div>
+                  <div className="status-bars">
+                    {statusCounts.map((s) => (
+                      <div key={s.key} className="status-bar-row">
+                        <span className="sb-label">{s.key}</span>
+                        <div className="sb-track">
+                          <div
+                            className="sb-fill"
+                            style={{
+                              width: `${(s.count / maxStatusCount) * 100}%`,
+                              background: s.color,
+                            }}
+                          />
+                        </div>
+                        <span className="sb-count">{s.count}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              )}
+
+              {/* Order value by status */}
+              {visibleCards.valueByStatus && (
+              <div className="an-cell">
+                <div className="admin-chart-card">
+                  <div className="chart-title">Order value by status</div>
+                  <div className="sv-list">
+                    {statusBreakdown.map((s) => (
+                      <div className="sv-row" key={s.key}>
+                        <span
+                          className="sv-dot"
+                          style={{ background: s.color }}
+                        />
+                        <div className="sv-main">
+                          <div className="sv-top">
+                            <span className="sv-name">
+                              {s.key}
+                              <em className="sv-count">{s.count} orders</em>
+                            </span>
+                            <span className="sv-val">
+                              ₹{s.value.toLocaleString()}
+                            </span>
+                          </div>
+                          <div className="sv-pay">
+                            <span className="sv-pill sv-upi">{s.upi} UPI</span>
+                            <span className="sv-pill sv-cod">{s.cod} COD</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    {statusBreakdown.length === 0 && (
+                      <div className="sv-empty">No orders in this period.</div>
+                    )}
+                  </div>
+                  {breakdownTotals.count > 0 && (
+                    <div className="sv-total">
+                      <span className="sv-name">
+                        Total
+                        <em className="sv-count">
+                          {breakdownTotals.count} orders
+                        </em>
+                      </span>
+                      <span className="sv-total-right">
+                        <span className="sv-val">
+                          ₹{breakdownTotals.value.toLocaleString()}
+                        </span>
+                        <span className="sv-pay">
+                          <span className="sv-pill sv-upi">
+                            {breakdownTotals.upi} UPI
+                          </span>
+                          <span className="sv-pill sv-cod">
+                            {breakdownTotals.cod} COD
+                          </span>
+                        </span>
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+              )}
+
+              {/* Top-selling books */}
+              {visibleCards.topBooks && (
+              <div className="an-cell an-wide">
+                <div className="admin-chart-card">
+                  <div className="chart-title">
+                    Top-selling books{" "}
+                    <span className="vol-sub">by units sold</span>
+                  </div>
+                  <HBars
+                    items={insights.topBooks.map((b) => ({
+                      label: b.name,
+                      value: b.units,
+                      display: `${b.units} · ₹${b.revenue.toLocaleString()}`,
+                    }))}
+                  />
+                </div>
+              </div>
+              )}
+
+              {/* Revenue by category */}
+              {visibleCards.categoryRevenue && (
+              <div className="an-cell">
+                <div className="admin-chart-card">
+                  <div className="chart-title">Revenue by category</div>
+                  <HBars
+                    accent="#3b6fe0"
+                    items={insights.topCats.map((c) => ({
+                      label: c.c,
+                      value: c.rev,
+                      display: `₹${c.rev.toLocaleString()}`,
+                    }))}
+                  />
+                </div>
+              </div>
+              )}
+
+              {/* Payment mix */}
+              {visibleCards.paymentMix && (
+              <div className="an-cell">
+                <div className="admin-chart-card">
+                  <div className="chart-title">Payment mix</div>
+                  <div className="pay-mix">
+                    <div className="pay-mix-row">
+                      <div className="pay-mix-head">
+                        <span>UPI / Prepaid</span>
+                        <span>
+                          {insights.upiN} · ₹{insights.upiV.toLocaleString()}
+                        </span>
+                      </div>
+                      <div className="ins-track">
                         <div
-                          className="sb-fill"
+                          className="ins-fill"
                           style={{
-                            width: `${(s.count / maxStatusCount) * 100}%`,
-                            background: s.color,
+                            width: `${insights.count ? (insights.upiN / insights.count) * 100 : 0}%`,
+                            background: "#2563eb",
                           }}
                         />
                       </div>
-                      <span className="sb-count">{s.count}</span>
                     </div>
-                  ))}
+                    <div className="pay-mix-row">
+                      <div className="pay-mix-head">
+                        <span>Cash on Delivery</span>
+                        <span>
+                          {insights.codN} · ₹{insights.codV.toLocaleString()}
+                        </span>
+                      </div>
+                      <div className="ins-track">
+                        <div
+                          className="ins-fill"
+                          style={{
+                            width: `${insights.count ? (insights.codN / insights.count) * 100 : 0}%`,
+                            background: "#fb8500",
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
+              )}
 
-              <div className="admin-chart-card">
-                <div className="chart-title">Payment & fulfilment</div>
-                <div className="pay-split">
-                  <div
-                    className="pay-donut"
-                    style={{
-                      background: `conic-gradient(#fb8500 0 ${
-                        analyticsOrders.length
-                          ? Math.round(
-                              (prepaidCount / analyticsOrders.length) * 100,
-                            )
-                          : 0
-                      }%, #0a0a0a 0)`,
-                    }}
-                  >
-                    <span>{analyticsOrders.length}</span>
-                  </div>
-                  <div className="pay-legend">
-                    <div>
-                      <span className="dot" style={{ background: "#fb8500" }} />
-                      Prepaid {prepaidCount}
-                    </div>
-                    <div>
-                      <span className="dot" style={{ background: "#0a0a0a" }} />
-                      COD {codCount}
-                    </div>
-                  </div>
+              {/* Busiest weekdays */}
+              {visibleCards.weekday && (
+              <div className="an-cell">
+                <div className="admin-chart-card">
+                  <div className="chart-title">Busiest weekdays</div>
+                  <ColBars
+                    accent="#7c3aed"
+                    cols={insights.weekday.map((v, i) => ({
+                      label: WEEKDAY_LABELS[i],
+                      value: v,
+                    }))}
+                  />
                 </div>
-                <div className="dash-mini">
-                  <div>
-                    <span>Delivered</span>
-                    <strong>{deliveredCount}</strong>
+              </div>
+              )}
+
+              {/* Peak order hours */}
+              {visibleCards.hours && (
+              <div className="an-cell">
+                <div className="admin-chart-card">
+                  <div className="chart-title">
+                    Peak order hours{" "}
+                    <span className="vol-sub">
+                      {insights.hasTime ? "0–23h" : "no time data"}
+                    </span>
                   </div>
-                  <div>
-                    <span>In transit</span>
-                    <strong>{inTransitCount}</strong>
-                  </div>
-                  <div>
-                    <span>Tracking</span>
-                    <strong>{withTrackingCount}</strong>
+                  {insights.hasTime ? (
+                    <ColBars
+                      accent="#0ea5e9"
+                      showValues={false}
+                      cols={insights.hourArr.map((v, i) => ({
+                        label: i % 3 === 0 ? String(i) : "",
+                        value: v,
+                        hint: `${i}:00`,
+                      }))}
+                    />
+                  ) : (
+                    <div className="sv-empty">
+                      Order timestamps don’t include a time of day.
+                    </div>
+                  )}
+                </div>
+              </div>
+              )}
+
+              {/* Top delivery pincodes */}
+              {visibleCards.pincodes && (
+              <div className="an-cell">
+                <div className="admin-chart-card">
+                  <div className="chart-title">Top delivery pincodes</div>
+                  <HBars
+                    accent="#12b76a"
+                    items={insights.topPins.map((p) => ({
+                      label: p.p,
+                      value: p.c,
+                      display: `${p.c} order${p.c > 1 ? "s" : ""}`,
+                    }))}
+                  />
+                </div>
+              </div>
+              )}
+
+              {/* Yearly cumulative run-rate */}
+              {visibleCards.runRate && (
+              <div className="an-cell an-wide">
+                <RunRateChart orders={orders} />
+              </div>
+              )}
+
+              {/* Operational health ratios */}
+              {visibleCards.health && (
+              <div className="an-cell an-wide">
+                <div className="admin-chart-card">
+                  <div className="chart-title">Operational health</div>
+                  <div className="pc-stripe">
+                    <span className="pc-si">
+                      Avg order value <b>₹{insights.aov.toLocaleString()}</b>
+                    </span>
+                    <span className="pc-si">
+                      Delivered <b className="pc-pos">{insights.deliveredPct}%</b>
+                    </span>
+                    <span className="pc-si">
+                      With tracking <b>{insights.trackedPct}%</b>
+                    </span>
+                    <span className="pc-si">
+                      Cancelled{" "}
+                      <b className={insights.cancelPct > 0 ? "pc-neg" : ""}>
+                        {insights.cancelPct}%
+                      </b>
+                    </span>
+                    <span className="pc-si">
+                      Repeat customers <b>{insights.repeatPct}%</b>
+                    </span>
+                    <span className="pc-si">
+                      Unique customers <b>{insights.uniqueCustomers}</b>
+                    </span>
                   </div>
                 </div>
               </div>
+              )}
             </div>
-
-            {/* Yearly run-rate + weekly orders + predicted MRR */}
-            <RunRateChart orders={orders} />
-            <WeeklyBarChart orders={orders} />
-            <PredictedMRR orders={orders} />
           </div>
         </Accordion>
+        )}
 
         {/* Search + Filter row */}
         <div className="admin-search">
@@ -2578,31 +3403,6 @@ export default function ManageOrdersPage() {
                 dateFrom ||
                 dateTo) && <span className="orange weight-600">●</span>}
             </button>
-            <button
-              className="sec-mid-btn"
-              onClick={() =>
-                setSortOrder((s) => (s === "desc" ? "asc" : "desc"))
-              }
-              style={{ maxWidth: "fit-content" }}
-              title={
-                sortOrder === "desc"
-                  ? "Showing latest first, click for oldest first"
-                  : "Showing oldest first, click for latest first"
-              }
-            >
-              <ArrowUpDown size={14} />
-              {sortOrder === "desc" ? "Latest" : "Oldest"}
-            </button>
-            <button
-              className="pri-big-btn"
-              onClick={() => {
-                resetForm();
-                setShowAddModal(true);
-              }}
-              style={{ maxWidth: "fit-content" }}
-            >
-              <Plus size={16} />
-            </button>
           </div>
 
           {/* Filter dropdown panel */}
@@ -2616,6 +3416,21 @@ export default function ManageOrdersPage() {
                 transition={{ duration: 0.2 }}
               >
                 <div className="admin-filter-grid">
+                  <div className="admin-field">
+                    <label className="admin-field-label">Analytics period</label>
+                    <div className="admin-select-wrap">
+                      <select
+                        className="admin-select"
+                        value={analyticsPeriod}
+                        onChange={(e) => selectPeriod(e.target.value)}
+                      >
+                        <option value="day">Day</option>
+                        <option value="week">Week</option>
+                        <option value="month">Month</option>
+                        <option value="all">All time</option>
+                      </select>
+                    </div>
+                  </div>
                   <div className="admin-field">
                     <label className="admin-field-label">Order Status</label>
                     <div className="admin-select-wrap">
@@ -2699,6 +3514,7 @@ export default function ManageOrdersPage() {
         </div>
 
         {/* ===== Calendar (accordion) ===== */}
+        {activeTab === "calendar" && (
         <Accordion
           id="calendar"
           title="Orders calendar"
@@ -2769,9 +3585,10 @@ export default function ManageOrdersPage() {
             )}
           </div>
         </Accordion>
-
+        )}
 
         {/* ===== India Post booking sheet (accordion) ===== */}
+        {activeTab === "indiapost" && (
         <Accordion
           id="indiapost"
           title="India Post booking (copy-paste)"
@@ -2794,8 +3611,10 @@ export default function ManageOrdersPage() {
             copiedId={copiedId}
           />
         </Accordion>
+        )}
 
         {/* ===== Orders (accordion) ===== */}
+        {activeTab === "orders" && (
         <Accordion
           id="orders"
           title="Orders"
@@ -3463,6 +4282,7 @@ export default function ManageOrdersPage() {
             </div>
           )}
         </Accordion>
+        )}
       </div>
 
       {/* ===== New orders modal (slide-up) ===== */}

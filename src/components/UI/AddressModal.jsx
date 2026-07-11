@@ -662,7 +662,7 @@ export default function AddressModal({
                 </span>
                 <span className="addr-notice-text">
                   Double-check your <b>address</b>, <b>pincode</b> &amp;{" "}
-                  <b>phone</b> for smooth delivery.
+                  <b>phone</b> for faster & successful delivery.
                 </span>
               </div>
 

@@ -23,6 +23,7 @@ import { CART_OFFERS } from "@/utils/cartOffers";
 import InstallPWA from "./InstallPWA";
 import Link from "next/link";
 import { useStore } from "@/context/StoreContext";
+import { trackEvent } from "@/lib/ga";
 
 // Rotating trust promos shown in the black stripe below the navbar.
 // Meaningful, contextual one-liners (white text, colour-accented icon).
@@ -156,7 +157,10 @@ export default function Navbar() {
             <button
               type="button"
               className="nav-ic"
-              onClick={() => setSearchOpen(true)}
+              onClick={() => {
+                trackEvent("search_opened", { source: "navbar" });
+                setSearchOpen(true);
+              }}
               aria-label="Search books"
             >
               <Search size={24} />

@@ -15,6 +15,7 @@ import RecommendationModal from "./RecommendationModal";
 import { getRemainingOfferTime, getOneRupeeOfferData } from "@/utils/book";
 import { useEffect, useState, useRef } from "react";
 import { trackFunnelEvent } from "@/lib/analytics";
+import { trackEvent } from "@/lib/ga";
 import { EVENTS } from "@/lib/trackingEvents";
 import UnlockChip from "./UI/UnlockChip";
 import OneRupeeModal from "./OneRupeeModal";
@@ -265,7 +266,10 @@ export default function CartBar() {
         <button
           type="button"
           className={`cart-fab-hint ${fabHint ? "show" : ""}`}
-          onClick={() => setSuggestOpen(true)}
+          onClick={() => {
+            trackEvent("suggestion_opened", { source: "fab_hint" });
+            setSuggestOpen(true);
+          }}
           tabIndex={fabHint ? 0 : -1}
           aria-hidden={!fabHint}
         >
@@ -274,7 +278,10 @@ export default function CartBar() {
         <button
           type="button"
           className="cart-fab-btn"
-          onClick={() => setSuggestOpen(true)}
+          onClick={() => {
+            trackEvent("suggestion_opened", { source: "fab" });
+            setSuggestOpen(true);
+          }}
           aria-label="Get book suggestions"
         >
           <Sparkles size={18} />
@@ -283,7 +290,10 @@ export default function CartBar() {
         <button
           type="button"
           className="cart-fab-btn"
-          onClick={() => setSearchOpen(true)}
+          onClick={() => {
+            trackEvent("search_opened", { source: "fab" });
+            setSearchOpen(true);
+          }}
           aria-label="Search books"
         >
           <Search size={18} />

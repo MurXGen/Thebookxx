@@ -176,28 +176,26 @@ export default function RootLayout({ children }) {
           }}
         />
 
-        {/* Google Analytics, skipped on admin paths */}
-        <Script id="ga-loader" strategy="lazyOnload">
+        {/* Google Analytics, skipped on admin paths.
+            gtag stub is defined synchronously so events fired before the
+            library finishes loading are queued into dataLayer (not dropped). */}
+        <Script id="ga-init" strategy="afterInteractive">
           {`
-            if (!${ADMIN_GUARD}) {
-              var s = document.createElement('script');
-              s.async = true;
-              s.src = 'https://www.googletagmanager.com/gtag/js?id=G-VZX7GSTR9Z';
-              document.head.appendChild(s);
-            }
-          `}
-        </Script>
-
-        <Script id="ga-init" strategy="lazyOnload">
-          {`
-            if (!${ADMIN_GUARD}) {
+            var GA_PROD_HOSTS = ["thebookx.in", "www.thebookx.in"];
+            var GA_IS_PROD = GA_PROD_HOSTS.indexOf(window.location.hostname) !== -1;
+            if (!${ADMIN_GUARD} && GA_IS_PROD) {
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
+              window.gtag = gtag;
               gtag('js', new Date());
               gtag('config', 'G-VZX7GSTR9Z', {
                 page_path: window.location.pathname,
                 send_page_view: false
               });
+              var s = document.createElement('script');
+              s.async = true;
+              s.src = 'https://www.googletagmanager.com/gtag/js?id=G-VZX7GSTR9Z';
+              document.head.appendChild(s);
             }
           `}
         </Script>

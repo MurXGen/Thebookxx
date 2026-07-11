@@ -33,6 +33,7 @@ import Link from "next/link";
 import { FaWhatsapp } from "react-icons/fa";
 import { EVENTS } from "@/lib/trackingEvents";
 import { trackFunnelEvent } from "@/lib/analytics";
+import { trackPurchase } from "@/lib/ga";
 import { trackOrderToGoogleForm } from "@/utils/googleFormOrder";
 
 const PINCODE_DATA_KEY = "user_pincode";
@@ -440,6 +441,12 @@ export default function AddressModal({
       cod_fee: codHandlingFee,
     });
     triggerCODSuccess(fasterDelivery);
+    // GA purchase — only counted here, at the COD success point.
+    trackPurchase({
+      cartItems: cartBooks,
+      totalAmount: finalPayable,
+      paymentId: `COD-${Date.now()}`,
+    });
     // Now log the CONFIRMED order (plain name, no "(unconfirmed)" tag).
     submitToGoogleForm("COD", fasterDelivery, true);
     // Push the COD order to Telegram (previously only UPI notified — the COD
@@ -598,6 +605,12 @@ export default function AddressModal({
     trackFunnelEvent(EVENTS.UPI_PAYMENT_VERIFIED, {
       amount: finalPayable,
       verification_time: verifyTimer,
+    });
+    // GA purchase — only counted here, when the user clicks Verify.
+    trackPurchase({
+      cartItems: cartBooks,
+      totalAmount: finalPayable,
+      paymentId: `UPI-${Date.now()}`,
     });
     // Log the CONFIRMED UPI order (plain name, no "(unconfirmed)" tag).
     submitToGoogleForm("UPI", fasterDelivery, true);

@@ -44,6 +44,8 @@ import {
   Send,
   LayoutGrid,
   List,
+  Wallet,
+  Pin,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
@@ -1786,6 +1788,25 @@ export default function ManageOrdersPage() {
     setNoteInput("");
   };
   const deleteNote = (id) => setNotes((n) => n.filter((x) => x.id !== id));
+
+  // Pinned transactions surfaced in the notifications modal.
+  const [pinnedTxns, setPinnedTxns] = useState([]);
+  const loadPinnedTxns = () => {
+    try {
+      const saved = JSON.parse(localStorage.getItem("mo_txns") || "[]");
+      setPinnedTxns(
+        Array.isArray(saved) ? saved.filter((t) => t.pinned) : [],
+      );
+    } catch {
+      setPinnedTxns([]);
+    }
+  };
+  useEffect(() => {
+    loadPinnedTxns();
+  }, []);
+  useEffect(() => {
+    if (showNewModal) loadPinnedTxns();
+  }, [showNewModal]);
   const downloadNotesCSV = () => {
     if (!notes.length) return;
     const rows = [["Date", "Day", "Time", "Message"]];
@@ -1999,6 +2020,31 @@ export default function ManageOrdersPage() {
 
       setOrders(sorted);
       setFilteredOrders(sorted);
+
+      // Cache a lightweight, de-duplicated customer list for the money
+      // manager's @-mention feature (keyed by name, latest order kept).
+      try {
+        const byName = new Map();
+        sorted.forEach((o) => {
+          const name = String(o["Customer Name"] || "").trim();
+          if (!name || byName.has(name)) return;
+          byName.set(name, {
+            name,
+            phone: o["Phone Number"] || "",
+            address: o["Address"] || "",
+            city: o["City"] || "",
+            state: o["State"] || "",
+            pincode: o["Pincode"] || "",
+            orderId: o["Order ID"] || "",
+            lastAmount: o.revenue || 0,
+            status: o["Order Status"] || "",
+          });
+        });
+        localStorage.setItem(
+          "mo_customers",
+          JSON.stringify([...byName.values()]),
+        );
+      } catch {}
     } catch (error) {
       console.error("Error fetching orders:", error);
     } finally {
@@ -2982,6 +3028,13 @@ export default function ManageOrdersPage() {
           </Link>
 
           <div className="mo-head-actions">
+            <Link
+              href="/manage-orders/transactions"
+              className="mo-bell"
+              title="Money Manager — income & expenses"
+            >
+              <Wallet size={20} />
+            </Link>
             <button
               type="button"
               className="mo-bell"
@@ -4569,6 +4622,32 @@ export default function ManageOrdersPage() {
                   <X size={18} />
                 </span>
               </div>
+
+              {pinnedTxns.length > 0 && (
+                <div className="pinned-txns">
+                  {pinnedTxns.map((t) => (
+                    <Link
+                      key={t.id}
+                      href="/manage-orders/transactions"
+                      className="pinned-txn"
+                      onClick={() => {
+                        markOrdersSeen();
+                        setShowNewModal(false);
+                      }}
+                    >
+                      <span className="pt-note">
+                        <Pin size={12} className="tx-pinned-ic" />
+                        {t.note ||
+                          (t.type === "income" ? "Income" : "Expense")}
+                      </span>
+                      <span className={`pt-amt ${t.type}`}>
+                        {t.type === "income" ? "+" : "−"}₹
+                        {(t.amount || 0).toLocaleString("en-IN")}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              )}
 
               <div className="mo-new-list">
                 {newOrders.length > 0 ? (

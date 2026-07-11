@@ -2690,6 +2690,34 @@ input {
   animation: slideDown 0.3s ease;
 }
 
+/* Address modal — highlighted accuracy reminder stripe */
+.addr-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 10px 12px;
+  margin-bottom: 14px;
+  border-radius: 10px;
+  background: #fff7ed;
+  border: 1px solid rgba(251, 133, 0, 0.4);
+  border-left: 3px solid #fb8500;
+}
+.addr-notice-ic {
+  flex-shrink: 0;
+  color: #ea580c;
+  display: inline-flex;
+  margin-top: 1px;
+}
+.addr-notice-text {
+  font-size: 12px;
+  line-height: 1.45;
+  color: #7c2d12;
+}
+.addr-notice-text b {
+  font-weight: 800;
+  color: #9a3412;
+}
+
 .filters-content {
   max-width: 1200px;
   margin: 0 auto;

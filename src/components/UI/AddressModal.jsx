@@ -655,6 +655,17 @@ export default function AddressModal({
             </div>
 
             <div className="address-form-content">
+              {/* Highlighted accuracy reminder — reduces failed deliveries */}
+              <div className="addr-notice">
+                <span className="addr-notice-ic">
+                  <AlertCircle size={16} />
+                </span>
+                <span className="addr-notice-text">
+                  Double-check your <b>address</b>, <b>pincode</b> &amp;{" "}
+                  <b>phone</b> for smooth delivery.
+                </span>
+              </div>
+
               <div className="input-group">
                 <label className="flex flex-row gap-4 flex-center items-center">
                   <MapPin size={14} />

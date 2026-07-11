@@ -43,6 +43,10 @@ export async function generateMetadata() {
 }
 
 function buildJsonLd() {
+  // ~1 year out, required/recommended for merchant listing eligibility
+  const priceValidUntil = new Date(Date.now() + 365 * 86400000)
+    .toISOString()
+    .slice(0, 10);
   const itemList = {
     "@context": "https://schema.org",
     "@type": "ItemList",
@@ -53,6 +57,12 @@ function buildJsonLd() {
     itemListElement: combos.map((combo, i) => {
       const { price } = getComboPricing(combo);
       const books = getComboBooks(combo);
+      const images = books
+        .map((b) => b.image)
+        .filter(Boolean)
+        .map((src) =>
+          src.startsWith("http") ? src : `https://www.thebookx.in${src}`,
+        );
       return {
         "@type": "ListItem",
         position: i + 1,
@@ -61,14 +71,53 @@ function buildJsonLd() {
           name: `${combo.title} (Combo of ${books.length} Books)`,
           description: combo.seoDescription,
           category: combo.category,
+          image: images.length ? images : [`${PAGE_URL}`],
           brand: { "@type": "Brand", name: "TheBookX" },
           url: `${PAGE_URL}#${combo.slug}`,
           offers: {
             "@type": "Offer",
             priceCurrency: "INR",
             price: String(price),
+            priceValidUntil: priceValidUntil,
             availability: "https://schema.org/InStock",
+            itemCondition: "https://schema.org/NewCondition",
             url: PAGE_URL,
+            hasMerchantReturnPolicy: {
+              "@type": "MerchantReturnPolicy",
+              applicableCountry: "IN",
+              returnPolicyCategory:
+                "https://schema.org/MerchantReturnFiniteReturnWindow",
+              merchantReturnDays: 7,
+              returnMethod: "https://schema.org/ReturnByMail",
+              returnFees: "https://schema.org/FreeReturn",
+            },
+            shippingDetails: {
+              "@type": "OfferShippingDetails",
+              shippingRate: {
+                "@type": "MonetaryAmount",
+                value: "0",
+                currency: "INR",
+              },
+              shippingDestination: {
+                "@type": "DefinedRegion",
+                addressCountry: "IN",
+              },
+              deliveryTime: {
+                "@type": "ShippingDeliveryTime",
+                handlingTime: {
+                  "@type": "QuantitativeValue",
+                  minValue: 0,
+                  maxValue: 2,
+                  unitCode: "DAY",
+                },
+                transitTime: {
+                  "@type": "QuantitativeValue",
+                  minValue: 2,
+                  maxValue: 7,
+                  unitCode: "DAY",
+                },
+              },
+            },
           },
         },
       };

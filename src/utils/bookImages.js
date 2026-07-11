@@ -605,4 +605,7 @@ export const bookImages = {
   "the-score": `${BOOK_IMAGE_BASE_PATH}/the-score.jpeg`,
   "the-goal": `${BOOK_IMAGE_BASE_PATH}/the-goal.jpeg`,
   "the-legacy": `${BOOK_IMAGE_BASE_PATH}/the-legacy.jpeg`,
+  "the-boy-the-mole-the-fox-and-the-horse": `${BOOK_IMAGE_BASE_PATH}/the-boy-the-mole-the-fox-and-the-horse.jpeg`,
+  "big-panda-and-tiny-dragon": `${BOOK_IMAGE_BASE_PATH}/big-panda-and-tiny-dragon.jpeg`,
+  "the-journey-big-panda": `${BOOK_IMAGE_BASE_PATH}/the-journey-big-panda.jpeg`,
 };

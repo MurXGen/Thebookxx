@@ -890,7 +890,7 @@ export default function AddressModal({
                     )}
                   </div>
                   <button
-                    className="sec-mid-btn width100 mt-16"
+                    className="sec-big-btn width100 mt-16"
                     onClick={handleProceedWithoutFasterDelivery}
                   >
                     {isCartBelow399

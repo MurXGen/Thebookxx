@@ -2690,6 +2690,14 @@ input {
   animation: slideDown 0.3s ease;
 }
 
+/* Text inputs/areas should show the I-beam cursor, not a pointer */
+input.sec-mid-btn:not([type="button"]):not([type="submit"]),
+textarea.sec-mid-btn,
+.address-form-content input,
+.address-form-content textarea {
+  cursor: text;
+}
+
 /* Address modal — highlighted accuracy reminder stripe */
 .addr-notice {
   display: flex;

@@ -40,6 +40,10 @@ import {
   TrendingUp,
   TrendingDown,
   MessageCircle,
+  StickyNote,
+  Send,
+  LayoutGrid,
+  List,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
@@ -1740,6 +1744,74 @@ export default function ManageOrdersPage() {
   const [detailOrder, setDetailOrder] = useState(null); // order shown in detail modal
   const [seenIds, setSeenIds] = useState(null); // order IDs seen on last visit
   const [showNewModal, setShowNewModal] = useState(false);
+
+  // ── Notes (chat-style, localStorage-backed) ──
+  const [showNotes, setShowNotes] = useState(false);
+  const [notes, setNotes] = useState([]);
+  const [noteInput, setNoteInput] = useState("");
+  const notesHydrated = useRef(false);
+  const notesEndRef = useRef(null);
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem("mo_notes") || "[]");
+      if (Array.isArray(saved)) setNotes(saved);
+    } catch {}
+    notesHydrated.current = true;
+  }, []);
+  useEffect(() => {
+    if (!notesHydrated.current) return;
+    try {
+      localStorage.setItem("mo_notes", JSON.stringify(notes));
+    } catch {}
+  }, [notes]);
+  useEffect(() => {
+    if (showNotes) {
+      setTimeout(
+        () => notesEndRef.current?.scrollIntoView({ behavior: "smooth" }),
+        60,
+      );
+    }
+  }, [showNotes, notes.length]);
+  const sendNote = () => {
+    const text = noteInput.trim();
+    if (!text) return;
+    setNotes((n) => [
+      ...n,
+      {
+        id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        text,
+        ts: Date.now(),
+      },
+    ]);
+    setNoteInput("");
+  };
+  const deleteNote = (id) => setNotes((n) => n.filter((x) => x.id !== id));
+  const downloadNotesCSV = () => {
+    if (!notes.length) return;
+    const rows = [["Date", "Day", "Time", "Message"]];
+    notes.forEach((nt) => {
+      const d = new Date(nt.ts);
+      rows.push([
+        d.toLocaleDateString("en-IN"),
+        d.toLocaleDateString("en-IN", { weekday: "long" }),
+        d.toLocaleTimeString("en-IN"),
+        nt.text,
+      ]);
+    });
+    const csv = rows
+      .map((r) =>
+        r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(","),
+      )
+      .join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `manage-orders-notes-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const [analyticsPeriod, setAnalyticsPeriod] = useState("month"); // day | week | month | all
   const [periodOffset, setPeriodOffset] = useState(0); // 0 = current, -1 = previous …
   const selectPeriod = (k) => {
@@ -2909,23 +2981,38 @@ export default function ManageOrdersPage() {
             </div>
           </Link>
 
-          <button
-            type="button"
-            className={`mo-bell${newOrderCount > 0 ? " has-new" : ""}`}
-            onClick={() => setShowNewModal(true)}
-            title={
-              newOrderCount > 0
-                ? `${newOrderCount} new order${newOrderCount > 1 ? "s" : ""} since your last visit`
-                : "No new orders since your last visit"
-            }
-          >
-            <Bell size={20} />
-            {newOrderCount > 0 && (
-              <span className="mo-bell-badge">
-                {newOrderCount > 99 ? "99+" : newOrderCount}
-              </span>
-            )}
-          </button>
+          <div className="mo-head-actions">
+            <button
+              type="button"
+              className="mo-bell"
+              onClick={() => setShowNotes(true)}
+              title="Notes"
+            >
+              <StickyNote size={20} />
+              {notes.length > 0 && (
+                <span className="mo-bell-badge notes">
+                  {notes.length > 99 ? "99+" : notes.length}
+                </span>
+              )}
+            </button>
+            <button
+              type="button"
+              className={`mo-bell${newOrderCount > 0 ? " has-new" : ""}`}
+              onClick={() => setShowNewModal(true)}
+              title={
+                newOrderCount > 0
+                  ? `${newOrderCount} new order${newOrderCount > 1 ? "s" : ""} since your last visit`
+                  : "No new orders since your last visit"
+              }
+            >
+              <Bell size={20} />
+              {newOrderCount > 0 && (
+                <span className="mo-bell-badge">
+                  {newOrderCount > 99 ? "99+" : newOrderCount}
+                </span>
+              )}
+            </button>
+          </div>
         </div>
 
         {/* Section navigation tabs — switch which section is shown */}
@@ -3644,20 +3731,24 @@ export default function ManageOrdersPage() {
                     · {pickedOrdersCount}/{filteredOrders.length} picked
                   </span>
                 </span>
-                <div className="mo-view-toggle">
+                <div className="mo-view-toggle mo-view-icons">
                   <button
                     type="button"
                     className={`mo-view-btn${orderView === "cards" ? " active" : ""}`}
                     onClick={() => setOrderView("cards")}
+                    title="Card view"
+                    aria-label="Card view"
                   >
-                    Cards
+                    <LayoutGrid size={16} />
                   </button>
                   <button
                     type="button"
                     className={`mo-view-btn${orderView === "table" ? " active" : ""}`}
                     onClick={() => setOrderView("table")}
+                    title="Table view"
+                    aria-label="Table view"
                   >
-                    Table
+                    <List size={16} />
                   </button>
                 </div>
               </div>
@@ -3762,6 +3853,20 @@ export default function ManageOrdersPage() {
                     (s, b) => s + (b.total || 0),
                     0,
                   );
+                  // Relative age of the order ("2 days ago") for the card badge
+                  const orderDate = getOrderDate(order);
+                  let agoLabel = "";
+                  if (orderDate) {
+                    const days = Math.floor(
+                      (Date.now() - orderDate.getTime()) / 86400000,
+                    );
+                    agoLabel =
+                      days <= 0
+                        ? "Today"
+                        : days === 1
+                          ? "Yesterday"
+                          : `${days} days ago`;
+                  }
                   const isCOD = /cash|cod/i.test(order["Payment Type"] || "");
                   const oidStr = String(orderId || "");
                   const formData = {
@@ -3843,9 +3948,20 @@ export default function ManageOrdersPage() {
                                 <Copy size={11} className="gray-500" />
                               )}
                             </button>
+                            {agoLabel && (
+                              <span
+                                className="mo-ago"
+                                title={
+                                  orderDate
+                                    ? orderDate.toLocaleString("en-IN")
+                                    : ""
+                                }
+                              >
+                                <Clock size={11} /> {agoLabel}
+                              </span>
+                            )}
                           </div>
                         </div>
-
                       </div>
 
                       {/* Book covers — scrollable row, tap to mark picked */}
@@ -4307,6 +4423,108 @@ export default function ManageOrdersPage() {
         </Accordion>
         )}
       </div>
+
+      {/* ===== Notes (chat-style, slide-up) ===== */}
+      <AnimatePresence>
+        {showNotes && (
+          <motion.div
+            className="bill-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowNotes(false)}
+          >
+            <motion.div
+              className="bill-modal notes-modal"
+              onClick={(e) => e.stopPropagation()}
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+            >
+              <div className="bill-header">
+                <span className="weight-600 font-16 flex flex-row gap-8 items-center">
+                  <StickyNote size={18} /> Notes
+                </span>
+                <div className="flex flex-row gap-8 items-center">
+                  <button
+                    type="button"
+                    className="sec-mid-btn"
+                    onClick={downloadNotesCSV}
+                    disabled={!notes.length}
+                    title="Download notes as CSV"
+                  >
+                    <Download size={14} /> CSV
+                  </button>
+                  <span
+                    className="cursor-pointer"
+                    onClick={() => setShowNotes(false)}
+                  >
+                    <X size={16} />
+                  </span>
+                </div>
+              </div>
+
+              <div className="notes-list">
+                {notes.length === 0 && (
+                  <div className="notes-empty">
+                    No notes yet. Type below and hit send to start.
+                  </div>
+                )}
+                {notes.map((nt) => {
+                  const d = new Date(nt.ts);
+                  return (
+                    <div className="note-bubble" key={nt.id}>
+                      <div className="note-text">{nt.text}</div>
+                      <div className="note-meta">
+                        <span>
+                          {d.toLocaleDateString("en-IN", { weekday: "short" })},{" "}
+                          {d.toLocaleDateString("en-IN")} ·{" "}
+                          {d.toLocaleTimeString("en-IN", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </span>
+                        <button
+                          type="button"
+                          className="note-del"
+                          onClick={() => deleteNote(nt.id)}
+                          title="Delete note"
+                        >
+                          <Trash2 size={12} />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+                <div ref={notesEndRef} />
+              </div>
+
+              <div className="notes-input-row">
+                <input
+                  type="text"
+                  className="sec-mid-btn width100"
+                  placeholder="Type a note…"
+                  value={noteInput}
+                  onChange={(e) => setNoteInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") sendNote();
+                  }}
+                />
+                <button
+                  type="button"
+                  className="pri-big-btn"
+                  onClick={sendNote}
+                  disabled={!noteInput.trim()}
+                  aria-label="Send note"
+                >
+                  <Send size={16} />
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ===== New orders modal (slide-up) ===== */}
       <AnimatePresence>

@@ -476,7 +476,6 @@ export default function RecommendationModal({
                           key={genre}
                           className={`sec-mid-btn ${formData.genres.includes(genre) ? "active" : ""}`}
                           onClick={() => toggleGenre(genre)}
-                          style={{ fontSize: "12px" }}
                         >
                           {genre}
                         </button>
@@ -494,7 +493,6 @@ export default function RecommendationModal({
                           key={age.id}
                           className={`sec-mid-btn ${formData.ageGroup === age.id ? "active" : ""}`}
                           onClick={() => updateFormData("ageGroup", age.id)}
-                          style={{ padding: "8px 16px", fontSize: "12px" }}
                         >
                           {age.label}
                         </button>

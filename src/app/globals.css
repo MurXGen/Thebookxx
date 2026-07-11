@@ -1065,6 +1065,18 @@ button:hover {
   color: var(--white-100);
 }
 
+/* Consistent button typography site-wide — same font size + boldness for
+   every primary/secondary button. Text inputs that reuse .sec-mid-btn are
+   excluded so their text stays normal weight. */
+.pri-big-btn,
+.sec-big-btn,
+button.sec-mid-btn,
+a.sec-mid-btn,
+label.sec-mid-btn {
+  font-size: var(--px-13);
+  font-weight: 600;
+}
+
 .cart-bar {
   position: fixed;
   width: 100%;
@@ -2688,6 +2700,103 @@ input {
   border-bottom: 1px solid #e5e7eb;
   padding: 20px 24px;
   animation: slideDown 0.3s ease;
+}
+
+/* Book Recommendations modal — minimal, consistent chip/button padding
+   (font size + weight come from the site-wide button rule) */
+.recommendation-modal .sec-mid-btn {
+  padding: 8px 14px;
+  border-radius: 10px;
+  border-color: var(--hairline, #e5e7eb);
+}
+.recommendation-modal .sec-big-btn,
+.recommendation-modal .pri-big-btn {
+  padding: 11px 16px;
+}
+.recommendation-modal .sec-big-btn svg,
+.recommendation-modal .pri-big-btn svg {
+  transform: none;
+}
+
+/* Manage-orders header actions (notes + bell) */
+.mo-head-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.mo-bell-badge.notes {
+  background: #2563eb;
+}
+
+/* Notes chat modal */
+.notes-modal {
+  display: flex;
+  flex-direction: column;
+  max-height: 82vh;
+}
+.notes-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 2px;
+  min-height: 140px;
+}
+.notes-empty {
+  margin: auto;
+  text-align: center;
+  font-size: 13px;
+  color: var(--dark-50);
+  padding: 30px 10px;
+}
+.note-bubble {
+  align-self: flex-end;
+  max-width: 88%;
+  background: #fff7ed;
+  border: 1px solid rgba(251, 133, 0, 0.35);
+  border-radius: 14px 14px 4px 14px;
+  padding: 9px 12px;
+}
+.note-text {
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: var(--foreground);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.note-meta {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 5px;
+  font-size: 10.5px;
+  color: var(--dark-50);
+}
+.note-del {
+  border: none;
+  background: transparent;
+  color: var(--dark-50);
+  cursor: pointer;
+  display: inline-flex;
+  padding: 2px;
+  border-radius: 4px;
+}
+.note-del:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+.notes-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid var(--hairline, #ececec);
+}
+.notes-input-row .pri-big-btn {
+  flex-shrink: 0;
+  padding: 12px 16px;
 }
 
 /* Text inputs/areas should show the I-beam cursor, not a pointer */
@@ -15272,6 +15381,41 @@ img[data-loaded="true"] {
   background: rgba(251, 133, 0, 0.45);
 }
 
+/* Hint label that slides out beside the Suggest icon after the shake */
+.cart-fab-hint {
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  border: none;
+  background: transparent;
+  color: var(--tertiary, #fb8500);
+  font-family: var(--font-poppins), sans-serif;
+  font-size: 12.5px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  transform: translateX(6px);
+  transition:
+    max-width 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.4s ease,
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    padding 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.cart-fab-hint.show {
+  max-width: 220px;
+  opacity: 1;
+  transform: translateX(0);
+  padding: 0 8px 0 6px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cart-fab-hint {
+    transition: opacity 0.3s ease;
+  }
+}
+
 /* =====================================================================
    ✦ /list-your-books — sell/list books with TheBookX
    ===================================================================== */
@@ -16208,6 +16352,28 @@ img[data-loaded="true"] {
   gap: 10px;
   flex-wrap: wrap;
 }
+/* Icon-only card/table view toggle */
+.mo-view-icons .mo-view-btn {
+  padding: 7px 11px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+/* "X days ago" badge on each order card */
+.mo-ago {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-left: 6px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--surface-2, #f3f4f6);
+  border: 1px solid var(--hairline, #e5e7eb);
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--dark-50);
+  white-space: nowrap;
+}
 .orders-picked-stat {
   font-size: 12px;
   font-weight: 600;
@@ -16393,7 +16559,13 @@ img[data-loaded="true"] {
 .orders-toolbar-actions {
   display: flex;
   gap: 8px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+}
+.orders-toolbar-actions .mo-form-btn {
+  flex: 1 1 0;
+  min-width: 0;
+  justify-content: center;
+  white-space: nowrap;
 }
 .mo-global-csv {
   background: var(--foreground);

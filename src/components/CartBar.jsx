@@ -29,19 +29,27 @@ export default function CartBar() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [suggestOpen, setSuggestOpen] = useState(false);
   const [fabShake, setFabShake] = useState(false);
+  const [fabHint, setFabHint] = useState(false);
   const shakenRef = useRef(false);
 
   // Draw attention to the Search/Suggest quick actions: the first time the
   // user is active in the session (scroll / tap / key / pointer move), shake
-  // the pill for ~3 seconds, then never again this session.
+  // the pill for ~3 seconds. When the shake ends, smoothly slide a hint label
+  // out beside the Suggest icon for 5 seconds, then slide it back. Once only.
   useEffect(() => {
     if (shakenRef.current) return;
-    let stopTimer;
+    const timers = [];
     const trigger = () => {
       if (shakenRef.current) return;
       shakenRef.current = true;
       setFabShake(true);
-      stopTimer = setTimeout(() => setFabShake(false), 3000);
+      timers.push(
+        setTimeout(() => {
+          setFabShake(false);
+          setFabHint(true);
+          timers.push(setTimeout(() => setFabHint(false), 5000));
+        }, 3000),
+      );
       cleanup();
     };
     const events = ["scroll", "pointerdown", "keydown", "pointermove", "touchstart"];
@@ -52,7 +60,7 @@ export default function CartBar() {
     );
     return () => {
       cleanup();
-      if (stopTimer) clearTimeout(stopTimer);
+      timers.forEach((t) => clearTimeout(t));
     };
   }, []);
 
@@ -254,6 +262,15 @@ export default function CartBar() {
       <div
         className={`cart-fab ${hasCart ? "with-bar" : ""} ${fabShake ? "fab-shake" : ""}`}
       >
+        <button
+          type="button"
+          className={`cart-fab-hint ${fabHint ? "show" : ""}`}
+          onClick={() => setSuggestOpen(true)}
+          tabIndex={fabHint ? 0 : -1}
+          aria-hidden={!fabHint}
+        >
+          Need a book? Ask Suggest ✨
+        </button>
         <button
           type="button"
           className="cart-fab-btn"

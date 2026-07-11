@@ -11946,6 +11946,7 @@ img[data-loaded="true"] {
 }
 .sv-pay {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
   margin-top: 5px;
 }

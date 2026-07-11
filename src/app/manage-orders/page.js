@@ -2850,13 +2850,17 @@ export default function ManageOrdersPage() {
   // (Non-COD orders are treated as UPI / prepaid.)
   const statusBreakdown = STATUS_META.map((s) => {
     const rows = analyticsOrders.filter((o) => o["Order Status"] === s.key);
-    const cod = rows.filter(isCODOrder).length;
+    const codRows = rows.filter(isCODOrder);
+    const upiRows = rows.filter((o) => !isCODOrder(o));
+    const sumRev = (list) => list.reduce((sum, o) => sum + (o.revenue || 0), 0);
     return {
       ...s,
       count: rows.length,
-      value: rows.reduce((sum, o) => sum + (o.revenue || 0), 0),
-      cod,
-      upi: rows.length - cod,
+      value: sumRev(rows),
+      cod: codRows.length,
+      upi: upiRows.length,
+      codVal: sumRev(codRows),
+      upiVal: sumRev(upiRows),
     };
   }).filter((s) => s.count > 0);
 
@@ -2866,8 +2870,10 @@ export default function ManageOrdersPage() {
       value: acc.value + s.value,
       upi: acc.upi + s.upi,
       cod: acc.cod + s.cod,
+      upiVal: acc.upiVal + s.upiVal,
+      codVal: acc.codVal + s.codVal,
     }),
-    { count: 0, value: 0, upi: 0, cod: 0 },
+    { count: 0, value: 0, upi: 0, cod: 0, upiVal: 0, codVal: 0 },
   );
 
   // Orders shown in the list/table, optionally narrowed by pick status
@@ -3158,8 +3164,12 @@ export default function ManageOrdersPage() {
                             </span>
                           </div>
                           <div className="sv-pay">
-                            <span className="sv-pill sv-upi">{s.upi} UPI</span>
-                            <span className="sv-pill sv-cod">{s.cod} COD</span>
+                            <span className="sv-pill sv-upi">
+                              {s.upi} UPI · ₹{s.upiVal.toLocaleString()}
+                            </span>
+                            <span className="sv-pill sv-cod">
+                              {s.cod} COD · ₹{s.codVal.toLocaleString()}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -3182,10 +3192,12 @@ export default function ManageOrdersPage() {
                         </span>
                         <span className="sv-pay">
                           <span className="sv-pill sv-upi">
-                            {breakdownTotals.upi} UPI
+                            {breakdownTotals.upi} UPI · ₹
+                            {breakdownTotals.upiVal.toLocaleString()}
                           </span>
                           <span className="sv-pill sv-cod">
-                            {breakdownTotals.cod} COD
+                            {breakdownTotals.cod} COD · ₹
+                            {breakdownTotals.codVal.toLocaleString()}
                           </span>
                         </span>
                       </span>
@@ -3739,6 +3751,17 @@ export default function ManageOrdersPage() {
                   );
                   const allPicked =
                     books.length > 0 && pickedCount === books.length;
+                  // Value (₹) of the books picked so far vs the full order.
+                  const pickedValue = books.reduce(
+                    (s, b, i) =>
+                      s +
+                      (pickChecked[bookKey(orderId, i)] ? b.total || 0 : 0),
+                    0,
+                  );
+                  const totalBooksValue = books.reduce(
+                    (s, b) => s + (b.total || 0),
+                    0,
+                  );
                   const isCOD = /cash|cod/i.test(order["Payment Type"] || "");
                   const oidStr = String(orderId || "");
                   const formData = {
@@ -3914,9 +3937,9 @@ export default function ManageOrdersPage() {
                             }`}
                           >
                             {allPicked
-                              ? "✓ Picked"
+                              ? `✓ Picked · ₹${pickedValue.toLocaleString()}`
                               : pickedCount > 0
-                                ? `Picking ${pickedCount}/${books.length}`
+                                ? `Partially picked ${pickedCount}/${books.length} · ₹${pickedValue.toLocaleString()} of ₹${totalBooksValue.toLocaleString()}`
                                 : "Not picked"}
                           </span>
                         )}

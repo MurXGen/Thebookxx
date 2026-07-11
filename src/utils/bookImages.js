@@ -600,4 +600,9 @@ export const bookImages = {
   "i-want-to-eat-your-pancreas": `${BOOK_IMAGE_BASE_PATH}/i-want-to-eat-your-pancreas.jpeg`,
   "the-god-delusion": `${BOOK_IMAGE_BASE_PATH}/the-god-delusion.jpeg`,
   "the-off-campus-set": `${BOOK_IMAGE_BASE_PATH}/the-off-campus-set.jpeg`,
+  "the-deal": `${BOOK_IMAGE_BASE_PATH}/the-deal.jpeg`,
+  "the-mistake": `${BOOK_IMAGE_BASE_PATH}/the-mistake.jpeg`,
+  "the-score": `${BOOK_IMAGE_BASE_PATH}/the-score.jpeg`,
+  "the-goal": `${BOOK_IMAGE_BASE_PATH}/the-goal.jpeg`,
+  "the-legacy": `${BOOK_IMAGE_BASE_PATH}/the-legacy.jpeg`,
 };

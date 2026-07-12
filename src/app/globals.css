@@ -3301,6 +3301,17 @@ textarea.sec-mid-btn,
   cursor: text;
 }
 
+/* Fast-delivery note under the city input (Mumbai only) */
+.mumbai-fast-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #0a8f0c;
+}
+
 /* Address modal — highlighted accuracy reminder stripe */
 .addr-notice {
   display: flex;

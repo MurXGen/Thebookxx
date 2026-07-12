@@ -65,6 +65,18 @@ export default function CartBar() {
     };
   }, []);
 
+  // Open the Suggest modal on load when the URL carries ?suggest
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.location.search.includes("suggest")) {
+      setSuggestOpen(true);
+      trackEvent("suggestion_opened", { source: "url_param" });
+      const url = new URL(window.location.href);
+      url.searchParams.delete("suggest");
+      window.history.replaceState({}, "", url.toString());
+    }
+  }, []);
+
   const hasCart = cart.length > 0;
 
   const cartBooks = cart

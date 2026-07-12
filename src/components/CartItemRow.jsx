@@ -105,7 +105,7 @@ export default function CartItemRow({ book }) {
           </div>
         </div>
 
-        {/* RIGHT: line price (top, aligned with title) + remove */}
+        {/* RIGHT: line price (top, aligned with title) */}
         <div className="cart-row-aside">
           <div className="cart-row-aside-price">
             <span className="cart-row-aside-now">₹{lineNow}</span>
@@ -116,17 +116,6 @@ export default function CartItemRow({ book }) {
               <span className="cart-row-aside-save">Save ₹{lineSave}</span>
             )}
           </div>
-
-          <button
-            type="button"
-            className="cart-row-remove"
-            onClick={handleRemove}
-            aria-label={`Remove ${book.name} from bag`}
-            title="Remove"
-          >
-            <Trash2 size={16} />
-            <span>Remove</span>
-          </button>
         </div>
       </div>
     </div>

@@ -713,6 +713,12 @@ export default function AddressModal({
                     <option key={c} value={c} />
                   ))}
                 </datalist>
+                {city.trim().toLowerCase() === "mumbai" && (
+                  <span className="mumbai-fast-note">
+                    <Zap size={13} /> Orders within Mumbai are delivered in 1–2
+                    days
+                  </span>
+                )}
               </div>
 
               <div className="input-group">

@@ -608,4 +608,5 @@ export const bookImages = {
   "the-boy-the-mole-the-fox-and-the-horse": `${BOOK_IMAGE_BASE_PATH}/the-boy-the-mole-the-fox-and-the-horse.jpeg`,
   "big-panda-and-tiny-dragon": `${BOOK_IMAGE_BASE_PATH}/big-panda-and-tiny-dragon.jpeg`,
   "the-journey-big-panda": `${BOOK_IMAGE_BASE_PATH}/the-journey-big-panda.jpeg`,
+  "japanese-candlestick-charting-techniques": `${BOOK_IMAGE_BASE_PATH}/japanese-candlestick-charting-techniques.jpeg`,
 };

@@ -8747,4 +8747,20 @@ export const books = [
     originalPrice: calculateOriginalPrice(319),
     discountedPrice: 319,
   },
+  {
+    id: "bk-626",
+    name: "Japanese Candlestick Charting Techniques",
+    image: bookImages["japanese-candlestick-charting-techniques"],
+    description:
+      "Buy Japanese Candlestick Charting Techniques by Steve Nison online at the lowest price on TheBookX.in. The definitive classic that introduced candlestick charting to the Western world — a must-read for traders and investors wanting to read market sentiment, spot reversals and time entries and exits with confidence. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
+    author: "Steve Nison",
+    authorSlug: "steve-nison",
+    pages: "300-320",
+    language: "English",
+    size: "Paperback",
+    stock: 24,
+    catalogue: ["finance", "non-fiction", "business", "bestseller"],
+    originalPrice: calculateOriginalPrice(179),
+    discountedPrice: 179,
+  },
 ];

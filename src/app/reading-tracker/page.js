@@ -393,19 +393,18 @@ export default function ReadingTrackerPage() {
 
         <div className="dashed-border my-20"></div>
 
-        {/* Import ordered books — quickest way to start tracking */}
-        <button
-          className="rt-import-cta"
-          onClick={openImportModal}
-        >
-          <BookOpen size={18} />
-          <span>
-            Import my ordered books
-            {orderedBooks.length > 0 && (
-              <em className="rt-import-count">{orderedBooks.length}</em>
-            )}
-          </span>
-        </button>
+        {/* Import ordered books — shown once you're already tracking books */}
+        {trackedBooks.length > 0 && (
+          <button className="rt-import-cta" onClick={openImportModal}>
+            <BookOpen size={18} />
+            <span>
+              Import my ordered books
+              {orderedBooks.length > 0 && (
+                <em className="rt-import-count">{orderedBooks.length}</em>
+              )}
+            </span>
+          </button>
+        )}
 
         {/* Search Section */}
         <div className="flex flex-col gap-4">
@@ -520,12 +519,12 @@ export default function ReadingTrackerPage() {
                           </div>
                         )}
                       </div>
-                      <div className="flex flex-row gap-12">
+                      <div className="rt-card-actions">
                         <button
                           className="sec-mid-btn"
                           onClick={() => handleBookSelect(book)}
                         >
-                          + Add Entry
+                          <Plus size={15} /> Add Entry
                         </button>
                         <button
                           className="sec-mid-btn rt-notes-btn"
@@ -540,11 +539,12 @@ export default function ReadingTrackerPage() {
                           )}
                         </button>
                         <button
-                          className="pri-big-btn"
+                          className="rt-del-btn"
                           onClick={() => {
                             setBookToDelete(book);
                             setShowDeleteConfirmModal(true);
                           }}
+                          aria-label="Remove from tracker"
                         >
                           <Trash2 size={16} />
                         </button>
@@ -872,15 +872,14 @@ export default function ReadingTrackerPage() {
               </div>
 
               <div className="rt-notes-input-row">
-                <textarea
-                  className="search-book width100 rt-notes-input"
+                <input
+                  type="text"
+                  className="rt-notes-input"
                   placeholder="Add a key point or action item…"
                   value={noteText}
                   onChange={(e) => setNoteText(e.target.value)}
-                  rows={2}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter" && (e.metaKey || e.ctrlKey))
-                      addBookNote();
+                    if (e.key === "Enter") addBookNote();
                   }}
                 />
                 <button

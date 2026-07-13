@@ -3,27 +3,24 @@
 // Get base offers based on whether ₹1 items are present
 export const getCartOffers = (hasOneRupeeItem = false) => {
   if (hasOneRupeeItem) {
+    // ₹1 books present → first goal is reaching ₹399 to unlock free delivery,
+    // then progressively bigger flat discounts. Bands are contiguous so the
+    // strip always shows the NEXT target (never a dead-end "unlocked").
     return [
       {
         min: 0,
         target: 399,
         type: "free_shipping",
-        message: "Add ₹{remaining} more for checkout & Free Delivery",
+        reward: "Free delivery",
+        message: "Add ₹{remaining} more to unlock Free delivery",
         icon: "gift",
       },
       {
         min: 399,
-        target: 400,
-        type: "percentage",
-        value: 0,
-        message: "Add ₹{remaining} more to get Free Delivery",
-        icon: "sparkle",
-      },
-      {
-        min: 400,
         target: 650,
         type: "flat",
         value: 100,
+        reward: "₹100 OFF",
         message: "Add ₹{remaining} more & get flat ₹100 OFF",
         icon: "sparkle",
       },
@@ -32,6 +29,7 @@ export const getCartOffers = (hasOneRupeeItem = false) => {
         target: 1000,
         type: "flat",
         value: 250,
+        reward: "₹250 OFF",
         message: "Add ₹{remaining} more & get ₹250 OFF",
         icon: "sparkle",
       },
@@ -40,32 +38,38 @@ export const getCartOffers = (hasOneRupeeItem = false) => {
         target: 2000,
         type: "flat",
         value: 500,
+        reward: "₹500 OFF",
         message: "Add ₹{remaining} more & get ₹500 OFF",
         icon: "sparkle",
       },
     ];
   } else {
+    // No ₹1 books → delivery is already free (from the ₹151 checkout min), so
+    // free delivery reads as "availed" and the goals push toward flat discounts.
     return [
       {
         min: 0,
         target: 151,
         type: "free_shipping",
-        message: "Add ₹{remaining} more for checkout",
+        reward: "Free delivery",
+        message: "Add ₹{remaining} more to checkout with Free delivery",
         icon: "gift",
       },
       {
-        min: 300,
-        target: 600,
-        type: "percentage",
-        value: 0,
-        message: "Add ₹{remaining} more & get flat ₹100 OFF",
+        min: 151,
+        target: 450,
+        type: "flat",
+        value: 50,
+        reward: "₹50 OFF",
+        message: "Add ₹{remaining} more & get flat ₹50 OFF",
         icon: "sparkle",
       },
       {
-        min: 400,
+        min: 450,
         target: 650,
         type: "flat",
         value: 100,
+        reward: "₹100 OFF",
         message: "Add ₹{remaining} more & get flat ₹100 OFF",
         icon: "sparkle",
       },
@@ -74,6 +78,7 @@ export const getCartOffers = (hasOneRupeeItem = false) => {
         target: 1000,
         type: "flat",
         value: 250,
+        reward: "₹250 OFF",
         message: "Add ₹{remaining} more & get ₹250 OFF",
         icon: "sparkle",
       },
@@ -82,6 +87,7 @@ export const getCartOffers = (hasOneRupeeItem = false) => {
         target: 2000,
         type: "flat",
         value: 500,
+        reward: "₹500 OFF",
         message: "Add ₹{remaining} more & get ₹500 OFF",
         icon: "sparkle",
       },

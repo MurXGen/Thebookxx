@@ -6,7 +6,7 @@ import { motion, animate } from "framer-motion";
 import { useStore } from "@/context/StoreContext";
 import { books } from "@/utils/book"; // 👈 needed to map id → image
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 export default function CartOfferStrip({ discountedAmount }) {
@@ -54,6 +54,17 @@ export default function CartOfferStrip({ discountedAmount }) {
 
   const target = progressOffer?.target || discountedAmount;
 
+  /* ✅ What the shopper has ALREADY unlocked (shown below the bar) */
+  const freeDeliveryAvailed = hasOneRupeeItem
+    ? discountedAmount >= 399
+    : discountedAmount >= 151;
+  const flatAvailed = [...CART_OFFERS]
+    .reverse()
+    .find((o) => o.type === "flat" && discountedAmount >= o.target);
+  const availedChips = [];
+  if (freeDeliveryAvailed) availedChips.push("Free delivery");
+  if (flatAvailed) availedChips.push(flatAvailed.reward);
+
   /* 🎬 Smooth progress */
   const [progress, setProgress] = useState(0);
 
@@ -79,58 +90,30 @@ export default function CartOfferStrip({ discountedAmount }) {
     }
   }, [appliedOffer]);
 
-  /* 🧠 Message */
+  /* 🧠 Message — always point to the NEXT target to drive AOV */
   const message = useMemo(() => {
-    /* 🎉 Applied offer (final state) */
-    if (!progressOffer && appliedOffer) {
-      if (appliedOffer.type === "free_shipping") {
-        return (
-          <>
-            <span className="highlight-amount">🚚 Free Delivery</span> unlocked
-            🎉
-          </>
-        );
-      }
-
-      if (appliedOffer.type === "flat") {
-        return (
-          <>
-            <span className="success-text">₹{appliedOffer.value} OFF</span>{" "}
-            unlocked 🎉
-          </>
-        );
-      }
-
-      if (appliedOffer.type === "percentage") {
-        return (
-          <>
-            <span className="success-text">{appliedOffer.value}% OFF</span>{" "}
-            unlocked 🎉
-          </>
-        );
-      }
+    /* 🎉 Everything unlocked (only at the very top of the ladder) */
+    if (!progressOffer) {
+      return (
+        <>
+          <span className="highlight-reward">🎉 You've unlocked every offer!</span>
+        </>
+      );
     }
 
-    /* 🚀 Progress state (USE CONFIG MESSAGE) */
-    if (!progressOffer) return "";
-
     const parts = progressOffer.message.split("{remaining}");
-
-    /* Extract reward (upto ₹250 OFF etc.) */
-    const rewardMatch = progressOffer.message.match(/₹\d+ OFF|free delivery/i);
-
-    const rewardText = rewardMatch ? rewardMatch[0] : "";
+    const rewardText = progressOffer.reward || "";
+    const tail = parts[1] ? parts[1].replace(rewardText, "") : "";
 
     return (
       <>
         {parts[0]}
         <span className="highlight-amount">{remaining}</span>
-        {parts[1].replace(rewardText, "")}
-
+        {tail}
         {rewardText && <span className="highlight-reward">{rewardText}</span>}
       </>
     );
-  }, [progressOffer, appliedOffer, remaining]);
+  }, [progressOffer, remaining]);
 
   /* Get the target message for the CTA based on ₹1 items */
   const getCTAMessage = () => {
@@ -183,6 +166,16 @@ export default function CartOfferStrip({ discountedAmount }) {
             style={{ left: `${progress}%` }}
           />
         </div>
+
+        {availedChips.length > 0 && (
+          <div className="offer-availed">
+            {availedChips.map((chip, i) => (
+              <span key={i} className="offer-availed-chip">
+                <Check size={12} strokeWidth={3} /> {chip}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* RIGHT */}

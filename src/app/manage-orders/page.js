@@ -46,7 +46,9 @@ import {
   List,
   Wallet,
   Pin,
+  Pencil,
 } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { books as ALL_BOOKS } from "@/utils/book";
@@ -129,6 +131,21 @@ const waMessages = (order) => {
       label: "🎉 Delivered",
       text: `${hi}, your TheBookX order${id} has been delivered ✅\n\nWe hope you love your books! A quick review would mean a lot to us 💛${profileLine}`,
     },
+    {
+      key: "received",
+      label: "📥 Received order",
+      text: `${hi}, this is TheBookX 📚\n\nWe've *received your order*${id}. It will be *shipped within 1–2 days*, and your tracking ID will be shared here as soon as it's dispatched.\n\nThank you for shopping with us! 💛${profileLine}`,
+    },
+    {
+      key: "unable",
+      label: "⚠️ Unable to ship",
+      text: `${hi}, this is TheBookX 📚\n\nWe tried to process your order${id}, but it *couldn't be shipped successfully* due to a mismatch in the *address or phone number* provided.\n\nPlease share your *correct full address (with pincode) and a reachable phone number* so we can dispatch it right away.${profileLine}`,
+    },
+    {
+      key: "verify",
+      label: "📍 Ask details checkup",
+      text: `${hi}, this is TheBookX 📚\n\nBefore we ship your order${id}, could you please *re-check your delivery details*? The current address/number provided may *not be sufficient for successful delivery*.\n\nKindly reply with your *complete address, landmark, pincode and an active phone number* so your books reach you safely. 🙏${profileLine}`,
+    },
   ];
 };
 
@@ -145,7 +162,8 @@ const FORM_SUBMIT_URL =
 // sheet in place (edits without adding a new row). Deploy the script in
 // docs/sheet-edit-apps-script.gs and paste its /exec URL here. Leave empty to
 // keep the old append-on-edit behaviour.
-const SHEET_EDIT_API_URL = "";
+const SHEET_EDIT_API_URL =
+  "https://script.google.com/macros/s/AKfycbw_MWJJmtGxukgHqNcoSTP-RRQONykYHLqgBYs2K8GfkuqSDmRmP3gVNAthKDWgVY5-Pw/exec";
 
 // Field mappings for Google Form
 const FORM_FIELD_IDS = {
@@ -366,6 +384,7 @@ const ANALYTICS_SECTIONS = [
   { key: "pincodes", label: "Top delivery pincodes" },
   { key: "runRate", label: "Yearly run-rate" },
   { key: "health", label: "Operational health" },
+  { key: "cancelled", label: "Cancelled orders & losses" },
 ];
 
 // Reusable horizontal progress bars (top books, categories, pincodes …)
@@ -1076,7 +1095,28 @@ function ProfitCostChart({ orders, period = "month", offset = 0 }) {
     monthAgg[mk].qty += qty;
   });
 
-  // Bucketing follows the global period tab.
+  // Helper: sum day-level aggregates across a date range [start, end]
+  const sumDays = (start, end) => {
+    const acc = blank();
+    const d = new Date(start);
+    while (d <= end) {
+      const a = dayAgg[dayKey(d)];
+      if (a) {
+        acc.rev += a.rev;
+        acc.cost += a.cost;
+        acc.n += a.n;
+        acc.qty += a.qty;
+      }
+      d.setDate(d.getDate() + 1);
+    }
+    return acc;
+  };
+
+  // Bucketing drills down with the global period tab:
+  //   Day   → the days of the selected week's context (last 14 days)
+  //   Week  → the 7 days (Mon–Sun) of the selected week
+  //   Month → each week within the selected month
+  //   All   → every month (horizontally scrollable)
   let cols = [];
   let granularityLabel = "";
   if (period === "day") {
@@ -1087,49 +1127,59 @@ function ProfitCostChart({ orders, period = "month", offset = 0 }) {
       cols.push({ ...a, label: String(d.getDate()), hint: fmt(d) });
     }
   } else if (period === "week") {
-    granularityLabel = "last 8 weeks";
+    // The 7 days of the selected week
     const base = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const dow = (base.getDay() + 6) % 7;
-    const thisMon = new Date(base);
-    thisMon.setDate(base.getDate() - dow);
-    for (let w = 7; w >= 0; w--) {
-      const ws = new Date(thisMon);
-      ws.setDate(thisMon.getDate() - w * 7);
-      const acc = blank();
-      for (let i = 0; i < 7; i++) {
-        const d = new Date(ws);
-        d.setDate(ws.getDate() + i);
-        const a = dayAgg[dayKey(d)];
-        if (a) {
-          acc.rev += a.rev;
-          acc.cost += a.cost;
-          acc.n += a.n;
-          acc.qty += a.qty;
-        }
-      }
-      const we = new Date(ws);
-      we.setDate(ws.getDate() + 6);
-      cols.push({ ...acc, label: fmt(ws), hint: `${fmt(ws)} – ${fmt(we)}` });
+    const weekStart = new Date(base);
+    weekStart.setDate(base.getDate() - dow);
+    const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6);
+    granularityLabel = `${fmt(weekStart)} – ${fmt(weekEnd)}`;
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(weekStart);
+      d.setDate(weekStart.getDate() + i);
+      const a = dayAgg[dayKey(d)] || blank();
+      cols.push({ ...a, label: DAYS[i], hint: fmt(d) });
+    }
+  } else if (period === "month") {
+    // Each week within the selected month
+    const y = now.getFullYear();
+    const m = now.getMonth();
+    const daysInMonth = new Date(y, m + 1, 0).getDate();
+    granularityLabel = `weeks of ${MON[m]} ${y}`;
+    let w = 1;
+    for (let startDay = 1; startDay <= daysInMonth; startDay += 7, w++) {
+      const endDay = Math.min(startDay + 6, daysInMonth);
+      const start = new Date(y, m, startDay);
+      const end = new Date(y, m, endDay);
+      const acc = sumDays(start, end);
+      cols.push({
+        ...acc,
+        label: `W${w}`,
+        hint: `${startDay}–${endDay} ${MON[m]}`,
+      });
     }
   } else {
-    // month + all → monthly bars (6 months, or full range for "all")
-    let months = 6;
-    if (period === "all" && earliest) {
-      months =
-        (now.getFullYear() - earliest.getFullYear()) * 12 +
-        (now.getMonth() - earliest.getMonth()) +
-        1;
-      months = Math.min(Math.max(months, 3), 12);
-    }
-    granularityLabel = period === "all" ? "monthly" : "last 6 months";
-    for (let m = months - 1; m >= 0; m--) {
-      const dt = new Date(now.getFullYear(), now.getMonth() - m, 1);
-      const a = monthAgg[`${dt.getFullYear()}-${dt.getMonth()}`] || blank();
+    // All time → every month from the first order to now (scrollable)
+    granularityLabel = "monthly · all time";
+    const start = earliest
+      ? new Date(earliest.getFullYear(), earliest.getMonth(), 1)
+      : new Date(now.getFullYear(), now.getMonth(), 1);
+    const cursor = new Date(start);
+    while (
+      cursor.getFullYear() < now.getFullYear() ||
+      (cursor.getFullYear() === now.getFullYear() &&
+        cursor.getMonth() <= now.getMonth())
+    ) {
+      const a =
+        monthAgg[`${cursor.getFullYear()}-${cursor.getMonth()}`] || blank();
       cols.push({
         ...a,
-        label: MON[dt.getMonth()],
-        hint: `${MON[dt.getMonth()]} ${dt.getFullYear()}`,
+        label: MON[cursor.getMonth()],
+        hint: `${MON[cursor.getMonth()]} ${cursor.getFullYear()}`,
       });
+      cursor.setMonth(cursor.getMonth() + 1);
     }
   }
 
@@ -1183,7 +1233,7 @@ function ProfitCostChart({ orders, period = "month", offset = 0 }) {
         </span>
       </div>
 
-      <div className="wk-scroll">
+      <div className={`wk-scroll ${period === "all" ? "pc-scroll-x" : ""}`}>
         <div className={`pc-bars pc-bars-${period}`}>
           {cols.map((c, i) => {
             const tipSide =
@@ -1867,6 +1917,28 @@ export default function ManageOrdersPage() {
   const [orderView, setOrderView] = useState("cards"); // cards | table
   const [orderPickFilter, setOrderPickFilter] = useState("all"); // all | picked | pending
   const [selectedIds, setSelectedIds] = useState([]); // bulk-selected order IDs (table)
+  const [bulkStage, setBulkStage] = useState(null); // WhatsApp stage key for bulk send
+  const [bulkSent, setBulkSent] = useState([]); // order IDs already messaged
+
+  // ── Cancelled-order loss log (chat-style, localStorage) ──
+  const [losses, setLosses] = useState([]);
+  const [showLossModal, setShowLossModal] = useState(false);
+  const [lossForm, setLossForm] = useState({ orderId: "", amount: "", note: "" });
+  const lossHydrated = useRef(false);
+  useEffect(() => {
+    try {
+      const s = JSON.parse(localStorage.getItem("mo_losses") || "[]");
+      if (Array.isArray(s)) setLosses(s);
+    } catch {}
+    lossHydrated.current = true;
+  }, []);
+  useEffect(() => {
+    if (!lossHydrated.current) return;
+    try {
+      localStorage.setItem("mo_losses", JSON.stringify(losses));
+    } catch {}
+  }, [losses]);
+  const deleteLoss = (id) => setLosses((l) => l.filter((x) => x.id !== id));
   const [accOpen, setAccOpen] = useState({
     analytics: true,
     calendar: false,
@@ -2994,6 +3066,34 @@ export default function ManageOrdersPage() {
     { count: 0, value: 0, upi: 0, cod: 0, upiVal: 0, codVal: 0 },
   );
 
+  // ── Cancelled orders + loss log ──
+  const isCancelled = (o) => /cancel/i.test(String(o["Order Status"] || ""));
+  const cancelledOrders = analyticsOrders.filter(isCancelled); // period-scoped
+  const cancelledValue = cancelledOrders.reduce(
+    (s, o) => s + (o.revenue || 0),
+    0,
+  );
+  const allCancelled = orders.filter(isCancelled); // for tagging in the log
+  const totalLoss = losses.reduce((s, l) => s + (l.amount || 0), 0);
+  const addLoss = () => {
+    const amt = parseFloat(lossForm.amount);
+    if (!lossForm.orderId || !amt || amt <= 0) return;
+    const ord = allCancelled.find((o) => o["Order ID"] === lossForm.orderId);
+    setLosses((prev) => [
+      {
+        id: `${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+        orderId: lossForm.orderId,
+        orderName: ord?.["Customer Name"] || "",
+        orderValue: ord?.revenue || 0,
+        amount: Math.round(amt),
+        note: lossForm.note.trim(),
+        ts: Date.now(),
+      },
+      ...prev,
+    ]);
+    setLossForm({ orderId: "", amount: "", note: "" });
+  };
+
   // Orders shown in the list/table, optionally narrowed by pick status
   const listOrders = filteredOrders.filter((o) => {
     if (orderPickFilter === "picked") return isOrderFullyPicked(o);
@@ -3528,6 +3628,77 @@ export default function ManageOrdersPage() {
                 </div>
               </div>
               )}
+
+              {/* Cancelled orders & losses */}
+              {visibleCards.cancelled && (
+              <div className="an-cell an-wide">
+                <div className="admin-chart-card">
+                  <div className="chart-title">Cancelled orders &amp; losses</div>
+                  <div className="cx-stats">
+                    <div className="cx-stat">
+                      <span className="cx-stat-label">Cancelled orders</span>
+                      <strong className="cx-stat-val">
+                        {cancelledOrders.length}
+                        <em className="cx-stat-sub">
+                          · ₹{cancelledValue.toLocaleString()}
+                        </em>
+                      </strong>
+                    </div>
+                    <div className="cx-stat">
+                      <span className="cx-stat-label">Total loss logged</span>
+                      <strong className="cx-stat-val cx-loss">
+                        ₹{totalLoss.toLocaleString()}
+                        <button
+                          type="button"
+                          className="cx-edit"
+                          onClick={() => setShowLossModal(true)}
+                          title="Log a loss"
+                        >
+                          <Pencil size={13} />
+                        </button>
+                      </strong>
+                    </div>
+                  </div>
+
+                  {losses.length > 0 && (
+                    <div className="cx-log">
+                      {losses.map((l) => {
+                        const d = new Date(l.ts);
+                        return (
+                          <div className="cx-log-row" key={l.id}>
+                            <div className="cx-log-main">
+                              <span className="cx-log-order">
+                                {l.orderName || "Order"}{" "}
+                                {l.orderValue ? (
+                                  <em>(₹{l.orderValue.toLocaleString()})</em>
+                                ) : null}
+                              </span>
+                              {l.note && (
+                                <span className="cx-log-note">{l.note}</span>
+                              )}
+                              <span className="cx-log-date">
+                                {d.toLocaleDateString("en-IN")}
+                              </span>
+                            </div>
+                            <span className="cx-log-amt">
+                              −₹{l.amount.toLocaleString()}
+                            </span>
+                            <button
+                              type="button"
+                              className="cx-log-del"
+                              onClick={() => deleteLoss(l.id)}
+                              aria-label="Delete loss entry"
+                            >
+                              <Trash2 size={13} />
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              </div>
+              )}
             </div>
           </div>
         </Accordion>
@@ -3861,6 +4032,26 @@ export default function ManageOrdersPage() {
                     >
                       Clear
                     </button>
+                  </div>
+
+                  {/* Bulk WhatsApp — pick a stage to message all selected readers */}
+                  <div className="bulk-wa-row">
+                    <span className="bulk-wa-label">
+                      <MessageCircle size={13} /> Message all on WhatsApp:
+                    </span>
+                    {waMessages({}).map((m) => (
+                      <button
+                        key={m.key}
+                        type="button"
+                        className="bulk-wa-chip"
+                        onClick={() => {
+                          setBulkStage(m.key);
+                          setBulkSent([]);
+                        }}
+                      >
+                        {m.label}
+                      </button>
+                    ))}
                   </div>
                 </div>
               )}
@@ -4574,6 +4765,262 @@ export default function ManageOrdersPage() {
                   <Send size={16} />
                 </button>
               </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ===== Log a cancelled-order loss (chat-style) ===== */}
+      <AnimatePresence>
+        {showLossModal && (
+          <motion.div
+            className="bill-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowLossModal(false)}
+          >
+            <motion.div
+              className="bill-modal cx-modal"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="bill-header">
+                <span className="weight-600 font-16 flex flex-col">
+                  <span className="flex flex-row gap-8 items-center">
+                    <Pencil size={16} /> Log a loss
+                  </span>
+                  <span className="font-12 dark-50">
+                    Total loss: ₹{totalLoss.toLocaleString()}
+                  </span>
+                </span>
+                <span
+                  className="cursor-pointer"
+                  onClick={() => setShowLossModal(false)}
+                >
+                  <X size={16} />
+                </span>
+              </div>
+
+              <div className="cx-form">
+                <select
+                  className="admin-select cx-select"
+                  value={lossForm.orderId}
+                  onChange={(e) => {
+                    const ord = allCancelled.find(
+                      (o) => o["Order ID"] === e.target.value,
+                    );
+                    setLossForm((f) => ({
+                      ...f,
+                      orderId: e.target.value,
+                      amount: ord?.revenue ? String(ord.revenue) : f.amount,
+                    }));
+                  }}
+                >
+                  <option value="">Select a cancelled order…</option>
+                  {allCancelled.map((o) => (
+                    <option key={o["Order ID"]} value={o["Order ID"]}>
+                      {o["Customer Name"] || "—"} · ₹
+                      {(o.revenue || 0).toLocaleString()}
+                    </option>
+                  ))}
+                </select>
+                <div className="cx-form-row">
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    className="sec-mid-btn cx-amt"
+                    placeholder="Loss ₹"
+                    value={lossForm.amount}
+                    onChange={(e) =>
+                      setLossForm((f) => ({ ...f, amount: e.target.value }))
+                    }
+                  />
+                  <input
+                    type="text"
+                    className="sec-mid-btn width100"
+                    placeholder="Note (reason for loss)…"
+                    value={lossForm.note}
+                    onChange={(e) =>
+                      setLossForm((f) => ({ ...f, note: e.target.value }))
+                    }
+                    onKeyDown={(e) => e.key === "Enter" && addLoss()}
+                  />
+                  <button
+                    type="button"
+                    className="pri-big-btn cx-add"
+                    onClick={addLoss}
+                    disabled={!lossForm.orderId || !lossForm.amount}
+                  >
+                    <Plus size={16} />
+                  </button>
+                </div>
+                {allCancelled.length === 0 && (
+                  <span className="font-12 dark-50">
+                    No cancelled orders found yet.
+                  </span>
+                )}
+              </div>
+
+              <div className="cx-log cx-log-modal">
+                {losses.length === 0 && (
+                  <div className="cx-empty">
+                    No losses logged yet. Tag a cancelled order above and add the
+                    exact amount lost.
+                  </div>
+                )}
+                {losses.map((l) => {
+                  const d = new Date(l.ts);
+                  return (
+                    <div className="cx-log-row" key={l.id}>
+                      <div className="cx-log-main">
+                        <span className="cx-log-order">
+                          {l.orderName || "Order"}{" "}
+                          {l.orderValue ? (
+                            <em>(₹{l.orderValue.toLocaleString()})</em>
+                          ) : null}
+                        </span>
+                        {l.note && (
+                          <span className="cx-log-note">{l.note}</span>
+                        )}
+                        <span className="cx-log-date">
+                          {d.toLocaleDateString("en-IN")} ·{" "}
+                          {d.toLocaleTimeString("en-IN", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </span>
+                      </div>
+                      <span className="cx-log-amt">
+                        −₹{l.amount.toLocaleString()}
+                      </span>
+                      <button
+                        type="button"
+                        className="cx-log-del"
+                        onClick={() => deleteLoss(l.id)}
+                        aria-label="Delete loss entry"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ===== Bulk WhatsApp send (slide-up) ===== */}
+      <AnimatePresence>
+        {bulkStage && (
+          <motion.div
+            className="bill-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setBulkStage(null)}
+          >
+            <motion.div
+              className="bill-modal bulk-wa-modal"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {(() => {
+                const selectedOrders = orders.filter((o) =>
+                  selectedIds.includes(o["Order ID"]),
+                );
+                const stageLabel =
+                  waMessages({}).find((m) => m.key === bulkStage)?.label ||
+                  "Message";
+                const nextUnsent = selectedOrders.find(
+                  (o) => !bulkSent.includes(o["Order ID"]),
+                );
+                const sendOne = (o) => {
+                  const msg = waMessages(o).find((m) => m.key === bulkStage);
+                  if (!msg) return;
+                  openWhatsApp(o["Phone Number"], msg.text);
+                  setBulkSent((prev) =>
+                    prev.includes(o["Order ID"])
+                      ? prev
+                      : [...prev, o["Order ID"]],
+                  );
+                };
+                return (
+                  <>
+                    <div className="bill-header">
+                      <span className="weight-600 font-16 flex flex-col">
+                        <span className="flex flex-row gap-8 items-center">
+                          <MessageCircle size={18} /> {stageLabel}
+                        </span>
+                        <span className="font-12 dark-50">
+                          {bulkSent.length}/{selectedOrders.length} sent · tap
+                          Send to open each chat (message pre-filled)
+                        </span>
+                      </span>
+                      <span
+                        className="cursor-pointer"
+                        onClick={() => setBulkStage(null)}
+                      >
+                        <X size={16} />
+                      </span>
+                    </div>
+
+                    {nextUnsent && (
+                      <button
+                        type="button"
+                        className="pri-big-btn width100 bulk-wa-next"
+                        onClick={() => sendOne(nextUnsent)}
+                      >
+                        <FaWhatsapp size={15} /> Send to next —{" "}
+                        {nextUnsent["Customer Name"] || "reader"}
+                      </button>
+                    )}
+
+                    <div className="bulk-wa-list">
+                      {selectedOrders.map((o) => {
+                        const sent = bulkSent.includes(o["Order ID"]);
+                        return (
+                          <div
+                            key={o["Order ID"]}
+                            className={`bulk-wa-item ${sent ? "sent" : ""}`}
+                          >
+                            <div className="bulk-wa-meta">
+                              <span className="bulk-wa-name">
+                                {o["Customer Name"] || "—"}
+                              </span>
+                              <span className="bulk-wa-phone">
+                                +91 {o["Phone Number"]}
+                              </span>
+                            </div>
+                            <button
+                              type="button"
+                              className={`bulk-wa-send ${sent ? "done" : ""}`}
+                              onClick={() => sendOne(o)}
+                            >
+                              {sent ? (
+                                <>
+                                  <Check size={14} /> Sent
+                                </>
+                              ) : (
+                                <>
+                                  <FaWhatsapp size={14} /> Send
+                                </>
+                              )}
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </>
+                );
+              })()}
             </motion.div>
           </motion.div>
         )}

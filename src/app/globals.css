@@ -3212,6 +3212,253 @@ input {
   color: #b42318;
 }
 
+/* ===== Cancelled orders & losses ===== */
+.cx-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.cx-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 11px 13px;
+  border: 1px solid var(--hairline, #ececec);
+  border-radius: 12px;
+  background: var(--surface-2, #faf9f7);
+}
+.cx-stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--dark-50);
+}
+.cx-stat-val {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--foreground);
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.cx-stat-sub {
+  font-style: normal;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--dark-50);
+}
+.cx-stat-val.cx-loss {
+  color: #b42318;
+  align-items: center;
+}
+.cx-edit {
+  border: none;
+  background: rgba(180, 35, 24, 0.1);
+  color: #b42318;
+  border-radius: 8px;
+  padding: 4px;
+  display: inline-flex;
+  cursor: pointer;
+}
+.cx-log {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-top: 1px dashed var(--hairline, #e5e7eb);
+  padding-top: 10px;
+}
+.cx-log-modal {
+  border-top: none;
+  padding-top: 0;
+  overflow-y: auto;
+}
+.cx-log-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--hairline, #ececec);
+  border-radius: 10px;
+}
+.cx-log-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.cx-log-order {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--foreground);
+}
+.cx-log-order em {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--dark-50);
+}
+.cx-log-note {
+  font-size: 12px;
+  color: var(--dark-50);
+}
+.cx-log-date {
+  font-size: 10.5px;
+  color: var(--dark-50);
+}
+.cx-log-amt {
+  font-size: 14px;
+  font-weight: 800;
+  color: #b42318;
+  white-space: nowrap;
+}
+.cx-log-del {
+  border: none;
+  background: transparent;
+  color: var(--dark-50);
+  cursor: pointer;
+  display: inline-flex;
+}
+.cx-log-del:hover {
+  color: #ef4444;
+}
+.cx-modal {
+  display: flex;
+  flex-direction: column;
+  max-height: 82vh;
+}
+.cx-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.cx-select {
+  width: 100%;
+}
+.cx-form-row {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+.cx-amt {
+  flex: 0 0 96px;
+  max-width: 96px;
+}
+.cx-add {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 16px;
+}
+.cx-empty {
+  text-align: center;
+  font-size: 13px;
+  color: var(--dark-50);
+  padding: 24px 12px;
+}
+@media (max-width: 480px) {
+  .cx-stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===== Bulk WhatsApp (table view) ===== */
+.bulk-wa-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--hairline, #e5e7eb);
+}
+.bulk-wa-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--dark-50);
+}
+.bulk-wa-chip {
+  border: 1px solid rgba(37, 211, 102, 0.5);
+  background: rgba(37, 211, 102, 0.08);
+  color: #128c3e;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.bulk-wa-chip:hover {
+  background: rgba(37, 211, 102, 0.16);
+}
+.bulk-wa-modal {
+  display: flex;
+  flex-direction: column;
+  max-height: 82vh;
+}
+.bulk-wa-next {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.bulk-wa-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.bulk-wa-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--hairline, #ececec);
+  border-radius: 12px;
+}
+.bulk-wa-item.sent {
+  background: rgba(10, 143, 12, 0.05);
+  border-color: rgba(10, 143, 12, 0.25);
+}
+.bulk-wa-meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.bulk-wa-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--foreground);
+}
+.bulk-wa-phone {
+  font-size: 11.5px;
+  color: var(--dark-50);
+}
+.bulk-wa-send {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 12.5px;
+  font-weight: 800;
+  cursor: pointer;
+  background: #25d366;
+  color: #fff;
+}
+.bulk-wa-send.done {
+  background: rgba(10, 143, 12, 0.12);
+  color: #0a8f0c;
+}
+
 /* Manage-orders header actions (notes + bell) */
 .mo-head-actions {
   display: flex;
@@ -4348,6 +4595,26 @@ textarea.sec-mid-btn,
   font-size: var(--px-12);
   font-weight: var(--weight-500);
   margin-bottom: 6px;
+}
+
+/* Already-availed rewards line (below the progress bar) */
+.offer-availed {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  margin-top: 7px;
+}
+.offer-availed-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #1fd65f;
+  letter-spacing: 0.2px;
+}
+.offer-availed-chip svg {
+  color: #1fd65f;
 }
 
 /* PROGRESS BAR */
@@ -12617,6 +12884,18 @@ img[data-loaded="true"] {
 .pc-bars {
   min-width: 0;
 }
+/* All-time view: keep bars readable and scroll horizontally */
+.pc-card .wk-scroll.pc-scroll-x {
+  overflow-x: auto;
+  overflow-y: visible;
+  padding-bottom: 6px;
+}
+.pc-bars-all {
+  min-width: max-content;
+}
+.pc-bars-all .pc-col {
+  min-width: 40px;
+}
 
 /* ===== Insight bars (top books, categories, pincodes) ===== */
 .ins-bars {
@@ -16336,9 +16615,11 @@ img[data-loaded="true"] {
 
 @media (max-width: 768px) {
   .cart-fab {
-    position: fixed;
+    /* Absolute to the (fixed) .cart-bar so it always floats a consistent
+       gap above whatever bottom section is showing — no hardcoded offset */
+    position: absolute;
     right: 16px;
-    bottom: 24px;
+    bottom: calc(100% + 12px);
     z-index: 95;
     display: inline-flex;
     align-items: center;
@@ -16348,12 +16629,11 @@ img[data-loaded="true"] {
     background: #ffffff;
     border: 1px solid rgba(251, 133, 0, 0.55);
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
-    transition: bottom 0.25s ease;
   }
 
   /* Lift above the cart bar (offer strip + checkout) when items are present */
   .cart-fab.with-bar {
-    bottom: 150px;
+    bottom: calc(100% + 12px);
   }
 
   /* Attention shake — runs for ~3s when the user first becomes active */

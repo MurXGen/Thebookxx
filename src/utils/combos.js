@@ -112,11 +112,10 @@ export const combos = [
     "bookIds": [
       "bk-015",
       "bk-025",
-      "bk-026",
       "bk-027"
     ],
-    "seoTitle": "Romance Lovers Box — 4 Books Combo from ₹1 | TheBookX",
-    "seoDescription": "Buy the Romance Lovers Box combo (Red Flags and Rishtas, Was I Ever Enough, We Are There for Each Other, Can We Be Strangers Again) online at the lowest price on TheBookX. 4 handpicked books for just ₹589 (MRP ₹880) with free delivery, Cash on Delivery and easy returns across India."
+    "seoTitle": "Romance Lovers Box — 3 Books Combo from ₹1 | TheBookX",
+    "seoDescription": "Buy the Romance Lovers Box combo (Red Flags and Rishtas, Was I Ever Enough, Can We Be Strangers Again) online at the lowest price on TheBookX. 3 handpicked books for just ₹1 with free delivery, Cash on Delivery and easy returns across India."
   },
   {
     "id": "combo-008",

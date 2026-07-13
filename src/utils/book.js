@@ -538,21 +538,6 @@ export const books = [
     discountedPrice: 139,
   },
   {
-    id: "bk-026",
-    name: "We Are There for Each Other",
-    image: bookImages["we-are-there-for-each-other"],
-    description:
-      "Celebrate the power of friendship and human connection with this heartwarming read from TheBookX.in. A beautiful story about the bonds that sustain us through life's challenges. TheBookX ensures authentic books in pristine condition, securely via Delhivery and Indian Post. Shop now, books starting at just ₹1 for a limited period.",
-    author: "Sagar Chudesara",
-    pages: "210-230",
-    language: "English",
-    size: "Paperback",
-    stock: 23,
-    catalogue: ["romance", "fiction", "trending"],
-    originalPrice: calculateOriginalPrice(149),
-    discountedPrice: 149,
-  },
-  {
     id: "bk-027",
     name: "Can We Be Strangers Again",
     image: bookImages["can-we-be-strangers-again"],

@@ -1,7 +1,9 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { useStore } from "@/context/StoreContext";
+import { books as ALL_BOOKS } from "@/utils/book";
 import LoadingButton from "./LoadingButton";
 import {
   Copy,
@@ -80,6 +82,7 @@ export default function AddressModal({
   generateViewBagLinkWithDetails,
   shortenUrl,
   codHandlingFee = 29, // NEW
+  onUpsellAccept,
 }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -96,6 +99,14 @@ export default function AddressModal({
   const [showFasterDeliveryModal, setShowFasterDeliveryModal] = useState(false);
   const [tempPaymentMethod, setTempPaymentMethod] = useState(null);
   const [addressFormStartTime, setAddressFormStartTime] = useState(null);
+
+  // ── Upsell: "The Art of Clarity" add-on before payment ──
+  const ART_ID = "bk-002";
+  const { cart, addToCart } = useStore();
+  const artBook = ALL_BOOKS.find((b) => b.id === ART_ID);
+  const hasArtInCart = (cart || []).some((i) => i.id === ART_ID);
+  const [showUpsell, setShowUpsell] = useState(false);
+  const [pendingMethod, setPendingMethod] = useState(null);
 
   const [showUPIPayment, setShowUPIPayment] = useState(false);
   const [showCODSuccess, setShowCODSuccess] = useState(false);
@@ -574,6 +585,53 @@ export default function AddressModal({
     onClose();
   };
 
+  // Keep a live reference to the payment handlers so the upsell can proceed
+  // with fresh state (e.g. correct totals after adding the upsell book).
+  const paymentHandlersRef = useRef({});
+  paymentHandlersRef.current = {
+    COD: handleCODClick,
+    UPI: handleUPIClick,
+    WhatsApp: handleWhatsAppOrderClick,
+  };
+
+  // Intercept a payment button: if the address is valid and the shopper
+  // hasn't already added "The Art of Clarity", show the upsell first.
+  const attemptPayment = (method) => {
+    if (!isFormValid()) return;
+    if (artBook && !hasArtInCart) {
+      setPendingMethod(method);
+      setShowUpsell(true);
+      return;
+    }
+    paymentHandlersRef.current[method]?.();
+  };
+
+  const proceedPendingPayment = () => {
+    const method = pendingMethod;
+    setShowUpsell(false);
+    setPendingMethod(null);
+    // Defer so any cart/total change from accepting the upsell is applied first
+    setTimeout(() => paymentHandlersRef.current[method]?.(), 60);
+  };
+
+  const acceptUpsell = () => {
+    if (artBook) addToCart(ART_ID);
+    onUpsellAccept?.(); // tells the bag to apply the ₹40 add-on discount
+    trackFunnelEvent(EVENTS.REGULAR_BOOK_ADDED, {
+      book: "The Art of Clarity",
+      source: "checkout_upsell",
+    });
+    proceedPendingPayment();
+  };
+
+  const declineUpsell = () => {
+    trackFunnelEvent(EVENTS.PAYMENT_METHOD_SELECTED, {
+      method: pendingMethod,
+      upsell: "declined",
+    });
+    proceedPendingPayment();
+  };
+
   const handleUPIPaymentClick = async () => {
     if (!isFormValid()) return;
     trackFunnelEvent(EVENTS.UPI_PAYMENT_INITIATED, {
@@ -794,7 +852,7 @@ export default function AddressModal({
                   <div className="flex flex-row gap-12">
                     <LoadingButton
                       className="pri-big-btn width100"
-                      onClick={handleUPIClick}
+                      onClick={() => attemptPayment("UPI")}
                       disabled={!isFormValid()}
                     >
                       <p className="weight-600">Pay with UPI</p>
@@ -803,7 +861,7 @@ export default function AddressModal({
 
                     <LoadingButton
                       className="sec-big-btn width100 flex flex-col"
-                      onClick={handleCODClick}
+                      onClick={() => attemptPayment("COD")}
                       disabled={!isFormValid()}
                     >
                       <p className="weight-600">Cash on Delivery</p>
@@ -813,7 +871,7 @@ export default function AddressModal({
 
                   <LoadingButton
                     className="sec-big-btn width100 flex flex-col"
-                    onClick={handleWhatsAppOrderClick}
+                    onClick={() => attemptPayment("WhatsApp")}
                     disabled={!isFormValid()}
                   >
                     <div className="flex flex-row gap-12">
@@ -961,6 +1019,86 @@ export default function AddressModal({
       </AnimatePresence>
 
       {/* ========== COD HANDLING FEE MODAL (NEW) ========== */}
+      {/* ========== UPSELL: The Art of Clarity ========== */}
+      <AnimatePresence>
+        {showUpsell && artBook && (
+          <motion.div
+            className="bill-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={declineUpsell}
+            style={{ maxWidth: "980px", margin: "0 auto" }}
+          >
+            <motion.div
+              className="bill-modal upsell-modal"
+              initial={{ scale: 0.9, opacity: 0, y: 30 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 30 }}
+              transition={{ type: "spring", stiffness: 320, damping: 28 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="upsell-badges">
+                <span className="upsell-badge hot">
+                  🔥 2,300+ readers added this
+                </span>
+                <span className="upsell-badge deal">₹40 OFF today</span>
+              </div>
+
+              {/* Book cover in focus, like the details page */}
+              <div className="upsell-hero">
+                {artBook.image && (
+                  <img src={artBook.image} alt={artBook.name} />
+                )}
+              </div>
+
+              <p className="upsell-kicker">Wait — one last thing ✨</p>
+              <h3 className="upsell-title">
+                Add <em>“The Art of Clarity”</em> to your order?
+              </h3>
+              <p className="upsell-sub">
+                The reader-favourite guide to thinking clearly and stopping
+                overthinking — the perfect companion to your order.
+              </p>
+
+              <div className="upsell-divider" />
+
+              <div className="upsell-price-block">
+                <div className="upsell-price-row">
+                  <span className="upsell-now">
+                    ₹{Math.max(0, artBook.discountedPrice - 40)}
+                  </span>
+                  <span className="upsell-was">₹{artBook.discountedPrice}</span>
+                  <span className="upsell-save">Save ₹40</span>
+                </div>
+                <span className="upsell-warn">
+                  ⏳ Price rises 50% after you leave — add it now
+                </span>
+              </div>
+
+              <div className="upsell-divider" />
+
+              <div className="upsell-actions">
+                <button
+                  type="button"
+                  className="pri-big-btn width100 upsell-yes"
+                  onClick={acceptUpsell}
+                >
+                  Yes, let me read this as well →
+                </button>
+                <button
+                  type="button"
+                  className="upsell-skip"
+                  onClick={declineUpsell}
+                >
+                  Not now, continue to payment
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <AnimatePresence>
         {showCODFeeModal && (
           <CODHandlingFeeModal

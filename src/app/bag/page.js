@@ -53,6 +53,7 @@ function BagContent() {
   const [siteOrigin, setSiteOrigin] = useState("");
   const [showBill, setShowBill] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
+  const [upsellAccepted, setUpsellAccepted] = useState(false);
   const [showRecommendationModal, setShowRecommendationModal] = useState(false);
   const [showFreeShippingNudge, setShowFreeShippingNudge] = useState(false);
   const [sharedBooks, setSharedBooks] = useState([]); // [{ book, qty }]
@@ -278,6 +279,17 @@ function BagContent() {
       offerDiscount = Math.round((totalDiscounted * appliedOffer.value) / 100);
       offerLabel = `Free delivery`;
     }
+  }
+
+  // "The Art of Clarity" checkout add-on: ₹40 off, only while it's in the cart
+  const ART_UPSELL_ID = "bk-002";
+  const upsellDiscount =
+    upsellAccepted && cartBooks.some((b) => b.id === ART_UPSELL_ID) ? 40 : 0;
+  if (upsellDiscount) {
+    offerDiscount += upsellDiscount;
+    offerLabel = offerLabel
+      ? `${offerLabel} + ₹40 add-on`
+      : "₹40 book add-on";
   }
 
   const finalPayable = totalDiscounted - offerDiscount;
@@ -923,6 +935,7 @@ _Thank you for shopping with TheBookX! 📚✨_
         offerLabel={offerLabel}
         offerDiscount={offerDiscount}
         codHandlingFee={COD_HANDLING_FEE}
+        onUpsellAccept={() => setUpsellAccepted(true)}
       />
 
       <BillModal

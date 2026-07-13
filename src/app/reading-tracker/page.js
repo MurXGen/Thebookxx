@@ -17,6 +17,7 @@ import {
   Plus,
   Trash2,
   Phone,
+  StickyNote,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -46,6 +47,17 @@ export default function ReadingTrackerPage() {
   const [notifyPhone, setNotifyPhone] = useState("");
   const [trackedBooks, setTrackedBooks] = useState([]);
 
+  // Import-ordered-books state
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [orderedBooks, setOrderedBooks] = useState([]);
+  const [importSelected, setImportSelected] = useState([]); // ids chosen to import
+
+  // Per-book notes / action items: { [bookId]: [{ id, text, ts }] }
+  const [bookNotes, setBookNotes] = useState({});
+  const [showNotesModal, setShowNotesModal] = useState(false);
+  const [notesBook, setNotesBook] = useState(null);
+  const [noteText, setNoteText] = useState("");
+
   // Custom book form
   const [customBook, setCustomBook] = useState({
     name: "",
@@ -54,7 +66,7 @@ export default function ReadingTrackerPage() {
     image: "/default-book.jpg",
   });
 
-  // Load saved reading data
+  // Load saved reading data + the shopper's ordered books (cached by profile)
   useEffect(() => {
     const savedData = localStorage.getItem(READING_DATA_KEY);
     if (savedData) {
@@ -62,21 +74,96 @@ export default function ReadingTrackerPage() {
         const parsed = JSON.parse(savedData);
         setReadingEntries(parsed.entries || []);
         setTrackedBooks(parsed.trackedBooks || []);
+        setBookNotes(parsed.bookNotes || {});
       } catch (e) {
         console.error("Error loading reading data", e);
       }
     }
+    try {
+      const ob = JSON.parse(localStorage.getItem("user_ordered_books") || "[]");
+      if (Array.isArray(ob)) setOrderedBooks(ob);
+    } catch {}
   }, []);
 
+  // Open the import modal, preselecting books not already tracked
+  const openImportModal = () => {
+    setImportSelected(
+      orderedBooks
+        .filter((b) => !trackedBooks.some((t) => t.id === b.id))
+        .map((b) => b.id),
+    );
+    setShowImportModal(true);
+  };
+
+  const toggleImportSelect = (id) => {
+    setImportSelected((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    );
+  };
+
+  const handleImportOrderedBooks = () => {
+    const toAdd = orderedBooks.filter(
+      (b) => importSelected.includes(b.id) && !trackedBooks.some((t) => t.id === b.id),
+    );
+    if (!toAdd.length) {
+      setShowImportModal(false);
+      return;
+    }
+    const updated = [
+      ...trackedBooks,
+      ...toAdd.map((b) => ({
+        id: b.id,
+        name: b.name,
+        author: b.author || "Unknown",
+        pages: b.pages || 200,
+        image: b.image || "/default-book.jpg",
+        isCustom: false,
+      })),
+    ];
+    setTrackedBooks(updated);
+    saveReadingData(readingEntries, updated);
+    setShowImportModal(false);
+  };
+
   // Save reading data
-  const saveReadingData = (entries, books) => {
+  const saveReadingData = (entries, books, notes = bookNotes) => {
     localStorage.setItem(
       READING_DATA_KEY,
       JSON.stringify({
         entries: entries,
         trackedBooks: books,
+        bookNotes: notes,
       }),
     );
+  };
+
+  // ── Per-book notes / action items ──
+  const openNotes = (book) => {
+    setNotesBook(book);
+    setNoteText("");
+    setShowNotesModal(true);
+  };
+  const addBookNote = () => {
+    const text = noteText.trim();
+    if (!text || !notesBook) return;
+    const next = {
+      ...bookNotes,
+      [notesBook.id]: [
+        ...(bookNotes[notesBook.id] || []),
+        { id: `${Date.now()}-${Math.random().toString(36).slice(2, 6)}`, text, ts: Date.now() },
+      ],
+    };
+    setBookNotes(next);
+    saveReadingData(readingEntries, trackedBooks, next);
+    setNoteText("");
+  };
+  const deleteBookNote = (bookId, noteId) => {
+    const next = {
+      ...bookNotes,
+      [bookId]: (bookNotes[bookId] || []).filter((n) => n.id !== noteId),
+    };
+    setBookNotes(next);
+    saveReadingData(readingEntries, trackedBooks, next);
   };
 
   const filteredBooks = books.filter((book) =>
@@ -306,6 +393,20 @@ export default function ReadingTrackerPage() {
 
         <div className="dashed-border my-20"></div>
 
+        {/* Import ordered books — quickest way to start tracking */}
+        <button
+          className="rt-import-cta"
+          onClick={openImportModal}
+        >
+          <BookOpen size={18} />
+          <span>
+            Import my ordered books
+            {orderedBooks.length > 0 && (
+              <em className="rt-import-count">{orderedBooks.length}</em>
+            )}
+          </span>
+        </button>
+
         {/* Search Section */}
         <div className="flex flex-col gap-4">
           <div className="search-input-wrapper">
@@ -320,13 +421,28 @@ export default function ReadingTrackerPage() {
           <span className="flex flex-row justify-center font-12">or</span>
 
           <button
-            className="pri-big-btn flex flex-row gap-4 justify-center items-center"
+            className="sec-big-btn flex flex-row gap-4 justify-center items-center"
             onClick={() => setShowAddCustomBookModal(true)}
           >
             <Plus size={18} />
-            Custom Book
+            Add a custom book
           </button>
         </div>
+
+        {/* Empty state — only when nothing is being tracked and no search */}
+        {trackedBooks.length === 0 && !searchQuery && (
+          <div className="rt-empty">
+            <BookOpen size={34} />
+            <h3>Start your reading journey</h3>
+            <p>
+              Import the books you've ordered, search our catalogue, or add your
+              own — then log your daily pages to build a streak.
+            </p>
+            <button className="pri-big-btn rt-empty-btn" onClick={openImportModal}>
+              <BookOpen size={16} /> Import my ordered books
+            </button>
+          </div>
+        )}
 
         {/* Search Results */}
         {searchQuery && (
@@ -410,6 +526,18 @@ export default function ReadingTrackerPage() {
                           onClick={() => handleBookSelect(book)}
                         >
                           + Add Entry
+                        </button>
+                        <button
+                          className="sec-mid-btn rt-notes-btn"
+                          onClick={() => openNotes(book)}
+                          title="Key points & action items"
+                        >
+                          <StickyNote size={15} /> Notes
+                          {(bookNotes[book.id] || []).length > 0 && (
+                            <span className="rt-notes-count">
+                              {bookNotes[book.id].length}
+                            </span>
+                          )}
                         </button>
                         <button
                           className="pri-big-btn"
@@ -574,6 +702,195 @@ export default function ReadingTrackerPage() {
                     Get Daily Reminders
                   </button>
                 </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Import Ordered Books Modal */}
+      <AnimatePresence>
+        {showImportModal && (
+          <motion.div
+            className="bill-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowImportModal(false)}
+          >
+            <motion.div
+              className="bill-modal rt-import-modal"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="bill-header">
+                <span className="weight-600 font-16 flex flex-row gap-8 items-center">
+                  <BookOpen size={18} /> Import your ordered books
+                </span>
+                <span
+                  className="cursor-pointer"
+                  onClick={() => setShowImportModal(false)}
+                >
+                  <X size={16} />
+                </span>
+              </div>
+
+              {orderedBooks.length === 0 ? (
+                <div className="rt-import-empty">
+                  <p>
+                    We couldn't find any ordered books yet. Open your{" "}
+                    <Link href="/profile" className="orange">
+                      Profile
+                    </Link>{" "}
+                    and view your orders first — they'll appear here to import.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <p className="font-12 dark-50" style={{ margin: "4px 0 10px" }}>
+                    Select the books you'd like to track:
+                  </p>
+                  <div className="rt-import-list">
+                    {orderedBooks.map((b) => {
+                      const already = trackedBooks.some((t) => t.id === b.id);
+                      const checked = importSelected.includes(b.id);
+                      return (
+                        <label
+                          key={b.id}
+                          className={`rt-import-item ${already ? "already" : ""}`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={already || checked}
+                            disabled={already}
+                            onChange={() => toggleImportSelect(b.id)}
+                          />
+                          <span className="rt-import-cover">
+                            {b.image && (
+                              <img src={b.image} alt={b.name} loading="lazy" />
+                            )}
+                          </span>
+                          <span className="rt-import-meta">
+                            <span className="rt-import-name">{b.name}</span>
+                            {b.author && (
+                              <span className="rt-import-author">
+                                {b.author}
+                              </span>
+                            )}
+                          </span>
+                          {already && (
+                            <span className="rt-import-tag">Tracking</span>
+                          )}
+                        </label>
+                      );
+                    })}
+                  </div>
+                  <button
+                    className="pri-big-btn width100"
+                    onClick={handleImportOrderedBooks}
+                    style={{ marginTop: 14 }}
+                  >
+                    Add{" "}
+                    {
+                      importSelected.filter(
+                        (id) => !trackedBooks.some((t) => t.id === id),
+                      ).length
+                    }{" "}
+                    book(s) to tracker
+                  </button>
+                </>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Per-book Notes / Action Items Modal */}
+      <AnimatePresence>
+        {showNotesModal && notesBook && (
+          <motion.div
+            className="bill-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowNotesModal(false)}
+          >
+            <motion.div
+              className="bill-modal rt-notes-modal"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="bill-header">
+                <span className="weight-600 font-16 flex flex-col">
+                  <span className="flex flex-row gap-8 items-center">
+                    <StickyNote size={18} /> Key points & action items
+                  </span>
+                  <span className="font-12 dark-50">{notesBook.name}</span>
+                </span>
+                <span
+                  className="cursor-pointer"
+                  onClick={() => setShowNotesModal(false)}
+                >
+                  <X size={16} />
+                </span>
+              </div>
+
+              <div className="rt-notes-list">
+                {(bookNotes[notesBook.id] || []).length === 0 && (
+                  <div className="rt-notes-empty">
+                    No notes yet. Jot down key takeaways and action items from
+                    this book below.
+                  </div>
+                )}
+                {(bookNotes[notesBook.id] || []).map((n) => {
+                  const d = new Date(n.ts);
+                  return (
+                    <div className="rt-note-item" key={n.id}>
+                      <p className="rt-note-text">{n.text}</p>
+                      <div className="rt-note-foot">
+                        <span>
+                          {d.toLocaleDateString("en-IN", { weekday: "short" })},{" "}
+                          {d.toLocaleDateString("en-IN")}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => deleteBookNote(notesBook.id, n.id)}
+                          aria-label="Delete note"
+                        >
+                          <Trash2 size={13} />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="rt-notes-input-row">
+                <textarea
+                  className="search-book width100 rt-notes-input"
+                  placeholder="Add a key point or action item…"
+                  value={noteText}
+                  onChange={(e) => setNoteText(e.target.value)}
+                  rows={2}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && (e.metaKey || e.ctrlKey))
+                      addBookNote();
+                  }}
+                />
+                <button
+                  type="button"
+                  className="pri-big-btn"
+                  onClick={addBookNote}
+                  disabled={!noteText.trim()}
+                >
+                  <Plus size={16} /> Add
+                </button>
               </div>
             </motion.div>
           </motion.div>

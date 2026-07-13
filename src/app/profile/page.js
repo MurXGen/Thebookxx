@@ -39,6 +39,7 @@ import { FaWhatsapp } from "react-icons/fa";
 import Link from "next/link";
 import PageHeader from "@/components/UI/PageHeader";
 import InstallAppBar from "@/components/InstallAppBar";
+import RecommendationModal from "@/components/RecommendationModal";
 import { books as ALL_BOOKS } from "@/utils/book";
 
 // Match an order-item name to its book cover (order items come from the sheet,
@@ -338,6 +339,7 @@ export default function MyOrdersPage() {
   const [searched, setSearched] = useState(false);
   const [error, setError] = useState("");
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showSuggest, setShowSuggest] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [qrUnlocked, setQrUnlocked] = useState(false);
   const [upiCopied, setUpiCopied] = useState(false);
@@ -391,6 +393,34 @@ export default function MyOrdersPage() {
       setShowPhoneInput(false);
     }
   }, []);
+
+  // Cache the shopper's ordered books so the Reading Tracker can import them.
+  useEffect(() => {
+    if (!orders || !orders.length) return;
+    try {
+      const byName = new Map();
+      orders.forEach((o) =>
+        (o.parsedBooks || []).forEach((b) => {
+          const key = String(b.name || "").trim();
+          if (!key || byName.has(key)) return;
+          const match = ALL_BOOKS.find(
+            (x) => x.name.toLowerCase() === key.toLowerCase(),
+          );
+          byName.set(key, {
+            id: match?.id || `ordered_${key.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
+            name: key,
+            author: match?.author || "",
+            image: match?.image || "/default-book.jpg",
+            pages: match?.pages || 200,
+          });
+        }),
+      );
+      localStorage.setItem(
+        "user_ordered_books",
+        JSON.stringify([...byName.values()]),
+      );
+    } catch {}
+  }, [orders]);
 
   // Persist a phone number to the saved list (most-recent first, max 5)
   const savePhoneNumber = (num) => {
@@ -1006,8 +1036,27 @@ Please cancel this order. Thank you 🙏`;
     return `${formattedDay} ${month}, ${year} | ${formattedTime}`;
   };
 
+  // Days since the shopper's most recent order → prompt "what to read next"
+  const lastOrderDate = (orders || []).reduce((latest, o) => {
+    const d = parseSheetDate(getOrderDateValue(o));
+    return d && (!latest || d > latest) ? d : latest;
+  }, null);
+  const daysSinceLastOrder = lastOrderDate
+    ? Math.floor((Date.now() - lastOrderDate.getTime()) / (1000 * 60 * 60 * 24))
+    : null;
+  const showReadNext =
+    orders.length > 0 && daysSinceLastOrder !== null && daysSinceLastOrder > 10;
+
   return (
     <div className="my-orders-page">
+      {/* Reading-tracker promo stripe */}
+      <Link href="/reading-tracker" className="reading-stripe">
+        <span className="reading-stripe-text">
+          📖 Track your reading progress from here
+        </span>
+        <span className="reading-stripe-btn">Click here</span>
+      </Link>
+
       <InstallAppBar />
       <div className="section-680 flex flex-col gap-24">
         {/* Header */}
@@ -1241,6 +1290,21 @@ Please cancel this order. Thank you 🙏`;
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* What to read next — nudge after 10+ days since last order */}
+        {searched && !loading && showReadNext && (
+          <button
+            type="button"
+            className="read-next-cta"
+            onClick={() => setShowSuggest(true)}
+          >
+            <span className="read-next-main">
+              📚 It's been {daysSinceLastOrder} days since your last order
+              <em>Not sure what to read next?</em>
+            </span>
+            <span className="read-next-go">Get suggestions →</span>
+          </button>
+        )}
 
         {/* Orders List */}
         {searched && !loading && orders.length > 0 && (
@@ -2044,6 +2108,12 @@ Please cancel this order. Thank you 🙏`;
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* "What to read next" suggestion modal */}
+      <RecommendationModal
+        isOpen={showSuggest}
+        onClose={() => setShowSuggest(false)}
+      />
     </div>
   );
 }

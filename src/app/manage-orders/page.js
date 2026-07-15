@@ -41,6 +41,8 @@ import {
   Phone,
   TrendingUp,
   TrendingDown,
+  BarChart3,
+  AreaChart,
   MessageCircle,
   StickyNote,
   Send,
@@ -361,6 +363,41 @@ const BOOK_BY_NAME = {};
 ALL_BOOKS.forEach((b) => {
   if (b?.name) BOOK_BY_NAME[b.name.toLowerCase().trim()] = b;
 });
+
+// India Post weight-slab delivery charge (grams → ₹). Extend the top slab
+// as needed for parcels heavier than 4kg.
+const indiaPostDeliveryCost = (grams) => {
+  const g = Number(grams) || 0;
+  if (g <= 500) return 42;
+  if (g <= 1000) return 62;
+  if (g <= 1500) return 100;
+  if (g <= 2000) return 150;
+  if (g <= 4000) return 200;
+  return 200; // >4kg — adjust if you add heavier slabs
+};
+
+// Derive real economics for an order from its parsed book lines, sourcing
+// per-book cost + weight from the catalogue (matched by name). Returns the
+// cost of goods, total parcel weight (g), and the resulting India Post cost.
+const orderEconomics = (parsedBooks = []) => {
+  let booksCost = 0;
+  let weight = 0;
+  let matched = 0;
+  let unmatched = 0;
+  parsedBooks.forEach((line) => {
+    const qty = Number(line.quantity) || 1;
+    const b = BOOK_BY_NAME[String(line.name || "").toLowerCase().trim()];
+    if (b) {
+      matched += 1;
+      booksCost += (Number(b.cost) || 0) * qty;
+      weight += (Number(b.weight) || 0) * qty;
+    } else {
+      unmatched += 1;
+    }
+  });
+  const deliveryCost = indiaPostDeliveryCost(weight);
+  return { booksCost, weight, deliveryCost, matched, unmatched };
+};
 const WEEKDAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 // Toggleable analytics sections (Customize panel).
@@ -375,6 +412,7 @@ const SECTION_TABS = [
 const ANALYTICS_SECTIONS = [
   { key: "kpis", label: "Summary cards" },
   { key: "profitCost", label: "Profit & cost" },
+  { key: "deliveryCost", label: "Delivery cost (India Post)" },
   { key: "dailyVolume", label: "Daily order volume" },
   { key: "ordersByStatus", label: "Orders by status" },
   { key: "valueByStatus", label: "Order value by status" },
@@ -627,7 +665,34 @@ function OrdersCalendar({
 }
 
 // ── Daily order-volume area chart (self-contained SVG, no deps) ──
+// Small bar/area switch shown in the top-right of a chart frame.
+function ChartTypeToggle({ mode, setMode }) {
+  return (
+    <div className="chart-type-toggle">
+      <button
+        type="button"
+        className={`ctt-btn${mode === "bar" ? " on" : ""}`}
+        onClick={() => setMode("bar")}
+        title="Bar chart"
+        aria-label="Bar chart"
+      >
+        <BarChart3 size={14} />
+      </button>
+      <button
+        type="button"
+        className={`ctt-btn${mode === "area" ? " on" : ""}`}
+        onClick={() => setMode("area")}
+        title="Area chart"
+        aria-label="Area chart"
+      >
+        <AreaChart size={14} />
+      </button>
+    </div>
+  );
+}
+
 function DailyVolumeChart({ ordersByDay, days = 14 }) {
+  const [mode, setMode] = useState("area");
   const today = new Date();
   const series = [];
   for (let i = days - 1; i >= 0; i--) {
@@ -660,66 +725,92 @@ function DailyVolumeChart({ ordersByDay, days = 14 }) {
 
   return (
     <div className="admin-chart-card vol-card">
-      <div className="chart-title">
-        Daily order volume
-        <span className="vol-sub">
-          {total} orders · peak {peak}/day · last {days} days
-        </span>
+      <div className="wk-head">
+        <div className="chart-title">
+          Daily order volume
+          <span className="vol-sub">
+            {total} orders · peak {peak}/day · last {days} days
+          </span>
+        </div>
+        <ChartTypeToggle mode={mode} setMode={setMode} />
       </div>
-      <svg className="vol-svg" viewBox={`0 0 ${W} ${H}`} role="img">
-        <defs>
-          <linearGradient id="volFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="rgba(10,143,12,0.32)" />
-            <stop offset="100%" stopColor="rgba(10,143,12,0)" />
-          </linearGradient>
-        </defs>
-        <line
-          x1={padX}
-          y1={padTop + ih}
-          x2={W - padX}
-          y2={padTop + ih}
-          stroke="var(--hairline,#ececec)"
-          strokeWidth="1"
-        />
-        <path d={area} fill="url(#volFill)" />
-        <polyline
-          points={line}
-          fill="none"
-          stroke="var(--success,#0a8f0c)"
-          strokeWidth="2.5"
-          strokeLinejoin="round"
-          strokeLinecap="round"
-        />
-        {series.map((s, i) => (
-          <g key={i}>
-            {s.count > 0 && (
-              <>
-                <circle
-                  cx={sx(i)}
-                  cy={sy(s.count)}
-                  r="3"
-                  fill="#fff"
-                  stroke="var(--success,#0a8f0c)"
-                  strokeWidth="2"
+      {mode === "bar" ? (
+        <div className="vol-bars">
+          {series.map((s, i) => (
+            <div
+              key={i}
+              className="vol-bcol"
+              title={`${fmt(s.d)} · ${s.count}`}
+            >
+              <div className="vol-btrack">
+                {s.count > 0 && <span className="vol-bnum">{s.count}</span>}
+                <div
+                  className="vol-bfill"
+                  style={{ height: `${(s.count / max) * 100}%` }}
                 />
-                <text
-                  x={sx(i)}
-                  y={sy(s.count) - 8}
-                  textAnchor="middle"
-                  className="vol-num"
-                >
-                  {s.count}
+              </div>
+              <span className="vol-bx">
+                {i % 2 === 0 || i === n - 1 ? fmt(s.d) : ""}
+              </span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <svg className="vol-svg" viewBox={`0 0 ${W} ${H}`} role="img">
+          <defs>
+            <linearGradient id="volFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="rgba(10,143,12,0.32)" />
+              <stop offset="100%" stopColor="rgba(10,143,12,0)" />
+            </linearGradient>
+          </defs>
+          <line
+            x1={padX}
+            y1={padTop + ih}
+            x2={W - padX}
+            y2={padTop + ih}
+            stroke="var(--hairline,#ececec)"
+            strokeWidth="1"
+          />
+          <path d={area} fill="url(#volFill)" />
+          <polyline
+            points={line}
+            fill="none"
+            stroke="var(--success,#0a8f0c)"
+            strokeWidth="2.5"
+            strokeLinejoin="round"
+            strokeLinecap="round"
+          />
+          {series.map((s, i) => (
+            <g key={i}>
+              {s.count > 0 && (
+                <>
+                  <circle
+                    cx={sx(i)}
+                    cy={sy(s.count)}
+                    r="3"
+                    fill="#fff"
+                    stroke="var(--success,#0a8f0c)"
+                    strokeWidth="2"
+                  />
+                  <text
+                    x={sx(i)}
+                    y={sy(s.count) - 8}
+                    textAnchor="middle"
+                    className="vol-num"
+                  >
+                    {s.count}
+                  </text>
+                </>
+              )}
+              {(i % 2 === 0 || i === n - 1) && (
+                <text x={sx(i)} y={H - 8} textAnchor="middle" className="vol-x">
+                  {fmt(s.d)}
                 </text>
-              </>
-            )}
-            {(i % 2 === 0 || i === n - 1) && (
-              <text x={sx(i)} y={H - 8} textAnchor="middle" className="vol-x">
-                {fmt(s.d)}
-              </text>
-            )}
-          </g>
-        ))}
-      </svg>
+              )}
+            </g>
+          ))}
+        </svg>
+      )}
     </div>
   );
 }
@@ -1056,6 +1147,7 @@ function OrdersLoader() {
 // ── Profit vs Cost stacked bars (day / week / month) with money stats ──
 function ProfitCostChart({ orders, period = "month", offset = 0 }) {
   const [hover, setHover] = useState(null);
+  const [mode, setMode] = useState("area"); // "area" | "bar"
   // Reference date shifts with the period navigation so the trailing
   // buckets end at the selected day / week / month.
   const realNow = new Date();
@@ -1187,6 +1279,35 @@ function ProfitCostChart({ orders, period = "month", offset = 0 }) {
 
   cols = cols.map((c) => ({ ...c, profit: c.rev - c.cost }));
   const maxRev = Math.max(1, ...cols.map((c) => c.rev));
+
+  // ── Area-chart geometry (Profit & Cost as two lines on a 0 baseline) ──
+  const AW = 600;
+  const AH = 210;
+  const aPadTop = 18;
+  const aPadBottom = 8;
+  const aih = AH - aPadTop - aPadBottom;
+  const nCols = cols.length || 1;
+  const vMax = Math.max(1, ...cols.map((c) => Math.max(c.cost, c.profit)));
+  const vMin = Math.min(0, ...cols.map((c) => c.profit));
+  const vRange = vMax - vMin || 1;
+  const ax = (i) => ((i + 0.5) / nCols) * AW;
+  const ay = (v) => aPadTop + aih - ((v - vMin) / vRange) * aih;
+  const aZero = ay(0);
+  const linePts = (key) =>
+    cols.map((c, i) => `${ax(i).toFixed(1)},${ay(c[key]).toFixed(1)}`).join(" ");
+  const areaPath = (key) =>
+    nCols === 0
+      ? ""
+      : `M ${ax(0).toFixed(1)},${aZero.toFixed(1)} ` +
+        cols
+          .map((c, i) => `L ${ax(i).toFixed(1)},${ay(c[key]).toFixed(1)}`)
+          .join(" ") +
+        ` L ${ax(nCols - 1).toFixed(1)},${aZero.toFixed(1)} Z`;
+  const costLinePts = linePts("cost");
+  const profitLinePts = linePts("profit");
+  const costAreaD = areaPath("cost");
+  const profitAreaD = areaPath("profit");
+
   const totRev = cols.reduce((s, c) => s + c.rev, 0);
   const totCost = cols.reduce((s, c) => s + c.cost, 0);
   const totProfit = totRev - totCost;
@@ -1200,13 +1321,16 @@ function ProfitCostChart({ orders, period = "month", offset = 0 }) {
         <div className="chart-title">
           Profit &amp; cost <span className="vol-sub">{granularityLabel}</span>
         </div>
-        <div className="pc-legend">
-          <span>
-            <i className="pc-dot pc-dot-cost" /> Cost
-          </span>
-          <span>
-            <i className="pc-dot pc-dot-profit" /> Profit
-          </span>
+        <div className="wk-head-right">
+          <div className="pc-legend">
+            <span>
+              <i className="pc-dot pc-dot-cost" /> Cost
+            </span>
+            <span>
+              <i className="pc-dot pc-dot-profit" /> Profit
+            </span>
+          </div>
+          <ChartTypeToggle mode={mode} setMode={setMode} />
         </div>
       </div>
 
@@ -1235,6 +1359,138 @@ function ProfitCostChart({ orders, period = "month", offset = 0 }) {
         </span>
       </div>
 
+      {mode === "area" ? (
+      <div className={`wk-scroll ${period === "all" ? "pc-scroll-x" : ""}`}>
+        <div
+          className="pc-area-wrap"
+          style={
+            period === "all"
+              ? { minWidth: `${Math.max(AW, nCols * 46)}px` }
+              : undefined
+          }
+        >
+          <svg
+            className="pc-area-svg"
+            viewBox={`0 0 ${AW} ${AH}`}
+            preserveAspectRatio="none"
+            role="img"
+          >
+            <defs>
+              <linearGradient id="pcCostFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="rgba(148,163,184,0.30)" />
+                <stop offset="100%" stopColor="rgba(148,163,184,0)" />
+              </linearGradient>
+              <linearGradient id="pcProfitFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="rgba(10,143,12,0.30)" />
+                <stop offset="100%" stopColor="rgba(10,143,12,0)" />
+              </linearGradient>
+            </defs>
+            {/* zero baseline */}
+            <line
+              x1="0"
+              y1={aZero}
+              x2={AW}
+              y2={aZero}
+              stroke="var(--hairline,#ececec)"
+              strokeWidth="1"
+              vectorEffect="non-scaling-stroke"
+            />
+            <path d={costAreaD} fill="url(#pcCostFill)" />
+            <path d={profitAreaD} fill="url(#pcProfitFill)" />
+            <polyline
+              points={costLinePts}
+              fill="none"
+              stroke="#94a3b8"
+              strokeWidth="2.5"
+              strokeLinejoin="round"
+              strokeLinecap="round"
+              vectorEffect="non-scaling-stroke"
+            />
+            <polyline
+              points={profitLinePts}
+              fill="none"
+              stroke="var(--success,#0a8f0c)"
+              strokeWidth="2.5"
+              strokeLinejoin="round"
+              strokeLinecap="round"
+              vectorEffect="non-scaling-stroke"
+            />
+            {cols.map((c, i) => (
+              <g key={i}>
+                <circle
+                  cx={ax(i)}
+                  cy={ay(c.cost)}
+                  r={hover === i ? 4 : 2.4}
+                  fill="#fff"
+                  stroke="#94a3b8"
+                  strokeWidth="2"
+                  vectorEffect="non-scaling-stroke"
+                />
+                <circle
+                  cx={ax(i)}
+                  cy={ay(c.profit)}
+                  r={hover === i ? 4 : 2.4}
+                  fill="#fff"
+                  stroke="var(--success,#0a8f0c)"
+                  strokeWidth="2"
+                  vectorEffect="non-scaling-stroke"
+                />
+              </g>
+            ))}
+          </svg>
+
+          {/* Transparent hover columns + x-axis labels overlaid on the chart */}
+          <div className="pc-area-cols">
+            {cols.map((c, i) => {
+              const tipSide =
+                i >= cols.length - 2
+                  ? "pc-tip-right"
+                  : i <= 1
+                    ? "pc-tip-left"
+                    : "";
+              return (
+                <div
+                  key={i}
+                  className={`pc-acol${hover === i ? " on" : ""}`}
+                  onMouseEnter={() => setHover(i)}
+                  onMouseLeave={() => setHover((h) => (h === i ? null : h))}
+                  onClick={() => setHover((h) => (h === i ? null : i))}
+                >
+                  {hover === i && (
+                    <div className={`pc-tip ${tipSide}`}>
+                      <div className="pc-tip-h">{c.hint}</div>
+                      <div className="pc-tip-r">
+                        <span>Revenue</span>
+                        <b>₹{c.rev.toLocaleString()}</b>
+                      </div>
+                      <div className="pc-tip-r">
+                        <span>Cost</span>
+                        <b>₹{c.cost.toLocaleString()}</b>
+                      </div>
+                      <div className="pc-tip-r">
+                        <span>Profit</span>
+                        <b className={c.profit >= 0 ? "pc-pos" : "pc-neg"}>
+                          ₹{c.profit.toLocaleString()}
+                        </b>
+                      </div>
+                      <div className="pc-tip-r">
+                        <span>Orders</span>
+                        <b>{c.n || 0}</b>
+                      </div>
+                      <div className="pc-tip-r">
+                        <span>Books</span>
+                        <b>{c.qty || 0}</b>
+                      </div>
+                    </div>
+                  )}
+                  <span className="pc-lbl">{c.label}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+      ) : (
       <div className={`wk-scroll ${period === "all" ? "pc-scroll-x" : ""}`}>
         <div className={`pc-bars pc-bars-${period}`}>
           {cols.map((c, i) => {
@@ -1245,58 +1501,59 @@ function ProfitCostChart({ orders, period = "month", offset = 0 }) {
                   ? "pc-tip-left"
                   : "";
             return (
-            <div
-              key={i}
-              className="pc-col"
-              onMouseEnter={() => setHover(i)}
-              onMouseLeave={() => setHover((h) => (h === i ? null : h))}
-              onClick={() => setHover((h) => (h === i ? null : i))}
-            >
-              {hover === i && (
-                <div className={`pc-tip ${tipSide}`}>
-                  <div className="pc-tip-h">{c.hint}</div>
-                  <div className="pc-tip-r">
-                    <span>Revenue</span>
-                    <b>₹{c.rev.toLocaleString()}</b>
+              <div
+                key={i}
+                className="pc-col"
+                onMouseEnter={() => setHover(i)}
+                onMouseLeave={() => setHover((h) => (h === i ? null : h))}
+                onClick={() => setHover((h) => (h === i ? null : i))}
+              >
+                {hover === i && (
+                  <div className={`pc-tip ${tipSide}`}>
+                    <div className="pc-tip-h">{c.hint}</div>
+                    <div className="pc-tip-r">
+                      <span>Revenue</span>
+                      <b>₹{c.rev.toLocaleString()}</b>
+                    </div>
+                    <div className="pc-tip-r">
+                      <span>Cost</span>
+                      <b>₹{c.cost.toLocaleString()}</b>
+                    </div>
+                    <div className="pc-tip-r">
+                      <span>Profit</span>
+                      <b className={c.profit >= 0 ? "pc-pos" : "pc-neg"}>
+                        ₹{c.profit.toLocaleString()}
+                      </b>
+                    </div>
+                    <div className="pc-tip-r">
+                      <span>Orders</span>
+                      <b>{c.n || 0}</b>
+                    </div>
+                    <div className="pc-tip-r">
+                      <span>Books</span>
+                      <b>{c.qty || 0}</b>
+                    </div>
                   </div>
-                  <div className="pc-tip-r">
-                    <span>Cost</span>
-                    <b>₹{c.cost.toLocaleString()}</b>
-                  </div>
-                  <div className="pc-tip-r">
-                    <span>Profit</span>
-                    <b className={c.profit >= 0 ? "pc-pos" : "pc-neg"}>
-                      ₹{c.profit.toLocaleString()}
-                    </b>
-                  </div>
-                  <div className="pc-tip-r">
-                    <span>Orders</span>
-                    <b>{c.n || 0}</b>
-                  </div>
-                  <div className="pc-tip-r">
-                    <span>Books</span>
-                    <b>{c.qty || 0}</b>
-                  </div>
+                )}
+                <div className="pc-bar-track">
+                  <div
+                    className="pc-seg pc-seg-profit"
+                    style={{
+                      height: `${(Math.max(0, c.profit) / maxRev) * 100}%`,
+                    }}
+                  />
+                  <div
+                    className="pc-seg pc-seg-cost"
+                    style={{ height: `${(c.cost / maxRev) * 100}%` }}
+                  />
                 </div>
-              )}
-              <div className="pc-bar-track">
-                <div
-                  className="pc-seg pc-seg-profit"
-                  style={{
-                    height: `${(Math.max(0, c.profit) / maxRev) * 100}%`,
-                  }}
-                />
-                <div
-                  className="pc-seg pc-seg-cost"
-                  style={{ height: `${(c.cost / maxRev) * 100}%` }}
-                />
+                <span className="pc-lbl">{c.label}</span>
               </div>
-              <span className="pc-lbl">{c.label}</span>
-            </div>
             );
           })}
         </div>
       </div>
+      )}
     </div>
   );
 }
@@ -1923,25 +2180,6 @@ export default function ManageOrdersPage() {
   const [bulkSent, setBulkSent] = useState([]); // order IDs already messaged
   const [waPick, setWaPick] = useState(""); // dropdown-selected stage (not yet triggered)
 
-  // ── Cancelled-order loss log (chat-style, localStorage) ──
-  const [losses, setLosses] = useState([]);
-  const [showLossModal, setShowLossModal] = useState(false);
-  const [lossForm, setLossForm] = useState({ orderId: "", amount: "", note: "" });
-  const lossHydrated = useRef(false);
-  useEffect(() => {
-    try {
-      const s = JSON.parse(localStorage.getItem("mo_losses") || "[]");
-      if (Array.isArray(s)) setLosses(s);
-    } catch {}
-    lossHydrated.current = true;
-  }, []);
-  useEffect(() => {
-    if (!lossHydrated.current) return;
-    try {
-      localStorage.setItem("mo_losses", JSON.stringify(losses));
-    } catch {}
-  }, [losses]);
-  const deleteLoss = (id) => setLosses((l) => l.filter((x) => x.id !== id));
   const [accOpen, setAccOpen] = useState({
     analytics: true,
     calendar: false,
@@ -2084,7 +2322,14 @@ export default function ManageOrdersPage() {
         order.shippingId = order["Shipping ID"] || "";
         order.status = order["Order Status"] || "Processing";
         order.revenue = parseFloat(order["Total Amount"]) || 0;
-        order.totalCost = parseFloat(order["Total Cost"]) || 0;
+        // Source cost + weight from the catalogue (matched by book name) so
+        // profit and India Post delivery cost are computed, not read from the
+        // sheet. totalCost = cost of goods + weight-based delivery charge.
+        const econ = orderEconomics(order.parsedBooks);
+        order.booksCost = econ.booksCost;
+        order.weight = econ.weight;
+        order.deliveryCost = econ.deliveryCost;
+        order.totalCost = econ.booksCost + econ.deliveryCost;
         order.pnl = order.revenue - order.totalCost;
         return order;
       });
@@ -3010,12 +3255,46 @@ export default function ManageOrdersPage() {
   // Highest order value (for value-based card tinting)
   const maxRevenue = Math.max(1, ...filteredOrders.map((o) => o.revenue || 0));
 
-  // Stats (all read straight from the sheet columns)
+  // Stats — cost/profit sourced from catalogue (book cost + India Post delivery)
   const totalRevenue = analyticsOrders.reduce((sum, o) => sum + o.revenue, 0);
+  const totalBooksCost = analyticsOrders.reduce(
+    (sum, o) => sum + (o.booksCost || 0),
+    0,
+  );
+  const totalDeliveryCost = analyticsOrders.reduce(
+    (sum, o) => sum + (o.deliveryCost || 0),
+    0,
+  );
+  const totalWeight = analyticsOrders.reduce(
+    (sum, o) => sum + (o.weight || 0),
+    0,
+  );
   const totalCost = analyticsOrders.reduce((sum, o) => sum + o.totalCost, 0);
   const totalPnL = totalRevenue - totalCost;
   const marginPct =
     totalRevenue > 0 ? Math.round((totalPnL / totalRevenue) * 100) : 0;
+  const avgDeliveryCost =
+    analyticsOrders.length > 0
+      ? Math.round(totalDeliveryCost / analyticsOrders.length)
+      : 0;
+
+  // Weight-slab distribution for the delivery-cost card
+  const deliverySlabs = [
+    { label: "0–500g", rate: 42, max: 500 },
+    { label: "500g–1kg", rate: 62, max: 1000 },
+    { label: "1–1.5kg", rate: 100, max: 1500 },
+    { label: "1.5–2kg", rate: 150, max: 2000 },
+    { label: "2–4kg", rate: 200, max: 4000 },
+  ].map((s) => ({ ...s, count: 0, amount: 0 }));
+  analyticsOrders.forEach((o) => {
+    const g = o.weight || 0;
+    const slab =
+      deliverySlabs.find((s) => g <= s.max) ||
+      deliverySlabs[deliverySlabs.length - 1];
+    slab.count += 1;
+    slab.amount += o.deliveryCost || 0;
+  });
+  const maxSlabCount = Math.max(1, ...deliverySlabs.map((s) => s.count));
 
   // Per-day run rate — orders & revenue averaged over the days that had orders
   const runRateDays = Math.max(
@@ -3087,33 +3366,17 @@ export default function ManageOrdersPage() {
     { count: 0, value: 0, upi: 0, cod: 0, upiVal: 0, codVal: 0 },
   );
 
-  // ── Cancelled orders + loss log ──
+  // ── Cancelled orders — auto loss from forfeited postage ──
   const isCancelled = (o) => /cancel/i.test(String(o["Order Status"] || ""));
   const cancelledOrders = analyticsOrders.filter(isCancelled); // period-scoped
   const cancelledValue = cancelledOrders.reduce(
     (s, o) => s + (o.revenue || 0),
     0,
   );
-  const allCancelled = orders.filter(isCancelled); // for tagging in the log
-  const totalLoss = losses.reduce((s, l) => s + (l.amount || 0), 0);
-  const addLoss = () => {
-    const amt = parseFloat(lossForm.amount);
-    if (!lossForm.orderId || !amt || amt <= 0) return;
-    const ord = allCancelled.find((o) => o["Order ID"] === lossForm.orderId);
-    setLosses((prev) => [
-      {
-        id: `${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-        orderId: lossForm.orderId,
-        orderName: ord?.["Customer Name"] || "",
-        orderValue: ord?.revenue || 0,
-        amount: Math.round(amt),
-        note: lossForm.note.trim(),
-        ts: Date.now(),
-      },
-      ...prev,
-    ]);
-    setLossForm({ orderId: "", amount: "", note: "" });
-  };
+  // Each cancelled order forfeits the average India Post postage, so the loss
+  // is cancelled-count × average post value. Deducted from total profit.
+  const cancelledLoss = Math.round(cancelledOrders.length * avgDeliveryCost);
+  const netProfit = totalPnL - cancelledLoss;
 
   // Orders shown in the list/table, optionally narrowed by pick status
   const listOrders = filteredOrders.filter((o) => {
@@ -3366,6 +3629,68 @@ export default function ManageOrdersPage() {
                   period={analyticsPeriod}
                   offset={periodOffset}
                 />
+              </div>
+              )}
+
+              {/* Delivery cost (India Post weight slabs) */}
+              {visibleCards.deliveryCost && (
+              <div className="an-cell an-wide">
+                <div className="admin-chart-card">
+                  <div className="chart-title">Delivery cost · India Post</div>
+                  <div className="dc-stats">
+                    <div className="dc-stat">
+                      <span className="dc-stat-label">Total delivery</span>
+                      <strong className="dc-stat-val dc-orange">
+                        ₹{totalDeliveryCost.toLocaleString()}
+                      </strong>
+                    </div>
+                    <div className="dc-stat">
+                      <span className="dc-stat-label">Avg / order</span>
+                      <strong className="dc-stat-val">
+                        ₹{avgDeliveryCost.toLocaleString()}
+                      </strong>
+                    </div>
+                    <div className="dc-stat">
+                      <span className="dc-stat-label">Total weight</span>
+                      <strong className="dc-stat-val">
+                        {(totalWeight / 1000).toFixed(1)}kg
+                      </strong>
+                    </div>
+                  </div>
+                  <div className="status-bars">
+                    {deliverySlabs.map((s) => (
+                      <div key={s.label} className="status-bar-row">
+                        <span className="sb-label">
+                          {s.label} · ₹{s.rate}
+                        </span>
+                        <div className="sb-track">
+                          <div
+                            className="sb-fill"
+                            style={{
+                              width: `${(s.count / maxSlabCount) * 100}%`,
+                              background: "#fb8500",
+                            }}
+                          />
+                        </div>
+                        <span className="sb-count">
+                          {s.count} · ₹{s.amount.toLocaleString()}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="dc-foot">
+                    Cost of goods ₹{totalBooksCost.toLocaleString()} + delivery ₹
+                    {totalDeliveryCost.toLocaleString()} ={" "}
+                    <strong>₹{totalCost.toLocaleString()}</strong> total cost ·
+                    profit{" "}
+                    <strong
+                      className={totalPnL >= 0 ? "dc-pos" : "dc-neg"}
+                    >
+                      {totalPnL >= 0 ? "+" : "−"}₹
+                      {Math.abs(totalPnL).toLocaleString()}
+                    </strong>
+                  </div>
+                </div>
               </div>
               )}
 
@@ -3650,73 +3975,54 @@ export default function ManageOrdersPage() {
               </div>
               )}
 
-              {/* Cancelled orders & losses */}
+              {/* Cancelled orders & losses (auto: forfeited postage) */}
               {visibleCards.cancelled && (
               <div className="an-cell an-wide">
                 <div className="admin-chart-card">
                   <div className="chart-title">Cancelled orders &amp; losses</div>
-                  <div className="cx-stats">
-                    <div className="cx-stat">
-                      <span className="cx-stat-label">Cancelled orders</span>
-                      <strong className="cx-stat-val">
+                  <div className="dc-stats">
+                    <div className="dc-stat">
+                      <span className="dc-stat-label">Cancelled orders</span>
+                      <strong className="dc-stat-val">
                         {cancelledOrders.length}
-                        <em className="cx-stat-sub">
-                          · ₹{cancelledValue.toLocaleString()}
-                        </em>
                       </strong>
                     </div>
-                    <div className="cx-stat">
-                      <span className="cx-stat-label">Total loss logged</span>
-                      <strong className="cx-stat-val cx-loss">
-                        ₹{totalLoss.toLocaleString()}
-                        <button
-                          type="button"
-                          className="cx-edit"
-                          onClick={() => setShowLossModal(true)}
-                          title="Log a loss"
-                        >
-                          <Pencil size={13} />
-                        </button>
+                    <div className="dc-stat">
+                      <span className="dc-stat-label">Cancelled value</span>
+                      <strong className="dc-stat-val">
+                        ₹{cancelledValue.toLocaleString()}
+                      </strong>
+                    </div>
+                    <div className="dc-stat">
+                      <span className="dc-stat-label">Cancelled loss</span>
+                      <strong className="dc-stat-val dc-neg">
+                        −₹{cancelledLoss.toLocaleString()}
+                      </strong>
+                    </div>
+                    <div className="dc-stat">
+                      <span className="dc-stat-label">Net profit</span>
+                      <strong
+                        className={`dc-stat-val ${
+                          netProfit >= 0 ? "dc-pos" : "dc-neg"
+                        }`}
+                      >
+                        {netProfit >= 0 ? "+" : "−"}₹
+                        {Math.abs(netProfit).toLocaleString()}
                       </strong>
                     </div>
                   </div>
-
-                  {losses.length > 0 && (
-                    <div className="cx-log">
-                      {losses.map((l) => {
-                        const d = new Date(l.ts);
-                        return (
-                          <div className="cx-log-row" key={l.id}>
-                            <div className="cx-log-main">
-                              <span className="cx-log-order">
-                                {l.orderName || "Order"}{" "}
-                                {l.orderValue ? (
-                                  <em>(₹{l.orderValue.toLocaleString()})</em>
-                                ) : null}
-                              </span>
-                              {l.note && (
-                                <span className="cx-log-note">{l.note}</span>
-                              )}
-                              <span className="cx-log-date">
-                                {d.toLocaleDateString("en-IN")}
-                              </span>
-                            </div>
-                            <span className="cx-log-amt">
-                              −₹{l.amount.toLocaleString()}
-                            </span>
-                            <button
-                              type="button"
-                              className="cx-log-del"
-                              onClick={() => deleteLoss(l.id)}
-                              aria-label="Delete loss entry"
-                            >
-                              <Trash2 size={13} />
-                            </button>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
+                  <div className="dc-foot">
+                    {cancelledOrders.length} cancelled order
+                    {cancelledOrders.length === 1 ? "" : "s"} × avg postage ₹
+                    {avgDeliveryCost.toLocaleString()} ={" "}
+                    <strong className="dc-neg">
+                      −₹{cancelledLoss.toLocaleString()}
+                    </strong>{" "}
+                    deducted from profit ₹{totalPnL.toLocaleString()} → net{" "}
+                    <strong className={netProfit >= 0 ? "dc-pos" : "dc-neg"}>
+                      ₹{netProfit.toLocaleString()}
+                    </strong>
+                  </div>
                 </div>
               </div>
               )}
@@ -3976,25 +4282,39 @@ export default function ManageOrdersPage() {
                     · {pickedOrdersCount}/{filteredOrders.length} picked
                   </span>
                 </span>
-                <div className="mo-view-toggle mo-view-icons">
-                  <button
-                    type="button"
-                    className={`mo-view-btn${orderView === "cards" ? " active" : ""}`}
-                    onClick={() => setOrderView("cards")}
-                    title="Card view"
-                    aria-label="Card view"
-                  >
-                    <LayoutGrid size={16} />
-                  </button>
-                  <button
-                    type="button"
-                    className={`mo-view-btn${orderView === "table" ? " active" : ""}`}
-                    onClick={() => setOrderView("table")}
-                    title="Table view"
-                    aria-label="Table view"
-                  >
-                    <List size={16} />
-                  </button>
+                <div className="orders-header-right">
+                  <div className="orders-sort">
+                    <ArrowUpDown size={15} />
+                    <select
+                      className="orders-sort-select"
+                      value={sortOrder}
+                      onChange={(e) => setSortOrder(e.target.value)}
+                      title="Sort orders"
+                    >
+                      <option value="desc">Latest ones</option>
+                      <option value="asc">Oldest ones</option>
+                    </select>
+                  </div>
+                  <div className="mo-view-toggle mo-view-icons">
+                    <button
+                      type="button"
+                      className={`mo-view-btn${orderView === "cards" ? " active" : ""}`}
+                      onClick={() => setOrderView("cards")}
+                      title="Card view"
+                      aria-label="Card view"
+                    >
+                      <LayoutGrid size={16} />
+                    </button>
+                    <button
+                      type="button"
+                      className={`mo-view-btn${orderView === "table" ? " active" : ""}`}
+                      onClick={() => setOrderView("table")}
+                      title="Table view"
+                      aria-label="Table view"
+                    >
+                      <List size={16} />
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -4838,149 +5158,6 @@ export default function ManageOrdersPage() {
         )}
       </AnimatePresence>
 
-      {/* ===== Log a cancelled-order loss (chat-style) ===== */}
-      <AnimatePresence>
-        {showLossModal && (
-          <motion.div
-            className="bill-modal-overlay"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setShowLossModal(false)}
-          >
-            <motion.div
-              className="bill-modal cx-modal"
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "100%" }}
-              transition={{ duration: 0.35, ease: "easeOut" }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="bill-header">
-                <span className="weight-600 font-16 flex flex-col">
-                  <span className="flex flex-row gap-8 items-center">
-                    <Pencil size={16} /> Log a loss
-                  </span>
-                  <span className="font-12 dark-50">
-                    Total loss: ₹{totalLoss.toLocaleString()}
-                  </span>
-                </span>
-                <span
-                  className="cursor-pointer"
-                  onClick={() => setShowLossModal(false)}
-                >
-                  <X size={16} />
-                </span>
-              </div>
-
-              <div className="cx-form">
-                <select
-                  className="admin-select cx-select"
-                  value={lossForm.orderId}
-                  onChange={(e) => {
-                    const ord = allCancelled.find(
-                      (o) => o["Order ID"] === e.target.value,
-                    );
-                    setLossForm((f) => ({
-                      ...f,
-                      orderId: e.target.value,
-                      amount: ord?.revenue ? String(ord.revenue) : f.amount,
-                    }));
-                  }}
-                >
-                  <option value="">Select a cancelled order…</option>
-                  {allCancelled.map((o) => (
-                    <option key={o["Order ID"]} value={o["Order ID"]}>
-                      {o["Customer Name"] || "—"} · ₹
-                      {(o.revenue || 0).toLocaleString()}
-                    </option>
-                  ))}
-                </select>
-                <div className="cx-form-row">
-                  <input
-                    type="number"
-                    inputMode="numeric"
-                    className="sec-mid-btn cx-amt"
-                    placeholder="Loss ₹"
-                    value={lossForm.amount}
-                    onChange={(e) =>
-                      setLossForm((f) => ({ ...f, amount: e.target.value }))
-                    }
-                  />
-                  <input
-                    type="text"
-                    className="sec-mid-btn width100"
-                    placeholder="Note (reason for loss)…"
-                    value={lossForm.note}
-                    onChange={(e) =>
-                      setLossForm((f) => ({ ...f, note: e.target.value }))
-                    }
-                    onKeyDown={(e) => e.key === "Enter" && addLoss()}
-                  />
-                  <button
-                    type="button"
-                    className="pri-big-btn cx-add"
-                    onClick={addLoss}
-                    disabled={!lossForm.orderId || !lossForm.amount}
-                  >
-                    <Plus size={16} />
-                  </button>
-                </div>
-                {allCancelled.length === 0 && (
-                  <span className="font-12 dark-50">
-                    No cancelled orders found yet.
-                  </span>
-                )}
-              </div>
-
-              <div className="cx-log cx-log-modal">
-                {losses.length === 0 && (
-                  <div className="cx-empty">
-                    No losses logged yet. Tag a cancelled order above and add the
-                    exact amount lost.
-                  </div>
-                )}
-                {losses.map((l) => {
-                  const d = new Date(l.ts);
-                  return (
-                    <div className="cx-log-row" key={l.id}>
-                      <div className="cx-log-main">
-                        <span className="cx-log-order">
-                          {l.orderName || "Order"}{" "}
-                          {l.orderValue ? (
-                            <em>(₹{l.orderValue.toLocaleString()})</em>
-                          ) : null}
-                        </span>
-                        {l.note && (
-                          <span className="cx-log-note">{l.note}</span>
-                        )}
-                        <span className="cx-log-date">
-                          {d.toLocaleDateString("en-IN")} ·{" "}
-                          {d.toLocaleTimeString("en-IN", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </span>
-                      </div>
-                      <span className="cx-log-amt">
-                        −₹{l.amount.toLocaleString()}
-                      </span>
-                      <button
-                        type="button"
-                        className="cx-log-del"
-                        onClick={() => deleteLoss(l.id)}
-                        aria-label="Delete loss entry"
-                      >
-                        <Trash2 size={13} />
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* ===== Bulk WhatsApp send (slide-up) ===== */}
       <AnimatePresence>

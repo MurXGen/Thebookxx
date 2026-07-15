@@ -12907,6 +12907,41 @@ img[data-loaded="true"] {
   color: var(--dark-50);
   white-space: nowrap;
 }
+/* ===== Profit & cost area chart ===== */
+.pc-area-wrap {
+  position: relative;
+  width: 100%;
+}
+.pc-area-svg {
+  display: block;
+  width: 100%;
+  height: 210px;
+}
+.pc-area-cols {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: stretch;
+}
+.pc-acol {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.12s ease;
+}
+.pc-acol.on {
+  background: rgba(0, 0, 0, 0.035);
+}
+.pc-acol .pc-lbl {
+  margin-bottom: 2px;
+  pointer-events: none;
+}
 /* Bars flex to fit the card (no horizontal scroll) so the hover tooltip,
    which sits above the bars, is never clipped by a scroll container. */
 .pc-card .wk-scroll {
@@ -13244,6 +13279,49 @@ img[data-loaded="true"] {
   font-weight: 700;
   color: var(--foreground);
   margin-bottom: 12px;
+}
+/* Delivery-cost card */
+.dc-stats {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.dc-stat {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #fff;
+  border: 1px solid var(--hairline, rgba(0, 0, 0, 0.08));
+}
+.dc-stat-label {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--dark-50, #6b7280);
+}
+.dc-stat-val {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--foreground, #111);
+}
+.dc-stat-val.dc-orange {
+  color: var(--tertiary, #fb8500);
+}
+.dc-foot {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--hairline, #e5e7eb);
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--dark-50, #6b7280);
+}
+.dc-foot .dc-pos {
+  color: #008f0c;
+}
+.dc-foot .dc-neg {
+  color: #dc2626;
 }
 .status-bars {
   display: flex;
@@ -16198,6 +16276,88 @@ img[data-loaded="true"] {
   gap: 10px;
   flex-wrap: wrap;
 }
+.wk-head-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+/* Bar/area chart type toggle (top-right of a chart frame) */
+.chart-type-toggle {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 999px;
+  background: var(--dark-4, #f1f1f3);
+}
+.ctt-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 26px;
+  border: none;
+  background: transparent;
+  border-radius: 999px;
+  color: var(--dark-50, #6b7280);
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+.ctt-btn.on {
+  background: #fff;
+  color: var(--tertiary, #fb8500);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+/* Daily-volume bar mode */
+.vol-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 172px;
+  padding-top: 18px;
+}
+.vol-bcol {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+.vol-btrack {
+  position: relative;
+  flex: 1 1 auto;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.vol-bfill {
+  width: 70%;
+  max-width: 26px;
+  min-height: 2px;
+  background: linear-gradient(
+    180deg,
+    var(--success, #0a8f0c),
+    rgba(10, 143, 12, 0.55)
+  );
+  border-radius: 5px 5px 0 0;
+}
+.vol-bnum {
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--foreground, #111);
+}
+.vol-bx {
+  margin-top: 5px;
+  font-size: 9.5px;
+  color: var(--dark-50, #6b7280);
+  white-space: nowrap;
+  height: 12px;
+}
 .wk-nav {
   display: inline-flex;
   align-items: center;
@@ -17456,6 +17616,36 @@ img[data-loaded="true"] {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+}
+.orders-header-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.orders-sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 8px 0 10px;
+  border-radius: 999px;
+  border: 1px solid var(--hairline, rgba(0, 0, 0, 0.12));
+  background: #fff;
+  color: var(--dark-50, #6b7280);
+}
+.orders-sort-select {
+  border: none;
+  background: transparent;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--foreground, #111);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 2px;
+}
+.orders-sort-select:focus {
+  outline: none;
 }
 .mo-view-toggle {
   display: inline-flex;

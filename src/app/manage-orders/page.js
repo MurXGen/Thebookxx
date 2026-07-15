@@ -3,8 +3,9 @@
 
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import {
-  downloadIndiaPostForm,
-  downloadAddressLabelForm,
+  downloadCombinedFormPNG,
+  downloadCombinedFormsPNGs,
+  downloadCombinedFormsPDF,
 } from "@/utils/shippingForms";
 import {
   Search,
@@ -2250,20 +2251,38 @@ export default function ManageOrdersPage() {
     codAmount: o.revenue,
   });
 
-  // Bulk: download India Post + From/To forms for all selected orders.
-  const downloadSelectedForms = () => {
+  // Each order → ONE combined frame (India Post CDF + From/To label together).
+  // "format" is "pdf" (all frames in one ordered file, best for printing) or
+  // "png" (one image per order).
+  const downloadFormsFor = (orders, format, filename) => {
+    if (!orders.length) return;
+    const payloads = orders.map(orderFormData);
+    if (format === "pdf") {
+      downloadCombinedFormsPDF(payloads, filename);
+    } else {
+      downloadCombinedFormsPNGs(payloads);
+    }
+  };
+
+  // Selected rows (table view) → combined shipping form(s).
+  const downloadSelectedForms = (format) => {
     const chosen = filteredOrders.filter((o) =>
       selectedIds.includes(o["Order ID"]),
     );
-    if (!chosen.length) return;
-    let i = 0;
-    chosen.forEach((o) => {
-      const fd = orderFormData(o);
-      // stagger so the browser doesn't drop rapid downloads
-      setTimeout(() => downloadIndiaPostForm(fd), i * 400);
-      setTimeout(() => downloadAddressLabelForm(fd), i * 400 + 200);
-      i += 1;
-    });
+    downloadFormsFor(
+      chosen,
+      format,
+      `shipping_forms_selected_${new Date().toISOString().slice(0, 10)}.pdf`,
+    );
+  };
+
+  // Every order in the current filter → combined shipping form(s).
+  const downloadAllForms = (format) => {
+    downloadFormsFor(
+      filteredOrders,
+      format,
+      `shipping_forms_all_${new Date().toISOString().slice(0, 10)}.pdf`,
+    );
   };
 
   // Whether every book in an order has been picked (touched).
@@ -4016,23 +4035,46 @@ export default function ManageOrdersPage() {
 
               {orderView === "table" && selectedIds.length > 0 && (
                 <div className="orders-bulk-bar">
-                  <span>{selectedIds.length} selected</span>
-                  <div className="orders-bulk-actions">
+                  <div className="bulk-head">
+                    <span className="bulk-count">
+                      {selectedIds.length} selected
+                    </span>
                     <button
                       type="button"
-                      className="mo-form-btn"
-                      onClick={downloadSelectedForms}
-                    >
-                      <Download size={13} /> Download forms (India Post + From/To)
-                    </button>
-                    <button
-                      type="button"
-                      className="mo-view-btn"
+                      className="mo-view-btn bulk-clear"
                       onClick={() => setSelectedIds([])}
                     >
                       Clear
                     </button>
                   </div>
+
+                  {/* Download section — combined shipping form for selected */}
+                  <div className="bulk-section">
+                    <div className="mo-dl-group">
+                      <span className="mo-dl-group-label">
+                        <Download size={13} /> Shipping form
+                        <em>India Post + From/To in one frame</em>
+                      </span>
+                      <button
+                        type="button"
+                        className="mo-form-btn mo-dl-pdf"
+                        onClick={() => downloadSelectedForms("pdf")}
+                        title="All selected orders in one printable PDF (one order per page)"
+                      >
+                        PDF
+                      </button>
+                      <button
+                        type="button"
+                        className="mo-form-btn mo-dl-png"
+                        onClick={() => downloadSelectedForms("png")}
+                        title="One PNG image per selected order"
+                      >
+                        PNG
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="bulk-divider" />
 
                   {/* Bulk WhatsApp — pick a stage to message all selected readers */}
                   <div className="bulk-wa-row">
@@ -4305,29 +4347,33 @@ export default function ManageOrdersPage() {
                         )}
                       </div>
 
-                      {/* Downloadable shipping documents (always available) */}
+                      {/* Downloadable shipping document — India Post CDF +
+                          From/To label in ONE combined frame for this order. */}
                       <div className="mo-card-forms">
                         <button
                           type="button"
                           className="mo-form-btn"
                           onClick={(e) => {
                             e.stopPropagation();
-                            downloadIndiaPostForm(formData);
+                            downloadCombinedFormPNG(orderFormData(order));
                           }}
-                          title="Download India Post CDF-I form"
+                          title="Download this order's shipping form (India Post + From/To in one frame)"
                         >
-                          <Download size={13} /> India Post form
+                          <Download size={13} /> Shipping form (PNG)
                         </button>
                         <button
                           type="button"
                           className="mo-form-btn"
                           onClick={(e) => {
                             e.stopPropagation();
-                            downloadAddressLabelForm(formData);
+                            downloadCombinedFormsPDF(
+                              [orderFormData(order)],
+                              `shipping_${order["Order ID"] || "order"}.pdf`,
+                            );
                           }}
-                          title="Download From / To address label"
+                          title="Download this order's shipping form as a printable PDF"
                         >
-                          <Download size={13} /> From / To label
+                          <Download size={13} /> Shipping form (PDF)
                         </button>
                       </div>
 

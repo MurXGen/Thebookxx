@@ -512,3 +512,227 @@ export function downloadAddressLabelForm(data) {
   });
   c.download(`address_label_${data.orderId || Date.now()}.png`);
 }
+
+// ── Combined single-frame form (India Post CDF + From/To label together) ──
+// Draws BOTH documents stacked on ONE canvas with a dashed cut-line between
+// them, so a single order = a single downloadable frame (not two files).
+// Returns a plain, pixel-cropped canvas at 2× resolution.
+function drawDashedDivider(c, y, label) {
+  const ctx = c.ctx;
+  ctx.save();
+  ctx.strokeStyle = "#9aa0a6";
+  ctx.lineWidth = 1;
+  ctx.setLineDash([7, 5]);
+  ctx.beginPath();
+  ctx.moveTo(40, y);
+  ctx.lineTo(c.W - 40, y);
+  ctx.stroke();
+  ctx.restore();
+  if (label) {
+    c.text(label, c.W / 2, y - 6, {
+      font: "10px sans-serif",
+      align: "center",
+      color: "#80868b",
+    });
+  }
+}
+
+export function buildCombinedForm(data) {
+  const isCOD = !!data.isCOD;
+  const W = 800;
+  const SAFE_H = 1800; // generous; the frame is cropped to real height after
+  const topPad = 36;
+  const gap = 48;
+  const botPad = 36;
+
+  const c = buildCanvas(W, SAFE_H);
+
+  let y = drawDeclarationForm(c, topPad, {
+    orderId: data.orderId,
+    customerName: data.customerName,
+    customerAddress: data.customerAddress,
+    customerState: data.customerState,
+    customerPincode: data.customerPincode,
+    customerPhone: data.customerPhone,
+    totalValueRs: data.totalValueRs,
+    isCOD,
+    codAmount: data.codAmount,
+  });
+
+  drawDashedDivider(
+    c,
+    y + gap / 2,
+    `✂  ORDER ${data.orderId || ""} · address label below`,
+  );
+
+  const endY = drawAddressLabel(c, y + gap, {
+    orderId: data.orderId,
+    customerName: data.customerName,
+    customerAddress: data.customerAddress,
+    customerCity: data.customerCity,
+    customerPincode: data.customerPincode,
+    customerPhone: data.customerPhone,
+    isCOD,
+    codAmount: data.codAmount,
+  });
+
+  const finalH = Math.min(endY + botPad, SAFE_H);
+
+  // Crop the tall working canvas down to the true content height (2× px).
+  const out = document.createElement("canvas");
+  out.width = W * 2;
+  out.height = finalH * 2;
+  const octx = out.getContext("2d");
+  octx.drawImage(
+    c.canvas,
+    0,
+    0,
+    W * 2,
+    finalH * 2,
+    0,
+    0,
+    W * 2,
+    finalH * 2,
+  );
+  return out;
+}
+
+function triggerDownload(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// One combined frame → PNG file.
+export function downloadCombinedFormPNG(data) {
+  const cv = buildCombinedForm(data);
+  cv.toBlob((blob) => {
+    if (blob) triggerDownload(blob, `shipping_${data.orderId || Date.now()}.png`);
+  }, "image/png");
+}
+
+// Many combined frames → individual PNG files (staggered so the browser
+// doesn't drop rapid downloads).
+export function downloadCombinedFormsPNGs(dataArray) {
+  dataArray.forEach((d, i) => {
+    setTimeout(() => downloadCombinedFormPNG(d), i * 350);
+  });
+}
+
+// ── Minimal, dependency-free multi-page PDF from JPEG frames ──
+// Each order's combined frame becomes one A4 page, in order, so the whole
+// batch prints as a single ordered document.
+function dataUrlToBytes(dataUrl) {
+  const b64 = dataUrl.split(",")[1] || "";
+  const bin = atob(b64);
+  const u8 = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i) & 0xff;
+  return u8;
+}
+
+function jpegPagesToPdf(pages) {
+  const PAGE_W = 595.28; // A4 portrait, points
+  const PAGE_H = 841.89;
+  const MARGIN = 22;
+
+  const chunks = [];
+  let length = 0;
+  const offsets = [];
+  const encStr = (s) => {
+    const a = new Uint8Array(s.length);
+    for (let i = 0; i < s.length; i++) a[i] = s.charCodeAt(i) & 0xff;
+    return a;
+  };
+  const push = (u8) => {
+    chunks.push(u8);
+    length += u8.length;
+  };
+  const pushStr = (s) => push(encStr(s));
+
+  const n = pages.length;
+  const totalObjs = 2 + n * 3; // catalog + pages + (page, content, image)*n
+
+  pushStr("%PDF-1.3\n");
+
+  offsets[1] = length;
+  pushStr("1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n");
+
+  offsets[2] = length;
+  const kids = [];
+  for (let i = 0; i < n; i++) kids.push(`${3 + i * 3} 0 R`);
+  pushStr(
+    `2 0 obj\n<< /Type /Pages /Count ${n} /Kids [${kids.join(" ")}] >>\nendobj\n`,
+  );
+
+  for (let i = 0; i < n; i++) {
+    const { data, w, h } = pages[i];
+    const pageId = 3 + i * 3;
+    const contentId = 4 + i * 3;
+    const imageId = 5 + i * 3;
+
+    const availW = PAGE_W - 2 * MARGIN;
+    const availH = PAGE_H - 2 * MARGIN;
+    const scale = Math.min(availW / w, availH / h);
+    const dw = w * scale;
+    const dh = h * scale;
+    const dx = (PAGE_W - dw) / 2;
+    const dy = (PAGE_H - dh) / 2;
+    const content = `q\n${dw.toFixed(2)} 0 0 ${dh.toFixed(2)} ${dx.toFixed(
+      2,
+    )} ${dy.toFixed(2)} cm\n/Im0 Do\nQ\n`;
+
+    offsets[pageId] = length;
+    pushStr(
+      `${pageId} 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PAGE_W} ${PAGE_H}] /Resources << /XObject << /Im0 ${imageId} 0 R >> >> /Contents ${contentId} 0 R >>\nendobj\n`,
+    );
+
+    offsets[contentId] = length;
+    pushStr(`${contentId} 0 obj\n<< /Length ${content.length} >>\nstream\n`);
+    pushStr(content);
+    pushStr("endstream\nendobj\n");
+
+    offsets[imageId] = length;
+    pushStr(
+      `${imageId} 0 obj\n<< /Type /XObject /Subtype /Image /Width ${w} /Height ${h} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${data.length} >>\nstream\n`,
+    );
+    push(data);
+    pushStr("\nendstream\nendobj\n");
+  }
+
+  const xrefStart = length;
+  pushStr(`xref\n0 ${totalObjs + 1}\n`);
+  pushStr("0000000000 65535 f \n");
+  for (let id = 1; id <= totalObjs; id++) {
+    pushStr(`${String(offsets[id]).padStart(10, "0")} 00000 n \n`);
+  }
+  pushStr(
+    `trailer\n<< /Size ${totalObjs + 1} /Root 1 0 R >>\nstartxref\n${xrefStart}\n%%EOF`,
+  );
+
+  const out = new Uint8Array(length);
+  let p = 0;
+  for (const c of chunks) {
+    out.set(c, p);
+    p += c.length;
+  }
+  return new Blob([out], { type: "application/pdf" });
+}
+
+// Many combined frames → ONE ordered PDF (one order per page).
+export function downloadCombinedFormsPDF(dataArray, filename) {
+  const pages = dataArray.map((d) => {
+    const cv = buildCombinedForm(d);
+    const url = cv.toDataURL("image/jpeg", 0.9);
+    return { data: dataUrlToBytes(url), w: cv.width, h: cv.height };
+  });
+  const blob = jpegPagesToPdf(pages);
+  triggerDownload(
+    blob,
+    filename || `shipping_forms_${new Date().toISOString().slice(0, 10)}.pdf`,
+  );
+}

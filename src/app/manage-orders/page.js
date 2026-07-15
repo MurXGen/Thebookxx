@@ -15,6 +15,7 @@ import {
   X,
   ChevronRight,
   ChevronLeft,
+  ArrowRight,
   SlidersHorizontal,
   RefreshCw,
   Filter,
@@ -1920,6 +1921,7 @@ export default function ManageOrdersPage() {
   const [selectedIds, setSelectedIds] = useState([]); // bulk-selected order IDs (table)
   const [bulkStage, setBulkStage] = useState(null); // WhatsApp stage key for bulk send
   const [bulkSent, setBulkSent] = useState([]); // order IDs already messaged
+  const [waPick, setWaPick] = useState(""); // dropdown-selected stage (not yet triggered)
 
   // ── Cancelled-order loss log (chat-style, localStorage) ──
   const [losses, setLosses] = useState([]);
@@ -4052,8 +4054,13 @@ export default function ManageOrdersPage() {
                   <div className="bulk-section">
                     <div className="mo-dl-group">
                       <span className="mo-dl-group-label">
-                        <Download size={13} /> Shipping form
-                        <em>India Post + From/To in one frame</em>
+                        <span className="mo-dl-icon">
+                          <Download size={20} />
+                        </span>
+                        <span className="mo-dl-text">
+                          Shipping form
+                          <em>India Post + From/To in one frame</em>
+                        </span>
                       </span>
                       <button
                         type="button"
@@ -4076,24 +4083,39 @@ export default function ManageOrdersPage() {
 
                   <div className="bulk-divider" />
 
-                  {/* Bulk WhatsApp — pick a stage to message all selected readers */}
+                  {/* Bulk WhatsApp — choose a stage from the dropdown, then hit
+                      the arrow to message all selected readers */}
                   <div className="bulk-wa-row">
                     <span className="bulk-wa-label">
                       <MessageCircle size={13} /> Message all on WhatsApp:
                     </span>
-                    {waMessages({}).map((m) => (
-                      <button
-                        key={m.key}
-                        type="button"
-                        className="bulk-wa-chip"
-                        onClick={() => {
-                          setBulkStage(m.key);
-                          setBulkSent([]);
-                        }}
+                    <div className="bulk-wa-picker">
+                      <select
+                        className="bulk-wa-select"
+                        value={waPick}
+                        onChange={(e) => setWaPick(e.target.value)}
                       >
-                        {m.label}
-                      </button>
-                    ))}
+                        <option value="">Choose a message…</option>
+                        {waMessages({}).map((m) => (
+                          <option key={m.key} value={m.key}>
+                            {m.label}
+                          </option>
+                        ))}
+                      </select>
+                      {waPick && (
+                        <button
+                          type="button"
+                          className="bulk-wa-go"
+                          title="Send this message to all selected"
+                          onClick={() => {
+                            setBulkStage(waPick);
+                            setBulkSent([]);
+                          }}
+                        >
+                          <ArrowRight size={18} />
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}

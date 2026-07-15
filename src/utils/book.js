@@ -9182,10 +9182,10 @@ export const books = [
   },
   {
     id: "bk-654",
-    name: "The House Without Windows",
-    image: bookImages["the-house-without-windows"],
+    name: "A House Without Windows",
+    image: bookImages["a-house-without-windows"],
     description:
-      "Buy The House Without Windows by Nadia Hashimi online at the lowest price on TheBookX.in. A moving, beautifully written novel of family, freedom and resilience from bestselling author Nadia Hashimi. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
+      "Buy A House Without Windows by Nadia Hashimi online at the lowest price on TheBookX.in. A moving, beautifully written novel of family, freedom and resilience from bestselling author Nadia Hashimi. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Nadia Hashimi",
     authorSlug: "nadia-hashimi",
     pages: "180-220",

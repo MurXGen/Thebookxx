@@ -2267,40 +2267,24 @@ button:disabled {
   font-weight: 600;
 }
 
-/* Wallet section inside the address modal (below name/phone) */
-.wc-modal {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 12px;
+/* Wallet toggle card inside the address modal (above the pay buttons) */
+.wc-card {
+  margin: 4px 0 12px;
   padding: 12px;
   border-radius: 12px;
   border: 1px dashed rgba(251, 133, 0, 0.5);
   background: rgba(251, 133, 0, 0.06);
 }
-.wc-modal-check {
+.wc-card .wc-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  width: 100%;
-  height: 40px;
-  border-radius: 10px;
-  border: 1px solid var(--tertiary, #fb8500);
-  background: #fff;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(251, 133, 0, 0.14);
   color: var(--tertiary, #fb8500);
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-}
-.wc-modal-check:disabled {
-  opacity: 0.6;
-  cursor: default;
-}
-.wc-none {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--dark-50, #6b7280);
+  flex: 0 0 auto;
 }
 
 .view-bill-text {

@@ -177,6 +177,28 @@ export default function RefundCancellationPolicy() {
           <li>With the original invoice or order confirmation</li>
           <li>Within 7 days of delivery, once the return is approved</li>
         </ul>
+
+        <p>
+          Where a book is received in a poor condition&mdash;for example, an
+          old, worn, or torn copy&mdash;how we resolve it depends on your
+          delivery location:
+        </p>
+        <ul>
+          <li>
+            <strong>Customers outside Mumbai:</strong> we issue a refund for the
+            affected book, so you are not required to ship it back to us.
+          </li>
+          <li>
+            <strong>Customers within Mumbai:</strong> we arrange a return pickup
+            for the affected book and process a replacement or refund once it is
+            collected.
+          </li>
+        </ul>
+        <p>
+          In both cases, please share clear photographs of the book and its
+          packaging within the timeframe above so we can verify the condition
+          and resolve it quickly.
+        </p>
       </section>
 
       <section id="non-returnable">

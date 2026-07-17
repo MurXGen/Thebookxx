@@ -214,12 +214,7 @@ export default function AddressModal({
   const isCartBelow399 = totalDiscounted < 399;
 
   // Look up wallet balance from the orders sheet for the entered phone.
-  const checkWallet = async () => {
-    const digits = phone.replace(/\D/g, "");
-    if (digits.length < 10) {
-      setWalletError("Enter your 10-digit number first");
-      return;
-    }
+  const checkWallet = async (digits) => {
     setWalletChecking(true);
     setWalletError("");
     try {
@@ -245,15 +240,23 @@ export default function AddressModal({
       setWalletBalance(bal);
       setWalletChecked(true);
       setWalletCheckedPhone(digits);
-      setWalletEnabled(bal > 0);
-      if (bal <= 0) setWalletError("No wallet balance found for this number");
+      setWalletEnabled(bal > 0); // auto-on when they have credit; they can turn off
     } catch (e) {
       console.error("Wallet check failed:", e);
-      setWalletError("Couldn't check balance. Please try again.");
+      setWalletBalance(0);
     } finally {
       setWalletChecking(false);
     }
   };
+
+  // Auto-search the wallet the moment a valid 10-digit number is entered.
+  useEffect(() => {
+    const digits = phone.replace(/\D/g, "");
+    if (digits.length === 10 && digits !== walletCheckedPhone) {
+      checkWallet(digits);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phone]);
 
   // Wallet applied = min(balance, ₹399 cap, goods total) when enabled.
   const walletApplied =
@@ -898,67 +901,45 @@ export default function AddressModal({
                         )}
                       </div>
                     </div>
-
-                    {/* Wallet balance — appears once a valid number is entered */}
-                    {phone.replace(/\D/g, "").length >= 10 && (
-                      <div className="wc-modal">
-                        {!(
-                          walletChecked &&
-                          walletCheckedPhone === phone.replace(/\D/g, "")
-                        ) ? (
-                          <button
-                            type="button"
-                            className="wc-modal-check"
-                            onClick={checkWallet}
-                            disabled={walletChecking}
-                          >
-                            <Wallet size={15} />
-                            {walletChecking
-                              ? "Checking wallet…"
-                              : "Check wallet balance"}
-                          </button>
-                        ) : walletBalance > 0 ? (
-                          <label className="wc-apply">
-                            <span className="wc-apply-txt">
-                              <span className="wc-bal">
-                                Wallet ₹{walletBalance}
-                              </span>
-                              <span className="wc-apply-note">
-                                {walletEnabled
-                                  ? `Applying ₹${walletApplied} to this order`
-                                  : `Tap to apply up to ₹${WALLET_MAX_PER_ORDER}`}
-                              </span>
-                            </span>
-                            <span
-                              className={`wc-switch${walletEnabled ? " on" : ""}`}
-                              aria-hidden="true"
-                            >
-                              <span className="wc-knob">
-                                {walletEnabled && (
-                                  <Check size={11} strokeWidth={3} />
-                                )}
-                              </span>
-                            </span>
-                            <input
-                              type="checkbox"
-                              className="wc-switch-input"
-                              checked={walletEnabled}
-                              onChange={(e) => setWalletEnabled(e.target.checked)}
-                            />
-                          </label>
-                        ) : (
-                          <span className="wc-none">
-                            No wallet balance for this number
-                          </span>
-                        )}
-                        {walletError && (
-                          <span className="wc-error">{walletError}</span>
-                        )}
-                      </div>
-                    )}
                   </motion.div>
                 )}
               </AnimatePresence>
+
+              {/* Wallet balance — auto-detected from the entered number, only
+                  shown when the customer actually has credit */}
+              {walletChecked &&
+                walletCheckedPhone === phone.replace(/\D/g, "") &&
+                walletBalance > 0 && (
+                  <label className="wc-apply wc-card">
+                    <span className="wc-icon">
+                      <Wallet size={16} />
+                    </span>
+                    <span className="wc-apply-txt">
+                      <span className="wc-bal">
+                        Wallet balance ₹{walletBalance}
+                      </span>
+                      <span className="wc-apply-note">
+                        {walletEnabled
+                          ? `Applying ₹${walletApplied} to this order`
+                          : `Tap to use up to ₹${WALLET_MAX_PER_ORDER}`}
+                      </span>
+                    </span>
+                    <span
+                      className={`wc-switch${walletEnabled ? " on" : ""}`}
+                      aria-hidden="true"
+                    >
+                      <span className="wc-knob">
+                        {walletEnabled && <Check size={11} strokeWidth={3} />}
+                      </span>
+                    </span>
+                    <input
+                      type="checkbox"
+                      className="wc-switch-input"
+                      checked={walletEnabled}
+                      onChange={(e) => setWalletEnabled(e.target.checked)}
+                    />
+                  </label>
+                )}
 
               <div className="bill-row total">
                 <span className="font-16 weight-600">Total Payable</span>

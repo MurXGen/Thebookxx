@@ -24,6 +24,7 @@ import {
   IndianRupee,
   Calendar,
   MapPin,
+  AlertCircle,
   User,
   Copy,
   Check,
@@ -51,6 +52,9 @@ import {
   Wallet,
   Pin,
   Pencil,
+  MoreVertical,
+  Calculator,
+  Delete,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
@@ -2023,6 +2027,123 @@ function PredictedMRR({ orders }) {
   );
 }
 
+// Simple calculator modal (basic arithmetic, keyboard-friendly).
+function CalculatorModal({ onClose }) {
+  const [expr, setExpr] = useState("");
+  const [result, setResult] = useState("");
+
+  const evaluate = (s) => {
+    // Only digits, operators, dot and parens — safe to evaluate.
+    if (!/^[0-9+\-*/.()%\s]*$/.test(s)) return "";
+    try {
+      const cleaned = s.replace(/%/g, "/100").replace(/[+\-*/.]\s*$/, "");
+      if (!cleaned.trim()) return "";
+      // eslint-disable-next-line no-new-func
+      const val = Function(`"use strict";return (${cleaned})`)();
+      if (val === undefined || val === null || Number.isNaN(val)) return "";
+      return String(Math.round(val * 1e6) / 1e6);
+    } catch {
+      return "";
+    }
+  };
+
+  const push = (ch) => {
+    setExpr((e) => {
+      const next = e + ch;
+      setResult(evaluate(next));
+      return next;
+    });
+  };
+  const clearAll = () => {
+    setExpr("");
+    setResult("");
+  };
+  const back = () =>
+    setExpr((e) => {
+      const next = e.slice(0, -1);
+      setResult(evaluate(next));
+      return next;
+    });
+  const equals = () => {
+    const r = evaluate(expr);
+    if (r !== "") {
+      setExpr(r);
+      setResult("");
+    }
+  };
+
+  const keys = [
+    "C", "( )", "%", "÷",
+    "7", "8", "9", "×",
+    "4", "5", "6", "−",
+    "1", "2", "3", "+",
+    "0", ".", "⌫", "=",
+  ];
+  const handleKey = (k) => {
+    if (k === "C") return clearAll();
+    if (k === "⌫") return back();
+    if (k === "=") return equals();
+    if (k === "( )") {
+      const opens = (expr.match(/\(/g) || []).length;
+      const closes = (expr.match(/\)/g) || []).length;
+      const last = expr.slice(-1);
+      return push(
+        opens > closes && /[0-9)]/.test(last) ? ")" : "(",
+      );
+    }
+    const map = { "÷": "/", "×": "*", "−": "-" };
+    push(map[k] || k);
+  };
+
+  return (
+    <motion.div
+      className="bill-modal-overlay"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={onClose}
+    >
+      <motion.div
+        className="bill-modal calc-modal"
+        initial={{ y: "100%", opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: "100%", opacity: 0 }}
+        transition={{ duration: 0.35, ease: "easeOut" }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="bill-header">
+          <span className="weight-600 font-16 flex items-center gap-8">
+            <Calculator size={16} /> Calculator
+          </span>
+          <span className="cursor-pointer" onClick={onClose}>
+            <X size={18} />
+          </span>
+        </div>
+        <div className="calc-screen">
+          <div className="calc-expr">{expr || "0"}</div>
+          <div className="calc-result">{result ? `= ${result}` : ""}</div>
+        </div>
+        <div className="calc-keys">
+          {keys.map((k) => (
+            <button
+              key={k}
+              type="button"
+              className={`calc-key${
+                k === "=" ? " eq" : ""
+              }${["÷", "×", "−", "+", "%", "( )"].includes(k) ? " op" : ""}${
+                k === "C" || k === "⌫" ? " fn" : ""
+              }`}
+              onClick={() => handleKey(k)}
+            >
+              {k}
+            </button>
+          ))}
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 export default function ManageOrdersPage() {
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
@@ -2055,6 +2176,39 @@ export default function ManageOrdersPage() {
   const [detailOrder, setDetailOrder] = useState(null); // order shown in detail modal
   const [seenIds, setSeenIds] = useState(null); // order IDs seen on last visit
   const [showNewModal, setShowNewModal] = useState(false);
+  const [showToolsMenu, setShowToolsMenu] = useState(false); // kebab menu
+  const [showListMenu, setShowListMenu] = useState(false); // orders list kebab
+  const [showCalc, setShowCalc] = useState(false); // calculator modal
+
+  // ── Per-order notes (localStorage: { "<orderId>": "note text" }) ──
+  const [orderNotes, setOrderNotes] = useState({});
+  const [noteEditor, setNoteEditor] = useState(null); // { orderId, draft }
+  const orderNotesHydrated = useRef(false);
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(
+        localStorage.getItem("mo_order_notes") || "{}",
+      );
+      if (saved && typeof saved === "object") setOrderNotes(saved);
+    } catch {}
+    orderNotesHydrated.current = true;
+  }, []);
+  useEffect(() => {
+    if (!orderNotesHydrated.current) return;
+    try {
+      localStorage.setItem("mo_order_notes", JSON.stringify(orderNotes));
+    } catch {}
+  }, [orderNotes]);
+  const saveOrderNote = (orderId, text) => {
+    setOrderNotes((m) => {
+      const next = { ...m };
+      const t = (text || "").trim();
+      if (t) next[orderId] = t;
+      else delete next[orderId];
+      return next;
+    });
+    setNoteEditor(null);
+  };
 
   // ── Notes (chat-style, localStorage-backed) ──
   const [showNotes, setShowNotes] = useState(false);
@@ -2400,7 +2554,13 @@ export default function ManageOrdersPage() {
   const newOrders = useMemo(() => {
     if (!seenIds) return [];
     const set = new Set(seenIds);
-    return orders.filter((o) => o["Order ID"] && !set.has(o["Order ID"]));
+    return orders.filter(
+      (o) =>
+        o["Order ID"] &&
+        !set.has(o["Order ID"]) &&
+        // Skip drop-off rows — only surface confirmed orders as notifications
+        !/\(unconfirmed\)/i.test(o["Customer Name"] || ""),
+    );
   }, [orders, seenIds]);
   const newOrderCount = newOrders.length;
 
@@ -3412,26 +3572,6 @@ export default function ManageOrdersPage() {
           </Link>
 
           <div className="mo-head-actions">
-            <Link
-              href="/manage-orders/transactions"
-              className="mo-bell"
-              title="Money Manager — income & expenses"
-            >
-              <Wallet size={20} />
-            </Link>
-            <button
-              type="button"
-              className="mo-bell"
-              onClick={() => setShowNotes(true)}
-              title="Notes"
-            >
-              <StickyNote size={20} />
-              {notes.length > 0 && (
-                <span className="mo-bell-badge notes">
-                  {notes.length > 99 ? "99+" : notes.length}
-                </span>
-              )}
-            </button>
             <button
               type="button"
               className={`mo-bell${newOrderCount > 0 ? " has-new" : ""}`}
@@ -3449,6 +3589,74 @@ export default function ManageOrdersPage() {
                 </span>
               )}
             </button>
+
+            {/* Kebab menu — Transactions, Notes, Calculator */}
+            <div className="mo-menu-wrap">
+              <button
+                type="button"
+                className="mo-bell"
+                onClick={() => setShowToolsMenu((v) => !v)}
+                title="More"
+                aria-haspopup="true"
+                aria-expanded={showToolsMenu}
+              >
+                <MoreVertical size={20} />
+                {notes.length > 0 && (
+                  <span className="mo-bell-badge notes">
+                    {notes.length > 99 ? "99+" : notes.length}
+                  </span>
+                )}
+              </button>
+              <AnimatePresence>
+                {showToolsMenu && (
+                  <>
+                    <div
+                      className="mo-menu-backdrop"
+                      onClick={() => setShowToolsMenu(false)}
+                    />
+                    <motion.div
+                      className="mo-menu"
+                      role="menu"
+                      initial={{ opacity: 0, scale: 0.94, y: -6 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.94, y: -6 }}
+                      transition={{ duration: 0.16, ease: "easeOut" }}
+                    >
+                      <Link
+                        href="/manage-orders/transactions"
+                        className="mo-menu-item"
+                        onClick={() => setShowToolsMenu(false)}
+                      >
+                        <Wallet size={16} /> Transactions
+                      </Link>
+                      <button
+                        type="button"
+                        className="mo-menu-item"
+                        onClick={() => {
+                          setShowNotes(true);
+                          setShowToolsMenu(false);
+                        }}
+                      >
+                        <StickyNote size={16} /> Notes
+                        {notes.length > 0 && (
+                          <span className="mo-menu-count">{notes.length}</span>
+                        )}
+                      </button>
+                      <button
+                        type="button"
+                        className="mo-menu-item"
+                        onClick={() => {
+                          setShowCalc(true);
+                          setShowToolsMenu(false);
+                        }}
+                      >
+                        <Calculator size={16} /> Calculator
+                      </button>
+                    </motion.div>
+                  </>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
         </div>
 
@@ -3657,24 +3865,28 @@ export default function ManageOrdersPage() {
                       </strong>
                     </div>
                   </div>
-                  <div className="status-bars">
+                  <div className="dc-bars">
                     {deliverySlabs.map((s) => (
-                      <div key={s.label} className="status-bar-row">
-                        <span className="sb-label">
-                          {s.label} · ₹{s.rate}
-                        </span>
-                        <div className="sb-track">
+                      <div key={s.label} className="dc-bar-row">
+                        <div className="dc-bar-head">
+                          <span className="dc-bar-label">{s.label}</span>
+                          <span className="dc-bar-rate">₹{s.rate}</span>
+                          <span className="dc-bar-val">
+                            <b>{s.count}</b> order{s.count === 1 ? "" : "s"} · ₹
+                            {s.amount.toLocaleString()}
+                          </span>
+                        </div>
+                        <div className="dc-bar-track">
                           <div
-                            className="sb-fill"
+                            className="dc-bar-fill"
                             style={{
-                              width: `${(s.count / maxSlabCount) * 100}%`,
-                              background: "#fb8500",
+                              width: `${Math.max(
+                                s.count > 0 ? 6 : 0,
+                                (s.count / maxSlabCount) * 100,
+                              )}%`,
                             }}
                           />
                         </div>
-                        <span className="sb-count">
-                          {s.count} · ₹{s.amount.toLocaleString()}
-                        </span>
                       </div>
                     ))}
                   </div>
@@ -4282,20 +4494,34 @@ export default function ManageOrdersPage() {
                     · {pickedOrdersCount}/{filteredOrders.length} picked
                   </span>
                 </span>
-                <div className="orders-header-right">
-                  <div className="orders-sort">
-                    <ArrowUpDown size={15} />
-                    <select
-                      className="orders-sort-select"
-                      value={sortOrder}
-                      onChange={(e) => setSortOrder(e.target.value)}
-                      title="Sort orders"
-                    >
-                      <option value="desc">Latest ones</option>
-                      <option value="asc">Oldest ones</option>
-                    </select>
-                  </div>
+                <div className="orders-header-right mo-menu-wrap">
                   <div className="mo-view-toggle mo-view-icons">
+                    <button
+                      type="button"
+                      className="mo-view-btn"
+                      onClick={() =>
+                        setSortOrder((s) => (s === "desc" ? "asc" : "desc"))
+                      }
+                      title={
+                        sortOrder === "desc"
+                          ? "Latest first (tap for oldest)"
+                          : "Oldest first (tap for latest)"
+                      }
+                      aria-label="Toggle sort order"
+                    >
+                      <motion.span
+                        animate={{ rotate: sortOrder === "desc" ? 0 : 180 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 320,
+                          damping: 22,
+                        }}
+                        style={{ display: "inline-flex" }}
+                      >
+                        <ArrowUpDown size={16} />
+                      </motion.span>
+                    </button>
+                    <span className="mo-view-div" />
                     <button
                       type="button"
                       className={`mo-view-btn${orderView === "cards" ? " active" : ""}`}
@@ -4314,7 +4540,57 @@ export default function ManageOrdersPage() {
                     >
                       <List size={16} />
                     </button>
+                    <span className="mo-view-div" />
+                    <button
+                      type="button"
+                      className="mo-view-btn"
+                      onClick={() => setShowListMenu((v) => !v)}
+                      title="More"
+                      aria-haspopup="true"
+                      aria-expanded={showListMenu}
+                    >
+                      <MoreVertical size={16} />
+                    </button>
                   </div>
+                  <AnimatePresence>
+                    {showListMenu && (
+                      <>
+                        <div
+                          className="mo-menu-backdrop"
+                          onClick={() => setShowListMenu(false)}
+                        />
+                        <motion.div
+                          className="mo-menu"
+                          role="menu"
+                          initial={{ opacity: 0, scale: 0.94, y: -6 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                          exit={{ opacity: 0, scale: 0.94, y: -6 }}
+                          transition={{ duration: 0.16, ease: "easeOut" }}
+                        >
+                          <button
+                            type="button"
+                            className="mo-menu-item"
+                            onClick={() => {
+                              exportGettingShippedCSV();
+                              setShowListMenu(false);
+                            }}
+                          >
+                            <Download size={16} /> Shipped CSV
+                          </button>
+                          <button
+                            type="button"
+                            className="mo-menu-item"
+                            onClick={() => {
+                              downloadCoversPNG();
+                              setShowListMenu(false);
+                            }}
+                          >
+                            <Download size={16} /> Covers PNG
+                          </button>
+                        </motion.div>
+                      </>
+                    )}
+                  </AnimatePresence>
                 </div>
               </div>
 
@@ -4334,24 +4610,6 @@ export default function ManageOrdersPage() {
                       {f.label}
                     </button>
                   ))}
-                </div>
-                <div className="orders-toolbar-actions">
-                  <button
-                    type="button"
-                    className="mo-form-btn mo-global-dl mo-global-csv"
-                    onClick={exportGettingShippedCSV}
-                    title="Download a CSV of all Getting Shipped orders (with full address + pincode)"
-                  >
-                    <Download size={13} /> Getting Shipped CSV
-                  </button>
-                  <button
-                    type="button"
-                    className="mo-form-btn mo-global-dl"
-                    onClick={downloadCoversPNG}
-                    title="Download every un-picked book cover as one PNG grid"
-                  >
-                    <Download size={13} /> Un-picked covers (PNG)
-                  </button>
                 </div>
               </div>
 
@@ -4576,89 +4834,75 @@ export default function ManageOrdersPage() {
                                 <Copy size={11} className="gray-500" />
                               )}
                             </button>
-                            {agoLabel && (
-                              <span
-                                className="mo-ago"
-                                title={
-                                  orderDate
-                                    ? orderDate.toLocaleString("en-IN")
-                                    : ""
-                                }
-                              >
-                                <Clock size={11} /> {agoLabel}
-                              </span>
-                            )}
                           </div>
+                        </div>
+                        <div className="mo-card-badges">
+                          {agoLabel && (
+                            <span
+                              className="mo-ago"
+                              title={
+                                orderDate
+                                  ? orderDate.toLocaleString("en-IN")
+                                  : ""
+                              }
+                            >
+                              <Clock size={11} /> {agoLabel}
+                            </span>
+                          )}
+                          <span className="mo-status-pill">
+                            {order.status}
+                          </span>
                         </div>
                       </div>
 
+                      {/* Amount (big, green) — above the covers; opens detail */}
+                      <button
+                        type="button"
+                        className="mo-amount"
+                        onClick={() => setDetailOrder(order)}
+                        title="View order details"
+                      >
+                        ₹{order.revenue.toLocaleString()}
+                      </button>
+
                       {/* Book covers — scrollable row, tap to mark picked */}
                       {books.length > 0 && (
-                        <>
-                          <div
-                            className="mo-covers"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            {books.map((b, ci) => {
-                              const img = getBookImage(b.name);
-                              const checked =
-                                !!pickChecked[bookKey(orderId, ci)];
-                              return (
-                                <button
-                                  key={ci}
-                                  type="button"
-                                  className={`mo-cover${checked ? " checked" : ""}`}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    toggleBook(orderId, ci);
-                                  }}
-                                  title={b.name}
-                                >
-                                  {img ? (
-                                    <img
-                                      src={img}
-                                      alt={b.name}
-                                      loading="lazy"
-                                    />
-                                  ) : (
-                                    <div className="mo-cover-ph">
-                                      <Package size={18} />
-                                    </div>
-                                  )}
-                                  <span className="mo-cover-check">
-                                    <Check size={16} />
-                                  </span>
-                                </button>
-                              );
-                            })}
-                          </div>
-                          <button
-                            type="button"
-                            className="mo-form-btn mo-covers-dl"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              exportOrderCovers(order);
-                            }}
-                            title="Download covers not yet picked"
-                          >
-                            <Download size={13} /> Download un-picked covers
-                          </button>
-                        </>
+                        <div
+                          className="mo-covers"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {books.map((b, ci) => {
+                            const img = getBookImage(b.name);
+                            const checked =
+                              !!pickChecked[bookKey(orderId, ci)];
+                            return (
+                              <button
+                                key={ci}
+                                type="button"
+                                className={`mo-cover${checked ? " checked" : ""}`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleBook(orderId, ci);
+                                }}
+                                title={b.name}
+                              >
+                                {img ? (
+                                  <img src={img} alt={b.name} loading="lazy" />
+                                ) : (
+                                  <div className="mo-cover-ph">
+                                    <Package size={18} />
+                                  </div>
+                                )}
+                                <span className="mo-cover-check">
+                                  <Check size={16} />
+                                </span>
+                              </button>
+                            );
+                          })}
+                        </div>
                       )}
 
-                      {/* Amount (big, green) opens the detail modal on click */}
-                      <div className="mo-amount-row">
-                        <button
-                          type="button"
-                          className="mo-amount"
-                          onClick={() => setDetailOrder(order)}
-                          title="View order details"
-                        >
-                          ₹{order.revenue.toLocaleString()}
-                        </button>
-                        <span className="mo-status-pill">{order.status}</span>
-                      </div>
-
+                      {/* Date · book count · picked badge — below the images */}
                       <div className="mo-card-desc">
                         <span className="mo-desc-item">
                           <Calendar size={11} />
@@ -4689,35 +4933,40 @@ export default function ManageOrdersPage() {
                         )}
                       </div>
 
-                      {/* Downloadable shipping document — India Post CDF +
-                          From/To label in ONE combined frame for this order. */}
-                      <div className="mo-card-forms">
+                      {/* Per-order note — critical, attention-grabbing when set */}
+                      {orderNotes[orderId] ? (
                         <button
                           type="button"
-                          className="mo-form-btn"
+                          className="mo-note-flag"
                           onClick={(e) => {
                             e.stopPropagation();
-                            downloadCombinedFormPNG(orderFormData(order));
+                            setNoteEditor({
+                              orderId,
+                              draft: orderNotes[orderId],
+                            });
                           }}
-                          title="Download this order's shipping form (India Post + From/To in one frame)"
+                          title="Edit note"
                         >
-                          <Download size={13} /> Shipping form (PNG)
+                          <span className="mo-note-flag-ic">
+                            <AlertCircle size={15} />
+                          </span>
+                          <span className="mo-note-flag-txt">
+                            {orderNotes[orderId]}
+                          </span>
+                          <Pencil size={13} className="mo-note-flag-edit" />
                         </button>
+                      ) : (
                         <button
                           type="button"
-                          className="mo-form-btn"
+                          className="mo-note-add"
                           onClick={(e) => {
                             e.stopPropagation();
-                            downloadCombinedFormsPDF(
-                              [orderFormData(order)],
-                              `shipping_${order["Order ID"] || "order"}.pdf`,
-                            );
+                            setNoteEditor({ orderId, draft: "" });
                           }}
-                          title="Download this order's shipping form as a printable PDF"
                         >
-                          <Download size={13} /> Shipping form (PDF)
+                          <StickyNote size={14} /> Add note
                         </button>
-                      </div>
+                      )}
 
                       <AnimatePresence initial={false}>
                         {isExpanded && (
@@ -5056,6 +5305,75 @@ export default function ManageOrdersPage() {
         )}
       </div>
 
+      {/* ===== Calculator ===== */}
+      <AnimatePresence>
+        {showCalc && <CalculatorModal onClose={() => setShowCalc(false)} />}
+      </AnimatePresence>
+
+      {/* ===== Per-order note editor ===== */}
+      <AnimatePresence>
+        {noteEditor && (
+          <motion.div
+            className="bill-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setNoteEditor(null)}
+          >
+            <motion.div
+              className="bill-modal note-editor-modal"
+              initial={{ y: "100%", opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: "100%", opacity: 0 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="bill-header">
+                <span className="weight-600 font-16 flex items-center gap-8">
+                  <StickyNote size={16} /> Order note
+                </span>
+                <span
+                  className="cursor-pointer"
+                  onClick={() => setNoteEditor(null)}
+                >
+                  <X size={18} />
+                </span>
+              </div>
+              <textarea
+                className="sec-mid-btn textarea note-editor-input"
+                placeholder="e.g. Call before dispatch · address needs confirming · hold till 5th…"
+                value={noteEditor.draft}
+                autoFocus
+                rows={4}
+                onChange={(e) =>
+                  setNoteEditor((n) => ({ ...n, draft: e.target.value }))
+                }
+              />
+              <div className="note-editor-actions">
+                {orderNotes[noteEditor.orderId] && (
+                  <button
+                    type="button"
+                    className="sec-mid-btn note-del"
+                    onClick={() => saveOrderNote(noteEditor.orderId, "")}
+                  >
+                    <Delete size={15} /> Remove
+                  </button>
+                )}
+                <button
+                  type="button"
+                  className="pri-big-btn note-save"
+                  onClick={() =>
+                    saveOrderNote(noteEditor.orderId, noteEditor.draft)
+                  }
+                >
+                  <Send size={15} /> Save note
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* ===== Notes (chat-style, slide-up) ===== */}
       <AnimatePresence>
         {showNotes && (
@@ -5279,10 +5597,7 @@ export default function ManageOrdersPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => {
-              markOrdersSeen();
-              setShowNewModal(false);
-            }}
+            onClick={() => setShowNewModal(false)}
           >
             <motion.div
               className="bill-modal"
@@ -5306,10 +5621,7 @@ export default function ManageOrdersPage() {
                 </div>
                 <span
                   className="cursor-pointer"
-                  onClick={() => {
-                    markOrdersSeen();
-                    setShowNewModal(false);
-                  }}
+                  onClick={() => setShowNewModal(false)}
                 >
                   <X size={18} />
                 </span>
@@ -5322,10 +5634,7 @@ export default function ManageOrdersPage() {
                       key={t.id}
                       href="/manage-orders/transactions"
                       className="pinned-txn"
-                      onClick={() => {
-                        markOrdersSeen();
-                        setShowNewModal(false);
-                      }}
+                      onClick={() => setShowNewModal(false)}
                     >
                       <span className="pt-note">
                         <Pin size={12} className="tx-pinned-ic" />
@@ -5352,7 +5661,6 @@ export default function ManageOrdersPage() {
                         type="button"
                         className="mo-new-item"
                         onClick={() => {
-                          markOrdersSeen();
                           setShowNewModal(false);
                           setDetailOrder(o);
                         }}
@@ -5400,7 +5708,7 @@ export default function ManageOrdersPage() {
                     setShowNewModal(false);
                   }}
                 >
-                  Mark all as seen
+                  Mark as read
                 </button>
               )}
             </motion.div>
@@ -5416,6 +5724,31 @@ export default function ManageOrdersPage() {
             const oid = order["Order ID"];
             const dbooks = order.parsedBooks || [];
             const dpnl = order.pnl;
+            // Books not yet picked (checked) → offer an out-of-stock hold message
+            const dUnpicked = dbooks.filter(
+              (_b, i) => !pickChecked[bookKey(oid, i)],
+            );
+            const dCustName = order["Customer Name"]
+              ? String(order["Customer Name"]).trim()
+              : "there";
+            const oosMany = dUnpicked.length > 1;
+            const oosMessage =
+              `Hi ${dCustName}, this is TheBookX 📚\n\n` +
+              `A quick update on your order${
+                oid ? ` (Order ${oid})` : ""
+              } — the following ${dUnpicked.length} book${
+                oosMany ? "s are" : " is"
+              } *temporarily out of stock*:\n\n` +
+              `${dUnpicked.map((b) => `• ${b.name}`).join("\n")}\n\n` +
+              `We're restocking ${
+                oosMany ? "them" : "it"
+              } and will *inform you the moment ${
+                oosMany ? "they're" : "it's"
+              } back*. Until then we're *holding your order as Processing* so your ${
+                oosMany ? "copies are" : "copy is"
+              } reserved for you. 🙏\n\n` +
+              `Thank you for your patience! 💛\n\n` +
+              `🔎 View your order anytime: ${PROFILE_URL}\n— Team TheBookX 📚`;
             const dHasTracking =
               order.shippingId && String(order.shippingId).trim() !== "";
             const dTiny = order["TinyURL"];
@@ -5604,6 +5937,18 @@ export default function ManageOrdersPage() {
                             {m.label}
                           </button>
                         ))}
+                        {dUnpicked.length > 0 && (
+                          <button
+                            type="button"
+                            className="aoc-wa-btn aoc-wa-oos"
+                            title={oosMessage}
+                            onClick={() =>
+                              openWhatsApp(order["Phone Number"], oosMessage)
+                            }
+                          >
+                            📕 Out of stock ({dUnpicked.length}) · hold
+                          </button>
+                        )}
                       </div>
                     </div>
 

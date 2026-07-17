@@ -13467,9 +13467,61 @@ img[data-loaded="true"] {
 .dc-stat-val.dc-orange {
   color: var(--tertiary, #fb8500);
 }
+/* Delivery weight-slab bars */
+.dc-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 4px;
+}
+.dc-bar-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.dc-bar-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 12px;
+}
+.dc-bar-label {
+  font-weight: 700;
+  color: var(--foreground, #111);
+}
+.dc-bar-rate {
+  font-weight: 600;
+  color: var(--tertiary, #fb8500);
+}
+.dc-bar-val {
+  margin-left: auto;
+  color: var(--dark-50, #6b7280);
+  white-space: nowrap;
+}
+.dc-bar-val b {
+  color: var(--foreground, #111);
+  font-weight: 800;
+}
+.dc-bar-track {
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--surface-2, #f1f1f3);
+  overflow: hidden;
+}
+.dc-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    var(--tertiary, #fb8500),
+    #ffb703
+  );
+  transition: width 0.4s ease;
+}
 .dc-foot {
-  margin-top: 12px;
-  padding-top: 10px;
+  margin-top: 16px;
+  padding-top: 12px;
   border-top: 1px dashed var(--hairline, #e5e7eb);
   font-size: 11.5px;
   line-height: 1.5;
@@ -17594,12 +17646,37 @@ img[data-loaded="true"] {
   color: var(--tertiary);
   animation: moBellPulse 2s ease-in-out infinite;
 }
+/* Shake the bell icon while there are unread notifications */
+.mo-bell.has-new svg {
+  transform-origin: 50% 2px;
+  animation: moBellShake 1.4s ease-in-out infinite;
+}
 @keyframes moBellPulse {
   0%, 100% {
     box-shadow: 0 0 0 0 rgba(251, 133, 0, 0.35);
   }
   60% {
     box-shadow: 0 0 0 7px rgba(251, 133, 0, 0);
+  }
+}
+@keyframes moBellShake {
+  0%, 55%, 100% {
+    transform: rotate(0deg);
+  }
+  60% {
+    transform: rotate(14deg);
+  }
+  67% {
+    transform: rotate(-12deg);
+  }
+  74% {
+    transform: rotate(9deg);
+  }
+  81% {
+    transform: rotate(-6deg);
+  }
+  88% {
+    transform: rotate(3deg);
   }
 }
 .mo-bell-badge {
@@ -17618,6 +17695,233 @@ img[data-loaded="true"] {
   font-weight: 800;
   border-radius: 999px;
   box-shadow: 0 0 0 2px var(--background);
+}
+
+/* ===== Kebab tools menu (Transactions / Notes / Calculator) ===== */
+.mo-menu-wrap {
+  position: relative;
+}
+.mo-menu-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+}
+.mo-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 50;
+  min-width: 190px;
+  padding: 6px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid var(--hairline, #e5e7eb);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.14);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.mo-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  background: none;
+  border-radius: 9px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--foreground, #111);
+  cursor: pointer;
+  text-decoration: none;
+}
+.mo-menu-item:hover {
+  background: var(--surface-2, #f5f5f6);
+}
+.mo-menu-item svg {
+  color: var(--tertiary, #fb8500);
+  flex: 0 0 auto;
+}
+.mo-menu-count {
+  margin-left: auto;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--tertiary, #fb8500);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  border-radius: 999px;
+}
+
+/* ===== Calculator modal ===== */
+.calc-modal {
+  width: 100%;
+  max-width: 420px;
+  margin-left: auto;
+  margin-right: auto;
+}
+@media (max-width: 560px) {
+  .calc-modal {
+    max-width: 100%;
+  }
+}
+.calc-screen {
+  margin: 8px 0 14px;
+  padding: 16px;
+  border-radius: 14px;
+  background: var(--surface-2, #f5f5f6);
+  text-align: right;
+  min-height: 78px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+}
+.calc-expr {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--foreground, #111);
+  word-break: break-all;
+  line-height: 1.15;
+}
+.calc-result {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--tertiary, #fb8500);
+  min-height: 18px;
+}
+.calc-keys {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.calc-key {
+  height: 56px;
+  border: 1px solid var(--hairline, #e5e7eb);
+  border-radius: 12px;
+  background: #fff;
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--foreground, #111);
+  cursor: pointer;
+  transition: background 0.12s ease, transform 0.08s ease;
+}
+.calc-key:active {
+  transform: scale(0.95);
+}
+.calc-key:hover {
+  background: var(--surface-2, #f5f5f6);
+}
+.calc-key.op {
+  color: var(--tertiary, #fb8500);
+  background: rgba(251, 133, 0, 0.08);
+  border-color: rgba(251, 133, 0, 0.3);
+}
+.calc-key.fn {
+  color: var(--dark-50, #6b7280);
+}
+.calc-key.eq {
+  background: var(--tertiary, #fb8500);
+  color: #fff;
+  border-color: var(--tertiary, #fb8500);
+}
+
+/* ===== Per-order note ===== */
+.note-editor-modal {
+  max-width: 460px;
+}
+.note-editor-input {
+  width: 100%;
+  margin: 8px 0 14px;
+  font-family: inherit;
+  font-size: 14px;
+}
+.note-editor-actions {
+  display: flex;
+  gap: 10px;
+}
+.note-editor-actions .note-save {
+  flex: 1 1 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.note-editor-actions .note-del {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--danger, #dc2626);
+  border-color: rgba(220, 38, 38, 0.4);
+}
+/* Card note: prominent amber flag when a note exists */
+.mo-note-flag {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(234, 88, 12, 0.5);
+  background: rgba(234, 88, 12, 0.1);
+  color: #9a3412;
+  text-align: left;
+  cursor: pointer;
+  animation: moNotePulse 2.4s ease-in-out infinite;
+}
+.mo-note-flag-ic {
+  flex: 0 0 auto;
+  color: #ea580c;
+  display: inline-flex;
+  margin-top: 1px;
+}
+.mo-note-flag-txt {
+  flex: 1 1 auto;
+  font-size: 12.5px;
+  font-weight: 700;
+  line-height: 1.35;
+  word-break: break-word;
+}
+.mo-note-flag-edit {
+  flex: 0 0 auto;
+  color: #c2410c;
+  opacity: 0.7;
+  margin-top: 1px;
+}
+@keyframes moNotePulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(234, 88, 12, 0.3);
+  }
+  55% {
+    box-shadow: 0 0 0 6px rgba(234, 88, 12, 0);
+  }
+}
+.mo-note-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  justify-content: center;
+  margin-top: 12px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  border: 1px dashed var(--hairline, #d1d5db);
+  background: none;
+  color: var(--dark-50, #6b7280);
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.mo-note-add:hover {
+  border-color: var(--tertiary, #fb8500);
+  color: var(--tertiary, #fb8500);
 }
 
 /* ===== New orders modal list ===== */
@@ -17820,6 +18124,27 @@ img[data-loaded="true"] {
   background: #fff;
   color: var(--dark-50, #6b7280);
 }
+/* Icon-only sort toggle */
+.orders-sort-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--hairline, rgba(0, 0, 0, 0.12));
+  background: #fff;
+  color: var(--dark-50, #6b7280);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.orders-sort-btn:hover {
+  color: var(--tertiary, #fb8500);
+  border-color: rgba(251, 133, 0, 0.4);
+}
+.mo-list-kebab {
+  padding: 7px 9px;
+}
 .orders-sort-select {
   border: none;
   background: transparent;
@@ -17855,6 +18180,19 @@ img[data-loaded="true"] {
 .mo-view-btn.active {
   background: var(--tertiary);
   color: #fff;
+}
+/* Thin divider between segment groups inside the unified pill */
+.mo-view-div {
+  align-self: center;
+  width: 1px;
+  height: 18px;
+  margin: 0 1px;
+  background: var(--hairline, rgba(0, 0, 0, 0.14));
+  flex: 0 0 auto;
+}
+/* Keep the list kebab menu anchored to the whole pill group */
+.orders-header-right.mo-menu-wrap {
+  position: relative;
 }
 
 /* ===== Orders table (responsive) ===== */

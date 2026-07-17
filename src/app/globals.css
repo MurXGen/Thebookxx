@@ -12772,9 +12772,11 @@ img[data-loaded="true"] {
 }
 .pc-legend {
   display: flex;
+  align-items: center;
   gap: 14px;
   font-size: 11px;
   color: var(--dark-50);
+  white-space: nowrap;
 }
 .pc-dot {
   display: inline-block;
@@ -16284,11 +16286,18 @@ img[data-loaded="true"] {
   justify-content: space-between;
   gap: 10px;
   flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+/* Inside the header the title's own bottom margin would break vertical
+   centering against the legend/toggle — neutralise it here. */
+.wk-head .chart-title {
+  margin-bottom: 0;
 }
 .wk-head-right {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  flex-shrink: 0;
 }
 /* Bar/area chart type toggle (top-right of a chart frame) */
 .chart-type-toggle {

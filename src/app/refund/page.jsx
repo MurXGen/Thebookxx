@@ -185,19 +185,30 @@ export default function RefundCancellationPolicy() {
         </p>
         <ul>
           <li>
-            <strong>Customers outside Mumbai:</strong> we issue a refund for the
-            affected book, so you are not required to ship it back to us.
+            <strong>Customers outside Mumbai:</strong> we issue a partial refund
+            for the affected book, so you are not required to ship it back to
+            us.
           </li>
           <li>
             <strong>Customers within Mumbai:</strong> we arrange a return pickup
-            for the affected book and process a replacement or refund once it is
-            collected.
+            for the affected book and process a replacement or partial refund
+            once it is collected.
           </li>
         </ul>
         <p>
-          In both cases, please share clear photographs of the book and its
-          packaging within the timeframe above so we can verify the condition
-          and resolve it quickly.
+          For condition-related issues we do{" "}
+          <strong>not refund the full amount</strong>. Instead, we assess the
+          reported condition and issue a <strong>partial refund</strong>{" "}
+          proportionate to it. For example, a book with minor tearing typically
+          qualifies for around <strong>10% of that book&rsquo;s value</strong>,
+          while more significant damage may warrant a higher percentage. The
+          exact refund amount is determined case-by-case based on our evaluation
+          of the condition from the photographs you share.
+        </p>
+        <p>
+          In all cases, please share clear photographs of the book and its
+          packaging within the timeframe above so we can evaluate the condition
+          and confirm the applicable refund quickly.
         </p>
       </section>
 

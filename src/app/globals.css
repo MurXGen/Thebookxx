@@ -16284,8 +16284,6 @@ img[data-loaded="true"] {
   gap: 6px;
   flex-wrap: wrap;
   margin-top: 12px;
-  padding-top: 10px;
-  border-top: 1px solid var(--hairline, #ececec);
   font-size: 11px;
   color: var(--dark-50, #9aa0a6);
 }
@@ -17755,6 +17753,7 @@ img[data-loaded="true"] {
   margin-top: 12px;
 }
 .mo-amount {
+  display: block;
   font-size: 22px;
   font-weight: 800;
   color: var(--success, #0a8f0c);
@@ -17762,8 +17761,22 @@ img[data-loaded="true"] {
   background: none;
   border: none;
   padding: 0;
+  margin-top: 12px;
   cursor: pointer;
   text-align: left;
+}
+/* Top-right badge cluster (age + status) */
+.mo-card-badges {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+/* Dashed separator between amount and covers */
+.mo-card-sep {
+  border-top: 1px dashed var(--hairline, #e5e7eb);
+  margin: 12px 0;
 }
 .mo-amount:hover {
   text-decoration: underline;
@@ -18375,11 +18388,12 @@ img[data-loaded="true"] {
 .orders-toolbar-actions {
   display: flex;
   gap: 8px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: stretch;
+  width: 100%;
 }
 .orders-toolbar-actions .mo-form-btn {
-  flex: 0 1 auto;
+  flex: 1 1 0;
   min-width: 0;
   justify-content: center;
   white-space: nowrap;

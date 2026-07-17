@@ -79,6 +79,8 @@ export default function AddressModal({
   cartBooks = [],
   offerDiscount = 0,
   offerLabel = "",
+  walletApplied = 0,
+  walletPhone = "",
   generateViewBagLinkWithDetails,
   shortenUrl,
   codHandlingFee = 29, // NEW
@@ -391,6 +393,8 @@ export default function AddressModal({
         totalDiscounted,
         offerDiscount,
         offerLabel,
+        walletUsed: walletApplied,
+        walletPhone,
         deliveryCharge: deliveryChargeForOrder,
         deliveryType: isFaster ? "Faster" : "Standard",
         giftWrapCharge: giftWrapAmountForOrder,

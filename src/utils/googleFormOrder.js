@@ -107,6 +107,8 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
     totalDiscounted,
     offerDiscount,
     offerLabel,
+    walletUsed = 0,
+    walletPhone = "",
     cartBooks,
   } = orderDetails;
 
@@ -148,7 +150,10 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
     giftWrap: giftWrapSelected ? "Yes" : "No",
     giftWrapCharge: giftWrapSelected ? 50 : 0,
     offerApplied:
-      offerDiscount > 0 ? `${offerLabel} (₹${offerDiscount} OFF)` : "None",
+      (offerDiscount > 0 ? `${offerLabel} (₹${offerDiscount} OFF)` : "None") +
+      (walletUsed > 0
+        ? ` · Wallet used ₹${walletUsed}${walletPhone ? ` (${walletPhone})` : ""}`
+        : ""),
     tinyUrl: shortLink || "",
     orderStatus: "Pending",
     timestamp: formattedTimestamp,

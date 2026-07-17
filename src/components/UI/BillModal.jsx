@@ -11,6 +11,7 @@ export default function BillModal({
   totalDiscounted,
   offerLabel,
   offerDiscount,
+  walletApplied = 0,
   standardDeliveryCharge = 0,
   fasterDeliveryCharge = 0,
   isFasterDelivery = false,
@@ -39,7 +40,7 @@ export default function BillModal({
   );
 
   const hasTrackedClose = useRef(false);
-  const finalPayable = totalDiscounted - offerDiscount;
+  const finalPayable = totalDiscounted - offerDiscount - (walletApplied || 0);
 
   useEffect(() => {
     if (
@@ -95,6 +96,13 @@ export default function BillModal({
           <div className="bill-row">
             <span>{offerLabel}</span>
             <span className="green">− ₹{offerDiscount}</span>
+          </div>
+        )}
+
+        {walletApplied > 0 && (
+          <div className="bill-row">
+            <span>Wallet balance</span>
+            <span className="green">− ₹{walletApplied}</span>
           </div>
         )}
 

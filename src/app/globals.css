@@ -2131,6 +2131,142 @@ button:disabled {
   gap: var(--px-24);
 }
 
+/* Wallet balance checkout (sits atop the fixed bill bar) */
+.wallet-checkout {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 12px;
+  margin-bottom: 4px;
+  border-bottom: 1px dashed var(--hairline, #e5e7eb);
+}
+.wc-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.wc-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: rgba(251, 133, 0, 0.12);
+  color: var(--tertiary, #fb8500);
+  flex: 0 0 auto;
+}
+.wc-head-txt {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+.wc-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--foreground, #111);
+}
+.wc-sub {
+  font-size: 11px;
+  color: var(--dark-50, #6b7280);
+}
+.wc-check-row {
+  display: flex;
+  gap: 8px;
+}
+.wc-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid var(--hairline, #d1d5db);
+  font-size: 14px;
+}
+.wc-input:focus {
+  outline: none;
+  border-color: var(--tertiary, #fb8500);
+}
+.wc-check-btn {
+  flex: 0 0 auto;
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 10px;
+  border: none;
+  background: var(--tertiary, #fb8500);
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+}
+.wc-check-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.wc-apply {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+.wc-apply-txt {
+  display: flex;
+  flex-direction: column;
+  margin-right: auto;
+}
+.wc-bal {
+  font-size: 14px;
+  font-weight: 800;
+  color: #0a8f0c;
+}
+.wc-apply-note {
+  font-size: 11px;
+  color: var(--dark-50, #6b7280);
+}
+.wc-switch {
+  position: relative;
+  width: 44px;
+  height: 26px;
+  border-radius: 999px;
+  background: #d1d5db;
+  transition: background 0.18s ease;
+  flex: 0 0 auto;
+}
+.wc-switch.on {
+  background: var(--tertiary, #fb8500);
+}
+.wc-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--tertiary, #fb8500);
+  transition: left 0.18s ease;
+}
+.wc-switch.on .wc-knob {
+  left: 21px;
+}
+.wc-switch-input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  margin: 0;
+}
+.wc-error {
+  font-size: 11.5px;
+  color: #dc2626;
+  font-weight: 600;
+}
+
 .view-bill-text {
   font-size: var(--px-12);
   color: #16a34a;

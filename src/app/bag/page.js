@@ -34,8 +34,6 @@ import {
   ShoppingCart,
   RotateCcw,
   X,
-  Wallet,
-  Check,
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
@@ -48,11 +46,6 @@ import { FcDocument } from "react-icons/fc";
 // Disclosed transparently after delivery selection via CODHandlingFeeModal.
 const COD_HANDLING_FEE = 29;
 
-// Wallet: customers can apply their store-credit balance at checkout, capped
-// per order. Balance is read from the "Wallet" column of the orders sheet.
-const WALLET_SHEET_ID = "1ovqFn50d0TKjV0nm4q1lb3N9XvimUgIsHCOlHh6QRdg";
-const WALLET_MAX_PER_ORDER = 399;
-
 function BagContent() {
   const { cart, addToCart, clearCart } = useStore();
   const router = useRouter();
@@ -61,13 +54,6 @@ function BagContent() {
   const [showBill, setShowBill] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [upsellAccepted, setUpsellAccepted] = useState(false);
-  // Wallet balance checkout
-  const [walletPhone, setWalletPhone] = useState("");
-  const [walletBalance, setWalletBalance] = useState(0);
-  const [walletChecked, setWalletChecked] = useState(false);
-  const [walletChecking, setWalletChecking] = useState(false);
-  const [walletError, setWalletError] = useState("");
-  const [walletEnabled, setWalletEnabled] = useState(false);
   const [showRecommendationModal, setShowRecommendationModal] = useState(false);
   const [showFreeShippingNudge, setShowFreeShippingNudge] = useState(false);
   const [sharedBooks, setSharedBooks] = useState([]); // [{ book, qty }]
@@ -306,64 +292,12 @@ function BagContent() {
       : "₹40 book add-on";
   }
 
-  // Wallet applied = min(balance, ₹399 cap, remaining payable) when enabled.
-  const walletApplied =
-    walletEnabled && walletBalance > 0
-      ? Math.min(
-          walletBalance,
-          WALLET_MAX_PER_ORDER,
-          Math.max(0, totalDiscounted - offerDiscount),
-        )
-      : 0;
-
-  const finalPayable = totalDiscounted - offerDiscount - walletApplied;
+  const finalPayable = totalDiscounted - offerDiscount;
   const canCheckout = totalDiscounted >= MIN_CHECKOUT_AMOUNT;
   const amountNeededToCheckout = Math.max(
     0,
     MIN_CHECKOUT_AMOUNT - totalDiscounted,
   );
-
-  // Look up the customer's wallet balance from the orders sheet by phone
-  // (max of the "Wallet" column across their rows), same source as the profile.
-  const checkWallet = async () => {
-    const phone = walletPhone.replace(/\D/g, "");
-    if (phone.length < 10) {
-      setWalletError("Enter a valid 10-digit phone number");
-      return;
-    }
-    setWalletChecking(true);
-    setWalletError("");
-    try {
-      const url = `https://docs.google.com/spreadsheets/d/${WALLET_SHEET_ID}/gviz/tq?tqx=out:json`;
-      const res = await fetch(url);
-      const text = await res.text();
-      const data = JSON.parse(text.substring(47, text.length - 2));
-      const headers = data.table.cols.map((c) => c.label);
-      let bal = 0;
-      data.table.rows.forEach((row) => {
-        const o = {};
-        row.c.forEach((cell, i) => {
-          let v = cell?.v;
-          if (v && typeof v === "object" && v.value !== undefined) v = v.value;
-          o[headers[i]] = v;
-        });
-        const rowPhone = String(o["Phone Number"] ?? "").replace(/\D/g, "");
-        if (rowPhone.slice(-10) === phone.slice(-10)) {
-          const w = parseFloat(o["Wallet"] ?? o["wallet"] ?? 0);
-          if (!isNaN(w)) bal = Math.max(bal, w);
-        }
-      });
-      setWalletBalance(bal);
-      setWalletChecked(true);
-      setWalletEnabled(bal > 0);
-      if (bal <= 0) setWalletError("No wallet balance found for this number");
-    } catch (e) {
-      console.error("Wallet check failed:", e);
-      setWalletError("Couldn't check balance. Please try again.");
-    } finally {
-      setWalletChecking(false);
-    }
-  };
 
   const standardDeliveryCharge = getDeliveryCharge(
     totalDiscounted,
@@ -919,71 +853,6 @@ _Thank you for shopping with TheBookX! 📚✨_
       )}
 
       <div className="fixed-bill-bar flex flex-col">
-      {canCheckout && (
-        <div className="wallet-checkout">
-          <div className="wc-head">
-            <span className="wc-icon">
-              <Wallet size={18} />
-            </span>
-            <div className="wc-head-txt">
-              <span className="wc-title">Have wallet balance?</span>
-              <span className="wc-sub">
-                Use up to ₹{WALLET_MAX_PER_ORDER} on this order
-              </span>
-            </div>
-          </div>
-
-          {!walletChecked ? (
-            <div className="wc-check-row">
-              <input
-                type="tel"
-                inputMode="numeric"
-                className="wc-input"
-                placeholder="Enter your phone number"
-                value={walletPhone}
-                onChange={(e) => setWalletPhone(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && checkWallet()}
-              />
-              <button
-                type="button"
-                className="wc-check-btn"
-                onClick={checkWallet}
-                disabled={walletChecking}
-              >
-                {walletChecking ? "Checking…" : "Check"}
-              </button>
-            </div>
-          ) : walletBalance > 0 ? (
-            <label className="wc-apply">
-              <span className="wc-apply-txt">
-                <span className="wc-bal">Balance ₹{walletBalance}</span>
-                <span className="wc-apply-note">
-                  {walletEnabled
-                    ? `Applying ₹${walletApplied} to this order`
-                    : `Tap to apply up to ₹${WALLET_MAX_PER_ORDER}`}
-                </span>
-              </span>
-              <span
-                className={`wc-switch${walletEnabled ? " on" : ""}`}
-                aria-hidden="true"
-              >
-                <span className="wc-knob">
-                  {walletEnabled && <Check size={11} strokeWidth={3} />}
-                </span>
-              </span>
-              <input
-                type="checkbox"
-                className="wc-switch-input"
-                checked={walletEnabled}
-                onChange={(e) => setWalletEnabled(e.target.checked)}
-              />
-            </label>
-          ) : null}
-
-          {walletError && <span className="wc-error">{walletError}</span>}
-        </div>
-      )}
-
         <div className="flex flex-row justify-between width100 items-center">
           <div className="bill-left">
             <span className="font-12 dark-50">Total payable</span>
@@ -1065,8 +934,6 @@ _Thank you for shopping with TheBookX! 📚✨_
         shortenUrl={shortenUrl}
         offerLabel={offerLabel}
         offerDiscount={offerDiscount}
-        walletApplied={walletApplied}
-        walletPhone={walletPhone}
         codHandlingFee={COD_HANDLING_FEE}
         onUpsellAccept={() => setUpsellAccepted(true)}
       />
@@ -1078,7 +945,6 @@ _Thank you for shopping with TheBookX! 📚✨_
         totalDiscounted={totalDiscounted}
         offerDiscount={offerDiscount}
         offerLabel={offerLabel}
-        walletApplied={walletApplied}
         standardDeliveryCharge={standardDeliveryCharge}
         standardDeliveryLabel={standardDeliveryLabel}
         fasterDeliveryCharge={fasterDeliveryCharge}

@@ -27,6 +27,7 @@ import {
   Headphones,
   Loader2,
   Wallet,
+  Check,
   ArrowRight,
   TrendingDown,
 } from "lucide-react";
@@ -62,6 +63,11 @@ function normalizePhone(raw = "") {
   return digits;
 }
 
+// Wallet: customers can apply store-credit balance at checkout, capped per
+// order. Balance is read from the "Wallet" column of the orders sheet by phone.
+const WALLET_SHEET_ID = "1ovqFn50d0TKjV0nm4q1lb3N9XvimUgIsHCOlHh6QRdg";
+const WALLET_MAX_PER_ORDER = 399;
+
 export default function AddressModal({
   open,
   onClose,
@@ -79,8 +85,6 @@ export default function AddressModal({
   cartBooks = [],
   offerDiscount = 0,
   offerLabel = "",
-  walletApplied = 0,
-  walletPhone = "",
   generateViewBagLinkWithDetails,
   shortenUrl,
   codHandlingFee = 29, // NEW
@@ -88,6 +92,13 @@ export default function AddressModal({
 }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  // Wallet balance (looked up by the phone entered below)
+  const [walletBalance, setWalletBalance] = useState(0);
+  const [walletChecked, setWalletChecked] = useState(false);
+  const [walletChecking, setWalletChecking] = useState(false);
+  const [walletError, setWalletError] = useState("");
+  const [walletEnabled, setWalletEnabled] = useState(false);
+  const [walletCheckedPhone, setWalletCheckedPhone] = useState("");
   const [city, setCity] = useState("");
   const [pincode, setPincode] = useState("");
   const [address, setAddress] = useState("");
@@ -202,11 +213,60 @@ export default function AddressModal({
 
   const isCartBelow399 = totalDiscounted < 399;
 
+  // Look up wallet balance from the orders sheet for the entered phone.
+  const checkWallet = async () => {
+    const digits = phone.replace(/\D/g, "");
+    if (digits.length < 10) {
+      setWalletError("Enter your 10-digit number first");
+      return;
+    }
+    setWalletChecking(true);
+    setWalletError("");
+    try {
+      const url = `https://docs.google.com/spreadsheets/d/${WALLET_SHEET_ID}/gviz/tq?tqx=out:json`;
+      const res = await fetch(url);
+      const text = await res.text();
+      const data = JSON.parse(text.substring(47, text.length - 2));
+      const headers = data.table.cols.map((c) => c.label);
+      let bal = 0;
+      data.table.rows.forEach((row) => {
+        const o = {};
+        row.c.forEach((cell, i) => {
+          let v = cell?.v;
+          if (v && typeof v === "object" && v.value !== undefined) v = v.value;
+          o[headers[i]] = v;
+        });
+        const rowPhone = String(o["Phone Number"] ?? "").replace(/\D/g, "");
+        if (rowPhone.slice(-10) === digits.slice(-10)) {
+          const w = parseFloat(o["Wallet"] ?? o["wallet"] ?? 0);
+          if (!isNaN(w)) bal = Math.max(bal, w);
+        }
+      });
+      setWalletBalance(bal);
+      setWalletChecked(true);
+      setWalletCheckedPhone(digits);
+      setWalletEnabled(bal > 0);
+      if (bal <= 0) setWalletError("No wallet balance found for this number");
+    } catch (e) {
+      console.error("Wallet check failed:", e);
+      setWalletError("Couldn't check balance. Please try again.");
+    } finally {
+      setWalletChecking(false);
+    }
+  };
+
+  // Wallet applied = min(balance, ₹399 cap, goods total) when enabled.
+  const walletApplied =
+    walletEnabled && walletBalance > 0
+      ? Math.min(walletBalance, WALLET_MAX_PER_ORDER, Math.max(0, finalPayable))
+      : 0;
+  const netPayable = Math.max(0, finalPayable - walletApplied);
+
   const getDeliveryCharge = (isFaster) =>
     isFaster ? fasterDeliveryCharge : standardDeliveryCharge;
 
   const getTotalWithDelivery = (isFaster) =>
-    finalPayable + getDeliveryCharge(isFaster);
+    netPayable + getDeliveryCharge(isFaster);
 
   const totalWithDelivery = getTotalWithDelivery(fasterDelivery);
   const codAdvanceAmount = 99;
@@ -383,18 +443,18 @@ export default function AddressModal({
         giftWrapSelected: giftWrapOn,
         shortLink,
         totalWithDelivery:
-          finalPayable +
+          netPayable +
           deliveryChargeForOrder +
           giftWrapAmountForOrder +
           feeForThisOrder,
         // Itemised values, match what the user sees in the success modal
         subtotal: totalDiscounted,
-        finalPayable,
+        finalPayable: netPayable,
         totalDiscounted,
         offerDiscount,
         offerLabel,
         walletUsed: walletApplied,
-        walletPhone,
+        walletPhone: walletApplied > 0 ? walletCheckedPhone : "",
         deliveryCharge: deliveryChargeForOrder,
         deliveryType: isFaster ? "Faster" : "Standard",
         giftWrapCharge: giftWrapAmountForOrder,
@@ -459,7 +519,7 @@ export default function AddressModal({
     // GA purchase — only counted here, at the COD success point.
     trackPurchase({
       cartItems: cartBooks,
-      totalAmount: finalPayable,
+      totalAmount: netPayable,
       paymentId: `COD-${Date.now()}`,
     });
     // Now log the CONFIRMED order (plain name, no "(unconfirmed)" tag).
@@ -671,7 +731,7 @@ export default function AddressModal({
     // GA purchase — only counted here, when the user clicks Verify.
     trackPurchase({
       cartItems: cartBooks,
-      totalAmount: finalPayable,
+      totalAmount: netPayable,
       paymentId: `UPI-${Date.now()}`,
     });
     // Log the CONFIRMED UPI order (plain name, no "(unconfirmed)" tag).
@@ -838,6 +898,64 @@ export default function AddressModal({
                         )}
                       </div>
                     </div>
+
+                    {/* Wallet balance — appears once a valid number is entered */}
+                    {phone.replace(/\D/g, "").length >= 10 && (
+                      <div className="wc-modal">
+                        {!(
+                          walletChecked &&
+                          walletCheckedPhone === phone.replace(/\D/g, "")
+                        ) ? (
+                          <button
+                            type="button"
+                            className="wc-modal-check"
+                            onClick={checkWallet}
+                            disabled={walletChecking}
+                          >
+                            <Wallet size={15} />
+                            {walletChecking
+                              ? "Checking wallet…"
+                              : "Check wallet balance"}
+                          </button>
+                        ) : walletBalance > 0 ? (
+                          <label className="wc-apply">
+                            <span className="wc-apply-txt">
+                              <span className="wc-bal">
+                                Wallet ₹{walletBalance}
+                              </span>
+                              <span className="wc-apply-note">
+                                {walletEnabled
+                                  ? `Applying ₹${walletApplied} to this order`
+                                  : `Tap to apply up to ₹${WALLET_MAX_PER_ORDER}`}
+                              </span>
+                            </span>
+                            <span
+                              className={`wc-switch${walletEnabled ? " on" : ""}`}
+                              aria-hidden="true"
+                            >
+                              <span className="wc-knob">
+                                {walletEnabled && (
+                                  <Check size={11} strokeWidth={3} />
+                                )}
+                              </span>
+                            </span>
+                            <input
+                              type="checkbox"
+                              className="wc-switch-input"
+                              checked={walletEnabled}
+                              onChange={(e) => setWalletEnabled(e.target.checked)}
+                            />
+                          </label>
+                        ) : (
+                          <span className="wc-none">
+                            No wallet balance for this number
+                          </span>
+                        )}
+                        {walletError && (
+                          <span className="wc-error">{walletError}</span>
+                        )}
+                      </div>
+                    )}
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -846,7 +964,7 @@ export default function AddressModal({
                 <span className="font-16 weight-600">Total Payable</span>
                 <span className="font-20 weight-700 green">
                   ₹
-                  {totalWithStandardDelivery +
+                  {getTotalWithDelivery(false) +
                     (giftWrapSelected ? giftWrapCharge : 0)}
                 </span>
               </div>
@@ -1131,6 +1249,7 @@ export default function AddressModal({
             totalDiscounted={totalDiscounted}
             offerDiscount={offerDiscount}
             offerLabel={offerLabel}
+            walletApplied={walletApplied}
             deliveryCharge={getDeliveryCharge(fasterDelivery)}
             giftWrap={giftWrap || giftWrapSelected}
             giftWrapCharge={giftWrapCharge}
@@ -1155,7 +1274,8 @@ export default function AddressModal({
       <AnimatePresence>
         {showUPIPayment && (
           <UPIPaymentModal
-            finalPayable={finalPayable}
+            finalPayable={netPayable}
+            walletApplied={walletApplied}
             fasterDelivery={fasterDelivery}
             fasterDeliveryCharge={fasterDeliveryCharge}
             standardDeliveryCharge={standardDeliveryCharge}
@@ -1403,6 +1523,7 @@ function CODSuccessModal({
   totalDiscounted = 0,
   offerDiscount = 0,
   offerLabel = "",
+  walletApplied = 0,
   deliveryCharge = 0,
   giftWrap = false,
   giftWrapCharge = 0,
@@ -1780,6 +1901,18 @@ function CODSuccessModal({
                           style={{ color: "var(--success)" }}
                         >
                           -₹{offerDiscount}
+                        </span>
+                      </div>
+                    )}
+
+                    {walletApplied > 0 && (
+                      <div className="flex flex-row justify-between font-12">
+                        <span className="dark-50">Wallet balance</span>
+                        <span
+                          className="weight-600"
+                          style={{ color: "var(--success)" }}
+                        >
+                          -₹{walletApplied}
                         </span>
                       </div>
                     )}

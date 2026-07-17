@@ -55,6 +55,8 @@ import {
   MoreVertical,
   Calculator,
   Delete,
+  Moon,
+  Sun,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
@@ -2179,6 +2181,22 @@ export default function ManageOrdersPage() {
   const [showToolsMenu, setShowToolsMenu] = useState(false); // kebab menu
   const [showListMenu, setShowListMenu] = useState(false); // orders list kebab
   const [showCalc, setShowCalc] = useState(false); // calculator modal
+  const [waPickerOrder, setWaPickerOrder] = useState(null); // WhatsApp picker
+  const [waCustomText, setWaCustomText] = useState(""); // custom WA message
+  const [darkMode, setDarkMode] = useState(false); // page dark theme
+  useEffect(() => {
+    try {
+      setDarkMode(localStorage.getItem("mo_dark") === "1");
+    } catch {}
+  }, []);
+  const toggleDark = () =>
+    setDarkMode((d) => {
+      const next = !d;
+      try {
+        localStorage.setItem("mo_dark", next ? "1" : "0");
+      } catch {}
+      return next;
+    });
 
   // ── Per-order notes (localStorage: { "<orderId>": "note text" }) ──
   const [orderNotes, setOrderNotes] = useState({});
@@ -3551,7 +3569,7 @@ export default function ManageOrdersPage() {
   }
 
   return (
-    <div className="my-orders-page">
+    <div className={`my-orders-page${darkMode ? " mo-dark" : ""}`}>
       {/* New-order chime (drop the audio file at /public/sounds/new-order.mp3) */}
       <audio
         ref={newOrderAudioRef}
@@ -3572,6 +3590,15 @@ export default function ManageOrdersPage() {
           </Link>
 
           <div className="mo-head-actions">
+            <button
+              type="button"
+              className="mo-bell"
+              onClick={toggleDark}
+              title={darkMode ? "Switch to light" : "Switch to dark"}
+              aria-label="Toggle dark mode"
+            >
+              {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
             <button
               type="button"
               className={`mo-bell${newOrderCount > 0 ? " has-new" : ""}`}
@@ -4855,15 +4882,31 @@ export default function ManageOrdersPage() {
                         </div>
                       </div>
 
-                      {/* Amount (big, green) — above the covers; opens detail */}
-                      <button
-                        type="button"
-                        className="mo-amount"
-                        onClick={() => setDetailOrder(order)}
-                        title="View order details"
-                      >
-                        ₹{order.revenue.toLocaleString()}
-                      </button>
+                      {/* Amount (big, green) — above the covers; opens detail.
+                          WhatsApp icon opens the message picker for this order. */}
+                      <div className="mo-amount-row">
+                        <button
+                          type="button"
+                          className="mo-amount"
+                          onClick={() => setDetailOrder(order)}
+                          title="View order details"
+                        >
+                          ₹{order.revenue.toLocaleString()}
+                        </button>
+                        <button
+                          type="button"
+                          className="mo-wa-btn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setWaCustomText("");
+                            setWaPickerOrder(order);
+                          }}
+                          title="WhatsApp the customer"
+                          aria-label="WhatsApp the customer"
+                        >
+                          <FaWhatsapp size={18} />
+                        </button>
+                      </div>
 
                       {/* Book covers — scrollable row, tap to mark picked */}
                       {books.length > 0 && (
@@ -5308,6 +5351,90 @@ export default function ManageOrdersPage() {
       {/* ===== Calculator ===== */}
       <AnimatePresence>
         {showCalc && <CalculatorModal onClose={() => setShowCalc(false)} />}
+      </AnimatePresence>
+
+      {/* ===== WhatsApp message picker (per order) ===== */}
+      <AnimatePresence>
+        {waPickerOrder && (
+          <motion.div
+            className="bill-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setWaPickerOrder(null)}
+          >
+            <motion.div
+              className="bill-modal wa-picker-modal"
+              initial={{ y: "100%", opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: "100%", opacity: 0 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="bill-header">
+                <div className="flex flex-col">
+                  <span className="weight-600 font-16 flex items-center gap-8">
+                    <FaWhatsapp size={16} /> Message{" "}
+                    {waPickerOrder["Customer Name"] || "customer"}
+                  </span>
+                  <span className="font-12 gray-500">
+                    +91 {waPickerOrder["Phone Number"]}
+                  </span>
+                </div>
+                <span
+                  className="cursor-pointer"
+                  onClick={() => setWaPickerOrder(null)}
+                >
+                  <X size={18} />
+                </span>
+              </div>
+
+              <div className="wa-picker-grid">
+                {waMessages(waPickerOrder).map((m) => (
+                  <button
+                    key={m.key}
+                    type="button"
+                    className="wa-picker-chip"
+                    title={m.text}
+                    onClick={() => {
+                      openWhatsApp(waPickerOrder["Phone Number"], m.text);
+                      setWaPickerOrder(null);
+                    }}
+                  >
+                    {m.label}
+                  </button>
+                ))}
+              </div>
+
+              <div className="wa-custom">
+                <span className="wa-custom-label">
+                  <Pencil size={13} /> Custom message
+                </span>
+                <textarea
+                  className="sec-mid-btn textarea wa-custom-input"
+                  placeholder="Type a custom WhatsApp message…"
+                  value={waCustomText}
+                  rows={3}
+                  onChange={(e) => setWaCustomText(e.target.value)}
+                />
+                <button
+                  type="button"
+                  className="pri-big-btn wa-custom-send"
+                  disabled={!waCustomText.trim()}
+                  onClick={() => {
+                    openWhatsApp(
+                      waPickerOrder["Phone Number"],
+                      waCustomText.trim(),
+                    );
+                    setWaPickerOrder(null);
+                  }}
+                >
+                  <Send size={15} /> Send on WhatsApp
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
       </AnimatePresence>
 
       {/* ===== Per-order note editor ===== */}

@@ -43,3 +43,11 @@ next-env.d.ts
 # FUSE mount temp artifacts (safe to delete)
 .fuse_hidden*
 **/.fuse_hidden*
+
+# local scratch / export artifacts (not part of the app)
+/exports/
+docs/sheet-edit-apps-script.gs
+/*-poster.html
+/*-poster.png
+/*-poster.jpg
+/*-poster.jpeg

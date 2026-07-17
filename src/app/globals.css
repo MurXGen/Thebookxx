@@ -13274,6 +13274,162 @@ img[data-loaded="true"] {
 }
 
 /* ===== Header → search → section tabs pinned to the top ===== */
+/* ============================================================
+   Dark mode — scoped to the Manage Orders page (.mo-dark)
+   ============================================================ */
+.mo-dark {
+  --background: #0e1014;
+  --foreground: #e8eaed;
+  --surface-2: #171a21;
+  --hairline: #2b303b;
+  --dark: #e8eaed;
+  --dark-50: #9aa0a6;
+  --dark-20: rgba(255, 255, 255, 0.16);
+  --dark-10: rgba(255, 255, 255, 0.08);
+  --dark-4: rgba(255, 255, 255, 0.05);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.65);
+  background: #0e1014;
+  color: #e8eaed;
+  min-height: 100vh;
+}
+/* Surfaces that hard-code white */
+.mo-dark .bill-modal {
+  background: #1c2029;
+  color: var(--foreground);
+}
+.mo-dark .admin-order-card,
+.mo-dark .mo-card {
+  background: #14171d;
+}
+.mo-dark .dc-stat,
+.mo-dark .calc-key,
+.mo-dark .mo-menu,
+.mo-dark .mo-bell,
+.mo-dark .mo-view-toggle {
+  background: #1c2029;
+}
+/* Accordion shells + count badge */
+.mo-dark .acc {
+  background: #14171d;
+  border-color: var(--hairline);
+}
+.mo-dark .acc-head {
+  background: linear-gradient(180deg, #191d25, #14171d);
+}
+.mo-dark .acc-count {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--foreground);
+}
+.mo-dark .admin-chart-card {
+  background: #14171d;
+  border-color: var(--hairline);
+}
+.mo-dark .orders-bulk-bar {
+  background: rgba(251, 133, 0, 0.14);
+}
+.mo-dark .calc-key {
+  color: var(--foreground);
+}
+.mo-dark .calc-screen,
+.mo-dark .calc-key.op {
+  background: #14171d;
+}
+.mo-dark .calc-key.op {
+  background: rgba(251, 133, 0, 0.16);
+}
+/* Inputs / search / filter buttons */
+.mo-dark .sec-mid-btn,
+.mo-dark .admin-input,
+.mo-dark .admin-select,
+.mo-dark .note-editor-input,
+.mo-dark .wa-custom-input {
+  background: #14171d;
+  color: var(--foreground);
+  border-color: var(--dark-50);
+}
+.mo-dark input::placeholder,
+.mo-dark textarea::placeholder {
+  color: #6b7280;
+}
+/* Table */
+.mo-dark .mo-table th,
+.mo-dark .mo-thead {
+  background: #14171d;
+  color: var(--foreground);
+}
+.mo-dark .mo-table td,
+.mo-dark .mo-table th {
+  border-color: var(--hairline);
+  color: var(--foreground);
+}
+.mo-dark .mo-trow:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+/* Menu hover */
+.mo-dark .mo-menu-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+/* Brighten positive greens so they pop on dark */
+.mo-dark .mo-amount,
+.mo-dark .dc-pos,
+.mo-dark .pc-pos,
+.mo-dark .green {
+  color: #34d399;
+}
+/* KPI cards — translucent tints on dark */
+.mo-dark .kpi {
+  border-color: var(--hairline);
+}
+.mo-dark .kpi-ic {
+  background: rgba(255, 255, 255, 0.08);
+}
+.mo-dark .kpi-orders {
+  background: rgba(234, 88, 12, 0.16);
+}
+.mo-dark .kpi-orders .kpi-value {
+  color: #fdba74;
+}
+.mo-dark .kpi-rev {
+  background: rgba(59, 111, 224, 0.18);
+}
+.mo-dark .kpi-rev .kpi-value {
+  color: #93b4ff;
+}
+.mo-dark .kpi-cost {
+  background: rgba(148, 163, 184, 0.16);
+}
+.mo-dark .kpi-cost .kpi-value {
+  color: #cbd5e1;
+}
+.mo-dark .kpi-profit {
+  background: rgba(16, 185, 106, 0.18);
+}
+.mo-dark .kpi-profit .kpi-value {
+  color: #6ee7b7;
+}
+.mo-dark .kpi-loss {
+  background: rgba(240, 68, 56, 0.18);
+}
+.mo-dark .kpi-loss .kpi-value {
+  color: #fca5a5;
+}
+.mo-dark .kpi-runrate {
+  background: rgba(124, 58, 237, 0.2);
+}
+.mo-dark .kpi-runrate .kpi-value {
+  color: #c4b5fd;
+}
+/* Accordion header + misc light fills */
+.mo-dark .acc-count,
+.mo-dark .mo-oid-hl {
+  color: var(--foreground);
+}
+.mo-dark .track-bar,
+.mo-dark .sb-track {
+  background: rgba(255, 255, 255, 0.08);
+}
+
 .my-orders-page .orders-header {
   order: -3;
 }
@@ -17632,7 +17788,7 @@ img[data-loaded="true"] {
   align-items: center;
   justify-content: center;
   border-radius: 12px;
-  border: 1px solid var(--hairline);
+  border: 1px solid var(--dark-50);
   background: var(--background);
   color: var(--foreground);
   cursor: pointer;
@@ -17714,8 +17870,8 @@ img[data-loaded="true"] {
   min-width: 190px;
   padding: 6px;
   border-radius: 12px;
-  background: #fff;
-  border: 1px solid var(--hairline, #e5e7eb);
+  background: var(--background, #fff);
+  border: 1px solid var(--dark-50);
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.14);
   display: flex;
   flex-direction: column;
@@ -18085,6 +18241,78 @@ img[data-loaded="true"] {
 .mo-amount:hover {
   text-decoration: underline;
 }
+/* WhatsApp icon button in the card price row */
+.mo-wa-btn {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid rgba(37, 211, 102, 0.45);
+  background: rgba(37, 211, 102, 0.1);
+  color: #128c3e;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+.mo-wa-btn:hover {
+  background: rgba(37, 211, 102, 0.2);
+}
+.mo-wa-btn:active {
+  transform: scale(0.94);
+}
+/* WhatsApp picker modal */
+.wa-picker-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 6px 0 16px;
+}
+.wa-picker-chip {
+  border: 1px solid rgba(37, 211, 102, 0.5);
+  background: rgba(37, 211, 102, 0.08);
+  color: #128c3e;
+  border-radius: 999px;
+  padding: 9px 14px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.wa-picker-chip:hover {
+  background: rgba(37, 211, 102, 0.18);
+}
+.wa-custom {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--hairline, #e5e7eb);
+}
+.wa-custom-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--dark-50, #6b7280);
+}
+.wa-custom-input {
+  width: 100%;
+  font-family: inherit;
+  font-size: 14px;
+}
+.wa-custom-send {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.wa-custom-send:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
 .mo-status-pill {
   display: inline-flex;
   align-items: center;
@@ -18165,7 +18393,7 @@ img[data-loaded="true"] {
   padding: 3px;
   border-radius: 999px;
   background: var(--dark-4);
-  border: 1px solid var(--hairline);
+  border: 1px solid var(--dark-50);
 }
 .mo-view-btn {
   border: none;

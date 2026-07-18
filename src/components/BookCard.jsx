@@ -370,8 +370,10 @@ export default function BookCard({ book }) {
                   aria-label={`Add ${book.name} to cart`}
                   aria-disabled={isOneRupeeLimitReached}
                 >
-                  <ShoppingCart size={17} />
-                  <span>Add to Cart</span>
+                  <span className="bc-add-inner">
+                    <ShoppingCart size={17} />
+                    <span>Add to Cart</span>
+                  </span>
                 </LoadingButton>
               ) : (
                 <div className="bookcard-qty">

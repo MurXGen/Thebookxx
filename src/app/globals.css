@@ -16118,6 +16118,13 @@ img[data-loaded="true"] {
 }
 .bookcard-add-btn svg {
   color: #fff;
+  flex: 0 0 auto;
+}
+.bc-add-inner {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 1;
 }
 .bookcard-add-btn:hover {
   background: var(--tertiary, #fb8500);

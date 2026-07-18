@@ -131,6 +131,11 @@ export default function AddressModal({
   const [canVerify, setCanVerify] = useState(false);
 
   const [giftWrap, setGiftWrap] = useState(giftWrapSelected);
+  // The modal stays mounted, so keep the internal gift-wrap flag in sync with
+  // the bag's selection — otherwise the +₹25 never reflects in the totals.
+  useEffect(() => {
+    setGiftWrap(giftWrapSelected);
+  }, [giftWrapSelected]);
 
   const UPI_ID = "7977960242-1@okbizaxis";
 

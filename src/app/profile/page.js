@@ -475,13 +475,35 @@ export default function MyOrdersPage() {
     );
     const grand = parseFloat(order["Total Amount"]) || sub;
     const isFree = (order["Delivery Type"] || "").toLowerCase().includes("free");
-    const diff = grand - sub;
+    let deliveryFee = parseFloat(order["Delivery Charge"]) || 0;
+    const giftFee =
+      order["Gift Wrap"] === "Yes"
+        ? parseFloat(order["Gift Wrap Charge"]) || 0
+        : 0;
+    const isCODOrder = (order["Payment Type"] || "").includes(
+      "Cash on Delivery",
+    );
+    let codFee = 0;
+    let discount = 0;
+    const extra = grand - sub - deliveryFee - giftFee;
+    if (extra > 0) {
+      if (isCODOrder) codFee = extra;
+      else deliveryFee += extra;
+    } else if (extra < 0) {
+      discount = -extra;
+    }
+    const freeDelivery = isFree || deliveryFee === 0;
 
     const W = 700;
     const P = 44;
     const rowH = 32;
     const scale = 2;
-    const summaryCount = (sub > 0 ? 1 : 0) + 1 + (diff < 0 ? 1 : 0);
+    const summaryCount =
+      (sub > 0 ? 1 : 0) +
+      1 +
+      (giftFee > 0 ? 1 : 0) +
+      (codFee > 0 ? 1 : 0) +
+      (discount > 0 ? 1 : 0);
     const H =
       300 + items.length * rowH + summaryCount * 26 + 70 + 70;
 
@@ -569,10 +591,12 @@ export default function MyOrdersPage() {
     if (sub > 0) sumLine(`Subtotal (${items.length} items)`, `₹${sub}`);
     sumLine(
       "Delivery",
-      isFree ? "FREE" : diff > 0 ? `+₹${diff}` : "—",
-      isFree ? "#008f0c" : "#0a0a0a",
+      freeDelivery ? "FREE" : `+₹${deliveryFee}`,
+      freeDelivery ? "#008f0c" : "#0a0a0a",
     );
-    if (diff < 0) sumLine("Discount", `−₹${-diff}`, "#008f0c");
+    if (giftFee > 0) sumLine("Gift wrapping", `+₹${giftFee}`);
+    if (codFee > 0) sumLine("COD handling fee", `+₹${codFee}`);
+    if (discount > 0) sumLine("Discount", `−₹${discount}`, "#008f0c");
 
     // total
     y += 18;
@@ -1360,6 +1384,26 @@ Please cancel this order. Thank you 🙏`;
                       .toLowerCase()
                       .includes("free");
                     const diff = grand - sub;
+                    // Break the difference into delivery, gift wrap and COD fee
+                    // using the stored columns; the leftover is inferred.
+                    let deliveryFee = parseFloat(order["Delivery Charge"]) || 0;
+                    const giftFee =
+                      order["Gift Wrap"] === "Yes"
+                        ? parseFloat(order["Gift Wrap Charge"]) || 0
+                        : 0;
+                    const isCODOrder = (order["Payment Type"] || "").includes(
+                      "Cash on Delivery",
+                    );
+                    let codFee = 0;
+                    let discount = 0;
+                    const extra = grand - sub - deliveryFee - giftFee;
+                    if (extra > 0) {
+                      if (isCODOrder) codFee = extra;
+                      else deliveryFee += extra;
+                    } else if (extra < 0) {
+                      discount = -extra;
+                    }
+                    const freeDelivery = isFree || deliveryFee === 0;
                     return (
                       <div className="order-invoice">
                         <div className="order-invoice-table">
@@ -1414,18 +1458,28 @@ Please cancel this order. Thank you 🙏`;
                           )}
                           <div className="ois-row">
                             <span>Delivery</span>
-                            {isFree ? (
+                            {freeDelivery ? (
                               <span className="ois-free">FREE</span>
-                            ) : diff > 0 ? (
-                              <span>+₹{diff}</span>
                             ) : (
-                              <span>—</span>
+                              <span>+₹{deliveryFee}</span>
                             )}
                           </div>
-                          {diff < 0 && (
+                          {giftFee > 0 && (
+                            <div className="ois-row">
+                              <span>Gift wrapping</span>
+                              <span>+₹{giftFee}</span>
+                            </div>
+                          )}
+                          {codFee > 0 && (
+                            <div className="ois-row">
+                              <span>COD handling fee</span>
+                              <span>+₹{codFee}</span>
+                            </div>
+                          )}
+                          {discount > 0 && (
                             <div className="ois-row">
                               <span>Discount</span>
-                              <span className="ois-free">−₹{-diff}</span>
+                              <span className="ois-free">−₹{discount}</span>
                             </div>
                           )}
                           <div className="ois-row ois-total">

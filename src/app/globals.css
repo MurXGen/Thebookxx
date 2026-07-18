@@ -16119,6 +16119,16 @@ img[data-loaded="true"] {
   transition: transform 0.15s ease, box-shadow 0.18s ease, background 0.18s ease;
   -webkit-tap-highlight-color: transparent;
 }
+.bookcard-add-btn {
+  line-height: 1;
+}
+/* LoadingButton wraps children in a span — make it flex-center so the label
+   is truly vertically centered (no inherited line-box gap at the bottom). */
+.bookcard-add-btn > span {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+}
 .bookcard-add-btn svg {
   color: #fff;
   flex: 0 0 auto;
@@ -16128,6 +16138,10 @@ img[data-loaded="true"] {
   align-items: center;
   gap: 8px;
   line-height: 1;
+}
+.bc-add-inner > span {
+  line-height: 1;
+  transform: translateY(0.5px);
 }
 .bookcard-add-btn:hover {
   background: var(--tertiary, #fb8500);

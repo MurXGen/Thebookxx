@@ -4220,11 +4220,108 @@ textarea.sec-mid-btn,
 .mumbai-fast-note {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  margin-top: 6px;
-  font-size: 12px;
+  gap: 4px;
+  margin-top: 5px;
+  font-size: 11px;
   font-weight: 700;
   color: #0a8f0c;
+  white-space: nowrap;
+}
+.addr-hint {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--dark-50, #6b7280);
+}
+/* Consistent inline warnings under the pay buttons */
+.addr-warn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.addr-warn svg {
+  flex: 0 0 auto;
+}
+.addr-warn-orange {
+  color: #b45309;
+  background: rgba(251, 133, 0, 0.1);
+}
+.addr-warn-red {
+  color: #dc2626;
+  background: rgba(220, 38, 38, 0.08);
+}
+
+/* Payment buttons row — UPI / COD / WhatsApp (icon-only), equal widths */
+.pay-row {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  width: 100%;
+  margin-top: 22px;
+}
+.pay-btn {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  height: 62px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border-radius: 14px;
+  border: 1px solid var(--dark-50);
+  background: #fff;
+  color: var(--foreground, #111);
+  cursor: pointer;
+  font-family: inherit;
+}
+.pay-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.pay-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.pay-btn-label {
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.1;
+  text-align: center;
+}
+.pay-upi {
+  background: var(--tertiary, #fb8500);
+  border-color: var(--tertiary, #fb8500);
+  color: #fff;
+}
+.pay-wa {
+  flex: 0 0 58px;
+}
+.pay-badge {
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+  background: #0a8f0c;
+  color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+.pay-cod .pay-badge {
+  background: var(--foreground, #111);
 }
 
 /* Address modal — highlighted accuracy reminder stripe */

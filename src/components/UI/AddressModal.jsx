@@ -30,6 +30,7 @@ import {
   Check,
   ArrowRight,
   TrendingDown,
+  Banknote,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -777,10 +778,31 @@ export default function AddressModal({
   };
 
   // Combine the structured parts into one deliverable address string.
-  const fullAddress = [flatNo, building, address, landmark]
+  const fullAddress = [flatNo, building, landmark, address]
     .map((s) => (s || "").trim())
     .filter(Boolean)
     .join(", ");
+
+  // On blur, strip words from the address that are already captured in the
+  // other fields (pincode, city, flat, building, landmark) to avoid repetition.
+  const dedupeAddress = () => {
+    const tokens = [pincode, city, flatNo, building, landmark]
+      .flatMap((v) => String(v || "").split(/[\s,]+/))
+      .map((t) => t.trim())
+      .filter((t) => t.length > 2);
+    if (!tokens.length || !address.trim()) return;
+    let a = address;
+    tokens.forEach((t) => {
+      const esc = t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      a = a.replace(new RegExp(`\\b${esc}\\b`, "gi"), "");
+    });
+    a = a
+      .replace(/\s{2,}/g, " ")
+      .replace(/(\s*,\s*){2,}/g, ", ")
+      .replace(/^[\s,]+|[\s,]+$/g, "")
+      .trim();
+    if (a !== address) setAddress(a);
+  };
   // Require house/flat + area address + city for a strong, deliverable address.
   const isAddressValid = () =>
     Boolean(city && flatNo.trim() && address.trim());
@@ -827,48 +849,49 @@ export default function AddressModal({
                 </span>
               </div>
 
-              <div className="input-group">
-                <label className="flex flex-row gap-4 flex-center items-center">
-                  <MapPin size={14} />
-                  Pincode
-                </label>
-                <input
-                  className={`sec-mid-btn ${!isValidPincode && pincode ? "error-border" : ""}`}
-                  placeholder="Enter 6 digit pincode"
-                  value={pincode}
-                  maxLength={6}
-                  onChange={handlePincodeChange}
-                  inputMode="numeric"
-                />
-                {isFetchingLocation && (
-                  <span className="font-10 gray-500 mt-4">
-                    Fetching location details...
-                  </span>
-                )}
+              {/* Pincode + City / District in one row */}
+              <div className="flex flex-row justify-between gap-12">
+                <div className="input-group">
+                  <label className="flex flex-row gap-4 flex-center items-center">
+                    <MapPin size={14} />
+                    Pincode
+                  </label>
+                  <input
+                    className={`sec-mid-btn width100 ${!isValidPincode && pincode ? "error-border" : ""}`}
+                    placeholder="6 digit pincode"
+                    value={pincode}
+                    maxLength={6}
+                    onChange={handlePincodeChange}
+                    inputMode="numeric"
+                  />
+                  {isFetchingLocation && (
+                    <span className="addr-hint">Fetching location…</span>
+                  )}
+                </div>
+
+                <div className="input-group">
+                  <label>City / District</label>
+                  <input
+                    list="cities"
+                    className="sec-mid-btn width100"
+                    placeholder="Your city"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                  />
+                  <datalist id="cities">
+                    {CITIES.map((c) => (
+                      <option key={c} value={c} />
+                    ))}
+                  </datalist>
+                  {city.trim().toLowerCase() === "mumbai" && (
+                    <span className="mumbai-fast-note">
+                      <Zap size={12} /> 1–2 day delivery
+                    </span>
+                  )}
+                </div>
               </div>
 
-              <div className="input-group">
-                <label>City / District</label>
-                <input
-                  list="cities"
-                  className="sec-mid-btn width100"
-                  placeholder="Enter your city"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                />
-                <datalist id="cities">
-                  {CITIES.map((c) => (
-                    <option key={c} value={c} />
-                  ))}
-                </datalist>
-                {city.trim().toLowerCase() === "mumbai" && (
-                  <span className="mumbai-fast-note">
-                    <Zap size={13} /> Orders within Mumbai are delivered in 1–2
-                    days
-                  </span>
-                )}
-              </div>
-
+              {/* Flat / House No + Building / Society, Street in one row */}
               <div className="flex flex-row justify-between gap-12">
                 <div className="input-group">
                   <label>
@@ -882,27 +905,14 @@ export default function AddressModal({
                   />
                 </div>
                 <div className="input-group">
-                  <label>Building / Society</label>
+                  <label>Building / Society, Street</label>
                   <input
                     className="sec-mid-btn width100"
-                    placeholder="e.g. Shanti Residency"
+                    placeholder="e.g. Shanti Residency, MG Rd"
                     value={building}
                     onChange={(e) => setBuilding(e.target.value)}
                   />
                 </div>
-              </div>
-
-              <div className="input-group">
-                <label>
-                  Address (area, street) <span className="red">*</span>
-                </label>
-                <textarea
-                  className="sec-mid-btn textarea"
-                  placeholder="Road / street, area, locality…"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  rows={2}
-                />
               </div>
 
               <div className="input-group">
@@ -912,6 +922,20 @@ export default function AddressModal({
                   placeholder="e.g. Near Apollo Pharmacy"
                   value={landmark}
                   onChange={(e) => setLandmark(e.target.value)}
+                />
+              </div>
+
+              <div className="input-group">
+                <label>
+                  Address (area, locality) <span className="red">*</span>
+                </label>
+                <textarea
+                  className="sec-mid-btn textarea"
+                  placeholder="Area, locality, any extra directions…"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  onBlur={dedupeAddress}
+                  rows={2}
                 />
               </div>
 
@@ -1007,60 +1031,56 @@ export default function AddressModal({
               </div>
 
               {showContactFields && (
-                <div className="flex flex-col gap-12 items-start mt-16">
-                  <div className="flex flex-row gap-12">
-                    <LoadingButton
-                      className="pri-big-btn width100"
-                      onClick={() => attemptPayment("UPI")}
-                      disabled={!isFormValid()}
-                    >
-                      <p className="weight-600">Pay with UPI</p>
-                      <span className="font-10">No extra charges</span>
-                    </LoadingButton>
-
-                    <LoadingButton
-                      className="sec-big-btn width100 flex flex-col"
-                      onClick={() => attemptPayment("COD")}
-                      disabled={!isFormValid()}
-                    >
-                      <p className="weight-600">Cash on Delivery</p>
-                      <span className="font-10">Pay at your doorstep</span>
-                    </LoadingButton>
-                  </div>
-
+                <div className="pay-row">
                   <LoadingButton
-                    className="sec-big-btn width100 flex flex-col"
-                    onClick={() => attemptPayment("WhatsApp")}
+                    className="pay-btn pay-upi"
+                    onClick={() => attemptPayment("UPI")}
                     disabled={!isFormValid()}
                   >
-                    <div className="flex flex-row gap-12">
-                      <FaWhatsapp size={32} color="#25D366" />
-                      <div className="flex flex-col">
-                        <p className="weight-600">Whatsapp</p>
-                        <span className="font-10">Chat & Order</span>
-                      </div>
-                    </div>
+                    <span className="pay-badge">No extra charges</span>
+                    <span className="pay-inner">
+                      <QrCode size={22} />
+                      <span className="pay-btn-label">Pay with UPI</span>
+                    </span>
+                  </LoadingButton>
+
+                  <LoadingButton
+                    className="pay-btn pay-cod"
+                    onClick={() => attemptPayment("COD")}
+                    disabled={!isFormValid()}
+                  >
+                    <span className="pay-badge">Pay at doorstep</span>
+                    <span className="pay-inner">
+                      <Banknote size={22} />
+                      <span className="pay-btn-label">Cash on Delivery</span>
+                    </span>
+                  </LoadingButton>
+
+                  <LoadingButton
+                    className="pay-btn pay-wa"
+                    onClick={() => attemptPayment("WhatsApp")}
+                    disabled={!isFormValid()}
+                    aria-label="Order on WhatsApp"
+                  >
+                    <FaWhatsapp size={26} color="#25D366" />
                   </LoadingButton>
                 </div>
               )}
 
               {!isAddressValid() && (
-                <div className="flex flex-row flex-center gap-4 orange items-center infoMessage mt-12">
-                  <AlertCircle size={14} />
-                  <span className="font-12">
-                    Please fill your city and full address to proceed
-                  </span>
+                <div className="addr-warn addr-warn-orange">
+                  <AlertCircle size={13} />
+                  <span>Add flat/house no, area address & city to proceed</span>
                 </div>
               )}
 
-              {showContactFields && !isFormValid() && (
-                <div className="flex flex-row flex-center gap-4 red items-center infoMessage mt-12">
-                  <AlertCircle size={14} />
-                  <span className="font-12">
-                    Please enter your name and a valid 10-digit phone number
-                  </span>
-                </div>
-              )}
+              {showContactFields &&
+                (!name.trim() || phone.length !== 10) && (
+                  <div className="addr-warn addr-warn-red">
+                    <AlertCircle size={13} />
+                    <span>Enter your name and a valid 10-digit phone</span>
+                  </div>
+                )}
             </div>
           </motion.div>
         </motion.div>

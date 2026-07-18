@@ -15,6 +15,7 @@
     "critters": "^0.0.23",
     "crypto-js": "^4.2.0",
     "framer-motion": "^12.33.0",
+    "gsap": "^3.15.0",
     "install": "^0.13.0",
     "lucide-react": "^0.562.0",
     "metadata": "^0.1.0",

@@ -442,6 +442,40 @@ button:hover {
   line-height: 1;
   border-radius: 999px;
   box-shadow: 0 0 0 2px var(--background);
+  transition: transform 0.2s ease;
+}
+/* Cart icon pop when a book lands in it (fly-to-cart) */
+.nav-cart.cart-pop {
+  animation: cartPop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.nav-cart.cart-pop .nav-cart-badge {
+  animation: cartBadgePop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes cartPop {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(1.28) rotate(-6deg);
+  }
+  60% {
+    transform: scale(0.94) rotate(3deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+@keyframes cartBadgePop {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.6);
+    background: #ffb703;
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 /* Menu Button */
@@ -810,12 +844,31 @@ button:hover {
   overflow: hidden;
   min-width: 200px;
   max-width: 768px;
-  transition-duration: 0.3s;
+  transition: transform 0.28s cubic-bezier(0.22, 0.61, 0.36, 1),
+    box-shadow 0.28s ease, background 0.3s ease;
+  will-change: transform;
 }
 
 .trending-card:hover {
   background: var(--white-100);
-  transition: 0.3s;
+  transform: translateY(-6px);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.12);
+}
+/* Cover gently zooms on card hover */
+.trending-card:hover .book-image {
+  transform: scale(1.05);
+}
+.trending-card .book-image {
+  transition: transform 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .trending-card,
+  .trending-card:hover,
+  .trending-card .book-image,
+  .trending-card:hover .book-image {
+    transition: none;
+    transform: none;
+  }
 }
 
 /* Image Wrapper – FIXED HEIGHT */
@@ -1010,10 +1063,15 @@ button:hover {
   border-radius: var(--px-32);
   text-align: center;
   background: var(--success);
+  color: #fff;
   border: none;
   display: flex;
   flex-direction: row;
   justify-content: center;
+}
+.plus-cart svg {
+  color: #fff;
+  stroke: #fff;
 }
 
 .minus-cart {
@@ -1021,10 +1079,15 @@ button:hover {
   border-radius: var(--px-32);
   text-align: center;
   background: #0a0a0a;
+  color: #fff;
   border: none;
   display: flex;
   flex-direction: row;
   justify-content: center;
+}
+.minus-cart svg {
+  color: #fff;
+  stroke: #fff;
 }
 
 .pri-big-btn {
@@ -4284,6 +4347,35 @@ textarea.sec-mid-btn,
 .pay-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+/* Looks inactive but stays clickable so we can toast the reason */
+.pay-btn.pay-dim {
+  opacity: 0.5;
+}
+/* UPI page → switch to COD tertiary link-button */
+.upi-cod-switch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 10px 14px;
+  width: 100%;
+  max-width: 340px;
+  border: none;
+  background: none;
+  color: var(--tertiary, #fb8500);
+  font-size: 12.5px;
+  font-weight: 700;
+  line-height: 1.3;
+  text-align: center;
+  cursor: pointer;
+}
+.upi-cod-switch svg {
+  flex: 0 0 auto;
+}
+.upi-cod-switch:hover {
+  text-decoration: underline;
 }
 .pay-inner {
   display: flex;
@@ -15999,28 +16091,61 @@ img[data-loaded="true"] {
 .edit-address-btn svg{ color:var(--tertiary,#fb8500); }
 
 /* Book card — Add to cart icon button (matches the +/- stepper circles) */
-.bookcard-add-btn{
-  flex:0 0 auto;
-  width:46px;height:46px;
-  border-radius:50%;
-  background:#0a0a0a;
-  color:#fff;
-  border:none;
-  cursor:pointer;
-  box-shadow:0 6px 16px -7px rgba(0,0,0,.55);
-  transition:transform .15s ease, box-shadow .18s ease, background .18s ease;
-  -webkit-tap-highlight-color:transparent;
+/* Add-to-cart row — full width, dashed divider above, sits below the price */
+.bookcard-cart-row {
+  width: 100%;
+  margin-top: 2px;
+  padding-top: 10px;
+  border-top: 1.5px dashed var(--dark-20, rgba(0, 0, 0, 0.14));
 }
-.bookcard-add-btn svg{ color:#fff; }
-.bookcard-add-btn:hover{
-  background:var(--tertiary,#fb8500);
-  transform:translateY(-2px);
-  box-shadow:0 10px 20px -8px rgba(251,133,0,.6);
+.bookcard-add-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 44px;
+  border-radius: 12px;
+  background: #0a0a0a;
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 6px 16px -8px rgba(0, 0, 0, 0.55);
+  transition: transform 0.15s ease, box-shadow 0.18s ease, background 0.18s ease;
+  -webkit-tap-highlight-color: transparent;
 }
-.bookcard-add-btn:active{ transform:scale(.93); }
-.bookcard-add-btn[aria-disabled="true"]{ opacity:.5; cursor:not-allowed; }
-@media (max-width:480px){
-  .bookcard-add-btn{ width:44px;height:44px; }
+.bookcard-add-btn svg {
+  color: #fff;
+}
+.bookcard-add-btn:hover {
+  background: var(--tertiary, #fb8500);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 22px -10px rgba(251, 133, 0, 0.6);
+}
+.bookcard-add-btn:active {
+  transform: scale(0.98);
+}
+.bookcard-add-btn[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+/* Full-width qty stepper (shown once in cart) */
+.bookcard-qty {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  height: 44px;
+  padding: 0 6px;
+  border-radius: 12px;
+  border: 1px solid var(--dark-20, rgba(0, 0, 0, 0.12));
+}
+.bookcard-qty .qty {
+  font-weight: 800;
+  font-size: 15px;
 }
 
 /* ===== Install app — fixed bottom bar (profile page) ===== */

@@ -165,7 +165,12 @@ export default function Navbar() {
             >
               <Search size={24} />
             </button>
-            <Link href="/bag" aria-label="Cart" className="nav-ic nav-cart">
+            <Link
+              href="/bag"
+              aria-label="Cart"
+              className="nav-ic nav-cart"
+              id="cart-fly-target"
+            >
               <HiOutlineShoppingBag size={26} />
               {cartCount > 0 && (
                 <span className="nav-cart-badge">

@@ -36,12 +36,17 @@ export default function WishlistButton({ inWishlist, onClick }) {
         ))}
       </AnimatePresence>
 
-      {/* Heart Icon */}
+      {/* Heart Icon — white by default (with shadow) so it reads on covers */}
       <Heart
         size={24}
-        fill={inWishlist ? "red" : "#00000050"}
-        stroke="none"
-        style={{ position: "relative", zIndex: 2 }}
+        fill={inWishlist ? "#ef4444" : "#ffffff"}
+        stroke={inWishlist ? "#ffffff" : "rgba(0,0,0,0.28)"}
+        strokeWidth={1.5}
+        style={{
+          position: "relative",
+          zIndex: 2,
+          filter: "drop-shadow(0 1px 3px rgba(0,0,0,0.5))",
+        }}
       />
     </button>
   );

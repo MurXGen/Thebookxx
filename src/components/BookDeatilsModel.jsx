@@ -40,6 +40,7 @@ import LoadingButton from "./UI/LoadingButton";
 import Script from "next/script";
 import { useEffect, useState, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { flyToCart } from "@/lib/flyToCart";
 import BookCard from "./BookCard";
 import Link from "next/link";
 import YouMayLike from "./UI/YouMayLike";
@@ -519,6 +520,7 @@ export default function BookDetailsModal({ book }) {
       showToast("This book is currently out of stock", "warning");
       return;
     }
+    flyToCart(heroRef.current, { imageSrc: book.image });
     addToCart(book.id);
     setConfetti(true);
     setTimeout(() => setConfetti(false), 1300);

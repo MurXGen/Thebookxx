@@ -39,6 +39,7 @@ import { EVENTS } from "@/lib/trackingEvents";
 import { trackFunnelEvent } from "@/lib/analytics";
 import { trackPurchase } from "@/lib/ga";
 import { trackOrderToGoogleForm } from "@/utils/googleFormOrder";
+import { showToast } from "@/context/ToastContext";
 
 const PINCODE_DATA_KEY = "user_pincode";
 
@@ -680,8 +681,22 @@ export default function AddressModal({
 
   // Intercept a payment button: if the address is valid and the shopper
   // hasn't already added "The Art of Clarity", show the upsell first.
+  // Specific reason the checkout can't proceed, shown as a toast on click.
+  const validationMessage = () => {
+    if (!flatNo.trim()) return "Please add your flat / house number";
+    if (!address.trim()) return "Please add your area / locality address";
+    if (!city.trim()) return "Please enter your city";
+    if (!name.trim()) return "Please enter your name";
+    if (phone.replace(/\D/g, "").length !== 10)
+      return "Please enter a valid 10-digit phone number";
+    return "Please complete your details to proceed";
+  };
+
   const attemptPayment = (method) => {
-    if (!isFormValid()) return;
+    if (!isFormValid()) {
+      showToast(validationMessage(), "error");
+      return;
+    }
     if (artBook && !hasArtInCart) {
       setPendingMethod(method);
       setShowUpsell(true);
@@ -775,6 +790,22 @@ export default function AddressModal({
     }
     setShowUPIPayment(false);
     onClose();
+  };
+
+  // From the UPI page: shopper has no online-payment option → switch to COD
+  // and place the order directly (skips the fee-disclosure step).
+  const switchToCODFromUPI = () => {
+    setShowUPIPayment(false);
+    trackFunnelEvent(EVENTS.PAYMENT_METHOD_SELECTED, {
+      method: "COD_from_UPI",
+    });
+    trackPurchase({
+      cartItems: cartBooks,
+      totalAmount: netPayable,
+      paymentId: `COD-${Date.now()}`,
+    });
+    submitToGoogleForm("COD", fasterDelivery, true);
+    triggerCODSuccess(fasterDelivery);
   };
 
   // Combine the structured parts into one deliverable address string.
@@ -1033,9 +1064,8 @@ export default function AddressModal({
               {showContactFields && (
                 <div className="pay-row">
                   <LoadingButton
-                    className="pay-btn pay-upi"
+                    className={`pay-btn pay-upi${isFormValid() ? "" : " pay-dim"}`}
                     onClick={() => attemptPayment("UPI")}
-                    disabled={!isFormValid()}
                   >
                     <span className="pay-badge">No extra charges</span>
                     <span className="pay-inner">
@@ -1045,9 +1075,8 @@ export default function AddressModal({
                   </LoadingButton>
 
                   <LoadingButton
-                    className="pay-btn pay-cod"
+                    className={`pay-btn pay-cod${isFormValid() ? "" : " pay-dim"}`}
                     onClick={() => attemptPayment("COD")}
-                    disabled={!isFormValid()}
                   >
                     <span className="pay-badge">Pay at doorstep</span>
                     <span className="pay-inner">
@@ -1057,9 +1086,8 @@ export default function AddressModal({
                   </LoadingButton>
 
                   <LoadingButton
-                    className="pay-btn pay-wa"
+                    className={`pay-btn pay-wa${isFormValid() ? "" : " pay-dim"}`}
                     onClick={() => attemptPayment("WhatsApp")}
-                    disabled={!isFormValid()}
                     aria-label="Order on WhatsApp"
                   >
                     <FaWhatsapp size={26} color="#25D366" />
@@ -1353,6 +1381,7 @@ export default function AddressModal({
             onVerify={handleVerifyUPIPayment}
             onClose={() => setShowUPIPayment(false)}
             onWhatsAppFallback={handleWhatsAppOrderClick}
+            onSwitchToCOD={switchToCODFromUPI}
           />
         )}
       </AnimatePresence>
@@ -2095,6 +2124,7 @@ function UPIPaymentModal({
   onVerify,
   onClose,
   onWhatsAppFallback,
+  onSwitchToCOD,
 }) {
   return (
     <motion.div
@@ -2236,6 +2266,19 @@ function UPIPaymentModal({
                 <FaWhatsapp size={16} color="#25D366" />
                 <span className="font-12">Prefer WhatsApp? Chat & order</span>
               </button>
+              {onSwitchToCOD && (
+                <button
+                  type="button"
+                  className="upi-cod-switch"
+                  onClick={onSwitchToCOD}
+                >
+                  <span>
+                    Don&apos;t have an option to pay online? Choose Cash on
+                    Delivery
+                  </span>
+                  <ArrowRight size={16} />
+                </button>
+              )}
             </motion.div>
           ) : (
             <motion.div

@@ -6,7 +6,8 @@ import { books } from "@/utils/book";
 import { Book, Minus, Plus, Share2, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { flyToCart } from "@/lib/flyToCart";
 import CartConfetti from "./UI/Confetti";
 import LoadingButton from "./UI/LoadingButton";
 import WishlistButton from "./UI/WishListButton";
@@ -103,6 +104,8 @@ export default function BookCard({ book }) {
     }
   }, [book, isOneRupee, cartTotal, hasTrackedView]);
 
+  const coverRef = useRef(null);
+
   const handleAddToCart = () => {
     // Allotment rule, only one ₹1 book per cart
     if (isOneRupeeLimitReached) {
@@ -110,6 +113,7 @@ export default function BookCard({ book }) {
       return;
     }
 
+    flyToCart(coverRef.current, { imageSrc: book.image });
     addToCart(book.id);
     trackAddToCart({ book, qty: 1 });
 
@@ -139,6 +143,7 @@ export default function BookCard({ book }) {
       showToast("Maximum book allotted reached for Rs.1", "info");
       return;
     }
+    flyToCart(coverRef.current, { imageSrc: book.image });
     addToCart(book.id);
     trackAddToCart({ book, qty: 1 });
   };
@@ -204,7 +209,7 @@ export default function BookCard({ book }) {
         )}
 
         {/* Image */}
-        <div className="book-image-wrapper">
+        <div className="book-image-wrapper" ref={coverRef}>
           <WishlistButton
             inWishlist={inWishlist}
             onClick={() => toggleWishlist(book.id)}
@@ -298,7 +303,7 @@ export default function BookCard({ book }) {
             )}
           </h3>
 
-          <div className="flex flex-row gap-24 justify-between book-content">
+          <div className="book-content">
             {/* Price */}
             <div
               className="flex flex-col width100"
@@ -354,9 +359,10 @@ export default function BookCard({ book }) {
                 <span className="green font-10">Save ₹{savings}</span>
               )}
             </div>
+          </div>
 
-            {/* Actions */}
-            <div className="flex gap-12 align-center card-button">
+          {/* Add to cart — full width, dashed divider above, below the price */}
+          <div className="bookcard-cart-row">
               {qty === 0 ? (
                 <LoadingButton
                   className="bookcard-add-btn"
@@ -364,11 +370,11 @@ export default function BookCard({ book }) {
                   aria-label={`Add ${book.name} to cart`}
                   aria-disabled={isOneRupeeLimitReached}
                 >
-                  <ShoppingCart size={18} />
-                  <span className="sr-only">Add to cart</span>
+                  <ShoppingCart size={17} />
+                  <span>Add to Cart</span>
                 </LoadingButton>
               ) : (
-                <div className="width100 gap-12 items-center flex flex-row justify-between">
+                <div className="bookcard-qty">
                   <button
                     onClick={() => decreaseQty(book.id)}
                     className="minus-cart"
@@ -391,7 +397,6 @@ export default function BookCard({ book }) {
                   </button>
                 </div>
               )}
-            </div>
           </div>
 
           {/* Stock Status Display */}

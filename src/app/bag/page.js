@@ -293,10 +293,13 @@ function BagContent() {
   }
 
   const finalPayable = totalDiscounted - offerDiscount;
-  const canCheckout = totalDiscounted >= MIN_CHECKOUT_AMOUNT;
+  // Gift wrap (+₹25) counts toward the checkout minimum, so a ₹149 cart can
+  // reach the ₹151 minimum by opting into gift wrapping.
+  const checkoutValue = totalDiscounted + (giftWrap ? GIFT_WRAP_CHARGE : 0);
+  const canCheckout = checkoutValue >= MIN_CHECKOUT_AMOUNT;
   const amountNeededToCheckout = Math.max(
     0,
-    MIN_CHECKOUT_AMOUNT - totalDiscounted,
+    MIN_CHECKOUT_AMOUNT - checkoutValue,
   );
 
   const standardDeliveryCharge = getDeliveryCharge(

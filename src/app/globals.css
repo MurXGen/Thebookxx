@@ -16104,7 +16104,10 @@ img[data-loaded="true"] {
   justify-content: center;
   gap: 8px;
   width: 100%;
-  height: 44px;
+  height: 46px;
+  margin: 0;
+  padding: 0 16px;
+  box-sizing: border-box;
   border-radius: 12px;
   background: #0a0a0a;
   color: #fff;
@@ -16130,6 +16133,8 @@ img[data-loaded="true"] {
   background: var(--tertiary, #fb8500);
   transform: translateY(-2px);
   box-shadow: 0 12px 22px -10px rgba(251, 133, 0, 0.6);
+  outline: none;
+  border-radius: 12px;
 }
 .bookcard-add-btn:active {
   transform: scale(0.98);

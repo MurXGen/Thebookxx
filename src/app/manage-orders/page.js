@@ -3560,8 +3560,13 @@ export default function ManageOrdersPage() {
   const listOrders = filteredOrders.filter((o) => {
     if (orderPickFilter === "picked") return isOrderFullyPicked(o);
     if (orderPickFilter === "pending") return !isOrderFullyPicked(o);
+    if (orderPickFilter === "noted")
+      return !!orderNotes[o["Order ID"]];
     return true;
   });
+  const notedOrdersCount = filteredOrders.filter(
+    (o) => !!orderNotes[o["Order ID"]],
+  ).length;
   const pickedOrdersCount = filteredOrders.filter(isOrderFullyPicked).length;
 
   if (loading) {
@@ -4627,6 +4632,10 @@ export default function ManageOrdersPage() {
                     { k: "all", label: "All" },
                     { k: "pending", label: "Not picked" },
                     { k: "picked", label: "Picked" },
+                    {
+                      k: "noted",
+                      label: `Noted${notedOrdersCount > 0 ? ` (${notedOrdersCount})` : ""}`,
+                    },
                   ].map((f) => (
                     <button
                       key={f.k}

@@ -102,6 +102,11 @@ export default function AddressModal({
   const [city, setCity] = useState("");
   const [pincode, setPincode] = useState("");
   const [address, setAddress] = useState("");
+  // Structured address parts — combined into one address string on submit so
+  // we capture strong, deliverable details instead of a vague single line.
+  const [flatNo, setFlatNo] = useState("");
+  const [building, setBuilding] = useState("");
+  const [landmark, setLandmark] = useState("");
   const [district, setDistrict] = useState("");
   const [area, setArea] = useState("");
   const [fasterDelivery, setFasterDelivery] = useState(false);
@@ -445,7 +450,13 @@ export default function AddressModal({
       const displayName = confirmed ? name : `${name} (unconfirmed)`;
 
       trackOrderToGoogleForm({
-        addressData: { name: displayName, phone, pincode, city, address },
+        addressData: {
+          name: displayName,
+          phone,
+          pincode,
+          city,
+          address: fullAddress,
+        },
         paymentType,
         fasterDeliveryChoice: isFaster,
         giftWrapSelected: giftWrapOn,
@@ -547,7 +558,7 @@ export default function AddressModal({
         phone,
         city,
         pincode,
-        address,
+        address: fullAddress,
         district,
         area,
         fasterDelivery: isFaster,
@@ -765,7 +776,14 @@ export default function AddressModal({
     onClose();
   };
 
-  const isAddressValid = () => Boolean(city && address);
+  // Combine the structured parts into one deliverable address string.
+  const fullAddress = [flatNo, building, address, landmark]
+    .map((s) => (s || "").trim())
+    .filter(Boolean)
+    .join(", ");
+  // Require house/flat + area address + city for a strong, deliverable address.
+  const isAddressValid = () =>
+    Boolean(city && flatNo.trim() && address.trim());
   const isFormValid = () =>
     Boolean(name && phone.length === 10 && isAddressValid());
 
@@ -851,16 +869,49 @@ export default function AddressModal({
                 )}
               </div>
 
+              <div className="flex flex-row justify-between gap-12">
+                <div className="input-group">
+                  <label>
+                    Flat / House No <span className="red">*</span>
+                  </label>
+                  <input
+                    className="sec-mid-btn width100"
+                    placeholder="e.g. A-304 / 12"
+                    value={flatNo}
+                    onChange={(e) => setFlatNo(e.target.value)}
+                  />
+                </div>
+                <div className="input-group">
+                  <label>Building / Society</label>
+                  <input
+                    className="sec-mid-btn width100"
+                    placeholder="e.g. Shanti Residency"
+                    value={building}
+                    onChange={(e) => setBuilding(e.target.value)}
+                  />
+                </div>
+              </div>
+
               <div className="input-group">
                 <label>
-                  Full Address <span className="red">*</span>
+                  Address (area, street) <span className="red">*</span>
                 </label>
                 <textarea
                   className="sec-mid-btn textarea"
-                  placeholder="House no, street, landmark, area..."
+                  placeholder="Road / street, area, locality…"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
-                  rows={3}
+                  rows={2}
+                />
+              </div>
+
+              <div className="input-group">
+                <label>Landmark</label>
+                <input
+                  className="sec-mid-btn width100"
+                  placeholder="e.g. Near Apollo Pharmacy"
+                  value={landmark}
+                  onChange={(e) => setLandmark(e.target.value)}
                 />
               </div>
 
@@ -1226,7 +1277,7 @@ export default function AddressModal({
           <CODSuccessModal
             name={name}
             phone={phone}
-            address={address}
+            address={fullAddress}
             city={city}
             pincode={pincode}
             fasterDelivery={fasterDelivery}

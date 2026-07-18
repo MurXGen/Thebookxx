@@ -110,12 +110,16 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
     walletUsed = 0,
     walletPhone = "",
     cartBooks,
+    // Accurate amounts computed at checkout — prefer these over recomputing.
+    deliveryCharge: deliveryChargeIn,
+    giftWrapCharge: giftWrapChargeIn,
   } = orderDetails;
 
-  const deliveryCharge = getDeliveryChargeValue(
-    totalDiscounted,
-    fasterDeliveryChoice,
-  );
+  // Use the real charge the customer was shown; only fall back to the
+  // estimate if it wasn't provided. Free delivery correctly records 0.
+  const deliveryCharge = Number.isFinite(deliveryChargeIn)
+    ? deliveryChargeIn
+    : getDeliveryChargeValue(totalDiscounted, fasterDeliveryChoice);
   const deliveryLabel = getDeliveryLabelValue(
     totalDiscounted,
     fasterDeliveryChoice,
@@ -148,7 +152,11 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
       : `Standard Delivery (${deliveryLabel})`,
     deliveryCharge: deliveryCharge || 0,
     giftWrap: giftWrapSelected ? "Yes" : "No",
-    giftWrapCharge: giftWrapSelected ? 50 : 0,
+    giftWrapCharge: giftWrapSelected
+      ? Number.isFinite(giftWrapChargeIn)
+        ? giftWrapChargeIn
+        : 25
+      : 0,
     offerApplied:
       (offerDiscount > 0 ? `${offerLabel} (₹${offerDiscount} OFF)` : "None") +
       (walletUsed > 0

@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useRef,
+} from "react";
 import { books } from "@/utils/book";
 import {
   getOneRupeeOfferData,
@@ -8,6 +14,8 @@ import {
   expireTimer,
   getRemainingOfferTime,
 } from "@/utils/book";
+import { getCartOffers } from "@/utils/cartOffers";
+import OfferCelebration from "@/components/UI/OfferCelebration";
 
 const StoreContext = createContext(null);
 
@@ -58,6 +66,37 @@ export function StoreProvider({ children }) {
     const total = calculateCartTotal(cart);
     setCartTotal(total);
   }, [cart]);
+
+  // 🎉 Celebrate when the cart crosses into a NEW offer tier (free delivery,
+  // ₹50 / ₹100 off, etc.). Replaces the fly-to-cart delight for now.
+  const prevRewardRef = useRef(null);
+  useEffect(() => {
+    const hasOneRupee = cart.some((item) => {
+      const b = books.find((x) => x.id === item.id);
+      return b?.discountedPrice === 1;
+    });
+    const offers = getCartOffers(hasOneRupee);
+    const applied =
+      [...offers].reverse().find((o) => cartTotal >= o.target) || null;
+    const reward = applied?.reward || "";
+
+    // Skip the very first run (hydration) so we don't fire on page load.
+    if (prevRewardRef.current === null) {
+      prevRewardRef.current = reward;
+      return;
+    }
+    // Only celebrate when moving UP into a new (higher-value) reward tier.
+    const prevIndex = offers.findIndex(
+      (o) => o.reward === prevRewardRef.current,
+    );
+    const newIndex = offers.findIndex((o) => o.reward === reward);
+    if (reward && reward !== prevRewardRef.current && newIndex > prevIndex) {
+      window.dispatchEvent(
+        new CustomEvent("tbx:offer-unlocked", { detail: { reward } }),
+      );
+    }
+    prevRewardRef.current = reward;
+  }, [cartTotal, cart]);
 
   // Load one rupee offer data on mount
   useEffect(() => {
@@ -250,6 +289,7 @@ export function StoreProvider({ children }) {
       }}
     >
       {children}
+      <OfferCelebration />
     </StoreContext.Provider>
   );
 }

@@ -2,6 +2,9 @@
 // Clones the book cover and arcs it into the navbar cart icon, then pops it.
 import { gsap } from "gsap";
 
+// Master toggle — set to true to re-enable the book fly-over on add-to-cart.
+export const FLY_TO_CART_ENABLED = false;
+
 const TARGET_SELECTOR = "#cart-fly-target";
 
 function popCart() {
@@ -21,6 +24,8 @@ function popCart() {
  */
 export function flyToCart(sourceEl, opts = {}) {
   if (typeof window === "undefined") return;
+  // Disabled for now (kept so it can be flipped back on via FLY_TO_CART_ENABLED).
+  if (!FLY_TO_CART_ENABLED) return;
   // Respect reduced-motion preferences.
   if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
     popCart();

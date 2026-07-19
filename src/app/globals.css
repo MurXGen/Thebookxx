@@ -13878,6 +13878,244 @@ img[data-loaded="true"] {
 .dc-foot .dc-neg {
   color: #dc2626;
 }
+
+/* ===== Offer-unlock celebration — small shiny pill above the cart bar ===== */
+.offer-pop {
+  position: fixed;
+  left: 50%;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 150px);
+  z-index: 100000;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  max-width: calc(100vw - 32px);
+  padding: 9px 16px;
+  border-radius: 999px;
+  background: linear-gradient(95deg, #fb8500, #ffb703 55%, #ff9e1f);
+  background-size: 180% 100%;
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+  box-shadow: 0 12px 28px -8px rgba(251, 133, 0, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  pointer-events: none;
+  transform: translateX(-50%);
+  animation: offerPopIn 2s cubic-bezier(0.22, 0.61, 0.36, 1) forwards,
+    offerPopShine 1.5s linear infinite;
+}
+.offer-pop-emoji {
+  font-size: 15px;
+  line-height: 1;
+}
+.offer-pop-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+@keyframes offerPopIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(18px) scale(0.85) rotate(0deg);
+  }
+  12% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1.06) rotate(-4deg);
+  }
+  /* quick vibrate/shake as it lands */
+  16% {
+    transform: translateX(-50%) translateY(0) scale(1.04) rotate(4deg);
+  }
+  20% {
+    transform: translateX(-50%) translateY(0) scale(1.03) rotate(-3deg);
+  }
+  24% {
+    transform: translateX(-50%) translateY(0) scale(1.02) rotate(2deg);
+  }
+  28% {
+    transform: translateX(-50%) translateY(0) scale(1.01) rotate(-1deg);
+  }
+  32% {
+    transform: translateX(-50%) translateY(0) scale(1) rotate(0deg);
+  }
+  80% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px) scale(0.97) rotate(0deg);
+  }
+}
+@keyframes offerPopShine {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 180% 50%;
+  }
+}
+@media (max-width: 480px) {
+  .offer-pop {
+    font-size: 12.5px;
+    padding: 8px 14px;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 140px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .offer-pop {
+    animation: offerPopIn 2s ease forwards;
+  }
+}
+
+/* ===== Book profitability table ===== */
+.bp-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.bp-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+}
+.bp-sum-card {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--surface-2, #faf9f7);
+  border: 1px solid var(--hairline, #ececec);
+}
+.bp-sum-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--dark-50, #6b7280);
+}
+.bp-sum-val {
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--foreground, #111);
+}
+.bp-sum-val.bp-slate {
+  color: #475569;
+}
+.bp-sum-val.bp-orange {
+  color: var(--tertiary, #fb8500);
+}
+.bp-pos {
+  color: #0a8f0c;
+}
+.bp-neg {
+  color: #dc2626;
+}
+.bp-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--hairline, #ececec);
+  border-radius: 14px;
+}
+.bp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  min-width: 640px;
+}
+.bp-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--surface-2, #f7f7f8);
+  text-align: right;
+  padding: 11px 12px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  color: var(--dark-50, #6b7280);
+  border-bottom: 1px solid var(--hairline, #ececec);
+  white-space: nowrap;
+}
+.bp-table th.bp-th-name,
+.bp-table td.bp-td-name {
+  text-align: left;
+}
+.bp-table tbody td {
+  padding: 11px 12px;
+  text-align: right;
+  font-weight: 700;
+  color: var(--foreground, #111);
+  border-bottom: 1px solid var(--hairline, #f0f0f0);
+  white-space: nowrap;
+}
+.bp-table tbody tr:nth-child(even) {
+  background: rgba(0, 0, 0, 0.015);
+}
+.bp-table tbody tr:hover {
+  background: rgba(251, 133, 0, 0.06);
+}
+.bp-td-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 260px;
+}
+.bp-name-txt {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bp-unmatched {
+  flex: 0 0 auto;
+  font-size: 9.5px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(220, 38, 38, 0.12);
+  color: #dc2626;
+  text-transform: uppercase;
+}
+.bp-table tfoot td {
+  padding: 12px;
+  text-align: right;
+  font-weight: 900;
+  font-size: 13px;
+  background: var(--surface-2, #f7f7f8);
+  border-top: 2px solid var(--hairline, #e5e7eb);
+  color: var(--foreground, #111);
+}
+.bp-empty {
+  text-align: center !important;
+  padding: 24px !important;
+  color: var(--dark-50, #6b7280);
+  font-weight: 600 !important;
+}
+.bp-note {
+  font-size: 11px;
+  color: var(--dark-50, #6b7280);
+  line-height: 1.5;
+  margin: 0;
+}
+/* dark mode */
+.mo-dark .bp-sum-card,
+.mo-dark .bp-table thead th,
+.mo-dark .bp-table tfoot td {
+  background: #14171d;
+  border-color: var(--hairline);
+}
+.mo-dark .bp-table-scroll {
+  border-color: var(--hairline);
+}
+.mo-dark .bp-table tbody td {
+  border-color: var(--hairline);
+  color: var(--foreground);
+}
+.mo-dark .bp-table tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.03);
+}
+.mo-dark .bp-pos {
+  color: #34d399;
+}
 .status-bars {
   display: flex;
   flex-direction: column;

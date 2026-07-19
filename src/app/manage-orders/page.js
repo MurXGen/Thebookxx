@@ -2354,6 +2354,7 @@ export default function ManageOrdersPage() {
 
   const [accOpen, setAccOpen] = useState({
     analytics: true,
+    bookProfit: false,
     calendar: false,
     indiapost: true,
     orders: true,
@@ -3456,6 +3457,65 @@ export default function ManageOrdersPage() {
       ? Math.round(totalDeliveryCost / analyticsOrders.length)
       : 0;
 
+  // Per-book profitability — respects BOTH the analytics period (day/week/
+  // month/all) and the Filters panel (status/payment/date) + search. We
+  // intersect the two order sets by Order ID.
+  const analyticsIdSet = new Set(
+    analyticsOrders.map((o) => o["Order ID"]).filter(Boolean),
+  );
+  const bpSource = filteredOrders.filter((o) =>
+    analyticsIdSet.has(o["Order ID"]),
+  );
+  const bpDelivery = bpSource.reduce((s, o) => s + (o.deliveryCost || 0), 0);
+  const bpRevenue = bpSource.reduce((s, o) => s + (o.revenue || 0), 0);
+  const bpTotalCost = bpSource.reduce((s, o) => s + (o.totalCost || 0), 0);
+  const bpOrderProfit = bpRevenue - bpTotalCost;
+  const bookProfitRows = (() => {
+    const map = {};
+    bpSource.forEach((o) => {
+      (o.parsedBooks || []).forEach((line) => {
+        const name = String(line.name || "").trim();
+        if (!name) return;
+        const b = BOOK_BY_NAME[name.toLowerCase()];
+        const qty = Number(line.quantity) || 1;
+        const revenue = Number(line.total) || (Number(line.price) || 0) * qty;
+        if (!map[name]) {
+          map[name] = {
+            name,
+            qty: 0,
+            revenue: 0,
+            unitCost: b ? Number(b.cost) || 0 : 0,
+            matched: !!b,
+          };
+        }
+        map[name].qty += qty;
+        map[name].revenue += revenue;
+      });
+    });
+    return Object.values(map)
+      .map((r) => {
+        const cost = r.unitCost * r.qty;
+        const profit = r.revenue - cost;
+        return {
+          ...r,
+          cost,
+          profit,
+          avgPrice: r.qty ? Math.round(r.revenue / r.qty) : 0,
+          unitProfit: r.qty ? Math.round(profit / r.qty) : 0,
+        };
+      })
+      .sort((a, b) => b.profit - a.profit);
+  })();
+  const bpTotals = bookProfitRows.reduce(
+    (a, r) => ({
+      qty: a.qty + r.qty,
+      revenue: a.revenue + r.revenue,
+      cost: a.cost + r.cost,
+      profit: a.profit + r.profit,
+    }),
+    { qty: 0, revenue: 0, cost: 0, profit: 0 },
+  );
+
   // Weight-slab distribution for the delivery-cost card
   const deliverySlabs = [
     { label: "0–500g", rate: 42, max: 500 },
@@ -4271,6 +4331,119 @@ export default function ManageOrdersPage() {
               </div>
               )}
             </div>
+          </div>
+        </Accordion>
+        )}
+
+        {/* ===== Book profitability table (accordion, below analytics) ===== */}
+        {activeTab === "analytics" && (
+        <Accordion
+          id="bookProfit"
+          title="Book profitability"
+          open={accOpen.bookProfit}
+          onToggle={toggleAcc}
+          right={<span className="acc-count">{bookProfitRows.length}</span>}
+        >
+          <div className="bp-wrap">
+            {/* Summary cards */}
+            <div className="bp-summary">
+              <div className="bp-sum-card">
+                <span className="bp-sum-label">Books sold</span>
+                <strong className="bp-sum-val">{bpTotals.qty}</strong>
+              </div>
+              <div className="bp-sum-card">
+                <span className="bp-sum-label">Order cost (goods)</span>
+                <strong className="bp-sum-val bp-slate">
+                  ₹{bpTotals.cost.toLocaleString()}
+                </strong>
+              </div>
+              <div className="bp-sum-card">
+                <span className="bp-sum-label">Delivery expense</span>
+                <strong className="bp-sum-val bp-orange">
+                  ₹{bpDelivery.toLocaleString()}
+                </strong>
+              </div>
+              <div className="bp-sum-card">
+                <span className="bp-sum-label">Order profit</span>
+                <strong
+                  className={`bp-sum-val ${bpOrderProfit >= 0 ? "bp-pos" : "bp-neg"}`}
+                >
+                  {bpOrderProfit >= 0 ? "+" : "−"}₹
+                  {Math.abs(bpOrderProfit).toLocaleString()}
+                </strong>
+              </div>
+            </div>
+
+            <div className="bp-table-scroll">
+              <table className="bp-table">
+                <thead>
+                  <tr>
+                    <th className="bp-th-name">Book</th>
+                    <th>Qty</th>
+                    <th>Cost/book</th>
+                    <th>Price/book</th>
+                    <th>Profit/book</th>
+                    <th>Total cost</th>
+                    <th>Total profit</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {bookProfitRows.map((r) => (
+                    <tr key={r.name}>
+                      <td className="bp-td-name">
+                        <span className="bp-name-txt">{r.name}</span>
+                        {!r.matched && (
+                          <span className="bp-unmatched" title="Not matched to catalogue — cost unknown">
+                            no cost
+                          </span>
+                        )}
+                      </td>
+                      <td>{r.qty}</td>
+                      <td>₹{r.unitCost.toLocaleString()}</td>
+                      <td>₹{r.avgPrice.toLocaleString()}</td>
+                      <td className={r.unitProfit >= 0 ? "bp-pos" : "bp-neg"}>
+                        {r.unitProfit >= 0 ? "+" : "−"}₹
+                        {Math.abs(r.unitProfit).toLocaleString()}
+                      </td>
+                      <td>₹{r.cost.toLocaleString()}</td>
+                      <td className={r.profit >= 0 ? "bp-pos" : "bp-neg"}>
+                        {r.profit >= 0 ? "+" : "−"}₹
+                        {Math.abs(r.profit).toLocaleString()}
+                      </td>
+                    </tr>
+                  ))}
+                  {bookProfitRows.length === 0 && (
+                    <tr>
+                      <td colSpan={7} className="bp-empty">
+                        No book sales in this period.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+                {bookProfitRows.length > 0 && (
+                  <tfoot>
+                    <tr>
+                      <td className="bp-td-name">Total</td>
+                      <td>{bpTotals.qty}</td>
+                      <td>—</td>
+                      <td>—</td>
+                      <td>—</td>
+                      <td>₹{bpTotals.cost.toLocaleString()}</td>
+                      <td className={bpTotals.profit >= 0 ? "bp-pos" : "bp-neg"}>
+                        {bpTotals.profit >= 0 ? "+" : "−"}₹
+                        {Math.abs(bpTotals.profit).toLocaleString()}
+                      </td>
+                    </tr>
+                  </tfoot>
+                )}
+              </table>
+            </div>
+            <p className="bp-note">
+              Cost sourced from the catalogue per book; profit = price charged −
+              cost. This table follows the <b>analytics period</b> (day / week /
+              month / all) and the <b>Filters</b> (status, payment, date) +
+              search — e.g. pick “Week” with status “Delivered”.
+            </p>
           </div>
         </Accordion>
         )}

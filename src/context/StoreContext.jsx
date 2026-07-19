@@ -50,6 +50,28 @@ export function StoreProvider({ children }) {
   const [isOneRupeeEnabled, setIsOneRupeeEnabled] = useState(false);
   const [cartTotal, setCartTotal] = useState(0);
 
+  // ── QuickReads cart (separate slice; each is a one-time ₹49 unlock) ──
+  const [qrCart, setQrCart] = useState(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const saved = JSON.parse(localStorage.getItem("qr_cart") || "[]");
+      return Array.isArray(saved) ? saved : [];
+    } catch {
+      return [];
+    }
+  });
+  useEffect(() => {
+    try {
+      localStorage.setItem("qr_cart", JSON.stringify(qrCart));
+    } catch {}
+  }, [qrCart]);
+  const addQuickRead = (bookId) =>
+    setQrCart((prev) => (prev.includes(bookId) ? prev : [...prev, bookId]));
+  const removeQuickRead = (bookId) =>
+    setQrCart((prev) => prev.filter((id) => id !== bookId));
+  const isInQrCart = (bookId) => qrCart.includes(bookId);
+  const clearQrCart = () => setQrCart([]);
+
   // Function to calculate cart total
   const calculateCartTotal = (cartItems) => {
     return cartItems.reduce((sum, item) => {
@@ -286,6 +308,12 @@ export function StoreProvider({ children }) {
         canAddOneRupeeBook,
         getOneRupeeBlockReason,
         getCartTotal,
+        // QuickReads cart
+        qrCart,
+        addQuickRead,
+        removeQuickRead,
+        isInQrCart,
+        clearQrCart,
       }}
     >
       {children}

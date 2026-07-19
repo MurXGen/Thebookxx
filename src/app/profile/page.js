@@ -40,6 +40,8 @@ import Link from "next/link";
 import PageHeader from "@/components/UI/PageHeader";
 import InstallAppBar from "@/components/InstallAppBar";
 import RecommendationModal from "@/components/RecommendationModal";
+import ProfileQuickReads from "@/components/quickreads/ProfileQuickReads";
+import { getVerifiedBookIdsForPhone } from "@/lib/quickreads";
 import { books as ALL_BOOKS } from "@/utils/book";
 
 // Match an order-item name to its book cover (order items come from the sheet,
@@ -767,7 +769,16 @@ export default function MyOrdersPage() {
       setWalletBalance(walletValue);
 
       setOrders(parsedOrders);
-      if (parsedOrders.length === 0) {
+
+      // A number may have QuickReads but no physical book orders — treat that
+      // as a valid "profile" too (show only QuickReads in that case).
+      let qrCount = 0;
+      try {
+        const qrIds = await getVerifiedBookIdsForPhone(phone);
+        qrCount = qrIds.length;
+      } catch (_) {}
+
+      if (parsedOrders.length === 0 && qrCount === 0) {
         setError(`No profile found for phone number ${phone}`);
       } else {
         setShowPhoneInput(false);
@@ -1314,6 +1325,12 @@ Please cancel this order. Thank you 🙏`;
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* QuickReads library — shown once a number is loaded (works even if
+            the number has QuickReads but no physical book orders). */}
+        {!showPhoneInput && phoneNumber?.length === 10 && (
+          <ProfileQuickReads phone={phoneNumber} />
+        )}
 
         {/* What to read next — nudge after 10+ days since last order */}
         {searched && !loading && showReadNext && (

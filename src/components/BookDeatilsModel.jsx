@@ -33,6 +33,8 @@ import {
   Users,
   GraduationCap,
   Sparkles,
+  Zap,
+  ArrowRight,
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -41,6 +43,8 @@ import Script from "next/script";
 import { useEffect, useState, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { flyToCart } from "@/lib/flyToCart";
+import { hasQuickRead } from "@/data/quickreads";
+import QuickReadsReader from "./quickreads/QuickReadsReader";
 import BookCard from "./BookCard";
 import Link from "next/link";
 import YouMayLike from "./UI/YouMayLike";
@@ -359,6 +363,8 @@ export default function BookDetailsModal({ book }) {
   const heroRef = useRef(null);
   const [showStickyHeader, setShowStickyHeader] = useState(false);
   const [confetti, setConfetti] = useState(false);
+  const [showQR, setShowQR] = useState(false);
+  const bookHasQuickRead = hasQuickRead(book.id);
 
   const cartItem = cart.find((i) => i.id === book.id);
   const qtyInCart = cartItem?.qty || 0;
@@ -995,6 +1001,23 @@ export default function BookDetailsModal({ book }) {
                 </div>
               </div>
 
+              {/* ===== QuickReads CTA — full-width, below the price ===== */}
+              {bookHasQuickRead && (
+                <button
+                  type="button"
+                  className="bd-qr-cta"
+                  onClick={() => setShowQR(true)}
+                >
+                  <span className="bd-qr-badge">
+                    <Zap size={12} /> QuickReads
+                  </span>
+                  <span className="bd-qr-cta-text">
+                    Short on time? Read the key insights in minutes
+                  </span>
+                  <ArrowRight size={16} className="bd-qr-arrow" />
+                </button>
+              )}
+
               <div className="bd-bookmark-card">
                 <div className="bd-bookmark-visual" aria-hidden="true">
                   <span className="bd-bookmark-3d">
@@ -1391,6 +1414,21 @@ export default function BookDetailsModal({ book }) {
           )}
         </div>
       </div>
+
+      <AnimatePresence>
+        {showQR && (
+          <QuickReadsReader
+            book={book}
+            onClose={() => setShowQR(false)}
+            onUnlock={() =>
+              showToast(
+                "Unlock & payment is being set up — enjoy the free insights!",
+                "info",
+              )
+            }
+          />
+        )}
+      </AnimatePresence>
     </>
   );
 }

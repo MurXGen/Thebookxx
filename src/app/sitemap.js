@@ -2,6 +2,7 @@ import { books } from "@/utils/book";
 import { authorData, getAllAuthors } from "@/utils/author";
 import { reviewsData } from "@/utils/reviews";
 import { getAllBlogs } from "@/utils/blogs";
+import { quickReadBookIds } from "@/data/quickreads";
 
 // Helper function to slugify text
 function slugify(text) {
@@ -168,6 +169,12 @@ export default async function sitemap() {
       priority: 0.9,
     },
     {
+      url: `${baseUrl}/quickreads`,
+      lastModified: now,
+      changeFrequency: "daily",
+      priority: 0.9,
+    },
+    {
       url: `${baseUrl}/blogs`,
       lastModified: now,
       changeFrequency: "daily",
@@ -323,6 +330,32 @@ export default async function sitemap() {
     return route;
   });
 
+  // QuickReads per-book routes (/quickreads/<slug>) — only books that have
+  // QuickReads content. Mirrors the book cover for image indexing.
+  const seenQrNames = new Set();
+  const quickReadRoutes = quickReadBookIds()
+    .map((id) => books.find((b) => b.id === id))
+    .filter(Boolean)
+    // De-duplicate titles that exist under multiple catalogue ids.
+    .filter((b) => {
+      const key = (b.name || "").trim().toLowerCase();
+      if (seenQrNames.has(key)) return false;
+      seenQrNames.add(key);
+      return true;
+    })
+    .map((book) => {
+      const route = {
+        url: `${baseUrl}/quickreads/${slugify(book.name)}`,
+        lastModified: now,
+        changeFrequency: "weekly",
+        priority: 0.85,
+      };
+      if (book.image) {
+        route.images = [getFullImageUrl(book.image, baseUrl)];
+      }
+      return route;
+    });
+
   // Category routes
   const categoryRoutes = allCategories.map((category) => {
     const categorySlug = slugify(category);
@@ -400,6 +433,7 @@ export default async function sitemap() {
     ...staticRoutes,
     ...bookRoutes,
     ...bookIdRoutes,
+    ...quickReadRoutes,
     ...authorBookRoutes,
     ...blogRoutes,
     ...authorRoutes,

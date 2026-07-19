@@ -66,8 +66,9 @@ export default function Navbar() {
   const [index, setIndex] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const { cart } = useStore();
-  const cartCount = cart.reduce((sum, i) => sum + (i.qty || 1), 0);
+  const { cart, qrCart } = useStore();
+  const cartCount =
+    cart.reduce((sum, i) => sum + (i.qty || 1), 0) + (qrCart?.length || 0);
 
   useEffect(() => {
     const interval = setInterval(() => {

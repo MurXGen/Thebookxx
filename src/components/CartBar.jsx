@@ -2,6 +2,7 @@
 
 import { books } from "@/utils/book";
 import { useStore } from "@/context/StoreContext";
+import { QUICKREAD_PRICE } from "@/data/quickreads";
 import { CART_OFFERS } from "@/utils/cartOffers";
 import { useRouter } from "next/navigation";
 import CartOfferStrip from "@/components/UI/CartOfferStrip";
@@ -20,9 +21,12 @@ import { EVENTS } from "@/lib/trackingEvents";
 import UnlockChip from "./UI/UnlockChip";
 import OneRupeeModal from "./OneRupeeModal";
 
-export default function CartBar() {
-  const { cart, cartTotal } = useStore();
+export default function CartBar({ tab = "books" }) {
+  const { cart, cartTotal, qrCart } = useStore();
   const router = useRouter();
+  const isQuickReads = tab === "quickreads";
+  const qrCount = qrCart?.length || 0;
+  const qrTotal = qrCount * QUICKREAD_PRICE;
   const [liveRemainingTime, setLiveRemainingTime] = useState(0);
   const [showOneRupeeModal, setShowOneRupeeModal] = useState(false);
   const prevCartTotalRef = useRef(cartTotal);
@@ -78,6 +82,7 @@ export default function CartBar() {
   }, []);
 
   const hasCart = cart.length > 0;
+  const showBar = isQuickReads ? qrCount > 0 : hasCart;
 
   const cartBooks = cart
     .map((item) => {
@@ -273,7 +278,7 @@ export default function CartBar() {
     <div className="cart-bar" style={{ maxWidth: "680px", margin: "0 auto" }}>
       {/* Quick actions: Suggest + Search (mobile), above the strip */}
       <div
-        className={`cart-fab ${hasCart ? "with-bar" : ""} ${fabShake ? "fab-shake" : ""}`}
+        className={`cart-fab ${showBar ? "with-bar" : ""} ${fabShake ? "fab-shake" : ""}`}
       >
         <button
           type="button"
@@ -317,9 +322,9 @@ export default function CartBar() {
         onClose={() => setSuggestOpen(false)}
       />
 
-      {/* 🎁 OFFER STRIP */}
+      {/* 🎁 OFFER STRIP (books only — QuickReads has no cart offer) */}
       <AnimatePresence mode="wait">
-        {hasCart && (
+        {!isQuickReads && hasCart && (
           <motion.div
             key="offer"
             initial={{ opacity: 0, y: -10, filter: "blur(10px)" }}
@@ -333,9 +338,41 @@ export default function CartBar() {
         )}
       </AnimatePresence>
 
-      {/* 🛒 CART CTA */}
+      {/* ⚡ QUICKREADS CART CTA */}
       <AnimatePresence mode="wait">
-        {hasCart && (
+        {isQuickReads && qrCount > 0 && (
+          <motion.div
+            key="qr-cart"
+            className="cart-bar-main flex flex-row gap-12"
+            initial={{ opacity: 0, y: 20, filter: "blur(8px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            exit={{ opacity: 0, y: 20, filter: "blur(8px)" }}
+            transition={{ duration: 0.4, ease: "easeInOut" }}
+          >
+            <div className="flex flex-col width100 gap-4">
+              <div className="flex flex-row justify-between items-center">
+                <span className="font-14 flex flex-row gap-6 items-center">
+                  <Zap size={15} /> {qrCount} QuickRead{qrCount > 1 ? "s" : ""}
+                </span>
+                <span className="cart-price final weight-600">₹{qrTotal}</span>
+              </div>
+            </div>
+            <motion.button
+              className="pri-big-btn"
+              onClick={() => router.push("/bag?tab=quickreads")}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <span>Checkout</span>
+              <ArrowRight size={16} />
+            </motion.button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* 🛒 CART CTA (books) */}
+      <AnimatePresence mode="wait">
+        {!isQuickReads && hasCart && (
           <motion.div
             key="cart"
             className="cart-bar-main flex flex-row gap-12"

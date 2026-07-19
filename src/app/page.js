@@ -14,6 +14,7 @@ import StoreReviews from "@/components/StoreReviews";
 import OneRupeeHero from "@/components/OneRupeeHero";
 import HomeHero from "@/components/HomeHero";
 import LiveOrdersStrip from "@/components/LiveOrdersStrip";
+import HomeTabs from "@/components/quickreads/HomeTabs";
 
 // Lazy load components with named exports
 const BestsellerStage = lazy(() => import("@/components/BestsellerStage"));
@@ -114,6 +115,9 @@ export default function HomePage() {
 
       <Navbar />
 
+      {/* Books / QuickReads primary tabs (QuickReads navigates to /quickreads) */}
+      <HomeTabs active="books" />
+
       {/* Static hero, provides the visible H1 + value prop above the carousel */}
       <HomeHero />
 
@@ -201,7 +205,7 @@ export default function HomePage() {
 
       <AllBooks />
 
-      <CartBar />
+      <CartBar tab="books" />
 
       {/* PWA Install - Lazy Load */}
       <LazySection threshold={0.1}>

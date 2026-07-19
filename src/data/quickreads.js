@@ -2340,6 +2340,1167 @@ export const quickReads = {
     ],
   },
 
+  // Think and Grow Rich — Napoleon Hill
+  "bk-525": {
+    bookId: "bk-525",
+    tagline: "The classic laws of wealth, desire, faith and persistence",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "tg-1",
+        title: "Thoughts Are Things",
+        content:
+          "Hill's central claim: our thoughts, charged with purpose and desire, are the starting point of all riches. What you think about persistently, you move toward.",
+      },
+      {
+        id: "tg-2",
+        title: "The Secret: Burning Desire",
+        content:
+          "Wishing won't bring wealth. A white-hot, obsessive desire — a definite aim you're determined to reach — is the seed of every fortune.",
+      },
+      {
+        id: "tg-3",
+        title: "Definiteness of Purpose",
+        content:
+          "Drifting leads nowhere. Choose one clear, definite major purpose and organize your energy around it relentlessly.",
+      },
+      {
+        id: "tg-4",
+        title: "The Six Steps to Riches",
+        content:
+          "Hill gives a concrete method: fix the exact amount you want, decide what you'll give for it, set a date, make a plan, write it down, and read it aloud daily.",
+      },
+      {
+        id: "tg-5",
+        title: "Name Your Number and Date",
+        content:
+          "Vague goals bring vague results. State precisely how much you intend to acquire and exactly when you intend to have it.",
+      },
+      {
+        id: "tg-6",
+        title: "Decide What You'll Give",
+        content:
+          "There's no such thing as something for nothing. Determine what service or value you'll give in return for the wealth you desire.",
+      },
+      {
+        id: "tg-7",
+        title: "Write Your Aim Down",
+        content:
+          "Putting your goal in writing makes it concrete and commits you to it. A written statement turns a wish into a plan.",
+      },
+      {
+        id: "tg-8",
+        title: "Read It Aloud Daily",
+        content:
+          "Read your goal morning and night, seeing and feeling yourself already in possession of it. Repetition burns it into your mind.",
+      },
+      {
+        id: "tg-9",
+        title: "Desire Backed by Faith",
+        content:
+          "Desire lights the fire; faith keeps it burning. Believing you will succeed, before any evidence appears, is what carries you through.",
+      },
+      {
+        id: "tg-10",
+        title: "Conceive, Believe, Achieve",
+        content:
+          "Whatever the mind can conceive and truly believe, Hill says, it can achieve. Belief is the catalyst that turns thought into reality.",
+      },
+      {
+        id: "tg-11",
+        title: "Faith Is a State of Mind",
+        content:
+          "Faith isn't luck; it's a mental state you can deliberately develop through affirmation and repeated positive thought.",
+      },
+      {
+        id: "tg-12",
+        title: "Cultivate Faith Deliberately",
+        content:
+          "Feed your mind confidence until doubt has no room. Faith grows by repeatedly instructing the subconscious that success is certain.",
+      },
+      {
+        id: "tg-13",
+        title: "Believe It to See It",
+        content:
+          "Most people demand proof before they believe. The achiever believes first, and the proof follows the conviction.",
+      },
+      {
+        id: "tg-14",
+        title: "Autosuggestion",
+        content:
+          "Autosuggestion is the practice of feeding chosen thoughts to your subconscious. What you repeat to yourself, you eventually become.",
+      },
+      {
+        id: "tg-15",
+        title: "Repetition Reaches the Subconscious",
+        content:
+          "The subconscious acts on the instructions it hears most. Repeat your goal and affirmations until they sink beneath conscious thought.",
+      },
+      {
+        id: "tg-16",
+        title: "Emotionalize Your Words",
+        content:
+          "Affirmations without feeling do little. Charge your statements with emotion — desire, faith, excitement — to make them take hold.",
+      },
+      {
+        id: "tg-17",
+        title: "Specialized Knowledge",
+        content:
+          "General knowledge doesn't create wealth; applied, specialized knowledge does. Know deeply the field in which you intend to succeed.",
+      },
+      {
+        id: "tg-18",
+        title: "Knowledge Must Be Applied",
+        content:
+          "Information is only potential power. It becomes power when organized into definite plans and directed toward a clear end.",
+      },
+      {
+        id: "tg-19",
+        title: "Know Where to Find It",
+        content:
+          "You needn't know everything — you must know where and how to get what you need. Resourcefulness beats raw memorization.",
+      },
+      {
+        id: "tg-20",
+        title: "Never Stop Learning",
+        content:
+          "The successful keep acquiring specialized knowledge long after school. Continuous learning is the fuel of continuous achievement.",
+      },
+      {
+        id: "tg-21",
+        title: "Imagination Is the Workshop",
+        content:
+          "In imagination, plans and desires take shape. Every fortune begins as an idea shaped in the mind's workshop.",
+      },
+      {
+        id: "tg-22",
+        title: "Two Kinds of Imagination",
+        content:
+          "Synthetic imagination rearranges old ideas into new combinations; creative imagination receives fresh insight. Both build wealth when used.",
+      },
+      {
+        id: "tg-23",
+        title: "Ideas Begin Riches",
+        content:
+          "Ideas are the intangible seeds of all riches. A single well-executed idea can be worth a fortune.",
+      },
+      {
+        id: "tg-24",
+        title: "Organized Planning",
+        content:
+          "Desire and faith need a vehicle: a practical plan. Turn your goal into organized, actionable steps you can start now.",
+      },
+      {
+        id: "tg-25",
+        title: "Plan the Work, Work the Plan",
+        content:
+          "A plan bridges the gap between wanting and having. Build one, act on it, and adjust as reality teaches you.",
+      },
+      {
+        id: "tg-26",
+        title: "Defeat Is Temporary",
+        content:
+          "A plan that fails isn't final defeat — it's feedback. Successful people simply build new plans until one works.",
+      },
+      {
+        id: "tg-27",
+        title: "Revise Plans, Not Goals",
+        content:
+          "When a strategy fails, change the strategy, not the destination. Persistence toward the goal with flexible methods wins.",
+      },
+      {
+        id: "tg-28",
+        title: "Decision: Beat Procrastination",
+        content:
+          "Hill found the wealthy decide quickly and change their minds slowly; the poor do the reverse. Decisiveness is a wealth habit.",
+      },
+      {
+        id: "tg-29",
+        title: "Decide Promptly",
+        content:
+          "Indecision is a thief of opportunity. Gather what you need, then commit — hesitation costs more than the occasional wrong call.",
+      },
+      {
+        id: "tg-30",
+        title: "Keep Your Own Counsel",
+        content:
+          "Don't broadcast your plans to everyone; opinions and doubts can drain your resolve. Share goals only with those who help you reach them.",
+      },
+      {
+        id: "tg-31",
+        title: "Persistence",
+        content:
+          "Persistence is to desire what carbon is to steel. The habit of refusing to quit outlasts talent, luck, and circumstance.",
+      },
+      {
+        id: "tg-32",
+        title: "Persistence Beats Talent",
+        content:
+          "The world is full of talented people who gave up. Ordinary persistence, sustained, achieves what brilliant bursts of effort cannot.",
+      },
+      {
+        id: "tg-33",
+        title: "The Habit of Not Quitting",
+        content:
+          "Most people quit at the first sign of defeat, often just short of success. Build persistence into a habit and setbacks lose their sting.",
+      },
+      {
+        id: "tg-34",
+        title: "Cure Weakness With Persistence",
+        content:
+          "A lack of persistence can be overcome deliberately — with a clear goal, a plan, and a refusal to be influenced by discouragement.",
+      },
+      {
+        id: "tg-35",
+        title: "Three Feet From Gold",
+        content:
+          "Hill tells of a miner who quit three feet from a fortune. Never abandon your dig when the treasure may be just ahead.",
+      },
+      {
+        id: "tg-36",
+        title: "The Master Mind",
+        content:
+          "Surround yourself with a group of capable, harmonious minds working toward your goal. Their combined knowledge and energy multiply your own.",
+      },
+      {
+        id: "tg-37",
+        title: "Two Minds Create a Third",
+        content:
+          "When minds coordinate in harmony, a third, invisible force emerges. Collaboration produces insight no single mind could reach alone.",
+      },
+      {
+        id: "tg-38",
+        title: "Choose Allies Wisely",
+        content:
+          "Your mastermind group should share your vision and lift your standards. Guard it against discord, which destroys its power.",
+      },
+      {
+        id: "tg-39",
+        title: "Harmony Is Essential",
+        content:
+          "A mastermind only works in perfect harmony. Friction among members dissolves the very power the group was formed to create.",
+      },
+      {
+        id: "tg-40",
+        title: "Transmute Your Drive",
+        content:
+          "Hill argues our strongest energies can be channeled. Redirect powerful drives and emotions into creative, productive achievement.",
+      },
+      {
+        id: "tg-41",
+        title: "Channel Energy Into Achievement",
+        content:
+          "The same intensity that fuels desire can fuel great work. Discipline turns raw drive into sustained, focused output.",
+      },
+      {
+        id: "tg-42",
+        title: "The Subconscious Mind",
+        content:
+          "Your subconscious works day and night on whatever thoughts dominate it. Direct it deliberately with your goals and faith.",
+      },
+      {
+        id: "tg-43",
+        title: "Feed It Positive Emotion",
+        content:
+          "The subconscious acts most powerfully on emotionalized thought. Flood it with desire, faith, and enthusiasm rather than fear.",
+      },
+      {
+        id: "tg-44",
+        title: "Crowd Out the Negative",
+        content:
+          "You can't hold positive and negative thoughts at once. Keep your mind so full of your goal that doubt finds no room.",
+      },
+      {
+        id: "tg-45",
+        title: "The Brain Broadcasts and Receives",
+        content:
+          "Hill likens the mind to a broadcasting station, sending and receiving thought. A confident, focused mind attracts aligned people and ideas.",
+      },
+      {
+        id: "tg-46",
+        title: "Raise Your Mental Signal",
+        content:
+          "Fear and doubt weaken your broadcast; faith and enthusiasm amplify it. Tune your mind to the frequency of what you want.",
+      },
+      {
+        id: "tg-47",
+        title: "The Sixth Sense",
+        content:
+          "With practice, hunches and flashes of insight guide the prepared mind. Hill calls this the sixth sense — the peak of the principles.",
+      },
+      {
+        id: "tg-48",
+        title: "Trust Your Hunches",
+        content:
+          "Intuition often delivers ideas the conscious mind can't reason its way to. Learn to notice and act on genuine inner guidance.",
+      },
+      {
+        id: "tg-49",
+        title: "The Six Ghosts of Fear",
+        content:
+          "Six basic fears block most people from riches. Naming them is the first step to driving them out of your mind.",
+      },
+      {
+        id: "tg-50",
+        title: "The Fear of Poverty",
+        content:
+          "The most destructive fear paralyzes ambition and invites the very lack it dreads. Decide on prosperity and act as if it's assured.",
+      },
+      {
+        id: "tg-51",
+        title: "The Fear of Criticism",
+        content:
+          "Worrying what others think keeps people small and safe. Free yourself from the crowd's opinion to pursue your own aim.",
+      },
+      {
+        id: "tg-52",
+        title: "The Fear of Ill Health",
+        content:
+          "Dwelling on sickness can invite it. A mind focused on vitality and purpose supports the body as well as the goal.",
+      },
+      {
+        id: "tg-53",
+        title: "The Fear of Lost Love",
+        content:
+          "Jealousy and insecurity poison relationships and scatter focus. Security comes from within, not from clinging.",
+      },
+      {
+        id: "tg-54",
+        title: "The Fear of Old Age",
+        content:
+          "Fearing decline drains today's energy. See experience as an asset and keep growing rather than winding down.",
+      },
+      {
+        id: "tg-55",
+        title: "The Fear of Death",
+        content:
+          "Dread of the end steals life from the present. Accept what you cannot change and pour yourself into meaningful work now.",
+      },
+      {
+        id: "tg-56",
+        title: "Indecision, Doubt, and Worry",
+        content:
+          "These three offspring of fear quietly sabotage success. Decisiveness and faith are their direct antidotes.",
+      },
+      {
+        id: "tg-57",
+        title: "Guard Your Mind",
+        content:
+          "Your mind is the one thing you can fully control. Protect it from negativity, and fill it with your definite purpose.",
+      },
+      {
+        id: "tg-58",
+        title: "Go the Extra Mile",
+        content:
+          "Render more and better service than you're paid for. Those who consistently over-deliver make themselves indispensable and prosperous.",
+      },
+      {
+        id: "tg-59",
+        title: "A Positive Mental Attitude",
+        content:
+          "Your dominant attitude shapes your results. A relentlessly positive, expectant mindset is the soil in which riches grow.",
+      },
+      {
+        id: "tg-60",
+        title: "Adversity Carries a Seed",
+        content:
+          "Every defeat and heartache brings with it the seed of an equal or greater benefit — if you look for it instead of quitting.",
+      },
+      {
+        id: "tg-61",
+        title: "Money Consciousness",
+        content:
+          "Keep your mind so fixed on your goal of wealth that you become 'money conscious.' What you focus on expands.",
+      },
+      {
+        id: "tg-62",
+        title: "Wealth Begins in the Mind",
+        content:
+          "Before it reaches your hands, riches take shape in your thoughts, plans, and beliefs. Master the inner game first.",
+      },
+      {
+        id: "tg-63",
+        title: "The Winning Formula",
+        content:
+          "Definite purpose plus faith plus organized planning plus persistence — repeated relentlessly — is Hill's formula for turning desire into gold.",
+      },
+      {
+        id: "tg-64",
+        title: "Think, and Grow Rich",
+        content:
+          "The title is the lesson: disciplined, purposeful thinking, backed by action and persistence, is the true origin of wealth.",
+      },
+    ],
+  },
+
+  // How to Talk to Anyone — Leil Lowndes
+  "bk-513": {
+    bookId: "bk-513",
+    tagline: "Little tricks for big success in relationships and conversation",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "ht-1",
+        title: "Talk to Anyone With Ease",
+        content:
+          "Great communicators aren't born — they use small, learnable techniques. Master a handful and you can connect with anyone, anywhere.",
+      },
+      {
+        id: "ht-2",
+        title: "First Impressions Form Fast",
+        content:
+          "People size you up in seconds, mostly before you speak a word. Your posture, expression, and energy do the talking first.",
+      },
+      {
+        id: "ht-3",
+        title: "Your Body Speaks First",
+        content:
+          "Up to most of your message is nonverbal. Align your body language with warmth and confidence before you open your mouth.",
+      },
+      {
+        id: "ht-4",
+        title: "Stand Tall and Open",
+        content:
+          "An upright, open posture signals confidence and approachability. Uncross your arms, lift your chin, and take up your space.",
+      },
+      {
+        id: "ht-5",
+        title: "The Warm, Unhurried Smile",
+        content:
+          "Don't flash an instant, automatic grin at everyone. A smile that blooms a moment slower feels genuine and personal.",
+      },
+      {
+        id: "ht-6",
+        title: "Let Your Smile Land",
+        content:
+          "Pause, look at the person, then let your smile spread. That brief delay tells them the smile is meant just for them.",
+      },
+      {
+        id: "ht-7",
+        title: "Make Eye Contact Count",
+        content:
+          "Warm, steady eye contact builds trust and intimacy. It tells people you're fully present and genuinely engaged.",
+      },
+      {
+        id: "ht-8",
+        title: "Hold the Gaze a Beat Longer",
+        content:
+          "Keep eye contact a moment past comfortable, even as you turn away. It conveys deep interest without tipping into a stare.",
+      },
+      {
+        id: "ht-9",
+        title: "Soft Eyes, Not a Stare",
+        content:
+          "The goal is warmth, not intensity. Relaxed, friendly eyes invite connection where a hard stare pushes people away.",
+      },
+      {
+        id: "ht-10",
+        title: "Turn Fully Toward People",
+        content:
+          "Pivot your whole body to face the person you're with. That full-attention turn makes them feel like the only one in the room.",
+      },
+      {
+        id: "ht-11",
+        title: "Give Undivided Attention",
+        content:
+          "Put the phone away and focus completely. In a distracted world, full presence is a rare and powerful compliment.",
+      },
+      {
+        id: "ht-12",
+        title: "Match Their Mood First",
+        content:
+          "Before diving in, sense the other person's energy and meet it. Matching their mood makes you feel instantly familiar.",
+      },
+      {
+        id: "ht-13",
+        title: "Read the Room",
+        content:
+          "Tune into the tone of a gathering before you speak. Fitting the energy of the moment keeps you from striking the wrong note.",
+      },
+      {
+        id: "ht-14",
+        title: "Skip 'What Do You Do?'",
+        content:
+          "That tired opener boxes people in and can embarrass them. Ask something fresher about their day, their world, or the event.",
+      },
+      {
+        id: "ht-15",
+        title: "Ask About Their World",
+        content:
+          "Open-ended questions about someone's life and interests invite real conversation. People light up when asked about what they love.",
+      },
+      {
+        id: "ht-16",
+        title: "Answer With a Hook",
+        content:
+          "When asked what you do, add a colorful detail that invites follow-up. Give them a thread to pull instead of a dead end.",
+      },
+      {
+        id: "ht-17",
+        title: "Never a One-Word Answer",
+        content:
+          "Bare replies kill conversation. Offer a little extra information that gives the other person something to respond to.",
+      },
+      {
+        id: "ht-18",
+        title: "Offer Conversation Threads",
+        content:
+          "Sprinkle small hooks into what you say. Each one is a thread the other person can grab to keep things flowing.",
+      },
+      {
+        id: "ht-19",
+        title: "Listen for Free Information",
+        content:
+          "People constantly reveal clues about their lives. Catch these details and use them to steer the conversation somewhere they enjoy.",
+      },
+      {
+        id: "ht-20",
+        title: "Follow Up on Details",
+        content:
+          "Notice the little things people mention and ask more about them. It shows you're truly listening, not just waiting to talk.",
+      },
+      {
+        id: "ht-21",
+        title: "Ask Them to Tell You More",
+        content:
+          "A simple 'tell me more' or 'and then what happened?' keeps someone talking. People love an audience that wants the whole story.",
+      },
+      {
+        id: "ht-22",
+        title: "Gently Echo Their Words",
+        content:
+          "Repeat the last few words someone said as a soft question. It shows you're following and nudges them to continue.",
+      },
+      {
+        id: "ht-23",
+        title: "Be a Word Detective",
+        content:
+          "Listen for pet phrases and topics people return to. Weaving their own favorite words back in makes them feel understood.",
+      },
+      {
+        id: "ht-24",
+        title: "Use Their Name Warmly",
+        content:
+          "Sprinkle a person's name into conversation sparingly and sincerely. Overuse feels salesy, but a well-placed name feels personal.",
+      },
+      {
+        id: "ht-25",
+        title: "Make Them the Star",
+        content:
+          "Shine the spotlight on the other person. The most charming people talk less about themselves and more about you.",
+      },
+      {
+        id: "ht-26",
+        title: "Draw Others Out",
+        content:
+          "Ask the questions that let someone share their proudest moments. People remember how you made them feel about themselves.",
+      },
+      {
+        id: "ht-27",
+        title: "Give Sincere Compliments",
+        content:
+          "Specific, genuine praise delights people. Compliment something real you noticed rather than an empty generic line.",
+      },
+      {
+        id: "ht-28",
+        title: "Praise Behind Their Back",
+        content:
+          "Say kind things about people when they're not around. Praise has a way of traveling back and landing with extra weight.",
+      },
+      {
+        id: "ht-29",
+        title: "Pass On Overheard Praise",
+        content:
+          "When you hear someone complimented, relay it to them. Being the messenger of good news makes you welcome everywhere.",
+      },
+      {
+        id: "ht-30",
+        title: "The Well-Timed Compliment",
+        content:
+          "A small, sincere compliment slipped in at the right moment can make someone's day. Timing turns kindness into impact.",
+      },
+      {
+        id: "ht-31",
+        title: "Praise the Deed, Not Flattery",
+        content:
+          "Admire specific actions and choices rather than gushing vaguely. Grounded praise feels honest; flattery feels hollow.",
+      },
+      {
+        id: "ht-32",
+        title: "Say 'You' More Than 'I'",
+        content:
+          "Frame your words around the other person. Sentences centered on 'you' feel warmer than ones centered on 'I'.",
+      },
+      {
+        id: "ht-33",
+        title: "Make It About Them",
+        content:
+          "Connect your points to the listener's interests and benefits. People pay most attention when they hear how it touches their world.",
+      },
+      {
+        id: "ht-34",
+        title: "Mirror Subtly",
+        content:
+          "Gently matching someone's posture, pace, and tone builds unconscious rapport. Keep it natural — obvious mimicry backfires.",
+      },
+      {
+        id: "ht-35",
+        title: "Echo Their Style",
+        content:
+          "Adapt your energy and vocabulary to the person in front of you. Speaking a little more like them helps them feel at home with you.",
+      },
+      {
+        id: "ht-36",
+        title: "Speak Their Language",
+        content:
+          "Use the words and references familiar to their world. Talking in their terms signals that you belong on their wavelength.",
+      },
+      {
+        id: "ht-37",
+        title: "Learn the Insider Lingo",
+        content:
+          "Pick up the key phrases of a group or industry and you're welcomed as one of them. A little jargon opens a lot of doors.",
+      },
+      {
+        id: "ht-38",
+        title: "Do Your Homework",
+        content:
+          "Before an event or meeting, learn who'll be there and what matters to them. Preparation turns nervous small talk into real connection.",
+      },
+      {
+        id: "ht-39",
+        title: "Always Have Something to Say",
+        content:
+          "Stay lightly informed on news, culture, and trends. A ready supply of topics saves you from awkward silences.",
+      },
+      {
+        id: "ht-40",
+        title: "Answer With Energy",
+        content:
+          "When asked how you are, skip the flat 'fine.' A warm, upbeat reply invites people to lean in rather than move on.",
+      },
+      {
+        id: "ht-41",
+        title: "Avoid Tired Clichés",
+        content:
+          "Overused phrases make you forgettable. A fresh, specific response makes you stand out in a sea of autopilot small talk.",
+      },
+      {
+        id: "ht-42",
+        title: "Work a Room With Ease",
+        content:
+          "Circulate with a warm, relaxed manner rather than clinging to one corner. Confidence in movement makes you approachable.",
+      },
+      {
+        id: "ht-43",
+        title: "Join Groups Gracefully",
+        content:
+          "Approach a cluster of people with a smile, listen briefly, then add value. Ease your way in rather than barging or interrupting.",
+      },
+      {
+        id: "ht-44",
+        title: "Be the Host, Not the Guest",
+        content:
+          "Even as a guest, act like a host: introduce people, refill the conversation, make others comfortable. Hosts are always liked.",
+      },
+      {
+        id: "ht-45",
+        title: "Introduce People Well",
+        content:
+          "When introducing two people, add a hook about each so they have something to talk about. A good intro sparks an instant bond.",
+      },
+      {
+        id: "ht-46",
+        title: "Bridge Others Together",
+        content:
+          "Connecting people who should know each other makes you memorable and valued. Be the hub that brings good people together.",
+      },
+      {
+        id: "ht-47",
+        title: "Exit Conversations Gracefully",
+        content:
+          "Leave with a warm, sincere close rather than an awkward drift. A gracious goodbye leaves a lasting good impression.",
+      },
+      {
+        id: "ht-48",
+        title: "The Sincere Goodbye",
+        content:
+          "End with genuine warmth and, if you can, a reason you enjoyed the chat. People remember beginnings and endings most.",
+      },
+      {
+        id: "ht-49",
+        title: "Master the Phone Voice",
+        content:
+          "On calls your voice carries everything. Warmth, energy, and clarity matter even more when your face can't be seen.",
+      },
+      {
+        id: "ht-50",
+        title: "Smile Before You Dial",
+        content:
+          "A smile changes the tone of your voice. Grin before you speak on the phone and the listener hears the friendliness.",
+      },
+      {
+        id: "ht-51",
+        title: "Personalize the Call",
+        content:
+          "Use the person's name and reference something specific to them. It turns a routine call into a personal connection.",
+      },
+      {
+        id: "ht-52",
+        title: "Never a Bare Thank You",
+        content:
+          "Add why you're grateful — 'thank you for your patience' — so the thanks feels personal and real, not automatic.",
+      },
+      {
+        id: "ht-53",
+        title: "Make Gratitude Specific",
+        content:
+          "Specific thanks lands harder than a generic one. Name what the person did and how it helped you.",
+      },
+      {
+        id: "ht-54",
+        title: "Do Small Favors Freely",
+        content:
+          "Little acts of help build a reservoir of goodwill. Give without keeping score and support tends to flow back to you.",
+      },
+      {
+        id: "ht-55",
+        title: "Build a Web of Goodwill",
+        content:
+          "Every kindness plants a seed in your network. Over time, generosity quietly becomes your most valuable social asset.",
+      },
+      {
+        id: "ht-56",
+        title: "Turn Small Talk Into Big Talk",
+        content:
+          "Small talk is the bridge to deeper connection. Move gently from surface topics toward what people truly care about.",
+      },
+      {
+        id: "ht-57",
+        title: "Find the Common Thread",
+        content:
+          "Hunt for shared interests, experiences, or values. A single point in common can turn a stranger into a friend.",
+      },
+      {
+        id: "ht-58",
+        title: "Let Them Feel Understood",
+        content:
+          "People's deepest wish in conversation is to feel heard. Reflect their feelings back and they'll treasure talking with you.",
+      },
+      {
+        id: "ht-59",
+        title: "Beat Nerves With Preparation",
+        content:
+          "Anxiety fades when you have a few openers and topics ready. Preparation replaces fear with quiet confidence.",
+      },
+      {
+        id: "ht-60",
+        title: "Charisma Is Learnable",
+        content:
+          "Charm isn't a mysterious gift; it's a set of habits anyone can practice. Small techniques, repeated, become natural warmth.",
+      },
+      {
+        id: "ht-61",
+        title: "Warmth Beats Wit",
+        content:
+          "You don't need to be clever or funny to be liked. Making people feel comfortable and valued matters far more than dazzling them.",
+      },
+      {
+        id: "ht-62",
+        title: "Make Everyone Feel Special",
+        content:
+          "The thread through every trick: leave people feeling a little better about themselves. Do that consistently and you can talk to anyone.",
+      },
+    ],
+  },
+
+  // How to Win Friends and Influence People — Dale Carnegie
+  "bk-524": {
+    bookId: "bk-524",
+    tagline: "Timeless principles for winning people to your way of thinking",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "wf-1",
+        title: "The Timeless Skill of People",
+        content:
+          "Success depends far more on how you deal with people than on technical skill. Carnegie's principles are about making others feel valued, and they still work a century on.",
+      },
+      {
+        id: "wf-2",
+        title: "Don't Criticize or Condemn",
+        content:
+          "Criticism rarely changes people; it only makes them defensive and resentful. Even when you're right, condemning wounds pride and closes minds.",
+      },
+      {
+        id: "wf-3",
+        title: "Criticism Wounds Pride",
+        content:
+          "People long to feel important, and criticism attacks that directly. Instead of pointing out flaws, seek to understand why they act as they do.",
+      },
+      {
+        id: "wf-4",
+        title: "Give Honest Appreciation",
+        content:
+          "The deepest human craving is to feel appreciated. Sincere, specific praise motivates people far more than fault-finding ever could.",
+      },
+      {
+        id: "wf-5",
+        title: "Appreciation, Not Flattery",
+        content:
+          "Flattery is cheap and insincere; appreciation comes from genuinely noticing the good in someone. People can tell the difference instantly.",
+      },
+      {
+        id: "wf-6",
+        title: "Arouse an Eager Want",
+        content:
+          "To influence anyone, talk about what they want, not what you want. The only way to move people is to make them want to do it themselves.",
+      },
+      {
+        id: "wf-7",
+        title: "See Through Their Desire",
+        content:
+          "Before you ask for anything, ask how it benefits the other person. Frame your request around their goals and it becomes easy to say yes.",
+      },
+      {
+        id: "wf-8",
+        title: "Be Genuinely Interested in Others",
+        content:
+          "You make more friends in two months by being interested in others than in two years trying to get them interested in you.",
+      },
+      {
+        id: "wf-9",
+        title: "Interest Opens Doors",
+        content:
+          "Show real curiosity about people's lives, work, and passions. Genuine interest signals respect and makes others glad to be around you.",
+      },
+      {
+        id: "wf-10",
+        title: "Smile",
+        content:
+          "A warm smile says without words, I'm glad to see you. It costs nothing yet instantly warms the space between two people.",
+      },
+      {
+        id: "wf-11",
+        title: "A Smile Is a Message",
+        content:
+          "Actions speak louder than words, and a smile is one of the friendliest actions there is. Even over the phone, a smile carries in your voice.",
+      },
+      {
+        id: "wf-12",
+        title: "Remember and Use Names",
+        content:
+          "A person's name is, to them, the sweetest sound in any language. Remembering and using it makes people feel uniquely seen.",
+      },
+      {
+        id: "wf-13",
+        title: "Names Signal Respect",
+        content:
+          "Forgetting a name quietly tells someone they didn't matter enough to recall. Make the effort, and you pay a compliment few forget.",
+      },
+      {
+        id: "wf-14",
+        title: "Be a Good Listener",
+        content:
+          "Being a great conversationalist mostly means being a great listener. Give people your full attention and they'll find you fascinating.",
+      },
+      {
+        id: "wf-15",
+        title: "Let Them Talk About Themselves",
+        content:
+          "Encourage others to talk about their own experiences and achievements. People love talking about themselves far more than hearing about you.",
+      },
+      {
+        id: "wf-16",
+        title: "Talk About Their Interests",
+        content:
+          "The royal road to someone's heart is to speak about the things they treasure most. Do your homework and lead with their world.",
+      },
+      {
+        id: "wf-17",
+        title: "Make Others Feel Important",
+        content:
+          "Everyone you meet wants to feel important. Give them that feeling sincerely, and you become someone they genuinely enjoy.",
+      },
+      {
+        id: "wf-18",
+        title: "The Craving to Matter",
+        content:
+          "The desire to feel important is one of the strongest human urges. Satisfy it honestly and you win loyalty and affection.",
+      },
+      {
+        id: "wf-19",
+        title: "Sincerity Is Everything",
+        content:
+          "These aren't manipulation tactics; they only work when they come from real care. People sense the difference between a technique and true regard.",
+      },
+      {
+        id: "wf-20",
+        title: "Avoid Arguments",
+        content:
+          "The only way to get the best of an argument is to avoid it. Even if you win, you lose — because the other person feels defeated and resentful.",
+      },
+      {
+        id: "wf-21",
+        title: "You Can't Win an Argument",
+        content:
+          "Win an argument and you may lose the relationship. Nine times out of ten, both sides end more convinced they were right.",
+      },
+      {
+        id: "wf-22",
+        title: "Never Say 'You're Wrong'",
+        content:
+          "Telling people they're wrong attacks their intelligence and pride. Show respect for their opinions instead of flatly contradicting them.",
+      },
+      {
+        id: "wf-23",
+        title: "Respect Their Opinions",
+        content:
+          "You can disagree without declaring war. Acknowledge their view first, and they'll be far more open to hearing yours.",
+      },
+      {
+        id: "wf-24",
+        title: "If Wrong, Admit It Quickly",
+        content:
+          "When you're wrong, admit it fast and wholeheartedly. Self-criticism disarms others far better than defensiveness ever could.",
+      },
+      {
+        id: "wf-25",
+        title: "Disarm With Humility",
+        content:
+          "Beat others to their own criticism of you and there's nothing left for them to attack. Owning your mistakes builds trust.",
+      },
+      {
+        id: "wf-26",
+        title: "Begin in a Friendly Way",
+        content:
+          "A drop of honey catches more flies than a gallon of gall. Start gently and warmly, and people lower their guard.",
+      },
+      {
+        id: "wf-27",
+        title: "Friendliness Opens Minds",
+        content:
+          "Hostility breeds hostility. Approach even difficult conversations with kindness and you make agreement possible.",
+      },
+      {
+        id: "wf-28",
+        title: "Get Them Saying Yes",
+        content:
+          "Start with questions the other person will answer yes to. A string of small agreements builds momentum toward the big one.",
+      },
+      {
+        id: "wf-29",
+        title: "Begin With Common Ground",
+        content:
+          "Emphasize the things you agree on before the things you don't. Shared ground makes the differences feel smaller.",
+      },
+      {
+        id: "wf-30",
+        title: "Let Them Do the Talking",
+        content:
+          "Resist the urge to dominate. Let the other person talk themselves toward your idea; people trust conclusions they reach on their own.",
+      },
+      {
+        id: "wf-31",
+        title: "Let People Persuade Themselves",
+        content:
+          "We believe our own ideas most. Ask questions that lead people to discover the answer, rather than forcing it on them.",
+      },
+      {
+        id: "wf-32",
+        title: "Let the Idea Be Theirs",
+        content:
+          "People support what they help create. Plant the seed and let them feel the idea is their own, and buy-in follows naturally.",
+      },
+      {
+        id: "wf-33",
+        title: "Ownership Wins Buy-In",
+        content:
+          "Nobody likes being sold to, but everyone loves their own conclusions. Give credit generously and keep your ego out of the way.",
+      },
+      {
+        id: "wf-34",
+        title: "See Their Point of View",
+        content:
+          "Try honestly to see things from the other person's angle. Understanding their reasoning is the first step to changing their mind.",
+      },
+      {
+        id: "wf-35",
+        title: "Empathy Changes Everything",
+        content:
+          "Ask yourself why a reasonable person would feel as they do. Empathy dissolves conflict that argument only hardens.",
+      },
+      {
+        id: "wf-36",
+        title: "Be Sympathetic to Their Ideas",
+        content:
+          "Acknowledge people's feelings and desires as valid. A simple 'I don't blame you for feeling that way' can transform a tense exchange.",
+      },
+      {
+        id: "wf-37",
+        title: "Appeal to Nobler Motives",
+        content:
+          "People like to think of themselves as fair and honorable. Appeal to their better nature and they often rise to meet it.",
+      },
+      {
+        id: "wf-38",
+        title: "Assume the Best",
+        content:
+          "Treat people as if they were already the honest, capable person you hope they'll be. Most will try to live up to it.",
+      },
+      {
+        id: "wf-39",
+        title: "Dramatize Your Ideas",
+        content:
+          "Facts alone rarely move people. Make your point vivid and memorable, and it lands with feeling as well as logic.",
+      },
+      {
+        id: "wf-40",
+        title: "Make It Come Alive",
+        content:
+          "A dull statement is easy to ignore. Show, illustrate, and bring your idea to life so it captures attention.",
+      },
+      {
+        id: "wf-41",
+        title: "Throw Down a Challenge",
+        content:
+          "The desire to excel and prove oneself is a powerful motivator. A fair challenge can spark people to give their very best.",
+      },
+      {
+        id: "wf-42",
+        title: "Spark Healthy Competition",
+        content:
+          "People rise to a stimulating challenge that lets them shine. Used sincerely, it energizes rather than pressures.",
+      },
+      {
+        id: "wf-43",
+        title: "Begin With Praise",
+        content:
+          "When you must correct someone, start with honest praise. Softening the ground first makes criticism far easier to hear.",
+      },
+      {
+        id: "wf-44",
+        title: "Praise Before You Correct",
+        content:
+          "Beginning with appreciation is like the dentist numbing before drilling. It eases the sting of what comes next.",
+      },
+      {
+        id: "wf-45",
+        title: "Point Out Mistakes Indirectly",
+        content:
+          "Call attention to errors gently and indirectly rather than bluntly. People accept correction far better when their dignity stays intact.",
+      },
+      {
+        id: "wf-46",
+        title: "Say 'And', Not 'But'",
+        content:
+          "Praise followed by 'but' feels like the praise was fake. Swap it for 'and' and the encouragement stays believable.",
+      },
+      {
+        id: "wf-47",
+        title: "Admit Your Own Mistakes First",
+        content:
+          "Before criticizing another, mention your own similar faults. It's far easier to accept correction from someone humble.",
+      },
+      {
+        id: "wf-48",
+        title: "Humility Invites Change",
+        content:
+          "Admitting you're not perfect either puts you on the same side. People change more willingly for an ally than a judge.",
+      },
+      {
+        id: "wf-49",
+        title: "Ask, Don't Order",
+        content:
+          "Give suggestions in the form of questions rather than commands. Questions preserve pride and invite cooperation instead of resentment.",
+      },
+      {
+        id: "wf-50",
+        title: "Questions Preserve Dignity",
+        content:
+          "Asking 'what if we tried this?' lets people keep their self-respect. Orders provoke resistance; questions invite ownership.",
+      },
+      {
+        id: "wf-51",
+        title: "Let Them Save Face",
+        content:
+          "Never humiliate someone, even when they're clearly wrong. Letting a person save face costs you nothing and earns their gratitude.",
+      },
+      {
+        id: "wf-52",
+        title: "Protect Their Dignity",
+        content:
+          "A few thoughtful words to spare someone embarrassment can preserve a relationship for life. Kindness in correction is remembered.",
+      },
+      {
+        id: "wf-53",
+        title: "Praise Every Improvement",
+        content:
+          "Be hearty in your approbation and lavish in your praise. Recognizing small progress inspires people to keep going.",
+      },
+      {
+        id: "wf-54",
+        title: "Catch Them Doing Right",
+        content:
+          "Look for what people do well, not just what they do wrong. Specific praise for real effort motivates like nothing else.",
+      },
+      {
+        id: "wf-55",
+        title: "Give a Reputation to Live Up To",
+        content:
+          "Give someone a fine reputation and they'll strain to deserve it. Tell people they're reliable and they tend to become so.",
+      },
+      {
+        id: "wf-56",
+        title: "Expectations Lift People",
+        content:
+          "People rise or fall to the level of belief you place in them. Expect the best and you often draw it out.",
+      },
+      {
+        id: "wf-57",
+        title: "Make Faults Seem Easy to Fix",
+        content:
+          "Encourage by making the flaw look correctable. If a task feels achievable, people gladly take it on.",
+      },
+      {
+        id: "wf-58",
+        title: "Encouragement Fuels Effort",
+        content:
+          "Tell someone they have a knack for something and they'll practice to prove you right. Encouragement is a self-fulfilling gift.",
+      },
+      {
+        id: "wf-59",
+        title: "Make Them Happy to Comply",
+        content:
+          "Frame your request so the other person genuinely wants to do it. Show how cooperation serves their own interests.",
+      },
+      {
+        id: "wf-60",
+        title: "Align With Their Benefit",
+        content:
+          "Influence lasts when both sides win. Connect what you need to what they value, and compliance becomes willing, not forced.",
+      },
+      {
+        id: "wf-61",
+        title: "Sincerity Can't Be Faked",
+        content:
+          "Every principle here collapses without genuine goodwill. Manipulation is eventually seen through; real care is felt and returned.",
+      },
+      {
+        id: "wf-62",
+        title: "Principles, Not Tricks",
+        content:
+          "Treat these as a philosophy of respect, not a bag of tactics. Practiced daily, they reshape how people respond to you.",
+      },
+      {
+        id: "wf-63",
+        title: "Give First to Win Friends",
+        content:
+          "The thread through it all: put others first, appreciate sincerely, and make people feel important. Give that freely, and friendship and influence follow.",
+      },
+    ],
+  },
+
   // Good Vibes, Good Life — Vex King
   "bk-382": {
     bookId: "bk-382",

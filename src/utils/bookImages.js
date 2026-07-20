@@ -636,7 +636,7 @@ export const bookImages = {
   "first-lie-wins": `${BOOK_IMAGE_BASE_PATH}/first-lie-wins.jpeg`,
   outlive: `${BOOK_IMAGE_BASE_PATH}/outlive.jpeg`,
   "a-house-without-windows": `${BOOK_IMAGE_BASE_PATH}/a-house-without-windows.jpeg`,
-  "did-she-ever-love-me": `${BOOK_IMAGE_BASE_PATH}/did-she-ever-love-me.jpeg`,
+  "did-you-ever-love-me": `${BOOK_IMAGE_BASE_PATH}/did-you-ever-love-me.jpeg`,
   "the-art-of-seduction": `${BOOK_IMAGE_BASE_PATH}/the-art-of-seduction.jpeg`,
   "mastery": `${BOOK_IMAGE_BASE_PATH}/mastery.jpeg`,
   "the-richest-man-in-babylon": `${BOOK_IMAGE_BASE_PATH}/the-richest-man-in-babylon.jpeg`,

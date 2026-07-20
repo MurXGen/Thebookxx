@@ -10363,10 +10363,10 @@ export const books = [
   },
   {
     id: "bk-655",
-    name: "Did She Ever Love Me",
-    image: bookImages["did-she-ever-love-me"],
+    name: "Did You Ever Love Me?",
+    image: bookImages["did-you-ever-love-me"],
     description:
-      "Buy Did She Ever Love Me by Rithvik Singh online at the lowest price on TheBookX.in. A tender, aching exploration of love, loss and longing from the beloved contemporary poet and storyteller Rithvik Singh. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
+      "Buy Did You Ever Love Me? by Rithvik Singh online at the lowest price on TheBookX.in. A book for people who feel everything deeply — a tender reminder of the love, care and kindness you truly deserve, from one of India's most popular young authors. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
     author: "Rithvik Singh",
     authorSlug: "rithvik-singh",
     pages: "150-190",

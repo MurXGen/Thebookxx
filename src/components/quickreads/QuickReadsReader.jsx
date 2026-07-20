@@ -19,7 +19,6 @@ import {
   RotateCcw,
   Moon,
   Sun,
-  Headphones,
   X,
 } from "lucide-react";
 import { getQuickRead, QUICKREAD_FREE_FRAMES, QUICKREAD_PRICE } from "@/data/quickreads";
@@ -461,14 +460,6 @@ export default function QuickReadsReader({
           </div>
           <div className="qr-head-actions">
             <button
-              className={`qr-icon-btn${autoPlay ? " on" : ""}`}
-              onClick={toggleAutoPlay}
-              aria-label={autoPlay ? "Stop listening" : "Listen to all insights"}
-              title={autoPlay ? "Stop" : "Listen to all"}
-            >
-              {autoPlay ? <Square size={16} /> : <Headphones size={18} />}
-            </button>
-            <button
               className="qr-icon-btn"
               onClick={toggleDark}
               aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
@@ -594,12 +585,12 @@ export default function QuickReadsReader({
             )}
           </button>
           <button
-            className={`qr-action qr-action-icon${speaking ? " on" : ""}`}
-            onClick={handleSpeak}
-            aria-label={speaking ? "Stop reading" : "Read this insight aloud"}
-            title={speaking ? "Stop reading" : "Listen"}
+            className={`qr-action qr-action-icon${autoPlay ? " on" : ""}`}
+            onClick={toggleAutoPlay}
+            aria-label={autoPlay ? "Stop reading" : "Read all insights aloud"}
+            title={autoPlay ? "Stop reading" : "Listen — read each insight aloud"}
           >
-            {speaking ? <Square size={16} /> : <Volume2 size={18} />}
+            {autoPlay ? <Square size={16} /> : <Volume2 size={18} />}
           </button>
         </div>
 

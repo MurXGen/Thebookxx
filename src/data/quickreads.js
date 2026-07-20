@@ -5778,6 +5778,3612 @@ export const quickReads = {
     ],
   },
 
+  // The Art of War — Sun Tzu
+  "bk-274": {
+    bookId: "bk-274",
+    tagline: "Ancient strategy for winning conflicts — on the battlefield and in life",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "aw-1",
+        title: "Timeless Strategy",
+        content:
+          "Written over two thousand years ago, Sun Tzu's manual on strategy applies far beyond war — to business, negotiation, and daily conflict. Its wisdom is about winning wisely.",
+      },
+      {
+        id: "aw-2",
+        title: "Conflict Is Serious Business",
+        content:
+          "War, Sun Tzu warns, is a matter of life and death for a state. Approach any serious conflict with the same gravity, study, and care.",
+      },
+      {
+        id: "aw-3",
+        title: "The Five Fundamental Factors",
+        content:
+          "Every contest turns on five things: moral purpose, timing, terrain, leadership, and discipline. Weigh all five before you commit.",
+      },
+      {
+        id: "aw-4",
+        title: "The Way — Moral Unity",
+        content:
+          "The first factor is the Way: a shared purpose that unites people with their leader. When your team believes in the cause, they'll follow you anywhere.",
+      },
+      {
+        id: "aw-5",
+        title: "Heaven — Timing",
+        content:
+          "Heaven represents timing and conditions — the seasons, the moment. Acting with the right timing, not just the right plan, is decisive.",
+      },
+      {
+        id: "aw-6",
+        title: "Earth — Terrain",
+        content:
+          "Earth is the ground you fight on — its distances, dangers, and openings. Know your terrain, literally or figuratively, before you move.",
+      },
+      {
+        id: "aw-7",
+        title: "The Commander — Leadership",
+        content:
+          "Victory needs a wise, courageous, disciplined leader. The qualities of the one in charge shape the fate of everyone under them.",
+      },
+      {
+        id: "aw-8",
+        title: "Method and Discipline",
+        content:
+          "Organization, logistics, and discipline decide whether strength can actually be applied. A brilliant plan fails without the systems to execute it.",
+      },
+      {
+        id: "aw-9",
+        title: "Assess Before You Act",
+        content:
+          "Sun Tzu insists on cold, thorough assessment first. Those who calculate carefully and honestly before battle usually win it.",
+      },
+      {
+        id: "aw-10",
+        title: "Know Yourself and Your Enemy",
+        content:
+          "His most famous line: know the enemy and know yourself, and you need not fear a hundred battles. Self-knowledge is half of strategy.",
+      },
+      {
+        id: "aw-11",
+        title: "Ignorance Is Danger",
+        content:
+          "Know yourself but not your enemy, and you'll win some and lose some. Know neither, and you're in peril in every encounter.",
+      },
+      {
+        id: "aw-12",
+        title: "All Warfare Is Deception",
+        content:
+          "Strategy relies on misdirection: appear unable when able, inactive when active. Keep opponents guessing about your true intentions.",
+      },
+      {
+        id: "aw-13",
+        title: "Appear Weak When Strong",
+        content:
+          "Hide your strength to be underestimated; feign weakness to lure overconfidence. Perception managed is advantage gained.",
+      },
+      {
+        id: "aw-14",
+        title: "Win Before You Fight",
+        content:
+          "The victorious army wins first and then goes to battle; the defeated fights first and hopes to win. Position for victory in advance.",
+      },
+      {
+        id: "aw-15",
+        title: "Battles Are Decided in Planning",
+        content:
+          "Most contests are won or lost before the first clash, in the quality of preparation and positioning. Do the winning in the planning.",
+      },
+      {
+        id: "aw-16",
+        title: "Win Without Fighting",
+        content:
+          "Supreme excellence is subduing the enemy without battle at all. The greatest victories cost the least blood.",
+      },
+      {
+        id: "aw-17",
+        title: "Break Resistance Bloodlessly",
+        content:
+          "To break the enemy's will through strategy, alliances, or leverage — without a fight — is the highest form of skill.",
+      },
+      {
+        id: "aw-18",
+        title: "War Is Costly",
+        content:
+          "Conflict drains resources, energy, and goodwill. Never enter one lightly, and always count the true cost first.",
+      },
+      {
+        id: "aw-19",
+        title: "Speed Over Prolonged War",
+        content:
+          "No nation benefits from prolonged warfare. If you must fight, win quickly; drawn-out conflicts exhaust and endanger everyone.",
+      },
+      {
+        id: "aw-20",
+        title: "Don't Get Bogged Down",
+        content:
+          "A long, grinding struggle blunts weapons and dampens morale. Avoid battles of attrition you can't decisively end.",
+      },
+      {
+        id: "aw-21",
+        title: "Fight Efficiently",
+        content:
+          "Use resources wisely and, where possible, turn the enemy's own strength to your advantage. Efficiency wins long campaigns.",
+      },
+      {
+        id: "aw-22",
+        title: "Attack the Enemy's Strategy",
+        content:
+          "The best approach is to foil the opponent's plans before they unfold. Defeat the strategy and you needn't defeat the army.",
+      },
+      {
+        id: "aw-23",
+        title: "Next Best: Break Alliances",
+        content:
+          "If you can't undo their plans, disrupt their alliances and support. Isolate an opponent and they weaken on their own.",
+      },
+      {
+        id: "aw-24",
+        title: "Worst: Besiege the Walls",
+        content:
+          "Direct, costly assaults on entrenched strength are the last resort. Avoid the head-on fight whenever a smarter path exists.",
+      },
+      {
+        id: "aw-25",
+        title: "Know When to Fight",
+        content:
+          "Victory comes to those who know when to fight and when not to. Picking your battles wisely is itself a decisive skill.",
+      },
+      {
+        id: "aw-26",
+        title: "Know When to Wait",
+        content:
+          "Sometimes the wisest move is not to engage. Patience and restraint can defeat an impatient enemy who overextends.",
+      },
+      {
+        id: "aw-27",
+        title: "Unity of Command",
+        content:
+          "An army with one clear commander and shared purpose beats a divided one. Confused authority loses before the fight begins.",
+      },
+      {
+        id: "aw-28",
+        title: "Don't Micromanage",
+        content:
+          "A ruler who interferes with the general in the field invites disaster. Empower capable people and let them lead.",
+      },
+      {
+        id: "aw-29",
+        title: "Make Yourself Invincible First",
+        content:
+          "Secure yourself against defeat before seeking to win. Your own solid position is what makes the enemy's mistakes exploitable.",
+      },
+      {
+        id: "aw-30",
+        title: "Wait for the Opening",
+        content:
+          "You can make yourself unbeatable, but you cannot force the enemy to expose himself. Prepare, then wait patiently for his error.",
+      },
+      {
+        id: "aw-31",
+        title: "Win the Easy Victories",
+        content:
+          "The truly skilled win with such foresight that their victories look effortless and unremarkable. They win where winning is easy.",
+      },
+      {
+        id: "aw-32",
+        title: "Position Beats Force",
+        content:
+          "Superior positioning lets a smaller force prevail. Arrange things so momentum and terrain do the work for you.",
+      },
+      {
+        id: "aw-33",
+        title: "Direct and Indirect",
+        content:
+          "Battles are won by combining the direct (expected) and indirect (surprising). The interplay of the two creates endless possibilities.",
+      },
+      {
+        id: "aw-34",
+        title: "The Power of Momentum",
+        content:
+          "Like a boulder rolling downhill, well-built momentum becomes unstoppable. Set conditions so your force gathers power on its own.",
+      },
+      {
+        id: "aw-35",
+        title: "Timing the Strike",
+        content:
+          "Energy is like a drawn crossbow; decision, like releasing the trigger. Strike at exactly the right instant, not a moment early or late.",
+      },
+      {
+        id: "aw-36",
+        title: "Attack Weakness, Avoid Strength",
+        content:
+          "Water flows around rocks to the low places; armies should avoid strength and strike weakness. Never attack where the enemy is strongest.",
+      },
+      {
+        id: "aw-37",
+        title: "Be Where They Aren't",
+        content:
+          "Advance where the enemy doesn't expect and isn't defended. Surprise and undefended openings are worth more than raw power.",
+      },
+      {
+        id: "aw-38",
+        title: "Make the Enemy Come to You",
+        content:
+          "Lure opponents onto ground of your choosing. When they move to your terms, you dictate the shape of the fight.",
+      },
+      {
+        id: "aw-39",
+        title: "Conceal Your Dispositions",
+        content:
+          "Hide your true plans and positions so the enemy must defend everywhere. Forced to spread thin, they are strong nowhere.",
+      },
+      {
+        id: "aw-40",
+        title: "Be Formless",
+        content:
+          "The ultimate strategy is to have no fixed form the enemy can read. If they can't predict you, they can't prepare against you.",
+      },
+      {
+        id: "aw-41",
+        title: "Adapt Like Water",
+        content:
+          "As water shapes itself to the ground, an army shapes itself to the enemy. There is no constant formation, only constant adaptation.",
+      },
+      {
+        id: "aw-42",
+        title: "No Fixed Method",
+        content:
+          "The one who can modify tactics endlessly in response to the opponent is called a master. Rigidity is the seed of defeat.",
+      },
+      {
+        id: "aw-43",
+        title: "Maneuvering",
+        content:
+          "The great difficulty is turning the circuitous into the direct — reaching your goal by an unexpected route while the enemy guards the obvious one.",
+      },
+      {
+        id: "aw-44",
+        title: "Turn Disadvantage Into Advantage",
+        content:
+          "Skilled strategists take a hard situation and bend it to their benefit. Constraints, handled cleverly, can become weapons.",
+      },
+      {
+        id: "aw-45",
+        title: "Unity and Morale",
+        content:
+          "A cohesive, motivated force multiplies its real strength. Attend to your people's spirit as carefully as their numbers.",
+      },
+      {
+        id: "aw-46",
+        title: "Manage the Enemy's Morale",
+        content:
+          "Sap the opponent's spirit and resolve. An army whose morale has broken is defeated before a blow lands.",
+      },
+      {
+        id: "aw-47",
+        title: "Attack When They're Weakest",
+        content:
+          "Strike when the enemy is tired, hungry, disorganized, or complacent. Choose the moment of their lowest strength for your highest.",
+      },
+      {
+        id: "aw-48",
+        title: "Discipline of Energy",
+        content:
+          "Don't waste your force on trivial fights or premature moves. Conserve your energy and unleash it only where it decides the outcome.",
+      },
+      {
+        id: "aw-49",
+        title: "Variation in Tactics",
+        content:
+          "There are roads not to travel and battles not to fight. Wisdom is knowing the exceptions to every rule and adapting on the spot.",
+      },
+      {
+        id: "aw-50",
+        title: "Consider Advantage and Disadvantage",
+        content:
+          "In every plan, weigh both the gains and the risks together. Blindness to the downside is how confident leaders fall.",
+      },
+      {
+        id: "aw-51",
+        title: "Five Dangerous Faults",
+        content:
+          "Sun Tzu warns of five flaws that ruin leaders: recklessness, cowardice, a hasty temper, a fragile sense of honour, and over-attachment to troops.",
+      },
+      {
+        id: "aw-52",
+        title: "Recklessness Leads to Destruction",
+        content:
+          "A leader who charges without thought gets destroyed. Boldness must be married to calculation, not replace it.",
+      },
+      {
+        id: "aw-53",
+        title: "Cowardice Leads to Capture",
+        content:
+          "A leader too afraid to act at the right moment loses by default. Timidity forfeits opportunities that never return.",
+      },
+      {
+        id: "aw-54",
+        title: "A Hasty Temper Can Be Provoked",
+        content:
+          "An easily angered leader can be baited into rash moves. Control your temper, or the enemy will use it against you.",
+      },
+      {
+        id: "aw-55",
+        title: "Fragile Honour Can Be Shamed",
+        content:
+          "A leader obsessed with reputation can be manipulated through insult. Don't let pride dictate strategy.",
+      },
+      {
+        id: "aw-56",
+        title: "Over-Attachment Can Be Exploited",
+        content:
+          "Excessive worry over one's people can paralyze decisions. Care deeply, but don't let it cloud necessary judgment.",
+      },
+      {
+        id: "aw-57",
+        title: "Read the Signs",
+        content:
+          "On the march, observe everything — dust, birds, movement, the enemy's behaviour. Small signs reveal large intentions.",
+      },
+      {
+        id: "aw-58",
+        title: "Interpret the Enemy",
+        content:
+          "Humble words with growing preparation signal an impending attack; bold words and forward movement may signal retreat. Read behaviour, not just claims.",
+      },
+      {
+        id: "aw-59",
+        title: "Know the Ground",
+        content:
+          "Different terrains demand different tactics. Understanding your ground — open, narrow, elevated, trapped — dictates how you should fight.",
+      },
+      {
+        id: "aw-60",
+        title: "Six Kinds of Terrain",
+        content:
+          "Sun Tzu classifies ground by how it shapes movement and advantage. Match your approach to the terrain rather than forcing one style.",
+      },
+      {
+        id: "aw-61",
+        title: "The Nine Situations",
+        content:
+          "From scattered ground to desperate ground, each situation calls for a distinct response. Recognize where you stand before you decide how to act.",
+      },
+      {
+        id: "aw-62",
+        title: "On Desperate Ground, Fight",
+        content:
+          "When there's no escape, soldiers fight with everything they have. Sometimes removing the option to retreat unlocks maximum resolve.",
+      },
+      {
+        id: "aw-63",
+        title: "Death Ground Breeds Courage",
+        content:
+          "Place people where survival demands their utmost, and they find strength they never knew. Necessity is a powerful motivator.",
+      },
+      {
+        id: "aw-64",
+        title: "Care for Your People",
+        content:
+          "Treat your soldiers as your own children and they'll follow you into the deepest valleys. Loyalty is earned through genuine care.",
+      },
+      {
+        id: "aw-65",
+        title: "Discipline With Compassion",
+        content:
+          "Kindness without discipline breeds chaos; discipline without kindness breeds resentment. Great leaders balance both.",
+      },
+      {
+        id: "aw-66",
+        title: "Reward and Standards",
+        content:
+          "Clear rewards and consistent standards keep a force sharp and fair. People give their best when effort is recognized and rules are just.",
+      },
+      {
+        id: "aw-67",
+        title: "Attack by Fire",
+        content:
+          "Fire — decisive, overwhelming force — must be used at the right time and place. Powerful weapons demand precise conditions to succeed.",
+      },
+      {
+        id: "aw-68",
+        title: "Never Fight From Anger",
+        content:
+          "No ruler should send troops to battle out of rage. Emotion-driven decisions in conflict are almost always disastrous.",
+      },
+      {
+        id: "aw-69",
+        title: "Anger Fades, Loss Doesn't",
+        content:
+          "Anger can turn back to gladness, but the destroyed cannot be restored. Weigh irreversible actions with utmost care.",
+      },
+      {
+        id: "aw-70",
+        title: "The Use of Spies",
+        content:
+          "Foreknowledge is the difference between victory and defeat, and it comes from intelligence — from people, not omens. Information is the ultimate edge.",
+      },
+      {
+        id: "aw-71",
+        title: "Intelligence Wins Wars",
+        content:
+          "Knowing the enemy's plans, strength, and movements in advance lets you strike with precision. Invest heavily in knowing.",
+      },
+      {
+        id: "aw-72",
+        title: "Five Kinds of Spies",
+        content:
+          "Sun Tzu details different sources of intelligence, each with its use. Diverse, cross-checked information guards against being deceived.",
+      },
+      {
+        id: "aw-73",
+        title: "Value Information Above All",
+        content:
+          "It's foolish to grudge the cost of good intelligence while spending fortunes on the fight. Knowing first is the cheapest path to winning.",
+      },
+      {
+        id: "aw-74",
+        title: "Deception Cuts Both Ways",
+        content:
+          "As you deceive, expect to be deceived. Verify what you're told and guard the secrecy of your own plans fiercely.",
+      },
+      {
+        id: "aw-75",
+        title: "Patience Is a Weapon",
+        content:
+          "The strategist waits calmly for the right moment while the impatient opponent blunders. Time, used well, is on the disciplined side.",
+      },
+      {
+        id: "aw-76",
+        title: "Flexibility Over Rigidity",
+        content:
+          "Plans meet reality and must bend. The willingness to change course as conditions shift separates victors from the stubbornly defeated.",
+      },
+      {
+        id: "aw-77",
+        title: "Economy of Force",
+        content:
+          "Achieve the maximum result with the minimum expenditure. Overkill wastes what a well-placed effort would have won cheaply.",
+      },
+      {
+        id: "aw-78",
+        title: "Control the Narrative",
+        content:
+          "Shape how the enemy perceives the situation. Feeding them a false picture leads them to defend the wrong things.",
+      },
+      {
+        id: "aw-79",
+        title: "Leadership Sets the Tone",
+        content:
+          "Calm, decisive leadership steadies a force in chaos. The commander's composure ripples through everyone beneath them.",
+      },
+      {
+        id: "aw-80",
+        title: "Adapt to the Opponent",
+        content:
+          "There is no single winning formula, only the response fitted to this enemy, this ground, this moment. Read and adjust continuously.",
+      },
+      {
+        id: "aw-81",
+        title: "Preserve, Don't Destroy",
+        content:
+          "It's better to capture an army, a city, or a rival intact than to wreck it. Winning while preserving value is the higher art.",
+      },
+      {
+        id: "aw-82",
+        title: "Strategy Beyond the Battlefield",
+        content:
+          "These principles govern any competition — business, career, negotiation. Wherever interests clash, Sun Tzu's logic applies.",
+      },
+      {
+        id: "aw-83",
+        title: "Self-Mastery First",
+        content:
+          "Before mastering opponents, master yourself — your emotions, discipline, and clarity. The inner battle underlies every outer one.",
+      },
+      {
+        id: "aw-84",
+        title: "Win With Wisdom, Not Force",
+        content:
+          "The deepest lesson isn't how to fight harder, but how to win smarter — often with the least conflict possible.",
+      },
+      {
+        id: "aw-85",
+        title: "Avoid Unnecessary Conflict",
+        content:
+          "The truest victory may be sidestepping a fight altogether. Choose your battles so most are won before they ever begin.",
+      },
+      {
+        id: "aw-86",
+        title: "The Art of War in Life",
+        content:
+          "Know yourself and your challenges, plan thoroughly, stay adaptable, and act with discipline and timing. That is how you prevail in any arena.",
+      },
+    ],
+  },
+
+  // The Art of Not Overthinking
+  "bk-032": {
+    bookId: "bk-032",
+    tagline: "Quiet the mental noise and think clearly again",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "ov-1",
+        title: "The Overthinking Trap",
+        content:
+          "Overthinking turns a busy mind against itself, spinning the same thoughts without resolution. The goal isn't to stop thinking, but to stop the useless loops.",
+      },
+      {
+        id: "ov-2",
+        title: "Thinking vs Overthinking",
+        content:
+          "Healthy thinking moves toward a decision; overthinking circles endlessly. If your thoughts aren't leading anywhere, you've crossed the line.",
+      },
+      {
+        id: "ov-3",
+        title: "The Rumination Loop",
+        content:
+          "Replaying the past or rehearsing the future keeps you trapped in your head. Recognizing the loop is the first step to breaking it.",
+      },
+      {
+        id: "ov-4",
+        title: "Analysis Paralysis",
+        content:
+          "Too much deliberation freezes action. At some point more thinking doesn't improve the decision — it just delays it.",
+      },
+      {
+        id: "ov-5",
+        title: "Overthinking Feels Productive",
+        content:
+          "Churning over a problem gives the illusion of working on it. But worry is not the same as problem-solving.",
+      },
+      {
+        id: "ov-6",
+        title: "The Hidden Cost",
+        content:
+          "Overthinking drains energy, steals sleep, and fuels anxiety, all while rarely producing answers. It taxes you without paying out.",
+      },
+      {
+        id: "ov-7",
+        title: "Past and Future, Never Now",
+        content:
+          "Overthinking lives in regret about the past or worry about the future. Peace is found by returning to the present moment.",
+      },
+      {
+        id: "ov-8",
+        title: "Return to the Present",
+        content:
+          "The present is the only place life actually happens. Anchoring your attention here starves the loops that feed on past and future.",
+      },
+      {
+        id: "ov-9",
+        title: "Action Beats Analysis",
+        content:
+          "A small step forward reveals information no amount of thinking can. Action often dissolves the very worry you were stuck in.",
+      },
+      {
+        id: "ov-10",
+        title: "Just Start",
+        content:
+          "Momentum quiets the mind. Beginning — however imperfectly — interrupts the paralysis and gives your thoughts somewhere to go.",
+      },
+      {
+        id: "ov-11",
+        title: "Done Beats Perfect",
+        content:
+          "Perfectionism is overthinking's favourite fuel. Choosing 'good and finished' over 'perfect and forever pending' frees your mind.",
+      },
+      {
+        id: "ov-12",
+        title: "Embrace Good Enough",
+        content:
+          "Not every decision deserves maximum analysis. For most choices, a reasonable, timely answer beats an optimal, agonized one.",
+      },
+      {
+        id: "ov-13",
+        title: "You Can't Control Everything",
+        content:
+          "Much overthinking is an attempt to control the uncontrollable. Accepting uncertainty is the antidote to endless what-ifs.",
+      },
+      {
+        id: "ov-14",
+        title: "Make Peace With Uncertainty",
+        content:
+          "Life offers no guarantees, and demanding them keeps you stuck. Learning to act amid uncertainty is a form of freedom.",
+      },
+      {
+        id: "ov-15",
+        title: "Worry Is Not Preparation",
+        content:
+          "Worrying feels like getting ready, but it mostly rehearses disaster. Real preparation is a plan, not a spiral.",
+      },
+      {
+        id: "ov-16",
+        title: "Problem-Solve, Don't Ruminate",
+        content:
+          "Ask: is there an action I can take? If yes, take it. If no, dwelling on it only prolongs the pain.",
+      },
+      {
+        id: "ov-17",
+        title: "Schedule Worry Time",
+        content:
+          "Give anxious thoughts a set 15 minutes a day. Outside that window, gently postpone them, and they lose their grip on the rest of your time.",
+      },
+      {
+        id: "ov-18",
+        title: "Name the Thought",
+        content:
+          "Labeling a thought — 'this is worry,' 'this is planning' — creates distance. You observe the thought instead of being swept up in it.",
+      },
+      {
+        id: "ov-19",
+        title: "You Are Not Your Thoughts",
+        content:
+          "Thoughts arise on their own; you don't have to believe or obey them. Watching them pass like clouds loosens their power.",
+      },
+      {
+        id: "ov-20",
+        title: "Let Thoughts Pass",
+        content:
+          "Fighting a thought feeds it. Noticing it and letting it drift by is how the mind naturally settles.",
+      },
+      {
+        id: "ov-21",
+        title: "Mindfulness Quiets the Mind",
+        content:
+          "A few minutes of present-moment awareness each day trains you to step out of mental loops. Stillness is a skill you can build.",
+      },
+      {
+        id: "ov-22",
+        title: "Breathe and Ground",
+        content:
+          "Slow, deep breaths signal safety to the nervous system. Grounding in the body pulls you out of a racing head.",
+      },
+      {
+        id: "ov-23",
+        title: "The 90-Second Emotion",
+        content:
+          "A raw emotion moves through the body in roughly ninety seconds; overthinking is what keeps it alive for hours. Let the wave pass.",
+      },
+      {
+        id: "ov-24",
+        title: "Feelings Are Temporary",
+        content:
+          "No mood lasts forever. Remembering that this feeling will pass reduces the urge to over-analyze your way out of it.",
+      },
+      {
+        id: "ov-25",
+        title: "Spot Cognitive Distortions",
+        content:
+          "Overthinking runs on faulty thinking — catastrophizing, mind-reading, all-or-nothing. Naming the distortion strips away its false urgency.",
+      },
+      {
+        id: "ov-26",
+        title: "Stop Catastrophizing",
+        content:
+          "The mind loves worst-case stories that rarely happen. Ask how likely the disaster really is, and how you'd cope even if it came.",
+      },
+      {
+        id: "ov-27",
+        title: "Beyond Black and White",
+        content:
+          "All-or-nothing thinking makes every choice feel enormous. Most of life lives in the flexible middle, where mistakes are recoverable.",
+      },
+      {
+        id: "ov-28",
+        title: "Reframe the Story",
+        content:
+          "The same situation can be a threat or a challenge depending on how you frame it. Choose the interpretation that empowers action.",
+      },
+      {
+        id: "ov-29",
+        title: "Question the Thought",
+        content:
+          "Ask: is this true? Is it helpful? What would I tell a friend? Interrogating anxious thoughts often deflates them.",
+      },
+      {
+        id: "ov-30",
+        title: "Journaling Clears the Mind",
+        content:
+          "Getting thoughts out of your head and onto paper untangles them. What loops endlessly in the mind often resolves once written.",
+      },
+      {
+        id: "ov-31",
+        title: "Empty the Mental Cache",
+        content:
+          "A quick brain-dump of everything swirling around frees up mental space and reveals what actually needs attention.",
+      },
+      {
+        id: "ov-32",
+        title: "Limit Your Inputs",
+        content:
+          "A mind flooded with news, notifications, and opinions has more to overthink. Reducing inputs reduces the noise.",
+      },
+      {
+        id: "ov-33",
+        title: "Tame the Digital Noise",
+        content:
+          "Constant scrolling feeds comparison and worry. Deliberate breaks from screens give your mind room to quiet down.",
+      },
+      {
+        id: "ov-34",
+        title: "Stop Comparing",
+        content:
+          "Measuring your life against others' highlight reels multiplies anxiety. Comparison is a fast track to overthinking.",
+      },
+      {
+        id: "ov-35",
+        title: "Simplify Your Decisions",
+        content:
+          "Too many options overwhelm the mind. Narrowing choices and setting simple rules cuts down the deliberation.",
+      },
+      {
+        id: "ov-36",
+        title: "Use Defaults and Routines",
+        content:
+          "Automating small, repeated decisions saves mental energy for what matters. Routines are quiet cures for overthinking.",
+      },
+      {
+        id: "ov-37",
+        title: "Decision Fatigue Is Real",
+        content:
+          "Willpower and clear thinking drain through the day. Make important decisions when your mind is fresh, not depleted.",
+      },
+      {
+        id: "ov-38",
+        title: "Sleep on Big Choices",
+        content:
+          "The rested mind sorts what the tired one can't. A night's sleep often delivers the clarity that hours of churning couldn't.",
+      },
+      {
+        id: "ov-39",
+        title: "Trust Your Gut",
+        content:
+          "Your intuition has quietly processed more than you realize. For many choices, a considered gut feeling beats endless analysis.",
+      },
+      {
+        id: "ov-40",
+        title: "Most Decisions Are Reversible",
+        content:
+          "We treat choices as permanent when most can be adjusted. Knowing you can course-correct makes deciding lighter and faster.",
+      },
+      {
+        id: "ov-41",
+        title: "Lower the Stakes",
+        content:
+          "Overthinking inflates the importance of small choices. Remind yourself that most decisions won't matter much in a year.",
+      },
+      {
+        id: "ov-42",
+        title: "Set a Time Limit",
+        content:
+          "Give yourself a deadline to decide. A ticking clock forces the mind to conclude instead of circling indefinitely.",
+      },
+      {
+        id: "ov-43",
+        title: "Self-Compassion",
+        content:
+          "Beating yourself up for overthinking only adds another layer of thought. Meet your anxious mind with kindness instead.",
+      },
+      {
+        id: "ov-44",
+        title: "Talk to Yourself Kindly",
+        content:
+          "Speak to yourself as you would a worried friend. A gentler inner voice calms the mind far better than a harsh one.",
+      },
+      {
+        id: "ov-45",
+        title: "Move Your Body",
+        content:
+          "Exercise burns off anxious energy and shifts you out of your head. Movement is one of the fastest ways to break a thought spiral.",
+      },
+      {
+        id: "ov-46",
+        title: "Get Into Nature",
+        content:
+          "Time outdoors calms the nervous system and widens your perspective. Nature quietly dissolves the mind's small, looping worries.",
+      },
+      {
+        id: "ov-47",
+        title: "Gratitude Shifts Focus",
+        content:
+          "Overthinking fixates on what's wrong. Deliberately noticing what's good redirects the mind toward the positive.",
+      },
+      {
+        id: "ov-48",
+        title: "Focus on What You Control",
+        content:
+          "Sort worries into what you can and can't influence. Pour energy into the first and release the second.",
+      },
+      {
+        id: "ov-49",
+        title: "Let Go of the Rest",
+        content:
+          "Some things simply aren't yours to solve. Practicing release — of outcomes, of others' choices — lightens the mental load.",
+      },
+      {
+        id: "ov-50",
+        title: "Single-Task",
+        content:
+          "Juggling many things at once fragments attention and feeds overwhelm. Doing one thing fully quiets the background noise.",
+      },
+      {
+        id: "ov-51",
+        title: "One Thing at a Time",
+        content:
+          "Give your full focus to the task in front of you. Presence in a single action leaves no room for anxious wandering.",
+      },
+      {
+        id: "ov-52",
+        title: "Accept Imperfect Action",
+        content:
+          "Waiting to feel certain before acting guarantees inaction. Move forward imperfectly and adjust as you learn.",
+      },
+      {
+        id: "ov-53",
+        title: "Watch Your Self-Talk",
+        content:
+          "Overthinking is often a harsh inner monologue on repeat. Catch the critical narration and gently redirect it.",
+      },
+      {
+        id: "ov-54",
+        title: "Create Mental Space",
+        content:
+          "Silence, walks, and unstructured time let the mind settle. A cluttered schedule leaves no room for thoughts to calm.",
+      },
+      {
+        id: "ov-55",
+        title: "Progress, Not Rumination",
+        content:
+          "Measure yourself by forward steps, not by how thoroughly you've analyzed. Movement, however small, beats mental spinning.",
+      },
+      {
+        id: "ov-56",
+        title: "Set Boundaries With Your Mind",
+        content:
+          "You can decline an invitation to overthink. When a familiar loop starts, choose to step out rather than climb aboard.",
+      },
+      {
+        id: "ov-57",
+        title: "Trust the Process",
+        content:
+          "Not everything needs to be figured out right now. Trusting that clarity will come with time and action eases the urgency to solve it all.",
+      },
+      {
+        id: "ov-58",
+        title: "Practice Makes Quiet",
+        content:
+          "A calm mind isn't a personality trait but a practice. Each time you interrupt a loop, the habit of overthinking weakens.",
+      },
+      {
+        id: "ov-59",
+        title: "Be Patient With Yourself",
+        content:
+          "You won't silence overthinking overnight. Gently returning your attention, again and again, is the whole of the work.",
+      },
+      {
+        id: "ov-60",
+        title: "The Art of Letting Go",
+        content:
+          "In the end, not overthinking is the art of releasing — of control, of certainty, of the endless need to solve. Let thoughts go, and clarity returns.",
+      },
+    ],
+  },
+
+  // The Laws of Human Nature — Robert Greene
+  "bk-012": {
+    bookId: "bk-012",
+    tagline: "Master the hidden forces that drive people's behaviour",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "hn-1",
+        title: "Understanding Human Nature",
+        content:
+          "Greene argues that beneath our rational surface lie ancient, powerful drives. Learning the laws of human nature helps you read people and yourself clearly.",
+      },
+      {
+        id: "hn-2",
+        title: "Become a Student of People",
+        content:
+          "Most conflict and failure come from misjudging others. Treating human behaviour as a subject to study gives you a lasting advantage.",
+      },
+      {
+        id: "hn-3",
+        title: "Know Yourself First",
+        content:
+          "The same forces you see in others live in you. Self-knowledge is the foundation for understanding — and not being ruled by — human nature.",
+      },
+      {
+        id: "hn-4",
+        title: "The Law of Irrationality",
+        content:
+          "We like to think we're rational, but emotions secretly drive most decisions. Mastering your emotional self begins with admitting how often feeling overrides logic.",
+      },
+      {
+        id: "hn-5",
+        title: "Master Your Emotions",
+        content:
+          "Strong emotions distort perception and push you to react. Creating distance — pausing before you act — is the first step to clear thinking.",
+      },
+      {
+        id: "hn-6",
+        title: "The Law of Narcissism",
+        content:
+          "Everyone is self-absorbed to some degree. The healthy path is turning self-love outward into empathy — genuinely feeling into others.",
+      },
+      {
+        id: "hn-7",
+        title: "Cultivate Empathy",
+        content:
+          "Empathy is a skill you can develop by listening deeply and imagining others' inner worlds. It's the ultimate tool for influence and connection.",
+      },
+      {
+        id: "hn-8",
+        title: "The Law of Role-Playing",
+        content:
+          "People wear masks, presenting a front while hiding their true feelings. Learn to read the micro-signals that leak past the performance.",
+      },
+      {
+        id: "hn-9",
+        title: "See Through the Mask",
+        content:
+          "Watch faces, tone, and body language, especially in unguarded moments. Actions and small tells reveal far more than words.",
+      },
+      {
+        id: "hn-10",
+        title: "The Law of Compulsive Behaviour",
+        content:
+          "Character is destiny; people repeat their patterns. Judge others by the consistent trend of their actions, not their promises.",
+      },
+      {
+        id: "hn-11",
+        title: "Read Character Over Time",
+        content:
+          "Anyone can impress once. Watch how people handle stress, power, and responsibility across time to gauge their true character.",
+      },
+      {
+        id: "hn-12",
+        title: "The Law of Covetousness",
+        content:
+          "People desire what seems scarce, forbidden, or just out of reach. Become an object of intrigue rather than something too easily had.",
+      },
+      {
+        id: "hn-13",
+        title: "The Law of Shortsightedness",
+        content:
+          "We fixate on the immediate and ignore long-term consequences. Elevating your perspective above the moment is a rare, powerful discipline.",
+      },
+      {
+        id: "hn-14",
+        title: "Elevate Your Perspective",
+        content:
+          "Step back from urgency and drama to see the larger pattern. The long view reveals what panic and impulse hide.",
+      },
+      {
+        id: "hn-15",
+        title: "The Law of Defensiveness",
+        content:
+          "People resist being changed or controlled. Confirm their good opinion of themselves and their resistance melts away.",
+      },
+      {
+        id: "hn-16",
+        title: "Soften Resistance",
+        content:
+          "Make people feel secure, respected, and free, and they open up. Attack their self-image and they close ranks against you.",
+      },
+      {
+        id: "hn-17",
+        title: "The Law of Self-Sabotage",
+        content:
+          "Your attitude colours your reality. A negative, fearful outlook narrows what you see and invites the very failures you dread.",
+      },
+      {
+        id: "hn-18",
+        title: "Change Your Attitude",
+        content:
+          "By shifting your inner attitude, you change how you experience and respond to circumstances — often changing the outcome itself.",
+      },
+      {
+        id: "hn-19",
+        title: "The Law of Repression",
+        content:
+          "We all have a shadow — the traits we deny and push down. What you repress leaks out sideways and controls you unseen.",
+      },
+      {
+        id: "hn-20",
+        title: "Confront Your Dark Side",
+        content:
+          "Integrating your shadow — acknowledging your aggression, envy, and flaws — makes you whole and far less easily manipulated.",
+      },
+      {
+        id: "hn-21",
+        title: "The Law of Envy",
+        content:
+          "Envy hides behind friendly faces and praise. Learn to spot its signs, and avoid triggering it by flaunting your good fortune.",
+      },
+      {
+        id: "hn-22",
+        title: "Beware the Fragile Ego",
+        content:
+          "Wounded egos lash out in subtle ways. Handle proud, insecure people carefully, and don't feed comparison that breeds resentment.",
+      },
+      {
+        id: "hn-23",
+        title: "The Law of Grandiosity",
+        content:
+          "Success can inflate the ego into delusion. Stay grounded in reality and know your limits, or grandiosity will lead to a fall.",
+      },
+      {
+        id: "hn-24",
+        title: "Know Your Limits",
+        content:
+          "Keep your self-belief tethered to evidence and feedback. Confidence built on fantasy collapses; confidence built on reality endures.",
+      },
+      {
+        id: "hn-25",
+        title: "The Law of Gender Rigidity",
+        content:
+          "We suppress the traits our culture labels for the opposite gender. Reclaiming your fuller range makes you more balanced and creative.",
+      },
+      {
+        id: "hn-26",
+        title: "The Law of Aimlessness",
+        content:
+          "Without a sense of purpose, we drift and feel lost. A clear guiding purpose organizes your energy and gives life direction.",
+      },
+      {
+        id: "hn-27",
+        title: "Advance With Purpose",
+        content:
+          "Define a calling larger than yourself and let it steer your decisions. Purpose turns scattered effort into a focused force.",
+      },
+      {
+        id: "hn-28",
+        title: "The Law of Conformity",
+        content:
+          "In groups, people lose their individuality and reason, pulled toward the average. Awareness of this pull helps you resist it.",
+      },
+      {
+        id: "hn-29",
+        title: "Resist the Group's Pull",
+        content:
+          "Groups can lower standards and silence dissent. Keep your independent judgment even while working within the collective.",
+      },
+      {
+        id: "hn-30",
+        title: "The Law of Fickleness",
+        content:
+          "People's loyalty and moods shift constantly. To lead, you must earn authority continually, not assume it's permanent.",
+      },
+      {
+        id: "hn-31",
+        title: "Make Them Want to Follow",
+        content:
+          "Real leadership inspires rather than commands. Give people a vision and a sense of contribution, and they follow willingly.",
+      },
+      {
+        id: "hn-32",
+        title: "The Law of Aggression",
+        content:
+          "Behind many polite facades lies frustrated aggression. Learn to sense hidden hostility before it catches you off guard.",
+      },
+      {
+        id: "hn-33",
+        title: "Channel Your Own Aggression",
+        content:
+          "Aggression denied turns passive and toxic. Channeled consciously, that same drive becomes ambition, boldness, and productive energy.",
+      },
+      {
+        id: "hn-34",
+        title: "The Law of Generational Myopia",
+        content:
+          "Each generation shares blind spots shaped by its era. Seeing your generational biases lets you seize the historical moment.",
+      },
+      {
+        id: "hn-35",
+        title: "The Law of Death Denial",
+        content:
+          "We avoid thinking about mortality, and it makes us anxious and shallow. Meditating on our shared mortality sharpens meaning and urgency.",
+      },
+      {
+        id: "hn-36",
+        title: "Embrace Mortality",
+        content:
+          "Accepting that life is finite frees you to live boldly and prioritize what matters. Death-awareness is a paradoxical source of vitality.",
+      },
+      {
+        id: "hn-37",
+        title: "People Are Driven by Emotion",
+        content:
+          "Appeals to pure logic rarely move anyone. To influence people, speak to their emotions, self-interest, and identity.",
+      },
+      {
+        id: "hn-38",
+        title: "Everyone Wears a Social Mask",
+        content:
+          "The self people show is curated. Assume there's more beneath the surface, and watch for the gap between words and behaviour.",
+      },
+      {
+        id: "hn-39",
+        title: "Observe Without Judging",
+        content:
+          "To read people accurately, suspend your snap judgments and simply observe. Bias blinds you to what's really there.",
+      },
+      {
+        id: "hn-40",
+        title: "Detach to See Clearly",
+        content:
+          "When you're emotionally hooked, you can't read a situation. Cultivating calm detachment lets you perceive people and motives accurately.",
+      },
+      {
+        id: "hn-41",
+        title: "Look for Patterns",
+        content:
+          "Isolated actions can mislead; patterns tell the truth. Track how people behave repeatedly to predict what they'll do next.",
+      },
+      {
+        id: "hn-42",
+        title: "Insecurity Runs Deep",
+        content:
+          "Much behaviour is driven by hidden insecurity and the need for validation. Recognizing this breeds both compassion and insight.",
+      },
+      {
+        id: "hn-43",
+        title: "Validate to Connect",
+        content:
+          "People crave feeling seen and important. Sincere acknowledgment of their worth opens doors that pressure never could.",
+      },
+      {
+        id: "hn-44",
+        title: "Beware First Impressions",
+        content:
+          "Charm and polish can hide flaws; awkwardness can hide depth. Reserve judgment until behaviour over time reveals character.",
+      },
+      {
+        id: "hn-45",
+        title: "The Power of Self-Awareness",
+        content:
+          "The more you understand your own drives, the less they secretly control you — and the better you understand everyone else.",
+      },
+      {
+        id: "hn-46",
+        title: "Turn Empathy Into a Superpower",
+        content:
+          "Deep, deliberate empathy lets you anticipate needs, defuse conflict, and connect. It's the most practical skill in the book.",
+      },
+      {
+        id: "hn-47",
+        title: "Manage Your Reactions",
+        content:
+          "You can't control what people do, only how you respond. Mastering your reactions is the core of dealing well with difficult people.",
+      },
+      {
+        id: "hn-48",
+        title: "Anticipate Manipulation",
+        content:
+          "Understanding these laws helps you spot when they're used on you. Awareness is your best protection against being played.",
+      },
+      {
+        id: "hn-49",
+        title: "The Shadow in Everyone",
+        content:
+          "Kind people can harbor hidden anger; confident people, hidden fear. Expecting complexity keeps you from being naively surprised.",
+      },
+      {
+        id: "hn-50",
+        title: "Envy Is Everywhere",
+        content:
+          "Learn to downplay your wins around the insecure, and to notice the subtle jabs and coldness that betray envy.",
+      },
+      {
+        id: "hn-51",
+        title: "Purpose Beats Drifting",
+        content:
+          "A person with direction outperforms ten with none. Anchor yourself to a purpose and let it filter your choices.",
+      },
+      {
+        id: "hn-52",
+        title: "Groups Change People",
+        content:
+          "In crowds and teams, individuals behave differently — bolder, more conforming, less rational. Factor the group effect into your reading.",
+      },
+      {
+        id: "hn-53",
+        title: "Lead by Vision",
+        content:
+          "People follow those who give them meaning and a sense of belonging. Cast a compelling vision and set the example yourself.",
+      },
+      {
+        id: "hn-54",
+        title: "Read the Times",
+        content:
+          "Understanding the spirit and biases of your era lets you position yourself ahead of trends rather than behind them.",
+      },
+      {
+        id: "hn-55",
+        title: "Confront, Don't Repress",
+        content:
+          "Facing your uncomfortable traits directly disarms them. What you refuse to see, you're doomed to act out unconsciously.",
+      },
+      {
+        id: "hn-56",
+        title: "Adapt to Each Person",
+        content:
+          "There's no one-size-fits-all approach to people. Tailor how you engage based on the drives and character you observe.",
+      },
+      {
+        id: "hn-57",
+        title: "Patience Reveals Truth",
+        content:
+          "People eventually show who they are if you watch long enough. Patience protects you from misjudging on early impressions.",
+      },
+      {
+        id: "hn-58",
+        title: "The Rational Human Ideal",
+        content:
+          "Greene's goal is the 'rational human' — self-aware, empathetic, and calm, mastering the primal drives rather than being enslaved by them.",
+      },
+      {
+        id: "hn-59",
+        title: "Compassion Over Cynicism",
+        content:
+          "Understanding people's flaws needn't make you cynical. Seeing why they behave as they do can deepen empathy instead.",
+      },
+      {
+        id: "hn-60",
+        title: "Use Knowledge Wisely",
+        content:
+          "These insights can manipulate or connect. Greene's higher path is to use them to relate more wisely and lead more nobly.",
+      },
+      {
+        id: "hn-61",
+        title: "The Long Game of Character",
+        content:
+          "Building genuine character and self-mastery is slow but decisive. Over time, it outperforms cleverness and manipulation.",
+      },
+      {
+        id: "hn-62",
+        title: "Emotions in Others",
+        content:
+          "Learn to sense the emotional currents in a room — tension, excitement, fear — and you can guide interactions others can't even read.",
+      },
+      {
+        id: "hn-63",
+        title: "Free Yourself From Reactivity",
+        content:
+          "The reactive person is easily controlled. Calm, thoughtful responses make you far harder to manipulate or provoke.",
+      },
+      {
+        id: "hn-64",
+        title: "Turn Inward to Rise",
+        content:
+          "The more honestly you examine your own nature, the more powerful and free you become in dealing with everyone else's.",
+      },
+      {
+        id: "hn-65",
+        title: "Human Nature Is the Constant",
+        content:
+          "Technology changes; human nature doesn't. Master these timeless drives and you hold a key that never goes out of date.",
+      },
+      {
+        id: "hn-66",
+        title: "Become the Wise Observer",
+        content:
+          "Study people with patience and empathy, master your own drives, and you move through the world with rare clarity and influence.",
+      },
+    ],
+  },
+
+  // The Mountain Is You — Brianna Wiest
+  "bk-044": {
+    bookId: "bk-044",
+    tagline: "Transforming self-sabotage into self-mastery",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "mo-1",
+        title: "The Mountain Is You",
+        content:
+          "The biggest obstacle standing between you and your goals is usually yourself. The mountain you must climb is your own self-sabotage.",
+      },
+      {
+        id: "mo-2",
+        title: "Self-Sabotage Is Protection",
+        content:
+          "Self-sabotage isn't self-hatred — it's a misguided attempt to protect yourself. Some part of you believes staying stuck is safer than moving forward.",
+      },
+      {
+        id: "mo-3",
+        title: "Two Conflicting Desires",
+        content:
+          "Sabotage happens when a conscious goal collides with an unconscious need. You want change, but a deeper part of you fears what it might cost.",
+      },
+      {
+        id: "mo-4",
+        title: "Unmet Needs Drive It",
+        content:
+          "Behind every self-sabotaging pattern is an unmet need — for safety, control, love, or worth. Meet the need and the sabotage loses its job.",
+      },
+      {
+        id: "mo-5",
+        title: "Find the Hidden Payoff",
+        content:
+          "Every self-defeating behaviour gives you something, even if it's just comfort or an excuse. Uncover the payoff to understand the pattern.",
+      },
+      {
+        id: "mo-6",
+        title: "Procrastination as Fear",
+        content:
+          "Procrastination often isn't laziness but fear — of failure, judgment, or even success. Naming the fear is the first step past it.",
+      },
+      {
+        id: "mo-7",
+        title: "Perfectionism as Avoidance",
+        content:
+          "Perfectionism can be a sophisticated way of never finishing. If it's never perfect, you never have to risk being judged.",
+      },
+      {
+        id: "mo-8",
+        title: "The Fear of Success",
+        content:
+          "Sometimes we fear success more than failure — the visibility, expectations, and change it brings. So we quietly hold ourselves back.",
+      },
+      {
+        id: "mo-9",
+        title: "The Upper Limit Problem",
+        content:
+          "When life gets too good, we often sabotage to return to a familiar level of comfort. We're wired to protect the known, even when it's less.",
+      },
+      {
+        id: "mo-10",
+        title: "The Comfort Zone Is a Cage",
+        content:
+          "What feels safe can quietly keep you small. Growth always lives on the far side of discomfort.",
+      },
+      {
+        id: "mo-11",
+        title: "Your Triggers Are Teachers",
+        content:
+          "The things that upset you point to your unhealed places. Triggers aren't just pain — they're a map of where you need to grow.",
+      },
+      {
+        id: "mo-12",
+        title: "Emotions Carry Messages",
+        content:
+          "Feelings aren't obstacles to push away; they're information. Learning to read them is central to emotional mastery.",
+      },
+      {
+        id: "mo-13",
+        title: "Metabolize Your Emotions",
+        content:
+          "Unfelt emotions don't disappear; they lodge in the body and drive behaviour. You must feel them fully to finally release them.",
+      },
+      {
+        id: "mo-14",
+        title: "Feel to Heal",
+        content:
+          "Avoiding pain keeps it alive. Allowing yourself to feel an emotion completely is what lets it move through and dissolve.",
+      },
+      {
+        id: "mo-15",
+        title: "Don't Suppress — Process",
+        content:
+          "Distraction and numbing only postpone what must be faced. Processing emotions consciously is how you stop them from running you.",
+      },
+      {
+        id: "mo-16",
+        title: "Release the Past",
+        content:
+          "Clinging to old stories and grudges anchors you to who you were. Letting go creates space to become who you could be.",
+      },
+      {
+        id: "mo-17",
+        title: "Grieve the Old Self",
+        content:
+          "Real change means letting an old identity die, and that deserves grief. Honour who you were as you become someone new.",
+      },
+      {
+        id: "mo-18",
+        title: "Let Go to Grow",
+        content:
+          "You cannot hold your old life and reach for a new one at once. Growth requires releasing what no longer fits.",
+      },
+      {
+        id: "mo-19",
+        title: "Wanting vs Attachment",
+        content:
+          "Sometimes we cling to what hurts us because it's familiar. Distinguish what you truly want from what you're merely attached to.",
+      },
+      {
+        id: "mo-20",
+        title: "Redefine What You Want",
+        content:
+          "Many goals are inherited or performative. Get honest about what you actually desire beneath the shoulds and expectations.",
+      },
+      {
+        id: "mo-21",
+        title: "Build Emotional Intelligence",
+        content:
+          "Self-mastery is largely emotional mastery — the ability to understand and work with your feelings rather than be ruled by them.",
+      },
+      {
+        id: "mo-22",
+        title: "Respond, Don't React",
+        content:
+          "Between trigger and action lies a choice. Widening that gap turns reflexive reactions into deliberate responses.",
+      },
+      {
+        id: "mo-23",
+        title: "The Inner Narrative",
+        content:
+          "The story you tell about yourself shapes what you do. Change the narrative and you change the behaviour that follows it.",
+      },
+      {
+        id: "mo-24",
+        title: "Rewrite Your Story",
+        content:
+          "You are not the victim of your history unless you keep casting yourself that way. Author a new, empowering story instead.",
+      },
+      {
+        id: "mo-25",
+        title: "Question Limiting Beliefs",
+        content:
+          "Many limits are beliefs you never examined. Ask whether they're actually true, and watch some of your walls become doors.",
+      },
+      {
+        id: "mo-26",
+        title: "Identity Shapes Your Life",
+        content:
+          "You act in line with who you believe you are. Upgrading your self-image quietly upgrades your choices and results.",
+      },
+      {
+        id: "mo-27",
+        title: "Become the Next You",
+        content:
+          "Picture the version of you who has overcome this mountain. Then start thinking, choosing, and acting as that person now.",
+      },
+      {
+        id: "mo-28",
+        title: "The Future Self",
+        content:
+          "Your future self is built by today's small decisions. Ask what they would do, and let that guide the moment.",
+      },
+      {
+        id: "mo-29",
+        title: "Small Consistent Choices",
+        content:
+          "Transformation isn't one dramatic leap but countless small, aligned choices. Consistency is what actually moves the mountain.",
+      },
+      {
+        id: "mo-30",
+        title: "Discipline Is Self-Love",
+        content:
+          "Doing what's good for you, even when it's hard, is an act of care for your future self — not punishment.",
+      },
+      {
+        id: "mo-31",
+        title: "Build New Habits",
+        content:
+          "Willpower fades, but habits endure. Replace self-sabotaging routines with small supportive ones, repeated until they stick.",
+      },
+      {
+        id: "mo-32",
+        title: "Design Your Days",
+        content:
+          "Your daily routine is your life in miniature. Structure your days around your growth, and the bigger change takes care of itself.",
+      },
+      {
+        id: "mo-33",
+        title: "Boundaries Protect Growth",
+        content:
+          "Healthy boundaries guard your energy and direction. Saying no to what drains you protects your yes to what matters.",
+      },
+      {
+        id: "mo-34",
+        title: "Stop People-Pleasing",
+        content:
+          "Living for others' approval is a form of self-abandonment. Reclaiming your own preferences is part of self-mastery.",
+      },
+      {
+        id: "mo-35",
+        title: "Build Self-Trust",
+        content:
+          "Every promise you keep to yourself deepens self-trust. That trust is the foundation of confidence and change.",
+      },
+      {
+        id: "mo-36",
+        title: "Follow Your Intuition",
+        content:
+          "Beneath the noise, a quieter inner knowing often points the way. Learning to hear and honour it is a form of wisdom.",
+      },
+      {
+        id: "mo-37",
+        title: "Resistance Points the Way",
+        content:
+          "What you most resist is often what you most need to do. Discomfort can be a compass toward growth, not a stop sign.",
+      },
+      {
+        id: "mo-38",
+        title: "Do the Hard Thing",
+        content:
+          "The path up the mountain is rarely easy or comfortable. Choosing the harder, growth-producing option is how you climb.",
+      },
+      {
+        id: "mo-39",
+        title: "Progress Over Perfection",
+        content:
+          "You don't need flawless; you need forward. Small imperfect steps beat waiting for the perfect moment that never comes.",
+      },
+      {
+        id: "mo-40",
+        title: "Healing Isn't Linear",
+        content:
+          "Growth comes in waves, with setbacks and plateaus. A bad day isn't failure — it's part of the nonlinear climb.",
+      },
+      {
+        id: "mo-41",
+        title: "Be Patient With Yourself",
+        content:
+          "Deep change takes time. Impatience often becomes another form of self-sabotage; trust the slow work of becoming.",
+      },
+      {
+        id: "mo-42",
+        title: "Forgive Yourself",
+        content:
+          "Self-punishment keeps you stuck in shame. Forgiving your past mistakes frees the energy you need to move forward.",
+      },
+      {
+        id: "mo-43",
+        title: "Compassion for the Old You",
+        content:
+          "The self who sabotaged was doing their best to cope. Meeting that self with compassion, not contempt, is what allows healing.",
+      },
+      {
+        id: "mo-44",
+        title: "Peak Experiences",
+        content:
+          "Moments of flow and joy are glimpses of your potential. Notice them — they hint at the life you're capable of building.",
+      },
+      {
+        id: "mo-45",
+        title: "Align With Your Values",
+        content:
+          "Fulfillment comes from living in line with what you truly value. Misalignment is a quiet source of sabotage and unrest.",
+      },
+      {
+        id: "mo-46",
+        title: "Purpose Fuels the Climb",
+        content:
+          "A clear sense of why makes the hard work bearable. Purpose turns struggle into meaningful effort.",
+      },
+      {
+        id: "mo-47",
+        title: "Turn Pain Into Growth",
+        content:
+          "Your suffering can become your greatest teacher. The very struggles you resent often forge your deepest strengths.",
+      },
+      {
+        id: "mo-48",
+        title: "The Gift in the Struggle",
+        content:
+          "The mountain isn't just an obstacle; it's the making of you. Who you become in the climb is the real reward.",
+      },
+      {
+        id: "mo-49",
+        title: "Detach Self-Worth From Outcomes",
+        content:
+          "Your value isn't your achievements. Rooting worth in who you are, not what you produce, steadies you through ups and downs.",
+      },
+      {
+        id: "mo-50",
+        title: "Notice Your Patterns",
+        content:
+          "Self-sabotage repeats in familiar forms. Simply seeing the pattern clearly takes away much of its unconscious power.",
+      },
+      {
+        id: "mo-51",
+        title: "Interrupt the Loop",
+        content:
+          "Awareness lets you catch a sabotaging impulse in the moment and choose differently. Interruption breaks the automatic cycle.",
+      },
+      {
+        id: "mo-52",
+        title: "Regulate Your Nervous System",
+        content:
+          "Much sabotage is a stress response. Calming your body — through breath, rest, movement — makes better choices possible.",
+      },
+      {
+        id: "mo-53",
+        title: "Rest Is Part of the Work",
+        content:
+          "Burning out is its own sabotage. Genuine rest and recovery are essential to sustaining the climb.",
+      },
+      {
+        id: "mo-54",
+        title: "Choose Growth Over Comfort",
+        content:
+          "At each fork, you can pick the comfortable known or the expansive unknown. Repeatedly choosing growth is self-mastery in action.",
+      },
+      {
+        id: "mo-55",
+        title: "Your Environment Matters",
+        content:
+          "Surroundings and relationships shape your patterns. Curate people and spaces that support the person you're becoming.",
+      },
+      {
+        id: "mo-56",
+        title: "Let Go of the Need to Control",
+        content:
+          "Trying to control everything breeds anxiety and rigidity. Learning to trust and release is part of inner freedom.",
+      },
+      {
+        id: "mo-57",
+        title: "Feel Your Feelings Fully",
+        content:
+          "Wiest returns to this again and again: the way out is through. Fully felt emotions stop silently steering your life.",
+      },
+      {
+        id: "mo-58",
+        title: "Mastery Is a Daily Practice",
+        content:
+          "Self-mastery isn't a destination you arrive at once, but a practice you renew each day through conscious choices.",
+      },
+      {
+        id: "mo-59",
+        title: "You Are the Path",
+        content:
+          "Since the mountain is you, so is the path up it. Everything you need to change is already within your reach.",
+      },
+      {
+        id: "mo-60",
+        title: "Climb Your Mountain",
+        content:
+          "Stop waiting for external conditions to change. The work is internal, and the summit is a truer, freer version of yourself.",
+      },
+      {
+        id: "mo-61",
+        title: "The View From the Top",
+        content:
+          "On the other side of self-sabotage is self-mastery — a life aligned with your values, driven by choice rather than fear.",
+      },
+      {
+        id: "mo-62",
+        title: "Becoming Who You're Meant to Be",
+        content:
+          "The mountain exists to make you rise. Face it with courage and compassion, and you become the person capable of the life you want.",
+      },
+    ],
+  },
+
+  // The Courage to Be Happy — Ichiro Kishimi & Fumitake Koga
+  "bk-150": {
+    bookId: "bk-150",
+    tagline: "Adlerian wisdom on love, work and the courage to find happiness",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "ch-1",
+        title: "The Sequel on Happiness",
+        content:
+          "This follow-up returns to the philosopher and youth, now testing Adler's ideas against the hard realities of work, education, and love.",
+      },
+      {
+        id: "ch-2",
+        title: "Ideals Meet Real Life",
+        content:
+          "The youth, now a teacher, has struggled to apply Adlerian psychology. The book asks whether these principles truly survive contact with daily life.",
+      },
+      {
+        id: "ch-3",
+        title: "The Goal of Education",
+        content:
+          "Adler sees education not as intervention but as support toward self-reliance. The aim is to help people stand on their own.",
+      },
+      {
+        id: "ch-4",
+        title: "Self-Reliance Is the Point",
+        content:
+          "Whether teaching, parenting, or leading, the goal is independence — helping others need you less, not more.",
+      },
+      {
+        id: "ch-5",
+        title: "Respect Comes First",
+        content:
+          "All good relationships begin with respect: seeing another person as they truly are, and valuing their uniqueness.",
+      },
+      {
+        id: "ch-6",
+        title: "See People as They Are",
+        content:
+          "Respect means not trying to mold others into what you want, but accepting and appreciating who they already are.",
+      },
+      {
+        id: "ch-7",
+        title: "Neither Praise Nor Scold",
+        content:
+          "Adlerian practice avoids both praising and scolding, since both assert authority from above and foster dependence.",
+      },
+      {
+        id: "ch-8",
+        title: "Why Scolding Fails",
+        content:
+          "Scolding may stop behaviour briefly, but it teaches fear and damages the relationship. It never builds genuine cooperation.",
+      },
+      {
+        id: "ch-9",
+        title: "Why Praise Fails",
+        content:
+          "Praise trains people to chase approval and act only when watched. It quietly makes them dependent on your judgment.",
+      },
+      {
+        id: "ch-10",
+        title: "Beyond Reward and Punishment",
+        content:
+          "A life run on carrots and sticks produces people who only act for reward or from fear. Adler seeks a deeper motivation.",
+      },
+      {
+        id: "ch-11",
+        title: "The Power of Encouragement",
+        content:
+          "Instead of judging, encourage — help others find the courage to face their own tasks as equals, with your support.",
+      },
+      {
+        id: "ch-12",
+        title: "The Stages of Problem Behaviour",
+        content:
+          "Adler outlines escalating stages of misbehaviour, each an attempt to secure belonging. Understanding the aim helps you respond wisely.",
+      },
+      {
+        id: "ch-13",
+        title: "Stage 1 — Seeking Praise",
+        content:
+          "First, people act out to be praised and noticed as 'good.' The behaviour aims at approval rather than genuine contribution.",
+      },
+      {
+        id: "ch-14",
+        title: "Stage 2 — Attracting Attention",
+        content:
+          "When praise fails, they seek attention any way they can, even negative. Being scolded feels better than being ignored.",
+      },
+      {
+        id: "ch-15",
+        title: "Stage 3 — Power Struggles",
+        content:
+          "Next comes open defiance and provocation, daring you to fight. Winning the struggle only escalates it.",
+      },
+      {
+        id: "ch-16",
+        title: "Stage 4 — Revenge",
+        content:
+          "Feeling unloved, they seek to hurt back, doing what they know will wound. This is a cry from someone who feels they can't belong.",
+      },
+      {
+        id: "ch-17",
+        title: "Stage 5 — Proof of Incompetence",
+        content:
+          "Finally, they give up entirely, acting helpless so nothing is expected of them. Despair, not laziness, drives this stage.",
+      },
+      {
+        id: "ch-18",
+        title: "Don't Take the Bait",
+        content:
+          "Getting drawn into power struggles or revenge cycles feeds them. Respond from respect and refuse to fight on those terms.",
+      },
+      {
+        id: "ch-19",
+        title: "Behaviour Seeks Belonging",
+        content:
+          "Beneath even destructive acts is a wish to belong. Address the need for connection, and the behaviour loses its purpose.",
+      },
+      {
+        id: "ch-20",
+        title: "Relationships of Equals",
+        content:
+          "Teacher and student, parent and child, boss and worker — all flourish best as horizontal relationships of mutual respect.",
+      },
+      {
+        id: "ch-21",
+        title: "Trust Unconditionally",
+        content:
+          "Deep relationships require believing in others without demanding proof first. Someone must extend trust, and it can be you.",
+      },
+      {
+        id: "ch-22",
+        title: "Believe, Even at Risk",
+        content:
+          "Others may betray your trust — that is their task. Yours is to keep believing, because only that makes real connection possible.",
+      },
+      {
+        id: "ch-23",
+        title: "Community Feeling, Deepened",
+        content:
+          "Happiness grows as your circle of concern widens from yourself to family, community, and humanity. Belonging expands outward.",
+      },
+      {
+        id: "ch-24",
+        title: "From Self-Interest to Social Interest",
+        content:
+          "Maturity is the shift from 'what can I get?' to 'what can I give?' Social interest is the heart of an Adlerian life.",
+      },
+      {
+        id: "ch-25",
+        title: "Give Meaning to Life",
+        content:
+          "Life has no preset meaning; we assign it. Choosing contribution as your meaning is what makes existence feel worthwhile.",
+      },
+      {
+        id: "ch-26",
+        title: "Love Is a Task",
+        content:
+          "Love, Adler says, is the hardest and most important of life's tasks. It's not a feeling that happens to you but a task you take up.",
+      },
+      {
+        id: "ch-27",
+        title: "The Courage to Love",
+        content:
+          "Loving means risking rejection and giving up self-centeredness. That vulnerability takes real courage — the courage to be happy.",
+      },
+      {
+        id: "ch-28",
+        title: "Love Is a Decision",
+        content:
+          "Beyond falling in love, real love is a deliberate choice to keep building a bond. It's decided and renewed, not merely felt.",
+      },
+      {
+        id: "ch-29",
+        title: "Loving Is a Skill",
+        content:
+          "Love can be learned and practiced like any art. Most people wait to be loved; few learn the harder skill of actively loving.",
+      },
+      {
+        id: "ch-30",
+        title: "From Being Loved to Loving",
+        content:
+          "Children seek to be loved; adults learn to love. Growing up emotionally is this shift from receiving to giving love.",
+      },
+      {
+        id: "ch-31",
+        title: "The Style of Being Loved",
+        content:
+          "A life spent trying to be loved keeps you self-centered, always asking how to win others' affection. Real freedom lies in loving instead.",
+      },
+      {
+        id: "ch-32",
+        title: "Love Makes You an Adult",
+        content:
+          "Through love, you move beyond childhood self-interest into genuine independence and responsibility. Love matures us.",
+      },
+      {
+        id: "ch-33",
+        title: "The Shift From 'I' to 'We'",
+        content:
+          "Love changes the subject of life from 'I' to 'we.' The center of the world moves from yourself to the two of you together.",
+      },
+      {
+        id: "ch-34",
+        title: "Self-Centeredness Dissolves",
+        content:
+          "In loving, the obsession with your own happiness fades. Seeking 'our' happiness quietly frees you from the prison of self.",
+      },
+      {
+        id: "ch-35",
+        title: "Building Happiness Together",
+        content:
+          "Love isn't finding the perfect person; it's two ordinary people choosing to build happiness side by side over time.",
+      },
+      {
+        id: "ch-36",
+        title: "Destiny Is Made, Not Found",
+        content:
+          "There is no single fated partner waiting. You create destiny by committing and doing the daily work of love.",
+      },
+      {
+        id: "ch-37",
+        title: "The Courage to Take the First Step",
+        content:
+          "Love, like happiness, begins with a courageous first move made without guarantees. Waiting for certainty means waiting forever.",
+      },
+      {
+        id: "ch-38",
+        title: "Independence Through Love",
+        content:
+          "Paradoxically, true independence is reached through love and belonging, not isolation. We become ourselves in relationship.",
+      },
+      {
+        id: "ch-39",
+        title: "Don't Fear Being Disliked",
+        content:
+          "As in the first book, freedom requires accepting that not everyone will approve. Living well means acting anyway.",
+      },
+      {
+        id: "ch-40",
+        title: "Live for This Moment",
+        content:
+          "Happiness isn't a future reward for present suffering. It's found by living earnestly and contributing in the here and now.",
+      },
+      {
+        id: "ch-41",
+        title: "Happiness Is Contribution",
+        content:
+          "Adler's definition holds: to feel useful to others is to be happy. Contribution, not achievement, is the source of contentment.",
+      },
+      {
+        id: "ch-42",
+        title: "You Decide to Be Happy",
+        content:
+          "Happiness is less a stroke of luck than a decision and a practice. It takes courage to choose it and live accordingly.",
+      },
+      {
+        id: "ch-43",
+        title: "Small Acts of Contribution",
+        content:
+          "You don't need grand gestures. Everyday acts of usefulness and kindness quietly build a felt sense of worth and belonging.",
+      },
+      {
+        id: "ch-44",
+        title: "Work as Contribution",
+        content:
+          "Work matters not for status but as a way of contributing to others. Seen this way, even ordinary jobs gain meaning.",
+      },
+      {
+        id: "ch-45",
+        title: "Friendship as Trust",
+        content:
+          "The task of friendship is built on trust and mutual respect between equals, without keeping score of who owes whom.",
+      },
+      {
+        id: "ch-46",
+        title: "Love as Union",
+        content:
+          "The task of love asks the most: to merge two lives into a shared 'we' while respecting each other's independence.",
+      },
+      {
+        id: "ch-47",
+        title: "The Three Life Tasks Again",
+        content:
+          "Work, friendship, and love remain the arenas of a full life. Courage means facing all three rather than hiding from them.",
+      },
+      {
+        id: "ch-48",
+        title: "Believe in People's Goodness",
+        content:
+          "Adlerian living rests on faith that people are fundamentally comrades, not enemies. That belief reshapes how you meet the world.",
+      },
+      {
+        id: "ch-49",
+        title: "Give First",
+        content:
+          "Don't wait for others to respect or love you first. Offer respect, trust, and contribution, and connection tends to follow.",
+      },
+      {
+        id: "ch-50",
+        title: "Ordinary Days Are Enough",
+        content:
+          "You don't need a remarkable life to be happy. Ordinary days, lived with contribution and love, are already full.",
+      },
+      {
+        id: "ch-51",
+        title: "No One Is Above You",
+        content:
+          "Even in hierarchies of role, no human is above another in worth. Holding that equality changes every relationship.",
+      },
+      {
+        id: "ch-52",
+        title: "Break Free of Approval",
+        content:
+          "Living for praise, whether from parents, bosses, or society, keeps you unfree. Happiness begins when that need loosens.",
+      },
+      {
+        id: "ch-53",
+        title: "Respect Cannot Be Forced",
+        content:
+          "You can't demand respect or love from others; you can only offer your own freely. What returns is their task, not yours.",
+      },
+      {
+        id: "ch-54",
+        title: "The Danger of Special-ness",
+        content:
+          "Craving to be special — good or bad — is a bid for attention. The courage to be ordinary quietly frees you from that trap.",
+      },
+      {
+        id: "ch-55",
+        title: "Encourage, Don't Rescue",
+        content:
+          "Doing everything for others robs them of self-reliance. Encouragement helps people find the courage to face their own tasks.",
+      },
+      {
+        id: "ch-56",
+        title: "Separation and Belonging",
+        content:
+          "Separate tasks so resentment fades, yet stay connected through contribution. Independence and belonging grow together.",
+      },
+      {
+        id: "ch-57",
+        title: "Love Over Fear",
+        content:
+          "Fear makes us controlling and defensive; love makes us open and generous. Choosing love over fear is the braver, happier path.",
+      },
+      {
+        id: "ch-58",
+        title: "Happiness Within Reach",
+        content:
+          "You needn't wait for perfect conditions. The materials of happiness — self-acceptance, trust, contribution, love — are available now.",
+      },
+      {
+        id: "ch-59",
+        title: "Courage, Not Circumstance",
+        content:
+          "What separates the happy from the unhappy isn't luck but courage — to change, to love, and to be disliked while staying true.",
+      },
+      {
+        id: "ch-60",
+        title: "The Work of a Lifetime",
+        content:
+          "Loving well and contributing fully aren't one-time achievements but lifelong practices, renewed day by ordinary day.",
+      },
+      {
+        id: "ch-61",
+        title: "Two Kinds of Life",
+        content:
+          "You can drift, seeking approval and avoiding risk, or you can choose the harder, freer path of love and contribution.",
+      },
+      {
+        id: "ch-62",
+        title: "Change Begins With You",
+        content:
+          "You can't wait for others or the world to change first. The one who starts — in love, trust, and giving — is you.",
+      },
+      {
+        id: "ch-63",
+        title: "The Courage to Be Happy",
+        content:
+          "Happiness asks courage: to love actively, contribute freely, accept yourself, and let go of the need to be approved of.",
+      },
+      {
+        id: "ch-64",
+        title: "Choose Happiness Today",
+        content:
+          "You don't reach happiness someday; you decide on it now. Take the first courageous step, and a happy life becomes possible.",
+      },
+    ],
+  },
+
+  // The Courage to Be Disliked — Ichiro Kishimi & Fumitake Koga
+  "bk-009": {
+    bookId: "bk-009",
+    tagline: "How to free yourself and find happiness through Adlerian psychology",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "cd-1",
+        title: "A Dialogue on Freedom",
+        content:
+          "Told as a debate between a philosopher and a troubled youth, the book unpacks Alfred Adler's psychology and its bold claim: anyone can be happy, starting now.",
+      },
+      {
+        id: "cd-2",
+        title: "The World Is Surprisingly Simple",
+        content:
+          "Life feels complicated because we make it so. Adlerian thought argues the world is simple, and happiness is available to all who have the courage to claim it.",
+      },
+      {
+        id: "cd-3",
+        title: "Purpose, Not Cause",
+        content:
+          "Adler focuses on the purpose behind behaviour, not its past cause. We aren't pushed by history so much as pulled by the goals we choose now.",
+      },
+      {
+        id: "cd-4",
+        title: "The Provocative Claim About Trauma",
+        content:
+          "Adler argues we aren't determined by past trauma; rather, we give experiences meaning to serve present goals. It's a controversial but liberating reframe.",
+      },
+      {
+        id: "cd-5",
+        title: "You Choose Your Meaning",
+        content:
+          "The same event can mean defeat or lesson depending on the purpose it serves you. You author the significance of your past.",
+      },
+      {
+        id: "cd-6",
+        title: "You Can Change Anytime",
+        content:
+          "If the past doesn't dictate you, change is always possible. What holds most people back is not their history but their decision to stay the same.",
+      },
+      {
+        id: "cd-7",
+        title: "Lifestyle Is a Choice",
+        content:
+          "Your 'lifestyle' — your worldview and way of living — was chosen and can be re-chosen. It only feels fixed because changing it takes courage.",
+      },
+      {
+        id: "cd-8",
+        title: "Emotions Serve Goals",
+        content:
+          "We don't get swept away by anger; we use anger to achieve a purpose, like dominating a situation. Emotions are tools we deploy.",
+      },
+      {
+        id: "cd-9",
+        title: "Your Unhappiness Is a Choice",
+        content:
+          "Adler says you chose your current way of being because it felt safer than the unknown. Unhappiness can be a decision to avoid risk.",
+      },
+      {
+        id: "cd-10",
+        title: "The Courage to Change",
+        content:
+          "Change is frightening because the familiar feels secure. Transformation requires the courage to face uncertainty and let go of comfortable excuses.",
+      },
+      {
+        id: "cd-11",
+        title: "All Problems Are Interpersonal",
+        content:
+          "Adler's striking claim: every problem is, at root, a problem of human relationships. Even loneliness only exists because others do.",
+      },
+      {
+        id: "cd-12",
+        title: "Feelings of Inferiority",
+        content:
+          "Everyone feels inferior in some way, and that can spur healthy growth. It becomes harmful only when we turn it into an excuse.",
+      },
+      {
+        id: "cd-13",
+        title: "Inferiority Feeling vs Complex",
+        content:
+          "A feeling of inferiority motivates; an inferiority complex uses it as a reason to give up. The difference is whether you strive or stall.",
+      },
+      {
+        id: "cd-14",
+        title: "The Superiority Complex",
+        content:
+          "Bragging and dominating others often masks deep insecurity. Those who must feel above you usually feel small inside.",
+      },
+      {
+        id: "cd-15",
+        title: "Life Is Not a Competition",
+        content:
+          "When you see others as comrades rather than rivals, the world stops feeling like a battlefield. Comparison is the thief of peace.",
+      },
+      {
+        id: "cd-16",
+        title: "Horizontal Relationships",
+        content:
+          "Adler urges relationships of equals — horizontal, not vertical. No one is fundamentally above or below anyone else.",
+      },
+      {
+        id: "cd-17",
+        title: "Beyond the Vertical",
+        content:
+          "Vertical thinking ranks people and breeds envy and control. Seeing everyone as 'different but equal' dissolves much of our conflict.",
+      },
+      {
+        id: "cd-18",
+        title: "The Desire for Recognition",
+        content:
+          "Craving approval chains you to others' expectations. Adler goes so far as to say we should not live to be recognized.",
+      },
+      {
+        id: "cd-19",
+        title: "Don't Live for Approval",
+        content:
+          "If you organize your life around pleasing others, you live their life, not yours. True freedom means releasing the need for their applause.",
+      },
+      {
+        id: "cd-20",
+        title: "The Separation of Tasks",
+        content:
+          "A key tool: separate your tasks from others'. Ask, 'Whose task is this?' and take responsibility only for what is genuinely yours.",
+      },
+      {
+        id: "cd-21",
+        title: "Whose Task Is It?",
+        content:
+          "Whoever ultimately bears the consequences owns the task. Another person's choices and opinions of you are their task, not yours.",
+      },
+      {
+        id: "cd-22",
+        title: "Let Others Own Their Tasks",
+        content:
+          "You can offer help, but you can't live people's lives for them. Stop intruding on others' tasks and stop letting them intrude on yours.",
+      },
+      {
+        id: "cd-23",
+        title: "How Others See You Is Their Task",
+        content:
+          "Whether someone likes or dislikes you is their concern, not yours. Freeing yourself from that judgment is deeply liberating.",
+      },
+      {
+        id: "cd-24",
+        title: "The Courage to Be Disliked",
+        content:
+          "Real freedom is accepting that some people will dislike you — and living authentically anyway. That acceptance is the book's central courage.",
+      },
+      {
+        id: "cd-25",
+        title: "Being Disliked Is Proof of Freedom",
+        content:
+          "If no one dislikes you, you may be bending to everyone's wishes. A few disapprovals can be a sign you're living on your own terms.",
+      },
+      {
+        id: "cd-26",
+        title: "You Can't Please Everyone",
+        content:
+          "Trying to be liked by all leaves you unfree and untrue. Accepting this releases enormous pressure.",
+      },
+      {
+        id: "cd-27",
+        title: "Discard Others' Expectations",
+        content:
+          "You do not exist to meet other people's expectations, and they don't exist to meet yours. Let that mutual freedom stand.",
+      },
+      {
+        id: "cd-28",
+        title: "Reward-and-Punishment Thinking",
+        content:
+          "Adler rejects manipulating people through praise and scolding. Both create hierarchy and dependence rather than genuine relationship.",
+      },
+      {
+        id: "cd-29",
+        title: "Don't Seek Praise",
+        content:
+          "Chasing praise makes your worth depend on others' evaluation. It quietly places you below the one doing the praising.",
+      },
+      {
+        id: "cd-30",
+        title: "Praise Creates Hierarchy",
+        content:
+          "Praise is often a judgment from above — 'well done, good boy.' It subtly asserts superiority even when kindly meant.",
+      },
+      {
+        id: "cd-31",
+        title: "Encouragement, Not Praise",
+        content:
+          "Instead of praising, express gratitude and shared appreciation between equals. 'Thank you' honours; 'good job' evaluates.",
+      },
+      {
+        id: "cd-32",
+        title: "Community Feeling",
+        content:
+          "Adler's ideal is 'community feeling' — a sense of connection and contribution to others. It's the compass toward happiness.",
+      },
+      {
+        id: "cd-33",
+        title: "A Sense of Belonging",
+        content:
+          "We all need to feel we belong. But belonging is earned by contributing to the community, not by demanding it from others.",
+      },
+      {
+        id: "cd-34",
+        title: "Where Is My Place?",
+        content:
+          "Rather than asking what others can do for you, ask what you can offer. Your place is found by contributing, not by taking.",
+      },
+      {
+        id: "cd-35",
+        title: "Self-Acceptance",
+        content:
+          "Accept yourself as you are, including your limits — not resigning, but honestly working with reality. Change what you can; accept what you can't.",
+      },
+      {
+        id: "cd-36",
+        title: "Accept, Don't Resign",
+        content:
+          "Self-acceptance isn't giving up. It's seeing yourself clearly, at sixty percent say, and asking how to move toward a hundred.",
+      },
+      {
+        id: "cd-37",
+        title: "Confidence in Others",
+        content:
+          "Trust people unconditionally, without demanding guarantees. To have relationships of depth, you must risk believing in others.",
+      },
+      {
+        id: "cd-38",
+        title: "Trust vs Blind Faith",
+        content:
+          "Confidence means believing in others while letting how they respond be their task. You risk betrayal, but only that openness allows real connection.",
+      },
+      {
+        id: "cd-39",
+        title: "Contribution to Others",
+        content:
+          "The deepest sense of worth comes from feeling useful to others. Contribution, not recognition, is where lasting fulfillment lives.",
+      },
+      {
+        id: "cd-40",
+        title: "Feeling Useful Equals Worth",
+        content:
+          "You feel your value not when praised, but when you sense you're contributing to your community. That inner feeling is enough.",
+      },
+      {
+        id: "cd-41",
+        title: "The Three Pillars",
+        content:
+          "Happiness rests on self-acceptance, confidence in others, and contribution to others — each reinforcing the next.",
+      },
+      {
+        id: "cd-42",
+        title: "We Are Not the Center",
+        content:
+          "You are part of the community, not its center. Releasing the need to be the star frees you to belong and contribute.",
+      },
+      {
+        id: "cd-43",
+        title: "From 'I' to 'We'",
+        content:
+          "Shifting attention from yourself to the larger 'we' dissolves much anxiety. Self-obsession is a lonely prison.",
+      },
+      {
+        id: "cd-44",
+        title: "Life Lies",
+        content:
+          "We invent excuses — 'life lies' — to avoid the tasks of relationships. Blaming circumstances protects us from the risk of trying.",
+      },
+      {
+        id: "cd-45",
+        title: "The Tasks of Life",
+        content:
+          "Adler names three life tasks: work, friendship, and love. Growth means facing them with courage rather than fleeing.",
+      },
+      {
+        id: "cd-46",
+        title: "Facing the Tasks",
+        content:
+          "Avoiding relationships to avoid getting hurt guarantees a lonely life. The tasks are hard, but engaging them is where meaning lies.",
+      },
+      {
+        id: "cd-47",
+        title: "Living in the Present",
+        content:
+          "Neither past regret nor future anxiety is real; only now is. Adler urges a life lived fully in this present moment.",
+      },
+      {
+        id: "cd-48",
+        title: "Life as a Series of Moments",
+        content:
+          "Life isn't a line toward a distant goal but a chain of complete 'nows.' Each present moment is whole in itself.",
+      },
+      {
+        id: "cd-49",
+        title: "Dance Through Life",
+        content:
+          "Rather than trudging toward a destination, dance — be fully engaged in the here and now. The dancing itself is the point.",
+      },
+      {
+        id: "cd-50",
+        title: "No Need for a Grand Plan",
+        content:
+          "You don't need your whole future mapped to live well. Living earnestly in each moment is enough to build a meaningful life.",
+      },
+      {
+        id: "cd-51",
+        title: "The Guiding Star",
+        content:
+          "Let contribution to others be your fixed guiding star. As long as you follow it, you can't lose your way.",
+      },
+      {
+        id: "cd-52",
+        title: "The Courage to Be Ordinary",
+        content:
+          "You needn't be special to be worthwhile. Accepting an ordinary life, lived with contribution, is itself a quiet courage.",
+      },
+      {
+        id: "cd-53",
+        title: "Special Good or Special Bad",
+        content:
+          "Those who can't be exceptionally good sometimes seek to be exceptionally bad, just to stand out. Both flee the fear of being ordinary.",
+      },
+      {
+        id: "cd-54",
+        title: "Happiness Is Contribution",
+        content:
+          "Adler defines happiness as the feeling of contribution. When you sense you're helping your community, you are already happy.",
+      },
+      {
+        id: "cd-55",
+        title: "Change Yourself, Change Your World",
+        content:
+          "You can't control others, only your own outlook and choices. Change how you relate to the world, and your world changes with you.",
+      },
+      {
+        id: "cd-56",
+        title: "The World Is Only Yours to Change",
+        content:
+          "Waiting for others or circumstances to change first keeps you stuck. Someone must begin, and it can only be you.",
+      },
+      {
+        id: "cd-57",
+        title: "Freedom Costs Courage",
+        content:
+          "Freedom, authenticity, and happiness all demand courage — the willingness to be disliked, to change, and to contribute anyway.",
+      },
+      {
+        id: "cd-58",
+        title: "Reject Determinism",
+        content:
+          "You are not a helpless product of your childhood or environment. Reclaiming that agency is the first step to a freer life.",
+      },
+      {
+        id: "cd-59",
+        title: "Separate, Then Connect",
+        content:
+          "Paradoxically, separating tasks doesn't isolate you — it clears the resentment and control that poison relationships, allowing true connection.",
+      },
+      {
+        id: "cd-60",
+        title: "Let Go of Comparison",
+        content:
+          "Measuring yourself against others breeds inferiority or arrogance. Compare only with your own ideal self, moving forward.",
+      },
+      {
+        id: "cd-61",
+        title: "Stop Fearing Judgment",
+        content:
+          "The fear of others' opinions is a cage of our own making. Recognizing that their judgment is their task unlocks the door.",
+      },
+      {
+        id: "cd-62",
+        title: "Give Without Keeping Score",
+        content:
+          "Contribution loses its power the moment you demand something back. Genuine giving asks nothing in return.",
+      },
+      {
+        id: "cd-63",
+        title: "Belonging Is Built, Not Found",
+        content:
+          "You don't wait to be given a place; you create belonging by actively contributing to the people around you.",
+      },
+      {
+        id: "cd-64",
+        title: "Happiness Starts Now",
+        content:
+          "You don't need to fix your past or perfect your future first. Adler insists you can decide to be happy in this very moment.",
+      },
+      {
+        id: "cd-65",
+        title: "A Simple, Radical Message",
+        content:
+          "Accept yourself, trust others, contribute freely, and stop living for approval. Simple to say, courageous to live.",
+      },
+      {
+        id: "cd-66",
+        title: "The Courage to Be Free",
+        content:
+          "To be disliked by some is the price of living as your true self. Pay it willingly, and you gain the freedom to finally be happy.",
+      },
+    ],
+  },
+
+  // The 48 Laws of Power — Robert Greene
+  "bk-013": {
+    bookId: "bk-013",
+    tagline: "The timeless, ruthless laws of gaining and keeping power",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "lp-1",
+        title: "The Game of Power",
+        content:
+          "Greene argues that power is a social game played everywhere — at work, in politics, in relationships. The 48 Laws distil how it has been won and lost throughout history.",
+      },
+      {
+        id: "lp-2",
+        title: "Observe, Don't Endorse",
+        content:
+          "The laws are deliberately amoral — a study of how power actually operates, not a moral guide. Read them to understand and protect yourself as much as to act.",
+      },
+      {
+        id: "lp-3",
+        title: "Master the Indirect",
+        content:
+          "A recurring theme: power rewards the subtle and indirect over the blunt and obvious. Those who scheme quietly usually beat those who act openly.",
+      },
+      {
+        id: "lp-4",
+        title: "Law 1 — Never Outshine the Master",
+        content:
+          "Make those above you feel superior. Display too much talent and you may inspire fear and insecurity instead of gratitude.",
+      },
+      {
+        id: "lp-5",
+        title: "Law 2 — Use Enemies, Watch Friends",
+        content:
+          "Friends can betray you out of envy, while a former enemy, given a chance to prove himself, is often more loyal. Never trust blindly.",
+      },
+      {
+        id: "lp-6",
+        title: "Law 3 — Conceal Your Intentions",
+        content:
+          "Keep people off balance by hiding your true aims. If they never know what you're after, they can't prepare a defense.",
+      },
+      {
+        id: "lp-7",
+        title: "Law 4 — Always Say Less Than Necessary",
+        content:
+          "The less you say, the more powerful and mysterious you seem. Say too much and you reveal weakness and give others ammunition.",
+      },
+      {
+        id: "lp-8",
+        title: "Law 5 — Guard Your Reputation",
+        content:
+          "Reputation is the cornerstone of power. Protect it fiercely, and learn to destroy enemies by attacking theirs.",
+      },
+      {
+        id: "lp-9",
+        title: "Law 6 — Court Attention",
+        content:
+          "Be seen and talked about at all costs. It is better to be attacked than ignored; obscurity is the true enemy of power.",
+      },
+      {
+        id: "lp-10",
+        title: "Law 7 — Take the Credit",
+        content:
+          "Get others to do the work, then claim the credit. Their effort becomes your reputation, and efficiency looks like brilliance.",
+      },
+      {
+        id: "lp-11",
+        title: "Law 8 — Make Others Come to You",
+        content:
+          "Lure opponents onto your ground with bait. When you make others act first, you control the terms of the encounter.",
+      },
+      {
+        id: "lp-12",
+        title: "Law 9 — Win Through Actions",
+        content:
+          "Never win through argument; you may win the point but breed resentment. Demonstrate your case through actions instead.",
+      },
+      {
+        id: "lp-13",
+        title: "Law 10 — Avoid the Unlucky",
+        content:
+          "Misery and misfortune can be contagious. Associate with the happy and successful, and steer clear of chronic drainers.",
+      },
+      {
+        id: "lp-14",
+        title: "Law 11 — Keep People Dependent",
+        content:
+          "Make others rely on you and your position is secure. The more they need you, the more freedom and safety you gain.",
+      },
+      {
+        id: "lp-15",
+        title: "Law 12 — Disarm With Honesty",
+        content:
+          "A single sincere, generous act can disarm even the wary. Selective honesty lowers people's guard for your larger aims.",
+      },
+      {
+        id: "lp-16",
+        title: "Law 13 — Appeal to Self-Interest",
+        content:
+          "When you need help, never appeal to mercy or gratitude. Show people how helping you serves their own interests.",
+      },
+      {
+        id: "lp-17",
+        title: "Law 14 — Pose as Friend, Work as Spy",
+        content:
+          "Learn to gather information quietly. Casual, friendly probing reveals more about rivals than any direct question.",
+      },
+      {
+        id: "lp-18",
+        title: "Law 15 — Crush Your Enemy Totally",
+        content:
+          "A wounded enemy will recover and seek revenge. When you must strike, do so decisively enough that they can't retaliate.",
+      },
+      {
+        id: "lp-19",
+        title: "Law 16 — Use Absence",
+        content:
+          "Too much presence breeds contempt; strategic absence increases respect and value. Scarcity makes you more desirable.",
+      },
+      {
+        id: "lp-20",
+        title: "Law 17 — Cultivate Unpredictability",
+        content:
+          "Keep others off balance by being hard to read. Deliberate unpredictability unnerves opponents and keeps them reacting to you.",
+      },
+      {
+        id: "lp-21",
+        title: "Law 18 — Don't Isolate Yourself",
+        content:
+          "Building walls to feel safe cuts you off from information and allies. Power requires staying connected, not hiding away.",
+      },
+      {
+        id: "lp-22",
+        title: "Law 19 — Know Who You Face",
+        content:
+          "Not everyone reacts the same to a slight. Misjudge the wrong person and you can make a permanent, dangerous enemy.",
+      },
+      {
+        id: "lp-23",
+        title: "Law 20 — Don't Commit to Anyone",
+        content:
+          "Stay independent and above the fray. If you commit to no single side, all sides court you and you keep your options open.",
+      },
+      {
+        id: "lp-24",
+        title: "Law 21 — Seem Dumber Than Your Mark",
+        content:
+          "Let others feel smarter than you. Playing the fool makes people underestimate you and lower their defenses.",
+      },
+      {
+        id: "lp-25",
+        title: "Law 22 — Use the Surrender Tactic",
+        content:
+          "When weaker, surrendering can be power. It buys time, denies the enemy satisfaction, and lets you recover to strike later.",
+      },
+      {
+        id: "lp-26",
+        title: "Law 23 — Concentrate Your Forces",
+        content:
+          "Spreading yourself thin dilutes power. Focus your energy and resources on a single, rich source of strength.",
+      },
+      {
+        id: "lp-27",
+        title: "Law 24 — Play the Perfect Courtier",
+        content:
+          "In any hierarchy, master the art of indirection, flattery, and grace. The skilled courtier advances without ever seeming to grasp.",
+      },
+      {
+        id: "lp-28",
+        title: "Law 25 — Re-Create Yourself",
+        content:
+          "Don't accept the role society hands you. Shape your own image and identity, and command attention as your own creation.",
+      },
+      {
+        id: "lp-29",
+        title: "Law 26 — Keep Your Hands Clean",
+        content:
+          "Maintain a spotless appearance by using others as scapegoats and cat's-paws to disguise your involvement in the dirty work.",
+      },
+      {
+        id: "lp-30",
+        title: "Law 27 — Create a Following",
+        content:
+          "People long to believe in something. Offer a cause and vague promises, and you can build a devoted, cultlike following.",
+      },
+      {
+        id: "lp-31",
+        title: "Law 28 — Act With Boldness",
+        content:
+          "Timidity is dangerous; boldness is often safer. Commit fully, because hesitation and half-measures invite trouble.",
+      },
+      {
+        id: "lp-32",
+        title: "Law 29 — Plan to the End",
+        content:
+          "Think several steps ahead to the very conclusion. Planning the endgame prevents nasty surprises and keeps you in control.",
+      },
+      {
+        id: "lp-33",
+        title: "Law 30 — Make It Look Effortless",
+        content:
+          "Hide the sweat and tricks behind your success. Effortlessness looks like natural talent and adds to your mystique.",
+      },
+      {
+        id: "lp-34",
+        title: "Law 31 — Control the Options",
+        content:
+          "Get others to choose among options you've set, all of which favor you. They feel in control while you decide the outcome.",
+      },
+      {
+        id: "lp-35",
+        title: "Law 32 — Play to Fantasies",
+        content:
+          "People flee harsh truths toward appealing fantasies. Offer the dream they crave and you win a powerful following.",
+      },
+      {
+        id: "lp-36",
+        title: "Law 33 — Find the Weakness",
+        content:
+          "Everyone has a psychological lever — an insecurity, need, or desire. Discover it, and you hold the means to influence them.",
+      },
+      {
+        id: "lp-37",
+        title: "Law 34 — Carry Yourself Like Royalty",
+        content:
+          "Demand respect by radiating dignity and confidence. Act like you deserve the crown and people tend to treat you accordingly.",
+      },
+      {
+        id: "lp-38",
+        title: "Law 35 — Master Timing",
+        content:
+          "Know when to wait and when to strike. Patience and perfect timing achieve what force and haste never could.",
+      },
+      {
+        id: "lp-39",
+        title: "Law 36 — Disdain What You Can't Have",
+        content:
+          "Chasing something in vain draws attention to your lack of it. Ignoring what you can't have is often the sharpest response.",
+      },
+      {
+        id: "lp-40",
+        title: "Law 37 — Create Spectacle",
+        content:
+          "Striking images and grand gestures move people more than words. Surround yourself with symbols that dramatize your power.",
+      },
+      {
+        id: "lp-41",
+        title: "Law 38 — Think Freely, Blend In",
+        content:
+          "Flaunting unconventional ideas invites attack. Keep your rebellious thoughts private and outwardly conform to fit in.",
+      },
+      {
+        id: "lp-42",
+        title: "Law 39 — Stir the Waters",
+        content:
+          "Rattle your opponents to make them act rashly, while you stay calm. Emotional enemies make mistakes you can exploit.",
+      },
+      {
+        id: "lp-43",
+        title: "Law 40 — Despise the Free Lunch",
+        content:
+          "What is free often carries hidden strings or guilt. Paying your own way keeps you independent and unindebted.",
+      },
+      {
+        id: "lp-44",
+        title: "Law 41 — Don't Follow a Great Man",
+        content:
+          "Succeeding a legend leaves you in their shadow. Clear your own space and build a new name rather than inherit theirs.",
+      },
+      {
+        id: "lp-45",
+        title: "Law 42 — Strike the Shepherd",
+        content:
+          "Trouble often traces to one strong instigator. Neutralize the leader and the followers scatter and lose their momentum.",
+      },
+      {
+        id: "lp-46",
+        title: "Law 43 — Win Hearts and Minds",
+        content:
+          "Coercion breeds resistance. Seduce people emotionally so they willingly follow you, and your influence becomes durable.",
+      },
+      {
+        id: "lp-47",
+        title: "Law 44 — Use the Mirror Effect",
+        content:
+          "Reflecting people's actions back at them can disarm, unsettle, or teach them a lesson through their own behaviour.",
+      },
+      {
+        id: "lp-48",
+        title: "Law 45 — Change Gradually",
+        content:
+          "Preach the need for change, but reform slowly. Sudden, sweeping change frightens people and provokes backlash.",
+      },
+      {
+        id: "lp-49",
+        title: "Law 46 — Never Appear Too Perfect",
+        content:
+          "Flawlessness breeds envy and secret enemies. Occasionally admitting a harmless flaw makes you human and safer.",
+      },
+      {
+        id: "lp-50",
+        title: "Law 47 — Know When to Stop",
+        content:
+          "In victory, don't let momentum push you too far. Overreaching turns triumph into disaster; set a goal and stop there.",
+      },
+      {
+        id: "lp-51",
+        title: "Law 48 — Assume Formlessness",
+        content:
+          "The ultimate power is adaptability. Be like water — fluid and shapeless — so opponents can never pin you down or predict you.",
+      },
+      {
+        id: "lp-52",
+        title: "Power Is Everywhere",
+        content:
+          "These laws aren't just for kings and generals. The same dynamics play out in offices, families, and friendships every day.",
+      },
+      {
+        id: "lp-53",
+        title: "Perception Over Reality",
+        content:
+          "In the game of power, how things appear often matters more than how they are. Managing perception is a core skill.",
+      },
+      {
+        id: "lp-54",
+        title: "Reputation Is Everything",
+        content:
+          "A strong reputation intimidates and attracts before you even act. Build it deliberately and defend it without mercy.",
+      },
+      {
+        id: "lp-55",
+        title: "Emotions Are a Liability",
+        content:
+          "Anger, impatience, and neediness cloud judgment and reveal weakness. The powerful master their emotions, or hide them.",
+      },
+      {
+        id: "lp-56",
+        title: "Patience Wins",
+        content:
+          "Most people are impatient, which is their undoing. The one who can wait for the right moment holds a decisive edge.",
+      },
+      {
+        id: "lp-57",
+        title: "Never Seem Needy",
+        content:
+          "Neediness repels and lowers your value. The more self-sufficient you appear, the more others are drawn to you.",
+      },
+      {
+        id: "lp-58",
+        title: "Study People Closely",
+        content:
+          "Power depends on reading others — their desires, fears, and weaknesses. Observation is the intelligence-gathering behind every move.",
+      },
+      {
+        id: "lp-59",
+        title: "Allies and Enemies",
+        content:
+          "Choose both carefully. A useful enemy can sharpen and motivate you, while the wrong ally can quietly undermine you.",
+      },
+      {
+        id: "lp-60",
+        title: "Mystery Is Magnetic",
+        content:
+          "Predictable people are easy to control. A degree of mystery keeps others intrigued and unable to fully grasp you.",
+      },
+      {
+        id: "lp-61",
+        title: "Control the Frame",
+        content:
+          "Whoever defines the terms of an interaction controls it. Set the context, and others play by the rules you designed.",
+      },
+      {
+        id: "lp-62",
+        title: "The Long Game",
+        content:
+          "Power is built over time through consistent positioning. Short-term wins that damage your long-term standing aren't worth it.",
+      },
+      {
+        id: "lp-63",
+        title: "Flatter the Powerful",
+        content:
+          "Those above you crave validation. Make them shine, and they'll reward and protect you rather than fear you.",
+      },
+      {
+        id: "lp-64",
+        title: "Manage Credit and Blame",
+        content:
+          "Quietly attach yourself to successes and distance yourself from failures. Association shapes how power sees you.",
+      },
+      {
+        id: "lp-65",
+        title: "Boldness Beats Timidity",
+        content:
+          "The world yields to the confident and decisive. Half-hearted moves invite resistance; bold ones command respect.",
+      },
+      {
+        id: "lp-66",
+        title: "Adaptability Is Survival",
+        content:
+          "Rigid people break when circumstances shift. The formless, flexible operator adapts and endures where others fall.",
+      },
+      {
+        id: "lp-67",
+        title: "Information Is Power",
+        content:
+          "Knowing more than others — their plans, secrets, and pressures — lets you anticipate and outmaneuver them.",
+      },
+      {
+        id: "lp-68",
+        title: "Never Reveal Your Hand",
+        content:
+          "Keep your true goals and feelings hidden. The moment people know exactly what you want, they gain leverage over you.",
+      },
+      {
+        id: "lp-69",
+        title: "Use Symbols and Spectacle",
+        content:
+          "People are moved by images more than arguments. Symbols, ceremony, and drama amplify your presence and authority.",
+      },
+      {
+        id: "lp-70",
+        title: "Seduction Over Force",
+        content:
+          "Force creates enemies; seduction creates allies. Winning people emotionally builds influence that outlasts coercion.",
+      },
+      {
+        id: "lp-71",
+        title: "Cut Losses Cleanly",
+        content:
+          "Don't cling to failing positions out of pride. The powerful abandon lost causes quickly and redeploy their strength.",
+      },
+      {
+        id: "lp-72",
+        title: "Beware Envy",
+        content:
+          "Success breeds resentment in others. Downplay parts of your good fortune to avoid making silent enemies.",
+      },
+      {
+        id: "lp-73",
+        title: "The Power of Restraint",
+        content:
+          "Not every provocation deserves a response. Restraint often projects more strength than reaction, and denies enemies satisfaction.",
+      },
+      {
+        id: "lp-74",
+        title: "Position Before Battle",
+        content:
+          "Wars are often won before they start, through superior positioning. Arrange the board so your victory is nearly inevitable.",
+      },
+      {
+        id: "lp-75",
+        title: "Let Others Reveal Themselves",
+        content:
+          "Stay quiet and let people talk. The more they expose their intentions and flaws, the more you learn while giving away nothing.",
+      },
+      {
+        id: "lp-76",
+        title: "Turn Weakness Into Strength",
+        content:
+          "Apparent surrender, ignorance, or humility can be strategic. What looks like weakness can quietly become an advantage.",
+      },
+      {
+        id: "lp-77",
+        title: "Guard Against Manipulation",
+        content:
+          "Reading these laws also teaches you to spot them being used on you. Awareness is the best defense against the manipulator.",
+      },
+      {
+        id: "lp-78",
+        title: "The Cat's-Paw",
+        content:
+          "Get someone else to do the risky or dirty deed while you stay above suspicion. Distance protects your reputation.",
+      },
+      {
+        id: "lp-79",
+        title: "Dependence Cuts Both Ways",
+        content:
+          "Making others need you grants power — but never become so dependent on someone that they hold the same over you.",
+      },
+      {
+        id: "lp-80",
+        title: "Control Your Image",
+        content:
+          "Craft the persona you present to the world. A carefully managed image shapes how much power others grant you.",
+      },
+      {
+        id: "lp-81",
+        title: "Timing the Strike",
+        content:
+          "Act too early and you're premature; too late and the moment's gone. Sensing the ripe moment is an art the powerful master.",
+      },
+      {
+        id: "lp-82",
+        title: "Divide and Conquer",
+        content:
+          "A united opposition is dangerous. Sowing division among rivals weakens them without you lifting a finger.",
+      },
+      {
+        id: "lp-83",
+        title: "Keep Rivals Off Balance",
+        content:
+          "Unpredictable moves prevent enemies from settling into a strategy. Constant uncertainty keeps them defensive and reactive.",
+      },
+      {
+        id: "lp-84",
+        title: "Appearances of Virtue",
+        content:
+          "Being seen as fair, generous, and honest builds trust you can draw on. Reputation for virtue is itself a form of power.",
+      },
+      {
+        id: "lp-85",
+        title: "The Danger of Arrogance",
+        content:
+          "Contempt for others invites their united hatred. Even at the height of power, humility in appearance protects you.",
+      },
+      {
+        id: "lp-86",
+        title: "Never Rely on Reputation Alone",
+        content:
+          "Past glory fades. Keep proving yourself, because power resting only on old achievements slowly erodes.",
+      },
+      {
+        id: "lp-87",
+        title: "Master the Courtier's Art",
+        content:
+          "In any organization, thriving requires tact, timing, and indirection. The subtle courtier outlasts the blunt striver.",
+      },
+      {
+        id: "lp-88",
+        title: "Read the Power Map",
+        content:
+          "Know who really holds influence, not just who holds titles. Aligning with true power beats flattering figureheads.",
+      },
+      {
+        id: "lp-89",
+        title: "Manufacture Scarcity",
+        content:
+          "What is rare feels valuable. Limiting your availability and output makes your presence and approval more prized.",
+      },
+      {
+        id: "lp-90",
+        title: "Never Outshine Upward",
+        content:
+          "Save your brilliance for where it helps you. Overshadowing a superior turns a potential patron into a threatened rival.",
+      },
+      {
+        id: "lp-91",
+        title: "Silence as Strategy",
+        content:
+          "Saying little keeps you enigmatic and safe. Others fill the silence and reveal themselves while you stay in control.",
+      },
+      {
+        id: "lp-92",
+        title: "Plan Several Moves Ahead",
+        content:
+          "Like a chess master, foresee the consequences of your actions. Those who think furthest ahead usually win.",
+      },
+      {
+        id: "lp-93",
+        title: "Choose Your Battles",
+        content:
+          "Not every fight is worth winning. Concentrate power on decisive struggles and ignore petty ones beneath you.",
+      },
+      {
+        id: "lp-94",
+        title: "The Ethics Question",
+        content:
+          "Many laws are manipulative by design. Greene documents how power works; using that knowledge ethically is your own responsibility.",
+      },
+      {
+        id: "lp-95",
+        title: "Power and Integrity",
+        content:
+          "You can apply the wisdom — reading people, timing, self-mastery — without the ruthlessness. Discernment separates strategy from cruelty.",
+      },
+      {
+        id: "lp-96",
+        title: "Self-Mastery First",
+        content:
+          "Before controlling others, control yourself — your temper, ego, and impulses. Inner discipline is the foundation of outer power.",
+      },
+      {
+        id: "lp-97",
+        title: "Learn From History",
+        content:
+          "The laws are drawn from courts, generals, and con artists across the ages. History is the greatest teacher of human behaviour.",
+      },
+      {
+        id: "lp-98",
+        title: "Defense as Much as Offense",
+        content:
+          "The book's real value for most readers is defensive: recognizing these tactics so you're never anyone's easy mark.",
+      },
+      {
+        id: "lp-99",
+        title: "Adapt the Laws to You",
+        content:
+          "The laws sometimes contradict; wisdom is knowing which applies when. Use them as flexible tools, not rigid commandments.",
+      },
+      {
+        id: "lp-100",
+        title: "Power Reveals Character",
+        content:
+          "How you play the game shows who you are. Power is a mirror — it magnifies whatever values you already hold.",
+      },
+      {
+        id: "lp-101",
+        title: "Play the Game Wisely",
+        content:
+          "Whether you seek power or simply to guard against it, understanding these laws lets you navigate people and influence with open eyes.",
+      },
+    ],
+  },
+
+  // Surrounded by Idiots — Thomas Erikson
+  "bk-007": {
+    bookId: "bk-007",
+    tagline: "The four types of human behaviour — and how to communicate with each",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "si-1",
+        title: "Why We Feel Surrounded by Idiots",
+        content:
+          "We often think others are difficult or clueless when really they just communicate differently. The 'idiots' around you usually just operate on a different wavelength than you.",
+      },
+      {
+        id: "si-2",
+        title: "The Real Problem Is Communication",
+        content:
+          "Most conflict comes from mismatched styles, not bad intentions. Understanding how people differ turns frustration into cooperation.",
+      },
+      {
+        id: "si-3",
+        title: "Behaviour Is Predictable",
+        content:
+          "People's behaviour follows patterns you can learn to read. Once you see the patterns, others become far easier to understand and work with.",
+      },
+      {
+        id: "si-4",
+        title: "The DISC Model",
+        content:
+          "Erikson uses the DISC framework, sorting behaviour into four broad styles. He color-codes them for simplicity: Red, Yellow, Green, and Blue.",
+      },
+      {
+        id: "si-5",
+        title: "Four Colours of Behaviour",
+        content:
+          "Red is dominant and driven, Yellow is social and inspiring, Green is stable and kind, Blue is analytical and precise. Each sees the world its own way.",
+      },
+      {
+        id: "si-6",
+        title: "Red — Dominance",
+        content:
+          "Reds are direct, decisive, and results-driven. They want speed, control, and the bottom line, and can seem blunt or impatient to others.",
+      },
+      {
+        id: "si-7",
+        title: "Yellow — Inspiration",
+        content:
+          "Yellows are enthusiastic, talkative, and creative. They thrive on people, ideas, and attention, but can be disorganized and easily distracted.",
+      },
+      {
+        id: "si-8",
+        title: "Green — Stability",
+        content:
+          "Greens are calm, patient, and dependable. They value harmony and relationships, but dislike conflict and resist sudden change.",
+      },
+      {
+        id: "si-9",
+        title: "Blue — Conscientiousness",
+        content:
+          "Blues are analytical, careful, and detail-obsessed. They want accuracy and quality, but can seem cold, slow, or overly critical.",
+      },
+      {
+        id: "si-10",
+        title: "Most People Are a Blend",
+        content:
+          "Pure single-colour types are rare. Most of us are a mix of two colours, which is why people can seem contradictory at times.",
+      },
+      {
+        id: "si-11",
+        title: "Task vs People Focus",
+        content:
+          "One key axis is whether someone focuses on tasks (Red, Blue) or people (Yellow, Green). It shapes what they care about in any interaction.",
+      },
+      {
+        id: "si-12",
+        title: "Fast vs Slow Pace",
+        content:
+          "The other axis is pace: fast and assertive (Red, Yellow) versus slow and reflective (Green, Blue). Mismatched pace causes friction fast.",
+      },
+      {
+        id: "si-13",
+        title: "The Two Axes Together",
+        content:
+          "Combine task/people with fast/slow and you get the four colours. Placing someone on these axes quickly reveals how to deal with them.",
+      },
+      {
+        id: "si-14",
+        title: "Meet the Red",
+        content:
+          "Reds charge at goals, make quick decisions, and love a challenge. They ask 'what' and 'when', wanting outcomes over small talk.",
+      },
+      {
+        id: "si-15",
+        title: "Red Strengths",
+        content:
+          "Reds are courageous, efficient, and decisive. They get things moving, take charge in a crisis, and aren't afraid of hard calls.",
+      },
+      {
+        id: "si-16",
+        title: "Red Weaknesses",
+        content:
+          "Reds can be domineering, impatient, and insensitive. In their rush for results, they may steamroll feelings and details.",
+      },
+      {
+        id: "si-17",
+        title: "How Reds Communicate",
+        content:
+          "Reds are blunt and to the point. They interrupt, cut small talk, and can come across as aggressive even when they don't mean to.",
+      },
+      {
+        id: "si-18",
+        title: "Talking to a Red",
+        content:
+          "Be brief, confident, and results-focused. Skip the chit-chat, get to the point, and give them options and control.",
+      },
+      {
+        id: "si-19",
+        title: "Reds Under Stress",
+        content:
+          "Stressed Reds become even more domineering and combative. They push harder and may run over anyone in the way.",
+      },
+      {
+        id: "si-20",
+        title: "Motivating a Red",
+        content:
+          "Reds are driven by winning, challenge, and progress. Give them goals, autonomy, and a chance to compete and lead.",
+      },
+      {
+        id: "si-21",
+        title: "Red Body Language",
+        content:
+          "Reds use firm handshakes, direct eye contact, and fast, decisive movements. They lean in and take up space.",
+      },
+      {
+        id: "si-22",
+        title: "Giving a Red Feedback",
+        content:
+          "Be direct and factual. Reds respect straight talk — say what's wrong, why it matters, and what to do, without cushioning it endlessly.",
+      },
+      {
+        id: "si-23",
+        title: "Reds and Time",
+        content:
+          "Reds hate wasting time. Long meetings, vague plans, and slow decisions drive them up the wall.",
+      },
+      {
+        id: "si-24",
+        title: "Meet the Yellow",
+        content:
+          "Yellows light up a room with energy, ideas, and stories. They love people, novelty, and being liked and noticed.",
+      },
+      {
+        id: "si-25",
+        title: "Yellow Strengths",
+        content:
+          "Yellows are optimistic, persuasive, and creative. They inspire others, spark ideas, and keep morale high.",
+      },
+      {
+        id: "si-26",
+        title: "Yellow Weaknesses",
+        content:
+          "Yellows can be disorganized, unreliable with details, and prone to talking more than doing. They may overpromise and forget follow-through.",
+      },
+      {
+        id: "si-27",
+        title: "How Yellows Communicate",
+        content:
+          "Yellows are expressive and animated, often jumping topics. They think out loud and can dominate a conversation without realizing it.",
+      },
+      {
+        id: "si-28",
+        title: "Talking to a Yellow",
+        content:
+          "Be warm, upbeat, and let them talk. Show enthusiasm for their ideas, and keep things light and social before getting to business.",
+      },
+      {
+        id: "si-29",
+        title: "Yellows Under Stress",
+        content:
+          "Stressed Yellows get scattered and emotional, seeking reassurance. They may talk more and focus less.",
+      },
+      {
+        id: "si-30",
+        title: "Motivating a Yellow",
+        content:
+          "Yellows crave recognition, social contact, and fun. Praise them publicly and give them variety and people to work with.",
+      },
+      {
+        id: "si-31",
+        title: "Yellow Body Language",
+        content:
+          "Yellows are open, expressive, and touchy — big gestures, lots of smiling, and warm, animated faces.",
+      },
+      {
+        id: "si-32",
+        title: "Giving a Yellow Feedback",
+        content:
+          "Keep it positive and personal. Start with what's good, frame improvements as exciting possibilities, and preserve the relationship.",
+      },
+      {
+        id: "si-33",
+        title: "Yellows and Details",
+        content:
+          "Fine print bores Yellows. Bury them in data or process and their attention drifts instantly.",
+      },
+      {
+        id: "si-34",
+        title: "Meet the Green",
+        content:
+          "Greens are the calm, kind glue of any group. They listen, support, and keep the peace, preferring stability to the spotlight.",
+      },
+      {
+        id: "si-35",
+        title: "Green Strengths",
+        content:
+          "Greens are patient, loyal, and great team players. They're steady under pressure and make others feel safe and heard.",
+      },
+      {
+        id: "si-36",
+        title: "Green Weaknesses",
+        content:
+          "Greens can be indecisive, conflict-avoidant, and resistant to change. They may go along with things they quietly disagree with.",
+      },
+      {
+        id: "si-37",
+        title: "How Greens Communicate",
+        content:
+          "Greens are soft-spoken and diplomatic. They rarely push their opinion and may hide true feelings to avoid friction.",
+      },
+      {
+        id: "si-38",
+        title: "Talking to a Green",
+        content:
+          "Be gentle, patient, and personal. Don't rush them, give reassurance, and make them feel safe to share their real view.",
+      },
+      {
+        id: "si-39",
+        title: "Greens Under Stress",
+        content:
+          "Stressed Greens withdraw and go quiet, becoming stubborn or passive. They dig in silently rather than confront.",
+      },
+      {
+        id: "si-40",
+        title: "Motivating a Green",
+        content:
+          "Greens value security, harmony, and appreciation. Offer stability, a supportive team, and sincere, low-key recognition.",
+      },
+      {
+        id: "si-41",
+        title: "Green Body Language",
+        content:
+          "Greens are relaxed and gentle — soft handshakes, warm but calm expressions, and unhurried movements.",
+      },
+      {
+        id: "si-42",
+        title: "Giving a Green Feedback",
+        content:
+          "Be kind and reassuring. Deliver criticism gently and privately, and emphasize that the relationship is secure.",
+      },
+      {
+        id: "si-43",
+        title: "Greens and Change",
+        content:
+          "Sudden change unsettles Greens. Give them time, context, and a gradual path, and they'll come along willingly.",
+      },
+      {
+        id: "si-44",
+        title: "Meet the Blue",
+        content:
+          "Blues are the meticulous thinkers who want everything correct. They analyze, question, and prize accuracy over speed or feelings.",
+      },
+      {
+        id: "si-45",
+        title: "Blue Strengths",
+        content:
+          "Blues are precise, thorough, and dependable. They catch errors others miss and deliver careful, high-quality work.",
+      },
+      {
+        id: "si-46",
+        title: "Blue Weaknesses",
+        content:
+          "Blues can be overly critical, slow to decide, and stuck in analysis. Perfectionism can stall progress and chill relationships.",
+      },
+      {
+        id: "si-47",
+        title: "How Blues Communicate",
+        content:
+          "Blues are reserved, precise, and fact-focused. They ask 'why' and 'how', want evidence, and dislike exaggeration or vagueness.",
+      },
+      {
+        id: "si-48",
+        title: "Talking to a Blue",
+        content:
+          "Be prepared, accurate, and logical. Give them facts and detail, avoid hype, and allow time to think before deciding.",
+      },
+      {
+        id: "si-49",
+        title: "Blues Under Stress",
+        content:
+          "Stressed Blues over-analyze and become withdrawn and fault-finding. They retreat into detail and resist moving forward.",
+      },
+      {
+        id: "si-50",
+        title: "Motivating a Blue",
+        content:
+          "Blues value quality, correctness, and expertise. Give them clear standards, time to do it right, and respect for their precision.",
+      },
+      {
+        id: "si-51",
+        title: "Blue Body Language",
+        content:
+          "Blues are controlled and reserved — minimal gestures, careful expressions, and a preference for personal space.",
+      },
+      {
+        id: "si-52",
+        title: "Giving a Blue Feedback",
+        content:
+          "Be specific, logical, and evidence-based. Blues want the facts and reasoning, not vague impressions or emotional appeals.",
+      },
+      {
+        id: "si-53",
+        title: "Blues and Perfectionism",
+        content:
+          "Blues can chase perfect at the cost of done. Help them see when 'good enough, on time' beats flawless but late.",
+      },
+      {
+        id: "si-54",
+        title: "The Red-Yellow Mix",
+        content:
+          "Red-Yellows are fast, bold, and social — persuasive go-getters who can also be impatient and scattered.",
+      },
+      {
+        id: "si-55",
+        title: "The Green-Blue Mix",
+        content:
+          "Green-Blues are calm, careful, and considerate — reliable and precise, but slow to decide and change-averse.",
+      },
+      {
+        id: "si-56",
+        title: "When Red Meets Green",
+        content:
+          "The driven Red and the gentle Green are opposites. The Red finds the Green too slow; the Green finds the Red too harsh.",
+      },
+      {
+        id: "si-57",
+        title: "When Yellow Meets Blue",
+        content:
+          "The spontaneous Yellow and the precise Blue clash: the Yellow feels stifled by detail; the Blue is exhausted by the chaos.",
+      },
+      {
+        id: "si-58",
+        title: "Opposite Colours Clash",
+        content:
+          "The biggest friction is between diagonal opposites. Recognizing an opposite style is the first step to bridging the gap.",
+      },
+      {
+        id: "si-59",
+        title: "Reds and Greens Misread Each Other",
+        content:
+          "Reds see Greens as passive; Greens see Reds as bullies. Each just weights results and relationships differently.",
+      },
+      {
+        id: "si-60",
+        title: "Yellows and Blues Misread Each Other",
+        content:
+          "Yellows see Blues as cold nitpickers; Blues see Yellows as flaky windbags. Both are simply prioritizing different things.",
+      },
+      {
+        id: "si-61",
+        title: "Adapt Your Style",
+        content:
+          "The core skill is flexing your approach to fit the other person's colour. You keep your identity, but adjust your delivery.",
+      },
+      {
+        id: "si-62",
+        title: "Speak Their Colour",
+        content:
+          "Give Reds the bottom line, Yellows the excitement, Greens the reassurance, and Blues the details. Same message, tailored delivery.",
+      },
+      {
+        id: "si-63",
+        title: "Read People Quickly",
+        content:
+          "Watch pace and focus: fast or slow, task or people. A few clues place someone on the colour map within minutes.",
+      },
+      {
+        id: "si-64",
+        title: "Watch the Body Language",
+        content:
+          "Gestures, handshake, eye contact, and energy all signal colour. Bold and fast leans Red or Yellow; calm and controlled leans Green or Blue.",
+      },
+      {
+        id: "si-65",
+        title: "Listen for Word Choice",
+        content:
+          "Reds talk results, Yellows talk people and feelings, Greens talk harmony and 'we', Blues talk facts and precision. Language reveals type.",
+      },
+      {
+        id: "si-66",
+        title: "Colours in Meetings",
+        content:
+          "Reds want speed, Yellows want discussion, Greens want inclusion, Blues want an agenda and data. A good meeting serves all four.",
+      },
+      {
+        id: "si-67",
+        title: "Colours in Conflict",
+        content:
+          "Reds confront, Yellows dramatize, Greens avoid, Blues withdraw. Knowing each reaction helps you defuse rather than escalate.",
+      },
+      {
+        id: "si-68",
+        title: "Colours in Teams",
+        content:
+          "Each colour contributes something a team needs: drive, energy, harmony, and rigor. Balance beats a team of clones.",
+      },
+      {
+        id: "si-69",
+        title: "Build a Balanced Team",
+        content:
+          "A team of all Reds fights; all Yellows loses focus; all Greens stalls; all Blues over-analyzes. Mix colours for strength.",
+      },
+      {
+        id: "si-70",
+        title: "Colours in Sales",
+        content:
+          "Sell to Reds with results and ROI, Yellows with excitement and social proof, Greens with trust and safety, Blues with facts and guarantees.",
+      },
+      {
+        id: "si-71",
+        title: "Colours in Leadership",
+        content:
+          "Great leaders read their people and adapt: pushing Reds, inspiring Yellows, reassuring Greens, and informing Blues.",
+      },
+      {
+        id: "si-72",
+        title: "Colours in Relationships",
+        content:
+          "Understanding a partner's colour turns 'why won't they change?' into 'this is how they're wired.' Empathy replaces irritation.",
+      },
+      {
+        id: "si-73",
+        title: "Colours in Writing",
+        content:
+          "Even emails need tailoring: short for Reds, upbeat for Yellows, warm for Greens, detailed for Blues. Format for the reader, not yourself.",
+      },
+      {
+        id: "si-74",
+        title: "Feedback by Colour",
+        content:
+          "Direct for Reds, encouraging for Yellows, gentle for Greens, precise for Blues. The message may be the same; the wrapping isn't.",
+      },
+      {
+        id: "si-75",
+        title: "Criticism by Colour",
+        content:
+          "Reds argue back, Yellows take it personally, Greens go quiet and hurt, Blues get defensive over accuracy. Anticipate the reaction.",
+      },
+      {
+        id: "si-76",
+        title: "Each Colour Under Pressure",
+        content:
+          "Stress amplifies each colour's shadow side: Reds dominate, Yellows scatter, Greens withdraw, Blues over-scrutinize. Spot it and adjust.",
+      },
+      {
+        id: "si-77",
+        title: "Don't Stereotype",
+        content:
+          "Colours are a lens, not a cage. People are complex, and the model is a tool for empathy — not a label to box anyone in.",
+      },
+      {
+        id: "si-78",
+        title: "Know Your Own Colour",
+        content:
+          "Self-awareness comes first. Understanding your own style shows why some people rub you the wrong way — and how you affect them.",
+      },
+      {
+        id: "si-79",
+        title: "Weakness Is Strength Overused",
+        content:
+          "Every colour's flaw is just its strength taken too far. A Red's decisiveness becomes bullying; a Blue's care becomes paralysis.",
+      },
+      {
+        id: "si-80",
+        title: "Flex Without Faking",
+        content:
+          "Adapting isn't being fake; it's being considerate. You meet people where they are so your true message actually lands.",
+      },
+      {
+        id: "si-81",
+        title: "Patience With Difference",
+        content:
+          "What annoys you about someone is often just their colour showing. Patience grows when you see behaviour as difference, not defect.",
+      },
+      {
+        id: "si-82",
+        title: "There Are No Idiots",
+        content:
+          "The book's twist: no one is actually an idiot. They just process and express the world through a different colour than you.",
+      },
+      {
+        id: "si-83",
+        title: "Communication Is Your Job",
+        content:
+          "You can't control how others behave, only how you adapt. Taking responsibility for being understood is the mark of a great communicator.",
+      },
+      {
+        id: "si-84",
+        title: "Speak So They Can Hear",
+        content:
+          "Master the colours and you stop feeling surrounded by idiots. You learn to speak each person's language — and connection replaces frustration.",
+      },
+    ],
+  },
+
   // You Are the Placebo — Dr. Joe Dispenza
   "bk-135": {
     bookId: "bk-135",

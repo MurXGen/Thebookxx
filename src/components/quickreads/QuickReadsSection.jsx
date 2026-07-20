@@ -99,28 +99,34 @@ export default function QuickReadsSection() {
 
                 <div className="qr-book-foot">
                   <span className="qr-book-price">₹{QUICKREAD_PRICE}</span>
-                  <Link
-                    href={`/quickreads/${slugify(book.name)}`}
-                    className="qr-read-btn"
-                  >
-                    <BookOpen size={15} /> Read
-                  </Link>
+                  {isInQrCart(book.id) ? (
+                    <span
+                      className="qr-cart-icon added"
+                      title="Added to cart"
+                      aria-label="Added to cart"
+                    >
+                      <Check size={17} />
+                    </span>
+                  ) : (
+                    <button
+                      className="qr-cart-icon"
+                      onClick={() => {
+                        addQuickRead(book.id);
+                        showToast("Added to QuickReads cart", "success");
+                      }}
+                      title="Add to cart"
+                      aria-label={`Add ${book.name} to cart`}
+                    >
+                      <Plus size={17} />
+                    </button>
+                  )}
                 </div>
-                {isInQrCart(book.id) ? (
-                  <span className="qr-added-btn">
-                    <Check size={15} /> Added to Cart
-                  </span>
-                ) : (
-                  <button
-                    className="qr-add-btn"
-                    onClick={() => {
-                      addQuickRead(book.id);
-                      showToast("Added to QuickReads cart", "success");
-                    }}
-                  >
-                    <Plus size={15} /> Add to Cart
-                  </button>
-                )}
+                <Link
+                  href={`/quickreads/${slugify(book.name)}`}
+                  className="qr-read-full"
+                >
+                  <BookOpen size={15} /> Read
+                </Link>
               </motion.article>
             );
           })}

@@ -3114,6 +3114,1029 @@ export const quickReads = {
     ],
   },
 
+  // The Secret — Rhonda Byrne
+  "bk-140": {
+    bookId: "bk-140",
+    tagline: "The law of attraction and the power of positive thought",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "se-1",
+        title: "The Law of Attraction",
+        content:
+          "The Secret's central idea is the law of attraction: the belief that your dominant thoughts and feelings draw matching experiences into your life. Like, the book says, attracts like.",
+      },
+      {
+        id: "se-2",
+        title: "Thoughts Become Things",
+        content:
+          "According to the book, thoughts carry an energy that shapes your reality. What you think about most consistently, you begin to move toward and attract.",
+      },
+      {
+        id: "se-3",
+        title: "You Attract What You Focus On",
+        content:
+          "Whether you focus on what you want or what you fear, the book argues you draw more of it. Direct your attention deliberately toward your desires.",
+      },
+      {
+        id: "se-4",
+        title: "Your Feelings Are the Signal",
+        content:
+          "Byrne teaches that feelings reveal what you're attracting. Good feelings signal alignment with what you want; bad feelings signal the opposite.",
+      },
+      {
+        id: "se-5",
+        title: "Feel Good on Purpose",
+        content:
+          "Because feelings are said to broadcast your request, deliberately cultivating positive emotions is central to the book's method.",
+      },
+      {
+        id: "se-6",
+        title: "The Creative Process: Ask",
+        content:
+          "Step one is to ask clearly for what you want. The book suggests deciding on your desire with clarity, as if placing an order with the universe.",
+      },
+      {
+        id: "se-7",
+        title: "Be Clear About Your Desire",
+        content:
+          "Vague wishes bring vague results, the book claims. The more specific and vivid your request, the more powerfully you're said to attract it.",
+      },
+      {
+        id: "se-8",
+        title: "The Creative Process: Believe",
+        content:
+          "Step two is to believe it's already yours. Faith and expectation, the book argues, are what turn a wish into a magnet.",
+      },
+      {
+        id: "se-9",
+        title: "Believe As If It's Done",
+        content:
+          "Act and feel as though your desire has already arrived. This unwavering belief, Byrne says, is the bridge between wanting and receiving.",
+      },
+      {
+        id: "se-10",
+        title: "The Creative Process: Receive",
+        content:
+          "Step three is to receive — to feel the joy of having it now. Getting into the feeling of the wish fulfilled is said to complete the process.",
+      },
+      {
+        id: "se-11",
+        title: "Align Your Feelings to Receive",
+        content:
+          "The book teaches that you can only receive what you're a vibrational match to. Feeling good now is how you tune yourself to good outcomes.",
+      },
+      {
+        id: "se-12",
+        title: "Gratitude Multiplies",
+        content:
+          "Gratitude is one of the book's most emphasized practices. Being thankful for what you have, it claims, attracts more to be thankful for.",
+      },
+      {
+        id: "se-13",
+        title: "Give Thanks in Advance",
+        content:
+          "Byrne suggests thanking the universe as if your desire has already been granted. Gratitude in advance signals expectant belief.",
+      },
+      {
+        id: "se-14",
+        title: "Visualization",
+        content:
+          "The book urges you to picture your desire vividly and often. Seeing and feeling the end result is presented as a powerful attracting tool.",
+      },
+      {
+        id: "se-15",
+        title: "See and Feel the End Result",
+        content:
+          "Effective visualization, the book says, isn't just seeing — it's feeling the emotions of already having it. Emotion is the amplifier.",
+      },
+      {
+        id: "se-16",
+        title: "The Universe as a Catalog",
+        content:
+          "Byrne compares desiring to ordering from a catalog: choose what you want, place your order through thought and feeling, then let it come.",
+      },
+      {
+        id: "se-17",
+        title: "Place Your Order and Let Go",
+        content:
+          "After asking and believing, the book advises releasing anxious attachment. Trusting rather than gripping is said to keep the channel open.",
+      },
+      {
+        id: "se-18",
+        title: "Expectation Is Powerful",
+        content:
+          "Expecting good things, the book claims, is a strong form of attraction. Anticipation, not hope with doubt, is what draws results.",
+      },
+      {
+        id: "se-19",
+        title: "Doubt Cancels the Order",
+        content:
+          "Persistent doubt, according to the book, works against your desire. Mixed signals of wanting and disbelieving muddle what you attract.",
+      },
+      {
+        id: "se-20",
+        title: "Guard Against Negative Thoughts",
+        content:
+          "Byrne stresses managing your mental diet. Since thoughts are said to attract, she urges catching and redirecting negative ones quickly.",
+      },
+      {
+        id: "se-21",
+        title: "Focus on Wanted, Not Unwanted",
+        content:
+          "The book warns that dwelling on what you don't want attracts more of it. Keep your attention on the outcome you desire instead.",
+      },
+      {
+        id: "se-22",
+        title: "The Power of Now",
+        content:
+          "Feeling good in the present moment is the book's practical anchor. You attract from where you are, so choose peace and joy now.",
+      },
+      {
+        id: "se-23",
+        title: "Shift Your Vibe Quickly",
+        content:
+          "The book offers tools — happy memories, music, gratitude — to change how you feel fast. Deliberately raising your mood is a core skill.",
+      },
+      {
+        id: "se-24",
+        title: "The Secret to Money",
+        content:
+          "To attract wealth, the book says, feel abundant now rather than focusing on lack. A scarcity mindset is thought to repel the very thing you want.",
+      },
+      {
+        id: "se-25",
+        title: "Feel Abundant Now",
+        content:
+          "Byrne advises acting and feeling wealthy in small ways today. Cultivating a sense of plenty is presented as the doorway to more.",
+      },
+      {
+        id: "se-26",
+        title: "Give to Open the Flow",
+        content:
+          "Generosity, the book claims, signals abundance and keeps money circulating toward you. Giving from a good feeling attracts more.",
+      },
+      {
+        id: "se-27",
+        title: "The Secret to Relationships",
+        content:
+          "To improve relationships, the book says to focus on what you appreciate in others rather than their faults. Attention to the good grows it.",
+      },
+      {
+        id: "se-28",
+        title: "Love Yourself First",
+        content:
+          "Byrne teaches that self-love sets the tone for how others treat you. Filling your own cup is the starting point for loving connection.",
+      },
+      {
+        id: "se-29",
+        title: "Radiate What You Seek",
+        content:
+          "The book suggests you attract in others the qualities you embody. Be the love, warmth, and positivity you wish to receive.",
+      },
+      {
+        id: "se-30",
+        title: "The Secret to Health",
+        content:
+          "The book argues the mind influences the body, and that belief, joy, and laughter support wellness. It frames health as partly a mental state.",
+      },
+      {
+        id: "se-31",
+        title: "Laughter and Joy Heal",
+        content:
+          "Positive emotion, according to the book, supports the body's wellbeing. Cultivating joy is offered as part of staying healthy.",
+      },
+      {
+        id: "se-32",
+        title: "You Are the Creator",
+        content:
+          "The book's empowering message is that you are the creator of your own life through your thoughts and feelings — not a passive victim of events.",
+      },
+      {
+        id: "se-33",
+        title: "Take Charge of Your Thoughts",
+        content:
+          "Since thought is presented as creative, mastering your mind becomes the key skill. You steer your life by steering your attention.",
+      },
+      {
+        id: "se-34",
+        title: "Segment Your Day With Intention",
+        content:
+          "The book suggests setting a positive intention before each part of your day. Deliberate expectation, it claims, shapes how each segment unfolds.",
+      },
+      {
+        id: "se-35",
+        title: "Take Inspired Action",
+        content:
+          "Attraction, the book notes, still requires action — but inspired, joyful action rather than forced striving. Follow the nudges that feel right.",
+      },
+      {
+        id: "se-36",
+        title: "Attract, Don't Chase",
+        content:
+          "Desperate chasing, the book argues, broadcasts lack. Acting from calm expectancy is presented as more magnetic than anxious effort.",
+      },
+      {
+        id: "se-37",
+        title: "The Feeling Is the Secret",
+        content:
+          "More than thoughts, the book emphasizes feelings as the real power. Generating the emotion of the wish fulfilled is the heart of the method.",
+      },
+      {
+        id: "se-38",
+        title: "Speak in the Present Tense",
+        content:
+          "Byrne advises affirming desires as already true — 'I am,' not 'I will.' Present-tense language reinforces the feeling of having.",
+      },
+      {
+        id: "se-39",
+        title: "Surround Yourself With Reminders",
+        content:
+          "Vision boards, notes, and symbols keep your desire vivid and top of mind. The book uses these to sustain focus and belief.",
+      },
+      {
+        id: "se-40",
+        title: "See Obstacles as Temporary",
+        content:
+          "Setbacks, the book suggests, are just delays, not denials. Holding steady in belief through them keeps the process alive.",
+      },
+      {
+        id: "se-41",
+        title: "Trust the How to the Universe",
+        content:
+          "You need not know exactly how your desire will arrive, the book says — only what and why. Release the 'how' and stay open to surprise.",
+      },
+      {
+        id: "se-42",
+        title: "You Deserve Good Things",
+        content:
+          "The book encourages a deep sense of worthiness. Believing you deserve your desires is said to be part of allowing them in.",
+      },
+      {
+        id: "se-43",
+        title: "Gratitude Rituals",
+        content:
+          "Daily gratitude practices — listing blessings, a gratitude object — are recommended to keep you in a receiving state.",
+      },
+      {
+        id: "se-44",
+        title: "Praise and Bless",
+        content:
+          "The book advises praising and appreciating rather than criticizing. Focusing on the good, it claims, calls more good toward you.",
+      },
+      {
+        id: "se-45",
+        title: "Your Body Follows Your Mind",
+        content:
+          "The book frames the body as responsive to belief and emotion. Picturing health and feeling vital is presented as supportive of the body.",
+      },
+      {
+        id: "se-46",
+        title: "Emotion Is the Amplifier",
+        content:
+          "A thought held with strong feeling is said to be far more powerful than a neutral one. Intensity of emotion magnifies the signal.",
+      },
+      {
+        id: "se-47",
+        title: "Start Small to Build Belief",
+        content:
+          "The book suggests attracting small, easy things first — a parking spot, a call. Early wins build the belief needed for bigger ones.",
+      },
+      {
+        id: "se-48",
+        title: "Keep Your Vibe High",
+        content:
+          "Protect your emotional state as your most valuable asset. The book treats a consistently good mood as the engine of attraction.",
+      },
+      {
+        id: "se-49",
+        title: "Let Go of Resentment",
+        content:
+          "Holding onto anger keeps you in a low state, the book warns. Releasing grievances frees you to feel — and attract — better things.",
+      },
+      {
+        id: "se-50",
+        title: "The Earth Turns for You",
+        content:
+          "Byrne offers a message of self-worth: see yourself as deserving of the universe's abundance rather than unworthy or small.",
+      },
+      {
+        id: "se-51",
+        title: "Give the Best of Yourself",
+        content:
+          "The book links receiving with giving your best energy to the world. What you put out, it claims, returns to you multiplied.",
+      },
+      {
+        id: "se-52",
+        title: "Consistency of Feeling",
+        content:
+          "Occasional positive thoughts, the book says, aren't enough. A steady, habitual emotional tone is what shapes lasting results.",
+      },
+      {
+        id: "se-53",
+        title: "A Note of Balance",
+        content:
+          "The law of attraction is inspiring but not a substitute for effort, planning, or professional help. Treat these ideas as motivation to think positively and act, not as a guarantee.",
+      },
+      {
+        id: "se-54",
+        title: "Live the Secret",
+        content:
+          "The book's takeaway: tend your thoughts and feelings, practice gratitude, expect good, and act with joy. Whatever your beliefs, a positive, grateful mind tends to build a better life.",
+      },
+    ],
+  },
+
+  // Attitude Is Everything — Jeff Keller
+  "bk-328": {
+    bookId: "bk-328",
+    tagline: "Change your attitude, and you change your life",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "ae-1",
+        title: "Attitude Is Everything",
+        content:
+          "Your attitude — not your circumstances — is the biggest factor in your success and happiness. Change your attitude and you genuinely change your life.",
+      },
+      {
+        id: "ae-2",
+        title: "Success Begins in the Mind",
+        content:
+          "Every achievement starts as a thought. What you consistently think about shapes the reality you eventually experience.",
+      },
+      {
+        id: "ae-3",
+        title: "Your Mind Is Like a Computer",
+        content:
+          "Garbage in, garbage out. The thoughts and messages you feed your mind determine the results it produces, so choose your inputs with care.",
+      },
+      {
+        id: "ae-4",
+        title: "Program Positive Inputs",
+        content:
+          "Fill your mind with encouraging books, people, and ideas. A steady diet of positive input reprograms a negative mindset over time.",
+      },
+      {
+        id: "ae-5",
+        title: "You Become What You Think About",
+        content:
+          "Dwell on problems and you attract more of them; dwell on possibilities and you find them. Your dominant thoughts set your direction.",
+      },
+      {
+        id: "ae-6",
+        title: "Self-Image Sets the Ceiling",
+        content:
+          "You perform in line with how you see yourself. Raise your self-image and your behaviour and results rise to match it.",
+      },
+      {
+        id: "ae-7",
+        title: "Act As If",
+        content:
+          "Behave like the confident, capable person you want to become. Acting the part gradually turns the image into reality.",
+      },
+      {
+        id: "ae-8",
+        title: "See the Glass Half Full",
+        content:
+          "Optimists and pessimists face the same facts but tell different stories. Choosing to focus on what's good changes how you feel and act.",
+      },
+      {
+        id: "ae-9",
+        title: "Focus on What's Good",
+        content:
+          "Whatever you focus on expands in your mind. Deliberately look for the positive and it starts to dominate your experience.",
+      },
+      {
+        id: "ae-10",
+        title: "Positive Expectancy",
+        content:
+          "Expect good outcomes and you act in ways that make them likelier. Expectation quietly shapes effort, energy, and results.",
+      },
+      {
+        id: "ae-11",
+        title: "You Can't Win Expecting to Lose",
+        content:
+          "If you're already convinced you'll fail, you sabotage yourself before you start. Belief in the possibility of success is the price of admission.",
+      },
+      {
+        id: "ae-12",
+        title: "Believe You Can",
+        content:
+          "Whether you think you can or you can't, you're usually right. Self-belief unlocks effort and persistence that doubt shuts down.",
+      },
+      {
+        id: "ae-13",
+        title: "Reframe Problems as Opportunities",
+        content:
+          "The same situation is a disaster or a challenge depending on your frame. Ask what this problem makes possible, not just what it costs.",
+      },
+      {
+        id: "ae-14",
+        title: "Every Setback Carries a Seed",
+        content:
+          "Difficulties often carry a hidden lesson or opportunity. Train yourself to hunt for it instead of only mourning the loss.",
+      },
+      {
+        id: "ae-15",
+        title: "Watch Your Words",
+        content:
+          "Your words reflect and reinforce your attitude. Speak defeat and you feel defeated; speak possibility and you lift yourself.",
+      },
+      {
+        id: "ae-16",
+        title: "Words Shape Your Mindset",
+        content:
+          "The language you use programs your mind and signals to others who you are. Choose words that build you up, not tear you down.",
+      },
+      {
+        id: "ae-17",
+        title: "Speak of What You Want",
+        content:
+          "Talk about your goals and hopes, not your fears and complaints. Where your words go, your energy and attention follow.",
+      },
+      {
+        id: "ae-18",
+        title: "Stop Complaining",
+        content:
+          "Complaining keeps you focused on the problem and drains your power to solve it. Replace complaints with requests or action.",
+      },
+      {
+        id: "ae-19",
+        title: "Complaining Repels People",
+        content:
+          "Chronic negativity pushes others away, while positivity draws them in. People gravitate toward those who lift the mood, not drain it.",
+      },
+      {
+        id: "ae-20",
+        title: "Answer With Optimism",
+        content:
+          "When asked how you are, respond with energy and positivity. A cheerful, genuine answer sets the tone for the whole interaction.",
+      },
+      {
+        id: "ae-21",
+        title: "Words Become Self-Fulfilling",
+        content:
+          "Say 'I'm terrible at this' often enough and you make it true. Speak to yourself as a coach would, not a critic.",
+      },
+      {
+        id: "ae-22",
+        title: "Associate With Positive People",
+        content:
+          "You absorb the attitudes of those around you. Spend time with encouraging, ambitious people and their energy becomes yours.",
+      },
+      {
+        id: "ae-23",
+        title: "Choose Your Circle",
+        content:
+          "Your environment shapes your outlook. Curate the people you spend the most time with as carefully as you'd curate your diet.",
+      },
+      {
+        id: "ae-24",
+        title: "Limit Toxic Influences",
+        content:
+          "Some people drain your optimism no matter what. It's okay to reduce your exposure to relentless negativity to protect your attitude.",
+      },
+      {
+        id: "ae-25",
+        title: "Heaven Helps Those Who Act",
+        content:
+          "A positive attitude means little without action. Good things flow to those who pair belief with consistent, courageous doing.",
+      },
+      {
+        id: "ae-26",
+        title: "Action Cures Fear",
+        content:
+          "Fear shrinks the moment you move toward it. Taking the first step often dissolves the anxiety that thinking only magnifies.",
+      },
+      {
+        id: "ae-27",
+        title: "Leave the Comfort Zone",
+        content:
+          "Growth lives just outside what feels safe. Regularly stretching beyond your comfort zone expands what you believe you can do.",
+      },
+      {
+        id: "ae-28",
+        title: "Do the Thing You Fear",
+        content:
+          "Confronting a fear directly is how you shrink it. Courage isn't the absence of fear but action taken in spite of it.",
+      },
+      {
+        id: "ae-29",
+        title: "Persistence Pays",
+        content:
+          "Most people give up right before the breakthrough. A positive, persistent attitude keeps you going until the results arrive.",
+      },
+      {
+        id: "ae-30",
+        title: "Don't Quit Before the Miracle",
+        content:
+          "Setbacks are part of every success story. Treat them as temporary detours, not dead ends, and keep moving.",
+      },
+      {
+        id: "ae-31",
+        title: "Make a Commitment",
+        content:
+          "Half-hearted effort brings half-hearted results. Full commitment unlocks resources, ideas, and help that hesitation never sees.",
+      },
+      {
+        id: "ae-32",
+        title: "Be Willing to Fail",
+        content:
+          "Fear of failure paralyzes more dreams than failure itself. Accept failure as tuition on the road to success.",
+      },
+      {
+        id: "ae-33",
+        title: "Take Responsibility",
+        content:
+          "Blaming others hands away your power to change things. Owning your response — even to unfair events — puts you back in control.",
+      },
+      {
+        id: "ae-34",
+        title: "You Are Not a Victim",
+        content:
+          "A victim mindset keeps you stuck; an ownership mindset moves you forward. Focus on what you can influence, not what you can't.",
+      },
+      {
+        id: "ae-35",
+        title: "Gratitude Fuels Positivity",
+        content:
+          "Gratitude is attitude in action. Regularly noticing what's good rewires your mind toward optimism and contentment.",
+      },
+      {
+        id: "ae-36",
+        title: "Count Your Blessings",
+        content:
+          "Even on hard days there is something to appreciate. A daily habit of gratitude steadily lifts your baseline mood.",
+      },
+      {
+        id: "ae-37",
+        title: "Smile and Mean It",
+        content:
+          "A genuine smile lifts your own mood and warms everyone around you. It's a small act with an outsized effect on attitude.",
+      },
+      {
+        id: "ae-38",
+        title: "Enthusiasm Is Contagious",
+        content:
+          "Approach your work and relationships with energy, and others catch it. Enthusiasm opens doors that indifference leaves shut.",
+      },
+      {
+        id: "ae-39",
+        title: "Give to Receive",
+        content:
+          "Helping others, without keeping score, creates goodwill and meaning. Generosity is both a positive attitude and a magnet for good.",
+      },
+      {
+        id: "ae-40",
+        title: "Lift Others Up",
+        content:
+          "Encouraging the people around you multiplies positivity — theirs and yours. You rarely lift someone without rising yourself.",
+      },
+      {
+        id: "ae-41",
+        title: "Visualize Success",
+        content:
+          "See yourself succeeding in vivid detail before it happens. Mental rehearsal primes your mind and body to make it real.",
+      },
+      {
+        id: "ae-42",
+        title: "See It Before You Achieve It",
+        content:
+          "Clear mental pictures of your goals sharpen focus and motivation. If you can picture it clearly, you're far likelier to reach it.",
+      },
+      {
+        id: "ae-43",
+        title: "Guard Against Negativity",
+        content:
+          "Negative news, gossip, and self-doubt seep in unless you defend against them. Actively protect the positive state you build.",
+      },
+      {
+        id: "ae-44",
+        title: "Feed Your Mind Good Material",
+        content:
+          "Read uplifting books, listen to encouraging voices, and revisit your goals. What you feed your mind daily becomes your default outlook.",
+      },
+      {
+        id: "ae-45",
+        title: "Handle Criticism Gracefully",
+        content:
+          "Not all criticism deserves your energy. Take the useful part, leave the rest, and don't let it dent your core confidence.",
+      },
+      {
+        id: "ae-46",
+        title: "Expect the Best of People",
+        content:
+          "Approaching others with positive assumptions usually brings out their better side. Attitude shapes relationships as much as outcomes.",
+      },
+      {
+        id: "ae-47",
+        title: "Turn Envy Into Inspiration",
+        content:
+          "When others succeed, let it inspire rather than diminish you. Their win is proof of what's possible for you too.",
+      },
+      {
+        id: "ae-48",
+        title: "Attitude Is a Choice",
+        content:
+          "You can't always control what happens, but you always choose your response. That choice is your greatest and most reliable freedom.",
+      },
+      {
+        id: "ae-49",
+        title: "Choose It Daily",
+        content:
+          "A positive attitude isn't a one-time decision; it's a daily practice. Renew it each morning and return to it whenever you drift.",
+      },
+      {
+        id: "ae-50",
+        title: "Persist Through Bad Days",
+        content:
+          "Everyone has off days; the difference is how fast you reset. Gently steer your thoughts back toward the positive again and again.",
+      },
+      {
+        id: "ae-51",
+        title: "Model the Attitude You Want",
+        content:
+          "Be the calm, upbeat presence you'd like to be around. Living your attitude influences your world more than preaching it.",
+      },
+      {
+        id: "ae-52",
+        title: "A Great Attitude Changes Everything",
+        content:
+          "Same job, same challenges, different attitude — and life transforms. Master your outlook and you master the one thing that colours it all.",
+      },
+    ],
+  },
+
+  // The Diary of a CEO — Steven Bartlett (33 Laws of Business & Life)
+  "bk-014": {
+    bookId: "bk-014",
+    tagline: "The 33 laws of business and life — self, story, philosophy, team",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "dc-1",
+        title: "33 Laws, Four Pillars",
+        content:
+          "Bartlett distils years of building companies into 33 laws, grouped into four pillars: The Self, The Story, The Philosophy, and The Team. Master these in order and greatness becomes systematic, not accidental.",
+      },
+      {
+        id: "dc-2",
+        title: "Pillar 1 — The Self",
+        content:
+          "Everything starts with you, because the self is the only thing you truly control. Self-awareness, self-discipline, and the story you tell about yourself set the ceiling for everything else.",
+      },
+      {
+        id: "dc-3",
+        title: "Fill Your Five Buckets",
+        content:
+          "Law 1: your potential rests in five buckets — knowledge, skills, network, resources, and reputation — and they should be filled roughly in that order, because each one fills the next.",
+      },
+      {
+        id: "dc-4",
+        title: "The First Two Can't Be Stolen",
+        content:
+          "Knowledge and skills, the first two buckets, can never be taken from you. Even if you lose money, network, or reputation, those two let you rebuild everything.",
+      },
+      {
+        id: "dc-5",
+        title: "Don't Chase Money First",
+        content:
+          "People who chase resources and reputation before building knowledge and skills build on sand. Fill the foundational buckets and the rest follow more durably.",
+      },
+      {
+        id: "dc-6",
+        title: "Self-Awareness Is the Superpower",
+        content:
+          "You can't improve what you can't see. Honest self-awareness — about your habits, triggers, and blind spots — is the starting point of all growth.",
+      },
+      {
+        id: "dc-7",
+        title: "Discipline Is Self-Respect",
+        content:
+          "Self-control isn't punishment; it's a form of self-love. Doing what your future self will thank you for is how you honor your own potential.",
+      },
+      {
+        id: "dc-8",
+        title: "Your Self-Story Shapes You",
+        content:
+          "The narrative you repeat about yourself becomes your behaviour. Change the story from 'I'm not the kind of person who…' and you change what you do.",
+      },
+      {
+        id: "dc-9",
+        title: "Rewrite a Limiting Story",
+        content:
+          "Many limits are inherited beliefs, not facts. Audit the stories holding you back and deliberately author more empowering ones.",
+      },
+      {
+        id: "dc-10",
+        title: "Sweat the Small Stuff",
+        content:
+          "Bartlett flips the cliché: the tiny details others ignore are exactly where excellence lives. Caring about the small things compounds into a remarkable whole.",
+      },
+      {
+        id: "dc-11",
+        title: "Marginal Gains Compound",
+        content:
+          "Getting slightly better at many small things beats one big leap. Relentless minor improvements stack into an advantage rivals can't copy.",
+      },
+      {
+        id: "dc-12",
+        title: "Lean Into Bizarre Behaviour",
+        content:
+          "Law 5: when something confuses or unsettles you, lean in rather than away. The things you don't understand are usually where the biggest lessons and opportunities hide.",
+      },
+      {
+        id: "dc-13",
+        title: "Confusion Is a Signal",
+        content:
+          "Discomfort and confusion mark the edge of your understanding. Treat them as invitations to investigate, not reasons to retreat.",
+      },
+      {
+        id: "dc-14",
+        title: "Ask, Don't Tell",
+        content:
+          "Law 6, the question-behaviour effect: asking someone a question is more persuasive than telling them something. Questions engage people and prompt them to convince themselves.",
+      },
+      {
+        id: "dc-15",
+        title: "Questions Change Behaviour",
+        content:
+          "Asking 'will you exercise this week?' shifts behaviour more than saying 'you should.' Turn your statements into questions to influence others and yourself.",
+      },
+      {
+        id: "dc-16",
+        title: "Pillar 2 — The Story",
+        content:
+          "Influence flows through storytelling. To get people to trust, buy, follow, or act, you must master how to frame and tell a compelling story.",
+      },
+      {
+        id: "dc-17",
+        title: "Humans Buy Stories, Not Facts",
+        content:
+          "Data informs, but stories move. People make decisions emotionally and justify them with logic, so wrap your facts in a narrative that makes them feel.",
+      },
+      {
+        id: "dc-18",
+        title: "Avoid Being Wallpaper",
+        content:
+          "The forgettable and the safe get ignored. To be noticed you must be remarkable — literally worth remarking on — rather than blending into the background.",
+      },
+      {
+        id: "dc-19",
+        title: "The Power of Framing",
+        content:
+          "The same fact framed differently produces different reactions. How you present something often matters as much as the thing itself.",
+      },
+      {
+        id: "dc-20",
+        title: "Words Are Never Neutral",
+        content:
+          "Every word carries emotional weight and shapes perception. Choose language deliberately, because it quietly steers how people feel and decide.",
+      },
+      {
+        id: "dc-21",
+        title: "Give People a 'Because'",
+        content:
+          "A reason, even a simple one, dramatically increases compliance. Attaching a 'because' to your request makes people far more likely to say yes.",
+      },
+      {
+        id: "dc-22",
+        title: "Make the Abstract Tangible",
+        content:
+          "Big numbers and vague ideas don't land. Translate them into concrete, relatable images so people can actually grasp and feel them.",
+      },
+      {
+        id: "dc-23",
+        title: "Consistency Builds Trust",
+        content:
+          "A trusted brand or person is a predictable one. Showing up consistently, in message and quality, is how trust is slowly earned.",
+      },
+      {
+        id: "dc-24",
+        title: "Pillar 3 — The Philosophy",
+        content:
+          "Your personal philosophies are the single biggest predictor of how you'll behave in future. Adopt strong guiding principles and your decisions align themselves.",
+      },
+      {
+        id: "dc-25",
+        title: "Beliefs Drive Behaviour",
+        content:
+          "You don't rise to your goals; you fall to your philosophies. What you truly believe about work, failure, and effort shows up in what you do daily.",
+      },
+      {
+        id: "dc-26",
+        title: "Fall in Love With the Process",
+        content:
+          "Outcomes are unreliable; process is in your control. Learning to enjoy the daily grind is what sustains you long enough to win.",
+      },
+      {
+        id: "dc-27",
+        title: "Extreme Consistency Wins",
+        content:
+          "Most people are inconsistent, so consistency itself becomes an edge. Doing the boring fundamentals repeatedly beats sporadic brilliance.",
+      },
+      {
+        id: "dc-28",
+        title: "Kill Your Comfort",
+        content:
+          "Comfort is where growth goes to die. Deliberately choosing the harder, growth-producing path keeps you sharp and moving forward.",
+      },
+      {
+        id: "dc-29",
+        title: "Failure Is Feedback",
+        content:
+          "Treat failure as information, not identity. Each failure narrows the path to what works, provided you extract the lesson and continue.",
+      },
+      {
+        id: "dc-30",
+        title: "Reframe Stress as Challenge",
+        content:
+          "Stress viewed as a threat harms you; the same stress viewed as a challenge sharpens you. The story you tell about pressure changes its effect.",
+      },
+      {
+        id: "dc-31",
+        title: "Quit the Right Things",
+        content:
+          "Persistence matters, but so does quitting wisely. Abandoning the wrong goals frees your energy for the ones that truly deserve it.",
+      },
+      {
+        id: "dc-32",
+        title: "You Are Your Inputs",
+        content:
+          "The information, people, and content you consume shape your thinking. Curate your inputs the way an athlete curates their diet.",
+      },
+      {
+        id: "dc-33",
+        title: "Guard Your Standards",
+        content:
+          "You get the standards you're willing to walk past. Refusing to accept mediocrity — in yourself and around you — quietly sets the level of everything.",
+      },
+      {
+        id: "dc-34",
+        title: "Nurture Self-Belief",
+        content:
+          "Confidence is built by keeping small promises to yourself. Each commitment kept is evidence that you can trust your own word.",
+      },
+      {
+        id: "dc-35",
+        title: "Pillar 4 — The Team",
+        content:
+          "No one builds greatness alone. This pillar is about assembling the right people and getting the very best from them.",
+      },
+      {
+        id: "dc-36",
+        title: "Ask Who, Not How",
+        content:
+          "Law 28: instead of asking 'how do I do this?', ask 'who is the best person to do this?' Ego insists you do it yourself; potential insists you find the right people.",
+      },
+      {
+        id: "dc-37",
+        title: "Delegate to Grow",
+        content:
+          "Trying to do everything caps your growth at your own capacity. Delegating to capable people multiplies what you can achieve.",
+      },
+      {
+        id: "dc-38",
+        title: "Hire People Better Than You",
+        content:
+          "Great leaders surround themselves with people smarter than themselves in their domains. Insecurity hires down; confidence hires up.",
+      },
+      {
+        id: "dc-39",
+        title: "Culture Is What You Tolerate",
+        content:
+          "Culture isn't the values on the wall; it's the worst behaviour you allow. What you walk past, you endorse.",
+      },
+      {
+        id: "dc-40",
+        title: "Psychological Safety",
+        content:
+          "Teams perform best when people feel safe to speak up, admit mistakes, and challenge ideas. Fear silences the truths a leader most needs to hear.",
+      },
+      {
+        id: "dc-41",
+        title: "Leverage the Power of Progress",
+        content:
+          "Law 31: nothing motivates like felt progress. Break work into visible wins and celebrate them, because momentum, not pressure, sustains effort.",
+      },
+      {
+        id: "dc-42",
+        title: "Celebrate Small Wins",
+        content:
+          "Recognizing small steps forward releases motivation for the next. Progress you can see is the most reliable fuel for a team.",
+      },
+      {
+        id: "dc-43",
+        title: "Motivation Follows Momentum",
+        content:
+          "Waiting to feel motivated is backwards. Start, create a small win, and the momentum itself generates the motivation to continue.",
+      },
+      {
+        id: "dc-44",
+        title: "The Power of a Deadline",
+        content:
+          "Open-ended work drifts. A clear, meaningful deadline focuses energy and forces the decisions that endless time avoids.",
+      },
+      {
+        id: "dc-45",
+        title: "Turn Knowledge Into Skill",
+        content:
+          "Knowledge you can't apply is trivia. Skill comes from putting what you learn into deliberate, repeated practice.",
+      },
+      {
+        id: "dc-46",
+        title: "Skills Beat Credentials",
+        content:
+          "The market rewards what you can do, not what your certificate says. Build demonstrable skills and opportunities follow.",
+      },
+      {
+        id: "dc-47",
+        title: "Your Network Compounds",
+        content:
+          "Relationships built through genuine value compound over years. The network bucket fills fastest when you give before you take.",
+      },
+      {
+        id: "dc-48",
+        title: "Reputation Is Everything",
+        content:
+          "Reputation is the bucket that opens doors while you sleep. It's slow to build, fast to lose, and worth protecting above short-term gain.",
+      },
+      {
+        id: "dc-49",
+        title: "Feedback Over Praise",
+        content:
+          "Comfortable praise feels good but teaches little. Actively seeking honest, even harsh, feedback is how the ambitious improve fastest.",
+      },
+      {
+        id: "dc-50",
+        title: "Data Beats Opinion",
+        content:
+          "Bartlett's companies run on evidence, not ego. Test, measure, and let real results — not the loudest voice — decide the direction.",
+      },
+      {
+        id: "dc-51",
+        title: "Experiment Relentlessly",
+        content:
+          "Treat business and life as a series of experiments. Many small, cheap tests reveal what works far better than one big bet.",
+      },
+      {
+        id: "dc-52",
+        title: "Master One Thing",
+        content:
+          "Spreading thin produces mediocrity everywhere. Deep mastery in one area creates disproportionate value and reputation.",
+      },
+      {
+        id: "dc-53",
+        title: "Time Is Your Real Currency",
+        content:
+          "Money can be regained; time cannot. Spend your hours on what genuinely moves your buckets forward, and guard them from noise.",
+      },
+      {
+        id: "dc-54",
+        title: "Act Despite Fear",
+        content:
+          "Waiting to feel ready means waiting forever. The successful feel the same fear and doubt but choose to move anyway.",
+      },
+      {
+        id: "dc-55",
+        title: "Small Choices, Big Outcomes",
+        content:
+          "Greatness isn't one heroic act; it's thousands of small, disciplined choices repeated over years. Your future is built in the mundane moments.",
+      },
+      {
+        id: "dc-56",
+        title: "Be Honest, Especially With Yourself",
+        content:
+          "Self-deception is the costliest habit. Facing uncomfortable truths early prevents far larger failures later.",
+      },
+      {
+        id: "dc-57",
+        title: "Systems Over Motivation",
+        content:
+          "Motivation is fickle; systems are reliable. Design routines and environments that make the right behaviour the default.",
+      },
+      {
+        id: "dc-58",
+        title: "Stay a Student",
+        content:
+          "The moment you think you've arrived, you start falling behind. Lifelong curiosity keeps the knowledge bucket topping up.",
+      },
+      {
+        id: "dc-59",
+        title: "Give More Than You Take",
+        content:
+          "Generosity with value, knowledge, and help builds every bucket at once. What you give tends to return, compounded.",
+      },
+      {
+        id: "dc-60",
+        title: "Live the 33 Laws",
+        content:
+          "Master yourself, master your story, build a strong philosophy, and surround yourself with a great team. Practised together, these laws turn ordinary effort into extraordinary results.",
+      },
+    ],
+  },
+
   // How to Win Friends and Influence People — Dale Carnegie
   "bk-524": {
     bookId: "bk-524",

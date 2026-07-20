@@ -637,4 +637,12 @@ export const bookImages = {
   outlive: `${BOOK_IMAGE_BASE_PATH}/outlive.jpeg`,
   "a-house-without-windows": `${BOOK_IMAGE_BASE_PATH}/a-house-without-windows.jpeg`,
   "did-she-ever-love-me": `${BOOK_IMAGE_BASE_PATH}/did-she-ever-love-me.jpeg`,
+  "the-art-of-seduction": `${BOOK_IMAGE_BASE_PATH}/the-art-of-seduction.jpeg`,
+  "mastery": `${BOOK_IMAGE_BASE_PATH}/mastery.jpeg`,
+  "the-richest-man-in-babylon": `${BOOK_IMAGE_BASE_PATH}/the-richest-man-in-babylon.jpeg`,
+  "meditations": `${BOOK_IMAGE_BASE_PATH}/meditations.jpeg`,
+  "the-4-hour-work-week": `${BOOK_IMAGE_BASE_PATH}/the-4-hour-work-week.jpeg`,
+  "who-moved-my-cheese": `${BOOK_IMAGE_BASE_PATH}/who-moved-my-cheese.jpeg`,
+  "the-one-minute-manager": `${BOOK_IMAGE_BASE_PATH}/the-one-minute-manager.jpeg`,
+  "good-to-great": `${BOOK_IMAGE_BASE_PATH}/good-to-great.jpeg`,
 };

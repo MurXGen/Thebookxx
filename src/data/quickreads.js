@@ -5778,6 +5778,4539 @@ export const quickReads = {
     ],
   },
 
+  // Dopamine Detox — Thibaut Meurisse
+  "bk-244": {
+    bookId: "bk-244",
+    tagline: "A short guide to remove distractions and reclaim your focus",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "dd-1",
+        title: "The Overstimulated Brain",
+        content:
+          "Modern life bombards us with pings, feeds, and instant pleasures. Meurisse argues this constant stimulation is quietly destroying our focus and motivation.",
+      },
+      {
+        id: "dd-2",
+        title: "What Dopamine Really Does",
+        content:
+          "Dopamine isn't the 'pleasure chemical' so much as the 'wanting' chemical. It drives craving and the pursuit of rewards, not just enjoyment.",
+      },
+      {
+        id: "dd-3",
+        title: "Wired for the Next Hit",
+        content:
+          "Every notification and scroll delivers a small dopamine spike, training you to seek the next one. The chase itself becomes compulsive.",
+      },
+      {
+        id: "dd-4",
+        title: "The Instant Gratification Trap",
+        content:
+          "Easy, immediate pleasures crowd out slower, more meaningful rewards. We trade deep satisfaction for quick, shallow hits.",
+      },
+      {
+        id: "dd-5",
+        title: "The Cost of Constant Stimulation",
+        content:
+          "When you're always stimulated, ordinary tasks feel unbearably boring. Focus, patience, and motivation all quietly erode.",
+      },
+      {
+        id: "dd-6",
+        title: "Tolerance Raises the Bar",
+        content:
+          "The brain adapts to overstimulation, so you need ever more to feel the same buzz. Your baseline for satisfaction keeps climbing.",
+      },
+      {
+        id: "dd-7",
+        title: "The Baseline Problem",
+        content:
+          "With a sky-high stimulation baseline, calm activities feel flat and dull. The goal of a detox is to reset that baseline lower.",
+      },
+      {
+        id: "dd-8",
+        title: "What a Dopamine Detox Is",
+        content:
+          "A dopamine detox means temporarily removing high-stimulation activities so your brain resensitizes to normal, healthy rewards.",
+      },
+      {
+        id: "dd-9",
+        title: "Not About Dopamine Itself",
+        content:
+          "You can't and shouldn't eliminate dopamine — it's essential. The detox targets the compulsive, overstimulating behaviours around it.",
+      },
+      {
+        id: "dd-10",
+        title: "Resetting Your Sensitivity",
+        content:
+          "After a detox, simple things — a walk, a book, real work — feel rewarding again. You've restored your ability to enjoy the ordinary.",
+      },
+      {
+        id: "dd-11",
+        title: "Identify Your Distractions",
+        content:
+          "First, list what overstimulates you: the phone, social media, junk food, games. Awareness is the starting point of change.",
+      },
+      {
+        id: "dd-12",
+        title: "Rank Your Stimulations",
+        content:
+          "Sort your habits by how strongly they hook you. The most compulsive ones are the first to target in a detox.",
+      },
+      {
+        id: "dd-13",
+        title: "The Usual Culprits",
+        content:
+          "Endless scrolling, notifications, binge content, sugary food, and constant novelty are the main drivers of overstimulation.",
+      },
+      {
+        id: "dd-14",
+        title: "The Phone Is Engineered to Hook You",
+        content:
+          "Apps are designed by experts to capture and hold your attention. You're not weak-willed; you're up against deliberate manipulation.",
+      },
+      {
+        id: "dd-15",
+        title: "Choose Your Detox",
+        content:
+          "A detox can last a few hours, a day, or a weekend. Pick a length that challenges you without being impossible to sustain.",
+      },
+      {
+        id: "dd-16",
+        title: "Remove High-Stimulation Inputs",
+        content:
+          "During the detox, cut out the compulsive activities entirely. Put the phone away, log off, and avoid the usual quick fixes.",
+      },
+      {
+        id: "dd-17",
+        title: "Sit With Boredom",
+        content:
+          "Boredom is the whole point. Letting yourself be understimulated is what allows your brain to recalibrate.",
+      },
+      {
+        id: "dd-18",
+        title: "The Do-Nothing Exercise",
+        content:
+          "Try simply sitting and doing nothing for a while. It feels uncomfortable at first, then surprisingly clarifying.",
+      },
+      {
+        id: "dd-19",
+        title: "Discomfort Is Temporary",
+        content:
+          "The restlessness of a detox passes. Reminding yourself that the craving will fade makes it far easier to ride out.",
+      },
+      {
+        id: "dd-20",
+        title: "Cravings Come in Waves",
+        content:
+          "Urges rise, peak, and subside if you don't act on them. Watch a craving like a wave and let it wash past.",
+      },
+      {
+        id: "dd-21",
+        title: "Urge Surfing",
+        content:
+          "Instead of fighting or feeding a craving, observe it with curiosity. Noticing it without reacting robs it of power.",
+      },
+      {
+        id: "dd-22",
+        title: "After the Detox",
+        content:
+          "The reset isn't the end; how you reintroduce stimulation matters most. Return to habits deliberately, not automatically.",
+      },
+      {
+        id: "dd-23",
+        title: "Reintroduce Mindfully",
+        content:
+          "Bring back activities one at a time and notice their real effect on you. Some you'll want back; others you'll happily leave behind.",
+      },
+      {
+        id: "dd-24",
+        title: "Rediscover Simple Pleasures",
+        content:
+          "With a reset baseline, a coffee, a conversation, or a sunset feels genuinely good again. You relearn to enjoy quiet rewards.",
+      },
+      {
+        id: "dd-25",
+        title: "The Joy of Understimulation",
+        content:
+          "A less stimulated life is calmer and more present. You trade frantic buzz for steady, sustainable contentment.",
+      },
+      {
+        id: "dd-26",
+        title: "Single-Tasking",
+        content:
+          "Overstimulation trains constant task-switching. Doing one thing at a time rebuilds the focus that multitasking destroyed.",
+      },
+      {
+        id: "dd-27",
+        title: "Deep Focus Returns",
+        content:
+          "As your baseline drops, you can once again sit with a single task for long stretches. Concentration comes back with practice.",
+      },
+      {
+        id: "dd-28",
+        title: "Delayed Gratification",
+        content:
+          "The ability to postpone reward is a superpower. Detoxing strengthens your tolerance for effort before payoff.",
+      },
+      {
+        id: "dd-29",
+        title: "Hard Now, Easy Later",
+        content:
+          "Choosing the harder, less stimulating path today builds the focus and discipline that make tomorrow far easier.",
+      },
+      {
+        id: "dd-30",
+        title: "Align Actions With Goals",
+        content:
+          "Ask whether an activity moves you toward your goals or just soothes a craving. Let your goals, not your impulses, choose.",
+      },
+      {
+        id: "dd-31",
+        title: "The Pleasure Trap",
+        content:
+          "Cheap, effortless pleasures give a quick spike then leave you emptier. Meaningful rewards take effort but satisfy far longer.",
+      },
+      {
+        id: "dd-32",
+        title: "Effortful Rewards Satisfy More",
+        content:
+          "Pleasures you work for — skills, fitness, creation — bring durable fulfillment. Handed-to-you dopamine fades fast.",
+      },
+      {
+        id: "dd-33",
+        title: "Design Your Environment",
+        content:
+          "Willpower is unreliable; environment is dependable. Shape your surroundings so distractions are hard and good habits are easy.",
+      },
+      {
+        id: "dd-34",
+        title: "Make Distractions Harder",
+        content:
+          "Delete the apps, log out, leave the phone in another room. Every extra step between you and a distraction weakens its pull.",
+      },
+      {
+        id: "dd-35",
+        title: "Make Good Habits Easier",
+        content:
+          "Lay out the book, the gym clothes, the work tools. Reducing friction for good behaviour makes it the path of least resistance.",
+      },
+      {
+        id: "dd-36",
+        title: "Out of Sight, Out of Mind",
+        content:
+          "Cues trigger cravings. Removing tempting objects and notifications from view quietly removes the urge to use them.",
+      },
+      {
+        id: "dd-37",
+        title: "Set Boundaries With Tech",
+        content:
+          "Turn off non-essential notifications, use app limits, and schedule screen-free times. Boundaries protect your attention.",
+      },
+      {
+        id: "dd-38",
+        title: "Schedule Your Stimulation",
+        content:
+          "Rather than grazing on distraction all day, set specific windows for it. Contained stimulation loses its grip on your focus.",
+      },
+      {
+        id: "dd-39",
+        title: "Batch Your Inputs",
+        content:
+          "Check messages and feeds in a few dedicated blocks instead of constantly. Batching reduces the endless dopamine drip.",
+      },
+      {
+        id: "dd-40",
+        title: "Guard Your Mornings",
+        content:
+          "Starting the day with scrolling primes your brain for distraction. A calm, screen-free morning sets a focused tone.",
+      },
+      {
+        id: "dd-41",
+        title: "Build a Focus Ritual",
+        content:
+          "A consistent routine before deep work signals your brain it's time to concentrate, easing you past the pull of distraction.",
+      },
+      {
+        id: "dd-42",
+        title: "Embrace Slowness",
+        content:
+          "Not everything needs to be fast and stimulating. Slower, deliberate living restores presence and mental calm.",
+      },
+      {
+        id: "dd-43",
+        title: "Boredom Sparks Creativity",
+        content:
+          "When you stop numbing every dull moment, your mind wanders productively. Boredom is often the birthplace of new ideas.",
+      },
+      {
+        id: "dd-44",
+        title: "Rest Without a Screen",
+        content:
+          "Scrolling isn't real rest; it just restimulates. Genuine downtime — a walk, quiet, closed eyes — actually recharges you.",
+      },
+      {
+        id: "dd-45",
+        title: "Consume With Intention",
+        content:
+          "Choose deliberately what content and food you take in, rather than mindlessly grazing. Intention turns consumption into a choice.",
+      },
+      {
+        id: "dd-46",
+        title: "Quality Over Quantity",
+        content:
+          "A few enriching inputs beat an endless stream of shallow ones. Curate what you feed your mind as carefully as your body.",
+      },
+      {
+        id: "dd-47",
+        title: "The Comfort of Numbing",
+        content:
+          "We often reach for distraction to avoid uncomfortable feelings. The scroll is frequently an escape from something we don't want to feel.",
+      },
+      {
+        id: "dd-48",
+        title: "Face What You Avoid",
+        content:
+          "Beneath many cravings lies boredom, anxiety, or loneliness. Addressing the underlying feeling reduces the need to numb it.",
+      },
+      {
+        id: "dd-49",
+        title: "Replace, Don't Just Remove",
+        content:
+          "A vacuum invites relapse. Fill the time freed by the detox with meaningful, rewarding activities you actually value.",
+      },
+      {
+        id: "dd-50",
+        title: "Fill the Void With Meaning",
+        content:
+          "Hobbies, relationships, exercise, and creative work give lasting reward. Meaning is the healthiest replacement for cheap stimulation.",
+      },
+      {
+        id: "dd-51",
+        title: "Small Wins Rebuild Focus",
+        content:
+          "Each time you resist a distraction, your self-control strengthens. Stack small victories and focus grows steadily.",
+      },
+      {
+        id: "dd-52",
+        title: "Consistency Over Intensity",
+        content:
+          "One heroic detox day won't fix everything. Small, sustainable changes practiced consistently reshape your habits for good.",
+      },
+      {
+        id: "dd-53",
+        title: "Track Your Progress",
+        content:
+          "Noticing how your focus and mood improve reinforces the habit. Awareness of the payoff keeps you motivated to continue.",
+      },
+      {
+        id: "dd-54",
+        title: "Relapses Are Normal",
+        content:
+          "Slipping back into old habits doesn't mean failure. Notice it without shame, reset, and continue — progress isn't linear.",
+      },
+      {
+        id: "dd-55",
+        title: "Regular Mini-Detoxes",
+        content:
+          "Make periodic detoxes a routine — a screen-free evening or weekend. Regular resets keep your baseline healthy over time.",
+      },
+      {
+        id: "dd-56",
+        title: "Mind the Micro-Habits",
+        content:
+          "The reflexive phone-check while waiting is where overstimulation hides. Catching these tiny habits matters as much as the big ones.",
+      },
+      {
+        id: "dd-57",
+        title: "Protect Your Attention",
+        content:
+          "Your focus is your most valuable and most attacked resource. Guarding it is the real purpose behind any dopamine detox.",
+      },
+      {
+        id: "dd-58",
+        title: "Motivation Returns",
+        content:
+          "As overstimulation fades, tasks that felt impossibly boring become doable again. A reset brain rediscovers its drive.",
+      },
+      {
+        id: "dd-59",
+        title: "A Calmer, Sharper Mind",
+        content:
+          "Less noise means clearer thinking and steadier emotions. The detox trades scattered buzz for calm, focused clarity.",
+      },
+      {
+        id: "dd-60",
+        title: "Reclaim Your Time",
+        content:
+          "The hours lost to scrolling add up to years. Reducing distraction quietly gives you back enormous amounts of life.",
+      },
+      {
+        id: "dd-61",
+        title: "Presence Over Distraction",
+        content:
+          "Freed from constant stimulation, you're more present with people and experiences. Attention is the currency of a rich life.",
+      },
+      {
+        id: "dd-62",
+        title: "Redefine Fun",
+        content:
+          "As your baseline resets, your idea of enjoyment shifts from frantic stimulation to deeper, quieter pleasures.",
+      },
+      {
+        id: "dd-63",
+        title: "Discipline Is Freedom",
+        content:
+          "Controlling your impulses isn't restriction; it's liberation from being jerked around by every craving and notification.",
+      },
+      {
+        id: "dd-64",
+        title: "Start Today",
+        content:
+          "You don't need the perfect plan. Put the phone in another room for an hour and simply notice how it feels to begin.",
+      },
+      {
+        id: "dd-65",
+        title: "Awareness First",
+        content:
+          "Before changing anything, simply observe your habits for a day. Seeing how often you reach for a hit is itself transformative.",
+      },
+      {
+        id: "dd-66",
+        title: "One Habit at a Time",
+        content:
+          "Don't try to fix everything at once. Tackle your most disruptive habit first, then build from that early success.",
+      },
+      {
+        id: "dd-67",
+        title: "Reward Yourself Wisely",
+        content:
+          "Use effortful, healthy rewards to reinforce focus. Celebrating progress with meaningful treats keeps the change enjoyable.",
+      },
+      {
+        id: "dd-68",
+        title: "Balance, Not Deprivation",
+        content:
+          "The aim isn't a joyless life but a balanced one, where pleasures are chosen consciously rather than consumed compulsively.",
+      },
+      {
+        id: "dd-69",
+        title: "Long-Term Focus",
+        content:
+          "Keep your bigger goals in view. Remembering what you're focusing for makes resisting momentary distractions worthwhile.",
+      },
+      {
+        id: "dd-70",
+        title: "Freedom From the Feed",
+        content:
+          "Breaking the compulsive pull of the feed is genuinely freeing. You decide what deserves your attention, not the algorithm.",
+      },
+      {
+        id: "dd-71",
+        title: "A Sustainable Practice",
+        content:
+          "Dopamine management isn't a one-time cleanse but an ongoing way of living deliberately with technology and pleasure.",
+      },
+      {
+        id: "dd-72",
+        title: "Reclaim Your Life",
+        content:
+          "Reset your baseline, design your environment, and choose meaning over quick hits. In doing so, you take your focus — and your life — back.",
+      },
+    ],
+  },
+
+  // Mastery — Robert Greene
+  "bk-657": {
+    bookId: "bk-657",
+    tagline: "The path to mastery, decoded from history's greatest achievers",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "ms-1",
+        title: "Mastery Is the Ultimate Power",
+        content:
+          "Greene argues that reaching mastery in a field is the highest human power and fulfillment. It's a level of skill and intuition that feels almost magical from the outside.",
+      },
+      {
+        id: "ms-2",
+        title: "Not Genius, but Process",
+        content:
+          "Masters aren't born with superhuman gifts; they follow a process. Understanding that process makes mastery available to almost anyone.",
+      },
+      {
+        id: "ms-3",
+        title: "The Brain Is Built for It",
+        content:
+          "The human brain is designed to master skills through sustained practice. Our capacity to learn deeply is our greatest evolutionary advantage.",
+      },
+      {
+        id: "ms-4",
+        title: "A Path Anyone Can Walk",
+        content:
+          "By studying masters across history and fields, Greene distils a repeatable path — one you can follow with patience and desire.",
+      },
+      {
+        id: "ms-5",
+        title: "Discover Your Life's Task",
+        content:
+          "The journey begins with finding your calling — the unique work you were meant to do. This inner sense of purpose fuels the whole path.",
+      },
+      {
+        id: "ms-6",
+        title: "Your Primal Inclination",
+        content:
+          "We each have a deep, individual inclination — a subject or activity that fascinated us early. It's a clue to your life's task.",
+      },
+      {
+        id: "ms-7",
+        title: "Return to Childhood Fascinations",
+        content:
+          "The things that absorbed you as a child, before others' opinions intruded, often point toward your true calling.",
+      },
+      {
+        id: "ms-8",
+        title: "The Voice of Your Uniqueness",
+        content:
+          "You are one of a kind, with a distinct configuration of talents and interests. Mastery flows from honouring, not suppressing, that uniqueness.",
+      },
+      {
+        id: "ms-9",
+        title: "Rebel Against the Wrong Path",
+        content:
+          "Money, parents, or convenience can pull you into work that isn't yours. Have the courage to resist a path that betrays your inclination.",
+      },
+      {
+        id: "ms-10",
+        title: "Find Your Niche",
+        content:
+          "Seek or create a niche where your particular blend of skills stands out. Occupying ground no one else does is a route to mastery.",
+      },
+      {
+        id: "ms-11",
+        title: "Avoid the False Self",
+        content:
+          "The false self is who others expect you to be. Shedding it to reconnect with your genuine interests is essential to the journey.",
+      },
+      {
+        id: "ms-12",
+        title: "Trust Your Inclinations",
+        content:
+          "Follow the pull of what deeply interests you, even when the payoff isn't obvious. That inner compass rarely misleads.",
+      },
+      {
+        id: "ms-13",
+        title: "A Sense of Destiny",
+        content:
+          "Masters feel their work is a calling, not just a job. This sense of destiny sustains them through years of hard effort.",
+      },
+      {
+        id: "ms-14",
+        title: "Submit to Reality",
+        content:
+          "The next phase is the apprenticeship — a humbling immersion in learning the real, unglamorous fundamentals of your field.",
+      },
+      {
+        id: "ms-15",
+        title: "The Apprenticeship Phase",
+        content:
+          "After formal education comes the crucial period of transforming your mind through practice in the real world. It typically lasts years.",
+      },
+      {
+        id: "ms-16",
+        title: "Learning Over Earning",
+        content:
+          "Early on, prioritize what you learn over what you earn. Choosing growth-rich work over a slightly bigger paycheck pays off for decades.",
+      },
+      {
+        id: "ms-17",
+        title: "Value Education Above All",
+        content:
+          "See your first jobs as an education you're being paid for. The skills and knowledge you gain are worth far more than the salary.",
+      },
+      {
+        id: "ms-18",
+        title: "Deep Observation",
+        content:
+          "First, watch and absorb the rules, etiquette, and reality of your field before acting. Patient observation prevents costly early mistakes.",
+      },
+      {
+        id: "ms-19",
+        title: "Learn the Rules First",
+        content:
+          "Master the conventions and fundamentals thoroughly before trying to break them. You can only innovate on a foundation you truly understand.",
+      },
+      {
+        id: "ms-20",
+        title: "Skills Acquisition",
+        content:
+          "Second, dedicate yourself to acquiring skills through intense, repeated practice. This is where the brain physically rewires toward expertise.",
+      },
+      {
+        id: "ms-21",
+        title: "The Power of Practice",
+        content:
+          "Deep, focused practice — not raw talent — builds mastery. Roughly ten thousand hours of it separates the master from the amateur.",
+      },
+      {
+        id: "ms-22",
+        title: "Practice Rewires the Brain",
+        content:
+          "Repetition literally builds and strengthens neural pathways. What feels laborious at first becomes automatic and intuitive over time.",
+      },
+      {
+        id: "ms-23",
+        title: "Embrace Boredom and Repetition",
+        content:
+          "The tedious drilling of fundamentals is unavoidable. Those who push through the boredom reach fluency that the impatient never do.",
+      },
+      {
+        id: "ms-24",
+        title: "Move Toward Resistance",
+        content:
+          "Practice your weaknesses, not just your strengths. Deliberately tackling what's hard is where the real growth happens.",
+      },
+      {
+        id: "ms-25",
+        title: "Experimentation",
+        content:
+          "Third, once skilled, begin experimenting and taking on more responsibility. Testing your abilities against real challenges deepens them.",
+      },
+      {
+        id: "ms-26",
+        title: "A Feeling of Inferiority",
+        content:
+          "Enter each new field willing to feel like a beginner again. Humility and openness accelerate learning far more than pride.",
+      },
+      {
+        id: "ms-27",
+        title: "Expand Your Horizons",
+        content:
+          "Apprentice broadly, absorbing knowledge from adjacent fields. A wide base of skills fuels later originality and connection-making.",
+      },
+      {
+        id: "ms-28",
+        title: "Overcome Impatience",
+        content:
+          "The great enemy of mastery is the desire for quick results. Accepting that mastery takes years is itself a competitive advantage.",
+      },
+      {
+        id: "ms-29",
+        title: "Trust the Slow Process",
+        content:
+          "Progress in the apprenticeship is often invisible day to day, then suddenly leaps forward. Keep going through the plateaus.",
+      },
+      {
+        id: "ms-30",
+        title: "Find the Right Mentor",
+        content:
+          "A mentor can compress years of learning into months by guiding your practice and sharing hard-won wisdom directly.",
+      },
+      {
+        id: "ms-31",
+        title: "Absorb the Master's Power",
+        content:
+          "Learn intensely from someone further along than you, absorbing their knowledge, tricks, and way of thinking.",
+      },
+      {
+        id: "ms-32",
+        title: "Choose a Mentor Who Fits You",
+        content:
+          "Pick a mentor whose strengths match your needs and inclinations, not just the most famous name. Fit matters more than fame.",
+      },
+      {
+        id: "ms-33",
+        title: "Transform Their Knowledge",
+        content:
+          "Don't merely copy your mentor; adapt what you learn to your own personality and vision. Absorb, then make it yours.",
+      },
+      {
+        id: "ms-34",
+        title: "Give Back and Surpass",
+        content:
+          "The goal is eventually to internalize and then exceed your mentor. A good student honours a mentor by outgrowing them.",
+      },
+      {
+        id: "ms-35",
+        title: "Beware Over-Dependence",
+        content:
+          "Cling to a mentor too long and you stunt your own voice. Know when to leave the nest and forge your own path.",
+      },
+      {
+        id: "ms-36",
+        title: "Books and the Dead as Mentors",
+        content:
+          "When no living mentor is available, study the great figures of the past through their work. History offers endless masters to learn from.",
+      },
+      {
+        id: "ms-37",
+        title: "See People as They Are",
+        content:
+          "To thrive, you need social intelligence — the ability to read people accurately and navigate the human world without naivety.",
+      },
+      {
+        id: "ms-38",
+        title: "Shed Your Naivety",
+        content:
+          "Idealizing people or assuming everyone shares your goals leads to painful setbacks. Seeing others clearly protects your progress.",
+      },
+      {
+        id: "ms-39",
+        title: "Read the Room",
+        content:
+          "Learn to sense the moods, politics, and unspoken rules around you. Social awareness keeps your talent from being derailed by others.",
+      },
+      {
+        id: "ms-40",
+        title: "Craft the Right Image",
+        content:
+          "How you present yourself shapes the opportunities you're given. Manage your image thoughtfully as part of your rise.",
+      },
+      {
+        id: "ms-41",
+        title: "Avoid Envy and Enemies",
+        content:
+          "Talent breeds envy. Downplay your brilliance where needed and avoid making unnecessary enemies who can block your path.",
+      },
+      {
+        id: "ms-42",
+        title: "Suffer Fools Patiently",
+        content:
+          "You'll encounter difficult, foolish people. Learning to handle them calmly, rather than react, keeps your energy on the work.",
+      },
+      {
+        id: "ms-43",
+        title: "Don't Let Ego Blind You",
+        content:
+          "Grandiosity and defensiveness distort your perception of people and feedback. Keep your ego in check to keep learning.",
+      },
+      {
+        id: "ms-44",
+        title: "Empathy as a Tool",
+        content:
+          "Deep empathy lets you understand collaborators, rivals, and audiences. Reading people well is itself a mastered skill.",
+      },
+      {
+        id: "ms-45",
+        title: "Awaken the Dimensional Mind",
+        content:
+          "After the apprenticeship comes the creative-active phase, where you use your mastered skills to create original, powerful work.",
+      },
+      {
+        id: "ms-46",
+        title: "From Apprentice to Creator",
+        content:
+          "Once the fundamentals are automatic, your mind is freed to innovate, connect, and invent. Skill becomes the platform for creativity.",
+      },
+      {
+        id: "ms-47",
+        title: "Keep the Mind Open",
+        content:
+          "Guard against the rigidity that success can bring. Staying curious and flexible keeps your creative powers alive.",
+      },
+      {
+        id: "ms-48",
+        title: "Hold Uncertainty",
+        content:
+          "Resist the urge to rush to conclusions. Sitting with open questions and ambiguity is where original ideas incubate.",
+      },
+      {
+        id: "ms-49",
+        title: "Let Ideas Incubate",
+        content:
+          "Alternate intense focus with relaxed downtime. The unconscious mind synthesizes solutions when you step away from the problem.",
+      },
+      {
+        id: "ms-50",
+        title: "Mechanical vs Living Intelligence",
+        content:
+          "Rote, mechanical thinking produces dull work. Living intelligence stays adaptive, questioning, and alive to new possibilities.",
+      },
+      {
+        id: "ms-51",
+        title: "Combine Distant Fields",
+        content:
+          "Breakthroughs often come from linking ideas across unrelated domains. A broad apprenticeship makes these fertile connections possible.",
+      },
+      {
+        id: "ms-52",
+        title: "Question Assumptions",
+        content:
+          "Look at your field with fresh eyes and challenge what everyone takes for granted. Assumptions are where hidden opportunities hide.",
+      },
+      {
+        id: "ms-53",
+        title: "Embrace Serendipity",
+        content:
+          "Stay alert to accidents and anomalies. Many great discoveries came from noticing what others dismissed as chance.",
+      },
+      {
+        id: "ms-54",
+        title: "Fail Forward",
+        content:
+          "Creative work means frequent failure. Treat each failure as data, adjust, and try again — persistence outlasts frustration.",
+      },
+      {
+        id: "ms-55",
+        title: "The Emotional Pitfalls of Creativity",
+        content:
+          "Impatience, complacency, and fear of criticism sabotage creative growth. Managing these emotions is part of the work.",
+      },
+      {
+        id: "ms-56",
+        title: "Fuse Intuition and Reason",
+        content:
+          "True mastery unites deep intuition with rational analysis. The master feels the right move and can also explain it.",
+      },
+      {
+        id: "ms-57",
+        title: "The Master's Intuition",
+        content:
+          "After years of practice, masters develop a high-level intuition — an instant grasp of situations that looks like a sixth sense.",
+      },
+      {
+        id: "ms-58",
+        title: "The Fingertip Feel",
+        content:
+          "Masters seem to feel the answer before they reason it out. This tacit, embodied knowledge is the fruit of thousands of hours.",
+      },
+      {
+        id: "ms-59",
+        title: "See the Whole",
+        content:
+          "Where beginners see fragments, masters perceive the entire system at once — how every part relates to the living whole.",
+      },
+      {
+        id: "ms-60",
+        title: "Thinking Becomes Seeing",
+        content:
+          "At the highest level, deliberate analysis gives way to direct perception. The master simply sees what needs to be done.",
+      },
+      {
+        id: "ms-61",
+        title: "Connect With Your Field",
+        content:
+          "Masters feel deeply connected to their subject, almost merging with it. That intimate bond is what produces effortless brilliance.",
+      },
+      {
+        id: "ms-62",
+        title: "Intuition Takes Years",
+        content:
+          "There's no shortcut to the master's intuition; it's built only through prolonged, immersive practice. Time is the essential ingredient.",
+      },
+      {
+        id: "ms-63",
+        title: "Passion Fuels the Journey",
+        content:
+          "Love for the work is what carries you through the long, hard years. Genuine passion, not willpower alone, sustains mastery.",
+      },
+      {
+        id: "ms-64",
+        title: "Patience Is Essential",
+        content:
+          "Mastery unfolds over a decade or more. Cultivating patience against a culture of instant results is itself a discipline.",
+      },
+      {
+        id: "ms-65",
+        title: "There Are No Shortcuts",
+        content:
+          "Hacks and quick fixes can't replace deep practice. The path is long by nature, and trying to skip it only leads back to the start.",
+      },
+      {
+        id: "ms-66",
+        title: "Resistance Is the Path",
+        content:
+          "The obstacles and difficulties in your field aren't detours — they're the very terrain of mastery. Lean into the hard parts.",
+      },
+      {
+        id: "ms-67",
+        title: "Turn Weakness Into Strength",
+        content:
+          "Masters often transform an early limitation into a distinctive strength. Your struggles can become the source of your originality.",
+      },
+      {
+        id: "ms-68",
+        title: "Adversity Sharpens Mastery",
+        content:
+          "Setbacks, if met with resolve, forge resilience and depth. The hardest periods often precede the greatest leaps.",
+      },
+      {
+        id: "ms-69",
+        title: "Time and Effort Over Talent",
+        content:
+          "Given enough focused time and effort, dedication beats raw talent. The tortoise of persistence outpaces the hare of gifts.",
+      },
+      {
+        id: "ms-70",
+        title: "Stay a Lifelong Learner",
+        content:
+          "Mastery isn't a final destination but a continuing practice. The greatest masters keep learning and growing until the end.",
+      },
+      {
+        id: "ms-71",
+        title: "Avoid Complacency at the Top",
+        content:
+          "Success can breed the rigidity and arrogance that end growth. Guard against resting on past achievements.",
+      },
+      {
+        id: "ms-72",
+        title: "Reconnect With Your Calling",
+        content:
+          "When you feel lost or stuck, return to the original inclination that started you. Your life's task keeps pointing the way home.",
+      },
+      {
+        id: "ms-73",
+        title: "The Reward Is Freedom",
+        content:
+          "Mastery brings a rare freedom — to work on your own terms, create what you envision, and shape your world. It's power in the deepest sense.",
+      },
+      {
+        id: "ms-74",
+        title: "Fulfillment Through Craft",
+        content:
+          "Beyond money or fame, mastery offers profound fulfillment — the deep satisfaction of doing meaningful work exceptionally well.",
+      },
+      {
+        id: "ms-75",
+        title: "Focus Beats Multitasking",
+        content:
+          "Deep skill requires sustained concentration on one pursuit. Scattering your energy across many things prevents mastery of any.",
+      },
+      {
+        id: "ms-76",
+        title: "Apprentice, Then Innovate",
+        content:
+          "You must earn the right to be creative by first mastering the craft. Innovation without foundation is just noise.",
+      },
+      {
+        id: "ms-77",
+        title: "Learn From Everything",
+        content:
+          "Masters extract lessons from every experience, success, and failure alike. A learning mindset turns all of life into training.",
+      },
+      {
+        id: "ms-78",
+        title: "The Alchemy of Learning",
+        content:
+          "Through practice, information becomes skill, skill becomes intuition, and intuition becomes mastery. Each stage transmutes the last.",
+      },
+      {
+        id: "ms-79",
+        title: "Guard Your Time",
+        content:
+          "Mastery demands enormous focused hours. Protecting your time from distraction and trivial demands is protecting your future.",
+      },
+      {
+        id: "ms-80",
+        title: "Practice With Intensity",
+        content:
+          "Hours alone aren't enough; the quality of attention matters. Fully engaged, deliberate practice accelerates growth dramatically.",
+      },
+      {
+        id: "ms-81",
+        title: "Feedback Fuels Growth",
+        content:
+          "Seek honest feedback and measure your progress. Without it, you may practice your errors and plateau unknowingly.",
+      },
+      {
+        id: "ms-82",
+        title: "Cultivate Curiosity",
+        content:
+          "An endless, childlike curiosity keeps you exploring and improving. It's the renewable fuel of the master's mind.",
+      },
+      {
+        id: "ms-83",
+        title: "Immerse Yourself Fully",
+        content:
+          "Total immersion in your field speeds learning immensely. Surround yourself with the work, the people, and the challenges of your craft.",
+      },
+      {
+        id: "ms-84",
+        title: "Discipline and Desire",
+        content:
+          "Mastery weds fiery desire with steady discipline. Passion supplies the drive; discipline turns it into daily, consistent effort.",
+      },
+      {
+        id: "ms-85",
+        title: "Own Your Development",
+        content:
+          "No one hands you mastery. Take charge of your own growth — choose your practice, mentors, and challenges deliberately.",
+      },
+      {
+        id: "ms-86",
+        title: "The Long Game Wins",
+        content:
+          "Those who think in years and decades outlast those chasing quick wins. Mastery rewards a long-term, patient orientation.",
+      },
+      {
+        id: "ms-87",
+        title: "Reinvent When Needed",
+        content:
+          "Fields and circumstances change. Masters keep adapting, sometimes reinventing themselves, rather than clinging to old methods.",
+      },
+      {
+        id: "ms-88",
+        title: "Connect Skill to Purpose",
+        content:
+          "Mastery gains its full power when aimed at something meaningful. Skill in service of a deeper purpose creates lasting value.",
+      },
+      {
+        id: "ms-89",
+        title: "Mastery Is a Way of Life",
+        content:
+          "More than a goal, mastery is an orientation — a lifelong commitment to learning, patience, and excellence in your craft.",
+      },
+      {
+        id: "ms-90",
+        title: "Everyone Has the Potential",
+        content:
+          "Greene's core belief: mastery isn't for a chosen few. With the right process and dedication, the potential lives in you.",
+      },
+      {
+        id: "ms-91",
+        title: "Start Where You Are",
+        content:
+          "You don't need perfect conditions to begin. Take the next step on your path today, and let the process unfold.",
+      },
+      {
+        id: "ms-92",
+        title: "Honour Your Uniqueness",
+        content:
+          "Your particular mix of interests and experiences is your greatest asset. Build your mastery around what makes you unlike anyone else.",
+      },
+      {
+        id: "ms-93",
+        title: "The Master's Peace",
+        content:
+          "Deep mastery brings a quiet confidence and calm. Having earned real competence, the master no longer needs to prove anything.",
+      },
+      {
+        id: "ms-94",
+        title: "Achieve Your Mastery",
+        content:
+          "Discover your calling, apprentice with humility, find mentors, sharpen your social and creative minds, and practice relentlessly. That is the road to mastery.",
+      },
+    ],
+  },
+
+  // Good to Great — Jim Collins
+  "bk-663": {
+    bookId: "bk-663",
+    tagline: "Why some companies make the leap from good to great — and others don't",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "gg-1",
+        title: "Good Is the Enemy of Great",
+        content:
+          "Collins opens with a paradox: the reason so few things become great is that most are merely good. Settling for good quietly blocks greatness.",
+      },
+      {
+        id: "gg-2",
+        title: "A Five-Year Study",
+        content:
+          "His team studied companies that jumped from good to great results and sustained them, comparing each to a similar company that didn't. The patterns are striking.",
+      },
+      {
+        id: "gg-3",
+        title: "Greatness Is a Choice",
+        content:
+          "Greatness isn't a matter of circumstance or luck; it's largely a matter of conscious choice and discipline. Any organization can pursue it.",
+      },
+      {
+        id: "gg-4",
+        title: "Level 5 Leadership",
+        content:
+          "The great companies were led by 'Level 5' leaders — a rare blend of deep personal humility and intense professional will.",
+      },
+      {
+        id: "gg-5",
+        title: "Humility Plus Will",
+        content:
+          "Level 5 leaders are ambitious first for the company, not themselves. They're modest and self-effacing, yet fiercely determined to succeed.",
+      },
+      {
+        id: "gg-6",
+        title: "The Window and the Mirror",
+        content:
+          "In success, Level 5 leaders look out the window to credit others and luck. In failure, they look in the mirror to take responsibility.",
+      },
+      {
+        id: "gg-7",
+        title: "Not About Charisma",
+        content:
+          "The best leaders weren't larger-than-life celebrities. Quiet, determined, and results-focused, they built greatness that outlasted them.",
+      },
+      {
+        id: "gg-8",
+        title: "First Who, Then What",
+        content:
+          "Great companies got the right people on the bus before deciding where to drive it. Who is on the team matters more than the initial strategy.",
+      },
+      {
+        id: "gg-9",
+        title: "Get the Right People On",
+        content:
+          "Start by attracting self-motivated, high-character people. With the right people, you can adapt strategy far more easily.",
+      },
+      {
+        id: "gg-10",
+        title: "Get the Wrong People Off",
+        content:
+          "Just as important is getting the wrong people off the bus. Keeping poor fits, out of comfort, drags the whole organization down.",
+      },
+      {
+        id: "gg-11",
+        title: "The Right Seats",
+        content:
+          "Then put the right people in the right seats, matched to their strengths. Talent aligned to role multiplies performance.",
+      },
+      {
+        id: "gg-12",
+        title: "People Are Not the Asset",
+        content:
+          "Collins refines the cliché: people aren't your most important asset — the right people are. Fit and character matter more than headcount.",
+      },
+      {
+        id: "gg-13",
+        title: "Rigorous, Not Ruthless",
+        content:
+          "Great companies are demanding but fair. They apply high standards consistently rather than through cruelty or arbitrary layoffs.",
+      },
+      {
+        id: "gg-14",
+        title: "When in Doubt, Don't Hire",
+        content:
+          "Rather than settle, great companies keep looking until they find the right person. Compromising on people is a costly mistake.",
+      },
+      {
+        id: "gg-15",
+        title: "Best People, Biggest Opportunities",
+        content:
+          "Put your strongest people on your biggest opportunities, not your biggest problems. Ride your winners.",
+      },
+      {
+        id: "gg-16",
+        title: "Confront the Brutal Facts",
+        content:
+          "Great companies face reality honestly, however harsh, while never losing faith they'll prevail. Truth and hope must coexist.",
+      },
+      {
+        id: "gg-17",
+        title: "The Stockdale Paradox",
+        content:
+          "Named for a POW who survived by holding two truths: confront the brutal facts of your situation, yet retain unwavering faith in the end.",
+      },
+      {
+        id: "gg-18",
+        title: "Faith and Facts Together",
+        content:
+          "Blind optimists who denied reality fared worst. Survivors both faced the facts and believed they would ultimately triumph.",
+      },
+      {
+        id: "gg-19",
+        title: "Create a Climate of Truth",
+        content:
+          "Build a culture where facts are heard and hard truths surface. Leaders should create conditions where the truth can be told.",
+      },
+      {
+        id: "gg-20",
+        title: "Lead With Questions",
+        content:
+          "Great leaders ask questions to understand reality, not to blame. Curiosity and humility invite the honest information you need.",
+      },
+      {
+        id: "gg-21",
+        title: "Autopsies Without Blame",
+        content:
+          "Examine failures openly to learn, without punishing the messenger. Blame-free analysis is how organizations improve.",
+      },
+      {
+        id: "gg-22",
+        title: "The Hedgehog Concept",
+        content:
+          "Great companies found one simple, clarifying idea — their Hedgehog Concept — and organized everything around it.",
+      },
+      {
+        id: "gg-23",
+        title: "The Three Circles",
+        content:
+          "The Hedgehog Concept lives at the intersection of three questions: what you're deeply passionate about, what you can be best at, and what drives your economics.",
+      },
+      {
+        id: "gg-24",
+        title: "What You're Passionate About",
+        content:
+          "Find the work that genuinely fires up your organization. Passion can't be manufactured; it must be discovered.",
+      },
+      {
+        id: "gg-25",
+        title: "What You Can Be Best At",
+        content:
+          "Identify what you can truly be the best in the world at — and, just as important, what you cannot. Honesty here is crucial.",
+      },
+      {
+        id: "gg-26",
+        title: "What Drives Your Economics",
+        content:
+          "Understand the single measure that best drives your economic engine. Clarity about what makes money focuses every decision.",
+      },
+      {
+        id: "gg-27",
+        title: "The Intersection Is Your Focus",
+        content:
+          "Where all three circles overlap is where you should concentrate. Everything outside that intersection is a distraction.",
+      },
+      {
+        id: "gg-28",
+        title: "Simplicity Within Complexity",
+        content:
+          "The Hedgehog Concept distils a complex world into one guiding idea. Great strategy is often piercingly simple.",
+      },
+      {
+        id: "gg-29",
+        title: "The Fox and the Hedgehog",
+        content:
+          "The fox knows many things; the hedgehog knows one big thing. Great companies are hedgehogs, focused relentlessly on their one concept.",
+      },
+      {
+        id: "gg-30",
+        title: "It Takes Time to Find",
+        content:
+          "The Hedgehog Concept isn't obvious overnight; it emerges through honest reflection and debate. Patience in finding it pays off.",
+      },
+      {
+        id: "gg-31",
+        title: "A Culture of Discipline",
+        content:
+          "Great companies pair disciplined people with disciplined thought and disciplined action. Discipline runs through everything they do.",
+      },
+      {
+        id: "gg-32",
+        title: "Disciplined People",
+        content:
+          "With the right, self-disciplined people on board, you need less bureaucracy and control. Good people manage themselves.",
+      },
+      {
+        id: "gg-33",
+        title: "Disciplined Thought",
+        content:
+          "Confronting facts and holding to the Hedgehog Concept are acts of disciplined thinking. Rigor of mind precedes rigor of action.",
+      },
+      {
+        id: "gg-34",
+        title: "Disciplined Action",
+        content:
+          "Consistently doing what fits the Hedgehog Concept — and refusing what doesn't — is disciplined action. Say no to the tempting distractions.",
+      },
+      {
+        id: "gg-35",
+        title: "Freedom Within a Framework",
+        content:
+          "Discipline isn't rigid control. Within a clear framework, disciplined people are given great freedom and responsibility.",
+      },
+      {
+        id: "gg-36",
+        title: "The Stop-Doing List",
+        content:
+          "Great companies are as clear about what to stop doing as what to start. Discipline means pruning anything outside the three circles.",
+      },
+      {
+        id: "gg-37",
+        title: "Technology Accelerators",
+        content:
+          "Great companies use technology to accelerate momentum, not to create it. They adopt tech that fits their Hedgehog Concept.",
+      },
+      {
+        id: "gg-38",
+        title: "Technology Doesn't Cause Greatness",
+        content:
+          "Technology is an accelerator of existing momentum, never the primary cause of a leap. Fundamentals come first.",
+      },
+      {
+        id: "gg-39",
+        title: "Crawl, Walk, Run",
+        content:
+          "Great companies think carefully before adopting new technology, then apply it deliberately. Hype-chasing is a comparison company's habit.",
+      },
+      {
+        id: "gg-40",
+        title: "The Flywheel",
+        content:
+          "Transformation is like turning a giant flywheel: each push builds on the last until momentum makes it nearly unstoppable.",
+      },
+      {
+        id: "gg-41",
+        title: "Momentum Builds Slowly",
+        content:
+          "There's no single dramatic moment of breakthrough. Greatness comes from consistent effort compounding over years.",
+      },
+      {
+        id: "gg-42",
+        title: "No Miracle Moment",
+        content:
+          "From outside it looks like a sudden leap, but insiders know it was gradual, cumulative work. Overnight success is a myth.",
+      },
+      {
+        id: "gg-43",
+        title: "The Doom Loop",
+        content:
+          "Comparison companies lurched from program to program, chasing quick fixes and never building momentum. Inconsistency kills the flywheel.",
+      },
+      {
+        id: "gg-44",
+        title: "Avoid Reactive Lurching",
+        content:
+          "Constantly changing direction resets your progress to zero. Sustained, consistent pushes in one direction win.",
+      },
+      {
+        id: "gg-45",
+        title: "Buildup and Breakthrough",
+        content:
+          "Greatness follows a pattern of long buildup then breakthrough. The unglamorous buildup is where the real work happens.",
+      },
+      {
+        id: "gg-46",
+        title: "Consistency Over Time",
+        content:
+          "Doing the right things, aligned to your concept, again and again, is what turns the flywheel. Patience and persistence compound.",
+      },
+      {
+        id: "gg-47",
+        title: "The Genius of the AND",
+        content:
+          "Great companies embrace both ends of paradoxes — humility and will, freedom and discipline — rather than choosing one.",
+      },
+      {
+        id: "gg-48",
+        title: "Reject the Tyranny of OR",
+        content:
+          "Don't accept that you must choose between, say, purpose and profit. The great figure out how to have both.",
+      },
+      {
+        id: "gg-49",
+        title: "Preserve the Core, Stimulate Progress",
+        content:
+          "Enduring greatness holds firmly to core values while relentlessly changing strategies and practices. Stability and change coexist.",
+      },
+      {
+        id: "gg-50",
+        title: "Greatness Takes Patience",
+        content:
+          "The leap from good to great demands discipline and years of consistent effort. There are no shortcuts to lasting excellence.",
+      },
+      {
+        id: "gg-51",
+        title: "Culture Over Charisma",
+        content:
+          "Sustained greatness comes from disciplined culture, not a heroic leader. Build systems and values that outlive any individual.",
+      },
+      {
+        id: "gg-52",
+        title: "Focus Beats Diversification",
+        content:
+          "The great companies concentrated on what they could be best at. Sprawling into everything diluted the comparison companies.",
+      },
+      {
+        id: "gg-53",
+        title: "Face Reality, Keep Faith",
+        content:
+          "The Stockdale Paradox applies to any hard endeavour: see the brutal facts clearly, yet never abandon belief in eventual victory.",
+      },
+      {
+        id: "gg-54",
+        title: "Right People First, Always",
+        content:
+          "When in doubt, invest in getting and keeping the right people. Nearly every other principle depends on this foundation.",
+      },
+      {
+        id: "gg-55",
+        title: "Apply It Beyond Business",
+        content:
+          "Level 5 humility, the Hedgehog Concept, disciplined action, and the flywheel apply to careers, teams, and personal goals too.",
+      },
+      {
+        id: "gg-56",
+        title: "Build Something That Lasts",
+        content:
+          "Good to Great is about enduring excellence, not a temporary spike. The aim is greatness that sustains long after the leap.",
+      },
+      {
+        id: "gg-57",
+        title: "Greatness Is Not Luck",
+        content:
+          "Collins found that great companies didn't have better luck than their peers — they made better, more disciplined choices.",
+      },
+      {
+        id: "gg-58",
+        title: "From Good to Great",
+        content:
+          "Get the right people, confront the facts, find your Hedgehog Concept, build a culture of discipline, and keep turning the flywheel. That is the path to greatness.",
+      },
+    ],
+  },
+
+  // The One Minute Manager — Kenneth Blanchard & Spencer Johnson
+  "bk-662": {
+    bookId: "bk-662",
+    tagline: "A simple system for managing people and getting great results",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "om-1",
+        title: "Managing in a Minute",
+        content:
+          "Told as a fable, the book follows a young man seeking a great manager. He discovers a leader who gets superb results with a remarkably simple approach.",
+      },
+      {
+        id: "om-2",
+        title: "Tough vs Nice — Be Both",
+        content:
+          "Most managers are either tough (results-focused) or nice (people-focused). The One Minute Manager combines both, caring about people and results.",
+      },
+      {
+        id: "om-3",
+        title: "Results Through People",
+        content:
+          "The central belief: people who feel good about themselves produce good results. Managing well means helping people feel good and perform well.",
+      },
+      {
+        id: "om-4",
+        title: "The Three Secrets",
+        content:
+          "The whole method rests on three quick practices: One Minute Goals, One Minute Praisings, and One Minute Re-Directs (originally Reprimands).",
+      },
+      {
+        id: "om-5",
+        title: "Secret 1 — One Minute Goals",
+        content:
+          "Clear goals are the foundation. Manager and employee agree on what needs doing and what good performance looks like — briefly and specifically.",
+      },
+      {
+        id: "om-6",
+        title: "Set Goals Together",
+        content:
+          "Goals aren't dictated from above; they're agreed upon. Shared ownership makes people far more committed to reaching them.",
+      },
+      {
+        id: "om-7",
+        title: "Keep Goals Short",
+        content:
+          "Each goal fits on a single page, readable in a minute. If it takes longer, it's too complicated to guide daily behaviour.",
+      },
+      {
+        id: "om-8",
+        title: "Review Goals Often",
+        content:
+          "People should reread their goals regularly and check whether their behaviour matches them. Frequent review keeps effort on target.",
+      },
+      {
+        id: "om-9",
+        title: "Goals Begin Behaviors",
+        content:
+          "Clear goals start good performance; without them, people can't know what's expected. Clarity up front prevents most problems.",
+      },
+      {
+        id: "om-10",
+        title: "Know What Good Looks Like",
+        content:
+          "Define success concretely so everyone recognizes it. Vague expectations lead to confusion, frustration, and finger-pointing.",
+      },
+      {
+        id: "om-11",
+        title: "Focus on the Vital Few",
+        content:
+          "Rather than dozens of goals, focus on the few that drive most results. A handful of clear priorities beats a long, fuzzy list.",
+      },
+      {
+        id: "om-12",
+        title: "Catch People Doing Right",
+        content:
+          "The key to developing people is to catch them doing something right, not to catch them making mistakes. Look for the good.",
+      },
+      {
+        id: "om-13",
+        title: "Secret 2 — One Minute Praisings",
+        content:
+          "When someone does well, praise them promptly and specifically. Immediate, genuine recognition is one of the most powerful management tools.",
+      },
+      {
+        id: "om-14",
+        title: "Praise Immediately",
+        content:
+          "Don't save praise for an annual review. Recognizing good work as it happens reinforces the behaviour while it's fresh.",
+      },
+      {
+        id: "om-15",
+        title: "Be Specific",
+        content:
+          "Tell people exactly what they did right. Specific praise teaches them what to repeat, where vague compliments teach nothing.",
+      },
+      {
+        id: "om-16",
+        title: "Share How You Feel",
+        content:
+          "Let people know how their good work makes you feel and how it helps the team. Genuine emotion makes praise land deeply.",
+      },
+      {
+        id: "om-17",
+        title: "Encourage More of the Same",
+        content:
+          "End a praising by encouraging them to keep it up. Positive reinforcement makes good behaviour more likely to recur.",
+      },
+      {
+        id: "om-18",
+        title: "Praise Progress, Not Just Perfection",
+        content:
+          "Especially when people are learning, praise approximate successes. Rewarding steps in the right direction builds momentum toward mastery.",
+      },
+      {
+        id: "om-19",
+        title: "Help People Win",
+        content:
+          "A good manager sets people up to succeed and then celebrates it. Your job is to help your team feel like winners.",
+      },
+      {
+        id: "om-20",
+        title: "Secret 3 — One Minute Re-Directs",
+        content:
+          "When someone with the skills makes a mistake, address it quickly and clearly, then reaffirm your confidence in them.",
+      },
+      {
+        id: "om-21",
+        title: "Address Mistakes Promptly",
+        content:
+          "Don't let errors pile up for a big blowup later. Quick, calm correction is fairer and far more effective.",
+      },
+      {
+        id: "om-22",
+        title: "Confirm the Facts First",
+        content:
+          "Before redirecting, make sure you understand what actually happened. Correcting based on assumptions destroys trust.",
+      },
+      {
+        id: "om-23",
+        title: "Be Clear About What Went Wrong",
+        content:
+          "State specifically what the mistake was and how it affects things. Precision helps the person understand and fix it.",
+      },
+      {
+        id: "om-24",
+        title: "Then Reaffirm the Person",
+        content:
+          "After the correction, remind them that you value them and believe in their ability. The behaviour was wrong; the person is still good.",
+      },
+      {
+        id: "om-25",
+        title: "Tough on Behavior, Kind to the Person",
+        content:
+          "Separate the deed from the doer. You can be firm about a mistake while remaining warm and supportive toward the individual.",
+      },
+      {
+        id: "om-26",
+        title: "End on a Positive Note",
+        content:
+          "A re-direct closes with encouragement, not lingering criticism. People leave motivated to improve rather than deflated.",
+      },
+      {
+        id: "om-27",
+        title: "Don't Attack Self-Worth",
+        content:
+          "Criticizing character rather than behaviour crushes confidence. Protect people's sense of worth even while correcting their work.",
+      },
+      {
+        id: "om-28",
+        title: "Feedback Is the Breakfast of Champions",
+        content:
+          "People need timely feedback to grow. Regular, honest input — praise and correction alike — fuels high performance.",
+      },
+      {
+        id: "om-29",
+        title: "Consequences Maintain Behavior",
+        content:
+          "Goals begin behavior, but what happens afterward — praise or correction — determines whether it continues. Follow-through matters.",
+      },
+      {
+        id: "om-30",
+        title: "Everyone Is a Potential Winner",
+        content:
+          "Some people are winners who just look like losers because a manager hasn't helped them yet. Believe in people's potential.",
+      },
+      {
+        id: "om-31",
+        title: "Believe in Your People",
+        content:
+          "When you genuinely believe in someone, they tend to rise to it. Confidence from a manager becomes confidence in the employee.",
+      },
+      {
+        id: "om-32",
+        title: "Autonomy With Clarity",
+        content:
+          "Once goals are clear, let people do their work. Clarity up front allows freedom in execution.",
+      },
+      {
+        id: "om-33",
+        title: "Manage Less, Empower More",
+        content:
+          "The one-minute approach is efficient precisely because it develops self-sufficient people who don't need constant oversight.",
+      },
+      {
+        id: "om-34",
+        title: "The Best Minute Invested in People",
+        content:
+          "The best minute you spend is the one you invest in your people. Small, focused moments of attention yield big returns.",
+      },
+      {
+        id: "om-35",
+        title: "People Are Your Greatest Asset",
+        content:
+          "Results flow through people, so developing them is the highest-leverage work a manager can do.",
+      },
+      {
+        id: "om-36",
+        title: "Honesty and Care Together",
+        content:
+          "Great management blends candor with genuine care. People trust a manager who is both truthful and on their side.",
+      },
+      {
+        id: "om-37",
+        title: "Praise Publicly, Redirect Privately",
+        content:
+          "Recognition shared openly lifts people; correction is best given one-on-one to protect dignity.",
+      },
+      {
+        id: "om-38",
+        title: "Consistency Builds Trust",
+        content:
+          "Applying these practices reliably makes you predictable and fair. People relax and perform when they know what to expect.",
+      },
+      {
+        id: "om-39",
+        title: "Clarity Prevents Problems",
+        content:
+          "Most performance issues trace back to unclear expectations. Investing in clear goals up front saves conflict later.",
+      },
+      {
+        id: "om-40",
+        title: "Short, Frequent Check-Ins",
+        content:
+          "Brief, regular touchpoints beat rare marathon reviews. Small, consistent attention keeps everyone aligned.",
+      },
+      {
+        id: "om-41",
+        title: "Teach People to Manage Themselves",
+        content:
+          "The ultimate aim is people who set their own goals and self-correct. A great manager works to become less necessary.",
+      },
+      {
+        id: "om-42",
+        title: "Simple, Not Easy",
+        content:
+          "The three secrets are simple to grasp but require discipline to practice consistently. Their power is in the doing.",
+      },
+      {
+        id: "om-43",
+        title: "Care Enough to Be Honest",
+        content:
+          "Avoiding hard conversations isn't kindness; it lets people fail. Caring managers deliver honest feedback promptly.",
+      },
+      {
+        id: "om-44",
+        title: "Reinforce What Works",
+        content:
+          "Notice and celebrate the behaviours you want more of. What gets recognized gets repeated.",
+      },
+      {
+        id: "om-45",
+        title: "Adjust to Each Person",
+        content:
+          "New employees need more guidance; experienced ones need more freedom. Match your support to each person's competence.",
+      },
+      {
+        id: "om-46",
+        title: "Leadership Is a Skill",
+        content:
+          "Great managing isn't an innate gift but a learnable set of practices. Anyone willing to apply them can lead well.",
+      },
+      {
+        id: "om-47",
+        title: "Model the Behavior",
+        content:
+          "Managers set the tone. Living the standards you expect earns the credibility to ask them of others.",
+      },
+      {
+        id: "om-48",
+        title: "Develop, Don't Just Direct",
+        content:
+          "The goal isn't to command tasks but to grow capable people. Development is the manager's true product.",
+      },
+      {
+        id: "om-49",
+        title: "Pass It On",
+        content:
+          "The young man in the fable eventually teaches others. Great managers multiply themselves by developing more great managers.",
+      },
+      {
+        id: "om-50",
+        title: "Become a One Minute Manager",
+        content:
+          "Set clear goals, catch people doing right, and redirect mistakes kindly. Do these three simple things well, and your people — and results — flourish.",
+      },
+    ],
+  },
+
+  // Who Moved My Cheese? — Spencer Johnson
+  "bk-661": {
+    bookId: "bk-661",
+    tagline: "A simple parable about dealing with change in work and life",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "wc-1",
+        title: "A Parable About Change",
+        content:
+          "Johnson tells a short fable of two mice and two little people in a maze, searching for cheese. It's a memorable lesson on how to handle change.",
+      },
+      {
+        id: "wc-2",
+        title: "The Cheese Is What You Want",
+        content:
+          "In the story, cheese stands for whatever you desire — a job, a relationship, money, health. It's your idea of success and happiness.",
+      },
+      {
+        id: "wc-3",
+        title: "The Maze Is Where You Look",
+        content:
+          "The maze represents where you spend your time seeking what you want — your workplace, community, or life. We all wander our own maze.",
+      },
+      {
+        id: "wc-4",
+        title: "Four Ways to Face Change",
+        content:
+          "The four characters embody four responses to change: Sniff, Scurry, Hem, and Haw. We each carry a bit of all of them.",
+      },
+      {
+        id: "wc-5",
+        title: "Sniff — Sees Change Early",
+        content:
+          "Sniff the mouse sniffs out change in advance. He notices the signs that the cheese is running low before it disappears.",
+      },
+      {
+        id: "wc-6",
+        title: "Scurry — Acts Quickly",
+        content:
+          "Scurry springs into action without overthinking. When the cheese is gone, he immediately sets off to find more.",
+      },
+      {
+        id: "wc-7",
+        title: "Hem — Denies and Resists",
+        content:
+          "Hem the little person refuses to accept the change. He clings to the empty cheese station, insisting things go back to how they were.",
+      },
+      {
+        id: "wc-8",
+        title: "Haw — Learns to Adapt",
+        content:
+          "Haw eventually overcomes his fear and adapts. His journey — from denial to acceptance to action — is the heart of the story.",
+      },
+      {
+        id: "wc-9",
+        title: "The Cheese Disappears",
+        content:
+          "One day the cheese at their familiar station is simply gone. The comfortable supply they relied on has vanished.",
+      },
+      {
+        id: "wc-10",
+        title: "Change Always Comes",
+        content:
+          "The cheese was slowly dwindling all along; its disappearance shouldn't have been a shock. Change is constant and inevitable.",
+      },
+      {
+        id: "wc-11",
+        title: "Hem's Denial",
+        content:
+          "Hem reacts with disbelief and outrage: 'Who moved my cheese?' He wastes energy protesting instead of adapting.",
+      },
+      {
+        id: "wc-12",
+        title: "It's Not Fair!",
+        content:
+          "Hem feels entitled to his cheese and treats its loss as an injustice. That victim mindset keeps him stuck and hungry.",
+      },
+      {
+        id: "wc-13",
+        title: "The Cost of Clinging",
+        content:
+          "By refusing to move, Hem grows weaker and more bitter. Clinging to what's gone only deepens the loss.",
+      },
+      {
+        id: "wc-14",
+        title: "Haw's Fear",
+        content:
+          "Haw is afraid to venture into the maze again. Fear of the unknown paralyzes him alongside Hem for a long while.",
+      },
+      {
+        id: "wc-15",
+        title: "Paralyzed by Comfort",
+        content:
+          "The little people had grown so comfortable they stopped paying attention. Comfort had quietly dulled their readiness for change.",
+      },
+      {
+        id: "wc-16",
+        title: "The Mice Move On",
+        content:
+          "Meanwhile, Sniff and Scurry, without agonizing, have already found new cheese elsewhere. Simplicity and action served them well.",
+      },
+      {
+        id: "wc-17",
+        title: "Overthinking Traps Us",
+        content:
+          "The mice succeeded partly because they didn't overanalyze. Sometimes the human tendency to overthink becomes its own obstacle.",
+      },
+      {
+        id: "wc-18",
+        title: "Haw Ventures Out",
+        content:
+          "Hungry and finally willing, Haw laughs at himself and steps into the maze. The first move past fear is the hardest and most important.",
+      },
+      {
+        id: "wc-19",
+        title: "The Handwriting on the Wall",
+        content:
+          "As he searches, Haw writes lessons on the maze walls to encourage himself and anyone who follows. These become the book's core wisdom.",
+      },
+      {
+        id: "wc-20",
+        title: "Change Happens",
+        content:
+          "The first lesson: change happens — they keep moving the cheese. Expecting change rather than resenting it is where wisdom begins.",
+      },
+      {
+        id: "wc-21",
+        title: "Anticipate Change",
+        content:
+          "Get ready for the cheese to move. Those who expect change aren't blindsided and can prepare instead of panic.",
+      },
+      {
+        id: "wc-22",
+        title: "Monitor Change",
+        content:
+          "Smell the cheese often so you know when it's getting old. Staying alert to small shifts warns you before a crisis hits.",
+      },
+      {
+        id: "wc-23",
+        title: "Adapt Quickly",
+        content:
+          "The quicker you let go of the old cheese, the sooner you can enjoy new cheese. Speed of adaptation reduces suffering.",
+      },
+      {
+        id: "wc-24",
+        title: "Let Go Sooner",
+        content:
+          "Every day Haw held onto the empty station was a day wasted. Releasing what's gone frees you to find what's next.",
+      },
+      {
+        id: "wc-25",
+        title: "Change",
+        content:
+          "Move with the cheese. Instead of resisting the current, flow with it and go where the opportunity now lies.",
+      },
+      {
+        id: "wc-26",
+        title: "Enjoy Change",
+        content:
+          "Savor the adventure and the taste of new cheese. Change, once embraced, can be exciting rather than threatening.",
+      },
+      {
+        id: "wc-27",
+        title: "Be Ready to Change Again",
+        content:
+          "They keep moving the cheese, so stay ready. Change isn't a single event to survive but a permanent condition to embrace.",
+      },
+      {
+        id: "wc-28",
+        title: "Fear Is Often Worse Than Reality",
+        content:
+          "Haw discovers that the maze he dreaded held new cheese all along. The fear of change is usually worse than the change itself.",
+      },
+      {
+        id: "wc-29",
+        title: "What Would You Do Without Fear?",
+        content:
+          "Haw asks himself what he'd do if he weren't afraid. The question unlocks courage and pulls him forward into action.",
+      },
+      {
+        id: "wc-30",
+        title: "Imagine Enjoying New Cheese",
+        content:
+          "Picturing himself finding and savoring new cheese motivates Haw to keep going. Visualizing a better outcome makes change feel worth pursuing.",
+      },
+      {
+        id: "wc-31",
+        title: "Visualization Pulls You Forward",
+        content:
+          "A vivid, positive image of the future draws you toward it. Focusing on possibility rather than loss changes your whole energy.",
+      },
+      {
+        id: "wc-32",
+        title: "Old Beliefs Trap You",
+        content:
+          "Haw realizes his old belief — that the cheese would always be there — kept him stuck. Outdated assumptions block adaptation.",
+      },
+      {
+        id: "wc-33",
+        title: "Let Go of Outdated Ideas",
+        content:
+          "When beliefs no longer serve reality, release them. Flexibility of mind is what allows flexibility of action.",
+      },
+      {
+        id: "wc-34",
+        title: "Comfort Zones Expire",
+        content:
+          "The station that once fed them became a trap. What was comfortable yesterday can become a cage today.",
+      },
+      {
+        id: "wc-35",
+        title: "Notice Small Changes Early",
+        content:
+          "The cheese shrank gradually before it vanished. Paying attention to small early signals lets you respond before it's a crisis.",
+      },
+      {
+        id: "wc-36",
+        title: "Small Changes Precede Big Ones",
+        content:
+          "Big disruptions are usually preceded by little warning signs. Staying observant turns surprises into anticipated events.",
+      },
+      {
+        id: "wc-37",
+        title: "Action Beats Analysis",
+        content:
+          "Haw makes progress only once he moves, not while he worries. Taking a step, even an uncertain one, breaks the paralysis.",
+      },
+      {
+        id: "wc-38",
+        title: "The Freedom of Letting Go",
+        content:
+          "Once Haw releases his attachment, he feels lighter and freer. Letting go isn't loss; it's liberation.",
+      },
+      {
+        id: "wc-39",
+        title: "Laugh at Your Own Folly",
+        content:
+          "Haw learns to laugh at how long he clung to the old ways. Humour and self-forgiveness make change easier to accept.",
+      },
+      {
+        id: "wc-40",
+        title: "Take It Lightly",
+        content:
+          "Treating change with lightness rather than dread lowers its power to frighten you. A playful attitude helps you adapt.",
+      },
+      {
+        id: "wc-41",
+        title: "Change Can Lead to Better",
+        content:
+          "The new cheese Haw finds is more plentiful than before. Change often opens doors to something better than what was lost.",
+      },
+      {
+        id: "wc-42",
+        title: "Growth Requires Movement",
+        content:
+          "Staying put guarantees decline as the world moves on. Growth demands that you keep venturing into new territory.",
+      },
+      {
+        id: "wc-43",
+        title: "Leave a Trail for Others",
+        content:
+          "Haw's wall-writings help those who come after him. Sharing your lessons about change can guide and encourage others.",
+      },
+      {
+        id: "wc-44",
+        title: "Hem's Fate Is a Warning",
+        content:
+          "We never learn if Hem changes — a deliberate open ending. It asks each reader: will you adapt, or cling like Hem?",
+      },
+      {
+        id: "wc-45",
+        title: "Stay Alert and Flexible",
+        content:
+          "The lasting posture the book recommends is watchfulness and readiness. Keep sniffing the cheese and stay light on your feet.",
+      },
+      {
+        id: "wc-46",
+        title: "Change in the Workplace",
+        content:
+          "The parable is often applied to jobs and organizations. Roles, industries, and companies shift; those who adapt thrive.",
+      },
+      {
+        id: "wc-47",
+        title: "Change in Personal Life",
+        content:
+          "Relationships, health, and circumstances change too. The same principles — anticipate, adapt, and enjoy — apply everywhere.",
+      },
+      {
+        id: "wc-48",
+        title: "Simplicity Is the Point",
+        content:
+          "The story is deliberately simple so its lesson sticks. In a changing world, a clear, memorable mindset is worth more than complexity.",
+      },
+      {
+        id: "wc-49",
+        title: "Apply It to Your Life",
+        content:
+          "Ask what your cheese is, whether it's moving, and how you're responding. Honest reflection turns the fable into real change.",
+      },
+      {
+        id: "wc-50",
+        title: "Move With the Cheese",
+        content:
+          "The takeaway is simple and powerful: notice change, let go of the old quickly, and keep moving toward the new. Adapt, and you thrive.",
+      },
+    ],
+  },
+
+  // The 4-Hour Work Week — Timothy Ferriss
+  "bk-660": {
+    bookId: "bk-660",
+    tagline: "Escape the 9-to-5, automate income, and design your ideal life",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "hw-1",
+        title: "Escape the 9-to-5",
+        content:
+          "Ferriss challenges the assumption that you must work forty years to enjoy life later. He shows how to design freedom into your life now.",
+      },
+      {
+        id: "hw-2",
+        title: "The New Rich",
+        content:
+          "The New Rich aren't those with the most money, but those with the most control over their time and mobility. Freedom is the real wealth.",
+      },
+      {
+        id: "hw-3",
+        title: "Lifestyle Design",
+        content:
+          "Instead of accumulating money to spend someday, design the life you want and reverse-engineer what it actually costs to live it.",
+      },
+      {
+        id: "hw-4",
+        title: "Time and Mobility",
+        content:
+          "Wealth measured only in dollars misses the point. Being able to choose what you do, when, and where is the true currency.",
+      },
+      {
+        id: "hw-5",
+        title: "The Deferred-Life Plan Is Broken",
+        content:
+          "Slaving for decades to retire at sixty-five gambles your best years on an uncertain future. Ferriss urges distributing freedom across your life.",
+      },
+      {
+        id: "hw-6",
+        title: "Take Mini-Retirements",
+        content:
+          "Rather than one long retirement at the end, sprinkle extended breaks and adventures throughout your life while you're young enough to enjoy them.",
+      },
+      {
+        id: "hw-7",
+        title: "Relative Income",
+        content:
+          "What matters isn't just how much you earn, but how much you earn per hour and how freely. Money that costs your whole life is expensive.",
+      },
+      {
+        id: "hw-8",
+        title: "The DEAL Framework",
+        content:
+          "Ferriss's system spells DEAL: Definition, Elimination, Automation, and Liberation. Each step moves you toward a freer life.",
+      },
+      {
+        id: "hw-9",
+        title: "D — Definition",
+        content:
+          "First, redefine your goals and rules. Get clear on the lifestyle you truly want rather than chasing vague notions of success.",
+      },
+      {
+        id: "hw-10",
+        title: "Dreamlining",
+        content:
+          "Turn dreams into concrete timelines. List what you want to have, be, and do, then price them out — often they're cheaper than you think.",
+      },
+      {
+        id: "hw-11",
+        title: "Fear-Setting",
+        content:
+          "Instead of goal-setting alone, define your fears in detail. Naming the worst case usually reveals it's survivable and reversible.",
+      },
+      {
+        id: "hw-12",
+        title: "Define the Worst Case",
+        content:
+          "Write out exactly what could go wrong and how you'd recover. Most fears shrink dramatically once examined on paper.",
+      },
+      {
+        id: "hw-13",
+        title: "The Cost of Inaction",
+        content:
+          "We weigh the risk of acting but ignore the cost of staying put. Ask what it will cost, in years and regret, to do nothing.",
+      },
+      {
+        id: "hw-14",
+        title: "E — Elimination",
+        content:
+          "Next, eliminate the unimportant to free your time. Productivity isn't doing more; it's doing less of what doesn't matter.",
+      },
+      {
+        id: "hw-15",
+        title: "The 80/20 Rule",
+        content:
+          "Roughly eighty percent of results come from twenty percent of efforts. Identify that vital twenty percent and cut the rest.",
+      },
+      {
+        id: "hw-16",
+        title: "Cut the Trivial Many",
+        content:
+          "Most tasks contribute little. Ruthlessly removing low-value activities creates space for what truly moves the needle.",
+      },
+      {
+        id: "hw-17",
+        title: "Parkinson's Law",
+        content:
+          "Work expands to fill the time available. Set tight deadlines and tasks shrink to fit, forcing focus on essentials.",
+      },
+      {
+        id: "hw-18",
+        title: "Short Deadlines Sharpen Focus",
+        content:
+          "Give yourself hours instead of days, and you'll cut the fluff automatically. Constraints breed efficiency.",
+      },
+      {
+        id: "hw-19",
+        title: "Effectiveness Over Efficiency",
+        content:
+          "Doing the right things matters more than doing things right. Being efficient at unimportant tasks is still a waste.",
+      },
+      {
+        id: "hw-20",
+        title: "The Low-Information Diet",
+        content:
+          "Most news and updates are irrelevant to your goals. Cutting the flood of information frees attention and reduces anxiety.",
+      },
+      {
+        id: "hw-21",
+        title: "Selective Ignorance",
+        content:
+          "Deliberately ignore what you can't act on or don't need. Protecting your attention is protecting your productivity.",
+      },
+      {
+        id: "hw-22",
+        title: "Batch Your Tasks",
+        content:
+          "Group similar tasks and do them together. Batching reduces the switching costs that fragment your day.",
+      },
+      {
+        id: "hw-23",
+        title: "Check Email Sparingly",
+        content:
+          "Constant inbox-checking shatters focus. Ferriss recommends checking email only once or twice a day at set times.",
+      },
+      {
+        id: "hw-24",
+        title: "The Not-To-Do List",
+        content:
+          "Deciding what you'll refuse to do is as powerful as any to-do list. Guard your time by saying no to distractions and low-value requests.",
+      },
+      {
+        id: "hw-25",
+        title: "Learn to Say No",
+        content:
+          "Every yes to the unimportant steals from the important. Politely declining protects the freedom you're building.",
+      },
+      {
+        id: "hw-26",
+        title: "A — Automation",
+        content:
+          "Third, automate income and tasks so money and work flow without your constant involvement. Build systems, not just effort.",
+      },
+      {
+        id: "hw-27",
+        title: "Build a Muse",
+        content:
+          "A 'muse' is an automated business that generates income with minimal ongoing work. It funds your freedom without a boss.",
+      },
+      {
+        id: "hw-28",
+        title: "Test Before You Invest",
+        content:
+          "Before committing money, cheaply test whether people will actually buy. Validate demand first to avoid costly failures.",
+      },
+      {
+        id: "hw-29",
+        title: "Outsource and Delegate",
+        content:
+          "Hand off repetitive tasks to assistants and services. Freeing yourself from busywork lets you focus on high-value decisions.",
+      },
+      {
+        id: "hw-30",
+        title: "Virtual Assistants",
+        content:
+          "Ferriss popularized using remote assistants to handle scheduling, research, and admin. Delegation multiplies your effective time.",
+      },
+      {
+        id: "hw-31",
+        title: "Systems Over Hustle",
+        content:
+          "Grinding harder has limits; well-built systems scale. Design processes that run without you rather than doing everything yourself.",
+      },
+      {
+        id: "hw-32",
+        title: "Remove Yourself From the Loop",
+        content:
+          "The goal is a business and life that don't depend on your constant attention. Automate decisions and free your presence.",
+      },
+      {
+        id: "hw-33",
+        title: "L — Liberation",
+        content:
+          "Finally, liberate yourself from a fixed location. Remote work and mobility let you live and work anywhere you choose.",
+      },
+      {
+        id: "hw-34",
+        title: "Escape the Office",
+        content:
+          "Ferriss offers tactics to negotiate remote work by proving your output. Freedom of place often follows freedom of proof.",
+      },
+      {
+        id: "hw-35",
+        title: "Geoarbitrage",
+        content:
+          "Earn in a strong currency and live where costs are low, and your money stretches far further. Location can transform your lifestyle.",
+      },
+      {
+        id: "hw-36",
+        title: "Fill the Void With Purpose",
+        content:
+          "Freedom without direction breeds boredom. Ferriss warns that once you escape work, you must fill life with meaning and passion.",
+      },
+      {
+        id: "hw-37",
+        title: "The Point Isn't Idleness",
+        content:
+          "The aim isn't to do nothing but to do what excites and fulfills you. Freedom is a tool for a richer life, not mere laziness.",
+      },
+      {
+        id: "hw-38",
+        title: "Do What Excites You",
+        content:
+          "Chase excitement, not just relaxation. Pursuing challenges and adventures is what makes a free life genuinely rewarding.",
+      },
+      {
+        id: "hw-39",
+        title: "Question the Rules",
+        content:
+          "Most limits are assumed, not real. Ferriss thrives by asking whether the conventional rules actually apply to him.",
+      },
+      {
+        id: "hw-40",
+        title: "Do the Opposite",
+        content:
+          "When everyone zigs, consider zagging. Contrarian thinking uncovers opportunities the crowd overlooks.",
+      },
+      {
+        id: "hw-41",
+        title: "Be Unreasonable",
+        content:
+          "Reasonable people accept the world as it is; the unreasonable reshape it. Ambitious, bold requests often get surprising yeses.",
+      },
+      {
+        id: "hw-42",
+        title: "Ask Better Questions",
+        content:
+          "The quality of your life follows the quality of your questions. Ask 'what would this look like if it were easy?' and options appear.",
+      },
+      {
+        id: "hw-43",
+        title: "Focus on Strengths",
+        content:
+          "Rather than fixing every weakness, multiply your strengths. Doubling down on what you do best yields outsized returns.",
+      },
+      {
+        id: "hw-44",
+        title: "Eliminate, Then Automate",
+        content:
+          "Never automate what you can eliminate. Cut a task entirely before spending effort to make it efficient.",
+      },
+      {
+        id: "hw-45",
+        title: "Money Buys Freedom, Not Stuff",
+        content:
+          "Use income to purchase time and options rather than status symbols. Freedom compounds; possessions depreciate.",
+      },
+      {
+        id: "hw-46",
+        title: "Work Smarter, Not Longer",
+        content:
+          "Hours worked is a poor measure of value. Concentrated, high-leverage effort beats long days of busywork.",
+      },
+      {
+        id: "hw-47",
+        title: "Beware Busyness as Identity",
+        content:
+          "Many wear busyness as a badge of honour. Ferriss reframes it as a warning sign of poor prioritization.",
+      },
+      {
+        id: "hw-48",
+        title: "Design, Don't Drift",
+        content:
+          "Without a design, life defaults to others' expectations. Consciously architecting your days is how you take back control.",
+      },
+      {
+        id: "hw-49",
+        title: "Start Small, Start Now",
+        content:
+          "You don't need to quit everything today. Small experiments — a mini-project, a test business — begin the shift toward freedom.",
+      },
+      {
+        id: "hw-50",
+        title: "Continuous Learning",
+        content:
+          "The freed life is a chance to learn languages, skills, and crafts. Growth keeps the adventure fresh and meaningful.",
+      },
+      {
+        id: "hw-51",
+        title: "Comparison Steals Freedom",
+        content:
+          "Chasing others' benchmarks traps you on a treadmill. Define enough on your own terms and step off the comparison game.",
+      },
+      {
+        id: "hw-52",
+        title: "Time Is Non-Renewable",
+        content:
+          "You can always make more money, never more time. Spending your scarcest resource wisely is the essence of the book.",
+      },
+      {
+        id: "hw-53",
+        title: "Test Assumptions Constantly",
+        content:
+          "Before accepting any 'have to,' test whether it's actually required. Many constraints crumble under a simple experiment.",
+      },
+      {
+        id: "hw-54",
+        title: "Automate Your Finances",
+        content:
+          "Set up systems for saving, paying, and investing automatically. Removing manual steps protects both money and attention.",
+      },
+      {
+        id: "hw-55",
+        title: "The Fear of Freedom",
+        content:
+          "Some people fear open time more than a busy schedule. Ferriss notes that designing a meaningful life requires facing that discomfort.",
+      },
+      {
+        id: "hw-56",
+        title: "Reclaim Your Attention",
+        content:
+          "Cutting inputs, batching, and saying no all serve one aim: reclaiming your focus for what genuinely matters.",
+      },
+      {
+        id: "hw-57",
+        title: "Adventure Over Accumulation",
+        content:
+          "Experiences and adventures, not possessions, define a rich life. Spend your freedom on living, not on acquiring.",
+      },
+      {
+        id: "hw-58",
+        title: "Take the Mini-Retirement",
+        content:
+          "Don't wait for permission or the perfect moment. Plan an extended break, travel, or project — and actually take it.",
+      },
+      {
+        id: "hw-59",
+        title: "Freedom Is a Skill",
+        content:
+          "Designing a free, mobile, automated life is a set of learnable skills, not luck. Anyone willing to question the norms can build it.",
+      },
+      {
+        id: "hw-60",
+        title: "Design Your Ideal Life",
+        content:
+          "Define what you want, eliminate the trivial, automate the essential, and liberate yourself from place. That's how you build a life of freedom.",
+      },
+    ],
+  },
+
+  // Meditations — Marcus Aurelius
+  "bk-659": {
+    bookId: "bk-659",
+    tagline: "The private Stoic reflections of a Roman emperor",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "me-1",
+        title: "A Roman Emperor's Diary",
+        content:
+          "Meditations was never meant for publication — it's Marcus Aurelius's private notebook of Stoic reflections, written to steady himself as he ruled an empire.",
+      },
+      {
+        id: "me-2",
+        title: "Philosophy for Living",
+        content:
+          "These aren't abstract theories but practical reminders for daily life. Marcus wrote to train his own character, and his notes still guide millions.",
+      },
+      {
+        id: "me-3",
+        title: "What Is in Our Control",
+        content:
+          "The heart of Stoicism: some things are up to us — our judgments and actions — and some are not. Peace comes from focusing only on the former.",
+      },
+      {
+        id: "me-4",
+        title: "The Dichotomy of Control",
+        content:
+          "You can't control events, other people, or outcomes — only your responses. Investing energy in what you can't control breeds frustration.",
+      },
+      {
+        id: "me-5",
+        title: "Externals Are Indifferent",
+        content:
+          "Wealth, health, and reputation are neither good nor bad in themselves. What matters is the virtue with which you handle them.",
+      },
+      {
+        id: "me-6",
+        title: "Your Judgments Disturb You",
+        content:
+          "It's not events that upset us but our opinions about them. Change the judgment, and the disturbance dissolves.",
+      },
+      {
+        id: "me-7",
+        title: "Remove the Opinion",
+        content:
+          "Marcus reminds himself: take away the story you've added, and the harm often vanishes. Much suffering is self-inflicted through interpretation.",
+      },
+      {
+        id: "me-8",
+        title: "The Obstacle Is the Way",
+        content:
+          "What blocks the path can become the path. The impediment to action can be turned into an opportunity to practice virtue.",
+      },
+      {
+        id: "me-9",
+        title: "Turn Adversity Into Virtue",
+        content:
+          "Every difficulty is a chance to exercise patience, courage, or wisdom. Obstacles are the raw material of good character.",
+      },
+      {
+        id: "me-10",
+        title: "Love Your Fate",
+        content:
+          "Accept, even embrace, whatever happens as part of nature's order. Wishing reality were otherwise only adds needless suffering.",
+      },
+      {
+        id: "me-11",
+        title: "Accept What Happens",
+        content:
+          "Marcus counsels welcoming events as a doctor accepts a difficult case — not resigned, but composed and ready to respond well.",
+      },
+      {
+        id: "me-12",
+        title: "Live According to Nature",
+        content:
+          "For the Stoics, living well means living in harmony with nature — and human nature is rational and social. Reason and cooperation are our purpose.",
+      },
+      {
+        id: "me-13",
+        title: "Reason Is Our Gift",
+        content:
+          "What sets humans apart is the capacity to reason. Using that faculty to govern our impulses is how we fulfill our nature.",
+      },
+      {
+        id: "me-14",
+        title: "Virtue Is the Only Good",
+        content:
+          "The Stoics hold that a good character is the sole true good. With virtue you can be content in any circumstance.",
+      },
+      {
+        id: "me-15",
+        title: "The Four Virtues",
+        content:
+          "Stoicism rests on four cardinal virtues: wisdom, justice, courage, and self-discipline. Marcus returns to them as his compass.",
+      },
+      {
+        id: "me-16",
+        title: "Wisdom",
+        content:
+          "Wisdom is knowing what is good, bad, and indifferent — and acting accordingly. It's the practical skill of living rightly.",
+      },
+      {
+        id: "me-17",
+        title: "Justice",
+        content:
+          "Treat others fairly and work for the common good. Marcus, though emperor, insists on serving people rather than lording over them.",
+      },
+      {
+        id: "me-18",
+        title: "Courage",
+        content:
+          "Face hardship, fear, and even death with steadiness. Courage is doing what's right despite discomfort or danger.",
+      },
+      {
+        id: "me-19",
+        title: "Self-Discipline",
+        content:
+          "Master your desires and impulses rather than being ruled by them. Temperance keeps you free and clear-headed.",
+      },
+      {
+        id: "me-20",
+        title: "The Present Moment",
+        content:
+          "You possess only the present. The past is gone and the future unknown, so live fully in the now — it's all you truly have.",
+      },
+      {
+        id: "me-21",
+        title: "You Only Ever Lose the Now",
+        content:
+          "Since only the present is real, even death takes only this fleeting moment. Focusing on now frees you from regret and dread.",
+      },
+      {
+        id: "me-22",
+        title: "Remember You Will Die",
+        content:
+          "Marcus constantly reminds himself of mortality. Awareness of death sharpens priorities and dispels petty concerns.",
+      },
+      {
+        id: "me-23",
+        title: "Death Is Natural",
+        content:
+          "Death is a natural process, like being born, not something to fear. Accepting it lets you live with urgency and calm.",
+      },
+      {
+        id: "me-24",
+        title: "All Things Pass",
+        content:
+          "Everything is in flux and soon forgotten. Remembering the impermanence of all things loosens our grip on trivial worries.",
+      },
+      {
+        id: "me-25",
+        title: "Fame Is Fleeting",
+        content:
+          "Marcus notes that even great names fade and those who praise you soon die too. Chasing reputation is chasing smoke.",
+      },
+      {
+        id: "me-26",
+        title: "The View From Above",
+        content:
+          "Imagine looking down on your life and the world from a great height. From that cosmic perspective, most troubles shrink to nothing.",
+      },
+      {
+        id: "me-27",
+        title: "We Are Small, Time Is Vast",
+        content:
+          "Against the immensity of time and the universe, our lives are brief and tiny. This humbling view brings both perspective and peace.",
+      },
+      {
+        id: "me-28",
+        title: "The Inner Citadel",
+        content:
+          "Your mind is a fortress no external force can breach without your consent. Retreat into it, and you're always secure.",
+      },
+      {
+        id: "me-29",
+        title: "Retreat Within",
+        content:
+          "You don't need a country house to find peace; you can withdraw into your own mind anytime. Inner calm is always available.",
+      },
+      {
+        id: "me-30",
+        title: "Be Like the Rock",
+        content:
+          "Marcus pictures a headland battered by waves that stands unmoved. Be that rock — steady while the storms of life crash around you.",
+      },
+      {
+        id: "me-31",
+        title: "Undisturbed by Externals",
+        content:
+          "Nothing outside your mind can truly harm your character. Only your own consent can trouble your inner peace.",
+      },
+      {
+        id: "me-32",
+        title: "Do Your Duty",
+        content:
+          "Rise each day and do the work you're here to do. Marcus urges himself past reluctance to fulfill his responsibilities.",
+      },
+      {
+        id: "me-33",
+        title: "Act for the Common Good",
+        content:
+          "We exist to serve one another, like parts of one body. What benefits the whole community ultimately benefits you.",
+      },
+      {
+        id: "me-34",
+        title: "We Are Made for Cooperation",
+        content:
+          "Humans are social by nature, made to work together. To act against others is to act against your own nature.",
+      },
+      {
+        id: "me-35",
+        title: "On Difficult People",
+        content:
+          "Each morning, Marcus prepares to meet the ungrateful, arrogant, and dishonest. Expecting difficulty keeps him from being thrown by it.",
+      },
+      {
+        id: "me-36",
+        title: "Others Act From Ignorance",
+        content:
+          "People do wrong because they don't know better. Understanding this replaces anger with patience and even compassion.",
+      },
+      {
+        id: "me-37",
+        title: "Anger Harms You Most",
+        content:
+          "Losing your temper punishes you more than the offender. Marcus reminds himself that composure is strength, not weakness.",
+      },
+      {
+        id: "me-38",
+        title: "The Best Revenge",
+        content:
+          "The finest response to bad behaviour is not to imitate it. Stay good and just, and you've already won.",
+      },
+      {
+        id: "me-39",
+        title: "Forgive and Move On",
+        content:
+          "Holding grudges burdens only you. Correct others gently if you can, forgive their nature, and return to your own work.",
+      },
+      {
+        id: "me-40",
+        title: "Simplicity",
+        content:
+          "Marcus prizes a plain, focused life. Do fewer things, but do what's essential, and you'll find greater peace.",
+      },
+      {
+        id: "me-41",
+        title: "Ask: Is This Necessary?",
+        content:
+          "Before acting or speaking, ask whether it's needful. Cutting the unnecessary frees time and calms the mind.",
+      },
+      {
+        id: "me-42",
+        title: "Humility",
+        content:
+          "Despite being emperor, Marcus reminds himself he's one small part of the cosmos. Humility guards against the corruption of power.",
+      },
+      {
+        id: "me-43",
+        title: "Guard Against Ego",
+        content:
+          "Power and praise can inflate the self. Marcus deliberately keeps his ego in check, remembering he too will soon be dust.",
+      },
+      {
+        id: "me-44",
+        title: "Examine Yourself",
+        content:
+          "Regular self-scrutiny keeps character on track. Marcus reviews his thoughts and actions to correct and improve himself.",
+      },
+      {
+        id: "me-45",
+        title: "Morning Preparation",
+        content:
+          "He rehearses the day's challenges in advance, so nothing catches him unprepared. Anticipation breeds steadiness.",
+      },
+      {
+        id: "me-46",
+        title: "Evening Review",
+        content:
+          "Looking back over the day — what you did well and poorly — turns experience into growth. Reflection is how character is forged.",
+      },
+      {
+        id: "me-47",
+        title: "Gratitude",
+        content:
+          "Marcus opens his book thanking those who shaped him. Appreciating what and who you've been given fosters contentment.",
+      },
+      {
+        id: "me-48",
+        title: "Appreciate What You Have",
+        content:
+          "Rather than craving more, dwell on the good already present in your life. Gratitude is a quiet antidote to endless wanting.",
+      },
+      {
+        id: "me-49",
+        title: "Waste No Time",
+        content:
+          "Life is short and uncertain. Don't squander it on trivialities, gossip, or delay — do what matters, now.",
+      },
+      {
+        id: "me-50",
+        title: "Character Over Reputation",
+        content:
+          "Care about being good, not about seeming good. What others think is beyond your control; your character is entirely yours.",
+      },
+      {
+        id: "me-51",
+        title: "Be Good, Don't Talk About It",
+        content:
+          "Don't waste breath debating what a good person is — be one. Marcus values quiet virtue over philosophical posturing.",
+      },
+      {
+        id: "me-52",
+        title: "The Rational Universe",
+        content:
+          "The Stoics saw the cosmos as ordered by reason, the logos. Trusting this larger order helps you accept your place within it.",
+      },
+      {
+        id: "me-53",
+        title: "Everything Is Connected",
+        content:
+          "All things are woven together in one web. Seeing yourself as part of a greater whole dissolves isolation and self-importance.",
+      },
+      {
+        id: "me-54",
+        title: "Endure and Renounce",
+        content:
+          "A Stoic motto: bear what must be borne, and give up craving what you cannot have. Endurance and restraint bring freedom.",
+      },
+      {
+        id: "me-55",
+        title: "Control Your Perceptions",
+        content:
+          "You have power over your mind, not outside events. Realizing this, Marcus writes, is where your strength truly lies.",
+      },
+      {
+        id: "me-56",
+        title: "Waste No Anger on the World",
+        content:
+          "Getting angry at how things are is futile; the world owes you nothing. Adjust yourself to reality rather than raging at it.",
+      },
+      {
+        id: "me-57",
+        title: "Do the Right Thing Regardless",
+        content:
+          "Act justly whether or not you're recognized. Virtue is its own reward and needs no audience.",
+      },
+      {
+        id: "me-58",
+        title: "Discomfort Is Bearable",
+        content:
+          "Pain and hardship, Marcus reminds himself, are endurable and pass. The mind can rise above the body's complaints.",
+      },
+      {
+        id: "me-59",
+        title: "Keep Returning to Principle",
+        content:
+          "When you drift, gently return to your Stoic principles, again and again. The practice is in the returning.",
+      },
+      {
+        id: "me-60",
+        title: "A Practice, Not a Theory",
+        content:
+          "Stoicism is meant to be lived, not merely read. Marcus's repetitions show that even an emperor had to practice daily.",
+      },
+      {
+        id: "me-61",
+        title: "Waste Not the Present on the Future",
+        content:
+          "Anxiety about the future robs the present of life. Meet each moment as it comes, doing what it asks of you.",
+      },
+      {
+        id: "me-62",
+        title: "Serve Without Complaint",
+        content:
+          "Marcus carried immense burdens yet counseled himself against self-pity. Do your work quietly and well, without grumbling.",
+      },
+      {
+        id: "me-63",
+        title: "Nothing Truly Belongs to Us",
+        content:
+          "Everything, even our bodies and loved ones, is on loan from nature. Holding this loosely spares us much grief when things pass.",
+      },
+      {
+        id: "me-64",
+        title: "The Strength of Calm",
+        content:
+          "A tranquil, well-ordered mind is the greatest strength. Marcus shows that real power is self-command, not command over others.",
+      },
+      {
+        id: "me-65",
+        title: "Timeless Consolation",
+        content:
+          "Written for one troubled man two thousand years ago, these words still comfort and steady readers facing life's storms today.",
+      },
+      {
+        id: "me-66",
+        title: "Live as a Stoic",
+        content:
+          "Focus on what you control, act with virtue, accept what comes, serve others, and remember your mortality. That is the path to a serene life.",
+      },
+    ],
+  },
+
+  // The Richest Man in Babylon — George S. Clason
+  "bk-658": {
+    bookId: "bk-658",
+    tagline: "Timeless money lessons told through Babylonian parables",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "rb-1",
+        title: "Wisdom From Ancient Babylon",
+        content:
+          "Set in the world's first great city of wealth, Clason's parables teach financial principles that are as true today as they were thousands of years ago.",
+      },
+      {
+        id: "rb-2",
+        title: "Money Follows Laws",
+        content:
+          "Wealth isn't luck or magic; it obeys simple, learnable laws. Those who understand and follow them prosper, while others stay poor.",
+      },
+      {
+        id: "rb-3",
+        title: "Bansir's Question",
+        content:
+          "Bansir the chariot builder works hard yet has no gold. He and his friend Kobbi wonder why diligent labour hasn't made them rich.",
+      },
+      {
+        id: "rb-4",
+        title: "Hard Work Isn't Enough",
+        content:
+          "The friends realize that earning money and keeping money are different skills. Working hard without financial knowledge leaves you empty-handed.",
+      },
+      {
+        id: "rb-5",
+        title: "Arkad, the Richest Man",
+        content:
+          "They seek out Arkad, once a humble scribe, now Babylon's wealthiest man. He agrees to share the secrets that made him rich.",
+      },
+      {
+        id: "rb-6",
+        title: "A Part of All You Earn Is Yours to Keep",
+        content:
+          "Arkad's foundational lesson: pay yourself first. Set aside at least a tenth of everything you earn before paying anyone else.",
+      },
+      {
+        id: "rb-7",
+        title: "Pay Yourself First",
+        content:
+          "Most people pay everyone else and keep nothing. Reverse this — take your savings off the top, and live on what remains.",
+      },
+      {
+        id: "rb-8",
+        title: "Save at Least a Tenth",
+        content:
+          "Saving ten percent of your income, consistently, is enough to build wealth over time. You'll barely miss it, yet it compounds.",
+      },
+      {
+        id: "rb-9",
+        title: "Learn From the Competent",
+        content:
+          "Arkad first lost his savings by taking advice from a brickmaker about jewels. Seek guidance only from those expert in the matter at hand.",
+      },
+      {
+        id: "rb-10",
+        title: "Beware Bad Advice",
+        content:
+          "Well-meaning but ignorant advice can cost you everything. Consult people who have actually succeeded in what you're attempting.",
+      },
+      {
+        id: "rb-11",
+        title: "Make Your Gold Work",
+        content:
+          "Saved gold should not sit idle. Put it to work earning more, so your money begins to make money on its own.",
+      },
+      {
+        id: "rb-12",
+        title: "Money Multiplies",
+        content:
+          "Each coin you save can become a worker that earns for you, and its earnings earn too. This is the quiet power of compounding.",
+      },
+      {
+        id: "rb-13",
+        title: "The Seven Cures for a Lean Purse",
+        content:
+          "The king asks Arkad to teach Babylon's citizens. Arkad gives seven remedies to fatten an empty purse — a complete plan for wealth.",
+      },
+      {
+        id: "rb-14",
+        title: "Cure 1 — Start Your Purse to Fattening",
+        content:
+          "Keep one tenth of all you earn. This first cure begins the habit of accumulation that everything else builds on.",
+      },
+      {
+        id: "rb-15",
+        title: "Cure 2 — Control Your Expenditures",
+        content:
+          "Spending rises to match income unless you check it. Budget deliberately so your necessary expenses never consume all you make.",
+      },
+      {
+        id: "rb-16",
+        title: "Needs vs Desires",
+        content:
+          "What we call necessary expenses will always grow to equal our income. Distinguish true needs from endless desires.",
+      },
+      {
+        id: "rb-17",
+        title: "Cure 3 — Make Your Gold Multiply",
+        content:
+          "Invest your savings so they earn a steady return. A stream of gold flowing in, working while you sleep, is the road to wealth.",
+      },
+      {
+        id: "rb-18",
+        title: "Cure 4 — Guard Your Treasures From Loss",
+        content:
+          "Protect your principal above all. Invest only where your capital is safe, and never risk it chasing impossible returns.",
+      },
+      {
+        id: "rb-19",
+        title: "Protect the Principal",
+        content:
+          "The first rule of investing is not to lose what you have. Consult the wise and avoid schemes that promise too much.",
+      },
+      {
+        id: "rb-20",
+        title: "Cure 5 — Own Your Home",
+        content:
+          "Make your dwelling a profitable investment. Owning your home reduces your costs and gives you security and a growing asset.",
+      },
+      {
+        id: "rb-21",
+        title: "Cure 6 — Insure a Future Income",
+        content:
+          "Provide in advance for old age and for your family. Set aside money now so that your later years and loved ones are protected.",
+      },
+      {
+        id: "rb-22",
+        title: "Cure 7 — Increase Your Ability to Earn",
+        content:
+          "Cultivate your skills and knowledge. As you become more capable and valuable, your income naturally rises.",
+      },
+      {
+        id: "rb-23",
+        title: "Invest in Yourself",
+        content:
+          "The desire to earn more, backed by learning and effort, is a form of wealth-building. Your growing ability is your best asset.",
+      },
+      {
+        id: "rb-24",
+        title: "The Five Laws of Gold",
+        content:
+          "In another tale, Arkad's son learns the five laws of gold — enduring truths about how wealth is gained, kept, and lost.",
+      },
+      {
+        id: "rb-25",
+        title: "Law 1 — Gold Comes to the Saver",
+        content:
+          "Gold comes gladly to anyone who saves at least a tenth of their earnings to build an estate for their future.",
+      },
+      {
+        id: "rb-26",
+        title: "Law 2 — Gold Works for the Wise",
+        content:
+          "Gold labours diligently for the owner who finds it profitable employment, multiplying like flocks in the field.",
+      },
+      {
+        id: "rb-27",
+        title: "Law 3 — Gold Stays With the Careful",
+        content:
+          "Gold clings to the cautious owner who invests it under the advice of the wise and experienced.",
+      },
+      {
+        id: "rb-28",
+        title: "Law 4 — Gold Flees the Ignorant Investor",
+        content:
+          "Gold slips away from those who invest it in ventures they don't understand or that the wise would not approve.",
+      },
+      {
+        id: "rb-29",
+        title: "Law 5 — Gold Flees Get-Rich-Quick",
+        content:
+          "Gold flees the person who chases impossible returns, follows tempting schemes, or trusts their money to their own inexperience.",
+      },
+      {
+        id: "rb-30",
+        title: "The Gold Lender of Babylon",
+        content:
+          "Rodan, given fifty pieces of gold, wonders whom to trust. The spearmaker Mathon teaches him the wisdom of careful lending.",
+      },
+      {
+        id: "rb-31",
+        title: "Lend Only to the Trustworthy",
+        content:
+          "Better a little caution than a great regret. Lend or invest only where repayment or return is reasonably secure.",
+      },
+      {
+        id: "rb-32",
+        title: "Humans Repay From Character",
+        content:
+          "A borrower's ability and honesty matter more than their promises. Judge people by their track record before trusting them with gold.",
+      },
+      {
+        id: "rb-33",
+        title: "The Walls of Babylon",
+        content:
+          "Babylon's great walls protected it from invaders. The lesson: we all need protection — insurance and savings — against life's attacks.",
+      },
+      {
+        id: "rb-34",
+        title: "Build Your Own Walls",
+        content:
+          "Adequate protection against the unexpected — an emergency fund, insurance — is essential. Don't leave yourself defenseless.",
+      },
+      {
+        id: "rb-35",
+        title: "The Camel Trader",
+        content:
+          "Dabasir, once buried in debt and enslaved, tells how he clawed his way back to freedom and wealth through resolve.",
+      },
+      {
+        id: "rb-36",
+        title: "Where Determination Is, a Way Is Found",
+        content:
+          "Dabasir's turning point was deciding to repay every debt and reclaim his self-respect. Firm resolve creates a path where none seemed to exist.",
+      },
+      {
+        id: "rb-37",
+        title: "The Soul of a Free Man",
+        content:
+          "Dabasir chose to see his debts as an honourable duty rather than a prison. That shift in spirit changed everything.",
+      },
+      {
+        id: "rb-38",
+        title: "Face Your Debts Honestly",
+        content:
+          "Running from debt only deepens the trap. Confronting it head-on, with a plan, is the beginning of financial freedom.",
+      },
+      {
+        id: "rb-39",
+        title: "The Clay Tablets of Dabasir",
+        content:
+          "Dabasir's ancient plan, found on clay tablets, still works: a simple system for saving, repaying debt, and living within your means.",
+      },
+      {
+        id: "rb-40",
+        title: "Ten, Twenty, Seventy",
+        content:
+          "His plan: save one tenth of income, use two tenths to repay creditors, and live on the remaining seventy percent.",
+      },
+      {
+        id: "rb-41",
+        title: "Live on Seventy Percent",
+        content:
+          "Committing to live on most, but not all, of your income leaves room to both save and pay down what you owe.",
+      },
+      {
+        id: "rb-42",
+        title: "Repay Creditors Steadily",
+        content:
+          "Paying every creditor a fair, consistent portion earns their patience and respect, and steadily clears your debts.",
+      },
+      {
+        id: "rb-43",
+        title: "The Luckiest Man in Babylon",
+        content:
+          "Sharru Nada, a wealthy merchant, reveals that his fortune began with a secret about work discovered during his days as a slave.",
+      },
+      {
+        id: "rb-44",
+        title: "Work Is Your Best Friend",
+        content:
+          "Sharru Nada learned to love good, hard work. It was work, embraced wholeheartedly, that lifted him from slavery to riches.",
+      },
+      {
+        id: "rb-45",
+        title: "Good Luck Follows Effort",
+        content:
+          "Opportunity favours those in motion. What looks like luck usually visits the person already working hard and paying attention.",
+      },
+      {
+        id: "rb-46",
+        title: "Attract Good Fortune Through Action",
+        content:
+          "You can't wait passively for luck. Taking action and seizing opportunities is how the fortunate become fortunate.",
+      },
+      {
+        id: "rb-47",
+        title: "The Power of Small Beginnings",
+        content:
+          "Every fortune in these tales starts with a single saved coin and a firm decision. Modest, consistent steps build great wealth.",
+      },
+      {
+        id: "rb-48",
+        title: "Wealth Is Built, Not Wished",
+        content:
+          "Longing for riches changes nothing; disciplined action changes everything. Wealth is the result of habits, not hopes.",
+      },
+      {
+        id: "rb-49",
+        title: "Discipline Beats Luck",
+        content:
+          "Consistency in saving, investing, and living within your means beats any stroke of fortune. Discipline is the true secret.",
+      },
+      {
+        id: "rb-50",
+        title: "Control Your Financial Life",
+        content:
+          "You needn't be a slave to circumstance. Applying these principles puts you, not chance, in charge of your money.",
+      },
+      {
+        id: "rb-51",
+        title: "Seek Wise Counsel",
+        content:
+          "The parables repeat it: consult those with real experience before risking your gold. Good advice is worth seeking out.",
+      },
+      {
+        id: "rb-52",
+        title: "Patience and Compounding",
+        content:
+          "Gold grows slowly at first, then rapidly as its earnings earn. Patience lets the miracle of compounding do its work.",
+      },
+      {
+        id: "rb-53",
+        title: "Enjoy Life Along the Way",
+        content:
+          "The goal isn't miserly hoarding but a full, secure life. Provide for the future while still enjoying the present in moderation.",
+      },
+      {
+        id: "rb-54",
+        title: "Money Is a Tool for Living",
+        content:
+          "Wealth exists to give you security, freedom, and the ability to help others — not merely to be counted.",
+      },
+      {
+        id: "rb-55",
+        title: "Guard Against Temptation",
+        content:
+          "Get-rich-quick schemes and impatience destroy fortunes. The steady, cautious path is far surer than the flashy shortcut.",
+      },
+      {
+        id: "rb-56",
+        title: "Teach the Next Generation",
+        content:
+          "Arkad passes his wisdom to his son and his city. Financial principles, taught early, become a lasting family inheritance.",
+      },
+      {
+        id: "rb-57",
+        title: "Character and Wealth Together",
+        content:
+          "The Babylonians tie money to honour, diligence, and integrity. Lasting wealth and good character reinforce one another.",
+      },
+      {
+        id: "rb-58",
+        title: "Simple, Not Easy",
+        content:
+          "The principles are simple to understand but require discipline to follow. Their power lies in consistent practice over years.",
+      },
+      {
+        id: "rb-59",
+        title: "It's Never Too Late",
+        content:
+          "Dabasir began deep in debt and slavery, yet still built wealth. Wherever you start, these laws can transform your finances.",
+      },
+      {
+        id: "rb-60",
+        title: "Start Where You Are",
+        content:
+          "You don't need a large income to begin — only the decision to save a tenth and follow the laws. Start today, however small.",
+      },
+      {
+        id: "rb-61",
+        title: "Consistency Compounds",
+        content:
+          "Small, repeated acts of saving and wise investing snowball over time into security and abundance.",
+      },
+      {
+        id: "rb-62",
+        title: "Freedom Through Wealth",
+        content:
+          "Financial independence buys the freedom to live on your own terms. That freedom is the true prize the parables point toward.",
+      },
+      {
+        id: "rb-63",
+        title: "Timeless and Universal",
+        content:
+          "Though set in ancient Babylon, these lessons apply to anyone, anywhere. Human nature and money's laws haven't changed.",
+      },
+      {
+        id: "rb-64",
+        title: "Become Your Own Richest Man",
+        content:
+          "Save a tenth, control spending, invest wisely, protect what you have, and keep learning. Follow the laws, and wealth will find you.",
+      },
+    ],
+  },
+
+  // The Art of Seduction — Robert Greene
+  "bk-656": {
+    bookId: "bk-656",
+    tagline: "The timeless art of charm, influence and irresistible attraction",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "sd-1",
+        title: "Seduction Is a Form of Power",
+        content:
+          "Greene frames seduction as the subtlest form of power — winning others through charm and psychology rather than force. It works in romance, business, and life.",
+      },
+      {
+        id: "sd-2",
+        title: "Charm Over Force",
+        content:
+          "You can never truly force people to want you; you can only draw them in. Indirect influence lasts where pressure only breeds resistance.",
+      },
+      {
+        id: "sd-3",
+        title: "Anyone Can Learn It",
+        content:
+          "Seduction isn't reserved for the beautiful. It's a set of learnable qualities and strategies anyone can cultivate.",
+      },
+      {
+        id: "sd-4",
+        title: "The Seductive Character",
+        content:
+          "The first half of the book profiles types of seducers. Recognizing which archetype suits you lets you develop your natural charm.",
+      },
+      {
+        id: "sd-5",
+        title: "The Siren",
+        content:
+          "The Siren radiates overt allure and confidence, offering an escape into pleasure and fantasy. Her power is heightened femininity and an air of danger.",
+      },
+      {
+        id: "sd-6",
+        title: "The Rake",
+        content:
+          "The Rake pursues with irresistible, all-consuming desire. His attention feels total and intoxicating, flattering the target with pure, unrestrained want.",
+      },
+      {
+        id: "sd-7",
+        title: "The Ideal Lover",
+        content:
+          "The Ideal Lover senses what people long for and becomes it. By fulfilling others' romantic and emotional ideals, they become impossible to resist.",
+      },
+      {
+        id: "sd-8",
+        title: "The Dandy",
+        content:
+          "The Dandy blurs conventional roles and radiates freedom and ambiguity. Their refusal to be categorized makes them intriguing and magnetic.",
+      },
+      {
+        id: "sd-9",
+        title: "The Natural",
+        content:
+          "The Natural charms through childlike spontaneity and innocence. Their unselfconscious playfulness disarms and delights.",
+      },
+      {
+        id: "sd-10",
+        title: "The Coquette",
+        content:
+          "The Coquette masters the art of delay — hot then cold, giving then withdrawing. This self-sufficient teasing keeps others endlessly pursuing.",
+      },
+      {
+        id: "sd-11",
+        title: "The Charmer",
+        content:
+          "The Charmer focuses entirely on you, soothing your ego and making you feel important. They rarely argue and always leave you feeling better.",
+      },
+      {
+        id: "sd-12",
+        title: "The Charismatic",
+        content:
+          "The Charismatic draws people with an inner fire — conviction, purpose, and self-belief. Their radiant certainty makes others want to follow.",
+      },
+      {
+        id: "sd-13",
+        title: "The Star",
+        content:
+          "The Star is a dreamlike, slightly distant figure onto whom people project fantasies. Their alluring, ungraspable image keeps admirers fascinated.",
+      },
+      {
+        id: "sd-14",
+        title: "The Anti-Seducer",
+        content:
+          "Anti-seducers repel through insecurity, self-absorption, neediness, or cheapness. Knowing these traits helps you avoid killing attraction.",
+      },
+      {
+        id: "sd-15",
+        title: "Know Your Target",
+        content:
+          "Seduction begins with deep observation. Every person has a particular character and unmet need; read it before you make a move.",
+      },
+      {
+        id: "sd-16",
+        title: "Everyone Has a Void",
+        content:
+          "People carry an inner lack — boredom, loneliness, an unlived dream. The seducer senses that void and offers to fill it.",
+      },
+      {
+        id: "sd-17",
+        title: "Read the Victim's Type",
+        content:
+          "Different people are susceptible in different ways. Tailoring your approach to their psychology is what makes it work.",
+      },
+      {
+        id: "sd-18",
+        title: "The Resistant Are Best",
+        content:
+          "The most guarded targets, once won over, become the most devoted. Resistance often masks the strongest hidden longing.",
+      },
+      {
+        id: "sd-19",
+        title: "The Seductive Process",
+        content:
+          "The second half maps seduction as a deliberate sequence of phases — from stirring interest to the final move. Patience and strategy guide each step.",
+      },
+      {
+        id: "sd-20",
+        title: "Choose the Right Victim",
+        content:
+          "Everything depends on selecting the right target — someone whose character responds to your particular charms. The wrong choice dooms the effort.",
+      },
+      {
+        id: "sd-21",
+        title: "Create a False Sense of Security",
+        content:
+          "Never approach too directly at first. Disarm suspicion by seeming harmless — a friend, not a pursuer — so their guard lowers.",
+      },
+      {
+        id: "sd-22",
+        title: "Approach Indirectly",
+        content:
+          "The indirect route is the seducer's path. Circle in slowly rather than announcing your intentions, and desire grows in the space you leave.",
+      },
+      {
+        id: "sd-23",
+        title: "Send Mixed Signals",
+        content:
+          "A blend of interest and reserve, warmth and mystery, keeps people intrigued. Predictability is the enemy of desire.",
+      },
+      {
+        id: "sd-24",
+        title: "Appear an Object of Desire",
+        content:
+          "We want what others want. Showing that you're valued and desired by others makes you instantly more attractive.",
+      },
+      {
+        id: "sd-25",
+        title: "Create a Need — Stir Anxiety",
+        content:
+          "Make people aware of a lack in their lives. A little discontent and longing is the soil in which seduction takes root.",
+      },
+      {
+        id: "sd-26",
+        title: "Master the Art of Insinuation",
+        content:
+          "Plant ideas indirectly through hints, suggestions, and ambiguity. What people conclude for themselves feels far more powerful than what you state.",
+      },
+      {
+        id: "sd-27",
+        title: "Enter Their Spirit",
+        content:
+          "Adapt to your target's moods and worldview. Meeting people where they are builds the rapport that opens them to you.",
+      },
+      {
+        id: "sd-28",
+        title: "Create Temptation",
+        content:
+          "Dangle the promise of adventure, pleasure, or escape. A vivid temptation pulls people out of their routine and toward you.",
+      },
+      {
+        id: "sd-29",
+        title: "Keep Them in Suspense",
+        content:
+          "Never become predictable. Constant small surprises keep the other person guessing and their interest alive.",
+      },
+      {
+        id: "sd-30",
+        title: "The Power of Words",
+        content:
+          "Language can enchant. Well-chosen, suggestive, flattering words weave a spell that plain speech never could.",
+      },
+      {
+        id: "sd-31",
+        title: "Pay Attention to Detail",
+        content:
+          "Small gestures — a remembered preference, a thoughtful touch — signal deep attention. Details create the feeling of being truly seen.",
+      },
+      {
+        id: "sd-32",
+        title: "Poeticize Your Presence",
+        content:
+          "Absence and idealization heighten desire. When you're away, let them fill the space with romantic imagination.",
+      },
+      {
+        id: "sd-33",
+        title: "Disarm With Vulnerability",
+        content:
+          "Revealing a strategic weakness or tenderness lowers defenses. A touch of vulnerability makes you human and trustworthy.",
+      },
+      {
+        id: "sd-34",
+        title: "Strategic Weakness",
+        content:
+          "Showing you can be affected — moved, softened — invites others closer. Perfect armor keeps people at a distance.",
+      },
+      {
+        id: "sd-35",
+        title: "Confuse Desire and Reality",
+        content:
+          "Blur the line between fantasy and life so the target loses their footing. Enchantment lives where reality softens into dream.",
+      },
+      {
+        id: "sd-36",
+        title: "Create the Perfect Illusion",
+        content:
+          "Craft experiences and moments that feel almost too good to be real. A beautiful illusion is more seductive than plain honesty.",
+      },
+      {
+        id: "sd-37",
+        title: "Isolate the Target",
+        content:
+          "Draw them away from their usual world and influences. In a private bubble, your presence looms larger and their attachment deepens.",
+      },
+      {
+        id: "sd-38",
+        title: "Prove Yourself",
+        content:
+          "At a certain point, demonstrate sincerity or sacrifice to dissolve lingering doubt. A meaningful gesture cements devotion.",
+      },
+      {
+        id: "sd-39",
+        title: "Stir Deep Emotions",
+        content:
+          "Reach past the surface to childhood feelings, nostalgia, and longing. Emotional depth binds far more strongly than pleasant chit-chat.",
+      },
+      {
+        id: "sd-40",
+        title: "Use the Forbidden",
+        content:
+          "A hint of the taboo or transgressive adds intensity. What feels a little dangerous or off-limits is powerfully alluring.",
+      },
+      {
+        id: "sd-41",
+        title: "Use Spiritual Lures",
+        content:
+          "Appeal to people's yearning for meaning, transcendence, or a higher connection. Seduction can operate on the soul, not just the senses.",
+      },
+      {
+        id: "sd-42",
+        title: "Mix Pleasure With Pain",
+        content:
+          "A little pain — jealousy, uncertainty, longing — makes pleasure sweeter. Constant ease breeds boredom; contrast keeps desire sharp.",
+      },
+      {
+        id: "sd-43",
+        title: "The Pursuer Becomes Pursued",
+        content:
+          "The ultimate move is to make the other person chase you. Once desire is strong, step back and let them come.",
+      },
+      {
+        id: "sd-44",
+        title: "Give Them Space to Fall",
+        content:
+          "Withdraw slightly and let the target close the distance. People treasure most what they feel they've won themselves.",
+      },
+      {
+        id: "sd-45",
+        title: "Master the Bold Move",
+        content:
+          "After building tension, a decisive, well-timed move resolves it. Hesitation at the climax squanders everything you've built.",
+      },
+      {
+        id: "sd-46",
+        title: "Timing Is Everything",
+        content:
+          "Move too soon and you seem desperate; too late and the moment cools. Sense the ripe instant and act with confidence.",
+      },
+      {
+        id: "sd-47",
+        title: "Beware the Aftereffects",
+        content:
+          "After the conquest, desire can cool into indifference or resentment. Manage the aftermath thoughtfully or maintain a graceful exit.",
+      },
+      {
+        id: "sd-48",
+        title: "Attention Is the Currency",
+        content:
+          "Genuine, focused attention is the seducer's greatest gift. In a distracted world, making someone feel truly seen is intoxicating.",
+      },
+      {
+        id: "sd-49",
+        title: "Make Them Feel Special",
+        content:
+          "Everyone longs to feel uniquely important. Convey that they are unlike anyone else, and their attachment deepens.",
+      },
+      {
+        id: "sd-50",
+        title: "The Power of Absence",
+        content:
+          "Too much presence breeds familiarity; measured absence breeds longing. Scarcity makes the heart grow fonder.",
+      },
+      {
+        id: "sd-51",
+        title: "Mystery Attracts",
+        content:
+          "Reveal yourself slowly. An unsolved puzzle keeps people fascinated, while full disclosure ends the intrigue.",
+      },
+      {
+        id: "sd-52",
+        title: "Never Be Too Available",
+        content:
+          "Constant availability lowers your value. A degree of unpredictability and independence keeps you desirable.",
+      },
+      {
+        id: "sd-53",
+        title: "Create Anticipation",
+        content:
+          "Desire lives in the waiting. Building suspense and slow escalation makes the eventual moment far more powerful.",
+      },
+      {
+        id: "sd-54",
+        title: "Slowness Intensifies Desire",
+        content:
+          "The great seducers take their time. Rushing kills the tension that makes seduction sweet; patience deepens it.",
+      },
+      {
+        id: "sd-55",
+        title: "Appeal to the Imagination",
+        content:
+          "What is suggested is more powerful than what is shown. Leave room for the other person's imagination to do the seducing.",
+      },
+      {
+        id: "sd-56",
+        title: "Be a Screen for Fantasies",
+        content:
+          "Let people project their dreams onto you. The most alluring figures are open enough that others see their ideal in them.",
+      },
+      {
+        id: "sd-57",
+        title: "Adapt to Each Person",
+        content:
+          "There's no single script. Read each individual and shape your approach to their unique desires and defenses.",
+      },
+      {
+        id: "sd-58",
+        title: "Listen Deeply",
+        content:
+          "Draw people out and truly listen. In being heard, they feel a rare intimacy that binds them to you.",
+      },
+      {
+        id: "sd-59",
+        title: "Flatter Without Fawning",
+        content:
+          "Sincere, specific admiration warms people; obvious flattery repels. Praise what's real and unexpected in them.",
+      },
+      {
+        id: "sd-60",
+        title: "The Push and Pull",
+        content:
+          "Alternate closeness and distance, warmth and coolness. This rhythm of advance and retreat keeps desire from going stale.",
+      },
+      {
+        id: "sd-61",
+        title: "Triangles Increase Desire",
+        content:
+          "A hint of rivals or admirers makes you more wanted. We instinctively value what others compete for.",
+      },
+      {
+        id: "sd-62",
+        title: "We Want What Others Want",
+        content:
+          "Desire is contagious and comparative. Being visibly valued by others is one of the strongest attractants there is.",
+      },
+      {
+        id: "sd-63",
+        title: "Provide Pleasure and Escape",
+        content:
+          "Offer a break from routine and worry. People are drawn to those who make their lives feel lighter and more exciting.",
+      },
+      {
+        id: "sd-64",
+        title: "Break the Routine",
+        content:
+          "Novelty reignites attention. Surprising experiences and spontaneity keep a connection from settling into dull predictability.",
+      },
+      {
+        id: "sd-65",
+        title: "The Language of the Body",
+        content:
+          "Posture, eye contact, and touch speak louder than words. Nonverbal signals often carry the real message of attraction.",
+      },
+      {
+        id: "sd-66",
+        title: "Presence and Voice",
+        content:
+          "A calm, warm presence and an expressive voice are powerful tools. How you say things matters as much as what you say.",
+      },
+      {
+        id: "sd-67",
+        title: "Confidence Is Magnetic",
+        content:
+          "Self-assurance draws people in; visible insecurity pushes them away. Cultivating genuine confidence is foundational to charm.",
+      },
+      {
+        id: "sd-68",
+        title: "But Never Seem Needy",
+        content:
+          "Neediness is the great destroyer of attraction. The more secure and self-sufficient you appear, the more magnetic you become.",
+      },
+      {
+        id: "sd-69",
+        title: "Avoid Self-Absorption",
+        content:
+          "The anti-seducer talks only about themselves. Turning attention outward, onto the other person, is the heart of charm.",
+      },
+      {
+        id: "sd-70",
+        title: "Never Argue",
+        content:
+          "Winning an argument loses the seduction. Charmers soothe and agree far more than they contradict.",
+      },
+      {
+        id: "sd-71",
+        title: "Enter Their World",
+        content:
+          "Show curiosity about the other person's interests and life. Meeting them in their world makes them feel understood and valued.",
+      },
+      {
+        id: "sd-72",
+        title: "Give Before You Take",
+        content:
+          "Generosity — of attention, gifts, and delight — builds goodwill and lowers defenses. Give first, and desire follows.",
+      },
+      {
+        id: "sd-73",
+        title: "The Grand Gesture",
+        content:
+          "A single bold, romantic gesture can leave a lasting impression. Used sparingly, spectacle intensifies emotion.",
+      },
+      {
+        id: "sd-74",
+        title: "Small Details Matter More",
+        content:
+          "Beyond grand gestures, it's the constant tiny attentions that seduce. Consistency in small things proves genuine care.",
+      },
+      {
+        id: "sd-75",
+        title: "The Power of Letters and Words",
+        content:
+          "Written words linger and can be reread endlessly. A well-crafted message keeps you present in the other person's mind.",
+      },
+      {
+        id: "sd-76",
+        title: "Vague, Suggestive Language",
+        content:
+          "Ambiguity invites imagination. Suggestive rather than explicit language lets desire fill in the blanks.",
+      },
+      {
+        id: "sd-77",
+        title: "Let Them Come to You",
+        content:
+          "Bait and position yourself so the target initiates. When they feel they chose you, their commitment is far deeper.",
+      },
+      {
+        id: "sd-78",
+        title: "The Retreat That Draws",
+        content:
+          "Sometimes stepping back pulls people forward. A strategic retreat can reignite a fading pursuit.",
+      },
+      {
+        id: "sd-79",
+        title: "Hesitation Kills Seduction",
+        content:
+          "At the decisive moment, boldness wins. Timidity and second-guessing dissolve the spell you've carefully built.",
+      },
+      {
+        id: "sd-80",
+        title: "Seduction in Everyday Life",
+        content:
+          "These principles govern all persuasion — sales, leadership, friendship. Anywhere you must win people over, charm is at work.",
+      },
+      {
+        id: "sd-81",
+        title: "Seducing Groups and Crowds",
+        content:
+          "Leaders and stars seduce masses with vision, image, and emotion. The same laws that win one heart can move a room or a nation.",
+      },
+      {
+        id: "sd-82",
+        title: "Charisma Scales",
+        content:
+          "Charismatic figures project inner conviction and mystery outward. Their self-belief becomes contagious across large audiences.",
+      },
+      {
+        id: "sd-83",
+        title: "Soft Power in Persuasion",
+        content:
+          "In business and negotiation, making people feel good and understood opens doors that pressure slams shut.",
+      },
+      {
+        id: "sd-84",
+        title: "Believe in Your Own Allure",
+        content:
+          "Self-seduction comes first: if you believe you're desirable and interesting, others sense and share that belief.",
+      },
+      {
+        id: "sd-85",
+        title: "Cultivate an Air of Mystery",
+        content:
+          "Never fully explain yourself. A degree of the unknown keeps others curious and drawn to discover more.",
+      },
+      {
+        id: "sd-86",
+        title: "Create Emotional Peaks",
+        content:
+          "Memorable highs and lows imprint far deeper than steady comfort. Orchestrating emotional intensity binds people to you.",
+      },
+      {
+        id: "sd-87",
+        title: "Manage Jealousy Carefully",
+        content:
+          "A touch of jealousy can inflame desire, but too much breeds resentment. Wield this powerful tool with restraint.",
+      },
+      {
+        id: "sd-88",
+        title: "Understand Human Longing",
+        content:
+          "At its core, seduction meets deep human needs — to be desired, seen, and swept away. Understanding longing is understanding people.",
+      },
+      {
+        id: "sd-89",
+        title: "Patience and Observation",
+        content:
+          "The master seducer watches and waits, gathering clues and choosing moments. Rushed effort betrays the whole art.",
+      },
+      {
+        id: "sd-90",
+        title: "Adapt Your Archetype",
+        content:
+          "Draw on whichever seducer type fits the moment. Flexibility across roles makes you compelling to a wider range of people.",
+      },
+      {
+        id: "sd-91",
+        title: "Guard Against Anti-Seductive Habits",
+        content:
+          "Complaining, bragging, clinging, and stinginess all repel. Removing these traits is as important as adding charm.",
+      },
+      {
+        id: "sd-92",
+        title: "Seduction as Understanding People",
+        content:
+          "Stripped of romance, the book is a deep study of human psychology, desire, and influence — useful far beyond courtship.",
+      },
+      {
+        id: "sd-93",
+        title: "A Double-Edged Art",
+        content:
+          "These same tools can manipulate or genuinely delight. The techniques are neutral; the intention behind them is what matters.",
+      },
+      {
+        id: "sd-94",
+        title: "The Ethics of Charm",
+        content:
+          "Used to exploit, seduction wounds; used to connect and enchant, it enriches. Choose to charm with respect, not deceit.",
+      },
+      {
+        id: "sd-95",
+        title: "Bring Enchantment to Life",
+        content:
+          "At its best, seduction is the art of making ordinary moments feel magical for another person. That is a gift, not a trick.",
+      },
+      {
+        id: "sd-96",
+        title: "The Art of Enchantment",
+        content:
+          "Master attention, mystery, timing, and emotion, and you can charm anyone. Wielded wisely, seduction is one of life's most graceful powers.",
+      },
+    ],
+  },
+
+  // Eat That Frog! — Brian Tracy
+  "bk-600": {
+    bookId: "bk-600",
+    tagline: "21 ways to stop procrastinating and get more done",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "ef-1",
+        title: "Eat That Frog",
+        content:
+          "Your 'frog' is your biggest, most important task — the one you're most likely to put off. Tracy's rule: eat it first thing, before anything else.",
+      },
+      {
+        id: "ef-2",
+        title: "What Is Your Frog?",
+        content:
+          "Your frog is the task that can have the greatest positive impact on your life right now. Identifying it is half the battle.",
+      },
+      {
+        id: "ef-3",
+        title: "Eat the Ugliest Frog First",
+        content:
+          "If you have two important tasks, do the bigger, harder, more important one first. Tackle your worst frog while your energy is highest.",
+      },
+      {
+        id: "ef-4",
+        title: "Don't Stare at the Frog",
+        content:
+          "If you must eat a live frog, don't sit and look at it too long. Overthinking a dreaded task only feeds procrastination — just begin.",
+      },
+      {
+        id: "ef-5",
+        title: "Do First Things First",
+        content:
+          "The habit of starting with your most important task, and finishing it, is the key to high productivity and success.",
+      },
+      {
+        id: "ef-6",
+        title: "Set the Table",
+        content:
+          "Get crystal clear about your goals before acting. You can't hit a target you haven't defined — decide exactly what you want.",
+      },
+      {
+        id: "ef-7",
+        title: "Think on Paper",
+        content:
+          "Write your goals and tasks down. A written goal is concrete and actionable; one left in your head stays vague and easy to ignore.",
+      },
+      {
+        id: "ef-8",
+        title: "Clarity Is Everything",
+        content:
+          "Most procrastination comes from fuzzy goals. The clearer you are on what to do and why, the easier it is to start.",
+      },
+      {
+        id: "ef-9",
+        title: "Plan Every Day in Advance",
+        content:
+          "Make your task list the night before, so your subconscious works on it overnight and you start the day with direction.",
+      },
+      {
+        id: "ef-10",
+        title: "The 10/90 Rule",
+        content:
+          "The first ten percent of time spent planning saves up to ninety percent in execution. A few minutes of planning multiplies your results.",
+      },
+      {
+        id: "ef-11",
+        title: "Apply the 80/20 Rule",
+        content:
+          "Twenty percent of your tasks produce eighty percent of your results. Identify that vital twenty percent and focus your energy there.",
+      },
+      {
+        id: "ef-12",
+        title: "The Vital Few",
+        content:
+          "Resist the pull to do many small, easy tasks. One high-value task is worth more than a dozen trivial ones combined.",
+      },
+      {
+        id: "ef-13",
+        title: "Consider the Consequences",
+        content:
+          "Important tasks are those with big long-term consequences. Judge what to do by its future impact, not its momentary urgency.",
+      },
+      {
+        id: "ef-14",
+        title: "Think Long-Term",
+        content:
+          "Successful people are willing to sacrifice short-term comfort for long-term gain. Long-term thinking sharpens today's priorities.",
+      },
+      {
+        id: "ef-15",
+        title: "Importance Over Urgency",
+        content:
+          "Urgent tasks shout, but importance is quiet. Don't let a flood of urgent trivia crowd out the few things that truly matter.",
+      },
+      {
+        id: "ef-16",
+        title: "Practice Creative Procrastination",
+        content:
+          "You can't do everything, so procrastinate on purpose — deliberately delay low-value tasks to make room for high-value ones.",
+      },
+      {
+        id: "ef-17",
+        title: "Choose What to Put Off",
+        content:
+          "The productive don't avoid procrastination entirely; they choose to postpone what matters least. Cut the small frogs loose.",
+      },
+      {
+        id: "ef-18",
+        title: "The ABCDE Method",
+        content:
+          "Rank tasks A (must do), B (should do), C (nice to do), D (delegate), E (eliminate). Always work on your A tasks first.",
+      },
+      {
+        id: "ef-19",
+        title: "Never Do a B Before an A",
+        content:
+          "Discipline yourself to finish your most important A task before touching anything of lower value. Priorities must actually be prioritized.",
+      },
+      {
+        id: "ef-20",
+        title: "Delegate and Eliminate",
+        content:
+          "Hand off what others can do (D) and simply drop what doesn't matter (E). Freeing your plate lets you focus on the frogs only you can eat.",
+      },
+      {
+        id: "ef-21",
+        title: "Focus on Key Result Areas",
+        content:
+          "Identify the handful of results your role truly depends on. Excellence in these key areas drives your whole performance.",
+      },
+      {
+        id: "ef-22",
+        title: "The Law of Three",
+        content:
+          "Of all your tasks, three usually account for most of your value. Find those three and give them your best time and energy.",
+      },
+      {
+        id: "ef-23",
+        title: "Your Three Vital Tasks",
+        content:
+          "Ask what would matter most if you could only do three things all week. Those are the frogs worth protecting time for.",
+      },
+      {
+        id: "ef-24",
+        title: "Prepare Thoroughly",
+        content:
+          "Before you begin, gather everything you need — information, tools, a clear space. Good preparation removes excuses to delay.",
+      },
+      {
+        id: "ef-25",
+        title: "Set Up for Success",
+        content:
+          "A clean, ready workspace and a clear plan make starting easy. Reduce the friction that tempts you to put things off.",
+      },
+      {
+        id: "ef-26",
+        title: "One Oil Barrel at a Time",
+        content:
+          "A huge task overwhelms us; focus only on the next step. As the saying goes, you can cross any desert one oil barrel at a time.",
+      },
+      {
+        id: "ef-27",
+        title: "Just Take the First Step",
+        content:
+          "You don't need to see the whole path — only the first move. Starting builds momentum that carries you through the rest.",
+      },
+      {
+        id: "ef-28",
+        title: "Upgrade Your Key Skills",
+        content:
+          "The better you get at your core tasks, the less you procrastinate on them. Continuous learning makes your frogs easier to swallow.",
+      },
+      {
+        id: "ef-29",
+        title: "Skill Beats Reluctance",
+        content:
+          "We avoid what we feel bad at. Improving a weak skill turns a dreaded task into one you can face with confidence.",
+      },
+      {
+        id: "ef-30",
+        title: "Identify Your Key Constraints",
+        content:
+          "Find the bottleneck holding back your biggest goal. Removing that single constraint often unlocks disproportionate progress.",
+      },
+      {
+        id: "ef-31",
+        title: "Look Inward for Limits",
+        content:
+          "Often the main constraint is within you — a skill, habit, or fear. Honestly locating it is the key to breaking through.",
+      },
+      {
+        id: "ef-32",
+        title: "Put the Pressure on Yourself",
+        content:
+          "Don't wait to be pushed. Set your own deadlines and standards, and act as if you had to leave town tomorrow.",
+      },
+      {
+        id: "ef-33",
+        title: "Be Your Own Boss",
+        content:
+          "High performers hold themselves to higher standards than anyone else would. Lead yourself and you won't need external pressure.",
+      },
+      {
+        id: "ef-34",
+        title: "Motivate Yourself Into Action",
+        content:
+          "Be your own cheerleader. Positive self-talk and optimism generate the energy to attack tasks rather than avoid them.",
+      },
+      {
+        id: "ef-35",
+        title: "Be an Optimist",
+        content:
+          "How you talk to yourself shapes your drive. Focus on solutions and possibilities, and action feels far more inviting.",
+      },
+      {
+        id: "ef-36",
+        title: "Technology Is a Terrible Master",
+        content:
+          "Constant devices and notifications shatter focus and feed procrastination. Left unchecked, technology runs you instead of the reverse.",
+      },
+      {
+        id: "ef-37",
+        title: "Disconnect to Focus",
+        content:
+          "Regularly switch everything off to work undisturbed. Periods of disconnection are where your real, deep work gets done.",
+      },
+      {
+        id: "ef-38",
+        title: "Technology Is a Wonderful Servant",
+        content:
+          "Used deliberately, tools can boost your productivity enormously. The key is to command your technology rather than obey it.",
+      },
+      {
+        id: "ef-39",
+        title: "Use Tools on Your Terms",
+        content:
+          "Decide when and how you'll use devices to serve your goals. Intentional use turns technology into a genuine ally.",
+      },
+      {
+        id: "ef-40",
+        title: "Focus Your Attention",
+        content:
+          "Concentration on a single task is the secret of high output. Every interruption resets your focus and costs you time.",
+      },
+      {
+        id: "ef-41",
+        title: "The Cost of Interruptions",
+        content:
+          "It takes minutes to fully refocus after each distraction. Protecting uninterrupted time is protecting your productivity.",
+      },
+      {
+        id: "ef-42",
+        title: "Slice the Task",
+        content:
+          "Break a big job into thin slices and do one at a time, like eating a salami. Small slices feel manageable where the whole felt impossible.",
+      },
+      {
+        id: "ef-43",
+        title: "The Swiss Cheese Method",
+        content:
+          "Punch holes in a big task by doing small five-minute chunks. A few holes create momentum that pulls you into the rest.",
+      },
+      {
+        id: "ef-44",
+        title: "Create Large Chunks of Time",
+        content:
+          "Important work needs unbroken blocks. Schedule big, protected chunks of time for your most valuable tasks.",
+      },
+      {
+        id: "ef-45",
+        title: "Block Time for Big Frogs",
+        content:
+          "Treat deep-work blocks like unmissable appointments. Guarding them ensures your frogs actually get eaten.",
+      },
+      {
+        id: "ef-46",
+        title: "Develop a Sense of Urgency",
+        content:
+          "Move fast on important tasks. A bias toward action and a sense of urgency are hallmarks of highly productive people.",
+      },
+      {
+        id: "ef-47",
+        title: "Get Into Flow",
+        content:
+          "Working quickly and continuously on a single task pulls you into flow, where focus deepens and output soars.",
+      },
+      {
+        id: "ef-48",
+        title: "Single-Handle Every Task",
+        content:
+          "Once you start your most important task, stay with it until it's one hundred percent complete. Don't jump between things.",
+      },
+      {
+        id: "ef-49",
+        title: "Do It to Completion",
+        content:
+          "Finishing gives a burst of energy and satisfaction. Half-done tasks drain you; completed ones fuel you.",
+      },
+      {
+        id: "ef-50",
+        title: "Starting and Stopping Wastes Time",
+        content:
+          "Every time you set a task down and pick it up again, you pay a re-entry cost. Single-handling avoids that waste entirely.",
+      },
+      {
+        id: "ef-51",
+        title: "The Momentum Principle",
+        content:
+          "It takes energy to start but less to keep going. Push through the initial resistance and momentum carries you forward.",
+      },
+      {
+        id: "ef-52",
+        title: "Overcome Procrastination Daily",
+        content:
+          "Beating procrastination isn't a one-time win but a daily practice. Each morning, choose to eat your frog again.",
+      },
+      {
+        id: "ef-53",
+        title: "Discipline Is the Key",
+        content:
+          "Self-discipline — making yourself do what you should, when you should — is the foundation beneath every one of these methods.",
+      },
+      {
+        id: "ef-54",
+        title: "Repetition Builds the Habit",
+        content:
+          "Do these practices until they're automatic. Productivity is a set of habits, and habits form through consistent repetition.",
+      },
+      {
+        id: "ef-55",
+        title: "Eat Your Frog, Every Day",
+        content:
+          "Plan, prioritize, and attack your most important task first, single-mindedly, each day. Do that consistently and your results transform.",
+      },
+    ],
+  },
+
+  // Deep Work — Cal Newport
+  "bk-299": {
+    bookId: "bk-299",
+    tagline: "Rules for focused success in a distracted world",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "dw-1",
+        title: "The Age of Distraction",
+        content:
+          "In a world of constant notifications and open tabs, the ability to focus deeply has become both rare and enormously valuable. Newport shows how to reclaim it.",
+      },
+      {
+        id: "dw-2",
+        title: "Deep Work Defined",
+        content:
+          "Deep work is distraction-free concentration that pushes your cognitive abilities to their limit. It creates new value and is hard to replicate.",
+      },
+      {
+        id: "dw-3",
+        title: "Shallow Work Defined",
+        content:
+          "Shallow work is non-cognitively demanding, logistical tasks done while distracted — email, meetings, busywork. It's easy to replicate and adds little value.",
+      },
+      {
+        id: "dw-4",
+        title: "Deep Work Is Valuable",
+        content:
+          "The most rewarding work — learning hard skills, producing at an elite level — requires depth. Deep work is the engine of real achievement.",
+      },
+      {
+        id: "dw-5",
+        title: "Deep Work Is Rare",
+        content:
+          "As distraction rises, fewer people can concentrate. That scarcity makes the skill of deep work a genuine competitive advantage.",
+      },
+      {
+        id: "dw-6",
+        title: "Deep Work Is Meaningful",
+        content:
+          "Depth doesn't just produce results; it produces satisfaction. Immersion in demanding work is a reliable source of meaning and flow.",
+      },
+      {
+        id: "dw-7",
+        title: "The Deep Work Hypothesis",
+        content:
+          "The ability to do deep work is becoming rarer at the exact moment it's becoming more valuable. Those who cultivate it will thrive.",
+      },
+      {
+        id: "dw-8",
+        title: "The Two Core Abilities",
+        content:
+          "To succeed today you must quickly master hard things and produce at an elite level in quality and speed. Both depend on deep work.",
+      },
+      {
+        id: "dw-9",
+        title: "Master Hard Things Fast",
+        content:
+          "Learning complex skills requires intense, focused attention. You cannot master difficult material while distracted.",
+      },
+      {
+        id: "dw-10",
+        title: "The Quality Formula",
+        content:
+          "High-quality work equals time spent times intensity of focus. Cranking up focus lets you produce more in fewer hours.",
+      },
+      {
+        id: "dw-11",
+        title: "Deliberate Practice",
+        content:
+          "Skill grows through focused practice on the edge of your ability, with feedback. Distraction blocks the very concentration deliberate practice demands.",
+      },
+      {
+        id: "dw-12",
+        title: "Attention Residue",
+        content:
+          "When you switch tasks, part of your attention stays stuck on the last one. Constant switching leaves you perpetually half-focused.",
+      },
+      {
+        id: "dw-13",
+        title: "The Cost of Switching",
+        content:
+          "Even a quick glance at your inbox fragments your concentration for far longer than the glance itself. Multitasking quietly wrecks depth.",
+      },
+      {
+        id: "dw-14",
+        title: "Busyness Isn't Productivity",
+        content:
+          "In the absence of clear metrics, many mistake frantic activity for value. Visible busyness often masks a lack of meaningful output.",
+      },
+      {
+        id: "dw-15",
+        title: "You Are What You Focus On",
+        content:
+          "Your world is the sum of what you pay attention to. Concentrating on deep, worthy things quite literally builds a better life.",
+      },
+      {
+        id: "dw-16",
+        title: "Focus Shapes Wellbeing",
+        content:
+          "A wandering, distracted mind fixates on what's wrong. A focused mind, absorbed in good work, is calmer and more content.",
+      },
+      {
+        id: "dw-17",
+        title: "Craftsmanship and Meaning",
+        content:
+          "Depth turns work into craft. The care and skill of deep work give even ordinary jobs a sense of purpose.",
+      },
+      {
+        id: "dw-18",
+        title: "Choose a Deep Work Philosophy",
+        content:
+          "Newport offers four ways to schedule depth. Pick the one that fits your life rather than forcing a single ideal.",
+      },
+      {
+        id: "dw-19",
+        title: "The Monastic Philosophy",
+        content:
+          "Radically eliminate shallow obligations to maximize depth. Suited to those whose value comes from a single, clear pursuit.",
+      },
+      {
+        id: "dw-20",
+        title: "The Bimodal Philosophy",
+        content:
+          "Divide your time into stretches of total depth and stretches open to everything else. Reserve whole days or weeks for deep work.",
+      },
+      {
+        id: "dw-21",
+        title: "The Rhythmic Philosophy",
+        content:
+          "Make deep work a daily habit at the same time each day. Rhythm and routine make focus automatic rather than a decision.",
+      },
+      {
+        id: "dw-22",
+        title: "The Journalistic Philosophy",
+        content:
+          "Fit deep work into your schedule wherever you can, switching into focus at a moment's notice. It's demanding but flexible.",
+      },
+      {
+        id: "dw-23",
+        title: "Ritualize Your Deep Work",
+        content:
+          "Decide in advance where you'll work, for how long, and by what rules. Rituals remove friction and preserve willpower.",
+      },
+      {
+        id: "dw-24",
+        title: "Set Rules and Structure",
+        content:
+          "Define what's off-limits during deep sessions — no phone, no internet — and how you'll support the work with coffee, walks, or metrics.",
+      },
+      {
+        id: "dw-25",
+        title: "The Grand Gesture",
+        content:
+          "A dramatic change of environment or investment can jolt you into depth. Booking a hotel room to finish a project is a classic example.",
+      },
+      {
+        id: "dw-26",
+        title: "Change Your Environment",
+        content:
+          "A dedicated space signals your brain it's time to focus. Where you work shapes how deeply you can work.",
+      },
+      {
+        id: "dw-27",
+        title: "Execute Like a Business",
+        content:
+          "Newport borrows the Four Disciplines of Execution to make deep work happen consistently rather than by accident.",
+      },
+      {
+        id: "dw-28",
+        title: "Focus on the Wildly Important",
+        content:
+          "Trying to do everything dilutes your depth. Choose a small number of ambitious goals and pour your deep work into them.",
+      },
+      {
+        id: "dw-29",
+        title: "Act on Lead Measures",
+        content:
+          "Track the inputs you control — hours of deep work — rather than only distant outcomes. Lead measures drive daily behaviour.",
+      },
+      {
+        id: "dw-30",
+        title: "Keep a Scoreboard",
+        content:
+          "A visible tally of your deep-work hours creates motivation and momentum. What gets measured gets improved.",
+      },
+      {
+        id: "dw-31",
+        title: "Create Accountability",
+        content:
+          "Regularly review your deep-work record and confront the results. Honest accountability keeps the habit alive.",
+      },
+      {
+        id: "dw-32",
+        title: "Be Lazy — Schedule Downtime",
+        content:
+          "Depth requires rest. Deliberately ending work and doing nothing productive restores the attention deep work burns through.",
+      },
+      {
+        id: "dw-33",
+        title: "The Shutdown Ritual",
+        content:
+          "End each workday with a routine that reviews tasks and formally closes work. Once shut down, let work go until tomorrow.",
+      },
+      {
+        id: "dw-34",
+        title: "Downtime Sparks Insight",
+        content:
+          "The unconscious mind solves problems while you rest. Stepping away often delivers the breakthroughs effort alone couldn't.",
+      },
+      {
+        id: "dw-35",
+        title: "Rest Restores Attention",
+        content:
+          "Directed focus is a finite resource that recharges with rest, especially in nature. Protect your downtime to protect your depth.",
+      },
+      {
+        id: "dw-36",
+        title: "Embrace Boredom",
+        content:
+          "If you reach for your phone at every dull moment, you train your brain to crave distraction. Tolerating boredom rebuilds focus.",
+      },
+      {
+        id: "dw-37",
+        title: "Don't Take Breaks From Distraction",
+        content:
+          "Rather than occasionally unplugging, schedule your distraction. Take planned breaks from focus, not breaks from distraction.",
+      },
+      {
+        id: "dw-38",
+        title: "Schedule Internet Time",
+        content:
+          "Give yourself set windows for the internet and stay offline between them. This keeps your focus muscle from atrophying.",
+      },
+      {
+        id: "dw-39",
+        title: "Train Your Focus Muscle",
+        content:
+          "Concentration is a skill you strengthen with practice. Regularly resisting distraction makes deep focus progressively easier.",
+      },
+      {
+        id: "dw-40",
+        title: "Productive Meditation",
+        content:
+          "While walking or exercising, focus your mind on a single work problem. It trains concentration and generates ideas at once.",
+      },
+      {
+        id: "dw-41",
+        title: "Work With Intensity",
+        content:
+          "Set an ambitious deadline that forces intense focus, the way Roosevelt attacked his studies in short, ferocious bursts.",
+      },
+      {
+        id: "dw-42",
+        title: "Quit Social Media — Deliberately",
+        content:
+          "Newport urges evaluating each tool honestly rather than using it by default. Keep only what offers substantial benefit to your real goals.",
+      },
+      {
+        id: "dw-43",
+        title: "The Any-Benefit Trap",
+        content:
+          "We justify tools because they offer some possible benefit. But almost anything has some benefit; the question is whether it's worth the cost.",
+      },
+      {
+        id: "dw-44",
+        title: "The Craftsman Approach to Tools",
+        content:
+          "A craftsman adopts a tool only if its benefits to core goals outweigh its harms. Apply that rigorous standard to your apps and habits.",
+      },
+      {
+        id: "dw-45",
+        title: "The Law of the Vital Few",
+        content:
+          "A handful of activities drive most of your important results. Identify them and cut the many that contribute little.",
+      },
+      {
+        id: "dw-46",
+        title: "Reclaim Your Leisure",
+        content:
+          "Don't let free time dissolve into mindless scrolling. Planning meaningful leisure protects your attention even off the clock.",
+      },
+      {
+        id: "dw-47",
+        title: "Drain the Shallows",
+        content:
+          "Shallow work expands to fill available time. Deliberately minimizing it frees hours for the deep work that actually matters.",
+      },
+      {
+        id: "dw-48",
+        title: "Schedule Every Minute",
+        content:
+          "Plan your day in time blocks rather than reacting to whatever arises. A schedule ensures depth gets protected space.",
+      },
+      {
+        id: "dw-49",
+        title: "Quantify Each Task's Depth",
+        content:
+          "Ask how many months it would take a smart graduate to do a task. Low-skill tasks are shallow — treat them accordingly.",
+      },
+      {
+        id: "dw-50",
+        title: "Fix a Shallow-Work Budget",
+        content:
+          "Decide what fraction of your time shallow work may consume, then defend the rest for depth. Make the trade-off explicit.",
+      },
+      {
+        id: "dw-51",
+        title: "Finish by Five",
+        content:
+          "Fixed-schedule productivity — committing to end work at a set hour — forces you to ruthlessly prioritize and cut the shallow.",
+      },
+      {
+        id: "dw-52",
+        title: "Become Hard to Reach",
+        content:
+          "Constant availability is the enemy of depth. Set expectations that you won't respond instantly, and protect your focus.",
+      },
+      {
+        id: "dw-53",
+        title: "Make Senders Do More Work",
+        content:
+          "Use sender filters and clear guidelines so people send you fewer, better-considered messages — and you owe fewer replies.",
+      },
+      {
+        id: "dw-54",
+        title: "Don't Respond by Default",
+        content:
+          "You're not obligated to answer every email. Reply only when it clearly serves your goals, and let the rest go.",
+      },
+      {
+        id: "dw-55",
+        title: "Do More in Less Time",
+        content:
+          "With intense focus and less shallow clutter, you accomplish more meaningful work in fewer hours — and reclaim your evenings.",
+      },
+      {
+        id: "dw-56",
+        title: "Deep Work Builds Career Capital",
+        content:
+          "The rare, valuable skills that create career freedom are forged through deep work. Depth compounds into opportunity.",
+      },
+      {
+        id: "dw-57",
+        title: "Focus Is the New IQ",
+        content:
+          "In the knowledge economy, the ability to concentrate is as decisive as raw intelligence. Trained attention is a genuine edge.",
+      },
+      {
+        id: "dw-58",
+        title: "Protect Your Attention",
+        content:
+          "Your attention is your most precious, most attacked resource. Guarding it deliberately is the central act of a productive life.",
+      },
+      {
+        id: "dw-59",
+        title: "Depth Over Distraction",
+        content:
+          "Given the choice between a distracted, busy life and a focused, deep one, Newport makes the case that depth is the richer path.",
+      },
+      {
+        id: "dw-60",
+        title: "Start Small",
+        content:
+          "You needn't overhaul everything at once. Begin with a single scheduled deep-work block a day and build from there.",
+      },
+      {
+        id: "dw-61",
+        title: "Consistency Compounds",
+        content:
+          "Deep work practiced daily compounds into mastery and output that sporadic effort can't match. Show up regularly.",
+      },
+      {
+        id: "dw-62",
+        title: "Guard Your Mornings",
+        content:
+          "For many, willpower and focus are highest early. Protect your best hours for your most demanding deep work.",
+      },
+      {
+        id: "dw-63",
+        title: "Single-Task Fiercely",
+        content:
+          "Depth demands one thing at a time. Close the tabs, silence the phone, and give the task your whole mind.",
+      },
+      {
+        id: "dw-64",
+        title: "Boredom Is Not the Enemy",
+        content:
+          "Constant novelty-seeking corrodes focus. Comfort with quiet, unstimulated moments is a prerequisite for deep concentration.",
+      },
+      {
+        id: "dw-65",
+        title: "Meaning Through Mastery",
+        content:
+          "Getting genuinely good at something hard is deeply satisfying. Deep work is the road to that mastery and its meaning.",
+      },
+      {
+        id: "dw-66",
+        title: "Measure What Matters",
+        content:
+          "Track deep-work hours and skills gained, not inbox counts. Aligning your metrics with depth changes how you spend your day.",
+      },
+      {
+        id: "dw-67",
+        title: "Design a Distraction-Resistant Life",
+        content:
+          "Shape your tools, schedule, and environment to make depth the default and distraction the exception.",
+      },
+      {
+        id: "dw-68",
+        title: "Rest Is Strategic",
+        content:
+          "Deliberate rest isn't the opposite of productivity; it's what sustains deep work over the long haul. Recharge on purpose.",
+      },
+      {
+        id: "dw-69",
+        title: "The Deep Life",
+        content:
+          "Beyond productivity, Newport hints at a philosophy: a life built around depth, craft, and focus is a life well lived.",
+      },
+      {
+        id: "dw-70",
+        title: "Reclaim Your Focus",
+        content:
+          "The distracted default isn't inevitable. With intention and practice, you can rebuild the capacity for sustained concentration.",
+      },
+      {
+        id: "dw-71",
+        title: "Depth Is a Choice",
+        content:
+          "Every day offers a choice between shallow reaction and deep intention. Choosing depth, repeatedly, defines your work and life.",
+      },
+      {
+        id: "dw-72",
+        title: "Build the Habit",
+        content:
+          "Deep work is a trainable habit, not a talent. Ritualize it, protect it, and it becomes your natural way of working.",
+      },
+      {
+        id: "dw-73",
+        title: "Less, But Better",
+        content:
+          "Fewer priorities pursued with full focus beat many pursued distractedly. Depth is the art of doing less, but far better.",
+      },
+      {
+        id: "dw-74",
+        title: "A Life of Depth",
+        content:
+          "Master your attention, minimize the shallow, and pour yourself into work that matters. That is how you achieve focused success.",
+      },
+    ],
+  },
+
   // The Art of War — Sun Tzu
   "bk-274": {
     bookId: "bk-274",

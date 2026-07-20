@@ -3768,6 +3768,2676 @@ export const quickReads = {
     ],
   },
 
+  // Why We Sleep — Matthew Walker
+  "bk-168": {
+    bookId: "bk-168",
+    tagline: "The new science of sleep and dreams — and why they matter",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "ws-1",
+        title: "Sleep Is Non-Negotiable",
+        content:
+          "Walker argues sleep is the single most effective thing you can do to reset your brain and body's health. It underpins nearly every system we have.",
+      },
+      {
+        id: "ws-2",
+        title: "The Neglected Third of Life",
+        content:
+          "We spend about a third of life asleep, yet modern culture treats it as wasted time. That neglect, Walker says, is quietly harming us.",
+      },
+      {
+        id: "ws-3",
+        title: "Two Forces Control Sleep",
+        content:
+          "Sleep is governed by two systems: your circadian rhythm (an internal 24-hour clock) and sleep pressure (a chemical urge that builds while awake).",
+      },
+      {
+        id: "ws-4",
+        title: "Your Circadian Rhythm",
+        content:
+          "An internal clock keyed to light tells your body when to feel alert and when to feel sleepy, roughly on a 24-hour cycle.",
+      },
+      {
+        id: "ws-5",
+        title: "Sleep Pressure and Adenosine",
+        content:
+          "While you're awake, a chemical called adenosine builds up, increasing the pressure to sleep. A full night's sleep clears it away.",
+      },
+      {
+        id: "ws-6",
+        title: "Caffeine Blocks the Signal",
+        content:
+          "Caffeine works by blocking adenosine receptors, masking sleepiness. It doesn't remove the fatigue — it just hides it temporarily.",
+      },
+      {
+        id: "ws-7",
+        title: "Caffeine's Long Half-Life",
+        content:
+          "Caffeine can linger for many hours; half of it may still be in your system five to six hours after your afternoon coffee, disrupting night sleep.",
+      },
+      {
+        id: "ws-8",
+        title: "The Caffeine Crash",
+        content:
+          "When caffeine wears off, the built-up adenosine floods back, causing a slump. You pay back the alertness you borrowed, with interest.",
+      },
+      {
+        id: "ws-9",
+        title: "Melatonin, the Hormone of Night",
+        content:
+          "As darkness falls, the brain releases melatonin, signalling that it's time to sleep. Melatonin times sleep but doesn't generate it.",
+      },
+      {
+        id: "ws-10",
+        title: "Light Sets Your Clock",
+        content:
+          "Light, especially morning sunlight, is the master signal that sets your circadian clock. Artificial light at night confuses it.",
+      },
+      {
+        id: "ws-11",
+        title: "Two Types of Sleep",
+        content:
+          "Sleep alternates between NREM (non-dreaming, restorative) and REM (dreaming) stages. Both are essential and do different jobs.",
+      },
+      {
+        id: "ws-12",
+        title: "The Sleep Cycle",
+        content:
+          "Across the night you move through repeating cycles of about 90 minutes, with the balance shifting from deep NREM early to more REM near morning.",
+      },
+      {
+        id: "ws-13",
+        title: "Deep NREM Sleep",
+        content:
+          "Deep non-REM sleep, strongest in the first half of the night, restores the body and helps move memories into long-term storage.",
+      },
+      {
+        id: "ws-14",
+        title: "REM Sleep and Dreaming",
+        content:
+          "REM sleep, richest toward morning, is when most vivid dreaming happens. It supports emotional processing and creative connection-making.",
+      },
+      {
+        id: "ws-15",
+        title: "Cutting Sleep Short Cuts REM",
+        content:
+          "Because REM concentrates in the later hours, sleeping only six hours can rob you of a large share of your dreaming sleep.",
+      },
+      {
+        id: "ws-16",
+        title: "Sleep Before Learning",
+        content:
+          "Sleep before studying prepares the brain to absorb new information. A tired brain is like a sponge that can't soak anything up.",
+      },
+      {
+        id: "ws-17",
+        title: "Sleep After Learning",
+        content:
+          "Sleep after learning cements new memories. Walker calls it hitting the 'save' button on what you studied that day.",
+      },
+      {
+        id: "ws-18",
+        title: "Memory Consolidation",
+        content:
+          "During sleep the brain replays and files the day's experiences, strengthening what matters and integrating it with older knowledge.",
+      },
+      {
+        id: "ws-19",
+        title: "Creativity in REM",
+        content:
+          "REM sleep fuses distant ideas in novel ways, which is why solutions and creative insights often arrive after a good night's rest.",
+      },
+      {
+        id: "ws-20",
+        title: "Overnight Emotional Therapy",
+        content:
+          "REM sleep helps strip the sharp emotional charge from difficult memories, so you wake able to remember events without being overwhelmed by them.",
+      },
+      {
+        id: "ws-21",
+        title: "Sleep and Mood",
+        content:
+          "Too little sleep amplifies the brain's emotional centers and weakens the rational control over them, leaving us reactive and irritable.",
+      },
+      {
+        id: "ws-22",
+        title: "Sleep and Mental Health",
+        content:
+          "Sleep loss is tightly linked with anxiety, depression, and other conditions. Walker stresses sleep's role in psychological wellbeing.",
+      },
+      {
+        id: "ws-23",
+        title: "The Myth of Catching Up",
+        content:
+          "You can't fully repay lost sleep on the weekend. Sleep isn't like a bank where a big deposit clears weeks of debt.",
+      },
+      {
+        id: "ws-24",
+        title: "Sleep Debt Accumulates",
+        content:
+          "Chronic short sleep builds a debt that quietly degrades performance and health, even when you feel you've 'adapted' to it.",
+      },
+      {
+        id: "ws-25",
+        title: "You Can't Judge Your Own Deficit",
+        content:
+          "The sleep-deprived routinely underestimate their impairment. Feeling fine on little sleep is itself a symptom of the deficit.",
+      },
+      {
+        id: "ws-26",
+        title: "Sleep and the Immune System",
+        content:
+          "Even one night of short sleep can reduce key immune cells. Consistent good sleep strengthens the body's natural defenses.",
+      },
+      {
+        id: "ws-27",
+        title: "Sleep and Cancer Risk",
+        content:
+          "Walker cites research linking chronic sleep loss and disrupted rhythms with higher cancer risk — one reason shift work is treated so seriously.",
+      },
+      {
+        id: "ws-28",
+        title: "Sleep and the Heart",
+        content:
+          "Short sleep is associated with higher blood pressure and cardiovascular problems. Walker even points to spikes in heart events around clock changes.",
+      },
+      {
+        id: "ws-29",
+        title: "Sleep and Blood Sugar",
+        content:
+          "Too little sleep impairs how the body handles glucose, pushing it toward a pre-diabetic state and raising metabolic risk.",
+      },
+      {
+        id: "ws-30",
+        title: "Sleep and Weight",
+        content:
+          "Sleep loss disrupts appetite hormones, increasing hunger (ghrelin) and dulling fullness (leptin), which drives overeating.",
+      },
+      {
+        id: "ws-31",
+        title: "Cravings Rise When Tired",
+        content:
+          "A sleepy brain craves more calories, especially sugary and high-carb foods. Good sleep supports healthier eating with less willpower.",
+      },
+      {
+        id: "ws-32",
+        title: "Sleep and Alzheimer's",
+        content:
+          "Walker links poor sleep with the buildup of amyloid protein tied to Alzheimer's — and worsening sleep can be both a warning sign and a driver.",
+      },
+      {
+        id: "ws-33",
+        title: "The Brain's Overnight Cleanse",
+        content:
+          "During deep sleep, the brain's glymphatic system flushes out metabolic waste built up during the day, including harmful proteins.",
+      },
+      {
+        id: "ws-34",
+        title: "Drowsy Driving Kills",
+        content:
+          "Fatigue behind the wheel can be as dangerous as drunk driving. Drowsy driving causes vast numbers of accidents every year.",
+      },
+      {
+        id: "ws-35",
+        title: "Microsleeps",
+        content:
+          "A severely sleep-deprived brain can slip into 'microsleeps' — split-second lapses of attention that are deadly at high speed.",
+      },
+      {
+        id: "ws-36",
+        title: "Alcohol Wrecks Sleep",
+        content:
+          "A nightcap may knock you out, but alcohol is a sedative, not true sleep. It fragments the night and blocks restorative stages.",
+      },
+      {
+        id: "ws-37",
+        title: "Alcohol Suppresses REM",
+        content:
+          "Alcohol especially suppresses REM sleep, robbing you of dreaming and the emotional and memory benefits it provides.",
+      },
+      {
+        id: "ws-38",
+        title: "Screens and Blue Light",
+        content:
+          "Evening screen light suppresses melatonin and pushes back your body clock, making it harder to fall — and stay — asleep.",
+      },
+      {
+        id: "ws-39",
+        title: "The Modern Sleep Crisis",
+        content:
+          "Artificial light, long work hours, caffeine, and alcohol have created a society-wide sleep shortage with serious health costs.",
+      },
+      {
+        id: "ws-40",
+        title: "Sleeping Pills Aren't Real Sleep",
+        content:
+          "Walker warns that many sleeping pills sedate rather than produce natural sleep, and can carry risks without delivering true restoration.",
+      },
+      {
+        id: "ws-41",
+        title: "Aim for Seven to Nine Hours",
+        content:
+          "Most adults need seven to nine hours a night. Routinely getting under seven, Walker argues, measurably harms body and mind.",
+      },
+      {
+        id: "ws-42",
+        title: "Consistency Is King",
+        content:
+          "Going to bed and waking at the same times daily — even on weekends — strengthens your body clock and improves sleep quality.",
+      },
+      {
+        id: "ws-43",
+        title: "Keep the Room Cool",
+        content:
+          "A slightly cool bedroom helps your core temperature drop, which the body needs to fall and stay asleep. Aim for cooler than feels obvious.",
+      },
+      {
+        id: "ws-44",
+        title: "Dark and Quiet",
+        content:
+          "Darkness triggers melatonin; even dim light can disrupt it. A dark, quiet room signals the brain that it's truly time to rest.",
+      },
+      {
+        id: "ws-45",
+        title: "Get Morning Sunlight",
+        content:
+          "Bright light early in the day anchors your circadian rhythm, helping you feel alert in the morning and sleepy at night.",
+      },
+      {
+        id: "ws-46",
+        title: "Wind Down Before Bed",
+        content:
+          "A relaxing pre-sleep routine — dim lights, no screens, calm activity — signals your brain to shift gears toward sleep.",
+      },
+      {
+        id: "ws-47",
+        title: "Avoid Late Caffeine",
+        content:
+          "Because caffeine lingers for hours, Walker advises cutting it off by early afternoon to protect your night's sleep.",
+      },
+      {
+        id: "ws-48",
+        title: "Don't Lie Awake in Bed",
+        content:
+          "If you can't sleep, get up and do something calming until sleepy. Lying awake trains the brain to associate bed with wakefulness.",
+      },
+      {
+        id: "ws-49",
+        title: "Naps: Use With Care",
+        content:
+          "Short early naps can help, but long or late naps reduce sleep pressure and can sabotage that night's sleep.",
+      },
+      {
+        id: "ws-50",
+        title: "Teenagers' Shifted Clocks",
+        content:
+          "Adolescent body clocks naturally run late, so early school starts fight biology. Teens aren't lazy — they're biologically wired to sleep later.",
+      },
+      {
+        id: "ws-51",
+        title: "Schools and Work Start Too Early",
+        content:
+          "Walker argues later school and work start times would improve learning, mood, safety, and health, especially for the young.",
+      },
+      {
+        id: "ws-52",
+        title: "Dreams Have Purpose",
+        content:
+          "Far from random, dreams help process emotion and spark creativity. Walker treats dreaming as active, useful overnight brainwork.",
+      },
+      {
+        id: "ws-53",
+        title: "Sleep and Performance",
+        content:
+          "Athletes and professionals perform measurably better with more sleep — faster reactions, sharper focus, fewer injuries and errors.",
+      },
+      {
+        id: "ws-54",
+        title: "Sleep and Longevity",
+        content:
+          "Chronic short sleep is linked with a shorter lifespan. Walker's blunt summary: the shorter your sleep, the shorter your life tends to be.",
+      },
+      {
+        id: "ws-55",
+        title: "No Substitute for Sleep",
+        content:
+          "No pill, food, or trick fully replaces natural sleep. It remains the most powerful, freely available health tool we have.",
+      },
+      {
+        id: "ws-56",
+        title: "Prioritize It Like Diet and Exercise",
+        content:
+          "We celebrate diet and exercise but overlook sleep — the third pillar that makes the other two work. Give it equal respect.",
+      },
+      {
+        id: "ws-57",
+        title: "Protect Your Sleep",
+        content:
+          "Guard your sleep as you would any vital appointment. Small, consistent habits protect the hours your health depends on.",
+      },
+      {
+        id: "ws-58",
+        title: "The Best Health Investment",
+        content:
+          "Walker's message is simple: sleep more, and better. It's the closest thing to a free, natural cure for body and mind we possess.",
+      },
+    ],
+  },
+
+  // The Castle — Franz Kafka
+  "bk-266": {
+    bookId: "bk-266",
+    tagline: "An endless quest for acceptance from an unreachable authority",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "ca-1",
+        title: "The Land Surveyor Arrives",
+        content:
+          "A man known only as K. arrives in a village claiming to be a land surveyor summoned by the Castle. From the first page, nothing about his purpose is clear.",
+      },
+      {
+        id: "ca-2",
+        title: "The Unreachable Castle",
+        content:
+          "The Castle looms over the village yet K. can never quite reach it. It becomes a symbol of every goal that stays maddeningly out of grasp.",
+      },
+      {
+        id: "ca-3",
+        title: "Access Forever Denied",
+        content:
+          "K. seeks official recognition and entry, but every path is blocked by rules, delays, and misdirection. The door is always one more obstacle away.",
+      },
+      {
+        id: "ca-4",
+        title: "Bureaucracy Without End",
+        content:
+          "The Castle's administration is a labyrinth of officials, files, and procedures. Kafka renders bureaucracy as an almost mythical, inescapable force.",
+      },
+      {
+        id: "ca-5",
+        title: "The Authority You Never Meet",
+        content:
+          "The powers that govern the village never appear in person. K. chases an authority that stays hidden behind layers of intermediaries.",
+      },
+      {
+        id: "ca-6",
+        title: "Klamm, the Elusive Official",
+        content:
+          "The official Klamm is spoken of with awe but glimpsed only fleetingly. Power here is rumour, reverence, and absence rather than presence.",
+      },
+      {
+        id: "ca-7",
+        title: "The Village and the Castle",
+        content:
+          "The villagers live in submission to a Castle they barely understand. Kafka contrasts ordinary life with the remote authority that rules it.",
+      },
+      {
+        id: "ca-8",
+        title: "The Outsider's Struggle",
+        content:
+          "K. is a stranger who never gains footing. His story captures the ache of trying to belong somewhere that keeps you at arm's length.",
+      },
+      {
+        id: "ca-9",
+        title: "Longing to Belong",
+        content:
+          "Beneath K.'s quest is a basic human hunger: to be recognized, accepted, and given a place. The Castle withholds exactly that.",
+      },
+      {
+        id: "ca-10",
+        title: "Recognition Withheld",
+        content:
+          "Even confirming whether K. was truly hired proves impossible. Kafka dramatizes how systems can deny you the simple acknowledgment you seek.",
+      },
+      {
+        id: "ca-11",
+        title: "Endless Obstacles",
+        content:
+          "Each step toward the Castle spawns new conditions and confusions. Progress is always promised and never delivered.",
+      },
+      {
+        id: "ca-12",
+        title: "Messengers and Middlemen",
+        content:
+          "K. deals only with go-betweens like the messenger Barnabas, never principals. Communication passes through so many hands that meaning dissolves.",
+      },
+      {
+        id: "ca-13",
+        title: "Communication That Fails",
+        content:
+          "Messages are vague, contradictory, or lost. Kafka shows how information decays as it travels through a vast, indifferent hierarchy.",
+      },
+      {
+        id: "ca-14",
+        title: "The Illusion of Progress",
+        content:
+          "K. is repeatedly made to feel he's advancing, only to find he's stood still. Hope is dangled to keep him compliant and moving.",
+      },
+      {
+        id: "ca-15",
+        title: "Waiting as a Way of Life",
+        content:
+          "The village runs on waiting — for officials, for answers, for permission. Time itself seems to dissolve into endless anticipation.",
+      },
+      {
+        id: "ca-16",
+        title: "Power That Hides Its Face",
+        content:
+          "The Castle's strength lies partly in its invisibility. What can't be confronted can't be argued with, appealed to, or overcome.",
+      },
+      {
+        id: "ca-17",
+        title: "The Absurd Quest",
+        content:
+          "K. pursues a goal whose rules keep changing and whose end never arrives. Kafka makes the pursuit itself the true subject.",
+      },
+      {
+        id: "ca-18",
+        title: "Identity Tied to a Role",
+        content:
+          "K. clings to being 'the surveyor,' but the title may be a mistake. Without official recognition, even his identity feels uncertain.",
+      },
+      {
+        id: "ca-19",
+        title: "Officials as Demigods",
+        content:
+          "The villagers treat Castle officials with near-religious reverence. Kafka examines how humans exalt the powerful they cannot reach.",
+      },
+      {
+        id: "ca-20",
+        title: "Arbitrary Rules",
+        content:
+          "The Castle's regulations seem to shift and contradict. Authority here needs no consistency, only the power to be obeyed.",
+      },
+      {
+        id: "ca-21",
+        title: "Frieda and Human Connection",
+        content:
+          "K.'s relationship with Frieda offers warmth amid the cold machinery. Yet even love gets tangled in his obsession with the Castle.",
+      },
+      {
+        id: "ca-22",
+        title: "The Cost of the Obsession",
+        content:
+          "K. sacrifices peace, rest, and relationships to his quest. Kafka asks what a single-minded pursuit of acceptance can cost a person.",
+      },
+      {
+        id: "ca-23",
+        title: "Losing Yourself in the Goal",
+        content:
+          "The more K. chases the Castle, the more he loses himself. The goal consumes the seeker rather than fulfilling him.",
+      },
+      {
+        id: "ca-24",
+        title: "The Unattainable Grace",
+        content:
+          "Many read the Castle as divine grace or salvation — longed for, sought endlessly, but never quite reached in this life.",
+      },
+      {
+        id: "ca-25",
+        title: "God or Government?",
+        content:
+          "Is the Castle heaven or the state? Kafka lets it be both — any higher power we serve, obey, and can never fully understand.",
+      },
+      {
+        id: "ca-26",
+        title: "The Silence of the Powerful",
+        content:
+          "The Castle rarely answers and never explains. Its silence is a wall K. beats against for the entire book.",
+      },
+      {
+        id: "ca-27",
+        title: "Hope That Never Resolves",
+        content:
+          "K. is sustained by the belief that acceptance is just ahead. Kafka examines how hope can both drive us and imprison us.",
+      },
+      {
+        id: "ca-28",
+        title: "The Unfinished Journey",
+        content:
+          "Kafka never finished the novel; K. never reaches the Castle. The incompleteness becomes part of its meaning — some quests have no arrival.",
+      },
+      {
+        id: "ca-29",
+        title: "No Arrival, Only Pursuit",
+        content:
+          "The book suggests the pursuit may be all there is. Meaning, if any, must be found in the striving, not the destination.",
+      },
+      {
+        id: "ca-30",
+        title: "Alienation of the Modern Soul",
+        content:
+          "K.'s estrangement mirrors modern life: surrounded by people and institutions, yet fundamentally unrecognized and alone.",
+      },
+      {
+        id: "ca-31",
+        title: "The Individual vs the Institution",
+        content:
+          "One person stands against an immense, faceless structure. Kafka returns again to the powerlessness of the individual before the system.",
+      },
+      {
+        id: "ca-32",
+        title: "Belonging as a Basic Need",
+        content:
+          "The novel lays bare how deeply we need a place and a purpose — and how devastating it is to be denied them.",
+      },
+      {
+        id: "ca-33",
+        title: "The Trap of Legitimacy",
+        content:
+          "K. wants the system to validate him, handing it power over his worth. Seeking legitimacy from an indifferent authority becomes a snare.",
+      },
+      {
+        id: "ca-34",
+        title: "Papers and Permissions",
+        content:
+          "Documents, stamps, and approvals rule the village. Kafka satirizes a world where a human's reality depends on official paperwork.",
+      },
+      {
+        id: "ca-35",
+        title: "The Kafkaesque Maze",
+        content:
+          "The Castle is a labyrinth with no center you can reach. It embodies the Kafkaesque: circular, absurd, and quietly suffocating.",
+      },
+      {
+        id: "ca-36",
+        title: "Persistence Against the Absurd",
+        content:
+          "Despite futility, K. never stops trying. There is a stubborn, almost heroic dignity in his refusal to give up.",
+      },
+      {
+        id: "ca-37",
+        title: "The Dignity of Trying",
+        content:
+          "Even if the Castle can't be reached, K.'s persistence affirms the human will to seek meaning against impossible odds.",
+      },
+      {
+        id: "ca-38",
+        title: "Meaning We Make Ourselves",
+        content:
+          "Since the Castle grants no meaning, any sense of purpose must come from within K. The novel points, quietly, toward self-made meaning.",
+      },
+      {
+        id: "ca-39",
+        title: "Faith Without Certainty",
+        content:
+          "K. keeps believing in a resolution he has no proof exists. Kafka turns the quest into a study of faith held in the dark.",
+      },
+      {
+        id: "ca-40",
+        title: "The Village's Fatalism",
+        content:
+          "The villagers have surrendered to the Castle's power as simply how things are. Kafka shows how oppression becomes normalized over time.",
+      },
+      {
+        id: "ca-41",
+        title: "The Officials' Indifference",
+        content:
+          "Those with power show no malice toward K. — only indifference, which proves just as crushing as cruelty.",
+      },
+      {
+        id: "ca-42",
+        title: "Time Dissolves in Waiting",
+        content:
+          "Days blur as K. waits and negotiates. The novel captures how bureaucratic limbo warps our very sense of time.",
+      },
+      {
+        id: "ca-43",
+        title: "The Reader Shares K.'s Frustration",
+        content:
+          "Kafka makes us feel the runaround alongside K. Our own frustration becomes part of understanding his ordeal.",
+      },
+      {
+        id: "ca-44",
+        title: "An Allegory of Life",
+        content:
+          "Many see the whole novel as life itself: a striving toward goals and acceptance we pursue without ever fully arriving.",
+      },
+      {
+        id: "ca-45",
+        title: "The Absurd Hero",
+        content:
+          "Like Sisyphus, K. persists at a task that will never be complete. There is meaning, Kafka hints, in the persistence itself.",
+      },
+      {
+        id: "ca-46",
+        title: "Systems Beyond Reason",
+        content:
+          "The Castle can't be reasoned with because it doesn't run on reason. Kafka warns of institutions that have outgrown logic and mercy.",
+      },
+      {
+        id: "ca-47",
+        title: "The Human Need for Answers",
+        content:
+          "K.'s craving for clarity in an unclear world is deeply relatable. We, too, keep demanding answers reality won't give.",
+      },
+      {
+        id: "ca-48",
+        title: "Connection vs Ambition",
+        content:
+          "K.'s obsession with the Castle strains his human ties. The novel quietly asks whether we sacrifice real connection chasing recognition.",
+      },
+      {
+        id: "ca-49",
+        title: "The Cold Comfort of Routine",
+        content:
+          "The village clings to its routines under the Castle's shadow. Kafka observes how people find fragile comfort even under arbitrary power.",
+      },
+      {
+        id: "ca-50",
+        title: "Interpretations Abound",
+        content:
+          "Religious, political, existential — The Castle invites endless readings. Its unfinished ambiguity is a feature, not a flaw.",
+      },
+      {
+        id: "ca-51",
+        title: "A Mirror for Our Institutions",
+        content:
+          "Anyone who has fought an unresponsive system will feel the novel's truth. It remains a sharp mirror of modern bureaucratic life.",
+      },
+      {
+        id: "ca-52",
+        title: "The Endless Approach",
+        content:
+          "K. is always approaching, never arriving. The Castle captures the peculiar modern condition of forever striving toward the just-out-of-reach.",
+      },
+      {
+        id: "ca-53",
+        title: "Why It Endures",
+        content:
+          "The Castle lasts because its frustration is universal: the longing to belong, to be recognized, and to understand a world that refuses to explain itself.",
+      },
+    ],
+  },
+
+  // Letters to Milena — Franz Kafka
+  "bk-004": {
+    bookId: "bk-004",
+    tagline: "Kafka's raw, tender love letters — the soul behind the fiction",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "lm-1",
+        title: "Love Through Letters",
+        content:
+          "These are Kafka's real letters to Milena Jesenská, the journalist who translated his work. In them we meet not the myth but the man, in love and in fear.",
+      },
+      {
+        id: "lm-2",
+        title: "The Kafka Behind the Fiction",
+        content:
+          "Where his novels are cold and strange, the letters are warm, aching, and intimate. They reveal the tender heart beneath the famous dread.",
+      },
+      {
+        id: "lm-3",
+        title: "Words as Intimacy",
+        content:
+          "Separated by distance and circumstance, Kafka builds closeness through language alone. The letters show how deeply two people can meet on the page.",
+      },
+      {
+        id: "lm-4",
+        title: "Longing Across Distance",
+        content:
+          "Much of the relationship lived in absence and anticipation. Kafka captures the sweet torment of loving someone you rarely get to hold.",
+      },
+      {
+        id: "lm-5",
+        title: "The Terror of Intimacy",
+        content:
+          "Kafka craves closeness yet is terrified by it. The letters lay bare the war between the longing to be loved and the fear of being truly known.",
+      },
+      {
+        id: "lm-6",
+        title: "Fear and Desire Entwined",
+        content:
+          "For Kafka, love and anxiety are inseparable. He writes of wanting Milena desperately while dreading what wanting could do to him.",
+      },
+      {
+        id: "lm-7",
+        title: "Writing as a Lifeline",
+        content:
+          "For Kafka, writing was survival. In these letters, the act of writing to Milena becomes a way to stay tethered to life and to another soul.",
+      },
+      {
+        id: "lm-8",
+        title: "Vulnerability on the Page",
+        content:
+          "Kafka hides nothing — his doubts, dreams, and dark moods pour out. The letters are a masterclass in emotional honesty.",
+      },
+      {
+        id: "lm-9",
+        title: "Self-Doubt and Unworthiness",
+        content:
+          "He often feels undeserving of Milena's love. The letters reveal a man haunted by the sense that he isn't enough.",
+      },
+      {
+        id: "lm-10",
+        title: "The Impossible Relationship",
+        content:
+          "Milena was married, and circumstances kept them apart. The love unfolds under the shadow of its own impossibility.",
+      },
+      {
+        id: "lm-11",
+        title: "Honesty to the Bone",
+        content:
+          "Kafka refuses comforting lies, even to himself. His radical honesty about fear and desire makes the letters piercingly real.",
+      },
+      {
+        id: "lm-12",
+        title: "The Ghosts of Letters",
+        content:
+          "Kafka famously feared that letters let ghosts drink the kisses meant for lovers. He longed for presence that words could never replace.",
+      },
+      {
+        id: "lm-13",
+        title: "Presence vs Absence",
+        content:
+          "The letters ache with the gap between written intimacy and physical presence. Kafka feels the limits of love conducted on paper.",
+      },
+      {
+        id: "lm-14",
+        title: "The Fear of Happiness",
+        content:
+          "Kafka distrusts joy, half-expecting it to be snatched away. He shows how some people struggle to let themselves be happy.",
+      },
+      {
+        id: "lm-15",
+        title: "Illness and Mortality",
+        content:
+          "Writing while ill with tuberculosis, Kafka's awareness of death colors the letters, lending his tenderness an urgent fragility.",
+      },
+      {
+        id: "lm-16",
+        title: "The Body and the Soul",
+        content:
+          "Kafka wrestles with the gulf between physical longing and spiritual connection. The letters explore love in both its forms.",
+      },
+      {
+        id: "lm-17",
+        title: "Sleepless Nights",
+        content:
+          "Insomnia and anxiety thread through the letters. Kafka writes from the small hours, when fears and longings loom largest.",
+      },
+      {
+        id: "lm-18",
+        title: "The Torture of Waiting",
+        content:
+          "Each unanswered letter is agony. Kafka captures how love makes us hostages to the next word from the beloved.",
+      },
+      {
+        id: "lm-19",
+        title: "Language and Translation",
+        content:
+          "Milena translated Kafka's work; their bond was built partly through language itself. Words were both their medium and their meeting place.",
+      },
+      {
+        id: "lm-20",
+        title: "Being Truly Seen",
+        content:
+          "Milena understood Kafka as few did. The letters reveal the rare relief and terror of being genuinely seen by another.",
+      },
+      {
+        id: "lm-21",
+        title: "The Courage to Be Known",
+        content:
+          "To love, Kafka must let himself be known — the very thing that frightens him most. The letters trace that trembling courage.",
+      },
+      {
+        id: "lm-22",
+        title: "Tenderness and Restraint",
+        content:
+          "Kafka's affection is deep yet often held back by fear. The push and pull of tenderness and restraint gives the letters their tension.",
+      },
+      {
+        id: "lm-23",
+        title: "Love as Salvation and Threat",
+        content:
+          "Milena is both K.'s hope of rescue and a source of overwhelming fear. Love, for Kafka, is salvation and danger at once.",
+      },
+      {
+        id: "lm-24",
+        title: "The Writer's Solitude",
+        content:
+          "Kafka needed solitude to write yet ached for connection. The letters expose the lonely bargain many artists make.",
+      },
+      {
+        id: "lm-25",
+        title: "Dependence on Another",
+        content:
+          "Kafka's moods rise and fall with Milena's letters. He reveals, unguarded, how love can make us reliant on another's smallest sign.",
+      },
+      {
+        id: "lm-26",
+        title: "The Small Details of Devotion",
+        content:
+          "Kafka lingers over tiny things — a phrase, a photograph, a memory. Love lives in the details he can't stop turning over.",
+      },
+      {
+        id: "lm-27",
+        title: "Jealousy and Insecurity",
+        content:
+          "Kafka's insecurities surface as worry and jealousy. The letters show love's shadow side with unflinching candor.",
+      },
+      {
+        id: "lm-28",
+        title: "The Purity of Longing",
+        content:
+          "Even unfulfilled, Kafka's longing has a purity and intensity. Sometimes the yearning itself becomes the love story.",
+      },
+      {
+        id: "lm-29",
+        title: "Words Chosen With Care",
+        content:
+          "Every sentence is crafted with a writer's precision and a lover's feeling. The letters are literature and confession in one.",
+      },
+      {
+        id: "lm-30",
+        title: "The Fragility of Connection",
+        content:
+          "Built on paper and distance, the bond feels perpetually at risk. Kafka is acutely aware of how easily it could break.",
+      },
+      {
+        id: "lm-31",
+        title: "Confession and Catharsis",
+        content:
+          "Writing to Milena lets Kafka release what he can't say aloud. The letters double as confession, therapy, and art.",
+      },
+      {
+        id: "lm-32",
+        title: "The Wish to Dissolve Into Another",
+        content:
+          "Kafka expresses a longing to merge with the beloved, to lose himself in her. It is love at its most consuming and vulnerable.",
+      },
+      {
+        id: "lm-33",
+        title: "The Limits of Letters",
+        content:
+          "For all their beauty, the letters can't bridge every gap. Kafka feels keenly what words leave undone.",
+      },
+      {
+        id: "lm-34",
+        title: "Sensitivity as Gift and Curse",
+        content:
+          "Kafka's extraordinary sensitivity makes him a great writer and a suffering lover. The same nerve feels both beauty and pain intensely.",
+      },
+      {
+        id: "lm-35",
+        title: "The Ache of the Unlived Life",
+        content:
+          "Beneath the romance runs grief for the fuller life Kafka fears he'll never live. The letters mourn possibilities as much as they celebrate love.",
+      },
+      {
+        id: "lm-36",
+        title: "Honesty About Fear",
+        content:
+          "Kafka names his fears rather than hiding them. There is strange strength in his willingness to be openly afraid.",
+      },
+      {
+        id: "lm-37",
+        title: "Love Amid Anxiety",
+        content:
+          "The letters show love not as serene but as tangled with dread — a truer portrait than any fairy tale.",
+      },
+      {
+        id: "lm-38",
+        title: "The Space Between Two People",
+        content:
+          "Kafka meditates on the unbridgeable distance that remains even between lovers. Two souls can draw close yet never fully merge.",
+      },
+      {
+        id: "lm-39",
+        title: "Letting Go",
+        content:
+          "As the relationship fades, Kafka's letters turn toward release. He shows the quiet grief of loving something you must let go.",
+      },
+      {
+        id: "lm-40",
+        title: "What Remains",
+        content:
+          "Though the romance ended, the letters endure as one of literature's most moving records of the human heart.",
+      },
+      {
+        id: "lm-41",
+        title: "A Portrait of the Inner Kafka",
+        content:
+          "Read alongside his fiction, the letters explain the man: the same fear, alienation, and longing, here turned toward love.",
+      },
+      {
+        id: "lm-42",
+        title: "The Beauty of Imperfect Love",
+        content:
+          "This is love that is anxious, incomplete, and doomed — and yet luminous. Kafka finds beauty precisely in its imperfection.",
+      },
+      {
+        id: "lm-43",
+        title: "Vulnerability as Strength",
+        content:
+          "In baring his fears, Kafka models a rare emotional bravery. The letters suggest that real intimacy requires exactly this openness.",
+      },
+      {
+        id: "lm-44",
+        title: "The Comfort of Being Understood",
+        content:
+          "Kafka's deepest relief is Milena's understanding. The letters remind us how healing it is simply to be understood.",
+      },
+      {
+        id: "lm-45",
+        title: "Distance Makes the Heart Ache",
+        content:
+          "The physical separation intensifies every feeling. Kafka shows how longing can magnify love into something almost unbearable.",
+      },
+      {
+        id: "lm-46",
+        title: "Words That Outlive Us",
+        content:
+          "Kafka's private letters, never meant for us, now speak to millions. Sincere words, it turns out, echo far beyond their moment.",
+      },
+      {
+        id: "lm-47",
+        title: "The Human Behind the Legend",
+        content:
+          "The letters humanize a literary icon. Kafka emerges not as a distant genius but as a fragile, feeling man like any of us.",
+      },
+      {
+        id: "lm-48",
+        title: "Love Documented",
+        content:
+          "Few relationships are recorded so intimately from within. The letters are a rare, unguarded diary of a heart in love.",
+      },
+      {
+        id: "lm-49",
+        title: "A Lesson in Feeling Deeply",
+        content:
+          "Kafka teaches, by example, the cost and beauty of feeling everything fully. To love like this is to risk — and to live.",
+      },
+      {
+        id: "lm-50",
+        title: "The Timeless Human Heart",
+        content:
+          "A century later, Kafka's longing, fear, and tenderness feel utterly current. The letters prove the human heart hasn't changed at all.",
+      },
+    ],
+  },
+
+  // How to Treat Her Right? — Gautam Grover
+  "bk-388": {
+    bookId: "bk-388",
+    tagline: "A practical guide for men on respect, communication and lasting love",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "hr-1",
+        title: "Treating Her Right Is a Skill",
+        content:
+          "Loving well isn't instinct — it's a set of habits you can learn. This guide reframes being a good partner as a skill any man can build with intention.",
+      },
+      {
+        id: "hr-2",
+        title: "Respect Is the Foundation",
+        content:
+          "Everything good in a relationship grows from respect. Treat her as an equal whose thoughts, feelings, and choices genuinely matter.",
+      },
+      {
+        id: "hr-3",
+        title: "Love Is Shown, Not Just Said",
+        content:
+          "Words are easy; consistent actions prove love. She feels cared for through what you do daily, not just what you declare.",
+      },
+      {
+        id: "hr-4",
+        title: "Listen to Understand",
+        content:
+          "Give her your full attention and listen to truly understand, not just to respond. Feeling heard is one of the deepest forms of love.",
+      },
+      {
+        id: "hr-5",
+        title: "Don't Fix — Empathize",
+        content:
+          "Often she wants understanding, not solutions. Resist the urge to fix; sometimes the most loving response is simply, 'that sounds hard.'",
+      },
+      {
+        id: "hr-6",
+        title: "Validate Her Feelings",
+        content:
+          "Never dismiss what she feels as an overreaction. Acknowledging emotions, even ones you don't share, builds safety and closeness.",
+      },
+      {
+        id: "hr-7",
+        title: "Emotional Intelligence Matters",
+        content:
+          "Learn to read and manage emotions — hers and yours. Emotional awareness is what turns a good man into a great partner.",
+      },
+      {
+        id: "hr-8",
+        title: "Communicate Openly",
+        content:
+          "Share your thoughts and feelings instead of bottling them up. Open, honest communication prevents small issues from festering into big ones.",
+      },
+      {
+        id: "hr-9",
+        title: "Honesty Builds Trust",
+        content:
+          "Trust is the currency of love, and honesty is how you earn it. Even hard truths, shared kindly, strengthen the bond.",
+      },
+      {
+        id: "hr-10",
+        title: "Consistency Over Grand Gestures",
+        content:
+          "A steady stream of small kindnesses matters more than occasional big romantic displays. Reliability is deeply romantic.",
+      },
+      {
+        id: "hr-11",
+        title: "Small Gestures, Big Impact",
+        content:
+          "A thoughtful text, a cup of tea, a remembered preference — tiny gestures tell her she's on your mind, and they add up.",
+      },
+      {
+        id: "hr-12",
+        title: "Give Quality Time",
+        content:
+          "Presence is a gift. Set aside undistracted time together where she has your full, undivided attention.",
+      },
+      {
+        id: "hr-13",
+        title: "Put Away the Phone",
+        content:
+          "Nothing says 'you matter less than this screen' like scrolling while she talks. Being fully present is a daily act of love.",
+      },
+      {
+        id: "hr-14",
+        title: "Appreciate Her Daily",
+        content:
+          "Notice and thank her for what she does, big and small. Feeling appreciated keeps love alive far more than being taken for granted kills it.",
+      },
+      {
+        id: "hr-15",
+        title: "Notice the Little Things",
+        content:
+          "Remember her favourite things, her worries, her wins. Attention to detail proves you truly see her.",
+      },
+      {
+        id: "hr-16",
+        title: "Support Her Dreams",
+        content:
+          "Champion her ambitions instead of competing with them. A partner who believes in her goals becomes her safe place to grow.",
+      },
+      {
+        id: "hr-17",
+        title: "Be Her Biggest Cheerleader",
+        content:
+          "Celebrate her successes without envy or ego. Being genuinely happy for her is one of love's purest expressions.",
+      },
+      {
+        id: "hr-18",
+        title: "Partnership, Not Ownership",
+        content:
+          "She is your partner, not your possession. Treating the relationship as a team of equals is the heart of treating her right.",
+      },
+      {
+        id: "hr-19",
+        title: "Share the Load",
+        content:
+          "Split responsibilities and chores fairly. Carrying your share of the everyday burden is a concrete, powerful form of respect.",
+      },
+      {
+        id: "hr-20",
+        title: "Control Is Not Love",
+        content:
+          "Monitoring, restricting, or dictating her life isn't love — it's control. Real love gives freedom, not surveillance.",
+      },
+      {
+        id: "hr-21",
+        title: "Jealousy Is Not Affection",
+        content:
+          "Possessive jealousy signals insecurity, not devotion. Secure love trusts rather than polices.",
+      },
+      {
+        id: "hr-22",
+        title: "Give Her Space",
+        content:
+          "Healthy love includes room to breathe — her own friends, hobbies, and time. Space strengthens a relationship rather than threatening it.",
+      },
+      {
+        id: "hr-23",
+        title: "Trust Her",
+        content:
+          "Extend trust freely unless truly given reason not to. Suspicion corrodes love, while trust lets it flourish.",
+      },
+      {
+        id: "hr-24",
+        title: "Loyalty Above All",
+        content:
+          "Faithfulness in action, word, and attention is non-negotiable. Loyalty is the bedrock she builds her security on.",
+      },
+      {
+        id: "hr-25",
+        title: "Handle Conflict Calmly",
+        content:
+          "Disagreements are normal; how you handle them defines the relationship. Stay calm, stay kind, and attack the problem, not her.",
+      },
+      {
+        id: "hr-26",
+        title: "Never Win by Wounding",
+        content:
+          "Scoring points by hurting her means the relationship loses. In love, the goal is resolution, not victory.",
+      },
+      {
+        id: "hr-27",
+        title: "Apologize Sincerely",
+        content:
+          "A real apology owns the mistake without excuses. Saying sorry — and meaning it — heals wounds that pride would only deepen.",
+      },
+      {
+        id: "hr-28",
+        title: "Own Your Mistakes",
+        content:
+          "Defensiveness blocks growth. Admitting when you're wrong shows maturity and makes her feel safe to be honest too.",
+      },
+      {
+        id: "hr-29",
+        title: "Affection Beyond the Physical",
+        content:
+          "Tenderness lives in more than intimacy — a hug, a hand held, a kind word. Everyday affection keeps emotional closeness alive.",
+      },
+      {
+        id: "hr-30",
+        title: "Romance Doesn't End",
+        content:
+          "Courtship shouldn't stop after commitment. Keep dating her, surprising her, and pursuing her long after the relationship is settled.",
+      },
+      {
+        id: "hr-31",
+        title: "Keep Dating Her",
+        content:
+          "Plan time together, dress up, make an effort. Continuing to court her tells her she's still worth winning.",
+      },
+      {
+        id: "hr-32",
+        title: "Protect Her Dignity",
+        content:
+          "Never mock or criticize her, especially in front of others. Guarding her dignity publicly and privately is a mark of true respect.",
+      },
+      {
+        id: "hr-33",
+        title: "Never Belittle Her",
+        content:
+          "Sarcasm and put-downs quietly erode love. Speak to her — and about her — with the respect you'd want for yourself.",
+      },
+      {
+        id: "hr-34",
+        title: "Be Reliable",
+        content:
+          "Do what you say you'll do. Dependability turns you into someone she can lean on without fear of being let down.",
+      },
+      {
+        id: "hr-35",
+        title: "Keep Your Promises",
+        content:
+          "Broken promises are withdrawals from trust. Keeping even small commitments proves your word means something.",
+      },
+      {
+        id: "hr-36",
+        title: "Patience in Hard Times",
+        content:
+          "Love is tested in difficulty, not ease. Standing by her patiently through stress and struggle is when it matters most.",
+      },
+      {
+        id: "hr-37",
+        title: "Stand By Her",
+        content:
+          "Be her ally against the world, not another critic. Knowing you're on her side gives her strength and security.",
+      },
+      {
+        id: "hr-38",
+        title: "Encourage, Don't Criticize",
+        content:
+          "Lift her up with encouragement rather than constant correction. People bloom under support and wilt under nagging.",
+      },
+      {
+        id: "hr-39",
+        title: "Understand Her Love Language",
+        content:
+          "People feel loved differently — words, time, touch, gifts, or acts. Learn how she best receives love and give it in her language.",
+      },
+      {
+        id: "hr-40",
+        title: "Learn What She Needs",
+        content:
+          "Ask, observe, and adapt to what actually makes her feel cared for. Assuming her needs match yours is a common mistake.",
+      },
+      {
+        id: "hr-41",
+        title: "Grow Together",
+        content:
+          "Keep learning and evolving as a couple. Relationships thrive when both partners keep growing side by side.",
+      },
+      {
+        id: "hr-42",
+        title: "Nurture Friendship",
+        content:
+          "The strongest couples are best friends. Cultivate the easy companionship beneath the romance.",
+      },
+      {
+        id: "hr-43",
+        title: "Laugh Together",
+        content:
+          "Shared humour is glue. Keeping playfulness and laughter alive lightens the hard days and deepens the good ones.",
+      },
+      {
+        id: "hr-44",
+        title: "Respect Her Family and Friends",
+        content:
+          "The people she loves matter to her. Treating them with warmth and grace is a way of honouring her.",
+      },
+      {
+        id: "hr-45",
+        title: "Financial Respect and Transparency",
+        content:
+          "Handle money as a team with honesty and fairness. Financial secrecy or control breeds resentment; openness builds partnership.",
+      },
+      {
+        id: "hr-46",
+        title: "Security, Not Suffocation",
+        content:
+          "Offer steady reassurance without clinging. Healthy love makes her feel safe and free at the same time.",
+      },
+      {
+        id: "hr-47",
+        title: "Make Her Feel Safe",
+        content:
+          "Emotional safety means she can be fully herself without fear of judgment. Creating that safety is one of your most important jobs.",
+      },
+      {
+        id: "hr-48",
+        title: "Be Emotionally Available",
+        content:
+          "Don't shut down or stonewall when things get hard. Staying emotionally open, even when uncomfortable, keeps connection alive.",
+      },
+      {
+        id: "hr-49",
+        title: "Grow Your Own Self First",
+        content:
+          "You can't pour from an empty cup. Working on your own confidence, health, and character makes you a better partner too.",
+      },
+      {
+        id: "hr-50",
+        title: "Love Is a Daily Choice",
+        content:
+          "Feelings ebb and flow, but love is chosen and renewed each day through your actions. Choose her, actively, again and again.",
+      },
+      {
+        id: "hr-51",
+        title: "Never Take Her for Granted",
+        content:
+          "Complacency kills relationships slowly. Keep valuing her presence as the gift it is, not a guarantee you're owed.",
+      },
+      {
+        id: "hr-52",
+        title: "A Woman Treated Right",
+        content:
+          "Given respect, honesty, presence, and consistent love, she thrives — and so does the relationship. Treat her right, and you both win.",
+      },
+    ],
+  },
+
+  // The 7 Habits of Highly Effective People — Stephen R. Covey
+  "bk-308": {
+    bookId: "bk-308",
+    tagline: "Powerful lessons in personal change, built on timeless principles",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "sh-1",
+        title: "Effectiveness Rests on Principles",
+        content:
+          "Covey argues lasting success comes from aligning your life with timeless principles like integrity, fairness, and service — not clever shortcuts.",
+      },
+      {
+        id: "sh-2",
+        title: "Character Over Personality",
+        content:
+          "The modern world sells the 'personality ethic' of image and technique. Covey champions the deeper 'character ethic' of who you truly are.",
+      },
+      {
+        id: "sh-3",
+        title: "Paradigms Shape Everything",
+        content:
+          "We each carry mental maps of how the world works. These paradigms filter everything we see, so changing them changes our whole experience.",
+      },
+      {
+        id: "sh-4",
+        title: "The Power of a Paradigm Shift",
+        content:
+          "When you see a situation in a genuinely new way, behaviour changes effortlessly. Real transformation is a shift in perception, not just effort.",
+      },
+      {
+        id: "sh-5",
+        title: "We See the World As We Are",
+        content:
+          "You don't see the world as it is, but as you are. Self-awareness of your own lens is the beginning of growth.",
+      },
+      {
+        id: "sh-6",
+        title: "What a Habit Is",
+        content:
+          "Covey defines a habit as the intersection of knowledge (what to do), skill (how to do it), and desire (wanting to do it). All three are needed.",
+      },
+      {
+        id: "sh-7",
+        title: "The Maturity Continuum",
+        content:
+          "Growth moves from dependence ('you take care of me') to independence ('I take care of myself') to interdependence ('we can do more together').",
+      },
+      {
+        id: "sh-8",
+        title: "Interdependence Is Highest",
+        content:
+          "Independence is a milestone, not the summit. The most effective people combine self-reliance with the power of working well with others.",
+      },
+      {
+        id: "sh-9",
+        title: "The P/PC Balance",
+        content:
+          "Effectiveness balances Production (results) with Production Capability (the resource that makes results possible). Push only for eggs and you kill the goose.",
+      },
+      {
+        id: "sh-10",
+        title: "Care for the Goose",
+        content:
+          "Whether it's your health, relationships, or tools, protect the capacity that produces your results. Sustainable success tends both.",
+      },
+      {
+        id: "sh-11",
+        title: "Habit 1 — Be Proactive",
+        content:
+          "Between stimulus and response lies your freedom to choose. Proactive people take responsibility rather than blaming conditions or others.",
+      },
+      {
+        id: "sh-12",
+        title: "Response-Ability",
+        content:
+          "You have the ability to choose your response to anything. Reactive people are driven by feelings; proactive people are driven by values.",
+      },
+      {
+        id: "sh-13",
+        title: "Circle of Concern vs Influence",
+        content:
+          "The Circle of Concern holds everything you worry about; the Circle of Influence holds what you can actually affect. Focus determines which one grows.",
+      },
+      {
+        id: "sh-14",
+        title: "Focus on What You Control",
+        content:
+          "Pour energy into your Circle of Influence and it expands. Obsess over things you can't control and you shrink your own power.",
+      },
+      {
+        id: "sh-15",
+        title: "The Language of the Proactive",
+        content:
+          "Swap 'I have to' and 'there's nothing I can do' for 'I choose to' and 'let me look at my options.' Words reveal and shape mindset.",
+      },
+      {
+        id: "sh-16",
+        title: "Habit 2 — Begin With the End in Mind",
+        content:
+          "Start with a clear vision of your desired destination. Knowing where you're going ensures every step actually moves you toward it.",
+      },
+      {
+        id: "sh-17",
+        title: "The Two Creations",
+        content:
+          "Everything is created twice — first mentally, then physically. Design your life on purpose in your mind before living it out.",
+      },
+      {
+        id: "sh-18",
+        title: "Write a Personal Mission Statement",
+        content:
+          "Define your core values and life aims in a personal mission statement. It becomes a constitution for making tough decisions.",
+      },
+      {
+        id: "sh-19",
+        title: "Imagine Your Own Funeral",
+        content:
+          "Covey's famous exercise: picture what you'd want said at your funeral. Working backward from that clarifies what truly matters now.",
+      },
+      {
+        id: "sh-20",
+        title: "Be the Author of Your Life",
+        content:
+          "Without a vision of your own, you live out someone else's script. Begin with the end in mind to author your own story.",
+      },
+      {
+        id: "sh-21",
+        title: "Habit 3 — Put First Things First",
+        content:
+          "Discipline yourself to act on your priorities, not just your urges. Habit 3 is the physical creation of the vision from Habit 2.",
+      },
+      {
+        id: "sh-22",
+        title: "The Time Management Matrix",
+        content:
+          "Tasks fall into four quadrants by urgency and importance. Effectiveness means spending less time firefighting and more on what's important.",
+      },
+      {
+        id: "sh-23",
+        title: "Urgent vs Important",
+        content:
+          "Urgent things shout for attention; important things quietly shape your future. Don't let the urgent crowd out the important.",
+      },
+      {
+        id: "sh-24",
+        title: "Live in Quadrant II",
+        content:
+          "Quadrant II — important but not urgent — holds planning, growth, and relationships. Investing here prevents crises before they start.",
+      },
+      {
+        id: "sh-25",
+        title: "Schedule Your Priorities",
+        content:
+          "Don't just prioritize your schedule; schedule your priorities. Put the big rocks in first, and let the small stuff fit around them.",
+      },
+      {
+        id: "sh-26",
+        title: "Learn to Say No",
+        content:
+          "Every yes to the trivial is a no to the vital. Saying no gracefully protects the time your real priorities deserve.",
+      },
+      {
+        id: "sh-27",
+        title: "The Private Victory",
+        content:
+          "Habits 1 through 3 build self-mastery — the 'private victory' of becoming independent before you try to work well with others.",
+      },
+      {
+        id: "sh-28",
+        title: "Habit 4 — Think Win-Win",
+        content:
+          "Seek agreements and solutions where everyone benefits. Win-win isn't soft; it's the belief that success isn't a zero-sum game.",
+      },
+      {
+        id: "sh-29",
+        title: "Abundance Mentality",
+        content:
+          "A scarcity mindset sees a fixed pie and fears others' success. An abundance mindset believes there's plenty for all — and shares credit freely.",
+      },
+      {
+        id: "sh-30",
+        title: "Win-Win or No Deal",
+        content:
+          "If a true win-win can't be found, sometimes the best option is no deal. Better no agreement than one that breeds resentment.",
+      },
+      {
+        id: "sh-31",
+        title: "The Emotional Bank Account",
+        content:
+          "Every kindness, promise kept, and honest word is a deposit of trust. Every slight or broken promise is a withdrawal.",
+      },
+      {
+        id: "sh-32",
+        title: "Make Deposits of Trust",
+        content:
+          "Strong relationships run on high trust balances. Consistent small deposits — courtesy, integrity, apologies — build the reserves that carry you through conflict.",
+      },
+      {
+        id: "sh-33",
+        title: "Habit 5 — Seek First to Understand",
+        content:
+          "Most people listen only to reply. Covey urges you to truly understand the other person before trying to be understood yourself.",
+      },
+      {
+        id: "sh-34",
+        title: "Empathic Listening",
+        content:
+          "Listen with the intent to understand, not to answer. Empathic listening gets inside another's frame of reference and makes them feel heard.",
+      },
+      {
+        id: "sh-35",
+        title: "Diagnose Before You Prescribe",
+        content:
+          "A good doctor understands before prescribing; so should you. Rushing to advise before understanding breaks trust and misses the real issue.",
+      },
+      {
+        id: "sh-36",
+        title: "Then to Be Understood",
+        content:
+          "Once you've truly understood, you've earned the right — and the audience — to share your own view clearly and be heard.",
+      },
+      {
+        id: "sh-37",
+        title: "Habit 6 — Synergize",
+        content:
+          "Synergy means the whole is greater than the sum of its parts. Creative cooperation produces solutions no one could reach alone.",
+      },
+      {
+        id: "sh-38",
+        title: "Value the Differences",
+        content:
+          "Differences aren't obstacles; they're the raw material of synergy. Genuinely valuing other viewpoints unlocks better answers.",
+      },
+      {
+        id: "sh-39",
+        title: "The Third Alternative",
+        content:
+          "Beyond 'my way' and 'your way' lies a better third way, created together. Synergy searches for that superior alternative.",
+      },
+      {
+        id: "sh-40",
+        title: "The Public Victory",
+        content:
+          "Habits 4 through 6 build effective relationships — the 'public victory' of interdependence that multiplies what you can achieve.",
+      },
+      {
+        id: "sh-41",
+        title: "Habit 7 — Sharpen the Saw",
+        content:
+          "A woodcutter too busy sawing to sharpen the blade works ever harder for less. Habit 7 is renewing yourself so the other six stay effective.",
+      },
+      {
+        id: "sh-42",
+        title: "Renew Four Dimensions",
+        content:
+          "Sharpen the saw across four areas: physical, mental, social/emotional, and spiritual. Neglect any one and the whole self weakens.",
+      },
+      {
+        id: "sh-43",
+        title: "Physical Renewal",
+        content:
+          "Exercise, nutrition, and rest maintain the body that carries everything else. Caring for it is caring for your capacity to perform.",
+      },
+      {
+        id: "sh-44",
+        title: "Mental Renewal",
+        content:
+          "Reading, learning, writing, and planning keep the mind sharp. A mind that stops growing slowly dulls.",
+      },
+      {
+        id: "sh-45",
+        title: "Social/Emotional Renewal",
+        content:
+          "Meaningful relationships and service refill your emotional reserves. Connection and contribution renew the heart.",
+      },
+      {
+        id: "sh-46",
+        title: "Spiritual Renewal",
+        content:
+          "Time in reflection, nature, prayer, or values-clarifying keeps you centered on principle. It is the core that steadies all the rest.",
+      },
+      {
+        id: "sh-47",
+        title: "The Upward Spiral",
+        content:
+          "Renewal fuels growth, which enables more renewal. Living the habits creates an upward spiral of learning, committing, and doing.",
+      },
+      {
+        id: "sh-48",
+        title: "Principle-Centered Living",
+        content:
+          "Center your life on principles rather than on work, money, or approval. Principles don't shift, so they give steady footing in any storm.",
+      },
+      {
+        id: "sh-49",
+        title: "Integrity in the Moment of Choice",
+        content:
+          "Character is built in small daily choices to honor your commitments. Integrity is keeping promises to yourself and others.",
+      },
+      {
+        id: "sh-50",
+        title: "Inside-Out Change",
+        content:
+          "Covey's approach starts within: change yourself before trying to change circumstances or people. Private victories precede public ones.",
+      },
+      {
+        id: "sh-51",
+        title: "Proactivity Is the Foundation",
+        content:
+          "Every other habit rests on the choice to be proactive. Owning your responses is the root of all personal effectiveness.",
+      },
+      {
+        id: "sh-52",
+        title: "Vision Guides Action",
+        content:
+          "A clear personal mission turns scattered effort into focused progress. Know your end, and daily choices align themselves.",
+      },
+      {
+        id: "sh-53",
+        title: "Trust Is the Glue",
+        content:
+          "The public habits all depend on trust. Without healthy emotional bank accounts, win-win, listening, and synergy fall apart.",
+      },
+      {
+        id: "sh-54",
+        title: "Effectiveness Is Sustainable",
+        content:
+          "The habits aim not at a quick win but at lasting effectiveness — results today without sacrificing your capacity for tomorrow.",
+      },
+      {
+        id: "sh-55",
+        title: "Balance and Renewal",
+        content:
+          "Sharpening the saw keeps you from burning out. Regular renewal is what lets the other six habits work over a lifetime.",
+      },
+      {
+        id: "sh-56",
+        title: "Small Habits, Big Character",
+        content:
+          "We are what we repeatedly do. Practiced consistently, these seven habits reshape not just what you achieve but who you become.",
+      },
+      {
+        id: "sh-57",
+        title: "From Independence to Legacy",
+        content:
+          "Master yourself, build trust, cooperate creatively, and keep renewing — and your influence grows into a lasting, principled legacy.",
+      },
+      {
+        id: "sh-58",
+        title: "Live the 7 Habits",
+        content:
+          "Be proactive, begin with the end in mind, put first things first, think win-win, seek to understand, synergize, and sharpen the saw. Together, they build a truly effective life.",
+      },
+    ],
+  },
+
+  // The 5 AM Club — Robin Sharma
+  "bk-540": {
+    bookId: "bk-540",
+    tagline: "Own your morning, elevate your life",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "am-1",
+        title: "Own Your Morning",
+        content:
+          "Sharma's core promise: how you begin your day shapes your whole life. Win the first hour and you win the day; win your days and you win your life.",
+      },
+      {
+        id: "am-2",
+        title: "Win the Battle of the Bed",
+        content:
+          "Rising early starts with beating the urge to hit snooze. That first small act of discipline sets the tone for every choice that follows.",
+      },
+      {
+        id: "am-3",
+        title: "The 5 AM Advantage",
+        content:
+          "The pre-dawn hours are quiet, distraction-free, and yours alone. Sharma calls this stillness the ideal time to build a world-class life.",
+      },
+      {
+        id: "am-4",
+        title: "The Victory Hour",
+        content:
+          "The hour from 5 to 6 AM is the Victory Hour — a daily ritual to strengthen your body, mind, and spirit before the world wakes.",
+      },
+      {
+        id: "am-5",
+        title: "The 20/20/20 Formula",
+        content:
+          "Split the Victory Hour into three 20-minute blocks: Move, Reflect, and Grow. This simple structure transforms an ordinary morning into a power ritual.",
+      },
+      {
+        id: "am-6",
+        title: "First 20 — Move",
+        content:
+          "Begin with intense exercise. Sweating early floods the brain with focus chemicals and burns away the stress hormone cortisol.",
+      },
+      {
+        id: "am-7",
+        title: "Second 20 — Reflect",
+        content:
+          "Spend the next twenty minutes in stillness — journaling, meditating, or planning. Reflection turns a busy mind into a clear, intentional one.",
+      },
+      {
+        id: "am-8",
+        title: "Third 20 — Grow",
+        content:
+          "Use the final twenty minutes to learn — read, study, or listen. Continuous growth is how ordinary people become extraordinary.",
+      },
+      {
+        id: "am-9",
+        title: "Discipline Over Motivation",
+        content:
+          "Motivation fades; the 5 AM habit is built on discipline. Sharma argues that self-control, practiced daily, is a muscle that strengthens.",
+      },
+      {
+        id: "am-10",
+        title: "The Four Interior Empires",
+        content:
+          "True success rests on four inner empires: Mindset (psychology), Heartset (emotions), Healthset (body), and Soulset (spirit). Neglect one and the others suffer.",
+      },
+      {
+        id: "am-11",
+        title: "Mindset",
+        content:
+          "Your beliefs and thoughts shape your performance. Tending your mindset keeps your psychology aligned with the life you want to build.",
+      },
+      {
+        id: "am-12",
+        title: "Heartset",
+        content:
+          "Unhealed emotions quietly sabotage success. Cleaning up your heartset — your emotional life — frees your energy for greatness.",
+      },
+      {
+        id: "am-13",
+        title: "Healthset",
+        content:
+          "Peak performance needs physical vitality. Fitness, nutrition, and rest are the fuel for a productive, long, and vibrant life.",
+      },
+      {
+        id: "am-14",
+        title: "Soulset",
+        content:
+          "Beyond mind and body lies the soul — your sense of meaning and connection. Nurturing it brings depth and purpose to achievement.",
+      },
+      {
+        id: "am-15",
+        title: "Twin Cycles of Elite Performance",
+        content:
+          "Great performers alternate between intense work and deep recovery. Growth happens in the rest, not just the effort.",
+      },
+      {
+        id: "am-16",
+        title: "Deliberate Practice",
+        content:
+          "Elite results come from focused, deliberate practice — not scattered busyness. Push your abilities intentionally at their edge.",
+      },
+      {
+        id: "am-17",
+        title: "Deep Recovery",
+        content:
+          "Rest is productive. Sharma insists that without genuine recovery, hard work leads to burnout rather than mastery.",
+      },
+      {
+        id: "am-18",
+        title: "The 66-Day Habit Rule",
+        content:
+          "Installing a habit takes about 66 days, not 21. Commit to the full stretch and the 5 AM ritual becomes automatic.",
+      },
+      {
+        id: "am-19",
+        title: "Three Phases of Change",
+        content:
+          "New habits pass through Destruction (hard), Installation (messy), and Integration (natural). Knowing the phases helps you push through the discomfort.",
+      },
+      {
+        id: "am-20",
+        title: "Push Through the Messy Middle",
+        content:
+          "The hardest part of any change is the middle, when it feels awful and results are invisible. Persist and the habit locks in.",
+      },
+      {
+        id: "am-21",
+        title: "The 3-Step Success Formula",
+        content:
+          "Better awareness leads to better choices, which lead to better results. Change begins by simply seeing yourself and your habits more clearly.",
+      },
+      {
+        id: "am-22",
+        title: "Protect Your Peak Hours",
+        content:
+          "Guard your most focused hours from distraction and trivial tasks. Your best energy should go to your most important work.",
+      },
+      {
+        id: "am-23",
+        title: "The 90/90/1 Rule",
+        content:
+          "For the next 90 days, devote the first 90 minutes of work to your single most important project. Concentrated focus produces breakthrough results.",
+      },
+      {
+        id: "am-24",
+        title: "The 60/10 Method",
+        content:
+          "Work in focused 60-minute bursts, then recover for 10. Alternating intensity and rest sustains high performance without burnout.",
+      },
+      {
+        id: "am-25",
+        title: "The 2nd Wind Workout",
+        content:
+          "A short evening workout can renew your energy and end the day strong, supporting both fitness and better sleep.",
+      },
+      {
+        id: "am-26",
+        title: "Digital Minimalism",
+        content:
+          "Constant screens fracture attention and drain willpower. Reclaiming your focus from devices is essential to the 5 AM lifestyle.",
+      },
+      {
+        id: "am-27",
+        title: "The Trap of Busyness",
+        content:
+          "Being busy isn't being productive. Sharma warns against mistaking frantic activity for meaningful, high-value work.",
+      },
+      {
+        id: "am-28",
+        title: "Sleep Early to Rise Early",
+        content:
+          "Rising at 5 AM only works if you protect your sleep. An early, consistent bedtime is the non-negotiable other half of the habit.",
+      },
+      {
+        id: "am-29",
+        title: "A Shutdown Ritual",
+        content:
+          "Wind down each night with a calming, screen-free routine. A deliberate shutdown protects the sleep that fuels your mornings.",
+      },
+      {
+        id: "am-30",
+        title: "Solitude Breeds Clarity",
+        content:
+          "Time alone in the early quiet lets you think, plan, and hear yourself. Solitude is where clarity and creativity are born.",
+      },
+      {
+        id: "am-31",
+        title: "Gratitude Each Morning",
+        content:
+          "Starting the day grateful primes a positive, resourceful state. Appreciation, practiced daily, reshapes your whole outlook.",
+      },
+      {
+        id: "am-32",
+        title: "Growth Is Uncomfortable",
+        content:
+          "Real change feels awkward and hard at first. Sharma reframes discomfort as proof that you're stretching and improving.",
+      },
+      {
+        id: "am-33",
+        title: "Capitalize on Your Gifts",
+        content:
+          "Everyone has natural talents that go unused. Effectiveness comes from identifying your gifts and pouring energy into them.",
+      },
+      {
+        id: "am-34",
+        title: "Freedom From Distraction",
+        content:
+          "Focus is the new superpower in a noisy world. Removing distractions is how you produce work that truly matters.",
+      },
+      {
+        id: "am-35",
+        title: "Consistency Over Intensity",
+        content:
+          "One heroic morning changes nothing; showing up daily changes everything. Small acts repeated relentlessly build a remarkable life.",
+      },
+      {
+        id: "am-36",
+        title: "Environment Shapes Behaviour",
+        content:
+          "Design your surroundings to support your goals — lay out clothes, remove temptations, prepare the space. Willpower needs a helpful environment.",
+      },
+      {
+        id: "am-37",
+        title: "Your Excuses Aren't Real",
+        content:
+          "The stories we tell to justify staying in bed are just fear in disguise. Sharma urges you to stop negotiating with your excuses.",
+      },
+      {
+        id: "am-38",
+        title: "Small Daily Wins",
+        content:
+          "Momentum builds from tiny victories — one workout, one page, one early rise. Stack small wins and they compound into transformation.",
+      },
+      {
+        id: "am-39",
+        title: "Lead Without a Title",
+        content:
+          "You don't need a position to lead; you lead by example and excellence. Mastering yourself is the first act of leadership.",
+      },
+      {
+        id: "am-40",
+        title: "Serve and Contribute",
+        content:
+          "Beyond personal success, Sharma emphasizes contribution. A life of impact and service gives your achievements lasting meaning.",
+      },
+      {
+        id: "am-41",
+        title: "Legacy Over Comfort",
+        content:
+          "Comfort is the enemy of greatness. Choosing the harder path of growth is how you build a legacy you'll be proud of.",
+      },
+      {
+        id: "am-42",
+        title: "Mindset Rituals",
+        content:
+          "Reinforce empowering beliefs each morning through affirmation and visualization. What you repeat to yourself, you become.",
+      },
+      {
+        id: "am-43",
+        title: "Move Your Body Daily",
+        content:
+          "Daily movement isn't vanity; it's the foundation of energy, mood, and focus. A strong body supports a strong mind.",
+      },
+      {
+        id: "am-44",
+        title: "Feed the Mind",
+        content:
+          "Read, study, and learn every single day. A mind that keeps growing keeps opening doors that a stagnant one never sees.",
+      },
+      {
+        id: "am-45",
+        title: "Master the Transitions",
+        content:
+          "How you move between activities — waking, working, resting — matters. Intentional transitions keep you in control of your day.",
+      },
+      {
+        id: "am-46",
+        title: "Protect Your Peak Energy",
+        content:
+          "Treat energy, not just time, as your scarcest resource. Spend your best energy on what matters most, early, before it drains.",
+      },
+      {
+        id: "am-47",
+        title: "The Power of Rituals",
+        content:
+          "Rituals remove decision fatigue and make excellence automatic. Build a set morning routine and greatness becomes a default, not a choice.",
+      },
+      {
+        id: "am-48",
+        title: "Recover Like an Athlete",
+        content:
+          "Elite athletes schedule recovery as seriously as training. Sleep, stillness, and downtime are where your gains are locked in.",
+      },
+      {
+        id: "am-49",
+        title: "Beat Procrastination",
+        content:
+          "Do the hardest, most important task first, while willpower is fresh. Early action defeats the procrastination that steals dreams.",
+      },
+      {
+        id: "am-50",
+        title: "Guard the First Hour",
+        content:
+          "Don't touch your phone or email in the first hour. Protect that time for growth, and you protect your power over the day.",
+      },
+      {
+        id: "am-51",
+        title: "Become World-Class",
+        content:
+          "Ordinary habits create ordinary results. Sharma's rituals are designed to help everyday people build genuinely world-class lives.",
+      },
+      {
+        id: "am-52",
+        title: "Patience With the Process",
+        content:
+          "Transformation is gradual and often invisible day to day. Trust the process and let consistent mornings compound over months.",
+      },
+      {
+        id: "am-53",
+        title: "The First Hour Sets the Day",
+        content:
+          "A strong, structured start creates momentum that carries you for hours. Lose the morning and you often lose the day.",
+      },
+      {
+        id: "am-54",
+        title: "Rise for a Reason",
+        content:
+          "Getting up at 5 is meaningless without purpose. Anchor the habit to a compelling why, and the alarm becomes easy to answer.",
+      },
+      {
+        id: "am-55",
+        title: "Join the 5 AM Club",
+        content:
+          "Own your morning with the 20/20/20 ritual, protect your focus, and recover deeply. Do it daily, and you elevate your entire life.",
+      },
+    ],
+  },
+
+  // The Metamorphosis — Franz Kafka
+  "bk-086": {
+    bookId: "bk-086",
+    tagline: "Kafka's haunting parable of alienation and identity",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "mt-1",
+        title: "A Man Wakes as an Insect",
+        content:
+          "Gregor Samsa wakes one morning transformed into a giant insect. Kafka states this impossible fact plainly, and the whole story unfolds from that single, unexplained horror.",
+      },
+      {
+        id: "mt-2",
+        title: "The Absurd Without Explanation",
+        content:
+          "No cause is ever given for the transformation, and none is sought. Kafka drops us into an absurd reality and asks how humans respond when the impossible simply happens.",
+      },
+      {
+        id: "mt-3",
+        title: "Alienation Made Literal",
+        content:
+          "Gregor's insect body externalizes a feeling many know: being estranged, unseen, and unable to connect with those closest to you.",
+      },
+      {
+        id: "mt-4",
+        title: "Reduced to a Body",
+        content:
+          "Overnight Gregor becomes a creature others recoil from. The story asks how much of our worth is tied to how we look and what we can do.",
+      },
+      {
+        id: "mt-5",
+        title: "The Breadwinner's Burden",
+        content:
+          "Gregor had shouldered the family's debts through a job he hated. His first panic is not about his body but about missing work — a life defined by duty.",
+      },
+      {
+        id: "mt-6",
+        title: "Work as Dehumanization",
+        content:
+          "Before any transformation, Gregor's soul-crushing job had already reduced him to a cog. Kafka suggests modern labor can turn people into something less than human.",
+      },
+      {
+        id: "mt-7",
+        title: "The Mind Remains Human",
+        content:
+          "Inside the monstrous shell, Gregor still thinks, worries, and loves as before. The tragedy is that no one can see the person still trapped within.",
+      },
+      {
+        id: "mt-8",
+        title: "The Failure to Communicate",
+        content:
+          "Gregor understands everyone, but no one understands him. The loss of shared language becomes a metaphor for profound human isolation.",
+      },
+      {
+        id: "mt-9",
+        title: "Trapped in His Room",
+        content:
+          "Gregor's bedroom becomes both refuge and prison. His shrinking world mirrors how illness or difference can quietly confine a person.",
+      },
+      {
+        id: "mt-10",
+        title: "The Threshold and the Door",
+        content:
+          "Doors open and close throughout the story, marking who is let in and who is shut out. Gregor is forever on the wrong side of belonging.",
+      },
+      {
+        id: "mt-11",
+        title: "From Provider to Burden",
+        content:
+          "The moment Gregor can no longer earn, his value to the family collapses. Kafka exposes how conditional our sense of being loved can be.",
+      },
+      {
+        id: "mt-12",
+        title: "Conditional Love",
+        content:
+          "The family's affection proves tied to what Gregor provides. When he needs care instead of giving it, that love steadily curdles.",
+      },
+      {
+        id: "mt-13",
+        title: "Grete's Early Compassion",
+        content:
+          "At first his sister Grete tends to him with tenderness. Her care is the story's fragile spark of humanity — and it will not last.",
+      },
+      {
+        id: "mt-14",
+        title: "Care Turns to Resentment",
+        content:
+          "As the burden wears on, compassion gives way to disgust and duty. Kafka shows how caregiving can erode into weary resentment.",
+      },
+      {
+        id: "mt-15",
+        title: "The Father's Hostility",
+        content:
+          "Gregor's father meets him with fear and aggression rather than love. The parent who was supported now turns on the son who supported him.",
+      },
+      {
+        id: "mt-16",
+        title: "The Wound of the Apple",
+        content:
+          "The father hurls apples, lodging one in Gregor's back to fester. It is a wound of rejection from the very family he sacrificed for.",
+      },
+      {
+        id: "mt-17",
+        title: "Shame and Hiding",
+        content:
+          "Gregor hides under the couch to spare others the sight of him. His instinct is to shrink and apologize for simply existing.",
+      },
+      {
+        id: "mt-18",
+        title: "Watching Life Go On Without Him",
+        content:
+          "From his room Gregor observes the family adapt and move forward. The loneliest pain is seeing the world continue as if you're already gone.",
+      },
+      {
+        id: "mt-19",
+        title: "The Picture He Protects",
+        content:
+          "Gregor desperately guards a framed picture on his wall — a last clutch at his old identity and desires against total erasure.",
+      },
+      {
+        id: "mt-20",
+        title: "Clinging to Humanity",
+        content:
+          "Even as his body grows stranger, Gregor's cravings for connection and beauty persist. His humanity refuses to fully die.",
+      },
+      {
+        id: "mt-21",
+        title: "Music and the Soul",
+        content:
+          "Drawn out by his sister's violin, Gregor wonders if a creature so moved by music can really be just an animal. Art briefly restores his dignity.",
+      },
+      {
+        id: "mt-22",
+        title: "The Lodgers and Appearances",
+        content:
+          "The family takes in lodgers and hides Gregor to keep up appearances. Social respectability matters more to them than the son in the next room.",
+      },
+      {
+        id: "mt-23",
+        title: "Rejected by His Sister",
+        content:
+          "Finally even Grete declares the creature must go, refusing to call it Gregor. The last thread of belonging is cut.",
+      },
+      {
+        id: "mt-24",
+        title: "Deemed No Longer Himself",
+        content:
+          "Once the family stops seeing Gregor as Gregor, his fate is sealed. To be denied your very identity is a kind of death before death.",
+      },
+      {
+        id: "mt-25",
+        title: "The Wish to Disappear",
+        content:
+          "Sensing he is only a burden, Gregor comes to feel his family would be better without him. His selflessness becomes self-erasure.",
+      },
+      {
+        id: "mt-26",
+        title: "A Quiet, Lonely Death",
+        content:
+          "Gregor dies alone in the dark, unmourned and unnoticed until morning. Kafka gives the moment no drama — only a devastating quiet.",
+      },
+      {
+        id: "mt-27",
+        title: "Relief, Not Grief",
+        content:
+          "The family greets his death with relief and a sense of freedom. The absence of grief is the story's most chilling indictment.",
+      },
+      {
+        id: "mt-28",
+        title: "The Family's Renewal",
+        content:
+          "Freed of Gregor, the family takes a trip and imagines a bright future. Life resumes easily — a haunting comment on how quickly we are replaced.",
+      },
+      {
+        id: "mt-29",
+        title: "Grete Blossoms",
+        content:
+          "The story ends with the parents noticing Grete has grown into a young woman. New life moves on atop the forgotten sacrifice of the old.",
+      },
+      {
+        id: "mt-30",
+        title: "The Cruelty of Usefulness",
+        content:
+          "A central sting of the tale: we are often valued for our usefulness, and cast aside when we can no longer provide.",
+      },
+      {
+        id: "mt-31",
+        title: "The Body as Prison",
+        content:
+          "Gregor's mind is caged in a body that betrays him. Kafka evokes the anguish of anyone trapped by illness, disability, or circumstance.",
+      },
+      {
+        id: "mt-32",
+        title: "Isolation Within the Family",
+        content:
+          "The loneliest isolation isn't in a desert but in your own home, among people who no longer see you. That is Gregor's true torment.",
+      },
+      {
+        id: "mt-33",
+        title: "Capitalism and the Worker",
+        content:
+          "Many read Gregor as the worker consumed by labor, discarded once unproductive. The story critiques a world that measures people by output.",
+      },
+      {
+        id: "mt-34",
+        title: "Guilt Without a Crime",
+        content:
+          "Gregor apologizes and feels shame though he has done nothing wrong. Kafka's characters often carry a nameless guilt for simply being.",
+      },
+      {
+        id: "mt-35",
+        title: "Empathy's Limits",
+        content:
+          "The story tests how far compassion stretches before self-interest wins. It asks each reader an uncomfortable question about their own limits.",
+      },
+      {
+        id: "mt-36",
+        title: "No Moral, Only Experience",
+        content:
+          "Kafka offers no tidy lesson. The power lies in living the discomfort with Gregor and sitting with the questions it raises.",
+      },
+      {
+        id: "mt-37",
+        title: "The Kafkaesque",
+        content:
+          "This story helped define 'Kafkaesque': the nightmarish, absurd, and dehumanizing rendered in flat, matter-of-fact prose.",
+      },
+      {
+        id: "mt-38",
+        title: "Dignity in Degradation",
+        content:
+          "Despite everything, Gregor's continued care for his family lends him a quiet dignity the humans around him lack.",
+      },
+      {
+        id: "mt-39",
+        title: "The Reader's Discomfort",
+        content:
+          "Kafka makes us complicit, understanding both Gregor's suffering and the family's exhaustion. The unease is the point.",
+      },
+      {
+        id: "mt-40",
+        title: "Modern Loneliness",
+        content:
+          "A century on, the story speaks to anyone who has felt invisible, unproductive, or estranged in a fast, transactional world.",
+      },
+      {
+        id: "mt-41",
+        title: "Communication and Love",
+        content:
+          "Once Gregor can't speak, love has no channel to flow through. The tale hints that connection dies when we stop truly hearing each other.",
+      },
+      {
+        id: "mt-42",
+        title: "The Ordinary Made Strange",
+        content:
+          "By treating the fantastic as mundane, Kafka reveals how strange and cruel ordinary family and work life can already be.",
+      },
+      {
+        id: "mt-43",
+        title: "Sacrifice Unremembered",
+        content:
+          "Gregor gave years to his family's comfort, yet it's forgotten within days of his death. The story mourns the fragility of gratitude.",
+      },
+      {
+        id: "mt-44",
+        title: "Identity Beyond Appearance",
+        content:
+          "Are you still you if no one recognizes you? Kafka pushes the question until it aches.",
+      },
+      {
+        id: "mt-45",
+        title: "The Fear of Being a Burden",
+        content:
+          "Gregor's deepest dread is becoming a weight on others. It's a fear that quietly haunts the sick, the aging, and the struggling everywhere.",
+      },
+      {
+        id: "mt-46",
+        title: "Powerlessness",
+        content:
+          "Gregor cannot argue, explain, or plead — only endure. Kafka captures the helplessness of those who have lost their voice in the world.",
+      },
+      {
+        id: "mt-47",
+        title: "The Silence of Suffering",
+        content:
+          "So much of Gregor's pain goes unspoken and unseen. The story honors the private suffering that no one else witnesses.",
+      },
+      {
+        id: "mt-48",
+        title: "A Mirror to Society",
+        content:
+          "The family's behaviour reflects how societies treat the different and the dependent — with initial pity that hardens into rejection.",
+      },
+      {
+        id: "mt-49",
+        title: "What Makes Us Human",
+        content:
+          "Stripped of body, job, and recognition, what remains of a person? Kafka locates humanity in feeling, longing, and love — not utility.",
+      },
+      {
+        id: "mt-50",
+        title: "Why It Endures",
+        content:
+          "The Metamorphosis lasts because its horror is emotional, not fantastical. We recognize the loneliness, even if we've never grown wings or shells.",
+      },
+      {
+        id: "mt-51",
+        title: "Compassion as the Real Test",
+        content:
+          "The story quietly asks: could you keep loving someone who could no longer give you anything back? Our answer defines us.",
+      },
+      {
+        id: "mt-52",
+        title: "The Lasting Question",
+        content:
+          "Kafka leaves us with discomfort rather than comfort — a mirror held up to how we treat the vulnerable, and to our own fear of becoming one.",
+      },
+    ],
+  },
+
+  // The Trial — Franz Kafka
+  "bk-087": {
+    bookId: "bk-087",
+    tagline: "A nightmare of guilt, justice, and faceless bureaucracy",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "tr-1",
+        title: "Arrested Without a Crime",
+        content:
+          "Josef K. is arrested one morning by agents who won't say what he's charged with. The nightmare begins with a guilt he can neither understand nor deny.",
+      },
+      {
+        id: "tr-2",
+        title: "Guilt Presumed",
+        content:
+          "The court treats K. as guilty from the start. Kafka inverts justice: instead of proving guilt, K. must somehow disprove an accusation no one will name.",
+      },
+      {
+        id: "tr-3",
+        title: "The Unknowable Charge",
+        content:
+          "K. never learns what he's accused of. The absence of a charge becomes more terrifying than any specific crime could be.",
+      },
+      {
+        id: "tr-4",
+        title: "The Faceless System",
+        content:
+          "The Court has no clear address, officials, or logic. It is everywhere and nowhere — an authority that can't be confronted or reasoned with.",
+      },
+      {
+        id: "tr-5",
+        title: "Bureaucracy as Nightmare",
+        content:
+          "Endless offices, forms, and functionaries lead nowhere. Kafka turns paperwork and procedure into a maze designed to exhaust and defeat.",
+      },
+      {
+        id: "tr-6",
+        title: "Courts in the Attic",
+        content:
+          "The tribunals hide in shabby attics of ordinary buildings. Power lurks in the mundane, woven invisibly into everyday life.",
+      },
+      {
+        id: "tr-7",
+        title: "Life Goes On Around It",
+        content:
+          "K. still works at his bank as the trial creeps through his life. The horror is how normalcy and dread coexist without resolution.",
+      },
+      {
+        id: "tr-8",
+        title: "The Lawyer Who Cannot Help",
+        content:
+          "K.'s advocate talks endlessly but achieves nothing. The legal help he seeks only entangles him deeper in the machinery.",
+      },
+      {
+        id: "tr-9",
+        title: "Endless Delay",
+        content:
+          "The process advances by not advancing. Perpetual postponement becomes a form of punishment in itself.",
+      },
+      {
+        id: "tr-10",
+        title: "The Machinery Grinds On",
+        content:
+          "No single villain runs the Court; it simply grinds forward on its own momentum. Systems, Kafka warns, can oppress with no one responsible.",
+      },
+      {
+        id: "tr-11",
+        title: "Creeping Self-Doubt",
+        content:
+          "As the case drags on, K. starts to wonder whether he is, somehow, guilty. The accusation slowly rewrites his sense of himself.",
+      },
+      {
+        id: "tr-12",
+        title: "Paranoia Takes Hold",
+        content:
+          "K. begins to see the Court's agents everywhere. The trial invades his mind long before it reaches any verdict.",
+      },
+      {
+        id: "tr-13",
+        title: "Everyone Seems Complicit",
+        content:
+          "Neighbors, colleagues, even strangers appear connected to the Court. Kafka evokes a world where the whole society enforces an unseen order.",
+      },
+      {
+        id: "tr-14",
+        title: "False Hope in Others",
+        content:
+          "K. seeks help from women and go-betweens who promise influence. Each lead dissolves, feeding hope only to deepen his helplessness.",
+      },
+      {
+        id: "tr-15",
+        title: "The Painter's Insight",
+        content:
+          "The court painter Titorelli explains the system's grim options, revealing that real escape is essentially impossible.",
+      },
+      {
+        id: "tr-16",
+        title: "Three Kinds of Acquittal",
+        content:
+          "Definite acquittal, apparent acquittal, and indefinite postponement — but the first is only a rumour no one has ever actually seen granted.",
+      },
+      {
+        id: "tr-17",
+        title: "No True Freedom",
+        content:
+          "Even 'apparent acquittal' means you can be re-arrested anytime. Once caught in the system, you are never truly released.",
+      },
+      {
+        id: "tr-18",
+        title: "The Absurdity of Justice",
+        content:
+          "The Court's rules defy all reason, yet everyone obeys them. Kafka portrays justice as a ritual emptied of meaning.",
+      },
+      {
+        id: "tr-19",
+        title: "Before the Law",
+        content:
+          "In the famous parable, a man waits his whole life at a gate to the Law, begging a gatekeeper for entry that never comes.",
+      },
+      {
+        id: "tr-20",
+        title: "A Door Meant Only for You",
+        content:
+          "At the man's death, the gatekeeper reveals the door was meant for him alone — and now it will be shut. Access was always possible yet always denied.",
+      },
+      {
+        id: "tr-21",
+        title: "Waiting a Lifetime",
+        content:
+          "The parable's man spends his life seeking permission he could perhaps have taken. Kafka probes how fear and deference keep us waiting forever.",
+      },
+      {
+        id: "tr-22",
+        title: "The Priest's Warning",
+        content:
+          "A prison chaplain tells K. the parable, warning that the Court neither wants nor rejects him — it simply receives him when he comes and lets him go when he leaves.",
+      },
+      {
+        id: "tr-23",
+        title: "Guilt as the Human Condition",
+        content:
+          "Many read the nameless charge as existential guilt — the vague sense of being at fault simply for being alive and imperfect.",
+      },
+      {
+        id: "tr-24",
+        title: "Seeking Meaning in the System",
+        content:
+          "K. keeps trying to find logic and fairness where none exists. His need to make sense of the senseless is deeply, painfully human.",
+      },
+      {
+        id: "tr-25",
+        title: "Resistance Feels Futile",
+        content:
+          "Every effort K. makes seems to sink him further. Kafka captures the despair of struggling against a power that cannot be grasped.",
+      },
+      {
+        id: "tr-26",
+        title: "Complicity Through Compliance",
+        content:
+          "By cooperating and seeking approval, K. legitimizes the very system crushing him. Obedience becomes its own trap.",
+      },
+      {
+        id: "tr-27",
+        title: "The Banality of Oppression",
+        content:
+          "The Court's cruelty is delivered by dull clerks doing their jobs. Evil here is bureaucratic, ordinary, and diffuse.",
+      },
+      {
+        id: "tr-28",
+        title: "A Prophecy of Totalitarianism",
+        content:
+          "Written before the century's great tyrannies, The Trial eerily foresaw states that arrest, accuse, and destroy citizens without cause.",
+      },
+      {
+        id: "tr-29",
+        title: "The Modern Citizen",
+        content:
+          "Anyone who has battled an opaque institution — an agency, a company, a system — recognizes K.'s helpless frustration.",
+      },
+      {
+        id: "tr-30",
+        title: "The Absence of Answers",
+        content:
+          "Kafka refuses explanations, leaving K. — and us — grasping. The withholding of answers is the story's engine of dread.",
+      },
+      {
+        id: "tr-31",
+        title: "Shame at the End",
+        content:
+          "As K. is led to his death, his final feeling is shame. The system has succeeded in making him feel guilty without ever proving anything.",
+      },
+      {
+        id: "tr-32",
+        title: "Like a Dog",
+        content:
+          "K. dies humiliated, thinking it is 'like a dog,' as if the shame would outlive him. It is one of literature's bleakest endings.",
+      },
+      {
+        id: "tr-33",
+        title: "Death Without Understanding",
+        content:
+          "K. never learns why any of it happened. Kafka denies the comfort of comprehension even at the very end.",
+      },
+      {
+        id: "tr-34",
+        title: "The Unfinished Novel",
+        content:
+          "Kafka left the book incomplete and asked for it to be burned. Its fragmentary form mirrors the incompleteness of K.'s search for truth.",
+      },
+      {
+        id: "tr-35",
+        title: "Ambiguity as the Point",
+        content:
+          "The Trial resists a single interpretation. Its refusal to resolve is precisely what makes it endlessly discussed.",
+      },
+      {
+        id: "tr-36",
+        title: "Existential Anxiety",
+        content:
+          "The book gives shape to a modern dread: the fear that life is governed by forces indifferent to our understanding or fairness.",
+      },
+      {
+        id: "tr-37",
+        title: "The Trial Within",
+        content:
+          "Some read the Court as K.'s own conscience, judging him from within. The prosecution may be as internal as it is external.",
+      },
+      {
+        id: "tr-38",
+        title: "Institutions Beyond Reason",
+        content:
+          "Kafka shows how institutions can grow so large and self-justifying that reason and mercy no longer reach them.",
+      },
+      {
+        id: "tr-39",
+        title: "The Cost of Passivity",
+        content:
+          "K. drifts, defers, and hopes others will save him. His passivity is part of his undoing — a warning against surrendering agency.",
+      },
+      {
+        id: "tr-40",
+        title: "Justice as Ritual",
+        content:
+          "The Court performs the motions of law without its substance. Kafka separates the appearance of justice from justice itself.",
+      },
+      {
+        id: "tr-41",
+        title: "The Reader as Juror",
+        content:
+          "We keep searching for K.'s guilt or innocence, becoming jurors in a trial with no evidence. Kafka implicates us in the judging.",
+      },
+      {
+        id: "tr-42",
+        title: "Faith and Doubt",
+        content:
+          "The Law can be read as the divine, forever sought and never reached. The novel becomes a meditation on faith without certainty.",
+      },
+      {
+        id: "tr-43",
+        title: "The Individual Crushed",
+        content:
+          "Against the vast machinery, the single human is powerless. Kafka mourns the individual swallowed by systems larger than any person.",
+      },
+      {
+        id: "tr-44",
+        title: "Dread in Ordinary Rooms",
+        content:
+          "Kafka locates terror not in dungeons but in offices, lodgings, and cathedrals. The everyday setting makes the horror inescapable.",
+      },
+      {
+        id: "tr-45",
+        title: "The Language of Delay",
+        content:
+          "Officials speak in evasions and technicalities that never commit to anything. Language itself becomes a tool of the maze.",
+      },
+      {
+        id: "tr-46",
+        title: "Hope as a Trap",
+        content:
+          "Each fresh hope pulls K. deeper into dependence on the Court. Kafka suggests false hope can bind us tighter than despair.",
+      },
+      {
+        id: "tr-47",
+        title: "The Weight of the Unknown",
+        content:
+          "Not knowing the accusation, the timeline, or the judges wears K. down. Uncertainty, Kafka shows, is a punishment all its own.",
+      },
+      {
+        id: "tr-48",
+        title: "A Warning Still Relevant",
+        content:
+          "In an age of vast bureaucracies and surveillance, The Trial reads less like fantasy and more like caution.",
+      },
+      {
+        id: "tr-49",
+        title: "Interpretations Multiply",
+        content:
+          "Psychological, political, religious, existential — each lens illuminates a different Trial. Its richness lies in holding them all.",
+      },
+      {
+        id: "tr-50",
+        title: "The Kafkaesque Defined",
+        content:
+          "The Trial is the purest distillation of the Kafkaesque: absurd, oppressive, and impersonal forces rendered with icy calm.",
+      },
+      {
+        id: "tr-51",
+        title: "Seeking Justice, Finding None",
+        content:
+          "K.'s tragedy is expecting fairness from a system built to deny it. The gap between his expectation and reality is where the anguish lives.",
+      },
+      {
+        id: "tr-52",
+        title: "The Silence of the Powerful",
+        content:
+          "The true authorities never appear. Power that hides its face can never be petitioned, argued with, or held to account.",
+      },
+      {
+        id: "tr-53",
+        title: "Meaning We Must Make",
+        content:
+          "Since the Court offers no meaning, any meaning must come from K. himself — a task he never manages, and one Kafka leaves to us.",
+      },
+      {
+        id: "tr-54",
+        title: "Empathy for the Accused",
+        content:
+          "The novel builds deep sympathy for anyone caught in a process they cannot understand or influence. It is a plea for the powerless.",
+      },
+      {
+        id: "tr-55",
+        title: "The Question of Guilt",
+        content:
+          "In the end, The Trial leaves one haunting question: are we all, in some quiet way, awaiting judgment for a charge we can't name?",
+      },
+    ],
+  },
+
   // The Diary of a CEO — Steven Bartlett (33 Laws of Business & Life)
   "bk-014": {
     bookId: "bk-014",

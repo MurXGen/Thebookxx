@@ -18,7 +18,12 @@ export default function HomeTabs({ active, onChange }) {
     if (t.key !== active) router.push(t.href);
   };
   return (
-    <div className="home-tabs-wrap">
+    <motion.div
+      className="home-tabs-wrap"
+      initial={{ opacity: 0, filter: "blur(10px)" }}
+      animate={{ opacity: 1, filter: "blur(0px)" }}
+      transition={{ duration: 0.45, ease: "easeOut" }}
+    >
       <div className="home-tabs" role="tablist">
         {TABS.map((t) => {
           const Icon = t.icon;
@@ -32,13 +37,6 @@ export default function HomeTabs({ active, onChange }) {
               className={`home-tab${on ? " active" : ""}`}
               onClick={() => handleClick(t)}
             >
-              {on && (
-                <motion.span
-                  layoutId="home-tab-pill"
-                  className="home-tab-pill"
-                  transition={{ type: "spring", stiffness: 400, damping: 32 }}
-                />
-              )}
               <span className="home-tab-inner">
                 <Icon size={16} />
                 {t.label}
@@ -47,6 +45,6 @@ export default function HomeTabs({ active, onChange }) {
           );
         })}
       </div>
-    </div>
+    </motion.div>
   );
 }

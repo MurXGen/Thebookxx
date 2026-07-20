@@ -20533,39 +20533,46 @@ img[data-loaded="true"] {
 }
 .home-tabs {
   position: relative;
-  display: inline-flex;
+  display: flex;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
   gap: 4px;
   padding: 5px;
   border-radius: 999px;
-  background: var(--dark-4, #f4f4f5);
-  border: 1px solid var(--hairline, #e5e7eb);
+  background: #f4f4f5;
+  border: 1px solid #111;
 }
 .home-tab {
   position: relative;
+  flex: 1 1 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: none;
   background: transparent;
-  padding: 9px 22px;
+  padding: 10px 16px;
   border-radius: 999px;
   font-size: 14px;
   font-weight: 700;
-  color: var(--dark-50, #6b7280);
+  color: #111;
   cursor: pointer;
+  transition: background 0.3s ease, color 0.3s ease, filter 0.3s ease;
 }
-.home-tab-pill {
-  position: absolute;
-  inset: 0;
-  border-radius: 999px;
-  background: var(--tertiary, #fb8500);
-  z-index: 0;
-}
+/* Black & white theme: active tab is solid black with white text */
 .home-tab.active {
+  background: #111;
   color: #fff;
+}
+.home-tab:not(.active):hover {
+  background: rgba(0, 0, 0, 0.05);
 }
 .home-tab-inner {
   position: relative;
   z-index: 1;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 7px;
 }
 

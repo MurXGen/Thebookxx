@@ -20873,17 +20873,52 @@ img[data-loaded="true"] {
   align-items: center;
   justify-content: center;
   min-height: 300px;
+  perspective: 1200px; /* gives the card's rotateX a real 3D depth */
 }
 .qr-card {
+  position: relative;
   width: 100%;
-  max-width: 640px;
+  max-width: 660px;
+  min-height: 64vh;
   margin: 0 auto;
-  padding: 30px 26px;
-  border-radius: 22px;
-  background: linear-gradient(160deg, #fff 0%, #fff7ed 100%);
-  border: 1px solid rgba(251, 133, 0, 0.18);
-  box-shadow: 0 18px 40px -22px rgba(251, 133, 0, 0.5);
+  padding: 44px 34px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-radius: 28px;
+  background:
+    radial-gradient(130% 90% at 12% -5%, rgba(251, 133, 0, 0.1) 0%, rgba(251, 133, 0, 0) 55%),
+    radial-gradient(130% 90% at 105% 105%, rgba(255, 183, 3, 0.12) 0%, rgba(255, 183, 3, 0) 52%),
+    linear-gradient(160deg, #fffefb 0%, #fff5e8 100%);
+  border: 1px solid rgba(251, 133, 0, 0.22);
+  box-shadow: 0 34px 64px -30px rgba(251, 133, 0, 0.55),
+    0 2px 12px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
   cursor: grab;
+}
+/* Soft decorative light orbs in the corners */
+.qr-card::before,
+.qr-card::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(44px);
+  pointer-events: none;
+  z-index: 0;
+}
+.qr-card::before {
+  width: 240px;
+  height: 240px;
+  top: -80px;
+  right: -70px;
+  background: radial-gradient(circle, rgba(251, 133, 0, 0.3), transparent 70%);
+}
+.qr-card::after {
+  width: 280px;
+  height: 280px;
+  bottom: -100px;
+  left: -80px;
+  background: radial-gradient(circle, rgba(255, 183, 3, 0.24), transparent 70%);
 }
 .qr-card:active {
   cursor: grabbing;
@@ -20894,23 +20929,40 @@ img[data-loaded="true"] {
   pointer-events: none;
 }
 .qr-card-kicker {
+  position: relative;
+  z-index: 1;
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 13px;
+  border-radius: 999px;
+  background: rgba(251, 133, 0, 0.12);
+  border: 1px solid rgba(251, 133, 0, 0.32);
   font-size: 11px;
   font-weight: 800;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.6px;
   text-transform: uppercase;
   color: var(--tertiary, #fb8500);
 }
 .qr-card-title {
-  font-size: clamp(20px, 5vw, 26px);
+  position: relative;
+  z-index: 1;
+  font-size: clamp(25px, 6.2vw, 36px);
   font-weight: 800;
-  line-height: 1.25;
-  margin: 10px 0 12px;
-  color: #1a1a1a;
+  line-height: 1.18;
+  letter-spacing: -0.01em;
+  margin: 20px 0 16px;
+  color: #14161a;
 }
 .qr-card-text {
-  font-size: clamp(15px, 4vw, 17px);
-  line-height: 1.6;
-  color: #3a3a3a;
+  position: relative;
+  z-index: 1;
+  font-size: clamp(16px, 4.4vw, 19px);
+  line-height: 1.72;
+  color: #33373d;
+  padding-left: 18px;
+  border-left: 3px solid rgba(251, 133, 0, 0.4);
 }
 /* Paywall */
 .qr-paywall {
@@ -21143,6 +21195,117 @@ img[data-loaded="true"] {
   }
 }
 
+/* Listen-to-all / active icon button */
+.qr-icon-btn.on {
+  background: var(--tertiary, #fb8500);
+  border-color: var(--tertiary, #fb8500);
+  color: #fff;
+}
+
+/* ============================ QuickReads dark mode ============================ */
+.qr-overlay.qr-dark,
+.qr-overlay.qr-dark .qr-modal {
+  background: #0f1216;
+}
+.qr-dark .qr-head {
+  background: #0f1216;
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+.qr-dark .qr-head-name {
+  color: #f3f4f6;
+}
+.qr-dark .qr-icon-btn {
+  background: #1b1f27;
+  border-color: rgba(255, 255, 255, 0.14);
+  color: #e7e9ee;
+}
+.qr-dark .qr-icon-btn:hover {
+  background: #262b34;
+}
+.qr-dark .qr-icon-btn.on {
+  background: var(--tertiary, #fb8500);
+  border-color: var(--tertiary, #fb8500);
+  color: #fff;
+}
+.qr-dark .qr-card {
+  background:
+    radial-gradient(130% 90% at 12% -5%, rgba(251, 133, 0, 0.16) 0%, rgba(251, 133, 0, 0) 55%),
+    radial-gradient(130% 90% at 105% 105%, rgba(255, 183, 3, 0.12) 0%, rgba(255, 183, 3, 0) 52%),
+    linear-gradient(160deg, #1b1f27 0%, #12151b 100%);
+  border-color: rgba(251, 133, 0, 0.3);
+  box-shadow: 0 34px 64px -30px rgba(0, 0, 0, 0.8);
+}
+.qr-dark .qr-card::before {
+  background: radial-gradient(circle, rgba(251, 133, 0, 0.34), transparent 70%);
+}
+.qr-dark .qr-card::after {
+  background: radial-gradient(circle, rgba(255, 183, 3, 0.2), transparent 70%);
+}
+.qr-dark .qr-card-title {
+  color: #f6f7f9;
+}
+.qr-dark .qr-card-text {
+  color: #cbd0da;
+  border-left-color: rgba(251, 133, 0, 0.5);
+}
+.qr-dark .qr-card-kicker {
+  color: var(--tertiary, #fb8500);
+  background: rgba(251, 133, 0, 0.16);
+  border-color: rgba(251, 133, 0, 0.4);
+}
+.qr-dark .qr-action {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #f3f4f6;
+}
+.qr-dark .qr-action:hover {
+  background: #f3f4f6;
+  color: #111;
+}
+.qr-dark .qr-action.on {
+  color: var(--tertiary, #fb8500);
+  border-color: rgba(251, 133, 0, 0.6);
+  background: rgba(251, 133, 0, 0.14);
+}
+.qr-dark .qr-nav-btn {
+  background: #1b1f27;
+  border-color: rgba(255, 255, 255, 0.14);
+  color: #e7e9ee;
+}
+.qr-dark .qr-nav-btn:disabled {
+  opacity: 0.4;
+}
+.qr-dark .qr-nav-pos {
+  color: #c7ccd6;
+}
+.qr-dark .qr-saved-sheet {
+  background: #12151b;
+  color: #f3f4f6;
+}
+.qr-dark .qr-saved-item {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+.qr-dark .qr-saved-item-title {
+  color: #f3f4f6;
+}
+.qr-dark .qr-saved-item-text,
+.qr-dark .qr-saved-item-book {
+  color: #b8bec9;
+}
+.qr-dark .qr-paywall {
+  background: linear-gradient(
+    180deg,
+    rgba(15, 18, 22, 0) 0%,
+    rgba(15, 18, 22, 0.92) 40%
+  );
+}
+.qr-dark .qr-paywall-title {
+  color: #f3f4f6;
+}
+.qr-dark .qr-paywall-sub {
+  color: #c7ccd6;
+}
+
 /* Book detail — QuickReads CTA strip */
 .bd-qr-cta {
   display: flex;
@@ -21226,8 +21389,19 @@ img[data-loaded="true"] {
   gap: 4px;
   padding: 5px;
   border-radius: 999px;
-  background: var(--dark-4, #f4f4f5);
-  border: 1px solid var(--dark-50);
+  background: #f4f4f5;
+  border: 1px solid #111;
+  animation: bag-tabs-in 0.45s ease both;
+}
+@keyframes bag-tabs-in {
+  from {
+    opacity: 0;
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
 }
 .bag-tab {
   flex: 1 1 0;
@@ -21235,14 +21409,18 @@ img[data-loaded="true"] {
   align-items: center;
   justify-content: center;
   gap: 7px;
-  padding: 8px 16px;
+  padding: 10px 16px;
   border: none;
   background: transparent;
   border-radius: 999px;
   font-size: 13.5px;
   font-weight: 700;
-  color: var(--dark-50, #6b7280);
+  color: #111;
   cursor: pointer;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+.bag-tab:not(.active):hover {
+  background: rgba(0, 0, 0, 0.05);
 }
 /* Empty state when the Books tab has no items but QuickReads does */
 .bag-empty-tab {
@@ -21543,7 +21721,7 @@ img[data-loaded="true"] {
   }
 }
 .bag-tab.active {
-  background: var(--tertiary, #fb8500);
+  background: #111;
   color: #fff;
 }
 .bag-tab-count {

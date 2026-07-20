@@ -5439,6 +5439,678 @@ export const quickReads = {
     ],
   },
 
+  // Breaking the Habit of Being Yourself — Dr. Joe Dispenza
+  "bk-132": {
+    bookId: "bk-132",
+    tagline: "How to lose your mind and create a new one",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "bh-1",
+        title: "Breaking the Habit of Being Yourself",
+        content:
+          "Dispenza's premise: you have become a habit. To change your life, you must break the automatic patterns of thinking, feeling, and acting that keep recreating the same you.",
+      },
+      {
+        id: "bh-2",
+        title: "You Are a Set of Habits",
+        content:
+          "Most of who you are runs on autopilot — memorized routines of thought and emotion. Change means becoming conscious of these habits and rewriting them.",
+      },
+      {
+        id: "bh-3",
+        title: "Personality Creates Personal Reality",
+        content:
+          "Your personality — your thoughts, actions, and feelings — creates your personal reality. Keep the same personality and you keep the same life.",
+      },
+      {
+        id: "bh-4",
+        title: "The Same Self, the Same Life",
+        content:
+          "If you want a new reality, you can't keep being the same person. A new life requires becoming, in a real sense, someone new.",
+      },
+      {
+        id: "bh-5",
+        title: "Most of You Is on Autopilot",
+        content:
+          "A large share of daily behaviour is driven by subconscious programs. You can't change what you don't first make conscious.",
+      },
+      {
+        id: "bh-6",
+        title: "The Subconscious Programs",
+        content:
+          "By adulthood we run on a stored set of automatic reactions. Real transformation means reaching and rewriting that programming.",
+      },
+      {
+        id: "bh-7",
+        title: "The Thought-Feeling Loop",
+        content:
+          "Your thoughts create feelings and your feelings drive more thoughts, spinning the same cycle. This loop keeps your state — and life — fixed.",
+      },
+      {
+        id: "bh-8",
+        title: "The Body as Unconscious Mind",
+        content:
+          "Repeat an emotional state long enough and the body memorizes it, running it without your permission. The body becomes the mind.",
+      },
+      {
+        id: "bh-9",
+        title: "Living in the Past",
+        content:
+          "Reliving old emotions keeps your biology anchored to yesterday. You can't create a new future while emotionally living in the past.",
+      },
+      {
+        id: "bh-10",
+        title: "Memorized Emotions",
+        content:
+          "Emotions from past events get memorized and replayed for years. These stored feelings quietly define your personality.",
+      },
+      {
+        id: "bh-11",
+        title: "Emotional Addiction",
+        content:
+          "The body can grow addicted to the chemistry of familiar emotions — even negative ones — and unconsciously seeks situations that trigger them.",
+      },
+      {
+        id: "bh-12",
+        title: "Survival vs Creation",
+        content:
+          "Living in stress emotions keeps you in survival mode, focused on the body, environment, and time. Creation requires a calmer, expanded state.",
+      },
+      {
+        id: "bh-13",
+        title: "Stress Keeps You Stuck",
+        content:
+          "Chronic stress narrows your focus and your biology. It is the very state that reinforces the old self you're trying to change.",
+      },
+      {
+        id: "bh-14",
+        title: "Three Things Hold You Back",
+        content:
+          "Your environment, your body, and time conspire to keep you the same. Transformation means rising above all three.",
+      },
+      {
+        id: "bh-15",
+        title: "Bigger Than Your Environment",
+        content:
+          "If your thoughts merely mirror your surroundings, nothing changes. Thinking beyond your current environment is the first step to a new reality.",
+      },
+      {
+        id: "bh-16",
+        title: "Bigger Than Your Body",
+        content:
+          "When the body demands its usual emotional fix, don't give in. Overriding the body's habits is how you free yourself from the old self.",
+      },
+      {
+        id: "bh-17",
+        title: "Bigger Than Time",
+        content:
+          "Escape the loop of remembered past and predicted future. Change is only possible in the present moment.",
+      },
+      {
+        id: "bh-18",
+        title: "The Three Brains",
+        content:
+          "We change through three stages: thinking (learning), doing (applying), and being (embodying). Only when it becomes 'being' is the change complete.",
+      },
+      {
+        id: "bh-19",
+        title: "Knowledge Is for the Mind",
+        content:
+          "New information primes the brain with fresh circuits. But knowledge alone, without action, changes nothing lasting.",
+      },
+      {
+        id: "bh-20",
+        title: "Instruction Is for the Body",
+        content:
+          "Applying what you learn teaches the body a new experience. Doing turns intellectual knowledge into lived skill.",
+      },
+      {
+        id: "bh-21",
+        title: "Experience Embodies It",
+        content:
+          "A new experience produces a new emotion, and repeated enough, that emotion becomes a trait of your character.",
+      },
+      {
+        id: "bh-22",
+        title: "Repetition Builds Identity",
+        content:
+          "Do and feel something enough times and it hardwires into who you are. Identity is built by repetition, for better or worse.",
+      },
+      {
+        id: "bh-23",
+        title: "Unlearn the Old Self",
+        content:
+          "Change requires unlearning as much as learning — dismantling the mental and emotional habits that define the current you.",
+      },
+      {
+        id: "bh-24",
+        title: "Prune Old Circuits",
+        content:
+          "Neural connections you stop using weaken and fade. Ceasing to fire old thought patterns lets them wither.",
+      },
+      {
+        id: "bh-25",
+        title: "Sprout New Connections",
+        content:
+          "New thoughts and rehearsals grow fresh neural pathways. The brain physically reshapes around what you repeatedly practice.",
+      },
+      {
+        id: "bh-26",
+        title: "Neuroplasticity in Action",
+        content:
+          "Your brain is not fixed. Deliberate mental effort rewires it, making the new self more natural over time.",
+      },
+      {
+        id: "bh-27",
+        title: "Mental Rehearsal",
+        content:
+          "Repeatedly rehearsing your new self in your mind installs the circuitry before the behaviour appears in the world.",
+      },
+      {
+        id: "bh-28",
+        title: "The Brain Doesn't Know the Difference",
+        content:
+          "Vivid inner rehearsal registers in the brain much like a real experience — which is why imagination can reshape identity.",
+      },
+      {
+        id: "bh-29",
+        title: "Change Before It Happens",
+        content:
+          "Don't wait for circumstances to improve before you feel different. Adopt the thoughts and emotions of the new self now.",
+      },
+      {
+        id: "bh-30",
+        title: "Feel the Future in the Present",
+        content:
+          "Generate the elevated emotions of your desired future today. Emotionally living in that future, Dispenza says, helps draw it toward you.",
+      },
+      {
+        id: "bh-31",
+        title: "Gratitude as Already Received",
+        content:
+          "Gratitude is the emotion of having already received. Feeling thankful in advance signals body and mind that the new reality is here.",
+      },
+      {
+        id: "bh-32",
+        title: "Energy and Frequency",
+        content:
+          "Dispenza frames emotions as energy you broadcast. Shifting to elevated emotions changes the frequency you carry into the world.",
+      },
+      {
+        id: "bh-33",
+        title: "The Quantum Field of Possibility",
+        content:
+          "He draws on quantum ideas: a field of infinite possibility that consciousness can tap. Your focused, coherent state, he argues, selects from it.",
+      },
+      {
+        id: "bh-34",
+        title: "Become No One, No Thing, No Time",
+        content:
+          "In deep meditation, you dissolve identification with your name, body, and schedule. From this open state, new realities can form.",
+      },
+      {
+        id: "bh-35",
+        title: "Enter the Present Moment",
+        content:
+          "The generous present moment is where creation happens. Letting go of the known past and future frees you to become new.",
+      },
+      {
+        id: "bh-36",
+        title: "Overcome the Analytical Mind",
+        content:
+          "The busy analytical mind defends the old self. Meditation slows it so you can reach the subconscious where habits live.",
+      },
+      {
+        id: "bh-37",
+        title: "From Beta to Alpha and Theta",
+        content:
+          "Shifting from busy beta brainwaves into calmer alpha and theta states opens the door to reprogramming the subconscious.",
+      },
+      {
+        id: "bh-38",
+        title: "Meditation as Rewiring",
+        content:
+          "Dispenza's core practice is meditation — a structured tool to observe the old self, release it, and rehearse the new one.",
+      },
+      {
+        id: "bh-39",
+        title: "Observe Your Old Self",
+        content:
+          "Becoming aware of your automatic thoughts and reactions robs them of their control. Observation is the first step to freedom.",
+      },
+      {
+        id: "bh-40",
+        title: "Break the Emotional Bonds",
+        content:
+          "Consciously release the memorized emotions tying you to the past. Letting them go loosens the grip of the old identity.",
+      },
+      {
+        id: "bh-41",
+        title: "Reinvent a New Self",
+        content:
+          "Deliberately design who you want to become — the thoughts, feelings, and actions of the new personality — then rehearse it.",
+      },
+      {
+        id: "bh-42",
+        title: "Rehearse the New You",
+        content:
+          "Mentally live a day as the new self until it feels familiar. Practice makes the new identity the path of least resistance.",
+      },
+      {
+        id: "bh-43",
+        title: "Choose New Thoughts and Feelings",
+        content:
+          "Moment to moment, catch the old pattern and choose the new one instead. Change is thousands of small conscious choices.",
+      },
+      {
+        id: "bh-44",
+        title: "Consistency Rewrites Identity",
+        content:
+          "One inspired meditation won't hold; daily repetition does. Consistency is what turns a chosen new self into your natural state.",
+      },
+      {
+        id: "bh-45",
+        title: "Mind the Gap",
+        content:
+          "Notice the gap between who you are and who you want to be. Closing it, day by day, is the whole work of transformation.",
+      },
+      {
+        id: "bh-46",
+        title: "Live as the New Self",
+        content:
+          "Beyond meditation, carry the new state into daily life. The goal is to be the new person off the cushion, in the real world.",
+      },
+      {
+        id: "bh-47",
+        title: "Discomfort Means Growth",
+        content:
+          "Stepping out of the familiar old self feels uncomfortable and unfamiliar. Dispenza says that discomfort is the feeling of change working.",
+      },
+      {
+        id: "bh-48",
+        title: "Don't Wait to Feel Ready",
+        content:
+          "The old self will resist and make excuses. Act as the new self before it feels natural, and the feeling follows.",
+      },
+      {
+        id: "bh-49",
+        title: "Emotions Instruct the Genes",
+        content:
+          "Elevated emotions are presented as signals that can influence gene expression, aligning your biology with your new mind.",
+      },
+      {
+        id: "bh-50",
+        title: "Coherence of Heart and Mind",
+        content:
+          "Bringing heart and brain into a calm, ordered coherence strengthens focus and the ability to hold your new state.",
+      },
+      {
+        id: "bh-51",
+        title: "Reality Follows the Inner Shift",
+        content:
+          "Change the inner state consistently, and outer circumstances, Dispenza argues, begin to reflect the new you.",
+      },
+      {
+        id: "bh-52",
+        title: "Freedom From the Past",
+        content:
+          "Breaking the habit of being yourself is ultimately freedom — no longer a prisoner of old emotions, reactions, and limits.",
+      },
+      {
+        id: "bh-53",
+        title: "A Practice, Not a Quick Fix",
+        content:
+          "This is ongoing inner work, not an overnight switch. The reward is a self you consciously build rather than one you inherited.",
+      },
+      {
+        id: "bh-54",
+        title: "A Note of Balance",
+        content:
+          "The book mixes real neuroscience with bolder metaphysical claims. Take the practical parts — mindfulness, mental rehearsal, managing emotion — and hold the rest thoughtfully.",
+      },
+      {
+        id: "bh-55",
+        title: "Become Someone New",
+        content:
+          "The invitation is bold: stop being your old, automatic self and consciously create a new one. Change your inner state daily, and you change your life.",
+      },
+    ],
+  },
+
+  // You Are the Placebo — Dr. Joe Dispenza
+  "bk-135": {
+    bookId: "bk-135",
+    tagline: "Making your mind matter — the science of belief and self-healing",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "yp-1",
+        title: "You Are the Placebo",
+        content:
+          "Dispenza's thesis: the healing power credited to sugar pills actually comes from your own mind. If belief alone can heal, you can learn to be your own placebo.",
+      },
+      {
+        id: "yp-2",
+        title: "The Mind Shapes the Body",
+        content:
+          "Thoughts aren't just abstract — they trigger real chemistry. What you think and feel consistently, the book argues, shows up in your physiology.",
+      },
+      {
+        id: "yp-3",
+        title: "Belief Becomes Biology",
+        content:
+          "Expectation, meaning, and belief can change the body's biochemistry. The placebo effect is proof that conviction can alter health.",
+      },
+      {
+        id: "yp-4",
+        title: "The Placebo Effect Explained",
+        content:
+          "In trials, people given inert pills often improve simply because they believe they will. The belief, not the substance, produces the result.",
+      },
+      {
+        id: "yp-5",
+        title: "The Nocebo Effect",
+        content:
+          "Negative expectations work the same way in reverse. Believing something will harm you can produce real symptoms — thought turned toxic.",
+      },
+      {
+        id: "yp-6",
+        title: "Thoughts Can Make You Sick",
+        content:
+          "Chronic worry and negative thinking keep the body in stress chemistry. Over time, Dispenza argues, that can help make you ill.",
+      },
+      {
+        id: "yp-7",
+        title: "Stories of Spontaneous Healing",
+        content:
+          "The book gathers cases of people who recovered against the odds by profoundly changing their inner state. Their belief shifted their biology.",
+      },
+      {
+        id: "yp-8",
+        title: "The Power of Suggestion",
+        content:
+          "How suggestible you are shapes how strongly belief affects you. A mind open to a new possibility can accept a new physical reality.",
+      },
+      {
+        id: "yp-9",
+        title: "Conditioning the Body",
+        content:
+          "Repeated associations can train the body to respond automatically — much as Pavlov's dogs learned. Ritual and repetition deepen the placebo response.",
+      },
+      {
+        id: "yp-10",
+        title: "Meaning and Ritual Matter",
+        content:
+          "The more meaning and ceremony surround a treatment, the stronger its effect. Belief is amplified by intention and attention.",
+      },
+      {
+        id: "yp-11",
+        title: "Genes Are Not Your Destiny",
+        content:
+          "You are not simply doomed by your genes. Epigenetics shows that signals — including thoughts and emotions — influence which genes switch on or off.",
+      },
+      {
+        id: "yp-12",
+        title: "Epigenetics in Everyday Life",
+        content:
+          "Your environment and inner state send instructions to your genes. Change the signals, the book argues, and you can change gene expression.",
+      },
+      {
+        id: "yp-13",
+        title: "Your Thoughts Are an Environment",
+        content:
+          "Since genes respond to environment, and your thoughts create an inner environment, your mind becomes a force that shapes your body.",
+      },
+      {
+        id: "yp-14",
+        title: "Same Thoughts, Same Life",
+        content:
+          "If you think the same thoughts daily, you produce the same feelings and the same biology — and keep recreating the same reality.",
+      },
+      {
+        id: "yp-15",
+        title: "The Thought-Feeling Loop",
+        content:
+          "Thoughts create feelings, and feelings drive more of the same thoughts. This loop can quietly lock you into your past.",
+      },
+      {
+        id: "yp-16",
+        title: "Living by Past Emotions",
+        content:
+          "When you constantly relive old emotions, your body believes it's still living in yesterday. Memory keeps the past physically alive.",
+      },
+      {
+        id: "yp-17",
+        title: "Emotions Are Chemical Records",
+        content:
+          "Emotions are the chemical residue of past experiences. Replaying them re-doses your body with the chemistry of what already happened.",
+      },
+      {
+        id: "yp-18",
+        title: "Addicted to Familiar Feelings",
+        content:
+          "The body can become addicted to the chemicals of stress, worry, or guilt. We unconsciously recreate situations that feed the familiar feeling.",
+      },
+      {
+        id: "yp-19",
+        title: "The Body Becomes the Mind",
+        content:
+          "Repeat a mental state long enough and the body memorizes it, running it automatically. Changing requires reprogramming both.",
+      },
+      {
+        id: "yp-20",
+        title: "Survival Emotions Keep You Stuck",
+        content:
+          "Fear, anger, and anxiety are survival states meant for emergencies. Living in them chronically narrows your body toward disease.",
+      },
+      {
+        id: "yp-21",
+        title: "Stress and Disease",
+        content:
+          "Long-term stress hormones knock the body out of balance. Dispenza argues sustained survival chemistry is a doorway to illness.",
+      },
+      {
+        id: "yp-22",
+        title: "Elevated Emotions Heal",
+        content:
+          "Gratitude, love, and joy shift the body toward growth and repair. Cultivating elevated emotions is presented as a path to healing.",
+      },
+      {
+        id: "yp-23",
+        title: "Gratitude Before the Event",
+        content:
+          "Feeling grateful as if your wish has already come true signals the body that the desired future is now. Gratitude is the ultimate state of receiving.",
+      },
+      {
+        id: "yp-24",
+        title: "Feel the Future Now",
+        content:
+          "Emotionally rehearsing your desired future in the present, Dispenza claims, begins to make your biology match it.",
+      },
+      {
+        id: "yp-25",
+        title: "Mental Rehearsal Rewires the Brain",
+        content:
+          "Vividly imagining an action changes the brain much as doing it would. Mental rehearsal installs new neural circuits before the physical change.",
+      },
+      {
+        id: "yp-26",
+        title: "The Brain Can't Tell the Difference",
+        content:
+          "To the brain, a richly imagined experience can look like a real one. This is why focused inner rehearsal produces outer results.",
+      },
+      {
+        id: "yp-27",
+        title: "Change Before the Evidence",
+        content:
+          "Most people wait for proof before they feel better. Dispenza urges the opposite: feel and think as the new self first, and let reality catch up.",
+      },
+      {
+        id: "yp-28",
+        title: "Bigger Than Your Environment",
+        content:
+          "If your thoughts only react to your surroundings, your environment controls you. Thinking greater than your environment is the first act of change.",
+      },
+      {
+        id: "yp-29",
+        title: "Bigger Than Your Body",
+        content:
+          "When the body cries out for its familiar emotional fix, you must not obey. Rising above the body's demands is how you reprogram it.",
+      },
+      {
+        id: "yp-30",
+        title: "Bigger Than Time",
+        content:
+          "Stop living in the remembered past and predictable future. The power to change lives only in the present moment.",
+      },
+      {
+        id: "yp-31",
+        title: "The Present-Moment Sweet Spot",
+        content:
+          "Real transformation happens when you become fully present, free of past identity and future worry. There, new possibilities open.",
+      },
+      {
+        id: "yp-32",
+        title: "Meditation as the Tool",
+        content:
+          "Dispenza's method is meditation — a practice to move beyond the analytical mind and reprogram the subconscious.",
+      },
+      {
+        id: "yp-33",
+        title: "From Thinking to Being",
+        content:
+          "It isn't enough to think positively; you must embody the new state until it becomes who you are. Knowing must become being.",
+      },
+      {
+        id: "yp-34",
+        title: "Change Your State of Being",
+        content:
+          "Lasting change is a shift in your habitual state of being — the blend of thoughts and feelings you carry by default.",
+      },
+      {
+        id: "yp-35",
+        title: "Personality Creates Reality",
+        content:
+          "Your personality — how you think, act, and feel — creates your personal reality. To change your life, you change your personality.",
+      },
+      {
+        id: "yp-36",
+        title: "Unmemorize the Old Self",
+        content:
+          "Breaking free means letting go of the memorized emotions and identity that keep you the same person day after day.",
+      },
+      {
+        id: "yp-37",
+        title: "Prune and Sprout",
+        content:
+          "Old thought patterns prune away when unused, while new ones grow with practice. The brain physically reshapes around your new focus.",
+      },
+      {
+        id: "yp-38",
+        title: "Neuroplasticity",
+        content:
+          "The brain remains changeable throughout life. Repeated new thoughts and feelings literally rewire it toward the person you want to be.",
+      },
+      {
+        id: "yp-39",
+        title: "The Quantum Model of Mind",
+        content:
+          "Dispenza draws on quantum ideas to argue that consciousness participates in shaping reality, and that mind and matter are deeply linked.",
+      },
+      {
+        id: "yp-40",
+        title: "Coherence: Heart and Brain",
+        content:
+          "When heart and brain move into coherence — a calm, elevated, ordered state — the body's healing capacity is said to rise.",
+      },
+      {
+        id: "yp-41",
+        title: "Beyond the Analytical Mind",
+        content:
+          "The overthinking analytical mind guards the old self. Meditation quiets it so new programs can reach the subconscious.",
+      },
+      {
+        id: "yp-42",
+        title: "Rest in the Unknown",
+        content:
+          "Growth requires stepping out of the predictable known and into the unknown — the uncomfortable space where new outcomes become possible.",
+      },
+      {
+        id: "yp-43",
+        title: "Become the Placebo",
+        content:
+          "Rather than needing a pill to trigger belief, you can generate the healing belief directly. You become the placebo yourself.",
+      },
+      {
+        id: "yp-44",
+        title: "Belief Without the Pill",
+        content:
+          "Once you understand how belief heals, you no longer need an external object to carry it. Your own conviction does the work.",
+      },
+      {
+        id: "yp-45",
+        title: "Practice Makes It Permanent",
+        content:
+          "One inspired session isn't enough. Daily practice is what turns a new state of being into your automatic default.",
+      },
+      {
+        id: "yp-46",
+        title: "Emotions Signal the Genes",
+        content:
+          "Elevated emotions are presented as instructions telling healthier genes to switch on. Feeling well, the book claims, helps the body become well.",
+      },
+      {
+        id: "yp-47",
+        title: "Break the Habit of Reaction",
+        content:
+          "Stop reacting automatically to life with the same old emotions. Choosing your inner state is where personal power begins.",
+      },
+      {
+        id: "yp-48",
+        title: "The Placebo Is Everywhere",
+        content:
+          "Belief shapes far more than medicine — it colors performance, relationships, and mood. Managing your expectations manages your life.",
+      },
+      {
+        id: "yp-49",
+        title: "Meaning Heals",
+        content:
+          "A strong sense of meaning and purpose supports both mind and body. Believing your life matters is itself protective.",
+      },
+      {
+        id: "yp-50",
+        title: "Mind Over Matter, Practically",
+        content:
+          "The book turns 'mind over matter' from a slogan into a practice: think, feel, and rehearse deliberately, and observe the changes.",
+      },
+      {
+        id: "yp-51",
+        title: "You Are Not Fixed",
+        content:
+          "Your health, mood, and identity are more changeable than you were taught. That flexibility is the ground of hope.",
+      },
+      {
+        id: "yp-52",
+        title: "The Daily Meditation Habit",
+        content:
+          "Dispenza recommends a consistent meditation practice to enter the calm, present state where reprogramming happens.",
+      },
+      {
+        id: "yp-53",
+        title: "A Note of Balance",
+        content:
+          "These ideas blend genuine placebo science with bolder claims. Treat them as inspiration to harness belief and reduce stress — not as a replacement for medical care.",
+      },
+      {
+        id: "yp-54",
+        title: "You Are the Healer",
+        content:
+          "The book's empowering message: your mind is a powerful ally in your wellbeing. Cultivate belief, gratitude, and presence, and you become your own medicine.",
+      },
+    ],
+  },
+
   // The 5 AM Club — Robin Sharma
   "bk-540": {
     bookId: "bk-540",

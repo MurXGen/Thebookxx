@@ -17,6 +17,9 @@ import {
   Volume2,
   Square,
   RotateCcw,
+  Moon,
+  Sun,
+  Headphones,
   X,
 } from "lucide-react";
 import { getQuickRead, QUICKREAD_FREE_FRAMES, QUICKREAD_PRICE } from "@/data/quickreads";
@@ -57,6 +60,10 @@ export default function QuickReadsReader({
   const [showSaved, setShowSaved] = useState(false);
   const [showCheckout, setShowCheckout] = useState(false);
   const [speaking, setSpeaking] = useState(false);
+  const [autoPlay, setAutoPlay] = useState(false);
+  const autoPlayRef = useRef(false);
+  const movedRef = useRef(false); // true after a drag, to suppress the tap
+  const [dark, setDark] = useState(false);
   const [mounted, setMounted] = useState(false);
   const validatingRef = useRef(false);
   const voicesRef = useRef([]);
@@ -277,7 +284,33 @@ export default function QuickReadsReader({
       .trim();
   };
 
-  // Read the current frame aloud (Web Speech API). Tap again to stop.
+  // Low-level: speak a string with the chosen voice; onEnd fires when done.
+  const speakText = (text, onEnd) => {
+    if (typeof window === "undefined" || !window.speechSynthesis) return false;
+    const utter = new SpeechSynthesisUtterance(text);
+    const voice = pickFemaleVoice();
+    if (voice) utter.voice = voice;
+    utter.lang = voice?.lang || "en-US";
+    utter.rate = 0.95; // a touch slower = clearer
+    utter.pitch = 1.25; // slightly higher = softer, cuter
+    utter.volume = 1;
+    utter.onend = () => onEnd && onEnd();
+    utter.onerror = () => onEnd && onEnd();
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utter);
+    return true;
+  };
+
+  const stopAllSpeech = () => {
+    if (typeof window !== "undefined" && window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
+    autoPlayRef.current = false;
+    setAutoPlay(false);
+    setSpeaking(false);
+  };
+
+  // Read ONLY the current frame aloud. Tap again to stop.
   const handleSpeak = () => {
     if (typeof window === "undefined" || !window.speechSynthesis) {
       showToast("Text-to-speech isn't supported on this device.", "info");
@@ -287,25 +320,49 @@ export default function QuickReadsReader({
       handleUnlockAttempt();
       return;
     }
-    if (speaking) {
-      window.speechSynthesis.cancel();
-      setSpeaking(false);
+    if (speaking || autoPlay) {
+      stopAllSpeech();
       return;
     }
     if (!current) return;
-    const utter = new SpeechSynthesisUtterance(speechText(current));
-    const voice = pickFemaleVoice();
-    if (voice) utter.voice = voice;
-    utter.lang = voice?.lang || "en-US";
-    utter.rate = 0.95; // a touch slower = clearer
-    utter.pitch = 1.25; // slightly higher = softer, cuter
-    utter.volume = 1;
-    utter.onend = () => setSpeaking(false);
-    utter.onerror = () => setSpeaking(false);
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(utter);
     setSpeaking(true);
+    speakText(speechText(current), () => setSpeaking(false));
   };
+
+  // Play every frame back-to-back, auto-advancing until the paywall / last frame.
+  const toggleAutoPlay = () => {
+    if (typeof window === "undefined" || !window.speechSynthesis) {
+      showToast("Text-to-speech isn't supported on this device.", "info");
+      return;
+    }
+    if (isLockedFrame) {
+      handleUnlockAttempt();
+      return;
+    }
+    if (autoPlayRef.current) {
+      stopAllSpeech();
+      return;
+    }
+    autoPlayRef.current = true;
+    setAutoPlay(true);
+  };
+
+  const toggleDark = () => {
+    setDark((d) => {
+      const next = !d;
+      try {
+        localStorage.setItem("qr_dark", next ? "1" : "0");
+      } catch {}
+      return next;
+    });
+  };
+
+  // Restore the saved dark-mode preference on open.
+  useEffect(() => {
+    try {
+      setDark(localStorage.getItem("qr_dark") === "1");
+    } catch {}
+  }, []);
 
   // Stop any narration when the frame changes, and remember reading progress.
   useEffect(() => {
@@ -317,8 +374,30 @@ export default function QuickReadsReader({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index]);
 
+  // Drive auto-play: speak the current frame, then advance when it finishes.
+  useEffect(() => {
+    if (!autoPlay) return;
+    if (!current || isLockedFrame) {
+      stopAllSpeech();
+      return;
+    }
+    setSpeaking(true);
+    speakText(speechText(current), () => {
+      setSpeaking(false);
+      if (!autoPlayRef.current) return;
+      if (index < total - 1 && !locked(index + 1)) {
+        go(index + 1);
+      } else {
+        autoPlayRef.current = false;
+        setAutoPlay(false);
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [index, autoPlay]);
+
   useEffect(() => {
     return () => {
+      autoPlayRef.current = false;
       if (typeof window !== "undefined" && window.speechSynthesis) {
         window.speechSynthesis.cancel();
       }
@@ -339,10 +418,11 @@ export default function QuickReadsReader({
 
   if (!book || !data) return null;
 
+  // Quick, clean horizontal slide in/out — no tilt, no bounce.
   const variants = {
-    enter: (d) => ({ x: d > 0 ? 60 : -60, opacity: 0, scale: 0.96 }),
-    center: { x: 0, opacity: 1, scale: 1 },
-    exit: (d) => ({ x: d > 0 ? -60 : 60, opacity: 0, scale: 0.96 }),
+    enter: (d) => ({ x: d > 0 ? 70 : -70, opacity: 0 }),
+    center: { x: 0, opacity: 1 },
+    exit: (d) => ({ x: d > 0 ? -70 : 70, opacity: 0 }),
   };
 
   if (!mounted) return null;
@@ -350,7 +430,7 @@ export default function QuickReadsReader({
   return createPortal(
     <>
     <motion.div
-      className="qr-overlay"
+      className={`qr-overlay${dark ? " qr-dark" : ""}`}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -380,6 +460,22 @@ export default function QuickReadsReader({
             )}
           </div>
           <div className="qr-head-actions">
+            <button
+              className={`qr-icon-btn${autoPlay ? " on" : ""}`}
+              onClick={toggleAutoPlay}
+              aria-label={autoPlay ? "Stop listening" : "Listen to all insights"}
+              title={autoPlay ? "Stop" : "Listen to all"}
+            >
+              {autoPlay ? <Square size={16} /> : <Headphones size={18} />}
+            </button>
+            <button
+              className="qr-icon-btn"
+              onClick={toggleDark}
+              aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+              title={dark ? "Light mode" : "Dark mode"}
+            >
+              {dark ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
             <button className="qr-icon-btn" onClick={handleShare} aria-label="Share">
               <Share2 size={18} />
             </button>
@@ -407,13 +503,30 @@ export default function QuickReadsReader({
               initial="enter"
               animate="center"
               exit="exit"
-              transition={{ duration: 0.28, ease: [0.22, 0.61, 0.36, 1] }}
+              transition={{ duration: 0.18, ease: "easeOut" }}
               drag="x"
               dragConstraints={{ left: 0, right: 0 }}
               dragElastic={0.18}
+              onDragStart={() => {
+                movedRef.current = false;
+              }}
+              onDrag={(e, info) => {
+                if (Math.abs(info.offset.x) > 6) movedRef.current = true;
+              }}
               onDragEnd={(e, info) => {
                 if (info.offset.x < -60) go(index + 1);
                 else if (info.offset.x > 60) go(index - 1);
+              }}
+              onClick={(e) => {
+                // Ignore the click that follows a drag/swipe.
+                if (movedRef.current) {
+                  movedRef.current = false;
+                  return;
+                }
+                const rect = e.currentTarget.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                if (x < rect.width / 2) go(index - 1);
+                else go(index + 1);
               }}
             >
               <span className="qr-card-kicker">

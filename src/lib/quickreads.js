@@ -27,6 +27,12 @@ export const QR_PUB_CSV_URL =
 // Spreadsheet ID (fallback approval read via gviz, if the CSV ever fails).
 export const QR_SHEET_ID = "1k0_wc0iziyWNpmuebhhz7PNOqcOD86VFHAS-3J6M52M";
 export const QR_SHEET_NAME = "Form responses 1";
+// Live read endpoint. Unlike the published CSV (pub?output=csv), which Google
+// can cache for several minutes, the gviz endpoint reflects edits/deletions in
+// the sheet almost immediately — so removing a row/status RE-LOCKS on reload.
+export const QR_GVIZ_CSV_URL = `https://docs.google.com/spreadsheets/d/${QR_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(
+  QR_SHEET_NAME,
+)}`;
 // Column headers (trailing spaces in the sheet are trimmed on read).
 export const QR_PAYMENT_HEADER = "Payment Status";
 export const QR_APPROVAL_HEADER = "Approval Status";
@@ -415,16 +421,33 @@ function isPaymentVerified(value) {
   return v.includes("paid") || v.includes("verified") || v.includes("success");
 }
 
+// Read the responses sheet as CSV. Tries the LIVE gviz endpoint first (reflects
+// deletions/edits almost immediately) and falls back to the published CSV
+// (heavily cached by Google) only if the live read fails. This is what makes
+// removing a Timestamp/Status in the sheet actually re-lock access on reload.
+async function fetchSheetCsv() {
+  const bust = `&_=${Date.now()}`;
+  try {
+    const res = await fetch(`${QR_GVIZ_CSV_URL}${bust}`, { cache: "no-store" });
+    if (res.ok) {
+      const text = await res.text();
+      // gviz returns real CSV for public sheets; guard against an HTML error page.
+      if (text && text.trim() && !/^\s*</.test(text)) return text;
+    }
+  } catch {
+    /* fall through to the published CSV */
+  }
+  const res = await fetch(`${QR_PUB_CSV_URL}${bust}`, { cache: "no-store" });
+  return res.text();
+}
+
 // Return every bookId this phone has a VERIFIED QuickReads order for
 // (payment verified or approval column approved). Cross-device, reads the sheet.
 export async function getVerifiedBookIdsForPhone(phone) {
   const digits = String(phone || "").replace(/\D/g, "").slice(-10);
   if (digits.length < 10) return [];
   try {
-    const res = await fetch(`${QR_PUB_CSV_URL}&_=${Date.now()}`, {
-      cache: "no-store",
-    });
-    const text = await res.text();
+    const text = await fetchSheetCsv();
     const rows = parseCsv(text);
     if (!rows.length) return [];
     const headers = rows[0].map((h) => String(h || "").trim());
@@ -518,10 +541,7 @@ export async function checkSubscription(phone) {
   const digits = String(phone || "").replace(/\D/g, "").slice(-10);
   if (digits.length < 10) return { active: false };
   try {
-    const res = await fetch(`${QR_PUB_CSV_URL}&_=${Date.now()}`, {
-      cache: "no-store",
-    });
-    const text = await res.text();
+    const text = await fetchSheetCsv();
     const rows = parseCsv(text);
     if (!rows.length) return { active: false };
     const headers = rows[0].map((h) => String(h || "").trim());
@@ -557,6 +577,9 @@ export async function checkSubscription(phone) {
       setLocalSubscription(best.plan, best.expiresAt);
       return { active: true, ...best };
     }
+    // Successful read, but no valid subscription row → drop any stale local
+    // subscription so a deleted/expired sheet row can't keep unlocking.
+    clearLocalSubscription();
     return { active: false };
   } catch (e) {
     console.error("QuickReads subscription check failed:", e);
@@ -587,11 +610,8 @@ export async function checkApproval(phone, bookId) {
   const digits = String(phone || "").replace(/\D/g, "").slice(-10);
   if (digits.length < 10 || !bookId) return "none";
   try {
-    // Cache-bust so we read the latest state as soon as the sheet updates.
-    const res = await fetch(`${QR_PUB_CSV_URL}&_=${Date.now()}`, {
-      cache: "no-store",
-    });
-    const text = await res.text();
+    // Live read so we see the latest state as soon as the sheet updates.
+    const text = await fetchSheetCsv();
     const rows = parseCsv(text);
     if (!rows.length) return "none";
     const headers = rows[0].map((h) => String(h || "").trim());

@@ -1011,23 +1011,6 @@ export default function BookDetailsModal({ book }) {
                 </div>
               </div>
 
-              {/* ===== QuickReads CTA — full-width, below the price ===== */}
-              {bookHasQuickRead && (
-                <button
-                  type="button"
-                  className="bd-qr-cta"
-                  onClick={() => setShowQR(true)}
-                >
-                  <span className="bd-qr-badge">
-                    <Zap size={12} /> QuickReads
-                  </span>
-                  <span className="bd-qr-cta-text">
-                    Short on time? Read the key insights in minutes
-                  </span>
-                  <ArrowRight size={16} className="bd-qr-arrow" />
-                </button>
-              )}
-
               {/* ===== QuickReads add-on — bundle it with the book ===== */}
               {bookHasQuickRead && (
                 <div
@@ -1047,27 +1030,36 @@ export default function BookDetailsModal({ book }) {
                   </div>
                   <div className="bd-qr-addon-right">
                     <span className="bd-qr-addon-price">+₹{QUICKREAD_PRICE}</span>
-                    <button
-                      type="button"
-                      className={`bd-qr-addon-btn${
-                        isInQrCart(book.id) ? " on" : ""
-                      }`}
-                      onClick={() =>
-                        isInQrCart(book.id)
-                          ? removeQuickRead(book.id)
-                          : addQuickRead(book.id)
-                      }
-                    >
-                      {isInQrCart(book.id) ? (
-                        <>
-                          <Check size={14} /> Added
-                        </>
-                      ) : (
-                        <>
-                          <Plus size={14} /> Add
-                        </>
-                      )}
-                    </button>
+                    <div className="bd-qr-addon-actions">
+                      <button
+                        type="button"
+                        className="bd-qr-addon-read"
+                        onClick={() => setShowQR(true)}
+                      >
+                        <BookOpen size={14} /> Read
+                      </button>
+                      <button
+                        type="button"
+                        className={`bd-qr-addon-btn${
+                          isInQrCart(book.id) ? " on" : ""
+                        }`}
+                        onClick={() =>
+                          isInQrCart(book.id)
+                            ? removeQuickRead(book.id)
+                            : addQuickRead(book.id)
+                        }
+                      >
+                        {isInQrCart(book.id) ? (
+                          <>
+                            <Check size={14} /> Added
+                          </>
+                        ) : (
+                          <>
+                            <Plus size={14} /> Add
+                          </>
+                        )}
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}

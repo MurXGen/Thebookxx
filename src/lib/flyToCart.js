@@ -3,7 +3,7 @@
 import { gsap } from "gsap";
 
 // Master toggle — set to true to re-enable the book fly-over on add-to-cart.
-export const FLY_TO_CART_ENABLED = false;
+export const FLY_TO_CART_ENABLED = true;
 
 const TARGET_SELECTOR = "#cart-fly-target";
 

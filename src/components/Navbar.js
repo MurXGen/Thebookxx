@@ -66,7 +66,26 @@ export default function Navbar() {
   const [index, setIndex] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [navHidden, setNavHidden] = useState(false);
   const { cart, qrCart } = useStore();
+
+  // Hide the navbar when scrolling down, reveal it when scrolling up / at top.
+  useEffect(() => {
+    let last = typeof window !== "undefined" ? window.scrollY : 0;
+    const onScroll = () => {
+      const y = window.scrollY;
+      if (y < 12) {
+        setNavHidden(false);
+      } else if (y > last + 6) {
+        setNavHidden(true);
+      } else if (y < last - 6) {
+        setNavHidden(false);
+      }
+      last = y;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
   const cartCount =
     cart.reduce((sum, i) => sum + (i.qty || 1), 0) + (qrCart?.length || 0);
 
@@ -93,7 +112,7 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="navbar-wrapper">
+      <header className={`navbar-wrapper${navHidden ? " nav-hidden" : ""}`}>
         {/* <div className="flex flex-row justify-between">
           <div className="mobile-offer-strip width100">
             

@@ -703,11 +703,7 @@ export default function AddressModal({
       showToast(validationMessage(), "error");
       return;
     }
-    if (artBook && !hasArtInCart) {
-      setPendingMethod(method);
-      setShowUpsell(true);
-      return;
-    }
+    // The Art of Clarity checkout upsell is disabled — go straight to payment.
     paymentHandlersRef.current[method]?.();
   };
 
@@ -840,9 +836,7 @@ export default function AddressModal({
       .trim();
     if (a !== address) setAddress(a);
   };
-  // Require house/flat + area address + city for a strong, deliverable address.
-  const isAddressValid = () =>
-    Boolean(city && flatNo.trim() && address.trim());
+  const isAddressValid = () => Boolean(city && address.trim());
   const isFormValid = () =>
     Boolean(name && phone.length === 10 && isAddressValid());
 
@@ -886,93 +880,55 @@ export default function AddressModal({
                 </span>
               </div>
 
-              {/* Pincode + City / District in one row */}
-              <div className="flex flex-row justify-between gap-12">
-                <div className="input-group">
-                  <label className="flex flex-row gap-4 flex-center items-center">
-                    <MapPin size={14} />
-                    Pincode
-                  </label>
-                  <input
-                    className={`sec-mid-btn width100 ${!isValidPincode && pincode ? "error-border" : ""}`}
-                    placeholder="6 digit pincode"
-                    value={pincode}
-                    maxLength={6}
-                    onChange={handlePincodeChange}
-                    inputMode="numeric"
-                  />
-                  {isFetchingLocation && (
-                    <span className="addr-hint">Fetching location…</span>
-                  )}
-                </div>
-
-                <div className="input-group">
-                  <label>City / District</label>
-                  <input
-                    list="cities"
-                    className="sec-mid-btn width100"
-                    placeholder="Your city"
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
-                  />
-                  <datalist id="cities">
-                    {CITIES.map((c) => (
-                      <option key={c} value={c} />
-                    ))}
-                  </datalist>
-                  {city.trim().toLowerCase() === "mumbai" && (
-                    <span className="mumbai-fast-note">
-                      <Zap size={12} /> 1–2 day delivery
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              {/* Flat / House No + Building / Society, Street in one row */}
-              <div className="flex flex-row justify-between gap-12">
-                <div className="input-group">
-                  <label>
-                    Flat / House No <span className="red">*</span>
-                  </label>
-                  <input
-                    className="sec-mid-btn width100"
-                    placeholder="e.g. A-304 / 12"
-                    value={flatNo}
-                    onChange={(e) => setFlatNo(e.target.value)}
-                  />
-                </div>
-                <div className="input-group">
-                  <label>Building / Society, Street</label>
-                  <input
-                    className="sec-mid-btn width100"
-                    placeholder="e.g. Shanti Residency, MG Rd"
-                    value={building}
-                    onChange={(e) => setBuilding(e.target.value)}
-                  />
-                </div>
+              <div className="input-group">
+                <label className="flex flex-row gap-4 flex-center items-center">
+                  <MapPin size={14} />
+                  Pincode
+                </label>
+                <input
+                  className={`sec-mid-btn width100 ${!isValidPincode && pincode ? "error-border" : ""}`}
+                  placeholder="Enter 6 digit pincode"
+                  value={pincode}
+                  maxLength={6}
+                  onChange={handlePincodeChange}
+                  inputMode="numeric"
+                />
+                {isFetchingLocation && (
+                  <span className="addr-hint">Fetching location…</span>
+                )}
               </div>
 
               <div className="input-group">
-                <label>Landmark</label>
+                <label>City / District</label>
                 <input
+                  list="cities"
                   className="sec-mid-btn width100"
-                  placeholder="e.g. Near Apollo Pharmacy"
-                  value={landmark}
-                  onChange={(e) => setLandmark(e.target.value)}
+                  placeholder="Enter your city"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
                 />
+                <datalist id="cities">
+                  {CITIES.map((c) => (
+                    <option key={c} value={c} />
+                  ))}
+                </datalist>
+                {city.trim().toLowerCase() === "mumbai" && (
+                  <span className="mumbai-fast-note">
+                    <Zap size={12} /> Orders within Mumbai delivered in 1–2 days
+                  </span>
+                )}
               </div>
 
               <div className="input-group">
                 <label>
-                  Address (area, locality) <span className="red">*</span>
+                  Full Address <span className="red">*</span>
                 </label>
                 <textarea
                   className="sec-mid-btn textarea"
-                  placeholder="Area, locality, any extra directions…"
+                  placeholder="House no, building, street, area, landmark…"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
-                  onBlur={dedupeAddress}
-                  rows={2}
+                  rows={3}
                 />
               </div>
 
@@ -1068,35 +1024,36 @@ export default function AddressModal({
               </div>
 
               {showContactFields && (
-                <div className="pay-row">
-                  <LoadingButton
-                    className={`pay-btn pay-upi${isFormValid() ? "" : " pay-dim"}`}
-                    onClick={() => attemptPayment("UPI")}
-                  >
-                    <span className="pay-badge">No extra charges</span>
-                    <span className="pay-inner">
-                      <QrCode size={22} />
-                      <span className="pay-btn-label">Pay with UPI</span>
-                    </span>
-                  </LoadingButton>
+                <div className="flex flex-col gap-12 items-start mt-16">
+                  <div className="flex flex-row gap-12">
+                    <LoadingButton
+                      className="pri-big-btn width100 flex flex-col"
+                      onClick={() => attemptPayment("UPI")}
+                    >
+                      <p className="weight-600">Pay with UPI</p>
+                      <span className="font-10">No extra charges</span>
+                    </LoadingButton>
+
+                    <LoadingButton
+                      className="sec-big-btn width100 flex flex-col"
+                      onClick={() => attemptPayment("COD")}
+                    >
+                      <p className="weight-600">Cash on Delivery</p>
+                      <span className="font-10">Pay at your doorstep</span>
+                    </LoadingButton>
+                  </div>
 
                   <LoadingButton
-                    className={`pay-btn pay-cod${isFormValid() ? "" : " pay-dim"}`}
-                    onClick={() => attemptPayment("COD")}
-                  >
-                    <span className="pay-badge">Pay at doorstep</span>
-                    <span className="pay-inner">
-                      <Banknote size={22} />
-                      <span className="pay-btn-label">Cash on Delivery</span>
-                    </span>
-                  </LoadingButton>
-
-                  <LoadingButton
-                    className={`pay-btn pay-wa${isFormValid() ? "" : " pay-dim"}`}
+                    className="sec-big-btn width100"
                     onClick={() => attemptPayment("WhatsApp")}
-                    aria-label="Order on WhatsApp"
                   >
-                    <FaWhatsapp size={26} color="#25D366" />
+                    <div className="flex flex-row gap-12 items-center">
+                      <FaWhatsapp size={30} color="#25D366" />
+                      <div className="flex flex-col items-start">
+                        <p className="weight-600">WhatsApp</p>
+                        <span className="font-10">Chat &amp; order</span>
+                      </div>
+                    </div>
                   </LoadingButton>
                 </div>
               )}
@@ -1104,7 +1061,7 @@ export default function AddressModal({
               {!isAddressValid() && (
                 <div className="addr-warn addr-warn-orange">
                   <AlertCircle size={13} />
-                  <span>Add flat/house no, area address & city to proceed</span>
+                  <span>Fill your city and full address to proceed</span>
                 </div>
               )}
 

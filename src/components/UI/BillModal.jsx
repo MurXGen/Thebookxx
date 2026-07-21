@@ -184,12 +184,9 @@ export default function BillModal({
         {quickReadItems.length > 0 && (
           <>
             <div className="dashed-border my-12"></div>
-            <div
-              className="bill-row"
-              style={{ fontWeight: 600, color: "var(--tertiary, #fb8500)" }}
-            >
+            <div className="bill-row" style={{ fontWeight: 600 }}>
               <span className="flex items-center gap-4">
-                ⚡ QuickReads ({quickReadItems.length})
+                QuickReads ({quickReadItems.length})
               </span>
               <span>₹{qrTotal}</span>
             </div>

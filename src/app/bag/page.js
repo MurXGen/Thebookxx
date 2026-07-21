@@ -21,7 +21,7 @@ import {
   notifyQuickReadTelegram,
 } from "@/lib/quickreads";
 import { QUICKREAD_PRICE, quickReadFrameCount } from "@/data/quickreads";
-import { Zap, BookOpen, Trash2 } from "lucide-react";
+import { Zap, BookOpen, Trash2, Minus, Plus } from "lucide-react";
 import { useStore } from "@/context/StoreContext";
 import { showToast } from "@/context/ToastContext";
 import { books } from "@/utils/book";
@@ -888,226 +888,92 @@ _Thank you for shopping with TheBookX! 📚✨_
         }
       />
 
-      {(qrItems.length > 0 || libraryBooks.length > 0) && (
-        <div className="bag-tabs">
-          <button
-            type="button"
-            className={`bag-tab${activeBagTab === "books" ? " active" : ""}`}
-            onClick={() => setBagTab("books")}
-          >
-            <BookOpen size={15} /> Books
-            {cartBooks.length > 0 && (
-              <span className="bag-tab-count">{cartBooks.length}</span>
-            )}
-          </button>
-          <button
-            type="button"
-            className={`bag-tab${activeBagTab === "quickreads" ? " active" : ""}`}
-            onClick={() => setBagTab("quickreads")}
-          >
-            <Zap size={15} /> QuickReads
-            {qrItems.length > 0 && (
-              <span className="bag-tab-count">{qrItems.length}</span>
-            )}
-          </button>
-        </div>
-      )}
 
-      {activeBagTab === "quickreads" && (
-        <>
-          {qrItems.length === 0 && libraryBooks.length === 0 ? (
-            <div className="bag-empty-tab qr-blank">
-              <span className="qr-blank-ic">
-                <Zap size={26} />
-              </span>
-              <h3 className="font-16 weight-700">No QuickReads yet</h3>
-              <p className="font-14 dark-50">
-                Big ideas from great books — read the key insights in minutes.
-              </p>
-              <Link href="/quickreads" className="pri-big-btn">
-                Explore QuickReads
-              </Link>
-            </div>
-          ) : (
-            <>
-              {/* In your bag (added, not yet purchased) */}
-              {qrItems.length > 0 && (
-                <div className="qr-bag-block">
-                  <div className="qr-bag-block-head">
-                    <span className="qr-bag-block-title">
-                      <Zap size={14} /> In your bag
-                    </span>
-                    <span className="qr-bag-block-count">{qrItems.length}</span>
-                  </div>
-                  <div className="cart-items-panel">
-                    <div className="cart-items-list">
-                      {qrItems.map((b) => (
-                        <div key={b.id} className="cart-row cart-row-qr">
-                          <div className="cart-row-cover">
-                            <img
-                              src={b.image}
-                              alt={b.name}
-                              className="cart-row-img"
-                              style={{ width: "100%", height: "100%" }}
-                            />
-                          </div>
-                          <div className="cart-row-body">
-                            <div className="cart-row-info">
-                              <span className="cart-row-title">{b.name}</span>
-                              <span
-                                className="cart-row-cat"
-                                style={{
-                                  display: "inline-flex",
-                                  alignItems: "center",
-                                  gap: 4,
-                                }}
-                              >
-                                <Zap size={12} /> QuickReads
-                              </span>
-                            </div>
-                            <div className="cart-row-aside">
-                              <div className="cart-row-aside-price">
-                                <span className="cart-row-aside-now">
-                                  ₹{QUICKREAD_PRICE}
-                                </span>
-                              </div>
-                              <button
-                                type="button"
-                                className="cart-row-remove"
-                                onClick={() => removeQuickRead(b.id)}
-                                aria-label={`Remove ${b.name}`}
-                              >
-                                <Trash2 size={14} /> Remove
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Your QuickReads (purchased / unlocked on this device) */}
-              {libraryBooks.length > 0 && (
-                <div className="qr-bag-block">
-                  <div className="qr-bag-block-head">
-                    <span className="qr-bag-block-title">
-                      <Sparkles size={14} /> Your QuickReads
-                    </span>
-                    <span className="qr-bag-block-count">
-                      {libraryBooks.length}
-                    </span>
-                  </div>
-                  <div className="qr-library-list">
-                    {libraryBooks.map((b) => (
-                      <div key={b.id} className="qr-lib-card">
-                        <div className="cart-row-cover">
-                          <img
-                            src={b.image}
-                            alt={b.name}
-                            className="cart-row-img"
-                            style={{ width: "100%", height: "100%" }}
-                          />
-                        </div>
-                        <div className="qr-lib-body">
-                          <span className="cart-row-title">{b.name}</span>
-                          <span className="qr-lib-meta">
-                            {quickReadFrameCount(b.id)} insights · Unlocked
-                          </span>
-                        </div>
-                        <button
-                          type="button"
-                          className="qr-lib-read"
-                          onClick={() => setOpenReaderBook(b)}
-                        >
-                          <BookOpen size={15} /> Read
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </>
-          )}
-
-          {qrItems.length > 0 && cartBooks.length > 0 && (
-            <div className="fixed-bill-bar flex flex-col">
-              <div className="flex flex-row justify-between width100 items-center">
-                <div className="bill-left">
-                  <span className="font-12 dark-50">
-                    Billed with your books
-                  </span>
-                  <div className="flex flex-col">
-                    <div className="flex flex-row gap-8 items-center">
-                      <span className="font-16 weight-600 discounted">
-                        ₹{qrTotal}
-                      </span>
-                    </div>
-                    <span className="font-14 weight-600 flex items-center gap-4" style={{ color: "var(--tertiary, #fb8500)" }}>
-                      <Zap size={12} /> Added to your book order
-                    </span>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  className="pri-big-btn"
-                  onClick={() => setBagTab("books")}
-                >
-                  Go to checkout
-                </button>
-              </div>
-            </div>
-          )}
-
-          {qrItems.length > 0 && cartBooks.length === 0 && (
-            <div className="fixed-bill-bar flex flex-col">
-              <div className="flex flex-row justify-between width100 items-center">
-                <div className="bill-left">
-                  <span className="font-12 dark-50">Total payable</span>
-                  <div className="flex flex-col">
-                    <div className="flex flex-row gap-8 items-center">
-                      <span className="font-16 weight-600 discounted">
-                        ₹{qrTotal}
-                      </span>
-                    </div>
-                    <span className="font-14 green weight-600">
-                      {qrItems.length} QuickRead
-                      {qrItems.length > 1 ? "s" : ""}
-                    </span>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  className="pri-big-btn"
-                  onClick={() => setShowQrCheckout(true)}
-                >
-                  Checkout QuickReads
-                </button>
-              </div>
-            </div>
-          )}
-        </>
-      )}
-
-      {activeBagTab === "books" && cartBooks.length === 0 && (
+      {cartBooks.length === 0 && qrItems.length === 0 && (
         <div className="bag-empty-tab">
           <BookOpen size={30} />
-          <p className="font-14 dark-50">No books in your cart yet.</p>
+          <p className="font-14 dark-50">Your bag is empty.</p>
           <Link href="/books" className="pri-big-btn">
             Browse books
           </Link>
         </div>
       )}
 
-      {activeBagTab === "books" && cartBooks.length > 0 && (
+      {(cartBooks.length > 0 || qrItems.length > 0) && (
       <>
-      <CartOfferStrip discountedAmount={totalDiscounted} />
+      {cartBooks.length > 0 && (
+        <CartOfferStrip discountedAmount={totalDiscounted} />
+      )}
 
       <div className="cart-items-panel">
         <div className="cart-items-list">
           {cartBooks.map((book) => (
             <CartItemRow key={book.id} book={book} />
+          ))}
+          {qrItems.map((b) => (
+            <div key={b.id} className="cart-row cart-row-qr">
+              <Link
+                href="/quickreads"
+                className="cart-row-cover"
+                aria-label={`${b.name} — QuickRead`}
+              >
+                <img
+                  src={b.image}
+                  alt={b.name}
+                  className="cart-row-img"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  }}
+                />
+              </Link>
+              <div className="cart-row-body">
+                <div className="cart-row-info">
+                  <Link href="/quickreads" className="cart-row-title">
+                    {b.name}
+                  </Link>
+                  <Link href="/quickreads" className="cart-row-cat">
+                    QuickReads
+                  </Link>
+
+                  <div
+                    className="cart-stepper"
+                    role="group"
+                    aria-label="Quantity"
+                  >
+                    <button
+                      type="button"
+                      className="cart-step-btn cart-step-minus"
+                      onClick={() => removeQuickRead(b.id)}
+                      aria-label={`Remove ${b.name}`}
+                    >
+                      <Minus size={16} />
+                    </button>
+                    <span className="cart-step-qty">1</span>
+                    <button
+                      type="button"
+                      className="cart-step-btn cart-step-plus"
+                      aria-disabled="true"
+                      onClick={() =>
+                        showToast("One copy per QuickRead is enough", "info")
+                      }
+                      aria-label="Only one QuickRead copy allowed"
+                    >
+                      <Plus size={16} />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="cart-row-aside">
+                  <div className="cart-row-aside-price">
+                    <span className="cart-row-aside-now">
+                      ₹{QUICKREAD_PRICE}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
           ))}
         </div>
       </div>
@@ -1173,6 +1039,7 @@ _Thank you for shopping with TheBookX! 📚✨_
         </div>
       )}
 
+      {cartBooks.length > 0 ? (
       <div className="fixed-bill-bar flex flex-col">
         <div className="flex flex-row justify-between width100 items-center">
           <div className="bill-left">
@@ -1191,12 +1058,6 @@ _Thank you for shopping with TheBookX! 📚✨_
 
               {appliedOffer && (
                 <span className="font-14 green weight-600">{offerLabel}</span>
-              )}
-              {hasBundledQr && (
-                <span className="font-12 weight-600 flex items-center gap-4" style={{ color: "var(--tertiary, #fb8500)" }}>
-                  <Zap size={11} /> incl. {qrItems.length} QuickRead
-                  {qrItems.length > 1 ? "s" : ""} · ₹{bundledQrTotal}
-                </span>
               )}
             </div>
 
@@ -1231,6 +1092,28 @@ _Thank you for shopping with TheBookX! 📚✨_
           </div>
         </div>
       </div>
+      ) : (
+      <div className="fixed-bill-bar flex flex-col">
+        <div className="flex flex-row justify-between width100 items-center">
+          <div className="bill-left">
+            <span className="font-12 dark-50">Total payable</span>
+            <div className="flex flex-col">
+              <span className="font-16 weight-600 discounted">₹{qrTotal}</span>
+              <span className="font-14 green weight-600">
+                {qrItems.length} QuickRead{qrItems.length > 1 ? "s" : ""}
+              </span>
+            </div>
+          </div>
+          <button
+            type="button"
+            className="pri-big-btn"
+            onClick={() => setShowQrCheckout(true)}
+          >
+            Checkout QuickReads
+          </button>
+        </div>
+      </div>
+      )}
       </>
       )}
 

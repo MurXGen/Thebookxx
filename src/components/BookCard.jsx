@@ -3,11 +3,12 @@
 import { useStore } from "@/context/StoreContext";
 import { trackAddToCart } from "@/lib/ga";
 import { books } from "@/utils/book";
-import { Book, Minus, Plus, Share2, ShoppingCart } from "lucide-react";
+import { Book, Minus, Plus, Share2, ShoppingCart, Zap } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { flyToCart } from "@/lib/flyToCart";
+import { hasQuickRead } from "@/data/quickreads";
 import CartConfetti from "./UI/Confetti";
 import LoadingButton from "./UI/LoadingButton";
 import WishlistButton from "./UI/WishListButton";
@@ -321,6 +322,17 @@ export default function BookCard({ book }) {
                 <meta itemProp="priceCurrency" content="INR" />
                 {book.originalPrice > book.discountedPrice && (
                   <span className="original">₹{book.originalPrice}</span>
+                )}
+                {hasQuickRead(book.id) && (
+                  <Link
+                    href={`/quickreads/${slugify(book.name)}`}
+                    className="bc-qr-badge"
+                    title="Read the QuickRead — key insights in minutes"
+                    aria-label="QuickReads"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <Zap size={15} />
+                  </Link>
                 )}
               </div>
 

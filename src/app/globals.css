@@ -383,6 +383,16 @@ button:hover {
   position: sticky;
   top: 0;
   z-index: 50;
+  transition: transform 0.32s cubic-bezier(0.22, 0.61, 0.36, 1);
+  will-change: transform;
+}
+.navbar-wrapper.nav-hidden {
+  transform: translateY(-100%);
+}
+@media (prefers-reduced-motion: reduce) {
+  .navbar-wrapper {
+    transition: none;
+  }
 }
 
 .navbar {
@@ -974,6 +984,30 @@ button:hover {
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
+}
+/* QuickReads thunder badge — rightmost of the price row (only for books
+   that have a QuickRead); tapping opens that book's QuickRead page. */
+.bc-qr-badge {
+  margin-left: auto;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--tertiary, #fb8500);
+  color: #fff;
+  box-shadow: 0 4px 12px -4px rgba(251, 133, 0, 0.7);
+  transition: transform 0.14s ease, box-shadow 0.16s ease;
+}
+.bc-qr-badge svg {
+  color: #fff;
+  fill: #fff;
+}
+.bc-qr-badge:hover {
+  transform: translateY(-2px) scale(1.06);
+  box-shadow: 0 8px 18px -6px rgba(251, 133, 0, 0.8);
 }
 
 .original {
@@ -12198,8 +12232,9 @@ img[data-loaded="true"] {
 .cart-row-cat {
   font-size: 14px;
   font-weight: 500;
-  color: var(--tertiary, #fb8500);
-  text-decoration: none;
+  color: var(--foreground, #111);
+  text-decoration: underline;
+  width: fit-content;
 }
 .cart-row-price {
   display: flex;
@@ -12235,6 +12270,10 @@ img[data-loaded="true"] {
 }
 .cart-step-btn:active {
   transform: scale(0.94);
+}
+.cart-step-btn[aria-disabled="true"] {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 .cart-step-minus {
   background: #ffffff;
@@ -16332,9 +16371,7 @@ img[data-loaded="true"] {
 /* Add-to-cart row — full width, dashed divider above, sits below the price */
 .bookcard-cart-row {
   width: 100%;
-  margin-top: 2px;
-  padding-top: 10px;
-  border-top: 1.5px dashed var(--dark-20, rgba(0, 0, 0, 0.14));
+  margin-top: 6px;
 }
 .bookcard-add-btn {
   display: flex;
@@ -20887,39 +20924,12 @@ img[data-loaded="true"] {
   flex-direction: column;
   justify-content: center;
   border-radius: 28px;
-  background:
-    radial-gradient(130% 90% at 12% -5%, rgba(251, 133, 0, 0.1) 0%, rgba(251, 133, 0, 0) 55%),
-    radial-gradient(130% 90% at 105% 105%, rgba(255, 183, 3, 0.12) 0%, rgba(255, 183, 3, 0) 52%),
-    linear-gradient(160deg, #fffefb 0%, #fff5e8 100%);
-  border: 1px solid rgba(251, 133, 0, 0.22);
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: 0 12px 28px -18px rgba(0, 0, 0, 0.18),
     0 2px 6px rgba(0, 0, 0, 0.03);
   overflow: hidden;
   cursor: grab;
-}
-/* Soft decorative light orbs in the corners */
-.qr-card::before,
-.qr-card::after {
-  content: "";
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(44px);
-  pointer-events: none;
-  z-index: 0;
-}
-.qr-card::before {
-  width: 240px;
-  height: 240px;
-  top: -80px;
-  right: -70px;
-  background: radial-gradient(circle, rgba(251, 133, 0, 0.3), transparent 70%);
-}
-.qr-card::after {
-  width: 280px;
-  height: 280px;
-  bottom: -100px;
-  left: -80px;
-  background: radial-gradient(circle, rgba(255, 183, 3, 0.24), transparent 70%);
 }
 .qr-card:active {
   cursor: grabbing;
@@ -20938,13 +20948,13 @@ img[data-loaded="true"] {
   gap: 6px;
   padding: 6px 13px;
   border-radius: 999px;
-  background: rgba(251, 133, 0, 0.12);
-  border: 1px solid rgba(251, 133, 0, 0.32);
+  background: linear-gradient(135deg, #111111 0%, #444444 100%);
+  border: 1px solid rgba(0, 0, 0, 0.6);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.6px;
   text-transform: uppercase;
-  color: var(--tertiary, #fb8500);
+  color: #ffffff;
 }
 .qr-card-title {
   position: relative;
@@ -21263,18 +21273,9 @@ img[data-loaded="true"] {
   color: #fff;
 }
 .qr-dark .qr-card {
-  background:
-    radial-gradient(130% 90% at 12% -5%, rgba(251, 133, 0, 0.16) 0%, rgba(251, 133, 0, 0) 55%),
-    radial-gradient(130% 90% at 105% 105%, rgba(255, 183, 3, 0.12) 0%, rgba(255, 183, 3, 0) 52%),
-    linear-gradient(160deg, #1b1f27 0%, #12151b 100%);
-  border-color: rgba(251, 133, 0, 0.3);
+  background: #16191f;
+  border-color: rgba(255, 255, 255, 0.12);
   box-shadow: 0 12px 30px -18px rgba(0, 0, 0, 0.6);
-}
-.qr-dark .qr-card::before {
-  background: radial-gradient(circle, rgba(251, 133, 0, 0.34), transparent 70%);
-}
-.qr-dark .qr-card::after {
-  background: radial-gradient(circle, rgba(255, 183, 3, 0.2), transparent 70%);
 }
 .qr-dark .qr-card-title {
   color: #f6f7f9;
@@ -21284,9 +21285,9 @@ img[data-loaded="true"] {
   border-left-color: rgba(251, 133, 0, 0.5);
 }
 .qr-dark .qr-card-kicker {
-  color: var(--tertiary, #fb8500);
-  background: rgba(251, 133, 0, 0.16);
-  border-color: rgba(251, 133, 0, 0.4);
+  color: #111111;
+  background: linear-gradient(135deg, #ffffff 0%, #c9ccd2 100%);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 .qr-dark .qr-action {
   background: transparent;
@@ -21633,6 +21634,27 @@ img[data-loaded="true"] {
 .bd-qr-addon-btn.on {
   background: var(--success, #0a8f0c);
 }
+.bd-qr-addon-actions {
+  display: inline-flex;
+  gap: 6px;
+}
+.bd-qr-addon-read {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 12px;
+  border-radius: 9px;
+  border: 1px solid var(--dark-50);
+  background: #fff;
+  color: var(--foreground, #111);
+  font-size: 12.5px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.12s ease;
+}
+.bd-qr-addon-read:hover {
+  transform: translateY(-1px);
+}
 
 /* QuickReads card add-to-cart */
 .qr-add-btn,
@@ -21767,18 +21789,12 @@ img[data-loaded="true"] {
   width: auto;
 }
 /* Compact QuickReads bag card */
-.cart-row-qr {
-  padding: 12px 4px;
-  gap: 12px;
-}
+/* QuickRead cart rows mirror book rows exactly (same cover + title size) */
 .cart-row-qr .cart-row-cover {
-  width: 54px;
-  height: 72px;
-  border-radius: 9px;
-  border: 1px solid var(--dark-50);
-}
-.cart-row-qr .cart-row-title {
-  font-size: 14px;
+  width: 84px;
+  height: 108px;
+  border-radius: 12px;
+  border: 1px solid var(--hairline);
 }
 
 /* QuickReads bag — sectioned containers (In your bag / Your QuickReads) */

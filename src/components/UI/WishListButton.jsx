@@ -40,8 +40,7 @@ export default function WishlistButton({ inWishlist, onClick }) {
       <Heart
         size={24}
         fill={inWishlist ? "#ef4444" : "#ffffff"}
-        stroke={inWishlist ? "#ffffff" : "rgba(0,0,0,0.28)"}
-        strokeWidth={1.5}
+        stroke="none"
         style={{
           position: "relative",
           zIndex: 2,

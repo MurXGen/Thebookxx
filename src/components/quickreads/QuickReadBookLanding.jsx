@@ -5,6 +5,7 @@ import { AnimatePresence } from "framer-motion";
 import { Zap, BookOpen, Plus, Check, Play } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import CartBar from "@/components/CartBar";
+import Breadcrumbs from "@/components/UI/Breadcrumbs";
 import QuickReadsReader from "./QuickReadsReader";
 import { getQuickRead, QUICKREAD_PRICE } from "@/data/quickreads";
 import { useStore } from "@/context/StoreContext";
@@ -41,6 +42,13 @@ export default function QuickReadBookLanding({ book }) {
       <Navbar />
 
       <div className="qrb-landing">
+        <Breadcrumbs
+          items={[
+            { label: "QuickReads", href: "/quickreads" },
+            { label: `${book.name} QuickReads` },
+          ]}
+        />
+
         <div className="qrb-hero">
           <div className="qrb-cover">
             {book.image ? (

@@ -21915,6 +21915,10 @@ img[data-loaded="true"] {
   margin: 0 auto;
   padding: 24px 20px 80px;
 }
+/* Breadcrumb sits flush with the hero content, not double-padded. */
+.qrb-landing .breadcrumbs-pro {
+  padding: 0 0 16px;
+}
 .qrb-hero {
   display: flex;
   gap: 20px;

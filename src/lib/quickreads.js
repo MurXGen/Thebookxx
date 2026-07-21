@@ -474,6 +474,62 @@ export async function getVerifiedBookIdsForPhone(phone) {
   }
 }
 
+// Full QuickReads profile for a phone, read from the sheet (cross-device):
+//   { name, verified: [bookId], pending: [bookId] }
+// - name    : the customer's name from the QuickReads sheet (latest non-empty),
+//             so the profile can greet them even when there are NO book orders.
+// - verified: books whose payment/approval is confirmed (ready to read).
+// - pending : books ordered but not yet verified (awaiting confirmation).
+// Subscription rows (SUB-*) are excluded from the book lists.
+export async function getQuickReadProfileForPhone(phone) {
+  const digits = String(phone || "").replace(/\D/g, "").slice(-10);
+  if (digits.length < 10) return { name: "", verified: [], pending: [] };
+  try {
+    const text = await fetchSheetCsv();
+    const rows = parseCsv(text);
+    if (!rows.length) return { name: "", verified: [], pending: [] };
+    const headers = rows[0].map((h) => String(h || "").trim());
+    const mIdx = headers.indexOf(QR_MOBILE_HEADER);
+    const bIdx = headers.indexOf(QR_BOOKID_HEADER);
+    const pIdx = headers.indexOf(QR_PAYMENT_HEADER);
+    const aIdx = headers.indexOf(QR_APPROVAL_HEADER);
+    // Name column isn't a fixed constant — find a "name" header that isn't the
+    // mobile/book column (handles "Name", "CustName", "Customer Name", etc.).
+    const nIdx = headers.findIndex(
+      (h) => /name/i.test(h) && !/mobile|book/i.test(h),
+    );
+    const verified = new Set();
+    const pending = new Set();
+    let name = "";
+    for (let r = 1; r < rows.length; r++) {
+      const cells = rows[r];
+      const rowPhone = String(cells[mIdx] ?? "").replace(/\D/g, "").slice(-10);
+      if (rowPhone !== digits) continue;
+      // Latest non-empty name wins (rows are appended chronologically).
+      if (nIdx >= 0) {
+        const rowName = String(cells[nIdx] ?? "").trim();
+        if (rowName) name = rowName;
+      }
+      const bookId = String(cells[bIdx] ?? "").trim();
+      if (!bookId) continue;
+      const upper = bookId.toUpperCase();
+      if (upper === SUB_MONTHLY || upper === SUB_YEARLY) continue; // subs handled elsewhere
+      const payOk = isPaymentVerified(cells[pIdx]);
+      const appr = String(cells[aIdx] ?? "").trim().toLowerCase();
+      if (payOk || QR_APPROVED_VALUES.includes(appr)) {
+        verified.add(bookId);
+        pending.delete(bookId);
+      } else if (!verified.has(bookId)) {
+        pending.add(bookId);
+      }
+    }
+    return { name, verified: [...verified], pending: [...pending] };
+  } catch (e) {
+    console.error("QuickReads profile fetch failed:", e);
+    return { name: "", verified: [], pending: [], error: true };
+  }
+}
+
 /* ---------------- Unlimited subscription (₹99/mo · ₹999/yr) ---------------- */
 const SUB_KEY = "qr_sub"; // { plan, expiresAt }
 const SUB_MONTHLY = "SUB-MONTHLY";

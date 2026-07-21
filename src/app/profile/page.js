@@ -1329,7 +1329,19 @@ Please cancel this order. Thank you 🙏`;
         {/* QuickReads library — shown once a number is loaded (works even if
             the number has QuickReads but no physical book orders). */}
         {!showPhoneInput && phoneNumber?.length === 10 && (
-          <ProfileQuickReads phone={phoneNumber} />
+          <ProfileQuickReads
+            phone={phoneNumber}
+            onName={(qrName) => {
+              // If the order sheet had no name (QuickReads-only customer), greet
+              // them with the name from the QuickReads sheet.
+              if (qrName && (!customerName || customerName === "Customer")) {
+                setCustomerName(qrName);
+                try {
+                  localStorage.setItem("track_orders_name", qrName);
+                } catch {}
+              }
+            }}
+          />
         )}
 
         {/* What to read next — nudge after 10+ days since last order */}

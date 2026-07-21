@@ -624,32 +624,34 @@ export default function QuickReadsReader({
         {/* Navigation */}
         <div className="qr-nav">
           <button
-            className="qr-nav-btn"
+            className="qr-nav-btn qr-nav-edge"
             onClick={() => go(index - 1)}
             disabled={index === 0}
             aria-label="Previous"
           >
             <ChevronLeft size={20} />
           </button>
-          <span className="qr-nav-pos">
-            {index + 1} / {total}
-          </span>
+          <div className="qr-nav-center">
+            <span className="qr-nav-pos">
+              {index + 1} / {total}
+            </span>
+            <button
+              className="qr-nav-reset"
+              onClick={() => go(0)}
+              disabled={index === 0}
+              aria-label="Reset to the first insight"
+              title="Reset to page 1"
+            >
+              <RotateCcw size={15} />
+            </button>
+          </div>
           <button
-            className="qr-nav-btn"
+            className="qr-nav-btn qr-nav-edge"
             onClick={() => go(index + 1)}
             disabled={index >= total - 1}
             aria-label="Next"
           >
             <ChevronRight size={20} />
-          </button>
-          <button
-            className="qr-nav-btn qr-nav-restart"
-            onClick={() => go(0)}
-            disabled={index === 0}
-            aria-label="Restart from the first insight"
-            title="Restart"
-          >
-            <RotateCcw size={17} />
           </button>
         </div>
 

@@ -34,8 +34,11 @@ import {
   getSavedPhone,
   getReadProgress,
   setReadProgress,
+  isSubscriptionActiveLocal,
+  checkSubscription,
 } from "@/lib/quickreads";
 import QuickReadsCheckout from "./QuickReadsCheckout";
+import QuickReadsPlans from "./QuickReadsPlans";
 
 export default function QuickReadsReader({
   book,
@@ -58,6 +61,7 @@ export default function QuickReadsReader({
   const [saved, setSaved] = useState([]);
   const [showSaved, setShowSaved] = useState(false);
   const [showCheckout, setShowCheckout] = useState(false);
+  const [showPlans, setShowPlans] = useState(false);
   const [speaking, setSpeaking] = useState(false);
   const [autoPlay, setAutoPlay] = useState(false);
   const autoPlayRef = useRef(false);
@@ -86,22 +90,36 @@ export default function QuickReadsReader({
   // gone / still unverified — so removing "unverified" in the sheet re-locks.
   const verifyApproval = async () => {
     if (!book?.id) return;
+    // An active unlimited subscription unlocks every title.
+    if (isSubscriptionActiveLocal()) {
+      setUnlocked(true);
+    }
     const phone = getSavedPhone();
     if (!phone) {
-      setUnlocked(isBookUnlocked(book.id));
+      if (!isSubscriptionActiveLocal()) setUnlocked(isBookUnlocked(book.id));
       return;
     }
     if (validatingRef.current) return;
     validatingRef.current = true;
     try {
+      // Authoritative subscription check against the sheet (anti-loophole:
+      // grants only while the current billing period is still valid).
+      const sub = await checkSubscription(phone);
+      if (sub?.active) {
+        setUnlocked(true);
+        return;
+      }
       const status = await checkApproval(phone, book.id);
       if (status === "approved") {
         grantBookAccess(book.id, phone);
         setUnlocked(true);
       } else if (status === "pending" || status === "none") {
-        // Sheet no longer confirms this book → pull access back.
-        revokeBookAccess(book.id);
-        setUnlocked(false);
+        // Sheet no longer confirms this book → pull access back
+        // (unless a local subscription is still active).
+        if (!isSubscriptionActiveLocal()) {
+          revokeBookAccess(book.id);
+          setUnlocked(false);
+        }
       }
       // "error" (network) → leave the current state untouched.
     } finally {
@@ -110,7 +128,7 @@ export default function QuickReadsReader({
   };
 
   useEffect(() => {
-    setUnlocked(isBookUnlocked(book?.id));
+    setUnlocked(isBookUnlocked(book?.id) || isSubscriptionActiveLocal());
     setSaved(getSavedReads());
     verifyApproval();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -561,6 +579,15 @@ export default function QuickReadsReader({
               <button className="qr-unlock-btn" onClick={handleUnlockAttempt}>
                 Unlock QuickReads – ₹{QUICKREAD_PRICE}
               </button>
+              <button
+                className="qr-unlimited-btn"
+                onClick={() => setShowPlans(true)}
+              >
+                <Crown size={15} /> Go Unlimited — from ₹99/mo
+              </button>
+              <span className="qr-paywall-note">
+                Read every book’s insights with one plan.
+              </span>
             </motion.div>
           )}
         </div>
@@ -685,6 +712,24 @@ export default function QuickReadsReader({
             onClose={() => setShowCheckout(false)}
             onPaid={() => {
               setUnlocked(true);
+            }}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showPlans && (
+          <QuickReadsPlans
+            book={book}
+            variant="sheet"
+            onClose={() => setShowPlans(false)}
+            onSinglePaid={() => {
+              setUnlocked(true);
+              setShowPlans(false);
+            }}
+            onSubscribed={() => {
+              setUnlocked(true);
+              setShowPlans(false);
             }}
           />
         )}

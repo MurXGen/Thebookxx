@@ -22,6 +22,10 @@ export default function BillModal({
   // from the displayed "You Pay" total. Used when the user hasn't yet
   // committed to shipping (i.e. the nudge modal is still pending).
   hideDeliveryCharges = false,
+  // QuickReads bundled onto this same bill (one combined checkout).
+  quickReadItems = [],
+  quickReadUnitPrice = 0,
+  quickReadTotal = 0,
 }) {
   useTrackView(
     EVENTS.BILL_MODAL_VIEWED,
@@ -66,11 +70,13 @@ export default function BillModal({
 
   // When hiding delivery, the displayed total excludes it.
   // Final total still includes gift wrap (that's already a confirmed selection).
-  const finalTotal = hideDeliveryCharges
-    ? finalPayable + giftWrapCharge
-    : totalWithDelivery !== null
-      ? totalWithDelivery
-      : finalPayable + deliveryCharge + giftWrapCharge;
+  const qrTotal = quickReadTotal || 0;
+  const finalTotal =
+    (hideDeliveryCharges
+      ? finalPayable + giftWrapCharge
+      : totalWithDelivery !== null
+        ? totalWithDelivery
+        : finalPayable + deliveryCharge + giftWrapCharge) + qrTotal;
 
   return (
     <div className="bill-modal-overlay" onClick={onClose}>
@@ -172,6 +178,30 @@ export default function BillModal({
             <span>🎁 Gift Wrap</span>
             <span className="orange">+ ₹{giftWrapCharge}</span>
           </div>
+        )}
+
+        {/* QuickReads bundled onto the same bill */}
+        {quickReadItems.length > 0 && (
+          <>
+            <div className="dashed-border my-12"></div>
+            <div
+              className="bill-row"
+              style={{ fontWeight: 600, color: "var(--tertiary, #fb8500)" }}
+            >
+              <span className="flex items-center gap-4">
+                ⚡ QuickReads ({quickReadItems.length})
+              </span>
+              <span>₹{qrTotal}</span>
+            </div>
+            {quickReadItems.map((b) => (
+              <div className="bill-row" key={`qr-${b.id}`}>
+                <span className="font-12 dark-50" style={{ paddingLeft: 14 }}>
+                  {b.name}
+                </span>
+                <span className="font-12 dark-50">₹{quickReadUnitPrice}</span>
+              </div>
+            ))}
+          </>
         )}
 
         <div className="dashed-border my-12"></div>

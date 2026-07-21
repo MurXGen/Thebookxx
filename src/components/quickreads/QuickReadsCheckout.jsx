@@ -17,13 +17,19 @@ import {
   Download,
   Check,
 } from "lucide-react";
-import { QUICKREAD_PRICE } from "@/data/quickreads";
+import {
+  QUICKREAD_PRICE,
+  SUB_MONTHLY_PRICE,
+  SUB_YEARLY_PRICE,
+} from "@/data/quickreads";
 import {
   submitQuickReadOrder,
   notifyQuickReadTelegram,
   setSavedPhone,
   checkApproval,
   grantBookAccess,
+  submitSubscriptionOrder,
+  checkSubscription,
 } from "@/lib/quickreads";
 import { showToast } from "@/context/ToastContext";
 
@@ -34,9 +40,12 @@ export default function QuickReadsCheckout({
   items = [],
   onClose,
   onPaid,
+  plan = "single", // "single" (per-book) · "monthly" · "yearly"
   variant = "sheet", // "sheet" = bottom bill-modal · "center" = centered dialog
 }) {
   const isCenter = variant === "center";
+  const isSub = plan === "monthly" || plan === "yearly";
+  const planLabel = plan === "yearly" ? "Unlimited — Yearly" : "Unlimited — Monthly";
   const [step, setStep] = useState("details"); // details | pay | processing | success
   const [name, setName] = useState("");
   const [mobile, setMobile] = useState("");
@@ -88,7 +97,11 @@ export default function QuickReadsCheckout({
     document.body.removeChild(a);
   };
 
-  const amount = items.length * QUICKREAD_PRICE;
+  const amount = isSub
+    ? plan === "yearly"
+      ? SUB_YEARLY_PRICE
+      : SUB_MONTHLY_PRICE
+    : items.length * QUICKREAD_PRICE;
   const mobileValid = mobile.replace(/\D/g, "").length === 10;
   const canContinue = name.trim() && mobileValid;
 
@@ -100,20 +113,33 @@ export default function QuickReadsCheckout({
     const phone = mobile.replace(/\D/g, "");
     setSavedPhone(phone);
     try {
-      for (const book of items) {
-        const order = {
+      if (isSub) {
+        await submitSubscriptionOrder({ name: name.trim(), mobile: phone, plan });
+        notifyQuickReadTelegram({
           name: name.trim(),
           mobile: phone,
-          bookId: book.id,
-          bookName: book.name,
-          amount: QUICKREAD_PRICE,
+          bookId: plan === "yearly" ? "SUB-YEARLY" : "SUB-MONTHLY",
+          bookName: planLabel,
+          amount,
           paymentMethod: "UPI Payment",
           paymentStatus: "Paid (unverified)",
-          approvalStatus: "Pending",
-        };
-        // eslint-disable-next-line no-await-in-loop
-        await submitQuickReadOrder(order);
-        notifyQuickReadTelegram(order);
+        });
+      } else {
+        for (const book of items) {
+          const order = {
+            name: name.trim(),
+            mobile: phone,
+            bookId: book.id,
+            bookName: book.name,
+            amount: QUICKREAD_PRICE,
+            paymentMethod: "UPI Payment",
+            paymentStatus: "Paid (unverified)",
+            approvalStatus: "Pending",
+          };
+          // eslint-disable-next-line no-await-in-loop
+          await submitQuickReadOrder(order);
+          notifyQuickReadTelegram(order);
+        }
       }
       setConfirmed(true); // starts the 30s countdown before Verify enables
     } catch (e) {
@@ -139,6 +165,15 @@ export default function QuickReadsCheckout({
     checkingRef.current = true;
     setChecking(true);
     try {
+      if (isSub) {
+        const sub = await checkSubscription(phone);
+        if (sub.active) {
+          onPaid?.({ name: name.trim(), mobile: phone, plan, subscription: sub });
+          setStep("success");
+          return true;
+        }
+        return false;
+      }
       const results = await Promise.all(
         items.map((b) => checkApproval(phone, b.id)),
       );
@@ -214,11 +249,15 @@ export default function QuickReadsCheckout({
                 ? "Payment processing"
                 : step === "success"
                   ? "Payment successful"
-                  : "Unlock QuickReads"}
+                  : isSub
+                    ? planLabel
+                    : "Unlock QuickReads"}
             </span>
             {(step === "details" || step === "pay") && (
               <span className="font-12 dark-50">
-                {items.length} book{items.length > 1 ? "s" : ""} · ₹{amount}
+                {isSub
+                  ? `Every QuickRead · ₹${amount}`
+                  : `${items.length} book${items.length > 1 ? "s" : ""} · ₹${amount}`}
               </span>
             )}
           </span>
@@ -230,12 +269,21 @@ export default function QuickReadsCheckout({
         {step === "details" && (
           <div className="flex flex-col gap-12">
             <div className="qrc-items">
-              {items.map((b) => (
-                <div key={b.id} className="qrc-item">
-                  <span className="qrc-item-name">{b.name}</span>
-                  <span className="qrc-item-price">₹{QUICKREAD_PRICE}</span>
+              {isSub ? (
+                <div className="qrc-item">
+                  <span className="qrc-item-name">
+                    {planLabel} · unlimited access to every QuickRead
+                  </span>
+                  <span className="qrc-item-price">₹{amount}</span>
                 </div>
-              ))}
+              ) : (
+                items.map((b) => (
+                  <div key={b.id} className="qrc-item">
+                    <span className="qrc-item-name">{b.name}</span>
+                    <span className="qrc-item-price">₹{QUICKREAD_PRICE}</span>
+                  </div>
+                ))
+              )}
             </div>
 
             <div className="flex flex-row justify-between gap-12">
@@ -414,7 +462,9 @@ export default function QuickReadsCheckout({
             </div>
             <h3 className="qrc-done-title">Payment successful 🎉</h3>
             <p className="qrc-done-sub">
-              Your QuickReads are unlocked on this device. Enjoy every insight!
+              {isSub
+                ? `${planLabel} is active — every QuickRead is now unlocked on this device. Enjoy!`
+                : "Your QuickReads are unlocked on this device. Enjoy every insight!"}
             </p>
             <button
               type="button"

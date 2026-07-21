@@ -451,6 +451,134 @@ export async function getVerifiedBookIdsForPhone(phone) {
   }
 }
 
+/* ---------------- Unlimited subscription (₹99/mo · ₹999/yr) ---------------- */
+const SUB_KEY = "qr_sub"; // { plan, expiresAt }
+const SUB_MONTHLY = "SUB-MONTHLY";
+const SUB_YEARLY = "SUB-YEARLY";
+const DAY_MS = 24 * 60 * 60 * 1000;
+// Generous bounds so a mid-period payment covers the whole month/year.
+const SUB_PERIOD_MS = { monthly: 31 * DAY_MS, yearly: 366 * DAY_MS };
+
+// Parse the sheet's Timestamp column (dd/mm/yyyy [HH:mm:ss] [am/pm]).
+function parseSheetDate(input) {
+  const str = String(input || "").trim();
+  if (!str) return null;
+  const m = str.match(
+    /^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[,\s]+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?\s*(am|pm)?)?/i,
+  );
+  if (!m) {
+    const d = new Date(str);
+    return isNaN(d.getTime()) ? null : d;
+  }
+  const day = +m[1];
+  const month = +m[2] - 1;
+  const year = +m[3];
+  let hh = m[4] ? +m[4] : 0;
+  const mm = m[5] ? +m[5] : 0;
+  const ss = m[6] ? +m[6] : 0;
+  const mer = (m[7] || "").toLowerCase();
+  if (mer === "pm" && hh < 12) hh += 12;
+  if (mer === "am" && hh === 12) hh = 0;
+  const d = new Date(year, month, day, hh, mm, ss);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+export function getLocalSubscription() {
+  if (typeof window === "undefined") return null;
+  try {
+    const s = JSON.parse(localStorage.getItem(SUB_KEY) || "null");
+    if (s && s.plan && s.expiresAt) return s;
+  } catch {}
+  return null;
+}
+
+export function setLocalSubscription(plan, expiresAt) {
+  try {
+    localStorage.setItem(SUB_KEY, JSON.stringify({ plan, expiresAt }));
+  } catch {}
+}
+
+export function clearLocalSubscription() {
+  try {
+    localStorage.removeItem(SUB_KEY);
+  } catch {}
+}
+
+// Fast, offline check of the cached subscription — active only if not expired.
+export function isSubscriptionActiveLocal() {
+  const s = getLocalSubscription();
+  return !!(s && Date.now() < s.expiresAt);
+}
+
+// Authoritative check against the sheet. A subscription is active ONLY if a
+// verified subscription row's payment date falls inside its current period —
+// so a past month's payment can never keep unlocking access.
+// Returns { active, plan, expiresAt } | { active:false } | { active:false, error:true }.
+export async function checkSubscription(phone) {
+  const digits = String(phone || "").replace(/\D/g, "").slice(-10);
+  if (digits.length < 10) return { active: false };
+  try {
+    const res = await fetch(`${QR_PUB_CSV_URL}&_=${Date.now()}`, {
+      cache: "no-store",
+    });
+    const text = await res.text();
+    const rows = parseCsv(text);
+    if (!rows.length) return { active: false };
+    const headers = rows[0].map((h) => String(h || "").trim());
+    const mIdx = headers.indexOf(QR_MOBILE_HEADER);
+    const bIdx = headers.indexOf(QR_BOOKID_HEADER);
+    const pIdx = headers.indexOf(QR_PAYMENT_HEADER);
+    const aIdx = headers.indexOf(QR_APPROVAL_HEADER);
+    const tIdx = headers.indexOf("Timestamp");
+    const now = Date.now();
+    let best = null; // latest still-valid subscription
+    for (let r = 1; r < rows.length; r++) {
+      const cells = rows[r];
+      const rowPhone = String(cells[mIdx] ?? "").replace(/\D/g, "").slice(-10);
+      if (rowPhone !== digits) continue;
+      const bookId = String(cells[bIdx] ?? "").trim().toUpperCase();
+      const plan =
+        bookId === SUB_MONTHLY
+          ? "monthly"
+          : bookId === SUB_YEARLY
+            ? "yearly"
+            : null;
+      if (!plan) continue;
+      const payOk = isPaymentVerified(cells[pIdx]);
+      const appr = String(cells[aIdx] ?? "").trim().toLowerCase();
+      if (!payOk && !QR_APPROVED_VALUES.includes(appr)) continue;
+      const start = parseSheetDate(cells[tIdx]);
+      if (!start) continue;
+      const expiresAt = start.getTime() + SUB_PERIOD_MS[plan];
+      if (expiresAt <= now) continue; // expired — cannot unlock (loophole closed)
+      if (!best || expiresAt > best.expiresAt) best = { plan, expiresAt };
+    }
+    if (best) {
+      setLocalSubscription(best.plan, best.expiresAt);
+      return { active: true, ...best };
+    }
+    return { active: false };
+  } catch (e) {
+    console.error("QuickReads subscription check failed:", e);
+    return { active: false, error: true };
+  }
+}
+
+// Record a subscription purchase in the shared QuickReads sheet.
+export async function submitSubscriptionOrder({ name, mobile, plan }) {
+  const isYear = plan === "yearly";
+  return submitQuickReadOrder({
+    name,
+    mobile,
+    bookId: isYear ? SUB_YEARLY : SUB_MONTHLY,
+    bookName: isYear ? "Unlimited — Yearly" : "Unlimited — Monthly",
+    amount: isYear ? 999 : 99,
+    paymentMethod: "UPI Payment",
+    paymentStatus: "Paid (unverified)",
+    approvalStatus: "Pending",
+  });
+}
+
 // Check the sheet for a matching order:
 //   "approved" — payment verified (or approval column approved)
 //   "pending"  — order found but still unverified

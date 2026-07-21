@@ -6,6 +6,13 @@
 export const QUICKREAD_PRICE = 29;
 export const QUICKREAD_FREE_FRAMES = 10; // frames readable before the paywall
 
+// Unlimited subscription plans (access to every QuickRead).
+export const SUB_MONTHLY_PRICE = 99;
+export const SUB_YEARLY_PRICE = 999;
+// Book IDs used to record subscription orders in the shared QuickReads sheet.
+export const SUB_MONTHLY_ID = "SUB-MONTHLY";
+export const SUB_YEARLY_ID = "SUB-YEARLY";
+
 // Mindset — Carol S. Dweck. Shared by both catalogue entries for this title
 // (bk-151 and bk-417) so the QuickReads badge shows on either detail page.
 const MINDSET_FRAMES = [
@@ -8930,6 +8937,2412 @@ export const quickReads = {
         title: "Become Your Own Richest Man",
         content:
           "Save a tenth, control spending, invest wisely, protect what you have, and keep learning. Follow the laws, and wealth will find you.",
+      },
+    ],
+  },
+
+  // Tuesdays with Morrie — Mitch Albom
+  "bk-303": {
+    bookId: "bk-303",
+    tagline: "An old man, a young man, and life's greatest lesson",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "tm-1",
+        title: "A Final Class on Living",
+        content:
+          "Dying of ALS, sociology professor Morrie Schwartz teaches his former student one last course — on how to live — every Tuesday.",
+      },
+      {
+        id: "tm-2",
+        title: "The Reunion",
+        content:
+          "Years after graduating, Mitch reconnects with his dying mentor. What begins as a visit becomes a series of profound life lessons.",
+      },
+      {
+        id: "tm-3",
+        title: "Dying Taught Him to Live",
+        content:
+          "Facing death, Morrie sees life more clearly than ever. His approaching end sharpens, rather than dims, his wisdom about living well.",
+      },
+      {
+        id: "tm-4",
+        title: "Learn to Die, Learn to Live",
+        content:
+          "Morrie's central paradox: once you learn how to die, you learn how to live. Accepting mortality frees you to live fully.",
+      },
+      {
+        id: "tm-5",
+        title: "Death Ends a Life, Not a Relationship",
+        content:
+          "Though Morrie is dying, he insists love and connection outlast death. The bonds we build continue in those we leave behind.",
+      },
+      {
+        id: "tm-6",
+        title: "Love Each Other or Perish",
+        content:
+          "Quoting a favourite line, Morrie says love is the only rational act. Without love, we truly wither; with it, we live.",
+      },
+      {
+        id: "tm-7",
+        title: "Love Is How You Stay Alive",
+        content:
+          "As long as you love and are loved, you live on in others' hearts. Love, Morrie says, is the ultimate meaning.",
+      },
+      {
+        id: "tm-8",
+        title: "Relationships Matter Most",
+        content:
+          "At the end, it isn't achievements or money that matter, but the people you loved and who loved you. Invest there.",
+      },
+      {
+        id: "tm-9",
+        title: "Give Love, Receive Love",
+        content:
+          "Morrie devotes his final months to loving and being loved. Opening yourself to give and receive love is the richest way to live.",
+      },
+      {
+        id: "tm-10",
+        title: "Money Won't Buy Meaning",
+        content:
+          "Morrie warns that chasing wealth and things leaves you empty. Meaning comes from love and purpose, never from possessions.",
+      },
+      {
+        id: "tm-11",
+        title: "Reject Society's False Values",
+        content:
+          "Our culture pushes status, money, and youth as the measures of worth. Morrie urges building your own values instead.",
+      },
+      {
+        id: "tm-12",
+        title: "Create Your Own Culture",
+        content:
+          "Don't let popular culture dictate what matters. Consciously choose the values you live by, even against the crowd.",
+      },
+      {
+        id: "tm-13",
+        title: "The Meaning of Life",
+        content:
+          "Morrie's answer is simple: devote yourself to loving others, to your community, and to creating something that gives you purpose.",
+      },
+      {
+        id: "tm-14",
+        title: "Give to Your Community",
+        content:
+          "Contributing to others brings deep fulfillment. Helping people, Morrie found, gives life meaning that self-interest never can.",
+      },
+      {
+        id: "tm-15",
+        title: "Helping Others Fulfills You",
+        content:
+          "Giving your time and heart to others feeds your own soul. Service is a source of joy, not merely a duty.",
+      },
+      {
+        id: "tm-16",
+        title: "Be Fully Present",
+        content:
+          "Morrie gives everyone his complete attention. Being truly present with people is one of the greatest gifts you can offer.",
+      },
+      {
+        id: "tm-17",
+        title: "Really Listen",
+        content:
+          "Most people wait to speak; Morrie listens deeply. Genuine listening makes others feel valued and seen.",
+      },
+      {
+        id: "tm-18",
+        title: "Accept Aging",
+        content:
+          "Rather than fear growing old, Morrie embraces each age. Aging isn't decline but growth — you gain wisdom you didn't have before.",
+      },
+      {
+        id: "tm-19",
+        title: "Don't Envy Youth",
+        content:
+          "Morrie doesn't wish to be young again; he's lived those years. Envying youth means rejecting the person you've become.",
+      },
+      {
+        id: "tm-20",
+        title: "Embrace Each Stage",
+        content:
+          "Every age holds its own gifts. Fully inhabiting your current stage of life is wiser than longing for another.",
+      },
+      {
+        id: "tm-21",
+        title: "Detachment",
+        content:
+          "Morrie's practice: experience each emotion fully, then let it go. You can't be free of a feeling you refuse to feel.",
+      },
+      {
+        id: "tm-22",
+        title: "Feel Emotions Fully",
+        content:
+          "Dive completely into grief, fear, or love, and paradoxically you can then release them. Suppression only traps emotion.",
+      },
+      {
+        id: "tm-23",
+        title: "Then Let It Go",
+        content:
+          "After feeling something wholly, Morrie steps back and detaches. This lets emotions move through him without ruling him.",
+      },
+      {
+        id: "tm-24",
+        title: "The Tension of Opposites",
+        content:
+          "Life pulls us between competing desires — love and independence, doing and being. Morrie says love ultimately wins the tug of war.",
+      },
+      {
+        id: "tm-25",
+        title: "Forgive Yourself",
+        content:
+          "Morrie urges making peace with your own regrets and mistakes. Self-forgiveness lifts a weight you needn't carry to the end.",
+      },
+      {
+        id: "tm-26",
+        title: "Forgive Others",
+        content:
+          "Holding grudges only poisons you. Morrie counsels forgiving people before it's too late, for your own peace.",
+      },
+      {
+        id: "tm-27",
+        title: "Don't Wait to Forgive",
+        content:
+          "Reconciliation delayed can become reconciliation denied. Mend relationships now, while there's still time.",
+      },
+      {
+        id: "tm-28",
+        title: "Make Peace Before It's Too Late",
+        content:
+          "Morrie regrets a friendship left unrepaired. His lesson: don't let pride keep you from those you love while you can still reach them.",
+      },
+      {
+        id: "tm-29",
+        title: "The Importance of Touch",
+        content:
+          "Even in illness, Morrie craves and gives physical affection. Human touch and closeness are essential nourishment for the soul.",
+      },
+      {
+        id: "tm-30",
+        title: "Human Connection Heals",
+        content:
+          "Warmth, presence, and touch ease even the hardest passages. Connection is medicine for the heart.",
+      },
+      {
+        id: "tm-31",
+        title: "Family as Foundation",
+        content:
+          "Morrie believes a loving family is life's essential support. Without that foundation, he says, you have very little to stand on.",
+      },
+      {
+        id: "tm-32",
+        title: "Someone to Lean On",
+        content:
+          "Knowing others are watching over and caring for you gives a spiritual security nothing else provides. Build those bonds.",
+      },
+      {
+        id: "tm-33",
+        title: "Face Your Mortality",
+        content:
+          "Morrie imagines a little bird on his shoulder asking if today is the day he'll die. Living with that awareness clarifies what matters.",
+      },
+      {
+        id: "tm-34",
+        title: "Ask: Is Today the Day?",
+        content:
+          "Regularly confronting the fact that life is finite keeps you from wasting it on the trivial. Mortality is a great teacher.",
+      },
+      {
+        id: "tm-35",
+        title: "Live Without Regret",
+        content:
+          "Morrie has few regrets because he chose love and meaning. Living deliberately now spares you sorrow at the end.",
+      },
+      {
+        id: "tm-36",
+        title: "Slow Down",
+        content:
+          "In a rushing world, Morrie savours small moments. Slowing down lets you actually experience the life speeding past you.",
+      },
+      {
+        id: "tm-37",
+        title: "Appreciate Simple Moments",
+        content:
+          "A conversation, a meal, sunlight through a window — Morrie treasures ordinary joys. The simple things are often the deepest.",
+      },
+      {
+        id: "tm-38",
+        title: "Nature and Gratitude",
+        content:
+          "Confined to his home, Morrie delights in the changing seasons outside his window. Gratitude turns limitation into wonder.",
+      },
+      {
+        id: "tm-39",
+        title: "Be Compassionate",
+        content:
+          "Morrie meets everyone, including himself, with gentleness. Compassion is at the heart of a life well lived.",
+      },
+      {
+        id: "tm-40",
+        title: "Offer What You Have to Give",
+        content:
+          "Even dying, Morrie keeps teaching and comforting others. As long as you can give something, your life has purpose.",
+      },
+      {
+        id: "tm-41",
+        title: "Death Is Natural",
+        content:
+          "Morrie accepts death as part of life, not a cruel exception. That acceptance brings him peace in his final days.",
+      },
+      {
+        id: "tm-42",
+        title: "Love Never Dies",
+        content:
+          "Morrie is certain that the love he's given will live on in Mitch and others. Love is the part of us that outlasts the body.",
+      },
+      {
+        id: "tm-43",
+        title: "Choose Love Over Fear",
+        content:
+          "Facing death, Morrie chooses openness and love over bitterness and fear. That choice defines the quality of his last chapter.",
+      },
+      {
+        id: "tm-44",
+        title: "Vulnerability Is Strength",
+        content:
+          "Morrie weeps, laughs, and shares openly without shame. His willingness to be vulnerable is a form of courage and connection.",
+      },
+      {
+        id: "tm-45",
+        title: "Wealth Isn't Worth",
+        content:
+          "Status and possessions can't fill an inner emptiness. Morrie found that giving love and attention is what makes a person truly rich.",
+      },
+      {
+        id: "tm-46",
+        title: "Invest in People, Not Things",
+        content:
+          "The time and love you pour into relationships pays the truest dividends. Things fade; connections endure and console.",
+      },
+      {
+        id: "tm-47",
+        title: "Teach and Be Remembered",
+        content:
+          "Morrie lives on through the lessons he passed to Mitch and readers. What you teach and give others is a kind of immortality.",
+      },
+      {
+        id: "tm-48",
+        title: "Aging Is Growth",
+        content:
+          "With years come understanding and depth. Morrie reframes aging as accumulating wisdom, not merely losing youth.",
+      },
+      {
+        id: "tm-49",
+        title: "Presence Over Distraction",
+        content:
+          "Morrie warns against sleepwalking through life on autopilot. Wake up, pay attention, and truly experience your days.",
+      },
+      {
+        id: "tm-50",
+        title: "Build a Loving Home",
+        content:
+          "A home filled with love and support is the greatest security. Morrie urges nurturing your closest relationships above all.",
+      },
+      {
+        id: "tm-51",
+        title: "Give While You Can",
+        content:
+          "Don't postpone kindness and love for a better time. Offer them now, generously, while you still have the chance.",
+      },
+      {
+        id: "tm-52",
+        title: "Peace at the End",
+        content:
+          "Because he lived with love and meaning, Morrie faces death calmly. A life well loved makes for a peaceful farewell.",
+      },
+      {
+        id: "tm-53",
+        title: "The Living Learn From the Dying",
+        content:
+          "Morrie's greatest gift is teaching the living how to live by showing them how to die with grace, love, and acceptance.",
+      },
+      {
+        id: "tm-54",
+        title: "Life's Greatest Lesson",
+        content:
+          "Love one another, give to your community, make peace with death, and cherish the present. That, Morrie teaches, is how to live.",
+      },
+    ],
+  },
+
+  // The Lean Startup — Eric Ries
+  "bk-067": {
+    bookId: "bk-067",
+    tagline: "How constant innovation creates radically successful businesses",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "ls-1",
+        title: "A New Way to Build",
+        content:
+          "Ries offers a scientific approach to creating businesses under extreme uncertainty. The Lean Startup replaces guesswork with rapid, validated learning.",
+      },
+      {
+        id: "ls-2",
+        title: "A Startup Is an Experiment",
+        content:
+          "Treat your startup not as a plan to execute but as a series of experiments to test your assumptions about what customers want.",
+      },
+      {
+        id: "ls-3",
+        title: "Entrepreneurship Is Management",
+        content:
+          "Building a startup requires a new kind of management suited to uncertainty — not the rigid planning of established companies.",
+      },
+      {
+        id: "ls-4",
+        title: "Manage Under Uncertainty",
+        content:
+          "Traditional business plans assume a knowable future. Startups operate where the future is unknown, demanding constant learning and adaptation.",
+      },
+      {
+        id: "ls-5",
+        title: "Validated Learning",
+        content:
+          "The unit of progress for a startup is validated learning — proving what customers actually want through real evidence, not opinions.",
+      },
+      {
+        id: "ls-6",
+        title: "Learn What Customers Want",
+        content:
+          "You don't truly know what customers want until you test it. Assumptions must be validated by their real behaviour, not your beliefs.",
+      },
+      {
+        id: "ls-7",
+        title: "Build-Measure-Learn",
+        content:
+          "The core loop: build something, measure how customers respond, and learn from the data. Then repeat, faster each time.",
+      },
+      {
+        id: "ls-8",
+        title: "Turn Ideas Into Products",
+        content:
+          "First, translate your idea into a product you can put in front of customers. Ideas are worthless until tested in reality.",
+      },
+      {
+        id: "ls-9",
+        title: "Measure the Response",
+        content:
+          "Watch what customers actually do with your product. Real behaviour is the measurement that matters, not flattering feedback.",
+      },
+      {
+        id: "ls-10",
+        title: "Learn and Decide",
+        content:
+          "Use what you learn to decide your next move. Each loop should teach you something that sharpens the product and strategy.",
+      },
+      {
+        id: "ls-11",
+        title: "Minimize Loop Time",
+        content:
+          "The faster you complete the build-measure-learn loop, the faster you learn. Speed through the cycle is a startup's key advantage.",
+      },
+      {
+        id: "ls-12",
+        title: "The Minimum Viable Product",
+        content:
+          "An MVP is the simplest version of your product that lets you start the learning process. It's built to test, not to impress.",
+      },
+      {
+        id: "ls-13",
+        title: "Ship the Smallest Test",
+        content:
+          "Don't polish for months in secret. Release the smallest thing that tests your riskiest assumption and get real feedback.",
+      },
+      {
+        id: "ls-14",
+        title: "Don't Build in a Vacuum",
+        content:
+          "Building for years without customer contact courts disaster. Involve real users from the very beginning.",
+      },
+      {
+        id: "ls-15",
+        title: "Get Out of the Building",
+        content:
+          "Answers aren't at your desk; they're with customers. Talk to them, watch them, and learn from the market directly.",
+      },
+      {
+        id: "ls-16",
+        title: "Leap-of-Faith Assumptions",
+        content:
+          "Every startup rests on a few core assumptions that must be true to succeed. Identify these and test the riskiest ones first.",
+      },
+      {
+        id: "ls-17",
+        title: "The Value Hypothesis",
+        content:
+          "This tests whether your product actually delivers value to customers once they use it. If it doesn't, nothing else matters.",
+      },
+      {
+        id: "ls-18",
+        title: "The Growth Hypothesis",
+        content:
+          "This tests how new customers will discover and adopt your product. Understanding your growth mechanism is essential to scaling.",
+      },
+      {
+        id: "ls-19",
+        title: "Test the Riskiest First",
+        content:
+          "Don't test easy assumptions; attack the ones that would sink the whole venture if false. Reduce the biggest uncertainty early.",
+      },
+      {
+        id: "ls-20",
+        title: "Vanity Metrics",
+        content:
+          "Metrics like total sign-ups or page views feel good but can mislead. They often rise while the real business stalls.",
+      },
+      {
+        id: "ls-21",
+        title: "Actionable Metrics",
+        content:
+          "Track metrics that reveal cause and effect and guide decisions — like conversion or retention by cohort. These tell the truth.",
+      },
+      {
+        id: "ls-22",
+        title: "Beware Feel-Good Numbers",
+        content:
+          "Big, ever-growing totals can hide a broken business. Insist on metrics that show whether you're actually improving.",
+      },
+      {
+        id: "ls-23",
+        title: "Cohort Analysis",
+        content:
+          "Instead of cumulative totals, analyze groups of users over time. Cohorts show whether each new batch behaves better than the last.",
+      },
+      {
+        id: "ls-24",
+        title: "Split Testing",
+        content:
+          "Test variations against each other with real users to see what truly works. Data from experiments beats debate and opinion.",
+      },
+      {
+        id: "ls-25",
+        title: "Innovation Accounting",
+        content:
+          "Measure progress by validated learning, not just revenue or activity. Innovation accounting proves you're moving toward a real business.",
+      },
+      {
+        id: "ls-26",
+        title: "Measure Real Progress",
+        content:
+          "Define clear milestones for learning and check whether experiments are moving the key metrics. This keeps you honest about progress.",
+      },
+      {
+        id: "ls-27",
+        title: "Pivot or Persevere",
+        content:
+          "Regularly ask whether to persevere with your current strategy or pivot. This decision is the most important a startup makes.",
+      },
+      {
+        id: "ls-28",
+        title: "The Pivot",
+        content:
+          "A pivot is a structured change in strategy while keeping your core vision. It's not failure but a course correction based on learning.",
+      },
+      {
+        id: "ls-29",
+        title: "Change Path, Keep Vision",
+        content:
+          "Pivoting means changing how you reach your goal, not abandoning the goal. Stay committed to the vision, flexible on the route.",
+      },
+      {
+        id: "ls-30",
+        title: "Types of Pivots",
+        content:
+          "Ries describes many pivots — zooming into one feature, changing customer segments, switching platforms, or altering the growth engine.",
+      },
+      {
+        id: "ls-31",
+        title: "Zoom-In and Zoom-Out",
+        content:
+          "Sometimes a single feature becomes the whole product (zoom-in); sometimes the product must become one feature of something bigger (zoom-out).",
+      },
+      {
+        id: "ls-32",
+        title: "Customer-Segment Pivot",
+        content:
+          "You may find your product solves a problem for a different audience than intended. Following the customers who actually love it can transform the business.",
+      },
+      {
+        id: "ls-33",
+        title: "The Courage to Pivot",
+        content:
+          "Pivoting requires admitting the current path isn't working. That honesty, though hard, often saves the company.",
+      },
+      {
+        id: "ls-34",
+        title: "Fail Fast, Learn Fast",
+        content:
+          "Quick, cheap failures that teach you something are victories. The aim is to fail forward, extracting learning at every step.",
+      },
+      {
+        id: "ls-35",
+        title: "Small Batches",
+        content:
+          "Working in small batches — shipping little and often — surfaces problems early and speeds up learning dramatically.",
+      },
+      {
+        id: "ls-36",
+        title: "Continuous Deployment",
+        content:
+          "Releasing improvements frequently, even many times a day, tightens the feedback loop and keeps you close to customers.",
+      },
+      {
+        id: "ls-37",
+        title: "Speed and Feedback",
+        content:
+          "The faster you can build, ship, and get feedback, the faster you improve. Cycle time is a core competitive weapon.",
+      },
+      {
+        id: "ls-38",
+        title: "The Five Whys",
+        content:
+          "When something goes wrong, ask 'why' five times to reach the root cause. Fix the underlying issue, not just the symptom.",
+      },
+      {
+        id: "ls-39",
+        title: "Find the Root Cause",
+        content:
+          "Most problems trace back to a deeper systemic cause. Addressing the root prevents the same issue from recurring.",
+      },
+      {
+        id: "ls-40",
+        title: "Proportional Investment",
+        content:
+          "Respond to problems in proportion to their severity. Small issues get small fixes; the Five Whys keeps overreaction in check.",
+      },
+      {
+        id: "ls-41",
+        title: "Build Quality In",
+        content:
+          "Rushing shoddy work creates costly rework later. Building quality as you go, in small batches, is faster over the long run.",
+      },
+      {
+        id: "ls-42",
+        title: "The Engine of Growth",
+        content:
+          "Ries identifies three engines of growth. Knowing which powers your business tells you where to focus your efforts.",
+      },
+      {
+        id: "ls-43",
+        title: "The Sticky Engine",
+        content:
+          "Sticky growth relies on retaining customers. If people stay and rarely leave, your user base compounds steadily.",
+      },
+      {
+        id: "ls-44",
+        title: "The Viral Engine",
+        content:
+          "Viral growth spreads through users inviting others as a natural part of using the product. Each user brings more users.",
+      },
+      {
+        id: "ls-45",
+        title: "The Paid Engine",
+        content:
+          "Paid growth reinvests revenue into acquiring more customers. It works when the value of a customer exceeds the cost to get one.",
+      },
+      {
+        id: "ls-46",
+        title: "Know Your Engine",
+        content:
+          "Focus on the one growth engine that fits your business rather than chasing all three. Clarity here sharpens every decision.",
+      },
+      {
+        id: "ls-47",
+        title: "Sustainable Growth",
+        content:
+          "Real growth comes from the actions of past customers — repeat use, referrals, or funded acquisition — not one-time spikes.",
+      },
+      {
+        id: "ls-48",
+        title: "Genchi Genbutsu",
+        content:
+          "Borrowing from Toyota, 'go and see for yourself.' Base decisions on firsthand observation of customers, not secondhand reports.",
+      },
+      {
+        id: "ls-49",
+        title: "Real Data Over Assumptions",
+        content:
+          "Replace opinions and hunches with evidence from experiments. Let what customers actually do settle internal debates.",
+      },
+      {
+        id: "ls-50",
+        title: "Experiment Constantly",
+        content:
+          "Treat every feature and idea as a hypothesis to be tested. A culture of experimentation keeps you learning and improving.",
+      },
+      {
+        id: "ls-51",
+        title: "Embrace Being Wrong",
+        content:
+          "Many assumptions will prove false, and that's the point. Discovering what's wrong quickly is how you find what's right.",
+      },
+      {
+        id: "ls-52",
+        title: "Don't Scale Too Early",
+        content:
+          "Pouring resources into growth before finding product-market fit magnifies failure. Learn first, then scale what works.",
+      },
+      {
+        id: "ls-53",
+        title: "Find Product-Market Fit First",
+        content:
+          "Before scaling, prove that a real market genuinely wants your product. Everything gets easier once that fit is real.",
+      },
+      {
+        id: "ls-54",
+        title: "Avoid the Success Theater",
+        content:
+          "Impressive-looking activity can mask a lack of real learning. Judge yourself by validated progress, not appearances.",
+      },
+      {
+        id: "ls-55",
+        title: "The MVP Mindset",
+        content:
+          "Always ask what's the least you can build to test the next assumption. Minimalism accelerates learning and saves resources.",
+      },
+      {
+        id: "ls-56",
+        title: "Ship, Measure, Iterate",
+        content:
+          "Release, observe, learn, and refine in tight loops. Continuous iteration steadily converges on a product people love.",
+      },
+      {
+        id: "ls-57",
+        title: "Adaptive Organizations",
+        content:
+          "The Lean approach scales beyond startups; established companies use it to innovate and adapt in fast-changing markets.",
+      },
+      {
+        id: "ls-58",
+        title: "Lean Beyond Software",
+        content:
+          "These principles apply to any venture facing uncertainty — products, nonprofits, or internal projects. It's a way of thinking.",
+      },
+      {
+        id: "ls-59",
+        title: "Vision, Steering, Acceleration",
+        content:
+          "Hold a clear vision, steer with experiments and pivots, and accelerate once you find what works. That's the Lean rhythm.",
+      },
+      {
+        id: "ls-60",
+        title: "Learning Is the Goal",
+        content:
+          "Early on, the point isn't revenue but learning what works. Optimize for insight, and sustainable success follows.",
+      },
+      {
+        id: "ls-61",
+        title: "Reduce Waste",
+        content:
+          "Any effort that doesn't produce validated learning about customers is waste. Ruthlessly cut what doesn't teach you something.",
+      },
+      {
+        id: "ls-62",
+        title: "Build the Right Thing",
+        content:
+          "The Lean Startup ensures you build something people actually want. Test relentlessly, learn fast, pivot when needed, and grow what works.",
+      },
+    ],
+  },
+
+  // The $100 Startup — Chris Guillebeau
+  "bk-066": {
+    bookId: "bk-066",
+    tagline: "Reinvent the way you make a living and create a new future",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "ss-1",
+        title: "The Microbusiness Revolution",
+        content:
+          "Guillebeau studied hundreds of people who built profitable businesses on tiny budgets. You don't need much money or expertise to start earning on your own terms.",
+      },
+      {
+        id: "ss-2",
+        title: "Start With What You Have",
+        content:
+          "Most successful microbusinesses launched with little more than existing skills and a modest sum. Begin from where you are, not where you wish you were.",
+      },
+      {
+        id: "ss-3",
+        title: "Freedom and Value",
+        content:
+          "Two forces drive these ventures: the founder's desire for freedom, and the value they provide to others. Serve people and gain autonomy.",
+      },
+      {
+        id: "ss-4",
+        title: "The Convergence",
+        content:
+          "The magic happens where your passion or skill overlaps with what people are willing to pay for. Find that intersection.",
+      },
+      {
+        id: "ss-5",
+        title: "Passion Meets Usefulness",
+        content:
+          "Loving something isn't enough; it must also be useful to others. A profitable idea sits where your enthusiasm meets a real need.",
+      },
+      {
+        id: "ss-6",
+        title: "Follow Passion — but Serve a Need",
+        content:
+          "Chase your interests only insofar as they help someone. The market pays for solutions, not merely for your hobbies.",
+      },
+      {
+        id: "ss-7",
+        title: "Solve a Real Problem",
+        content:
+          "Successful businesses relieve a pain or fulfill a desire. Identify a problem people have and offer a clear solution.",
+      },
+      {
+        id: "ss-8",
+        title: "Give People What They Want",
+        content:
+          "Don't sell what you think people should want; sell what they actually want. Listen closely to their real desires.",
+      },
+      {
+        id: "ss-9",
+        title: "Sell the Benefit, Not the Feature",
+        content:
+          "People buy outcomes and feelings, not specifications. Frame your offer around the transformation and benefit it delivers.",
+      },
+      {
+        id: "ss-10",
+        title: "Emotional Benefits Sell",
+        content:
+          "Under practical needs lie emotional ones — freedom, status, security, love. Speak to those deeper desires and sales follow.",
+      },
+      {
+        id: "ss-11",
+        title: "The Unexpected Entrepreneur",
+        content:
+          "Many founders had no business background; they turned ordinary skills into income. You likely already have marketable abilities.",
+      },
+      {
+        id: "ss-12",
+        title: "Turn Skills Into Income",
+        content:
+          "A talent, hobby, or knowledge others lack can become a business. Look at what comes easily to you but is valuable to others.",
+      },
+      {
+        id: "ss-13",
+        title: "Find Your Niche",
+        content:
+          "A focused niche beats trying to serve everyone. Serving a specific group well is easier and more profitable than being generic.",
+      },
+      {
+        id: "ss-14",
+        title: "The One-Page Business Plan",
+        content:
+          "Forget the fifty-page plan. A single page covering what you'll sell, to whom, and how you'll get paid is enough to start.",
+      },
+      {
+        id: "ss-15",
+        title: "Keep It Simple",
+        content:
+          "Complexity delays action. The simpler your plan and offer, the faster you can launch and learn from real customers.",
+      },
+      {
+        id: "ss-16",
+        title: "Start Before You're Ready",
+        content:
+          "You'll never feel fully prepared. Launch early, imperfect, and improve as you go — action teaches what planning can't.",
+      },
+      {
+        id: "ss-17",
+        title: "Action Over Analysis",
+        content:
+          "Endless research and planning is often procrastination. Real progress comes from putting an offer in front of real people.",
+      },
+      {
+        id: "ss-18",
+        title: "Test Cheaply First",
+        content:
+          "Before big investment, run a small, low-cost test to see if people will actually buy. Validate demand with real transactions.",
+      },
+      {
+        id: "ss-19",
+        title: "Validate With Real Sales",
+        content:
+          "Interest and praise mean little; paying customers mean everything. The truest proof of a good idea is money changing hands.",
+      },
+      {
+        id: "ss-20",
+        title: "The Power of a Launch",
+        content:
+          "A well-orchestrated launch concentrates attention and sales into a single event. Build anticipation, then open the doors.",
+      },
+      {
+        id: "ss-21",
+        title: "Build Anticipation",
+        content:
+          "Tease and prepare your audience before launch. Excitement built in advance turns a quiet release into a strong opening.",
+      },
+      {
+        id: "ss-22",
+        title: "The Offer Matters",
+        content:
+          "Craft a clear, compelling offer that makes buying easy. A strong offer can outperform a strong product with a weak pitch.",
+      },
+      {
+        id: "ss-23",
+        title: "Make It Easy to Buy",
+        content:
+          "Remove friction from the purchase. Every extra step or confusion costs you sales, so keep the path to payment simple.",
+      },
+      {
+        id: "ss-24",
+        title: "Charge What It's Worth",
+        content:
+          "Underpricing is a common, costly mistake. Price on the value you deliver, not just your costs, and don't fear charging fairly.",
+      },
+      {
+        id: "ss-25",
+        title: "Price on Value",
+        content:
+          "What a solution is worth to the customer matters more than what it costs you. Anchor your price to the benefit delivered.",
+      },
+      {
+        id: "ss-26",
+        title: "Recurring Revenue",
+        content:
+          "Subscriptions and repeat purchases create predictable income. Whenever possible, design offers that customers renew.",
+      },
+      {
+        id: "ss-27",
+        title: "Predictable Income",
+        content:
+          "Recurring revenue smooths the ups and downs of a small business, giving you stability and room to plan and grow.",
+      },
+      {
+        id: "ss-28",
+        title: "Know Your Numbers",
+        content:
+          "Track income, expenses, and cash flow closely. A microbusiness lives or dies on understanding its simple economics.",
+      },
+      {
+        id: "ss-29",
+        title: "Cash Flow Is King",
+        content:
+          "Profit on paper doesn't pay bills; cash does. Manage the timing of money in and out to keep the business alive.",
+      },
+      {
+        id: "ss-30",
+        title: "Reinvest and Grow",
+        content:
+          "Plow early profits back into what's working. Modest, steady reinvestment compounds a tiny venture into a solid income.",
+      },
+      {
+        id: "ss-31",
+        title: "The Launch Checklist",
+        content:
+          "Guillebeau offers a step-by-step launch process. Systematizing the routine parts frees you to focus on the offer and customers.",
+      },
+      {
+        id: "ss-32",
+        title: "Marketing Is Teaching",
+        content:
+          "The best marketing helps and educates rather than hard-sells. Provide value freely and trust — and sales — follow.",
+      },
+      {
+        id: "ss-33",
+        title: "Build an Email List",
+        content:
+          "An email list of interested people is a microbusiness's most valuable asset. It's a direct line to those likely to buy.",
+      },
+      {
+        id: "ss-34",
+        title: "Own Your Audience",
+        content:
+          "Don't rely solely on platforms you don't control. Building a direct relationship with your audience protects your business.",
+      },
+      {
+        id: "ss-35",
+        title: "Word of Mouth",
+        content:
+          "Delighted customers become your best marketers. Exceeding expectations turns buyers into enthusiastic referrers.",
+      },
+      {
+        id: "ss-36",
+        title: "Delight Your Customers",
+        content:
+          "Small businesses win on care and personal touch. Treating customers exceptionally well is a durable competitive advantage.",
+      },
+      {
+        id: "ss-37",
+        title: "Small Is Beautiful",
+        content:
+          "You don't need to build an empire. A small, profitable business that funds a great life is a worthy goal in itself.",
+      },
+      {
+        id: "ss-38",
+        title: "Stay Lean",
+        content:
+          "Low overhead and simple operations keep you flexible and profitable. Resist adding cost and complexity you don't need.",
+      },
+      {
+        id: "ss-39",
+        title: "Design Around Your Life",
+        content:
+          "Build the business to serve the life you want, not the other way around. Freedom, not size, is the point.",
+      },
+      {
+        id: "ss-40",
+        title: "Freedom Is the Goal",
+        content:
+          "The recurring theme is autonomy — control over your time, work, and location. Money is a means to that freedom.",
+      },
+      {
+        id: "ss-41",
+        title: "The Side-Hustle Start",
+        content:
+          "You needn't quit your job on day one. Start on the side, prove the idea, and transition once it can support you.",
+      },
+      {
+        id: "ss-42",
+        title: "Quit Wisely",
+        content:
+          "Leave your job when the numbers make sense, not on impulse. A validated, growing income makes the leap far safer.",
+      },
+      {
+        id: "ss-43",
+        title: "Overcome the Fear",
+        content:
+          "Fear of failure stops most would-be founders. Starting small and cheaply lowers the risk enough to just begin.",
+      },
+      {
+        id: "ss-44",
+        title: "Just Ship It",
+        content:
+          "A launched, imperfect product beats a perfect idea that never ships. Get it into the world and improve from there.",
+      },
+      {
+        id: "ss-45",
+        title: "Learn From Customers",
+        content:
+          "Your customers will tell you what to build and fix. Listen to their feedback and let it guide your next steps.",
+      },
+      {
+        id: "ss-46",
+        title: "Iterate and Improve",
+        content:
+          "The first version is a starting point. Continuously refine your offer based on what actually sells and delights.",
+      },
+      {
+        id: "ss-47",
+        title: "Multiple Small Streams",
+        content:
+          "Several modest income streams can add up to real security and reduce reliance on any single one.",
+      },
+      {
+        id: "ss-48",
+        title: "Sell Your Existing Knowledge",
+        content:
+          "Information products, courses, and services let you package what you know. Your expertise can become a scalable product.",
+      },
+      {
+        id: "ss-49",
+        title: "The 'Right Now' Test",
+        content:
+          "Focus on ideas you can start now with what you have. Prefer the actionable over the ideal-but-distant.",
+      },
+      {
+        id: "ss-50",
+        title: "Give Value First",
+        content:
+          "Generosity builds trust and audience. Freely helping people primes them to buy when you make an offer.",
+      },
+      {
+        id: "ss-51",
+        title: "Focus on the Overlap",
+        content:
+          "Keep returning to the intersection of what you enjoy, what you're good at, and what others will pay for.",
+      },
+      {
+        id: "ss-52",
+        title: "Simplicity Scales",
+        content:
+          "The simplest businesses are often the most resilient and profitable. Complexity is usually the enemy of a small venture.",
+      },
+      {
+        id: "ss-53",
+        title: "Freedom + Value = Success",
+        content:
+          "Guillebeau's formula is simple: create real value for others, and use it to buy your own freedom.",
+      },
+      {
+        id: "ss-54",
+        title: "You Have Everything You Need",
+        content:
+          "Skills, an internet connection, and a willingness to help others are often all it takes to begin. Stop waiting for more.",
+      },
+      {
+        id: "ss-55",
+        title: "Take Imperfect Action",
+        content:
+          "Progress beats perfection. Launch, learn, adjust — momentum is built by doing, not by endlessly preparing.",
+      },
+      {
+        id: "ss-56",
+        title: "Persistence Pays",
+        content:
+          "Few businesses succeed instantly. Steady effort, learning, and refinement turn a small start into a sustainable income.",
+      },
+      {
+        id: "ss-57",
+        title: "Anyone Can Start",
+        content:
+          "You don't need a degree, connections, or capital. The stories prove that ordinary people can build extraordinary freedom.",
+      },
+      {
+        id: "ss-58",
+        title: "Build Your $100 Startup",
+        content:
+          "Find the overlap of passion and need, make a simple offer, launch small, charge fairly, and serve customers well. That's the path to your own freedom.",
+      },
+    ],
+  },
+
+  // Don't Believe Everything You Think — Joseph Nguyen
+  "bk-031": {
+    bookId: "bk-031",
+    tagline: "Why your thinking is the source of your suffering",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "db-1",
+        title: "The Root of Suffering",
+        content:
+          "Nguyen's bold claim: thinking itself is the root of nearly all our psychological suffering. Understand this, and peace becomes possible.",
+      },
+      {
+        id: "db-2",
+        title: "Thinking vs Thoughts",
+        content:
+          "Thoughts arise on their own, effortlessly; thinking is when we grab a thought and spin it into stories. The spinning is what hurts.",
+      },
+      {
+        id: "db-3",
+        title: "Thoughts Just Arise",
+        content:
+          "You can't control which thoughts appear, and that's fine. The trouble starts only when you engage and identify with them.",
+      },
+      {
+        id: "db-4",
+        title: "Overthinking Creates Suffering",
+        content:
+          "It's not the thought but the endless thinking about it that generates anxiety, regret, and pain. The loop is the problem.",
+      },
+      {
+        id: "db-5",
+        title: "Feelings Come From Thinking",
+        content:
+          "Your emotions arise from your thinking, not directly from events. Change the thinking and the feeling changes with it.",
+      },
+      {
+        id: "db-6",
+        title: "Not From Circumstances",
+        content:
+          "The same situation can feel devastating or fine depending on your thoughts about it. Circumstances don't dictate your inner state.",
+      },
+      {
+        id: "db-7",
+        title: "The Same Event, Different Feelings",
+        content:
+          "Two people face identical events yet feel completely differently. The difference is entirely in their thinking.",
+      },
+      {
+        id: "db-8",
+        title: "You Are Not Your Thoughts",
+        content:
+          "There is an awareness that notices your thoughts — that observer is the real you. Thoughts pass through; you remain.",
+      },
+      {
+        id: "db-9",
+        title: "The Observer Behind Thought",
+        content:
+          "Step back and watch your mind, and you realize you're the one watching, not the thoughts themselves. This shift brings freedom.",
+      },
+      {
+        id: "db-10",
+        title: "Peace Is Your Natural State",
+        content:
+          "Beneath the noise of thinking lies a natural peace. It isn't something to create, only something to return to.",
+      },
+      {
+        id: "db-11",
+        title: "Suffering Is Added On",
+        content:
+          "Pain may be real, but suffering is what our thinking adds on top. Drop the added layer and much of the anguish dissolves.",
+      },
+      {
+        id: "db-12",
+        title: "The Space Between Thoughts",
+        content:
+          "In the gaps between thoughts lies stillness and clarity. Resting in that space is where calm and wisdom are found.",
+      },
+      {
+        id: "db-13",
+        title: "Stillness Holds Wisdom",
+        content:
+          "The best insights arise not from frantic thinking but from a quiet mind. Wisdom whispers in the silence.",
+      },
+      {
+        id: "db-14",
+        title: "Let Thoughts Pass",
+        content:
+          "Thoughts are like clouds drifting across the sky of awareness. Let them come and go without grabbing hold.",
+      },
+      {
+        id: "db-15",
+        title: "Don't Grab the Thought",
+        content:
+          "A thought only gains power when you seize it and feed it attention. Notice it, release it, and it loses its grip.",
+      },
+      {
+        id: "db-16",
+        title: "Non-Attachment",
+        content:
+          "Clinging to thoughts and outcomes creates tension. Holding them lightly lets life flow and the mind settle.",
+      },
+      {
+        id: "db-17",
+        title: "The Present Moment",
+        content:
+          "Suffering lives in imagined pasts and futures. The present moment, met directly, is almost always workable and calm.",
+      },
+      {
+        id: "db-18",
+        title: "Now Is All There Is",
+        content:
+          "The past and future exist only as thoughts. Returning your attention to now is returning to reality — and to peace.",
+      },
+      {
+        id: "db-19",
+        title: "The Mind Lives Elsewhere",
+        content:
+          "The thinking mind drags you into regret and worry. Gently bring it back to what is actually happening right now.",
+      },
+      {
+        id: "db-20",
+        title: "Intuition vs Thinking",
+        content:
+          "Beyond the noisy thinking mind is a quieter intuition. Learning to trust that inner knowing guides you better than overanalysis.",
+      },
+      {
+        id: "db-21",
+        title: "Wisdom Arises in Silence",
+        content:
+          "When the thinking stops, clarity appears. Answers you couldn't force often arrive the moment you stop chasing them.",
+      },
+      {
+        id: "db-22",
+        title: "Question Your Thoughts",
+        content:
+          "Don't accept every thought as true. Asking 'is this actually true?' loosens the grip of anxious, distorted thinking.",
+      },
+      {
+        id: "db-23",
+        title: "Thoughts Are Not Facts",
+        content:
+          "A thought is just a mental event, not reality. Treating your thoughts as facts is where much needless suffering begins.",
+      },
+      {
+        id: "db-24",
+        title: "Don't Believe Everything You Think",
+        content:
+          "The book's title is its core practice: just because you think something doesn't make it true or worth believing.",
+      },
+      {
+        id: "db-25",
+        title: "The Story You Tell",
+        content:
+          "Much suffering comes from the stories we spin about events. Notice the story, and you can choose to release or rewrite it.",
+      },
+      {
+        id: "db-26",
+        title: "Release the Story",
+        content:
+          "Drop the narrative and you're left with the bare facts, which are usually far less painful than the tale about them.",
+      },
+      {
+        id: "db-27",
+        title: "Let Go of Control",
+        content:
+          "Trying to think your way to control over everything breeds stress. Surrendering the illusion of control brings ease.",
+      },
+      {
+        id: "db-28",
+        title: "Acceptance Brings Peace",
+        content:
+          "Fighting reality with your mind only multiplies suffering. Accepting what is, then responding, restores calm.",
+      },
+      {
+        id: "db-29",
+        title: "Resistance Creates Pain",
+        content:
+          "Much of our anguish is resistance to what already is. What you resist persists; what you accept can be released.",
+      },
+      {
+        id: "db-30",
+        title: "Flow With Life",
+        content:
+          "Instead of forcing outcomes through anxious thinking, move with life as it unfolds. Flow replaces struggle.",
+      },
+      {
+        id: "db-31",
+        title: "You Don't Need to Think to Be",
+        content:
+          "You can function, act, and even excel without constant analytical thinking. Being fully present is often enough.",
+      },
+      {
+        id: "db-32",
+        title: "Inspired Action, Not Anxious Thought",
+        content:
+          "Action born of a calm, present mind is clearer and more effective than action driven by anxious overthinking.",
+      },
+      {
+        id: "db-33",
+        title: "Creation From Stillness",
+        content:
+          "Creativity and inspiration flow most freely from a quiet mind, not a churning one. Stillness is fertile ground.",
+      },
+      {
+        id: "db-34",
+        title: "Love Is Our Default",
+        content:
+          "Nguyen suggests that beneath the noise of fear-based thinking, love and peace are our natural state.",
+      },
+      {
+        id: "db-35",
+        title: "Fear Is Learned Thinking",
+        content:
+          "Much fear is generated by conditioned thought patterns, not real danger. Seeing this loosens fear's hold on you.",
+      },
+      {
+        id: "db-36",
+        title: "Return to Love",
+        content:
+          "When thinking quiets, what remains is a peaceful, loving awareness. You return, again and again, to that ground.",
+      },
+      {
+        id: "db-37",
+        title: "The Mind as Tool, Not Master",
+        content:
+          "The thinking mind is a useful tool for practical tasks, but a terrible master. Use it deliberately, then set it down.",
+      },
+      {
+        id: "db-38",
+        title: "Use Thinking When Needed",
+        content:
+          "Planning a trip or solving a problem needs thought. The issue is compulsive, unnecessary thinking that runs on autopilot.",
+      },
+      {
+        id: "db-39",
+        title: "Drop It When Not",
+        content:
+          "Once a task is done, let the thinking go. Carrying it endlessly is what turns useful thought into suffering.",
+      },
+      {
+        id: "db-40",
+        title: "Awareness Is the Practice",
+        content:
+          "Simply noticing when you've slipped into thinking begins to free you. Awareness itself is the tool of transformation.",
+      },
+      {
+        id: "db-41",
+        title: "Watch the Mind",
+        content:
+          "Observe your thoughts without judgment, as if watching traffic go by. The watching creates space and calm.",
+      },
+      {
+        id: "db-42",
+        title: "Meditation Reveals This",
+        content:
+          "Sitting quietly, you directly see how thoughts arise and pass. Meditation makes the book's message experiential, not just intellectual.",
+      },
+      {
+        id: "db-43",
+        title: "Freedom From the Mind",
+        content:
+          "You aren't trapped by your mind once you see you're the awareness behind it. That realization is genuine freedom.",
+      },
+      {
+        id: "db-44",
+        title: "Nothing to Fix",
+        content:
+          "You don't need to fix yourself to find peace; you only need to stop the thinking that hides it. Peace is already here.",
+      },
+      {
+        id: "db-45",
+        title: "You Are Already Whole",
+        content:
+          "The sense of lack is a thought, not a truth. Beneath it, you are already complete and at peace.",
+      },
+      {
+        id: "db-46",
+        title: "Feelings Are Signals, Not Commands",
+        content:
+          "Notice emotions as information passing through, not orders to obey. They arise from thinking and, like thoughts, will pass.",
+      },
+      {
+        id: "db-47",
+        title: "Stop Feeding Negative Loops",
+        content:
+          "Every time you re-engage a negative thought, you strengthen it. Letting it pass unfed lets it fade away.",
+      },
+      {
+        id: "db-48",
+        title: "Presence Over Analysis",
+        content:
+          "Being fully present with what is beats endlessly analyzing it. Presence resolves what thinking only complicates.",
+      },
+      {
+        id: "db-49",
+        title: "Trust Life More",
+        content:
+          "Anxious thinking assumes you must control everything. Trusting life to unfold eases the compulsion to over-think.",
+      },
+      {
+        id: "db-50",
+        title: "Simplicity of Peace",
+        content:
+          "Peace isn't complicated or far away. It's what remains when you stop believing the noise in your head.",
+      },
+      {
+        id: "db-51",
+        title: "A Practice, Not a One-Time Fix",
+        content:
+          "Quieting the mind is an ongoing practice of noticing and letting go. Each return to stillness deepens the habit of peace.",
+      },
+      {
+        id: "db-52",
+        title: "Peace Beyond Thought",
+        content:
+          "Stop believing every thought, return to the present, and rest in awareness. There, beyond thinking, lies the peace you've been seeking.",
+      },
+    ],
+  },
+
+  // Can't Hurt Me — David Goggins
+  "bk-146": {
+    bookId: "bk-146",
+    tagline: "Master your mind and defy the odds",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "cm-1",
+        title: "Master Your Mind",
+        content:
+          "Goggins argues that the mind, not the body, is the true limit. Learn to control it, and you can endure and achieve almost anything.",
+      },
+      {
+        id: "cm-2",
+        title: "From Broken to Unbreakable",
+        content:
+          "Rising from an abusive childhood, poverty, and obesity, Goggins remade himself into an elite soldier and endurance athlete through sheer will.",
+      },
+      {
+        id: "cm-3",
+        title: "Callus Your Mind",
+        content:
+          "Just as hard work callouses the hands, repeated exposure to hardship toughens the mind. Deliberately seek difficulty to grow stronger.",
+      },
+      {
+        id: "cm-4",
+        title: "The Accountability Mirror",
+        content:
+          "Look in the mirror and tell yourself the brutal truth about your life and goals. Radical honesty with yourself is where change begins.",
+      },
+      {
+        id: "cm-5",
+        title: "Own Your Story",
+        content:
+          "Face your past — the pain, the failures, the excuses — head-on. Owning your story robs it of the power to hold you back.",
+      },
+      {
+        id: "cm-6",
+        title: "Your Past Is Fuel",
+        content:
+          "Rather than a wound, your suffering can become fuel. Goggins turned every bit of pain into motivation to prove himself.",
+      },
+      {
+        id: "cm-7",
+        title: "No Excuses",
+        content:
+          "Excuses are the comfortable lies that keep you weak. Goggins refuses them entirely and takes total ownership of his life.",
+      },
+      {
+        id: "cm-8",
+        title: "The 40% Rule",
+        content:
+          "When your mind says you're done, you've often used only forty percent of your capacity. There's a huge reserve you can learn to tap.",
+      },
+      {
+        id: "cm-9",
+        title: "You're Capable of More",
+        content:
+          "Most people vastly underestimate what they can endure and achieve. The limits you feel are usually far short of the real ones.",
+      },
+      {
+        id: "cm-10",
+        title: "The Governor in Your Brain",
+        content:
+          "Your mind has a built-in 'governor' that slows you down to protect you. Learning to push past it unlocks hidden reserves.",
+      },
+      {
+        id: "cm-11",
+        title: "Embrace Suffering",
+        content:
+          "Goggins doesn't just tolerate suffering; he seeks it out. Voluntary hardship builds the mental toughness that comfort never can.",
+      },
+      {
+        id: "cm-12",
+        title: "Comfort Is the Enemy",
+        content:
+          "A comfortable life quietly makes you soft. Growth lives in the discomfort most people spend their lives avoiding.",
+      },
+      {
+        id: "cm-13",
+        title: "Do What You Hate",
+        content:
+          "Regularly doing things you dislike — the cold, the run, the hard task — strengthens discipline and expands your capacity.",
+      },
+      {
+        id: "cm-14",
+        title: "The Cookie Jar",
+        content:
+          "Keep a mental 'cookie jar' of past victories and hardships overcome. In moments of doubt, reach in and remind yourself what you've survived.",
+      },
+      {
+        id: "cm-15",
+        title: "Draw on Past Wins",
+        content:
+          "When you want to quit, recall specific times you already proved your strength. Evidence of past resilience fuels present courage.",
+      },
+      {
+        id: "cm-16",
+        title: "Visualization",
+        content:
+          "Goggins visualizes not just success but the suffering required to get there. Mentally rehearsing the pain prepares you to endure it.",
+      },
+      {
+        id: "cm-17",
+        title: "Prepare for the Pain",
+        content:
+          "Anticipate exactly how hard something will be, so it can't ambush you. Bracing for the struggle makes it survivable.",
+      },
+      {
+        id: "cm-18",
+        title: "Taking Souls",
+        content:
+          "When someone doubts or disrespects you, 'take their soul' by outworking and outlasting them. Turn their doubt into your fuel.",
+      },
+      {
+        id: "cm-19",
+        title: "Use Doubt as Fuel",
+        content:
+          "Every person who underestimates you is a source of motivation. Let their disbelief drive you to prove them spectacularly wrong.",
+      },
+      {
+        id: "cm-20",
+        title: "Be Uncommon Amongst the Uncommon",
+        content:
+          "It's not enough to be good; push to be exceptional even among the exceptional. Go further than anyone thinks reasonable.",
+      },
+      {
+        id: "cm-21",
+        title: "Go Beyond What's Required",
+        content:
+          "Doing only what's asked keeps you average. Consistently exceeding expectations is how you separate from the pack.",
+      },
+      {
+        id: "cm-22",
+        title: "Who's Gonna Carry the Boats?",
+        content:
+          "Goggins's rallying cry: when the hardest task appears, step up and do it. Volunteering for the difficult builds unshakeable strength.",
+      },
+      {
+        id: "cm-23",
+        title: "Self-Discipline",
+        content:
+          "Discipline, not motivation, is what carries you when feelings fail. Goggins built his life on doing what must be done regardless of mood.",
+      },
+      {
+        id: "cm-24",
+        title: "Motivation Is Fleeting",
+        content:
+          "Motivation comes and goes; you can't rely on it. Discipline shows up every day whether or not you feel like it.",
+      },
+      {
+        id: "cm-25",
+        title: "Account for Every Minute",
+        content:
+          "Goggins scheduled his days rigorously to eliminate wasted time. Structure and accountability turn intention into action.",
+      },
+      {
+        id: "cm-26",
+        title: "Hard Work Beats Talent",
+        content:
+          "Goggins had no natural gifts for what he achieved; he outworked everyone. Relentless effort can overcome a lack of talent.",
+      },
+      {
+        id: "cm-27",
+        title: "Outwork Everyone",
+        content:
+          "If you're not the most gifted, be the hardest working. Effort is the one advantage entirely within your control.",
+      },
+      {
+        id: "cm-28",
+        title: "Failure Is a Teacher",
+        content:
+          "Goggins failed repeatedly — Hell Week, exams, races — before succeeding. Each failure taught him and made his eventual victory sweeter.",
+      },
+      {
+        id: "cm-29",
+        title: "Fail, Learn, Return",
+        content:
+          "Failure isn't the end unless you quit. Analyze what went wrong, prepare harder, and come back to conquer it.",
+      },
+      {
+        id: "cm-30",
+        title: "The Path of Most Resistance",
+        content:
+          "Where most flee difficulty, Goggins runs toward it. Choosing the harder road deliberately is how he builds his edge.",
+      },
+      {
+        id: "cm-31",
+        title: "Grow Through Adversity",
+        content:
+          "Hardship, faced head-on, forges resilience and character. The struggles you'd never choose often make you who you become.",
+      },
+      {
+        id: "cm-32",
+        title: "Mental Toughness Is a Lifestyle",
+        content:
+          "Toughness isn't a one-time act but a daily practice. You rebuild it every day through the hard choices you make.",
+      },
+      {
+        id: "cm-33",
+        title: "Talk Back to the Weak Voice",
+        content:
+          "The mind whispers reasons to quit. Argue back, override it, and take one more step. You command your mind, not the reverse.",
+      },
+      {
+        id: "cm-34",
+        title: "Push Past the Wall",
+        content:
+          "When you hit the wall and think you're finished, that's exactly when to dig for the reserve waiting on the other side.",
+      },
+      {
+        id: "cm-35",
+        title: "Suffering Reveals You",
+        content:
+          "Under extreme pressure, you discover who you truly are. Hardship strips away illusions and shows your real character.",
+      },
+      {
+        id: "cm-36",
+        title: "Take Ownership of Everything",
+        content:
+          "Goggins accepts total responsibility for his life, blaming no one. Ownership is the foundation of real personal power.",
+      },
+      {
+        id: "cm-37",
+        title: "Stop Blaming",
+        content:
+          "Blaming circumstances hands away your power to change. Reclaim it by owning your choices and your responses.",
+      },
+      {
+        id: "cm-38",
+        title: "Confront Your Weaknesses",
+        content:
+          "Instead of hiding from what you're bad at, attack it. Goggins deliberately went after his greatest fears and flaws.",
+      },
+      {
+        id: "cm-39",
+        title: "Attack Your Insecurities",
+        content:
+          "Your insecurities lose power when you face them directly. Conquering what scares you builds unshakeable self-belief.",
+      },
+      {
+        id: "cm-40",
+        title: "Earn Your Confidence",
+        content:
+          "Confidence isn't given; it's earned through doing hard things. Each difficult task completed becomes proof you can trust yourself.",
+      },
+      {
+        id: "cm-41",
+        title: "Confidence Through Callousing",
+        content:
+          "Every voluntary hardship you survive deposits real confidence. You believe in yourself because you have the receipts.",
+      },
+      {
+        id: "cm-42",
+        title: "Never Feel Entitled",
+        content:
+          "Goggins expects nothing to be handed to him. Rejecting entitlement keeps him hungry and working for everything.",
+      },
+      {
+        id: "cm-43",
+        title: "Stay Hungry",
+        content:
+          "Success can breed complacency. Goggins stays perpetually driven, always chasing the next hard goal rather than resting on the last.",
+      },
+      {
+        id: "cm-44",
+        title: "The Journey Never Ends",
+        content:
+          "There's no final destination of toughness. Self-mastery is a lifelong pursuit that demands you keep showing up.",
+      },
+      {
+        id: "cm-45",
+        title: "Do It for You",
+        content:
+          "Ultimately, the battle is with yourself. You push not to impress others but to become the strongest version of you.",
+      },
+      {
+        id: "cm-46",
+        title: "Callous the Mind Daily",
+        content:
+          "Toughness fades without use. A little voluntary hardship each day keeps the mind strong and ready.",
+      },
+      {
+        id: "cm-47",
+        title: "Discomfort Is Where You Grow",
+        content:
+          "Everything you want is on the far side of discomfort. Learn to lean into it rather than run from it.",
+      },
+      {
+        id: "cm-48",
+        title: "Small Steps Compound",
+        content:
+          "Goggins's transformation came one hard choice at a time. Consistent difficult decisions compound into extraordinary change.",
+      },
+      {
+        id: "cm-49",
+        title: "Be Your Own Motivation",
+        content:
+          "Don't wait for anyone to lift you up. Generate your own drive from your goals, your pain, and your standards.",
+      },
+      {
+        id: "cm-50",
+        title: "Turn Pain Into Purpose",
+        content:
+          "The very things that broke you can become your mission. Goggins transformed his deepest wounds into his greatest strengths.",
+      },
+      {
+        id: "cm-51",
+        title: "Reject the Victim Mindset",
+        content:
+          "You can be a victim of circumstance or the author of your comeback, but not both. Choose to author yours.",
+      },
+      {
+        id: "cm-52",
+        title: "The Warrior's Standard",
+        content:
+          "Hold yourself to a standard higher than anyone else would. That inner bar is what separates the driven from the drifting.",
+      },
+      {
+        id: "cm-53",
+        title: "Suffer Now, Win Later",
+        content:
+          "The pain of discipline is temporary; the pain of regret lasts. Choose the suffering that leads somewhere.",
+      },
+      {
+        id: "cm-54",
+        title: "Prove It to Yourself",
+        content:
+          "You don't need external validation. The deepest satisfaction comes from proving your strength to the one person who matters — you.",
+      },
+      {
+        id: "cm-55",
+        title: "One More",
+        content:
+          "When you want to stop, do one more — one more rep, one more step. That relentless 'one more' is where growth hides.",
+      },
+      {
+        id: "cm-56",
+        title: "Get Comfortable Being Uncomfortable",
+        content:
+          "Make discomfort your normal. The more familiar hardship becomes, the less power it has to stop you.",
+      },
+      {
+        id: "cm-57",
+        title: "Face Fear Head-On",
+        content:
+          "Goggins ran toward his fears — of water, of failure, of pain. Confronting fear directly is how you shrink and defeat it.",
+      },
+      {
+        id: "cm-58",
+        title: "Build Unbreakable Resolve",
+        content:
+          "Resolve is forged in the moments you keep going when everything says stop. Each time, your will grows harder to break.",
+      },
+      {
+        id: "cm-59",
+        title: "Redefine Your Limits",
+        content:
+          "The limits you accept become your ceiling. Constantly test and push them, and you'll discover how false most of them were.",
+      },
+      {
+        id: "cm-60",
+        title: "Stay Hard",
+        content:
+          "Goggins's mantra: stay hard. Keep your standards, your discipline, and your edge sharp no matter how far you've come.",
+      },
+      {
+        id: "cm-61",
+        title: "Be Your Own Hero",
+        content:
+          "No one is coming to save you, and that's good news — it means the power to change is entirely in your hands.",
+      },
+      {
+        id: "cm-62",
+        title: "You Can't Hurt Me",
+        content:
+          "Master your mind, embrace suffering, own your story, and outwork everyone, and you become someone the world can no longer break.",
+      },
+    ],
+  },
+
+  // The Intelligent Investor — Benjamin Graham
+  "bk-275": {
+    bookId: "bk-275",
+    tagline: "The definitive book on value investing and financial discipline",
+    updated: "2026-07",
+    frames: [
+      {
+        id: "ii-1",
+        title: "The Bible of Value Investing",
+        content:
+          "Graham's classic, which shaped Warren Buffett, teaches a disciplined, business-like way to invest. Its principles have guided investors for generations.",
+      },
+      {
+        id: "ii-2",
+        title: "Investment vs Speculation",
+        content:
+          "An investment operation, Graham says, promises safety of principal and an adequate return; anything else is speculation. Know which you're doing.",
+      },
+      {
+        id: "ii-3",
+        title: "Protect Your Principal First",
+        content:
+          "The foremost goal is not losing money. Preserving capital, then earning a reasonable return, matters far more than chasing spectacular gains.",
+      },
+      {
+        id: "ii-4",
+        title: "Temperament Over Intellect",
+        content:
+          "Successful investing depends more on character than brains. Discipline, patience, and emotional control beat raw intelligence.",
+      },
+      {
+        id: "ii-5",
+        title: "You Are Your Own Worst Enemy",
+        content:
+          "The investor's chief problem, and worst enemy, is likely himself. Managing your own fear and greed is the real challenge.",
+      },
+      {
+        id: "ii-6",
+        title: "Meet Mr. Market",
+        content:
+          "Imagine a manic business partner, Mr. Market, who offers to buy or sell each day at wildly swinging prices driven by emotion, not logic.",
+      },
+      {
+        id: "ii-7",
+        title: "Use Mr. Market, Don't Obey Him",
+        content:
+          "Mr. Market is there to serve you, not guide you. Buy when he's fearful and cheap, sell when he's euphoric — but never let his moods infect you.",
+      },
+      {
+        id: "ii-8",
+        title: "Price Is What You Pay",
+        content:
+          "The market quotes a price, but that's not the same as worth. Never confuse a stock's price with the value of the business behind it.",
+      },
+      {
+        id: "ii-9",
+        title: "Value Is What You Get",
+        content:
+          "Intrinsic value is what a business is truly worth based on its assets and earning power. Wise investing means buying value for less than its price.",
+      },
+      {
+        id: "ii-10",
+        title: "Intrinsic Value",
+        content:
+          "Estimate what a company is genuinely worth, independent of the market's mood. That estimate anchors every sound buy-or-sell decision.",
+      },
+      {
+        id: "ii-11",
+        title: "The Margin of Safety",
+        content:
+          "Graham's central concept: buy only at a price well below your estimate of value. That gap protects you when your analysis is wrong.",
+      },
+      {
+        id: "ii-12",
+        title: "A Cushion Against Error",
+        content:
+          "Since the future is uncertain and estimates imperfect, the margin of safety absorbs mistakes and bad luck. It's your financial seatbelt.",
+      },
+      {
+        id: "ii-13",
+        title: "Buy Below Intrinsic Value",
+        content:
+          "Purchasing a dollar of value for seventy cents tilts the odds in your favour. The bigger the discount, the safer and more profitable the buy.",
+      },
+      {
+        id: "ii-14",
+        title: "Two Types of Investors",
+        content:
+          "Graham divides investors into the defensive (passive) and the enterprising (active). Each needs a different strategy and effort level.",
+      },
+      {
+        id: "ii-15",
+        title: "The Defensive Investor",
+        content:
+          "The defensive investor seeks safety and freedom from effort. A simple, diversified, low-maintenance portfolio suits them best.",
+      },
+      {
+        id: "ii-16",
+        title: "The Enterprising Investor",
+        content:
+          "The enterprising investor is willing to devote time and study to seek better-than-average returns through careful bargain-hunting.",
+      },
+      {
+        id: "ii-17",
+        title: "Know Which You Are",
+        content:
+          "Be honest about how much time and temperament you have. The dangerous middle ground is doing active investing without the required work.",
+      },
+      {
+        id: "ii-18",
+        title: "The Stock-Bond Split",
+        content:
+          "Graham suggests dividing money between stocks and bonds, never letting either fall below twenty-five percent of the portfolio.",
+      },
+      {
+        id: "ii-19",
+        title: "Rebalance Periodically",
+        content:
+          "As markets move, restore your target allocation. Rebalancing forces you to sell high and buy low mechanically, without emotion.",
+      },
+      {
+        id: "ii-20",
+        title: "Dollar-Cost Averaging",
+        content:
+          "Investing a fixed amount at regular intervals buys more shares when prices are low and fewer when high, smoothing out timing risk.",
+      },
+      {
+        id: "ii-21",
+        title: "Invest Steadily",
+        content:
+          "Consistent, automatic investing beats trying to jump in and out. Regularity removes the temptation to time the market.",
+      },
+      {
+        id: "ii-22",
+        title: "Diversify",
+        content:
+          "Spreading money across many securities protects you when any single one disappoints. Adequate diversification is basic prudence.",
+      },
+      {
+        id: "ii-23",
+        title: "Don't Bet the Farm",
+        content:
+          "No matter how confident you are, avoid concentrating your wealth in one stock. Even great analysis can be blindsided.",
+      },
+      {
+        id: "ii-24",
+        title: "Criteria for Defensive Stocks",
+        content:
+          "Graham offers clear tests for safe stock picks — around size, financial strength, earnings, dividends, growth, and price.",
+      },
+      {
+        id: "ii-25",
+        title: "Adequate Size",
+        content:
+          "Favour established companies of sufficient size. Larger, stable firms are less likely to be wiped out by a single misstep.",
+      },
+      {
+        id: "ii-26",
+        title: "Strong Financial Condition",
+        content:
+          "Look for solid balance sheets — ample current assets and manageable debt. Financial strength lets a company survive hard times.",
+      },
+      {
+        id: "ii-27",
+        title: "Earnings Stability",
+        content:
+          "Prefer companies with a long record of consistent profits. Steady earnings signal a durable, understandable business.",
+      },
+      {
+        id: "ii-28",
+        title: "A Dividend Record",
+        content:
+          "A long, unbroken history of paying dividends is a mark of reliability and discipline. It shows real, distributable earnings.",
+      },
+      {
+        id: "ii-29",
+        title: "Earnings Growth",
+        content:
+          "Seek reasonable growth in earnings over the years. You want a business getting stronger, not slowly withering.",
+      },
+      {
+        id: "ii-30",
+        title: "A Moderate Price",
+        content:
+          "Don't overpay. Graham advises reasonable price-to-earnings and price-to-book ratios, so you're not buying at a bubble valuation.",
+      },
+      {
+        id: "ii-31",
+        title: "The Enterprising Search",
+        content:
+          "The active investor hunts for undervalued bargains the market has overlooked, applying more analysis for potentially higher reward.",
+      },
+      {
+        id: "ii-32",
+        title: "Bargain Issues",
+        content:
+          "Graham loved stocks trading below their conservative worth — sometimes even below net current assets. Deep value offers a big margin of safety.",
+      },
+      {
+        id: "ii-33",
+        title: "Unpopular Large Companies",
+        content:
+          "Solid big companies that fall out of favour can be bargains. The market often over-punishes temporary disappointments.",
+      },
+      {
+        id: "ii-34",
+        title: "Do Your Homework",
+        content:
+          "Enterprising investing demands real analysis of financial statements and business quality. Effort is the price of an edge.",
+      },
+      {
+        id: "ii-35",
+        title: "Analyze the Business",
+        content:
+          "Study earnings, assets, and prospects as if buying the whole company. Sound stock selection is fundamentally business analysis.",
+      },
+      {
+        id: "ii-36",
+        title: "The Business-Owner Mindset",
+        content:
+          "A share of stock is a fractional ownership in a real business, not a number that blinks on a screen. Think like a part-owner.",
+      },
+      {
+        id: "ii-37",
+        title: "Own a Piece of a Business",
+        content:
+          "Judge your holdings by the performance of the underlying company, not by the daily quote. Businesses, not tickers, create wealth.",
+      },
+      {
+        id: "ii-38",
+        title: "Ignore Daily Price Swings",
+        content:
+          "Short-term price movements are mostly noise. A true investor is largely indifferent to whether the market is open tomorrow.",
+      },
+      {
+        id: "ii-39",
+        title: "Voting Machine, Weighing Machine",
+        content:
+          "In the short run the market is a voting machine driven by popularity; in the long run it's a weighing machine that reflects real value.",
+      },
+      {
+        id: "ii-40",
+        title: "Beware Growth-Stock Mania",
+        content:
+          "Exciting growth stories tempt investors to overpay. High expectations already baked into the price make them risky.",
+      },
+      {
+        id: "ii-41",
+        title: "Don't Overpay for Growth",
+        content:
+          "Even a wonderful company is a bad investment at too high a price. Growth is only valuable when bought at a sensible cost.",
+      },
+      {
+        id: "ii-42",
+        title: "Popular Is Often Overpriced",
+        content:
+          "The most talked-about stocks usually carry the least margin of safety. Popularity and value rarely coincide.",
+      },
+      {
+        id: "ii-43",
+        title: "IPOs — Buyer Beware",
+        content:
+          "New issues are typically sold when conditions favour the seller, at optimistic prices. Graham warns to treat them with great caution.",
+      },
+      {
+        id: "ii-44",
+        title: "Resist New-Issue Hype",
+        content:
+          "The excitement around a hot IPO is a marketing engine, not an investment case. Let others chase the debut; wait for value.",
+      },
+      {
+        id: "ii-45",
+        title: "The Crowd Is Often Wrong",
+        content:
+          "Markets swing to extremes of optimism and pessimism. The disciplined investor profits by acting against the crowd's emotions.",
+      },
+      {
+        id: "ii-46",
+        title: "Think Independently",
+        content:
+          "You're neither right nor wrong because the crowd agrees. You're right because your facts and reasoning are sound.",
+      },
+      {
+        id: "ii-47",
+        title: "Contrarian Courage",
+        content:
+          "The best bargains appear when others are fearful. Buying quality at a discount during panics requires courage and conviction.",
+      },
+      {
+        id: "ii-48",
+        title: "Be Greedy When Others Fear",
+        content:
+          "Market crashes transfer wealth to the patient and prepared. Downturns are when the disciplined investor does their best buying.",
+      },
+      {
+        id: "ii-49",
+        title: "History of Bubbles",
+        content:
+          "Graham chronicles cycles of boom and bust. Studying market history inoculates you against believing the latest mania is different.",
+      },
+      {
+        id: "ii-50",
+        title: "This Time Is Rarely Different",
+        content:
+          "Every bubble is justified by a story of a new era. Almost always, old rules of value reassert themselves eventually.",
+      },
+      {
+        id: "ii-51",
+        title: "Forecasting Is Futile",
+        content:
+          "No one can reliably predict short-term market moves. Basing your strategy on forecasts is building on sand.",
+      },
+      {
+        id: "ii-52",
+        title: "Don't Try to Time the Market",
+        content:
+          "Attempting to jump in and out at the perfect moments usually backfires. Time in the market beats timing the market.",
+      },
+      {
+        id: "ii-53",
+        title: "Focus on Value, Not Predictions",
+        content:
+          "Instead of guessing the market's direction, focus on buying good value. Value gives returns regardless of the forecast.",
+      },
+      {
+        id: "ii-54",
+        title: "Inflation Erodes Returns",
+        content:
+          "What matters is real, after-inflation return. Graham reminds investors to account for inflation eating into nominal gains.",
+      },
+      {
+        id: "ii-55",
+        title: "Stocks and Inflation",
+        content:
+          "Over long periods, stocks tend to offer some protection against inflation, unlike cash. This supports holding equities for the long run.",
+      },
+      {
+        id: "ii-56",
+        title: "The Role of Bonds",
+        content:
+          "High-quality bonds provide safety and income to balance stocks. The mix cushions the portfolio against equity swings.",
+      },
+      {
+        id: "ii-57",
+        title: "Understand What You Own",
+        content:
+          "Never buy a security you can't explain. Understanding the business and its finances is non-negotiable for the intelligent investor.",
+      },
+      {
+        id: "ii-58",
+        title: "Read the Financials",
+        content:
+          "Learn to read income statements and balance sheets. The numbers reveal the health and value that headlines obscure.",
+      },
+      {
+        id: "ii-59",
+        title: "Watch the Balance Sheet",
+        content:
+          "A company's assets, liabilities, and equity show its true financial footing. A weak balance sheet is a red flag whatever the story.",
+      },
+      {
+        id: "ii-60",
+        title: "Beware Excessive Debt",
+        content:
+          "Heavy debt magnifies risk and can sink a company in a downturn. Favour firms with conservative, manageable borrowing.",
+      },
+      {
+        id: "ii-61",
+        title: "Quality of Earnings",
+        content:
+          "Not all reported profits are equal. Look past accounting tricks to the real, sustainable earning power of the business.",
+      },
+      {
+        id: "ii-62",
+        title: "Management Matters",
+        content:
+          "Honest, capable management that treats shareholders as owners is invaluable. Poor stewardship can destroy even good businesses.",
+      },
+      {
+        id: "ii-63",
+        title: "Dividends as Discipline",
+        content:
+          "Regular dividends impose discipline and return real cash to owners. They're evidence that profits are genuine, not paper.",
+      },
+      {
+        id: "ii-64",
+        title: "The Power of Compounding",
+        content:
+          "Reinvested returns compound over decades into substantial wealth. Patience lets this quiet force do the heavy lifting.",
+      },
+      {
+        id: "ii-65",
+        title: "Time in the Market",
+        content:
+          "The longer your horizon, the more the odds favour equities and the less short-term volatility matters. Think in decades.",
+      },
+      {
+        id: "ii-66",
+        title: "Patience Rewards the Investor",
+        content:
+          "Value often takes time to be recognized by the market. The patient investor who waits is eventually paid for holding on.",
+      },
+      {
+        id: "ii-67",
+        title: "Avoid Overtrading",
+        content:
+          "Frequent buying and selling racks up costs and taxes and invites emotional error. Do less, and do it well.",
+      },
+      {
+        id: "ii-68",
+        title: "Costs and Taxes Matter",
+        content:
+          "Fees, commissions, and taxes silently erode returns. Minimizing them is one of the surest ways to improve your results.",
+      },
+      {
+        id: "ii-69",
+        title: "The Index-Fund Alternative",
+        content:
+          "For those unwilling to analyze stocks, a low-cost index fund is a sensible default that captures the market cheaply.",
+      },
+      {
+        id: "ii-70",
+        title: "Simplicity Beats Cleverness",
+        content:
+          "Most active investors underperform a simple, diversified, low-cost approach. Complexity rarely improves outcomes.",
+      },
+      {
+        id: "ii-71",
+        title: "Don't Play the Pros' Game",
+        content:
+          "Trying to out-trade professionals at their own short-term game is a losing proposition. Compete instead on patience and discipline.",
+      },
+      {
+        id: "ii-72",
+        title: "Investing Should Be Businesslike",
+        content:
+          "Graham's famous line: investing is most intelligent when it is most businesslike. Treat it with the same rigor as running a business.",
+      },
+      {
+        id: "ii-73",
+        title: "Your Circle of Competence",
+        content:
+          "Invest within what you genuinely understand. Straying into unfamiliar territory is where costly mistakes are made.",
+      },
+      {
+        id: "ii-74",
+        title: "Say No Freely",
+        content:
+          "You don't have to act on every opportunity. Passing on what you don't understand protects you far more than chasing it.",
+      },
+      {
+        id: "ii-75",
+        title: "Emotional Discipline Wins",
+        content:
+          "The gap between average investor returns and market returns is mostly emotional error. Staying calm is a real financial edge.",
+      },
+      {
+        id: "ii-76",
+        title: "Fear and Greed Are the Enemies",
+        content:
+          "Panic makes you sell low; euphoria makes you buy high. Recognizing these impulses lets you act against them.",
+      },
+      {
+        id: "ii-77",
+        title: "Have a Plan and Stick to It",
+        content:
+          "A clear, written investment policy keeps you steady when markets are wild. Predecided rules protect you from impulsive decisions.",
+      },
+      {
+        id: "ii-78",
+        title: "Set Rules in Advance",
+        content:
+          "Decide your allocation and criteria before emotions run high. Rules made in calm protect you during storms.",
+      },
+      {
+        id: "ii-79",
+        title: "Volatility Is Not Risk",
+        content:
+          "Graham distinguishes price fluctuation from true risk. Real risk is the permanent loss of capital, not temporary paper dips.",
+      },
+      {
+        id: "ii-80",
+        title: "Embrace Falling Prices",
+        content:
+          "For a net buyer of stocks, lower prices are good news — you buy more value for less. Only sellers should fear a decline.",
+      },
+      {
+        id: "ii-81",
+        title: "Don't Confuse Activity With Progress",
+        content:
+          "Constant trading feels productive but usually hurts returns. Sometimes the best action is patient inaction.",
+      },
+      {
+        id: "ii-82",
+        title: "Beware Leverage",
+        content:
+          "Borrowing to invest magnifies both gains and losses and can force you to sell at the worst time. Graham urges great caution with debt.",
+      },
+      {
+        id: "ii-83",
+        title: "The Two Questions",
+        content:
+          "Ask what the business is worth and whether the price offers a margin of safety. Those two questions guide every value decision.",
+      },
+      {
+        id: "ii-84",
+        title: "Avoid the Forecasting Trap",
+        content:
+          "Confident market predictions from experts are largely entertainment. Ground decisions in value, not in prophecy.",
+      },
+      {
+        id: "ii-85",
+        title: "Reinvest and Compound",
+        content:
+          "Reinvesting dividends and gains accelerates the compounding machine. Small, consistent reinvestment builds large fortunes over time.",
+      },
+      {
+        id: "ii-86",
+        title: "Keep Enough in Reserve",
+        content:
+          "Maintain cash and quality bonds so you're never a forced seller. Liquidity lets you buy bargains when they appear.",
+      },
+      {
+        id: "ii-87",
+        title: "The Long-Term Mindset",
+        content:
+          "Short-term results are noisy and often misleading. Judge your strategy over years and cycles, not weeks.",
+      },
+      {
+        id: "ii-88",
+        title: "Buy Wonderful at a Fair Price",
+        content:
+          "Graham's student Buffett refined the idea: it's better to buy a great business at a fair price than a fair business at a great price.",
+      },
+      {
+        id: "ii-89",
+        title: "Chapters 8 and 20",
+        content:
+          "Buffett calls chapters eight (Mr. Market) and twenty (margin of safety) the two most important. Master these and you grasp the essence.",
+      },
+      {
+        id: "ii-90",
+        title: "Stay Rational in Manias",
+        content:
+          "When everyone is euphoric, be cautious. When everyone despairs, look for value. Rationality is your rare advantage.",
+      },
+      {
+        id: "ii-91",
+        title: "Focus on Return of Capital",
+        content:
+          "Before return on capital, secure the return of capital. Protecting what you have is the first duty of investing.",
+      },
+      {
+        id: "ii-92",
+        title: "The Enemy of Speculation",
+        content:
+          "Speculation disguised as investing has ruined many. Always know whether you're investing on fundamentals or gambling on price.",
+      },
+      {
+        id: "ii-93",
+        title: "Beware Story Stocks",
+        content:
+          "Companies sold on narrative rather than numbers are dangerous. Insist on real earnings and assets behind the tale.",
+      },
+      {
+        id: "ii-94",
+        title: "Consistency Beats Brilliance",
+        content:
+          "You don't need extraordinary insight, just consistent discipline and sound principles applied over a lifetime.",
+      },
+      {
+        id: "ii-95",
+        title: "Guard Against Overconfidence",
+        content:
+          "Success can breed the overconfidence that leads to bigger, riskier bets. Stay humble about the limits of your knowledge.",
+      },
+      {
+        id: "ii-96",
+        title: "Let the Market Serve You",
+        content:
+          "Treat the market's mood swings as opportunities, not instructions. Its volatility is a gift to the disciplined value investor.",
+      },
+      {
+        id: "ii-97",
+        title: "Adequate, Not Spectacular",
+        content:
+          "Graham aims for satisfactory, dependable returns rather than home runs. Reliable, repeatable results build lasting wealth.",
+      },
+      {
+        id: "ii-98",
+        title: "Suitable for Every Investor",
+        content:
+          "The defensive and enterprising frameworks mean anyone, whatever their time or skill, can invest intelligently.",
+      },
+      {
+        id: "ii-99",
+        title: "Timeless, Not Trendy",
+        content:
+          "Markets and instruments change, but the principles of value, margin of safety, and discipline endure across every era.",
+      },
+      {
+        id: "ii-100",
+        title: "Invest, Don't Gamble",
+        content:
+          "The line between investing and gambling is drawn by analysis, safety, and reason. Stay firmly on the investing side.",
+      },
+      {
+        id: "ii-101",
+        title: "The Margin of Safety, Always",
+        content:
+          "If a single idea captures the whole book, it's the margin of safety. Buy with a cushion, and time forgives many mistakes.",
+      },
+      {
+        id: "ii-102",
+        title: "Master Your Behaviour",
+        content:
+          "Ultimately, intelligent investing is behavioural: patience, discipline, and independence matter more than any formula.",
+      },
+      {
+        id: "ii-103",
+        title: "Sound Principles Endure",
+        content:
+          "Follow Graham's timeless rules and you won't need to predict the future — you'll be prepared for whatever it brings.",
+      },
+      {
+        id: "ii-104",
+        title: "Invest Intelligently",
+        content:
+          "Define value, demand a margin of safety, control your emotions, diversify, and think long-term. That is how the intelligent investor wins.",
       },
     ],
   },

@@ -23,6 +23,7 @@ import {
   Globe,
   Package,
   CheckCircle2,
+  Check,
   XCircle,
   Bookmark,
   Minus,
@@ -43,7 +44,7 @@ import Script from "next/script";
 import { useEffect, useState, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { flyToCart } from "@/lib/flyToCart";
-import { hasQuickRead } from "@/data/quickreads";
+import { hasQuickRead, QUICKREAD_PRICE, quickReadFrameCount } from "@/data/quickreads";
 import QuickReadsReader from "./quickreads/QuickReadsReader";
 import BookCard from "./BookCard";
 import Link from "next/link";
@@ -356,7 +357,16 @@ function ReviewsSummary({ rating, reviewCount, dist }) {
 }
 
 export default function BookDetailsModal({ book }) {
-  const { cart, addToCart, decreaseQty, toggleWishlist, wishlist } = useStore();
+  const {
+    cart,
+    addToCart,
+    decreaseQty,
+    toggleWishlist,
+    wishlist,
+    addQuickRead,
+    removeQuickRead,
+    isInQrCart,
+  } = useStore();
   const inWishlist = wishlist.includes(book.id);
   const router = useRouter();
 
@@ -1016,6 +1026,50 @@ export default function BookDetailsModal({ book }) {
                   </span>
                   <ArrowRight size={16} className="bd-qr-arrow" />
                 </button>
+              )}
+
+              {/* ===== QuickReads add-on — bundle it with the book ===== */}
+              {bookHasQuickRead && (
+                <div
+                  className={`bd-qr-addon${isInQrCart(book.id) ? " added" : ""}`}
+                >
+                  <span className="bd-qr-addon-ic">
+                    <Zap size={16} />
+                  </span>
+                  <div className="bd-qr-addon-copy">
+                    <span className="bd-qr-addon-title">
+                      Add QuickReads to your order
+                    </span>
+                    <span className="bd-qr-addon-sub">
+                      {quickReadFrameCount(book.id)} key insights · unlocks
+                      instantly · billed together
+                    </span>
+                  </div>
+                  <div className="bd-qr-addon-right">
+                    <span className="bd-qr-addon-price">+₹{QUICKREAD_PRICE}</span>
+                    <button
+                      type="button"
+                      className={`bd-qr-addon-btn${
+                        isInQrCart(book.id) ? " on" : ""
+                      }`}
+                      onClick={() =>
+                        isInQrCart(book.id)
+                          ? removeQuickRead(book.id)
+                          : addQuickRead(book.id)
+                      }
+                    >
+                      {isInQrCart(book.id) ? (
+                        <>
+                          <Check size={14} /> Added
+                        </>
+                      ) : (
+                        <>
+                          <Plus size={14} /> Add
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
               )}
 
               <div className="bd-bookmark-card">

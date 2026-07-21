@@ -14,7 +14,12 @@ import HorizontalScroll from "@/components/UI/HorizontalScroll";
 import WishlistStrip from "@/components/WishlistStrip";
 import QuickReadsCheckout from "@/components/quickreads/QuickReadsCheckout";
 import QuickReadsReader from "@/components/quickreads/QuickReadsReader";
-import { unlockedBookIds } from "@/lib/quickreads";
+import {
+  unlockedBookIds,
+  submitQuickReadOrder,
+  grantBookAccess,
+  notifyQuickReadTelegram,
+} from "@/lib/quickreads";
 import { QUICKREAD_PRICE, quickReadFrameCount } from "@/data/quickreads";
 import { Zap, BookOpen, Trash2 } from "lucide-react";
 import { useStore } from "@/context/StoreContext";
@@ -384,6 +389,11 @@ function BagContent() {
     ? finalPayable + (giftWrap ? GIFT_WRAP_CHARGE : 0)
     : totalWithStandardDeliveryGift;
 
+  // QuickReads ride on the same physical-book bill (one combined checkout).
+  const hasBundledQr = cartBooks.length > 0 && qrItems.length > 0;
+  const bundledQrTotal = hasBundledQr ? qrTotal : 0;
+  const displayedFixedBarTotalWithQr = displayedFixedBarTotal + bundledQrTotal;
+
   // Returns the COD fee amount only when paymentType is COD
   const getCodFeeForPayment = (paymentType) =>
     paymentType === "COD" ? COD_HANDLING_FEE : 0;
@@ -404,7 +414,7 @@ function BagContent() {
     const giftWrapAmount = giftWrapSelected ? GIFT_WRAP_CHARGE : 0;
     const codFee = getCodFeeForPayment(paymentType);
     const totalWithDelivery =
-      finalPayable + deliveryCharge + giftWrapAmount + codFee;
+      finalPayable + deliveryCharge + giftWrapAmount + codFee + bundledQrTotal;
 
     let deliveryInfo = `${addressData.city || "Not specified"} - ${addressData.pincode || "Not specified"}`;
     if (fasterDeliveryChoice) {
@@ -421,6 +431,10 @@ function BagContent() {
 
     if (codFee > 0) {
       deliveryInfo += ` 💵 (COD Handling Fee +₹${codFee})`;
+    }
+
+    if (bundledQrTotal > 0) {
+      deliveryInfo += ` ⚡ (${qrItems.length} QuickRead${qrItems.length > 1 ? "s" : ""} +₹${bundledQrTotal})`;
     }
 
     return `
@@ -459,7 +473,14 @@ Thank you! 🙏
     const giftWrapAmount = giftWrapSelected ? GIFT_WRAP_CHARGE : 0;
     const codFee = getCodFeeForPayment(paymentType);
     const totalWithDelivery =
-      finalPayable + deliveryCharge + giftWrapAmount + codFee;
+      finalPayable + deliveryCharge + giftWrapAmount + codFee + bundledQrTotal;
+
+    const qrLines =
+      bundledQrTotal > 0
+        ? `\n\n━━━━━━━━━━━━━━━━━━━━\n*⚡ QUICKREADS (billed together)*\n━━━━━━━━━━━━━━━━━━━━\n${qrItems
+            .map((b, idx) => `${idx + 1}. *${b.name}* = ₹${QUICKREAD_PRICE}`)
+            .join("\n")}`
+        : "";
 
     const orderMessage = `
 🛍️ *NEW ORDER - THEBOOKX*
@@ -487,7 +508,7 @@ ${cartBooks
     (book, idx) =>
       `${idx + 1}. *${book.name}* × ${book.qty} = ₹${book.discountedPrice * book.qty}`,
   )
-  .join("\n")}
+  .join("\n")}${qrLines}
 
 ━━━━━━━━━━━━━━━━━━━━
 *💰 BILL DETAILS*
@@ -495,7 +516,7 @@ ${cartBooks
 📚 Subtotal: ₹${totalDiscounted}
 🎁 Offer Discount: -₹${offerDiscount}
 🚚 Delivery: ${deliveryLabel}
-📦 Delivery Charge: +₹${deliveryCharge}${giftWrapSelected ? `\n🎁 Gift Wrap: +₹${GIFT_WRAP_CHARGE}` : ""}${codFee > 0 ? `\n💵 COD Handling Fee: +₹${codFee}` : ""}
+📦 Delivery Charge: +₹${deliveryCharge}${giftWrapSelected ? `\n🎁 Gift Wrap: +₹${GIFT_WRAP_CHARGE}` : ""}${codFee > 0 ? `\n💵 COD Handling Fee: +₹${codFee}` : ""}${bundledQrTotal > 0 ? `\n⚡ QuickReads (${qrItems.length}): +₹${bundledQrTotal}` : ""}
 ━━━━━━━━━━━━━━━━━━━━
 *💵 TOTAL PAYABLE: ₹${totalWithDelivery}*${codFee > 0 ? `\n_(includes ₹${codFee} COD fee, collected at delivery)_` : ""}
 
@@ -631,6 +652,38 @@ _Thank you for shopping with TheBookX! 📚✨_
     );
   };
 
+  // When a customer checks out physical books, any QuickReads sitting in the
+  // bag ride on the SAME bill. Submit each to the QuickReads sheet using the
+  // phone entered at checkout, grant local access, then clear the QR cart.
+  const submitBundledQuickReads = async (addressData, paymentType) => {
+    if (!qrItems.length) return;
+    const phone = addressData?.phone || "";
+    for (const b of qrItems) {
+      try {
+        await submitQuickReadOrder({
+          name: addressData?.name || "",
+          mobile: phone,
+          bookId: b.id,
+          bookName: b.name,
+          amount: QUICKREAD_PRICE,
+          paymentMethod: paymentType === "COD" ? "COD" : "UPI Payment",
+        });
+        notifyQuickReadTelegram({
+          name: addressData?.name || "",
+          mobile: phone,
+          bookId: b.id,
+          bookName: b.name,
+          amount: QUICKREAD_PRICE,
+          paymentMethod: paymentType === "COD" ? "COD" : "UPI Payment",
+        });
+        if (phone) grantBookAccess(b.id, phone);
+      } catch (e) {
+        console.error("Bundled QuickRead submit failed:", b.id, e);
+      }
+    }
+    clearQrCart();
+  };
+
   const handleCODCheckout = async (
     addressData,
     fasterDeliveryChoice,
@@ -658,6 +711,9 @@ _Thank you for shopping with TheBookX! 📚✨_
       giftWrapSelected,
       shortLink,
     );
+
+    // Bundle any QuickReads onto this same order before redirecting.
+    await submitBundledQuickReads(addressData, "COD");
 
     redirectToWhatsApp(
       addressData,
@@ -698,6 +754,9 @@ _Thank you for shopping with TheBookX! 📚✨_
       giftWrapSelected,
       shortLink,
     );
+
+    // Bundle any QuickReads onto this same order before redirecting.
+    await submitBundledQuickReads(addressData, "UPI");
 
     redirectToWhatsApp(
       addressData,
@@ -972,7 +1031,36 @@ _Thank you for shopping with TheBookX! 📚✨_
             </>
           )}
 
-          {qrItems.length > 0 && (
+          {qrItems.length > 0 && cartBooks.length > 0 && (
+            <div className="fixed-bill-bar flex flex-col">
+              <div className="flex flex-row justify-between width100 items-center">
+                <div className="bill-left">
+                  <span className="font-12 dark-50">
+                    Billed with your books
+                  </span>
+                  <div className="flex flex-col">
+                    <div className="flex flex-row gap-8 items-center">
+                      <span className="font-16 weight-600 discounted">
+                        ₹{qrTotal}
+                      </span>
+                    </div>
+                    <span className="font-14 weight-600 flex items-center gap-4" style={{ color: "var(--tertiary, #fb8500)" }}>
+                      <Zap size={12} /> Added to your book order
+                    </span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="pri-big-btn"
+                  onClick={() => setBagTab("books")}
+                >
+                  Go to checkout
+                </button>
+              </div>
+            </div>
+          )}
+
+          {qrItems.length > 0 && cartBooks.length === 0 && (
             <div className="fixed-bill-bar flex flex-col">
               <div className="flex flex-row justify-between width100 items-center">
                 <div className="bill-left">
@@ -1092,17 +1180,23 @@ _Thank you for shopping with TheBookX! 📚✨_
             <div className="flex flex-col">
               <div className="flex flex-row gap-8 items-center">
                 <span className="font-16 weight-600 discounted">
-                  ₹{displayedFixedBarTotal}
+                  ₹{displayedFixedBarTotalWithQr}
                 </span>
                 {offerDiscount > 0 && (
                   <span className="strike dark-50 original">
-                    ₹{totalDiscounted}
+                    ₹{totalDiscounted + bundledQrTotal}
                   </span>
                 )}
               </div>
 
               {appliedOffer && (
                 <span className="font-14 green weight-600">{offerLabel}</span>
+              )}
+              {hasBundledQr && (
+                <span className="font-12 weight-600 flex items-center gap-4" style={{ color: "var(--tertiary, #fb8500)" }}>
+                  <Zap size={11} /> incl. {qrItems.length} QuickRead
+                  {qrItems.length > 1 ? "s" : ""} · ₹{bundledQrTotal}
+                </span>
               )}
             </div>
 
@@ -1171,6 +1265,9 @@ _Thank you for shopping with TheBookX! 📚✨_
         offerDiscount={offerDiscount}
         codHandlingFee={COD_HANDLING_FEE}
         onUpsellAccept={() => setUpsellAccepted(true)}
+        quickReadItems={hasBundledQr ? qrItems : []}
+        quickReadUnitPrice={QUICKREAD_PRICE}
+        quickReadTotal={bundledQrTotal}
       />
 
       <BillModal
@@ -1190,6 +1287,9 @@ _Thank you for shopping with TheBookX! 📚✨_
         giftWrapCharge={giftWrap ? GIFT_WRAP_CHARGE : 0}
         giftWrapSelected={giftWrap}
         hideDeliveryCharges={needsShippingNudge}
+        quickReadItems={hasBundledQr ? qrItems : []}
+        quickReadUnitPrice={QUICKREAD_PRICE}
+        quickReadTotal={bundledQrTotal}
       />
 
       <RecommendationModal

@@ -21017,6 +21017,40 @@ img[data-loaded="true"] {
   transform: translateY(-2px);
   box-shadow: 0 16px 30px -12px rgba(251, 133, 0, 0.9);
 }
+.qr-unlimited-btn {
+  margin-top: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 12px 24px;
+  border-radius: 12px;
+  border: 1.5px solid rgba(17, 17, 17, 0.14);
+  background: #111;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 10px 22px -14px rgba(0, 0, 0, 0.85);
+  transition: transform 0.14s ease, box-shadow 0.18s ease;
+}
+.qr-unlimited-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 26px -14px rgba(0, 0, 0, 0.9);
+}
+.qr-paywall-note {
+  margin-top: 9px;
+  font-size: 12px;
+  color: var(--dark-50, #8a8f98);
+}
+.qr-dark .qr-unlimited-btn {
+  background: #f5f5f5;
+  color: #111;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+.qr-dark .qr-paywall-note {
+  color: #b4b9c2;
+}
 /* Action buttons */
 .qr-actions {
   display: flex;
@@ -21307,6 +21341,158 @@ img[data-loaded="true"] {
   color: #c7ccd6;
 }
 
+/* ============================ QuickReads plans modal ============================ */
+.qrp-modal {
+  width: 100%;
+  max-width: 560px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 !important;
+  overflow: hidden;
+}
+.qrp-modal.qrc-modal-center {
+  max-width: 480px;
+}
+.qrp-hero {
+  position: relative;
+  padding: 22px 22px 18px;
+  background:
+    radial-gradient(120% 100% at 100% 0%, rgba(251, 133, 0, 0.16), rgba(251, 133, 0, 0) 60%),
+    linear-gradient(160deg, #fffdf9 0%, #fff4e4 100%);
+  border-bottom: 1px solid var(--hairline, #eee);
+}
+.qrp-hero-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--tertiary, #fb8500);
+}
+.qrp-hero-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--foreground, #111);
+  margin: 8px 0 4px;
+}
+.qrp-hero-sub {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--dark-50, #6b7280);
+  max-width: 380px;
+}
+.qrp-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  cursor: pointer;
+  color: var(--dark-50, #6b7280);
+}
+.qrp-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  max-height: 62vh;
+  overflow-y: auto;
+}
+.qrp-card {
+  position: relative;
+  border: 1px solid var(--hairline, #e5e7eb);
+  border-radius: 16px;
+  padding: 16px;
+  background: var(--background, #fff);
+}
+.qrp-card.best {
+  border-color: var(--tertiary, #fb8500);
+  background: linear-gradient(180deg, rgba(251, 133, 0, 0.06), rgba(251, 133, 0, 0));
+  box-shadow: 0 12px 30px -20px rgba(251, 133, 0, 0.6);
+}
+.qrp-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #fff;
+  background: var(--tertiary, #fb8500);
+}
+.qrp-card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.qrp-card-ic {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  color: var(--tertiary, #fb8500);
+  background: rgba(251, 133, 0, 0.12);
+}
+.qrp-card-titles {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.qrp-card-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--foreground, #111);
+}
+.qrp-card-tag {
+  font-size: 11.5px;
+  color: var(--dark-50, #6b7280);
+}
+.qrp-price {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  margin: 12px 0 10px;
+}
+.qrp-price-amt {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--foreground, #111);
+}
+.qrp-price-unit {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--dark-50, #6b7280);
+}
+.qrp-bullets {
+  list-style: none;
+  margin: 0 0 14px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.qrp-bullets li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--foreground, #222);
+}
+.qrp-bullets li svg {
+  flex: 0 0 auto;
+  color: var(--success, #0a8f0c);
+}
+.qrp-foot {
+  padding: 0 18px 18px;
+  font-size: 12px;
+  color: var(--dark-50, #6b7280);
+  text-align: center;
+}
+
 /* Book detail — QuickReads CTA strip */
 .bd-qr-cta {
   display: flex;
@@ -21353,6 +21539,99 @@ img[data-loaded="true"] {
 .bd-qr-arrow {
   flex: 0 0 auto;
   color: var(--tertiary, #fb8500);
+}
+
+/* QuickReads add-on (bundle with the physical book) */
+.bd-qr-addon {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  margin-top: 10px;
+  padding: 11px 13px;
+  border-radius: 13px;
+  border: 1.5px dashed rgba(251, 133, 0, 0.5);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 183, 3, 0.08),
+    rgba(251, 133, 0, 0.05)
+  );
+  transition: border-color 0.18s ease, background 0.18s ease;
+}
+.bd-qr-addon.added {
+  border-style: solid;
+  border-color: rgba(10, 143, 12, 0.55);
+  background: linear-gradient(
+    135deg,
+    rgba(10, 143, 12, 0.09),
+    rgba(10, 143, 12, 0.04)
+  );
+}
+.bd-qr-addon-ic {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #fb8500, #ffb703);
+  color: #fff;
+}
+.bd-qr-addon.added .bd-qr-addon-ic {
+  background: linear-gradient(135deg, #0a8f0c, #35b13a);
+}
+.bd-qr-addon-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+.bd-qr-addon-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--foreground, #111);
+}
+.bd-qr-addon-sub {
+  font-size: 11.5px;
+  line-height: 1.35;
+  color: var(--dark-50, #6b7280);
+}
+.bd-qr-addon-right {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+.bd-qr-addon-price {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--tertiary, #fb8500);
+}
+.bd-qr-addon.added .bd-qr-addon-price {
+  color: var(--success, #0a8f0c);
+}
+.bd-qr-addon-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 14px;
+  border-radius: 9px;
+  border: none;
+  background: #111;
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.12s ease, background 0.16s ease;
+}
+.bd-qr-addon-btn:hover {
+  transform: translateY(-1px);
+}
+.bd-qr-addon-btn.on {
+  background: var(--success, #0a8f0c);
 }
 
 /* QuickReads card add-to-cart */

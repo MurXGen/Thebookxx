@@ -91,6 +91,10 @@ export default function AddressModal({
   shortenUrl,
   codHandlingFee = 29, // NEW
   onUpsellAccept,
+  // QuickReads riding on this same bill (flat add-on, no delivery/offer).
+  quickReadItems = [],
+  quickReadUnitPrice = 0,
+  quickReadTotal = 0,
 }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -275,7 +279,9 @@ export default function AddressModal({
     walletEnabled && walletBalance > 0
       ? Math.min(walletBalance, WALLET_MAX_PER_ORDER, Math.max(0, finalPayable))
       : 0;
-  const netPayable = Math.max(0, finalPayable - walletApplied);
+  // QuickReads add-on rides on the same bill (flat, no delivery/offer applied).
+  const qrAddOn = quickReadTotal || 0;
+  const netPayable = Math.max(0, finalPayable - walletApplied) + qrAddOn;
 
   const getDeliveryCharge = (isFaster) =>
     isFaster ? fasterDeliveryCharge : standardDeliveryCharge;
@@ -1339,6 +1345,8 @@ export default function AddressModal({
             giftWrap={giftWrap || giftWrapSelected}
             giftWrapCharge={giftWrapCharge}
             codFee={codHandlingFee}
+            quickReadCount={quickReadItems.length}
+            quickReadTotal={qrAddOn}
             // ---- totals derived from above for convenience ----
             baseAmount={
               getTotalWithDelivery(fasterDelivery) +
@@ -1366,6 +1374,8 @@ export default function AddressModal({
             standardDeliveryCharge={standardDeliveryCharge}
             giftWrap={giftWrap}
             giftWrapCharge={giftWrapCharge}
+            quickReadCount={quickReadItems.length}
+            quickReadTotal={qrAddOn}
             totalToPay={
               getTotalWithDelivery(fasterDelivery) +
               (giftWrap ? giftWrapCharge : 0)
@@ -1613,6 +1623,8 @@ function CODSuccessModal({
   deliveryCharge = 0,
   giftWrap = false,
   giftWrapCharge = 0,
+  quickReadCount = 0,
+  quickReadTotal = 0,
   cartBooks,
   onContinue,
   onClose,
@@ -2029,6 +2041,20 @@ function CODSuccessModal({
                       </div>
                     )}
 
+                    {quickReadTotal > 0 && (
+                      <div className="flex flex-row justify-between font-12">
+                        <span className="dark-50">
+                          ⚡ QuickReads ({quickReadCount})
+                        </span>
+                        <span
+                          className="weight-600"
+                          style={{ color: "var(--tertiary)" }}
+                        >
+                          +₹{quickReadTotal}
+                        </span>
+                      </div>
+                    )}
+
                     {codFee > 0 && (
                       <div className="flex flex-row justify-between font-12">
                         <span className="dark-50">COD handling fee</span>
@@ -2112,6 +2138,8 @@ function UPIPaymentModal({
   standardDeliveryCharge,
   giftWrap,
   giftWrapCharge,
+  quickReadCount = 0,
+  quickReadTotal = 0,
   totalToPay,
   qrUnlocked,
   upiCopied,
@@ -2203,6 +2231,15 @@ function UPIPaymentModal({
                 ₹{totalToPay}
               </span>
             </div>
+            {quickReadTotal > 0 && (
+              <div
+                className="font-11 flex items-center gap-4"
+                style={{ color: "var(--tertiary, #fb8500)", fontWeight: 600 }}
+              >
+                ⚡ Includes {quickReadCount} QuickRead
+                {quickReadCount > 1 ? "s" : ""} (₹{quickReadTotal})
+              </div>
+            )}
           </motion.div>
 
           {!qrUnlocked ? (

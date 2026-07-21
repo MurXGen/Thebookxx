@@ -4,31 +4,36 @@ import { books } from "@/utils/book";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Star,
   BookOpen,
   Store,
   Gift,
+  Mail,
   Phone,
-  Award,
-  Instagram,
-  ChevronRight,
-  CheckCircle,
+  Sparkles,
+  X,
 } from "lucide-react";
+import ScratchCard from "@/components/UI/ScratchCard";
+import ReviewsShowcase from "@/components/ReviewsShowcase";
+import {
+  submitReviewToSheet,
+  isReviewRateLimited,
+  recordReviewSubmission,
+} from "@/utils/reviewForm";
 
 export default function ReviewClient() {
   const searchParams = useSearchParams();
-  const [activeTab, setActiveTab] = useState("store"); // "store" or "book"
+  const [activeTab, setActiveTab] = useState("store");
   const [selectedBook, setSelectedBook] = useState("");
-  const [storeReview, setStoreReview] = useState("");
-  const [bookReview, setBookReview] = useState("");
-  const [storeRating, setStoreRating] = useState(0);
-  const [bookRating, setBookRating] = useState(0);
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [review, setReview] = useState("");
+  const [rating, setRating] = useState(0);
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-  const [showPhoneInput, setShowPhoneInput] = useState(false);
-  const [phoneSubmitted, setPhoneSubmitted] = useState(false);
+  const [showScratch, setShowScratch] = useState(false);
 
   const selectedBookData = books.find(
     (b) => b.id.trim() === selectedBook.trim(),
@@ -42,336 +47,299 @@ export default function ReviewClient() {
     }
   }, [searchParams]);
 
-  const handleStoreSubmit = async () => {
-    if (!storeReview || storeRating === 0) {
-      setMessage("Please provide a rating and write your feedback.");
+  const resetForm = () => {
+    setReview("");
+    setRating(0);
+  };
+
+  const contactValid = () => {
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+    const phoneOk = /^\d{10}$/.test(phone.replace(/\D/g, ""));
+    return emailOk || phoneOk;
+  };
+
+  const notifyTelegram = async (payload) => {
+    const url =
+      activeTab === "book"
+        ? "https://api.journalx.app/api/bookxTelegram/review"
+        : "https://api.journalx.app/api/bookxTelegram/store-review";
+    try {
+      await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        keepalive: true,
+        body: JSON.stringify(payload),
+      });
+    } catch (e) {
+      console.error("Review Telegram failed:", e);
+    }
+  };
+
+  const handleSubmit = async () => {
+    setMessage("");
+    if (rating === 0 || !review.trim()) {
+      setMessage("Please give a rating and write your review.");
+      return;
+    }
+    if (activeTab === "book" && !selectedBook) {
+      setMessage("Please pick the book you're reviewing.");
+      return;
+    }
+    if (!contactValid()) {
+      setMessage("Add your email or 10-digit phone to enter the giveaway.");
+      return;
+    }
+    if (isReviewRateLimited()) {
+      setMessage("Too many reviews from this device. Please try again later.");
       return;
     }
 
+    setLoading(true);
+    const cleanPhone = phone.replace(/\D/g, "");
+    const bookName = activeTab === "book" ? selectedBookData?.name || "" : "";
+    const payload = {
+      review: review.trim(),
+      rating,
+      email: email.trim() || null,
+      phoneNumber: cleanPhone || null,
+      bookId: activeTab === "book" ? selectedBook : undefined,
+      bookName: bookName || undefined,
+      type: activeTab === "book" ? "Book" : "Store",
+    };
+
     try {
-      setLoading(true);
-      setMessage("");
-
-      const res = await fetch(
-        `https://api.journalx.app/api/bookxTelegram/store-review`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            review: storeReview,
-            rating: storeRating,
-            phoneNumber: phoneSubmitted ? phoneNumber : null,
-          }),
-        },
-      );
-
-      const data = await res.json();
-
-      if (res.ok) {
-        setMessage("✅ Thank you for your feedback!");
-        setStoreReview("");
-        setStoreRating(0);
-        setTimeout(() => setMessage(""), 3000);
-      } else {
-        setMessage(data.message || "Something went wrong");
-      }
-    } catch (err) {
-      setMessage("Server error. Please try again.");
+      await notifyTelegram(payload);
+      await submitReviewToSheet({
+        type: activeTab === "book" ? "Book" : "Store",
+        bookName,
+        rating,
+        review: review.trim(),
+        email: email.trim(),
+        phone: cleanPhone,
+        timestamp: new Date().toLocaleString("en-IN"),
+        userAgent:
+          typeof navigator !== "undefined"
+            ? navigator.userAgent.slice(0, 300)
+            : "",
+      });
+      recordReviewSubmission();
+      resetForm();
+      setShowScratch(true);
+    } catch (e) {
+      setMessage("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleBookSubmit = async () => {
-    if (!selectedBook || !bookReview || bookRating === 0) {
-      setMessage("Please select a book, rate it, and write a review.");
-      return;
-    }
-
-    try {
-      setLoading(true);
-      setMessage("");
-
-      const res = await fetch(
-        `https://api.journalx.app/api/bookxTelegram/review`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            bookId: selectedBook,
-            review: bookReview,
-            rating: bookRating,
-            phoneNumber: phoneSubmitted ? phoneNumber : null,
-          }),
-        },
-      );
-
-      const data = await res.json();
-
-      if (res.ok) {
-        setMessage("✅ Book review submitted successfully!");
-        setBookReview("");
-        setBookRating(0);
-        setTimeout(() => setMessage(""), 3000);
-      } else {
-        setMessage(data.message || "Something went wrong");
-      }
-    } catch (err) {
-      setMessage("Server error. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handlePhoneSubmit = async () => {
-    if (!phoneNumber || !/^\d{10}$/.test(phoneNumber)) {
-      setMessage("Please enter a valid 10-digit mobile number");
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const res = await fetch(
-        `https://api.journalx.app/api/bookxTelegram/phone`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ phoneNumber, type: activeTab }),
-        },
-      );
-
-      if (res.ok) {
-        setPhoneSubmitted(true);
-        setMessage(
-          "🎉 Great! You're now eligible to win! We'll notify you on WhatsApp.",
-        );
-        setTimeout(() => setMessage(""), 4000);
-      }
-    } catch (err) {
-      setMessage("Failed to save number. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const StarRating = ({ rating, onRatingChange }) => {
-    return (
-      <div className="flex gap-4">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <button
-            key={star}
-            onClick={() => onRatingChange(star)}
-            className="star-button"
-            style={{ background: "none", border: "none", cursor: "pointer" }}
-          >
-            <Star
-              size={28}
-              fill={star <= rating ? "#FFB800" : "none"}
-              color={star <= rating ? "#FFB800" : "#D1D5DB"}
-              style={{ transition: "all 0.2s" }}
-            />
-          </button>
-        ))}
-      </div>
-    );
-  };
+  const StarRating = ({ value, onChange }) => (
+    <div className="rv-stars">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <button
+          key={star}
+          type="button"
+          className="rv-star-btn"
+          onClick={() => onChange(star)}
+          aria-label={`${star} star`}
+        >
+          <Star
+            size={34}
+            fill={star <= value ? "#FFB800" : "none"}
+            color={star <= value ? "#FFB800" : "#D1D5DB"}
+          />
+        </button>
+      ))}
+    </div>
+  );
 
   return (
-    <div className="section-1200" style={{ padding: "40px 20px" }}>
+    <div className="rv-page">
+      {/* Hero */}
+      <div className="rv-hero">
+        <h1 className="rv-hero-title">Share your experience</h1>
+        <p className="rv-hero-sub">
+          Your honest words help thousands of readers — and help us do better.
+        </p>
+        <div className="rv-win">
+          <Gift size={18} />
+          <span>
+            Leave a review for a <b>chance to win a book for FREE</b> 🎁
+          </span>
+        </div>
+      </div>
+
       {/* Tabs */}
-      <div className="flex flex-row gap-12 margin-btm-32px justify-center">
+      <div className="rv-tabs">
         <button
-          className={`tab-button ${activeTab === "store" ? "active" : ""}`}
+          className={`rv-tab${activeTab === "store" ? " active" : ""}`}
           onClick={() => {
             setActiveTab("store");
             setMessage("");
-            setShowPhoneInput(false);
           }}
         >
-          <Store size={18} />
-          Store Review
+          <Store size={17} /> Store
         </button>
         <button
-          className={`tab-button ${activeTab === "book" ? "active" : ""}`}
+          className={`rv-tab${activeTab === "book" ? " active" : ""}`}
           onClick={() => {
             setActiveTab("book");
             setMessage("");
-            setShowPhoneInput(false);
           }}
         >
-          <BookOpen size={18} />
-          Book Review
+          <BookOpen size={17} /> A Book
         </button>
       </div>
 
-      {/* Store Review Tab */}
-      {activeTab === "store" && (
-        <div
-          className="review-container"
-          style={{ maxWidth: "600px", margin: "0 auto" }}
-        >
-          <div className="text-center margin-btm-24px">
-            <h2 className="font-24 weight-600 margin-btm-8px">
-              How was your experience?
-            </h2>
-            <p className="font-14 gray-500">
-              Your feedback helps us serve you better
-            </p>
-          </div>
-
-          {/* Rating Stars */}
-          <div className="margin-btm-24px text-center">
-            <label className="font-14 weight-500 margin-btm-12px block">
-              Rate your experience
-            </label>
-            <StarRating rating={storeRating} onRatingChange={setStoreRating} />
-          </div>
-
-          {/* Review Input */}
-          <div className="margin-btm-24px">
-            <label className="font-14 weight-500 margin-btm-12px block">
-              Your Feedback
-            </label>
-            <textarea
-              className="review-textarea"
-              placeholder="Tell us about your experience with TheBookX..."
-              value={storeReview}
-              onChange={(e) => setStoreReview(e.target.value)}
-              rows={5}
-              style={{ width: "100%", resize: "vertical", textAlign: "left" }}
-            />
-          </div>
-
-          {/* Submit Button */}
-          <button
-            className="pri-big-btn width100"
-            onClick={handleStoreSubmit}
-            disabled={loading || !storeReview || storeRating === 0}
-            style={{ padding: "14px" }}
-          >
-            {loading ? "Submitting..." : "Submit Review"}
-          </button>
-
-          {message && (
-            <div
-              className={`margin-tp-16px text-center ${message.includes("✅") ? "green" : "red"}`}
-            >
-              {message}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Book Review Tab */}
-      {activeTab === "book" && (
-        <div
-          className="review-container"
-          style={{ maxWidth: "600px", margin: "0 auto" }}
-        >
-          <div className="text-center margin-btm-24px">
-            <h2 className="font-24 weight-600 margin-btm-8px">Review a Book</h2>
-            <p className="font-14 gray-500">
-              Share your thoughts about your favorite read
-            </p>
-          </div>
-
-          {/* Book Selection */}
-          <div className="margin-btm-24px">
-            <label className="font-14 weight-500 margin-btm-12px block">
-              Select Book
-            </label>
+      <div className="rv-card">
+        {activeTab === "book" && (
+          <div className="rv-field">
+            <label className="rv-label">Which book?</label>
             <select
-              className="sec-mid-btn"
+              className="rv-select"
               value={selectedBook}
               onChange={(e) => setSelectedBook(e.target.value)}
-              style={{ width: "100%", padding: "12px" }}
             >
-              <option value="">Choose a book...</option>
-              {books.map((book) => (
-                <option key={book.id} value={book.id}>
-                  {book.name}
+              <option value="">Choose a book…</option>
+              {books.map((b) => (
+                <option key={b.id} value={b.id}>
+                  {b.name}
                 </option>
               ))}
             </select>
-          </div>
-
-          {/* Book Preview */}
-          {selectedBookData && (
-            <div
-              className="book-preview"
-              style={{
-                display: "flex",
-                gap: "16px",
-                padding: "16px",
-                background: "#F9FAFB",
-                borderRadius: "12px",
-                marginBottom: "24px",
-              }}
-            >
-              {selectedBookData.image && (
-                <Image
-                  src={selectedBookData.image}
-                  alt={selectedBookData.name}
-                  width={150}
-                  height={200}
-                  style={{ objectFit: "cover", borderRadius: "8px" }}
-                />
-              )}
-              <div>
-                <h3 className="font-16 weight-600 margin-btm-4px">
-                  {selectedBookData.name}
-                </h3>
-                <p className="font-12 gray-500">
-                  by {selectedBookData.author || "Unknown Author"}
-                </p>
+            {selectedBookData && (
+              <div className="rv-book-preview">
+                {selectedBookData.image && (
+                  <Image
+                    src={selectedBookData.image}
+                    alt={selectedBookData.name}
+                    width={54}
+                    height={76}
+                    className="rv-book-cover"
+                  />
+                )}
+                <div>
+                  <div className="rv-book-name">{selectedBookData.name}</div>
+                  <div className="rv-book-author">
+                    by {selectedBookData.author || "Unknown"}
+                  </div>
+                </div>
               </div>
-            </div>
-          )}
-
-          {/* Rating Stars */}
-          <div className="margin-btm-24px text-center">
-            <label className="font-14 weight-500 margin-btm-12px block">
-              Rate this book
-            </label>
-            <StarRating rating={bookRating} onRatingChange={setBookRating} />
+            )}
           </div>
+        )}
 
-          {/* Review Input */}
-          <div className="margin-btm-24px">
-            <label className="font-14 weight-500 margin-btm-12px block">
-              Your Review
-            </label>
-            <textarea
-              className="review-textarea"
-              placeholder="What did you think about this book? Share your honest opinion..."
-              value={bookReview}
-              onChange={(e) => setBookReview(e.target.value)}
-              rows={5}
-              style={{ width: "100%", resize: "vertical", textAlign: "left" }}
-            />
-          </div>
-
-          {/* Submit Button */}
-          <button
-            className="pri-big-btn width100"
-            onClick={handleBookSubmit}
-            disabled={
-              loading || !selectedBook || !bookReview || bookRating === 0
-            }
-            style={{ padding: "14px" }}
-          >
-            {loading ? "Submitting..." : "Submit Review"}
-          </button>
-
-          {message && (
-            <div
-              className={`margin-tp-16px text-center ${message.includes("✅") ? "green" : "red"}`}
-            >
-              {message}
-            </div>
-          )}
+        <div className="rv-field rv-rating-field">
+          <label className="rv-label">
+            {activeTab === "book" ? "Rate this book" : "Rate your experience"}
+          </label>
+          <StarRating value={rating} onChange={setRating} />
         </div>
-      )}
+
+        <div className="rv-field">
+          <label className="rv-label">Your review</label>
+          <textarea
+            className="rv-textarea"
+            rows={4}
+            placeholder={
+              activeTab === "book"
+                ? "What did you think of this book?"
+                : "How was your experience with TheBookX?"
+            }
+            value={review}
+            onChange={(e) => setReview(e.target.value)}
+          />
+        </div>
+
+        {/* Contact / giveaway */}
+        <div className="rv-contact">
+          <div className="rv-contact-head">
+            <Sparkles size={15} /> Enter the giveaway — email or phone
+          </div>
+          <div className="rv-contact-row">
+            <div className="rv-input-wrap">
+              <Mail size={15} />
+              <input
+                type="email"
+                className="rv-input"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            <div className="rv-input-wrap">
+              <Phone size={15} />
+              <input
+                type="tel"
+                inputMode="numeric"
+                className="rv-input"
+                placeholder="Phone"
+                value={phone}
+                maxLength={10}
+                onChange={(e) =>
+                  setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))
+                }
+              />
+            </div>
+          </div>
+        </div>
+
+        <button
+          className="rv-submit"
+          onClick={handleSubmit}
+          disabled={loading}
+        >
+          {loading ? "Submitting…" : "Submit & Scratch to win"}
+        </button>
+
+        {message && <div className="rv-message">{message}</div>}
+      </div>
+
+      {/* Reviews from readers (real + curated) */}
+      <ReviewsShowcase />
+
+      {/* Scratch card reward */}
+      <AnimatePresence>
+        {showScratch && (
+          <motion.div
+            className="rv-scratch-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="rv-scratch-modal"
+              initial={{ y: 40, opacity: 0, scale: 0.96 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={{ y: 40, opacity: 0 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+            >
+              <button
+                type="button"
+                className="rv-scratch-close"
+                onClick={() => setShowScratch(false)}
+                aria-label="Close"
+              >
+                <X size={18} />
+              </button>
+              <div className="rv-scratch-head">
+                🎉 Thanks for your review!
+              </div>
+              <p className="rv-scratch-sub">Scratch the card below</p>
+              <ScratchCard
+                revealText="Better luck next time"
+                revealSub="We'll be in touch if you win 💛"
+              />
+              <button
+                type="button"
+                className="rv-scratch-done"
+                onClick={() => setShowScratch(false)}
+              >
+                Done
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

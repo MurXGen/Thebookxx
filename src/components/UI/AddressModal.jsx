@@ -123,6 +123,9 @@ export default function AddressModal({
   const [showFasterDeliveryModal, setShowFasterDeliveryModal] = useState(false);
   const [tempPaymentMethod, setTempPaymentMethod] = useState(null);
   const [addressFormStartTime, setAddressFormStartTime] = useState(null);
+  // Guards the one-time "logged-in shopper" prefill so it doesn't overwrite
+  // fields the user is actively editing.
+  const loginPrefillRef = useRef(false);
 
   // ── Upsell: "The Art of Clarity" add-on before payment ──
   const ART_ID = "bk-002";
@@ -273,6 +276,80 @@ export default function AddressModal({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phone]);
+
+  // Prefill the checkout from a logged-in shopper's first order on record.
+  // Same orders sheet as the wallet, so we grab their earliest matching row
+  // and fill name / phone / address / city / pincode. Only fills empty fields.
+  const prefillFromOrders = async (digits) => {
+    try {
+      const url = `https://docs.google.com/spreadsheets/d/${WALLET_SHEET_ID}/gviz/tq?tqx=out:json`;
+      const res = await fetch(url);
+      const text = await res.text();
+      const data = JSON.parse(text.substring(47, text.length - 2));
+      const headers = data.table.cols.map((c) => c.label);
+      const matches = [];
+      data.table.rows.forEach((row) => {
+        const o = {};
+        row.c.forEach((cell, i) => {
+          let v = cell?.v;
+          if (v && typeof v === "object" && v.value !== undefined) v = v.value;
+          o[headers[i]] = v;
+        });
+        const rowPhone = String(o["Phone Number"] ?? "").replace(/\D/g, "");
+        if (rowPhone.slice(-10) === digits.slice(-10)) matches.push(o);
+      });
+      if (!matches.length) return;
+      const first = matches[0]; // their 1st address out of all past orders
+      const nm = String(first["Customer Name"] ?? "").trim();
+      const addr = String(first["Address"] ?? "").trim();
+      const cty = String(first["City"] ?? "").trim();
+      const st = String(first["State"] ?? "").trim();
+      const pin = String(first["Pincode"] ?? "")
+        .replace(/\D/g, "")
+        .slice(0, 6);
+      setName((prev) => prev || nm);
+      setAddress((prev) => prev || addr);
+      if (cty) {
+        setCity((prev) => prev || cty);
+        setDistrict((prev) => prev || cty);
+      } else if (st) {
+        setDistrict((prev) => prev || st);
+      }
+      if (pin) setPincode((prev) => prev || pin);
+    } catch (e) {
+      console.error("Prefill from orders failed:", e);
+    }
+  };
+
+  // When a shopper has already "logged in" via their number (track_orders_phone
+  // saved on the profile/track page), reuse it at checkout: set the phone (which
+  // triggers the wallet lookup) and, if this device has no saved address yet,
+  // pull their first past order to prefill everything. Runs once per open.
+  useEffect(() => {
+    if (!open || loginPrefillRef.current) return;
+    let loginPhone = "";
+    try {
+      loginPhone = normalizePhone(
+        localStorage.getItem("track_orders_phone") || "",
+      );
+    } catch (_) {}
+    if (loginPhone.length !== 10) return;
+    loginPrefillRef.current = true;
+
+    // Make sure the phone is populated so the wallet toggle can appear.
+    setPhone((prev) => (prev && prev.length === 10 ? prev : loginPhone));
+
+    // Keep a device-saved address if we already have one; otherwise fetch it.
+    let hasSavedAddress = false;
+    try {
+      const saved = JSON.parse(
+        localStorage.getItem("checkoutAddress") || "null",
+      );
+      hasSavedAddress = !!(saved && saved.address && saved.city);
+    } catch (_) {}
+    if (!hasSavedAddress) prefillFromOrders(loginPhone);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   // Wallet applied = min(balance, ₹399 cap, goods total) when enabled.
   const walletApplied =

@@ -985,32 +985,6 @@ button:hover {
   gap: 8px;
   flex-wrap: wrap;
 }
-/* QuickReads thunder badge — rightmost of the price row (only for books
-   that have a QuickRead); tapping opens that book's QuickRead page. */
-.bc-qr-badge {
-  margin-left: auto;
-  flex: 0 0 auto;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: var(--tertiary, #fb8500);
-  color: #fff;
-  box-shadow: 0 3px 9px -4px rgba(251, 133, 0, 0.7);
-  transition: transform 0.14s ease, box-shadow 0.16s ease;
-}
-.bc-qr-badge svg {
-  color: #fff;
-  fill: #fff;
-  width: 13px;
-  height: 13px;
-}
-.bc-qr-badge:hover {
-  transform: translateY(-2px) scale(1.06);
-  box-shadow: 0 8px 18px -6px rgba(251, 133, 0, 0.8);
-}
 
 .original {
   text-decoration: line-through;
@@ -18852,6 +18826,28 @@ img[data-loaded="true"] {
 .mo-status-pill.sm {
   font-size: 10.5px;
   padding: 3px 8px;
+}
+/* Payment-method pill beside the status pill (COD vs UPI). */
+.mo-pay-pill {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  padding: 4px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+.mo-pay-pill.cod {
+  background: rgba(37, 99, 235, 0.12);
+  color: #1d4ed8;
+  border-color: rgba(37, 99, 235, 0.28);
+}
+.mo-pay-pill.upi {
+  background: rgba(22, 163, 74, 0.12);
+  color: #15803d;
+  border-color: rgba(22, 163, 74, 0.28);
 }
 
 /* ===== Orders view toggle (cards / table) ===== */

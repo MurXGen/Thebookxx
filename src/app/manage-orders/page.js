@@ -5058,6 +5058,11 @@ export default function ManageOrdersPage() {
                               <Clock size={11} /> {agoLabel}
                             </span>
                           )}
+                          <span
+                            className={`mo-pay-pill ${isCOD ? "cod" : "upi"}`}
+                          >
+                            {isCOD ? "COD" : "UPI"}
+                          </span>
                           <span className="mo-status-pill">
                             {order.status}
                           </span>

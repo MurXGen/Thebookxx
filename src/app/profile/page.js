@@ -743,12 +743,20 @@ export default function MyOrdersPage() {
         return dateB - dateA;
       });
 
+      // Name from the newest order with one on record (re-login safe: always
+      // refresh so a blank "Customer" card never lingers after logout).
+      const freshName =
+        (sortedOrders.find((o) => (o["Customer Name"] || "").trim()) || {})[
+          "Customer Name"
+        ] || "";
+      if (freshName) {
+        setCustomerName(freshName);
+        try {
+          localStorage.setItem("track_orders_name", freshName);
+        } catch {}
+      }
+
       const parsedOrders = sortedOrders.map((order) => {
-        const customer = order["Customer Name"] || "";
-        if (customer && !customerName) {
-          setCustomerName(customer);
-          localStorage.setItem("track_orders_name", customer);
-        }
         return {
           ...order,
           parsedBooks: parseBooksList(order["Books List"]),

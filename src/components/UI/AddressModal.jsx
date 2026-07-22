@@ -123,9 +123,9 @@ export default function AddressModal({
   const [showFasterDeliveryModal, setShowFasterDeliveryModal] = useState(false);
   const [tempPaymentMethod, setTempPaymentMethod] = useState(null);
   const [addressFormStartTime, setAddressFormStartTime] = useState(null);
-  // Guards the one-time "logged-in shopper" prefill so it doesn't overwrite
-  // fields the user is actively editing.
-  const loginPrefillRef = useRef(false);
+  // Tracks the last logged-in phone we prefilled from, so we re-prefill when a
+  // shopper logs in as a different number but don't clobber active editing.
+  const loginPrefillRef = useRef("");
 
   // ── Upsell: "The Art of Clarity" add-on before payment ──
   const ART_ID = "bk-002";
@@ -279,8 +279,10 @@ export default function AddressModal({
 
   // Prefill the checkout from a logged-in shopper's first order on record.
   // Same orders sheet as the wallet, so we grab their earliest matching row
-  // and fill name / phone / address / city / pincode. Only fills empty fields.
-  const prefillFromOrders = async (digits) => {
+  // and fill name / address / city / pincode. When `overwrite` is true we
+  // replace existing values (used when loading a logged-in user's profile);
+  // otherwise we only fill blanks.
+  const prefillFromOrders = async (digits, overwrite = false) => {
     try {
       const url = `https://docs.google.com/spreadsheets/d/${WALLET_SHEET_ID}/gviz/tq?tqx=out:json`;
       const res = await fetch(url);
@@ -307,26 +309,32 @@ export default function AddressModal({
       const pin = String(first["Pincode"] ?? "")
         .replace(/\D/g, "")
         .slice(0, 6);
-      setName((prev) => prev || nm);
-      setAddress((prev) => prev || addr);
+      const put = (setter, val) => {
+        if (!val) return;
+        setter((prev) => (overwrite ? val : prev || val));
+      };
+      put(setName, nm);
+      put(setAddress, addr);
       if (cty) {
-        setCity((prev) => prev || cty);
-        setDistrict((prev) => prev || cty);
+        put(setCity, cty);
+        put(setDistrict, cty);
       } else if (st) {
-        setDistrict((prev) => prev || st);
+        put(setDistrict, st);
       }
-      if (pin) setPincode((prev) => prev || pin);
+      if (pin) put(setPincode, pin);
     } catch (e) {
       console.error("Prefill from orders failed:", e);
     }
   };
 
-  // When a shopper has already "logged in" via their number (track_orders_phone
-  // saved on the profile/track page), reuse it at checkout: set the phone (which
-  // triggers the wallet lookup) and, if this device has no saved address yet,
-  // pull their first past order to prefill everything. Runs once per open.
+  // When a shopper has "logged in" via their number (track_orders_phone saved on
+  // the profile/track page), reuse it at checkout: whenever the modal opens and
+  // the form isn't already showing that number, load it — set the phone (which
+  // triggers the wallet lookup) and pull their first past order to prefill the
+  // address. Keyed on the phone so a fresh login after logout re-prefills, but a
+  // shopper actively editing their own logged-in number is left untouched.
   useEffect(() => {
-    if (!open || loginPrefillRef.current) return;
+    if (!open) return;
     let loginPhone = "";
     try {
       loginPhone = normalizePhone(
@@ -334,20 +342,11 @@ export default function AddressModal({
       );
     } catch (_) {}
     if (loginPhone.length !== 10) return;
-    loginPrefillRef.current = true;
-
-    // Make sure the phone is populated so the wallet toggle can appear.
-    setPhone((prev) => (prev && prev.length === 10 ? prev : loginPhone));
-
-    // Keep a device-saved address if we already have one; otherwise fetch it.
-    let hasSavedAddress = false;
-    try {
-      const saved = JSON.parse(
-        localStorage.getItem("checkoutAddress") || "null",
-      );
-      hasSavedAddress = !!(saved && saved.address && saved.city);
-    } catch (_) {}
-    if (!hasSavedAddress) prefillFromOrders(loginPhone);
+    const current = phone.replace(/\D/g, "");
+    if (current === loginPhone || loginPrefillRef.current === loginPhone) return;
+    loginPrefillRef.current = loginPhone;
+    setPhone(loginPhone); // drives the wallet lookup + marks this profile loaded
+    prefillFromOrders(loginPhone, true); // overwrite with their profile address
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 

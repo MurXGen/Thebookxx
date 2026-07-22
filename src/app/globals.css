@@ -342,9 +342,7 @@ button {
 button:hover {
   transform: scale(0.99);
   transition: 0.3s;
-  outline: 1px solid var(--dark-50);
   cursor: pointer;
-  border-radius: var(--px-8);
 }
 
 .cursor-pointer {
@@ -13664,11 +13662,15 @@ img[data-loaded="true"] {
 }
 
 /* Scrollable section navigation tabs (border-bottom style) */
+/* Segmented pill tabs — light gray track, active tab is a white rounded card */
 .mo-tabs {
-  display: flex;
+  display: inline-flex;
   gap: 4px;
   overflow-x: auto;
-  border-bottom: 1.5px solid var(--hairline, #e5e7eb);
+  max-width: 100%;
+  background: rgba(118, 118, 128, 0.1);
+  border-radius: 13px;
+  padding: 5px;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
 }
@@ -13679,22 +13681,126 @@ img[data-loaded="true"] {
   flex: 0 0 auto;
   border: none;
   background: transparent;
-  padding: 11px 16px;
-  margin-bottom: -1.5px;
-  border-bottom: 2.5px solid transparent;
+  padding: 9px 18px;
+  border-radius: 9px;
   font-size: 13.5px;
   font-weight: 600;
   color: var(--dark-50);
   cursor: pointer;
   white-space: nowrap;
-  transition: color 0.15s ease, border-color 0.15s ease;
+  transition: color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
 }
 .mo-tab:hover {
   color: var(--foreground);
 }
 .mo-tab.active {
+  color: var(--foreground);
+  background: #fff;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.09),
+    0 1px 2px rgba(0, 0, 0, 0.06);
+}
+/* Dark mode: darker track + soft charcoal active card */
+.mo-dark .mo-tabs {
+  background: rgba(255, 255, 255, 0.07);
+}
+.mo-dark .mo-tab.active {
+  background: #2a2c31;
+  color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+/* Tab row: tabs on the left, timeline nav + calendar icon on the right */
+.mo-tabs-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.mo-tabs-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+.mo-cal-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  border: 1px solid var(--hairline, #e5e7eb);
+  background: var(--background, #fff);
+  color: var(--foreground);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.mo-cal-icon-btn:hover {
+  border-color: var(--tertiary, #fb8500);
   color: var(--tertiary, #fb8500);
-  border-bottom-color: var(--tertiary, #fb8500);
+}
+.mo-dark .mo-cal-icon-btn {
+  background: #1f2126;
+  border-color: rgba(255, 255, 255, 0.14);
+  color: #e7e7ea;
+}
+
+/* Orders calendar modal */
+.mo-cal-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+}
+.mo-cal-modal {
+  width: 100%;
+  max-width: 420px;
+  max-height: 88vh;
+  overflow-y: auto;
+  background: var(--background, #fff);
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.4);
+}
+.mo-dark .mo-cal-modal {
+  background: #1a1c20;
+}
+.mo-cal-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.mo-cal-modal-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--foreground);
+}
+.mo-cal-modal-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  border: none;
+  background: var(--surface-2, #f3f4f6);
+  color: var(--foreground);
+  cursor: pointer;
+}
+.mo-dark .mo-cal-modal-close {
+  background: rgba(255, 255, 255, 0.08);
+  color: #e7e7ea;
 }
 
 /* Customize (show / hide) panel */

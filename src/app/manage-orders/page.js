@@ -410,7 +410,6 @@ const WEEKDAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 // Top-level page sections for the scrollable navigation tabs.
 const SECTION_TABS = [
   { key: "analytics", label: "Analytics" },
-  { key: "calendar", label: "Orders calendar" },
   { key: "indiapost", label: "India Post booking" },
   { key: "orders", label: "Orders" },
 ];
@@ -2376,6 +2375,8 @@ export default function ManageOrdersPage() {
     } catch {}
     setAccOpen((p) => ({ ...p, [key]: true }));
   };
+  // Orders calendar now lives in a modal opened from the tab row.
+  const [showCalModal, setShowCalModal] = useState(false);
 
   useEffect(() => {
     try {
@@ -2911,6 +2912,26 @@ export default function ManageOrdersPage() {
     dateTo,
     selectedDate,
   ]);
+
+  // Distinct Order Status / Payment Type values actually present in the sheet,
+  // so the filter dropdowns only offer what really exists (no dead options).
+  const distinctStatuses = useMemo(() => {
+    const set = new Set();
+    orders.forEach((o) => {
+      const v = String(o["Order Status"] || "").trim();
+      if (v) set.add(v);
+    });
+    return [...set].sort((a, b) => a.localeCompare(b));
+  }, [orders]);
+
+  const distinctPayments = useMemo(() => {
+    const set = new Set();
+    orders.forEach((o) => {
+      const v = String(o["Payment Type"] || "").trim();
+      if (v) set.add(v);
+    });
+    return [...set].sort((a, b) => a.localeCompare(b));
+  }, [orders]);
 
   // Orders received per calendar day → { "YYYY-MM-DD": count }
   const ordersByDay = useMemo(() => {
@@ -3753,42 +3774,55 @@ export default function ManageOrdersPage() {
         </div>
 
         {/* Section navigation tabs — switch which section is shown */}
-        <div className="mo-tabs">
-          {SECTION_TABS.map((t) => (
-            <button
-              key={t.key}
-              type="button"
-              className={`mo-tab${activeTab === t.key ? " active" : ""}`}
-              onClick={() => goToTab(t.key)}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
+        <div className="mo-tabs-row">
+          <div className="mo-tabs">
+            {SECTION_TABS.map((t) => (
+              <button
+                key={t.key}
+                type="button"
+                className={`mo-tab${activeTab === t.key ? " active" : ""}`}
+                onClick={() => goToTab(t.key)}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
 
-        {/* Analytics period range nav — sits below the search section */}
-        {activeTab === "analytics" && analyticsPeriod !== "all" && (
-          <div className="an-nav an-nav-below">
+          {/* Right side of the tab row — period/timeline nav + calendar modal */}
+          <div className="mo-tabs-right">
+            {activeTab === "analytics" && analyticsPeriod !== "all" && (
+              <div className="an-nav an-nav-inline">
+                <button
+                  type="button"
+                  className="an-nav-btn"
+                  onClick={() => setPeriodOffset((o) => o - 1)}
+                  aria-label={`Previous ${analyticsPeriod}`}
+                >
+                  <ChevronLeft size={16} />
+                </button>
+                <span className="an-nav-label">{periodWindow.label}</span>
+                <button
+                  type="button"
+                  className="an-nav-btn"
+                  onClick={() => setPeriodOffset((o) => Math.min(0, o + 1))}
+                  disabled={!periodWindow.canNext}
+                  aria-label={`Next ${analyticsPeriod}`}
+                >
+                  <ChevronRight size={16} />
+                </button>
+              </div>
+            )}
             <button
               type="button"
-              className="an-nav-btn"
-              onClick={() => setPeriodOffset((o) => o - 1)}
-              aria-label={`Previous ${analyticsPeriod}`}
+              className="mo-cal-icon-btn"
+              onClick={() => setShowCalModal(true)}
+              title="Open orders calendar"
+              aria-label="Open orders calendar"
             >
-              <ChevronLeft size={16} />
-            </button>
-            <span className="an-nav-label">{periodWindow.label}</span>
-            <button
-              type="button"
-              className="an-nav-btn"
-              onClick={() => setPeriodOffset((o) => Math.min(0, o + 1))}
-              disabled={!periodWindow.canNext}
-              aria-label={`Next ${analyticsPeriod}`}
-            >
-              <ChevronRight size={16} />
+              <Calendar size={18} />
             </button>
           </div>
-        )}
+        </div>
 
         {/* ===== Analytics (accordion) ===== */}
         {activeTab === "analytics" && (
@@ -4510,15 +4544,11 @@ export default function ManageOrdersPage() {
                           Active (Pending + Processing + Getting Shipped)
                         </option>
                         <option value="all">All Statuses</option>
-                        <option value="Processing">Processing</option>
-                        <option value="Getting Shipped">Getting Shipped</option>
-                        <option value="Shipped">Shipped</option>
-                        <option value="In Transit">In Transit</option>
-                        <option value="Out for Delivery">
-                          Out for Delivery
-                        </option>
-                        <option value="Delivered">Delivered</option>
-                        <option value="Cancelled">Cancelled</option>
+                        {distinctStatuses.map((s) => (
+                          <option key={s} value={s}>
+                            {s}
+                          </option>
+                        ))}
                       </select>
                     </div>
                   </div>
@@ -4531,9 +4561,11 @@ export default function ManageOrdersPage() {
                         onChange={(e) => setPaymentFilter(e.target.value)}
                       >
                         <option value="all">All Payments</option>
-                        <option value="COD">Cash on Delivery</option>
-                        <option value="UPI Payment">UPI Payment</option>
-                        <option value="Card Payment">Card Payment</option>
+                        {distinctPayments.map((p) => (
+                          <option key={p} value={p}>
+                            {p}
+                          </option>
+                        ))}
                       </select>
                     </div>
                   </div>
@@ -4581,77 +4613,97 @@ export default function ManageOrdersPage() {
         </div>
 
         {/* ===== Calendar (accordion) ===== */}
-        {activeTab === "calendar" && (
-        <Accordion
-          id="calendar"
-          title="Orders calendar"
-          open={accOpen.calendar}
-          onToggle={toggleAcc}
-        >
-          <div className="admin-cal-wrap admin-cal-standalone">
-            <OrdersCalendar
-              calMonth={calMonth}
-              setCalMonth={setCalMonth}
-              ordersByDay={ordersByDay}
-              selectedDate={selectedDate}
-              setSelectedDate={setSelectedDate}
-              dateFrom={dateFrom}
-              dateTo={dateTo}
-              setDateFrom={setDateFrom}
-              setDateTo={setDateTo}
-            />
-            {selectedDate && (
-              <div className="admin-cal-selected">
-                Showing orders for{" "}
-                <strong>
-                  {new Date(selectedDate + "T00:00:00").toLocaleDateString(
-                    "en-IN",
-                    { day: "numeric", month: "short", year: "numeric" },
-                  )}
-                </strong>
+        {/* ===== Orders calendar modal (opened from the tab row) ===== */}
+        {showCalModal && (
+          <div
+            className="mo-cal-modal-overlay"
+            onClick={() => setShowCalModal(false)}
+          >
+            <div
+              className="mo-cal-modal"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="mo-cal-modal-head">
+                <span className="mo-cal-modal-title">
+                  <Calendar size={16} /> Orders calendar
+                </span>
                 <button
                   type="button"
-                  className="admin-cal-clear"
-                  onClick={() => setSelectedDate("")}
+                  className="mo-cal-modal-close"
+                  onClick={() => setShowCalModal(false)}
+                  aria-label="Close calendar"
                 >
-                  <X size={13} /> Show all
+                  <X size={18} />
                 </button>
               </div>
-            )}
-            {dateFrom && dateTo && (
-              <div className="admin-cal-selected">
-                Showing orders from{" "}
-                <strong>
-                  {new Date(dateFrom + "T00:00:00").toLocaleDateString(
-                    "en-IN",
-                    {
-                      day: "numeric",
-                      month: "short",
-                    },
-                  )}
-                </strong>{" "}
-                to{" "}
-                <strong>
-                  {new Date(dateTo + "T00:00:00").toLocaleDateString("en-IN", {
-                    day: "numeric",
-                    month: "short",
-                    year: "numeric",
-                  })}
-                </strong>
-                <button
-                  type="button"
-                  className="admin-cal-clear"
-                  onClick={() => {
-                    setDateFrom("");
-                    setDateTo("");
-                  }}
-                >
-                  <X size={13} /> Show all
-                </button>
+              <div className="admin-cal-wrap admin-cal-standalone">
+                <OrdersCalendar
+                  calMonth={calMonth}
+                  setCalMonth={setCalMonth}
+                  ordersByDay={ordersByDay}
+                  selectedDate={selectedDate}
+                  setSelectedDate={setSelectedDate}
+                  dateFrom={dateFrom}
+                  dateTo={dateTo}
+                  setDateFrom={setDateFrom}
+                  setDateTo={setDateTo}
+                />
+                {selectedDate && (
+                  <div className="admin-cal-selected">
+                    Showing orders for{" "}
+                    <strong>
+                      {new Date(selectedDate + "T00:00:00").toLocaleDateString(
+                        "en-IN",
+                        { day: "numeric", month: "short", year: "numeric" },
+                      )}
+                    </strong>
+                    <button
+                      type="button"
+                      className="admin-cal-clear"
+                      onClick={() => setSelectedDate("")}
+                    >
+                      <X size={13} /> Show all
+                    </button>
+                  </div>
+                )}
+                {dateFrom && dateTo && (
+                  <div className="admin-cal-selected">
+                    Showing orders from{" "}
+                    <strong>
+                      {new Date(dateFrom + "T00:00:00").toLocaleDateString(
+                        "en-IN",
+                        {
+                          day: "numeric",
+                          month: "short",
+                        },
+                      )}
+                    </strong>{" "}
+                    to{" "}
+                    <strong>
+                      {new Date(dateTo + "T00:00:00").toLocaleDateString(
+                        "en-IN",
+                        {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        },
+                      )}
+                    </strong>
+                    <button
+                      type="button"
+                      className="admin-cal-clear"
+                      onClick={() => {
+                        setDateFrom("");
+                        setDateTo("");
+                      }}
+                    >
+                      <X size={13} /> Show all
+                    </button>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
-        </Accordion>
         )}
 
         {/* ===== India Post booking sheet (accordion) ===== */}

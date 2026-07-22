@@ -163,7 +163,7 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
         ? ` · Wallet used ₹${walletUsed}${walletPhone ? ` (${walletPhone})` : ""}`
         : ""),
     tinyUrl: shortLink || "",
-    orderStatus: "Pending",
+    orderStatus: "Getting Shipped",
     timestamp: formattedTimestamp,
     userAgent:
       typeof navigator !== "undefined"

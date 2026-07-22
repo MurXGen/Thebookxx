@@ -325,9 +325,9 @@ export default function BookCard({ book }) {
                 )}
                 {hasQuickRead(book.id) && (
                   <Link
-                    href={`/quickreads/${slugify(book.name)}`}
+                    href={`/quickreads?book=${book.id}`}
                     className="bc-qr-badge"
-                    title="Read the QuickRead — key insights in minutes"
+                    title="See this book in QuickReads — key insights in minutes"
                     aria-label="QuickReads"
                     onClick={(e) => e.stopPropagation()}
                   >

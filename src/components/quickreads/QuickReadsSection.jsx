@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
@@ -25,6 +26,30 @@ function slugify(text) {
 
 export default function QuickReadsSection() {
   const { addQuickRead, isInQrCart } = useStore();
+  // When arriving from a book card's ⚡ badge (/quickreads?book=<id>), scroll to
+  // and highlight that book's QuickReads card instead of jumping straight in.
+  const [highlightSlug, setHighlightSlug] = useState(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const id = new URLSearchParams(window.location.search).get("book");
+    if (!id) return;
+    const target = books.find((b) => b.id === id);
+    if (!target) return;
+    const slug = slugify(target.name);
+    setHighlightSlug(slug);
+    // Let the grid render, then smooth-scroll the card into view.
+    const scrollT = setTimeout(() => {
+      const el = document.getElementById(`qr-card-${slug}`);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 350);
+    // Fade the highlight out after a few seconds.
+    const clearT = setTimeout(() => setHighlightSlug(null), 4000);
+    return () => {
+      clearTimeout(scrollT);
+      clearTimeout(clearT);
+    };
+  }, []);
 
   const seenNames = new Set();
   const items = quickReadBookIds()
@@ -59,10 +84,13 @@ export default function QuickReadsSection() {
         <div className="qr-grid">
           {items.map((book, i) => {
             const count = quickReadFrameCount(book.id);
+            const slug = slugify(book.name);
+            const isHighlighted = highlightSlug === slug;
             return (
               <motion.article
                 key={book.id}
-                className="qr-book-card"
+                id={`qr-card-${slug}`}
+                className={`qr-book-card${isHighlighted ? " qr-highlight" : ""}`}
                 initial={{ opacity: 0, y: 18 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.2 }}

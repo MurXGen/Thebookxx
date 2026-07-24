@@ -144,7 +144,7 @@ export default function Navbar() {
         {/* 🔥 Mobile promo strip */}
 
         <nav className="navbar section-1200">
-          {/* LEFT — menu + WhatsApp */}
+          {/* LEFT — menu + brand */}
           <div className="nav-left">
             <button
               onClick={() => setIsMenuOpen(true)}
@@ -153,26 +153,13 @@ export default function Navbar() {
             >
               <MenuIcon size={26} />
             </button>
-            <a
-              href="https://wa.me/917710892108"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="WhatsApp"
-              className="nav-ic"
-            >
-              <FaWhatsapp size={24} color="#25D366" />
-            </a>
-          </div>
-
-          {/* CENTER — brand + former-name tagline */}
-          <div className="nav-center-brand">
             <Link href="/" aria-label="TheBookX home" className="nav-brand">
               <span className="logo-text">TheBookX</span>
               <span className="nav-brand-sub">formerly Uskillbook</span>
             </Link>
           </div>
 
-          {/* RIGHT — search + cart */}
+          {/* RIGHT — search, WhatsApp, profile, cart */}
           <div className="nav-right">
             <button
               type="button"
@@ -185,6 +172,22 @@ export default function Navbar() {
             >
               <Search size={24} />
             </button>
+            <a
+              href="https://wa.me/917710892108"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="WhatsApp"
+              className="nav-ic"
+            >
+              <FaWhatsapp size={24} color="#25D366" />
+            </a>
+            <Link
+              href="/profile"
+              aria-label="Profile"
+              className="nav-ic nav-profile"
+            >
+              <User size={24} />
+            </Link>
             <Link
               href="/bag"
               aria-label="Cart"

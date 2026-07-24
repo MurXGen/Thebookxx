@@ -2,7 +2,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getBlogBySlug, getAllBlogSlugs, getAllBlogs } from "@/utils/blogs";
 import BlogViews from "@/components/UI/BlogViews";
-import BlogCover from "@/components/UI/BlogCover";
 import {
   Star,
   BookOpen,
@@ -249,19 +248,8 @@ export default async function BlogPage({ params }) {
               <span style={{ color: "#374151" }}>{blog.title}</span>
             </nav>
 
-            {/* Article header with cover image */}
+            {/* Text-first article header (no cover image) */}
             <header style={{ marginBottom: "28px" }}>
-              <BlogCover
-                src={blog.coverImage || blog.hero || blog.images?.[0]?.url}
-                alt={blog.images?.[0]?.alt || blog.title}
-                fit="contain"
-                wrapperStyle={{
-                  width: "100%",
-                  borderRadius: "16px",
-                  marginBottom: "20px",
-                }}
-                imgStyle={{ width: "100%", maxHeight: "380px" }}
-              />
               <h1
                 className="font-32 weight-700"
                 style={{ lineHeight: 1.2, marginBottom: "12px" }}

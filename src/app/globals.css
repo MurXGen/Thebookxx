@@ -8067,9 +8067,83 @@ textarea.sec-mid-btn,
   justify-content: space-between;
   padding: 16px 20px;
   background: #f9fafb;
-  border-bottom: 1px solid #e5e7eb;
   flex-wrap: wrap;
   gap: 12px;
+}
+
+/* Collapsible order card (Amazon/Flipkart style) */
+.order-card-toggle {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+}
+.order-card-toggle:hover {
+  transform: none;
+}
+.order-card-toggle:hover .order-summary-strip {
+  background: #fafafa;
+}
+.order-summary-strip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  transition: background 0.2s ease;
+}
+.order-card.expanded .order-summary-strip {
+  border-bottom: 1px solid #e5e7eb;
+}
+.oss-thumbs {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+.oss-thumb {
+  width: 34px;
+  height: 46px;
+  border-radius: 5px;
+  object-fit: cover;
+  border: 1.5px solid #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.16);
+  margin-left: -10px;
+}
+.oss-thumb:first-child {
+  margin-left: 0;
+}
+.oss-thumb-ph {
+  background: #eee;
+  margin-left: 0;
+}
+.oss-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+  min-width: 0;
+}
+.oss-count {
+  font-size: 12px;
+  color: #6b7280;
+}
+.oss-total {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--foreground);
+}
+.oss-chevron {
+  flex: 0 0 auto;
+  color: #6b7280;
+  transition: transform 0.3s ease;
+}
+.oss-chevron.open {
+  transform: rotate(180deg);
 }
 
 .order-id-section {
@@ -13926,6 +14000,9 @@ img[data-loaded="true"] {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+}
+.mo-track-status {
+  min-width: 132px;
 }
 .mo-track-send {
   display: inline-flex;

@@ -414,6 +414,20 @@ const SECTION_TABS = [
   { key: "orders", label: "Orders" },
 ];
 
+// Status options for the Track & notify quick status editor (includes the
+// extra "Money received" state on top of the usual delivery stages).
+const TRACK_STATUS_OPTIONS = [
+  "Pending",
+  "Processing",
+  "Getting Shipped",
+  "Shipped",
+  "In Transit",
+  "Out for Delivery",
+  "Delivered",
+  "Money received",
+  "Cancelled",
+];
+
 const ANALYTICS_SECTIONS = [
   { key: "kpis", label: "Summary cards" },
   { key: "profitCost", label: "Profit & cost" },
@@ -2415,6 +2429,7 @@ export default function ManageOrdersPage() {
       "Phone Number": match["Phone Number"] || "",
       "Shipping ID": match["Shipping ID"] || val,
       shippingId: match["Shipping ID"] || val,
+      status: match["Order Status"] || "Processing",
     };
     setTrackList((prev) => {
       if (
@@ -2442,6 +2457,27 @@ export default function ManageOrdersPage() {
   const clearTracking = () => {
     setTrackList([]);
     persistTrackList([]);
+  };
+  // Change an order's status right from the Track & notify row and save it to
+  // the sheet (Apps Script) — plus optimistically reflect it in the list.
+  const updateTrackStatus = (idx, val) => {
+    const row = trackList[idx];
+    setTrackList((prev) => {
+      const next = prev.map((r, i) => (i === idx ? { ...r, status: val } : r));
+      persistTrackList(next);
+      return next;
+    });
+    const oid = row?.["Order ID"];
+    if (oid) {
+      updateOrderRow(oid, { "Order Status": val });
+      setOrders((prev) =>
+        prev.map((o) =>
+          o["Order ID"] === oid
+            ? { ...o, "Order Status": val, status: val }
+            : o,
+        ),
+      );
+    }
   };
 
   useEffect(() => {
@@ -4800,15 +4836,16 @@ export default function ManageOrdersPage() {
 
         {/* ===== Orders (accordion) ===== */}
         {activeTab === "orders" && (
+        <>
+        {/* ── Track & notify: its own section — paste tracking IDs, look them
+            up, change/save order status, and message customers ── */}
         <Accordion
-          id="orders"
-          title="Orders"
-          open={accOpen.orders}
+          id="tracknotify"
+          title="Track & notify"
+          open={accOpen.tracknotify ?? true}
           onToggle={toggleAcc}
-          right={<span className="acc-count">{filteredOrders.length}</span>}
+          right={<span className="acc-count">{trackList.length}</span>}
         >
-          {/* ── Track & notify: paste tracking IDs one by one, look them up in
-              the sheet, and message customers (e.g. Out for delivery) ── */}
           <div className="mo-track-notify">
             <div className="mo-track-head">
               <span className="mo-track-title">
@@ -4853,6 +4890,7 @@ export default function ManageOrdersPage() {
                         <th>Order</th>
                         <th>Customer</th>
                         <th>Tracking ID</th>
+                        <th>Status</th>
                         <th>Notify on WhatsApp</th>
                         <th></th>
                       </tr>
@@ -4870,6 +4908,22 @@ export default function ManageOrdersPage() {
                             <td>{r["Customer Name"] || "—"}</td>
                             <td className="mo-track-tid">
                               {r["Shipping ID"]}
+                            </td>
+                            <td>
+                              <select
+                                className="bulk-wa-select mo-track-status"
+                                value={r.status || "Processing"}
+                                onChange={(e) =>
+                                  updateTrackStatus(i, e.target.value)
+                                }
+                                title="Change & save order status"
+                              >
+                                {TRACK_STATUS_OPTIONS.map((s) => (
+                                  <option key={s} value={s}>
+                                    {s}
+                                  </option>
+                                ))}
+                              </select>
                             </td>
                             <td>
                               <div className="mo-track-wa">
@@ -4936,7 +4990,15 @@ export default function ManageOrdersPage() {
               </>
             )}
           </div>
+        </Accordion>
 
+        <Accordion
+          id="orders"
+          title="Orders"
+          open={accOpen.orders}
+          onToggle={toggleAcc}
+          right={<span className="acc-count">{filteredOrders.length}</span>}
+        >
           {filteredOrders.length > 0 ? (
             <div className="flex flex-col gap-12">
               <div className="orders-list-header">
@@ -5780,6 +5842,7 @@ export default function ManageOrdersPage() {
             </div>
           )}
         </Accordion>
+        </>
         )}
       </div>
 

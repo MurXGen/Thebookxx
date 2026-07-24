@@ -22,6 +22,7 @@ import {
   LogOut,
   ArrowLeft,
   ChevronRight,
+  ChevronDown,
   BadgeCheck,
   Check,
   Zap,
@@ -351,6 +352,10 @@ export default function MyOrdersPage() {
   const [customerName, setCustomerName] = useState("");
   const [walletBalance, setWalletBalance] = useState(0);
   const [savedPhones, setSavedPhones] = useState([]);
+  // Which order cards are expanded (Amazon/Flipkart-style collapsed by default)
+  const [expandedOrders, setExpandedOrders] = useState({});
+  const toggleOrder = (key) =>
+    setExpandedOrders((p) => ({ ...p, [key]: !p[key] }));
 
   // ----- NEW state for cancel + reschedule -----
   const [showRescheduleModal, setShowRescheduleModal] = useState(false);
@@ -766,9 +771,8 @@ export default function MyOrdersPage() {
           comment: order["Comment for this order"] || order["Comment"] || "",
         };
       });
-      // Compute wallet balance, read from the "Wallet" column.
-      // Take the max across rows so blank cells in older orders don't
-      // overwrite a positive balance from a more recent row.
+      // Compute wallet balance, read from the "Wallet" column — across ALL
+      // rows (including wallet-only reward rows), max value.
       const walletValue = parsedOrders.reduce((max, order) => {
         const raw = order["Wallet"] ?? order["wallet"] ?? 0;
         const w = parseFloat(raw);
@@ -776,7 +780,18 @@ export default function MyOrdersPage() {
       }, 0);
       setWalletBalance(walletValue);
 
-      setOrders(parsedOrders);
+      // Only show genuine orders in the list. Wallet-only reward rows (pushed
+      // with just phone + wallet + timestamp) have no order id / books / total,
+      // so they must not appear as an order card.
+      const isRealOrder = (o) => {
+        const hasId = String(o["Order ID"] || "").trim() !== "";
+        const hasBooks = (o.parsedBooks || []).length > 0;
+        const total = parseFloat(o["Total Amount"] ?? 0);
+        return hasId || hasBooks || (!isNaN(total) && total > 0);
+      };
+      const realOrders = parsedOrders.filter(isRealOrder);
+
+      setOrders(realOrders);
 
       // A number may have QuickReads but no physical book orders — treat that
       // as a valid "profile" too (show only QuickReads in that case).
@@ -786,7 +801,7 @@ export default function MyOrdersPage() {
         qrCount = qrIds.length;
       } catch (_) {}
 
-      if (parsedOrders.length === 0 && qrCount === 0) {
+      if (realOrders.length === 0 && qrCount === 0 && walletValue <= 0) {
         setError(`No profile found for phone number ${phone}`);
       } else {
         setShowPhoneInput(false);
@@ -1382,32 +1397,99 @@ Please cancel this order. Thank you 🙏`;
                 .toLowerCase()
                 .includes("pending");
 
+              // Collapsed summary bits (thumbnails + item count + total)
+              const summaryItems = order.parsedBooks || [];
+              const summaryTotal =
+                parseFloat(order["Total Amount"]) ||
+                summaryItems.reduce(
+                  (s, b) => s + (b.total || b.price * b.quantity || 0),
+                  0,
+                );
+              const summaryCovers = summaryItems
+                .map((b) => getBookImage(b.name))
+                .filter(Boolean)
+                .slice(0, 3);
+              const orderKey = order["Order ID"] || String(idx);
+              const isExpanded = !!expandedOrders[orderKey];
+
               return (
-                <div key={idx} className="order-card">
-                  <div className="order-card-header">
-                    <div className="order-id-section">
-                      <span className="order-id-label">Order ID</span>
-                      <span className="order-id-value">
-                        {order["Order ID"]}
-                      </span>
-                    </div>
-                    <div className="order-date-section">
-                      <Calendar size={14} />
-                      <span className="time-full">
-                        {formatDate(getOrderDateValue(order))}
-                      </span>
-                    </div>
-                    <div className="flex flex-row gap-4 items-center">
-                      <span className="order-id-label">Delivery status:</span>
-                      <div
-                        className={`order-status-badge ${getStatusColor(order.status)}`}
-                      >
-                        {getStatusIcon(order.status)}
-                        <span>{order.status}</span>
+                <div
+                  key={idx}
+                  className={`order-card${isExpanded ? " expanded" : ""}`}
+                >
+                  <button
+                    type="button"
+                    className="order-card-toggle"
+                    onClick={() => toggleOrder(orderKey)}
+                    aria-expanded={isExpanded}
+                  >
+                    <div className="order-card-header">
+                      <div className="order-id-section">
+                        <span className="order-id-label">Order ID</span>
+                        <span className="order-id-value">
+                          {order["Order ID"] || "—"}
+                        </span>
+                      </div>
+                      <div className="order-date-section">
+                        <Calendar size={14} />
+                        <span className="time-full">
+                          {formatDate(getOrderDateValue(order))}
+                        </span>
+                      </div>
+                      <div className="flex flex-row gap-4 items-center">
+                        <span className="order-id-label">Delivery status:</span>
+                        <div
+                          className={`order-status-badge ${getStatusColor(order.status)}`}
+                        >
+                          {getStatusIcon(order.status)}
+                          <span>{order.status}</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
+                    {/* Collapsed key-details strip (Amazon/Flipkart style) */}
+                    <div className="order-summary-strip">
+                      <div className="oss-thumbs">
+                        {summaryCovers.length > 0 ? (
+                          summaryCovers.map((src, ci) => (
+                            <Image
+                              key={ci}
+                              src={src}
+                              alt=""
+                              width={34}
+                              height={46}
+                              className="oss-thumb"
+                            />
+                          ))
+                        ) : (
+                          <span className="oss-thumb oss-thumb-ph" />
+                        )}
+                      </div>
+                      <div className="oss-meta">
+                        <span className="oss-count">
+                          {summaryItems.length || 0}{" "}
+                          {summaryItems.length === 1 ? "item" : "items"}
+                        </span>
+                        <span className="oss-total">₹{summaryTotal}</span>
+                      </div>
+                      <ChevronDown
+                        size={18}
+                        className={`oss-chevron${isExpanded ? " open" : ""}`}
+                      />
+                    </div>
+                  </button>
+
+                  <AnimatePresence initial={false}>
+                    {isExpanded && (
+                      <motion.div
+                        key="body"
+                        className="order-card-body"
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+                        style={{ overflow: "hidden" }}
+                      >
                   <OrderTrackingTimeline order={order} />
 
                   {(() => {
@@ -1687,7 +1769,9 @@ Please cancel this order. Thank you 🙏`;
                         </button>
                       </div>
                     )}
-
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               );
             })}

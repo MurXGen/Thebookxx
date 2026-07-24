@@ -2378,6 +2378,72 @@ export default function ManageOrdersPage() {
   // Orders calendar now lives in a modal opened from the tab row.
   const [showCalModal, setShowCalModal] = useState(false);
 
+  // ── Track & notify: paste a tracking (shipping) ID, look up the order from
+  // the sheet, stack matches in a table, and fire a WhatsApp stage message.
+  // The stacked list persists across sessions (localStorage).
+  const [trackInput, setTrackInput] = useState("");
+  const [trackError, setTrackError] = useState("");
+  const [trackList, setTrackList] = useState([]);
+  const [trackPicks, setTrackPicks] = useState({});
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("mo_track_notify");
+      if (raw) setTrackList(JSON.parse(raw) || []);
+    } catch {}
+  }, []);
+  const persistTrackList = (next) => {
+    try {
+      localStorage.setItem("mo_track_notify", JSON.stringify(next));
+    } catch {}
+  };
+  const addTracking = () => {
+    const val = trackInput.trim();
+    if (!val) return;
+    const match = orders.find(
+      (o) =>
+        String(o["Shipping ID"] || "")
+          .trim()
+          .toLowerCase() === val.toLowerCase(),
+    );
+    if (!match) {
+      setTrackError(`No order found for tracking ID "${val}".`);
+      return;
+    }
+    const slim = {
+      "Order ID": match["Order ID"] || "",
+      "Customer Name": match["Customer Name"] || "",
+      "Phone Number": match["Phone Number"] || "",
+      "Shipping ID": match["Shipping ID"] || val,
+      shippingId: match["Shipping ID"] || val,
+    };
+    setTrackList((prev) => {
+      if (
+        prev.some(
+          (r) =>
+            String(r["Shipping ID"]).toLowerCase() === val.toLowerCase(),
+        )
+      ) {
+        return prev;
+      }
+      const next = [...prev, slim];
+      persistTrackList(next);
+      return next;
+    });
+    setTrackInput("");
+    setTrackError("");
+  };
+  const removeTracking = (idx) => {
+    setTrackList((prev) => {
+      const next = prev.filter((_, i) => i !== idx);
+      persistTrackList(next);
+      return next;
+    });
+  };
+  const clearTracking = () => {
+    setTrackList([]);
+    persistTrackList([]);
+  };
+
   useEffect(() => {
     try {
       const raw = localStorage.getItem("manage_orders_picks");
@@ -4741,6 +4807,136 @@ export default function ManageOrdersPage() {
           onToggle={toggleAcc}
           right={<span className="acc-count">{filteredOrders.length}</span>}
         >
+          {/* ── Track & notify: paste tracking IDs one by one, look them up in
+              the sheet, and message customers (e.g. Out for delivery) ── */}
+          <div className="mo-track-notify">
+            <div className="mo-track-head">
+              <span className="mo-track-title">
+                <Truck size={15} /> Track &amp; notify
+              </span>
+              <span className="mo-track-sub">
+                Paste a tracking ID to pull the order, then WhatsApp the
+                customer. Entries are saved here as you add them.
+              </span>
+            </div>
+            <div className="mo-track-input-row">
+              <input
+                className="admin-input mo-track-input"
+                placeholder="Paste tracking ID and press Enter…"
+                value={trackInput}
+                onChange={(e) => setTrackInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    addTracking();
+                  }
+                }}
+              />
+              <button
+                type="button"
+                className="mo-track-add"
+                onClick={addTracking}
+              >
+                <Search size={15} /> Search
+              </button>
+            </div>
+            {trackError && (
+              <div className="mo-track-error">{trackError}</div>
+            )}
+            {trackList.length > 0 && (
+              <>
+                <div className="mo-track-table-wrap">
+                  <table className="mo-track-table">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Order</th>
+                        <th>Customer</th>
+                        <th>Tracking ID</th>
+                        <th>Notify on WhatsApp</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {trackList.map((r, i) => {
+                        const key = String(r["Shipping ID"]);
+                        const stage = trackPicks[key] || "ofd";
+                        return (
+                          <tr key={key}>
+                            <td className="mo-track-num">{i + 1}</td>
+                            <td className="mo-track-oid">
+                              {r["Order ID"] || "—"}
+                            </td>
+                            <td>{r["Customer Name"] || "—"}</td>
+                            <td className="mo-track-tid">
+                              {r["Shipping ID"]}
+                            </td>
+                            <td>
+                              <div className="mo-track-wa">
+                                <select
+                                  className="bulk-wa-select"
+                                  value={stage}
+                                  onChange={(e) =>
+                                    setTrackPicks((p) => ({
+                                      ...p,
+                                      [key]: e.target.value,
+                                    }))
+                                  }
+                                >
+                                  {waMessages({}).map((m) => (
+                                    <option key={m.key} value={m.key}>
+                                      {m.label}
+                                    </option>
+                                  ))}
+                                </select>
+                                <button
+                                  type="button"
+                                  className="mo-track-send"
+                                  title="Send on WhatsApp"
+                                  aria-label="Send on WhatsApp"
+                                  onClick={() => {
+                                    const msg = waMessages(r).find(
+                                      (m) => m.key === stage,
+                                    );
+                                    if (msg)
+                                      openWhatsApp(r["Phone Number"], msg.text);
+                                  }}
+                                >
+                                  <FaWhatsapp size={15} />
+                                </button>
+                              </div>
+                            </td>
+                            <td>
+                              <button
+                                type="button"
+                                className="mo-track-del"
+                                title="Remove"
+                                aria-label="Remove"
+                                onClick={() => removeTracking(i)}
+                              >
+                                <X size={14} />
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+                <div className="mo-track-foot">
+                  <span>{trackList.length} tracked</span>
+                  <button
+                    type="button"
+                    className="mo-track-clear"
+                    onClick={clearTracking}
+                  >
+                    Clear all
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+
           {filteredOrders.length > 0 ? (
             <div className="flex flex-col gap-12">
               <div className="orders-list-header">

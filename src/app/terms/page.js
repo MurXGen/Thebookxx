@@ -175,8 +175,34 @@ export default function TermsAndConditions() {
         </p>
       </section>
 
+      <section id="authenticity">
+        <h2>6. Product Authenticity &amp; Condition</h2>
+        <p>
+          The books offered on the Website are genuine paperback editions
+          sourced from established shops, retailers, and distributors, which
+          enables us to offer them to readers at near-cost prices. Every copy is
+          quality-checked and dispatched in good, readable condition.
+        </p>
+        <p>
+          Unless a listing expressly states otherwise, our books are standard
+          paperback copies obtained through the retail supply chain. We do not
+          represent them as brand-new, direct-from-publisher stock, signed
+          copies, first editions, or collector's editions, and the specific
+          print run, edition, or cover design may vary from the images shown.
+          The text and content of every book is complete and unaltered.
+        </p>
+        <p>
+          Where the Website describes books as "genuine", "authentic", or
+          "original", this means the copy is a legitimate published edition of
+          the title and the author's work, and not a photocopied or pirated
+          reproduction. If you have any question about the condition or edition
+          of a specific title before ordering, please contact us on WhatsApp and
+          we will be glad to help.
+        </p>
+      </section>
+
       <section id="pricing">
-        <h2>6. Pricing &amp; Payment</h2>
+        <h2>7. Pricing &amp; Payment</h2>
         <p>
           All prices displayed on the Website are in Indian Rupees (INR) and are
           inclusive of applicable taxes unless stated otherwise. Prices, offers,
@@ -208,7 +234,7 @@ export default function TermsAndConditions() {
       </section>
 
       <section id="shipping-terms">
-        <h2>7. Shipping &amp; Delivery</h2>
+        <h2>8. Shipping &amp; Delivery</h2>
         <p>
           Shipping is offered across India through partner courier services
           including India Post, Delhivery, and other reputable logistics
@@ -226,7 +252,7 @@ export default function TermsAndConditions() {
       </section>
 
       <section id="returns-terms">
-        <h2>8. Returns, Refunds &amp; Cancellations</h2>
+        <h2>9. Returns, Refunds &amp; Cancellations</h2>
         <p>
           Our return, refund, and cancellation procedures are governed
           exclusively by our{" "}
@@ -251,7 +277,7 @@ export default function TermsAndConditions() {
       </section>
 
       <section id="intellectual">
-        <h2>9. Intellectual Property</h2>
+        <h2>10. Intellectual Property</h2>
         <p>
           All content available on the Website, including but not limited to
           text, graphics, logos, images, software, page layouts, and the
@@ -274,7 +300,7 @@ export default function TermsAndConditions() {
       </section>
 
       <section id="prohibited">
-        <h2>10. Prohibited Conduct</h2>
+        <h2>11. Prohibited Conduct</h2>
         <p>You agree not to:</p>
         <ul>
           <li>
@@ -309,7 +335,7 @@ export default function TermsAndConditions() {
       </section>
 
       <section id="liability">
-        <h2>11. Limitation of Liability</h2>
+        <h2>12. Limitation of Liability</h2>
         <p>
           To the maximum extent permitted under applicable law, TheBookX, its
           proprietor, employees, agents, and partners shall not be liable for
@@ -331,7 +357,7 @@ export default function TermsAndConditions() {
       </section>
 
       <section id="indemnity">
-        <h2>12. Indemnification</h2>
+        <h2>13. Indemnification</h2>
         <p>
           You agree to indemnify, defend, and hold harmless TheBookX, its
           proprietor, employees, and affiliates from and against any and all
@@ -344,7 +370,7 @@ export default function TermsAndConditions() {
       </section>
 
       <section id="force-majeure">
-        <h2>13. Force Majeure</h2>
+        <h2>14. Force Majeure</h2>
         <p>
           TheBookX shall not be liable for any failure or delay in the
           performance of its obligations arising out of or caused by events
@@ -357,7 +383,7 @@ export default function TermsAndConditions() {
       </section>
 
       <section id="termination">
-        <h2>14. Termination</h2>
+        <h2>15. Termination</h2>
         <p>
           We reserve the right to suspend, restrict, or terminate your access to
           the Website at any time, with or without notice, for any reason
@@ -369,7 +395,7 @@ export default function TermsAndConditions() {
       </section>
 
       <section id="governing-law">
-        <h2>15. Governing Law &amp; Jurisdiction</h2>
+        <h2>16. Governing Law &amp; Jurisdiction</h2>
         <p>
           These Terms shall be governed by and construed in accordance with the
           laws of the Republic of India, without regard to its conflict of laws
@@ -381,7 +407,7 @@ export default function TermsAndConditions() {
       </section>
 
       <section id="changes">
-        <h2>16. Changes to These Terms</h2>
+        <h2>17. Changes to These Terms</h2>
         <p>
           We reserve the right to modify, amend, or update these Terms at any
           time, at our sole discretion. Any changes will be effective
@@ -393,7 +419,7 @@ export default function TermsAndConditions() {
       </section>
 
       <section id="contact-terms">
-        <h2>17. Contact Information</h2>
+        <h2>18. Contact Information</h2>
         <p>
           For any questions, concerns, or notices relating to these Terms,
           please contact us using the details below:

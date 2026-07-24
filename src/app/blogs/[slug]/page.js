@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getBlogBySlug, getAllBlogSlugs, getAllBlogs } from "@/utils/blogs";
+import BlogViews from "@/components/UI/BlogViews";
 import {
   Star,
   BookOpen,
@@ -273,6 +274,7 @@ export default async function BlogPage({ params }) {
                     day: "numeric",
                   })}
                 </span>
+                <BlogViews slug={blog.slug} />
               </div>
             </header>
 

@@ -167,15 +167,6 @@ export default function CartOfferStrip({ discountedAmount }) {
           />
         </div>
 
-        {availedChips.length > 0 && (
-          <div className="offer-availed">
-            {availedChips.map((chip, i) => (
-              <span key={i} className="offer-availed-chip">
-                <Check size={12} strokeWidth={3} /> {chip}
-              </span>
-            ))}
-          </div>
-        )}
       </div>
 
       {/* RIGHT */}

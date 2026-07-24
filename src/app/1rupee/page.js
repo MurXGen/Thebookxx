@@ -64,8 +64,8 @@ export default function OneRupeePage() {
       a: "Add a few more books to your order and enjoy free delivery across India, with Cash on Delivery (COD) and easy 7-day returns.",
     },
     {
-      q: "Are the ₹1 books genuine and new?",
-      a: "Absolutely. Every copy is 100% authentic and brand new, shipped in secure, protective packaging via Delhivery and India Post.",
+      q: "What condition are the ₹1 books in?",
+      a: "Every copy is a good-quality paperback edition sourced from trusted shops and retailers, quality-checked and shipped in secure, protective packaging via Delhivery and India Post.",
     },
   ];
 

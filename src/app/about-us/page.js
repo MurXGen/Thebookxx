@@ -45,8 +45,8 @@ const PROMISES = [
   },
   {
     icon: ShieldCheck,
-    title: "Authentic & pristine",
-    text: "Every title is genuine and carefully packed, so it arrives just as it should.",
+    title: "Good-quality paperbacks",
+    text: "Genuine paperback editions sourced from trusted shops and retailers, quality-checked and carefully packed.",
   },
   {
     icon: BookOpen,

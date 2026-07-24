@@ -1157,6 +1157,12 @@ label.sec-mid-btn {
   margin-left: auto;
   margin-right: auto;
   z-index: 100;
+  transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+/* Slide fully out of view (bar + floating FAB) when scrolling down */
+.cart-bar.cart-bar-hidden {
+  transform: translateY(135%);
 }
 
 .cart-offer {
@@ -1226,7 +1232,11 @@ label.sec-mid-btn {
   backdrop-filter: blur(100px);
   border-top: 1px solid rgba(0, 0, 0, 0.3);
   /* box-shadow: -12px 0 24px rgba(0, 0, 0, 0.4); */
-  padding: var(--px-16);
+  padding: 9px var(--px-16);
+}
+/* Trim the checkout button so the whole bottom bar stays compact */
+.cart-bar .pri-big-btn {
+  padding: 9px var(--px-16);
 }
 
 .greenbox {
@@ -23013,6 +23023,151 @@ img[data-loaded="true"] {
   color: var(--dark-50, #6b7280);
   margin: 4px 0 16px;
 }
+/* Post-order reward (scratch card) block in the COD/UPI success modal */
+.cod-reward-block {
+  margin-top: 16px;
+  padding: 14px;
+  border: 1px dashed var(--tertiary, #fb8500);
+  border-radius: 14px;
+  background: linear-gradient(
+    135deg,
+    rgba(251, 133, 0, 0.06),
+    rgba(255, 183, 3, 0.06)
+  );
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+.cod-reward-head {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.cod-reward-card-wrap {
+  display: flex;
+  justify-content: center;
+}
+.cod-reward-note {
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: center;
+  color: var(--foreground);
+  background: rgba(251, 133, 0, 0.1);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+.cod-reward-note strong {
+  color: #c2410c;
+}
+.cod-help-link {
+  background: none;
+  border: none;
+  color: var(--dark-50);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px;
+  margin-top: 2px;
+}
+/* Pincode reward scratch-card modal body */
+.scratch-modal-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  text-align: center;
+}
+.scratch-modal-sub {
+  font-size: 13px;
+  color: var(--dark-50);
+  margin: 0;
+  line-height: 1.5;
+}
+/* Pincode modal — full-width reward teaser stripe under the phone field */
+.pin-win-stripe {
+  margin-top: 8px;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(251, 133, 0, 0.35);
+  background: linear-gradient(
+    90deg,
+    rgba(251, 133, 0, 0.12) 0%,
+    rgba(255, 183, 3, 0.16) 50%,
+    rgba(251, 133, 0, 0.12) 100%
+  );
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #b45309;
+}
+.pin-win-stripe svg {
+  flex: 0 0 auto;
+  width: 13px;
+  height: 13px;
+  color: var(--tertiary, #fb8500);
+}
+.pin-win-stripe .pin-scratch-ic {
+  width: 16px;
+  height: 16px;
+}
+/* Pincode modal — scrolling benefits marquee */
+.pin-marquee {
+  overflow: hidden;
+  white-space: nowrap;
+  border-top: 1px solid var(--hairline, #eee);
+  border-bottom: 1px solid var(--hairline, #eee);
+  padding: 7px 0;
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 8%,
+    #000 92%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 8%,
+    #000 92%,
+    transparent
+  );
+}
+.pin-marquee-track {
+  display: inline-flex;
+  animation: pinMarquee 14s linear infinite;
+}
+.pin-marquee-group {
+  display: inline-flex;
+  align-items: center;
+}
+.pin-marquee-item {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--foreground);
+  padding: 0 4px;
+}
+.pin-marquee-sep {
+  color: var(--tertiary, #fb8500);
+  font-weight: 800;
+  padding: 0 10px;
+}
+@keyframes pinMarquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
 .scratch-card {
   position: relative;
   margin: 0 auto;

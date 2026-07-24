@@ -36,6 +36,21 @@ export default function CartBar({ tab = "books" }) {
   const [fabShake, setFabShake] = useState(false);
   const [fabHint, setFabHint] = useState(false);
   const shakenRef = useRef(false);
+  // Hide the bottom bar when scrolling down, reveal it when scrolling up / near
+  // the top — keeps the reading area clear but the checkout one swipe away.
+  const [barHidden, setBarHidden] = useState(false);
+  useEffect(() => {
+    let last = typeof window !== "undefined" ? window.scrollY : 0;
+    const onScroll = () => {
+      const y = window.scrollY;
+      if (y < 40) setBarHidden(false);
+      else if (y > last + 6) setBarHidden(true);
+      else if (y < last - 6) setBarHidden(false);
+      last = y;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   // Draw attention to the Search/Suggest quick actions: the first time the
   // user is active in the session (scroll / tap / key / pointer move), shake
@@ -275,7 +290,10 @@ export default function CartBar({ tab = "books" }) {
   const shouldShowUnlockMessage = !hasNeverUnlocked;
 
   return (
-    <div className="cart-bar" style={{ maxWidth: "680px", margin: "0 auto" }}>
+    <div
+      className={`cart-bar${barHidden ? " cart-bar-hidden" : ""}`}
+      style={{ maxWidth: "680px", margin: "0 auto" }}
+    >
       {/* Quick actions: Suggest + Search (mobile), above the strip */}
       <div
         className={`cart-fab ${showBar ? "with-bar" : ""} ${fabShake ? "fab-shake" : ""}`}

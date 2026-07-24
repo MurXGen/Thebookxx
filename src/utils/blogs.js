@@ -125,11 +125,11 @@ export const blogsData = {
       },
     ],
 
-    coverImage: "/blogs/the-art-of-clarity-book-review.jpeg",
+    coverImage: "/books/the-art-of-clarity.jpeg",
 
     images: [
       {
-        url: "/blogs/the-art-of-clarity-book-review.jpeg",
+        url: "/books/the-art-of-clarity.jpeg",
         alt: "The Art of Clarity book by Murthy Thevar — review and reader testimonials on TheBookX",
         caption:
           "'The Art of Clarity' by Murthy Thevar — a 4.9★ self-help guide to thinking clearly, available on TheBookX",

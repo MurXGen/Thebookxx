@@ -83,6 +83,83 @@ export const submitOrderToGoogleForm = async (orderData) => {
   }
 };
 
+// ── Wallet rewards ──────────────────────────────────────────────────────
+// Same orders sheet holds the "Wallet" column; the profile reads a shopper's
+// balance as the MAX Wallet value across their rows (by phone). To credit a
+// scratch-card reward we read their current balance and write a fresh row with
+// only phone + new cumulative wallet + timestamp, so the profile reflects it.
+const WALLET_SHEET_ID = "1ovqFn50d0TKjV0nm4q1lb3N9XvimUgIsHCOlHh6QRdg";
+const WALLET_FIELD_ID = "entry.1030338596"; // "Wallet" column on the form
+const PHONE_FIELD_ID = "entry.1941153221";
+const TIMESTAMP_FIELD_ID = "entry.509242940";
+
+const fmtSheetTs = (date) => {
+  const d = new Date(date);
+  const p = (n) => String(n).padStart(2, "0");
+  return `${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()} ${p(
+    d.getHours(),
+  )}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+};
+
+// Read the current wallet balance (max Wallet across the phone's rows).
+export const fetchWalletBalance = async (phone) => {
+  const digits = String(phone || "").replace(/\D/g, "").slice(-10);
+  if (digits.length !== 10) return 0;
+  try {
+    const url = `https://docs.google.com/spreadsheets/d/${WALLET_SHEET_ID}/gviz/tq?tqx=out:json`;
+    const res = await fetch(url);
+    const text = await res.text();
+    const data = JSON.parse(text.substring(47, text.length - 2));
+    const headers = data.table.cols.map((c) => c.label);
+    let bal = 0;
+    data.table.rows.forEach((row) => {
+      const o = {};
+      row.c.forEach((cell, i) => {
+        let v = cell?.v;
+        if (v && typeof v === "object" && v.value !== undefined) v = v.value;
+        o[headers[i]] = v;
+      });
+      const rowPhone = String(o["Phone Number"] ?? "").replace(/\D/g, "");
+      if (rowPhone.slice(-10) === digits) {
+        const w = parseFloat(o["Wallet"] ?? o["wallet"] ?? 0);
+        if (!isNaN(w)) bal = Math.max(bal, w);
+      }
+    });
+    return bal;
+  } catch (e) {
+    console.error("Wallet balance read failed:", e);
+    return 0;
+  }
+};
+
+// Credit `reward` to the shopper's wallet on top of their current balance.
+// Returns { success, reward, balance } where balance is the new cumulative.
+export const creditWalletReward = async (phone, reward) => {
+  const digits = String(phone || "").replace(/\D/g, "").slice(-10);
+  if (digits.length !== 10 || !reward) return { success: false };
+  const current = await fetchWalletBalance(digits);
+  const newBalance = Math.round(current + reward);
+  try {
+    const params = new URLSearchParams();
+    params.append(PHONE_FIELD_ID, digits);
+    params.append(WALLET_FIELD_ID, String(newBalance));
+    params.append(TIMESTAMP_FIELD_ID, fmtSheetTs(new Date()));
+    await fetch(GOOGLE_FORM_ORDER_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: params.toString(),
+    });
+    return { success: true, reward, balance: newBalance };
+  } catch (e) {
+    console.error("Wallet credit failed:", e);
+    return { success: false };
+  }
+};
+
+// A random scratch-card reward between ₹20 and ₹29 (inclusive).
+export const randomWalletReward = () => 20 + Math.floor(Math.random() * 10);
+
 // Format books list for Google Form
 const formatBooksList = (cartBooks) => {
   if (!cartBooks || cartBooks.length === 0) return "";

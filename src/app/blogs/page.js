@@ -42,10 +42,18 @@ export default function BlogsPage() {
                 borderRadius: "14px",
                 border: "1px solid var(--hairline, #ececec)",
                 boxShadow: "var(--shadow-xs)",
-                padding: "22px",
+                overflow: "hidden",
                 height: "100%",
               }}
             >
+              <BlogCover
+                src={blog.coverImage || blog.hero || blog.images?.[0]?.url}
+                alt={blog.images?.[0]?.alt || blog.title}
+                fit="cover"
+                wrapperStyle={{ width: "100%", height: "180px" }}
+                imgStyle={{ width: "100%", height: "100%" }}
+              />
+              <div style={{ padding: "22px" }}>
               <div className="flex items-center gap-8 margin-btm-8px">
                 <span className="font-12" style={{ color: "#fb8500" }}>
                   {new Date(blog.publishDate).toLocaleDateString("en-IN", {
@@ -60,7 +68,7 @@ export default function BlogsPage() {
                 {blog.title}
               </h2>
               <p className="font-13 dark-50" style={{ lineHeight: 1.6 }}>
-                {blog.excerpt.substring(0, 150)}...
+                {(blog.excerpt || "").substring(0, 150)}...
               </p>
               <span
                 className="font-13 weight-600"
@@ -68,6 +76,7 @@ export default function BlogsPage() {
               >
                 Read article →
               </span>
+              </div>
             </div>
           </Link>
         ))}

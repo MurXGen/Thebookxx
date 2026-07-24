@@ -38,7 +38,12 @@ import { FaWhatsapp } from "react-icons/fa";
 import { EVENTS } from "@/lib/trackingEvents";
 import { trackFunnelEvent } from "@/lib/analytics";
 import { trackPurchase } from "@/lib/ga";
-import { trackOrderToGoogleForm } from "@/utils/googleFormOrder";
+import {
+  trackOrderToGoogleForm,
+  creditWalletReward,
+  randomWalletReward,
+} from "@/utils/googleFormOrder";
+import ScratchCard from "./ScratchCard";
 import { showToast } from "@/context/ToastContext";
 
 const PINCODE_DATA_KEY = "user_pincode";
@@ -137,6 +142,7 @@ export default function AddressModal({
 
   const [showUPIPayment, setShowUPIPayment] = useState(false);
   const [showCODSuccess, setShowCODSuccess] = useState(false);
+  const [successPayment, setSuccessPayment] = useState("COD");
   const [showCODFeeModal, setShowCODFeeModal] = useState(false); // NEW
   const [qrUnlocked, setQrUnlocked] = useState(false);
   const [upiCopied, setUpiCopied] = useState(false);
@@ -607,7 +613,32 @@ export default function AddressModal({
 
   const triggerCODSuccess = (isFasterDeliverySelected) => {
     setFasterDelivery(isFasterDeliverySelected);
+    setSuccessPayment("COD");
     setShowCODSuccess(true);
+  };
+
+  // Finalise a UPI order after the shopper closes the success screen (mirrors
+  // the COD flow — the order row was already logged on Verify).
+  const handleUPISuccessContinue = () => {
+    setShowCODSuccess(false);
+    if (handleUPICheckout) {
+      handleUPICheckout(
+        {
+          name,
+          phone,
+          city,
+          pincode,
+          address,
+          district,
+          area,
+          fasterDelivery,
+          giftWrap,
+        },
+        fasterDelivery,
+        giftWrap,
+      );
+    }
+    onClose();
   };
 
   // NEW, user confirmed they'll pay the COD fee
@@ -849,25 +880,11 @@ export default function AddressModal({
     });
     // Log the CONFIRMED UPI order (plain name, no "(unconfirmed)" tag).
     submitToGoogleForm("UPI", fasterDelivery, true);
-    if (handleUPICheckout) {
-      handleUPICheckout(
-        {
-          name,
-          phone,
-          city,
-          pincode,
-          address,
-          district,
-          area,
-          fasterDelivery,
-          giftWrap,
-        },
-        fasterDelivery,
-        giftWrap,
-      );
-    }
+    // Show the same Flipkart-style success screen (with scratch reward);
+    // the order is finalised when the shopper taps Continue.
     setShowUPIPayment(false);
-    onClose();
+    setSuccessPayment("UPI");
+    setShowCODSuccess(true);
   };
 
   // From the UPI page: shopper has no online-payment option → switch to COD
@@ -1377,7 +1394,8 @@ export default function AddressModal({
             deliveryCharge={getDeliveryCharge(fasterDelivery)}
             giftWrap={giftWrap || giftWrapSelected}
             giftWrapCharge={giftWrapCharge}
-            codFee={codHandlingFee}
+            codFee={successPayment === "UPI" ? 0 : codHandlingFee}
+            paymentMode={successPayment}
             quickReadCount={quickReadItems.length}
             quickReadTotal={qrAddOn}
             // ---- totals derived from above for convenience ----
@@ -1388,9 +1406,13 @@ export default function AddressModal({
             totalAmount={
               getTotalWithDelivery(fasterDelivery) +
               (giftWrap ? giftWrapCharge : 0) +
-              codHandlingFee
+              (successPayment === "UPI" ? 0 : codHandlingFee)
             }
-            onContinue={handleCODSuccessContinue}
+            onContinue={
+              successPayment === "UPI"
+                ? handleUPISuccessContinue
+                : handleCODSuccessContinue
+            }
             onClose={() => setShowCODSuccess(false)}
           />
         )}
@@ -1659,9 +1681,11 @@ function CODSuccessModal({
   quickReadCount = 0,
   quickReadTotal = 0,
   cartBooks,
+  paymentMode = "COD",
   onContinue,
   onClose,
 }) {
+  const isUPI = paymentMode === "UPI";
   const [isProcessing, setIsProcessing] = useState(true);
 
   useEffect(() => {
@@ -1671,9 +1695,50 @@ function CODSuccessModal({
     return () => clearTimeout(t);
   }, []);
 
+  // Scratch-card reward — a random ₹20–29 credited to the wallet on scratch.
+  const rewardRef = useRef(randomWalletReward());
+  const reward = rewardRef.current;
+  const [scratched, setScratched] = useState(false);
+  const [walletCredited, setWalletCredited] = useState(false);
+  const handleScratchComplete = async () => {
+    if (scratched) return;
+    setScratched(true);
+    const res = await creditWalletReward(phone, reward);
+    if (res?.success) setWalletCredited(true);
+  };
+
   const deliveryWindow = fasterDelivery
     ? "2-5 business days"
     : "3-9 business days";
+
+  // Estimated arrival date (end of the delivery window), e.g. "Sat, 2 Aug".
+  const deliveryByDate = (() => {
+    const d = new Date();
+    d.setDate(d.getDate() + (fasterDelivery ? 5 : 9));
+    return d.toLocaleDateString("en-IN", {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+    });
+  })();
+
+  const handleShareOrder = () => {
+    const itemsList = (cartBooks || [])
+      .map((b, i) => `${i + 1}. ${b.name} × ${b.qty}`)
+      .join("\n");
+    const msg = `🎉 My TheBookX order is confirmed!\n\n📦 Delivery by ${deliveryByDate}\n📍 ${name}, ${address}, ${city} - ${pincode}\n\nItems:\n${itemsList}\n\nTotal: ₹${totalAmount}\n\nShop books from ₹1 → https://thebookx.in`;
+    if (navigator.share) {
+      navigator
+        .share({ title: "My TheBookX order", text: msg })
+        .catch(() => {});
+    } else {
+      window.open(
+        `https://wa.me/?text=${encodeURIComponent(msg)}`,
+        "_blank",
+        "noopener,noreferrer",
+      );
+    }
+  };
 
   const handleNeedHelp = () => {
     const itemsList = cartBooks
@@ -1902,9 +1967,68 @@ function CODSuccessModal({
                   className="font-14 dark-50"
                   style={{ margin: 0 }}
                 >
-                  Your Cash on Delivery order has been placed
+                  Thanks for shopping with us!
                 </motion.p>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                  style={{
+                    marginTop: 10,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 4,
+                    alignItems: "center",
+                  }}
+                >
+                  <span className="font-14 weight-600">
+                    Delivery by {deliveryByDate}
+                  </span>
+                  <Link
+                    href="/profile"
+                    className="font-13 weight-600"
+                    style={{ color: "var(--tertiary, #fb8500)" }}
+                  >
+                    Track &amp; manage order →
+                  </Link>
+                </motion.div>
               </div>
+
+              {/* 🎁 Scratch card — reveal a ₹20–29 wallet reward */}
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.55 }}
+                className="cod-reward-block"
+              >
+                <div className="cod-reward-head">
+                  <Gift size={15} style={{ color: "var(--tertiary)" }} />
+                  <span className="font-13 weight-700">
+                    {walletCredited
+                      ? "Reward added to your wallet!"
+                      : "Scratch to win a wallet reward"}
+                  </span>
+                </div>
+                <div className="cod-reward-card-wrap">
+                  <ScratchCard
+                    width={280}
+                    height={150}
+                    revealText={`₹${reward} won! 🎉`}
+                    revealSub="Added to your TheBookX wallet"
+                    onComplete={handleScratchComplete}
+                  />
+                </div>
+                {scratched && (
+                  <div className="cod-reward-note">
+                    <strong>
+                      ₹{reward} is applicable only on your next order.
+                    </strong>{" "}
+                    If you cancel this order, this wallet amount will be wiped
+                    off — so please keep your order to enjoy the reward.
+                  </div>
+                )}
+              </motion.div>
 
               <motion.div
                 initial={{ opacity: 0, y: 12 }}
@@ -2111,7 +2235,7 @@ function CODSuccessModal({
                   >
                     <div className="flex flex-col">
                       <span className="font-14 weight-700">
-                        To pay at delivery
+                        {isUPI ? "Amount paid" : "To pay at delivery"}
                       </span>
                       {codFee > 0 && (
                         <span className="font-10 dark-50">
@@ -2138,20 +2262,30 @@ function CODSuccessModal({
                 }}
               >
                 <button
-                  className="sec-mid-btn width100 flex flex-row items-center justify-center gap-8"
-                  onClick={handleNeedHelp}
-                  style={{ padding: "10px 16px" }}
+                  className="pri-big-btn width100 flex flex-row items-center justify-center gap-8"
+                  onClick={onContinue}
+                  style={{ padding: "12px 16px" }}
                 >
-                  <Headphones size={16} />
-                  Need help? Contact us
+                  Continue Shopping
+                  <ArrowRight size={16} />
                 </button>
 
-                <span
-                  className="font-10 dark-50"
-                  style={{ textAlign: "center", marginTop: 4 }}
+                <button
+                  className="sec-mid-btn width100 flex flex-row items-center justify-center gap-8"
+                  onClick={handleShareOrder}
+                  style={{ padding: "10px 16px" }}
                 >
-                  You can close this window...
-                </span>
+                  <FaWhatsapp size={16} color="#25D366" />
+                  Send Order Details
+                </button>
+
+                <button
+                  className="cod-help-link flex flex-row items-center justify-center gap-6"
+                  onClick={handleNeedHelp}
+                >
+                  <Headphones size={14} />
+                  Need help? Contact us
+                </button>
               </motion.div>
             </motion.div>
           )}

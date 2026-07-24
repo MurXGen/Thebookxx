@@ -2,12 +2,14 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
-import { X, MapPin, Truck, ShieldCheck, Clock, Phone } from "lucide-react";
+import { X, MapPin, Truck, ShieldCheck, Clock, Phone, Gift } from "lucide-react";
 import LoadingButton from "./LoadingButton";
 import { trackFunnelEvent } from "@/lib/analytics";
 import { EVENTS } from "@/lib/trackingEvents";
 import { useTrackView } from "@/lib/trackingHooks";
 import { trackPincodeToGoogleForm } from "@/utils/googleForm";
+import ScratchCard from "./ScratchCard";
+import { fetchWalletBalance, creditWalletReward } from "@/utils/googleFormOrder";
 
 const PINCODE_STORAGE_KEY = "pincode_modal_last_shown";
 const PINCODE_DATA_KEY = "user_pincode";
@@ -21,6 +23,20 @@ export default function PincodeModal() {
   const [locationData, setLocationData] = useState(null);
   const [startTime, setStartTime] = useState(null);
   const [hasAutoFilled, setHasAutoFilled] = useState(false);
+  // Scratch-card reward shown after submit (only when a phone number is given).
+  const [showScratch, setShowScratch] = useState(false);
+  const [scratchEligible, setScratchEligible] = useState(false);
+  const [scratchReward, setScratchReward] = useState(0);
+  const [scratchDone, setScratchDone] = useState(false);
+
+  const handleScratchComplete = async () => {
+    if (scratchDone) return;
+    setScratchDone(true);
+    if (scratchEligible && scratchReward > 0) {
+      await creditWalletReward(phoneNumber, scratchReward);
+    }
+  };
+  const closeScratch = () => setShowScratch(false);
 
   // Track modal view when opened
   useTrackView(EVENTS.PINCODE_MODAL_VIEWED, {}, isOpen);
@@ -165,6 +181,19 @@ export default function PincodeModal() {
     setLocationData(location);
     setLoading(false);
 
+    // If they shared a valid phone number, reward them with a scratch card.
+    // Only credit shoppers who don't already hold ₹30+ in their wallet.
+    if (phoneNumber && phoneNumber.length === 10) {
+      const balance = await fetchWalletBalance(phoneNumber);
+      const eligible = balance < 30;
+      setScratchEligible(eligible);
+      setScratchReward(eligible ? 11 + Math.floor(Math.random() * 30) : 0);
+      setScratchDone(false);
+      setIsOpen(false);
+      setShowScratch(true);
+      return;
+    }
+
     setTimeout(() => {
       setIsOpen(false);
     }, 1500);
@@ -223,6 +252,7 @@ export default function PincodeModal() {
   };
 
   return (
+    <>
     <AnimatePresence>
       {isOpen && (
         <motion.div
@@ -264,7 +294,6 @@ export default function PincodeModal() {
                     maxLength={6}
                     onChange={(e) => handlePincodeChange(e.target.value)}
                     onKeyPress={(e) => e.key === "Enter" && handleSubmit()}
-                    autoFocus
                   />
                   {error && (
                     <span className="font-12 red flex items-center gap-4 mt-4">
@@ -291,24 +320,77 @@ export default function PincodeModal() {
                   <span className="font-10 gray-500 mt-4">
                     Get notified about special offers and delivery updates
                   </span>
+
+                  {/* 3D teaser stripe — nudges the shopper to add their number
+                      so they can win a wallet reward on submit */}
+                  <div className="pin-win-stripe">
+                    <svg
+                      className="pin-scratch-ic"
+                      viewBox="0 0 24 24"
+                      width="16"
+                      height="16"
+                      aria-hidden="true"
+                    >
+                      <rect
+                        x="2.5"
+                        y="4.5"
+                        width="19"
+                        height="15"
+                        rx="3"
+                        fill="#fb8500"
+                      />
+                      <rect
+                        x="5"
+                        y="7"
+                        width="14"
+                        height="10"
+                        rx="2"
+                        fill="#ffe0a3"
+                      />
+                      <path
+                        d="M6.5 12h9"
+                        stroke="#c25e00"
+                        strokeWidth="1.6"
+                        strokeLinecap="round"
+                        strokeDasharray="1.5 2.4"
+                      />
+                      <circle
+                        cx="17.5"
+                        cy="7"
+                        r="3.4"
+                        fill="#ffd166"
+                        stroke="#c25e00"
+                        strokeWidth="1"
+                      />
+                    </svg>
+                    <span>Fill your details &amp; win big with a scratch card!</span>
+                  </div>
                 </div>
               </div>
 
-              {/* Benefits Section */}
-              <div className="">
-                <div className="grid-2">
-                  <div className="flex items-center gap-8">
-                    <Truck size={18} className="green" />
-                    <span className="font-12">Check delivery availability</span>
-                  </div>
-                  <div className="flex items-center gap-8">
-                    <Clock size={18} className="green" />
-                    <span className="font-12">Estimated delivery time</span>
-                  </div>
-                  <div className="flex items-center gap-8">
-                    <ShieldCheck size={18} className="green" />
-                    <span className="font-12">Better recommendations</span>
-                  </div>
+              {/* Benefits — scrolling marquee, items split by a dot */}
+              <div className="pin-marquee">
+                <div className="pin-marquee-track">
+                  {[0, 1].map((k) => (
+                    <span
+                      className="pin-marquee-group"
+                      key={k}
+                      aria-hidden={k === 1}
+                    >
+                      <span className="pin-marquee-item">
+                        Check delivery availability
+                      </span>
+                      <span className="pin-marquee-sep">•</span>
+                      <span className="pin-marquee-item">
+                        Estimated delivery time
+                      </span>
+                      <span className="pin-marquee-sep">•</span>
+                      <span className="pin-marquee-item">
+                        Better recommendations
+                      </span>
+                      <span className="pin-marquee-sep">•</span>
+                    </span>
+                  ))}
                 </div>
               </div>
 
@@ -342,5 +424,85 @@ export default function PincodeModal() {
         </motion.div>
       )}
     </AnimatePresence>
+
+    {/* 🎁 Reward scratch card — slides up after a phone number is submitted */}
+    <AnimatePresence>
+      {showScratch && (
+        <motion.div
+          className="bill-modal-overlay"
+          style={{ maxWidth: "980px", margin: "0 auto" }}
+          onClick={closeScratch}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          <motion.div
+            className="bill-modal"
+            onClick={(e) => e.stopPropagation()}
+            initial={{ y: "100%", opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: "100%", opacity: 0 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+          >
+            <div className="bill-header">
+              <span className="weight-600 font-16 flex flex-row items-center gap-8">
+                <Gift size={17} style={{ color: "var(--tertiary)" }} /> A little
+                gift for you!
+              </span>
+              <span className="cursor-pointer" onClick={closeScratch}>
+                <X size={16} />
+              </span>
+            </div>
+
+            <div className="scratch-modal-body">
+              <p className="scratch-modal-sub">
+                Thanks for sharing your details 💛 Scratch the card below to
+                reveal your reward.
+              </p>
+              <div className="cod-reward-card-wrap">
+                <ScratchCard
+                  width={280}
+                  height={160}
+                  revealText={
+                    scratchEligible
+                      ? `₹${scratchReward} won! 🎉`
+                      : "Better luck next time"
+                  }
+                  revealSub={
+                    scratchEligible
+                      ? "Added to your TheBookX wallet"
+                      : "You already have wallet credit 💛"
+                  }
+                  onComplete={handleScratchComplete}
+                />
+              </div>
+              {scratchDone && (
+                <div className="cod-reward-note">
+                  {scratchEligible ? (
+                    <>
+                      <strong>₹{scratchReward} added to your wallet.</strong>{" "}
+                      Use it on your next order — you can see it in your profile.
+                    </>
+                  ) : (
+                    <>
+                      You already have wallet credit waiting for you. Use it on
+                      your next order!
+                    </>
+                  )}
+                </div>
+              )}
+              <button
+                className="pri-big-btn width100"
+                onClick={closeScratch}
+                style={{ marginTop: 12 }}
+              >
+                {scratchDone ? "Awesome, thanks!" : "Maybe later"}
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+    </>
   );
 }

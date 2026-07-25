@@ -21310,6 +21310,32 @@ img[data-loaded="true"] {
   user-select: none;
   pointer-events: none;
 }
+/* Corner tap zones — brand-orange circles, half-clipped by the frame edge,
+   at very low opacity so they read as subtle affordances. */
+.qr-tap-dot {
+  position: absolute;
+  bottom: 26px;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: none;
+  background: var(--tertiary, #fb8500);
+  opacity: 0.16;
+  cursor: pointer;
+  z-index: 2;
+  transition: opacity 0.16s ease;
+}
+.qr-tap-dot:hover,
+.qr-tap-dot:active {
+  opacity: 0.3;
+}
+/* Push each dot halfway past the frame edge; overflow:hidden clips the rest. */
+.qr-tap-dot-left {
+  left: -36px;
+}
+.qr-tap-dot-right {
+  right: -36px;
+}
 .qr-card-kicker {
   position: relative;
   z-index: 1;
@@ -21479,17 +21505,35 @@ img[data-loaded="true"] {
 }
 /* Navigation */
 .qr-nav {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  width: 100%;
+  width: calc(100% - 32px);
   max-width: 660px;
-  margin: 8px auto 0;
+  margin: 10px auto max(22px, env(safe-area-inset-bottom, 22px));
   padding: 6px;
   border-radius: 18px;
   background: #f1f2f4;
   border: 1px solid rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+/* Reading progress line along the top edge of the pagination bar */
+.qr-nav-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(0, 0, 0, 0.07);
+}
+.qr-nav-progress-fill {
+  display: block;
+  height: 100%;
+  background: var(--tertiary, #fb8500);
+  border-radius: 0 3px 3px 0;
+  transition: width 0.3s ease;
 }
 /* Prev / next stretched to the container ends */
 .qr-nav-btn {
@@ -21715,6 +21759,9 @@ img[data-loaded="true"] {
 .qr-dark .qr-nav {
   background: #20242c;
   border-color: rgba(255, 255, 255, 0.08);
+}
+.qr-dark .qr-nav-progress {
+  background: rgba(255, 255, 255, 0.1);
 }
 .qr-dark .qr-nav-btn {
   background: #12151b;

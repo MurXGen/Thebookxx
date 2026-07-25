@@ -222,69 +222,43 @@ export async function buildQuickReadImage({ bookName, cover, title, content }) {
   canvas.height = H * scale;
   const ctx = canvas.getContext("2d");
 
-  // Background gradient (brand)
-  const grad = ctx.createLinearGradient(0, 0, W, H);
-  grad.addColorStop(0, "#111318");
-  grad.addColorStop(1, "#1c2029");
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, W, H);
+  // Strip em/en dashes so they never appear in the shared image.
+  const clean = (s) => String(s || "").replace(/\s*[—–]\s*/g, ", ");
 
-  // Soft orange glow accent
-  const glow = ctx.createRadialGradient(W * 0.85, 120, 40, W * 0.85, 120, 520);
-  glow.addColorStop(0, "rgba(251,133,0,0.35)");
-  glow.addColorStop(1, "rgba(251,133,0,0)");
-  ctx.fillStyle = glow;
+  // Background: white → brand orange gradient (nothing else).
+  const grad = ctx.createLinearGradient(0, 0, W, H);
+  grad.addColorStop(0, "#ffffff");
+  grad.addColorStop(0.55, "#fff3e0");
+  grad.addColorStop(1, "#fb8500");
+  ctx.fillStyle = grad;
   ctx.fillRect(0, 0, W, H);
 
   const P = 90;
 
   // Kicker
-  ctx.fillStyle = "#fb8500";
+  ctx.fillStyle = "#c25e00";
   ctx.font = "700 30px Poppins, Arial, sans-serif";
   ctx.textBaseline = "alphabetic";
   ctx.fillText("QUICKREADS  ·  KEY INSIGHT", P, 150);
 
   // Title
-  ctx.fillStyle = "#ffffff";
+  ctx.fillStyle = "#141414";
   ctx.font = "800 62px Poppins, Arial, sans-serif";
-  let y = wrapText(ctx, title, P, 260, W - P * 2, 74);
+  let y = wrapText(ctx, clean(title), P, 260, W - P * 2, 74);
 
   // Content
-  ctx.fillStyle = "#d7dae0";
+  ctx.fillStyle = "#33291f";
   ctx.font = "400 40px Poppins, Arial, sans-serif";
-  wrapText(ctx, content, P, y + 40, W - P * 2, 58);
+  wrapText(ctx, clean(content), P, y + 40, W - P * 2, 58);
 
-  // Footer: cover + book + branding
-  const cImg = await loadImage(cover);
-  const footY = H - 190;
-  if (cImg) {
-    const cw = 96;
-    const ch = 134;
-    // rounded cover
-    const r = 12;
-    ctx.save();
-    ctx.beginPath();
-    ctx.moveTo(P + r, footY);
-    ctx.arcTo(P + cw, footY, P + cw, footY + ch, r);
-    ctx.arcTo(P + cw, footY + ch, P, footY + ch, r);
-    ctx.arcTo(P, footY + ch, P, footY, r);
-    ctx.arcTo(P, footY, P + cw, footY, r);
-    ctx.closePath();
-    ctx.clip();
-    ctx.drawImage(cImg, P, footY, cw, ch);
-    ctx.restore();
-  }
-  const textX = cImg ? P + 130 : P;
-  ctx.fillStyle = "#ffffff";
-  ctx.font = "700 40px Poppins, Arial, sans-serif";
-  ctx.fillText(String(bookName || "").slice(0, 34), textX, footY + 52);
-  ctx.fillStyle = "#9aa0a6";
-  ctx.font = "500 30px Poppins, Arial, sans-serif";
-  ctx.fillText("QuickReads by TheBookX", textX, footY + 98);
-
-  // bottom accent bar
-  ctx.fillStyle = "#fb8500";
-  ctx.fillRect(0, H - 14, W, 14);
+  // Footer: book name + website link (no cover image)
+  const footY = H - 170;
+  ctx.fillStyle = "#141414";
+  ctx.font = "700 44px Poppins, Arial, sans-serif";
+  ctx.fillText(clean(bookName).slice(0, 34), P, footY + 40);
+  ctx.fillStyle = "#7a3d00";
+  ctx.font = "600 32px Poppins, Arial, sans-serif";
+  ctx.fillText("www.thebookx.in", P, footY + 88);
 
   await new Promise((resolve) => {
     canvas.toBlob((blob) => {

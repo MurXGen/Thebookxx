@@ -538,6 +538,29 @@ export default function QuickReadsReader({
                 else go(index + 1);
               }}
             >
+              {/* Corner tap zones — brand-orange rounded dots to move back/next */}
+              {!isLockedFrame && index > 0 && (
+                <button
+                  type="button"
+                  className="qr-tap-dot qr-tap-dot-left"
+                  aria-label="Previous insight"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    go(index - 1);
+                  }}
+                />
+              )}
+              {!isLockedFrame && index < total - 1 && (
+                <button
+                  type="button"
+                  className="qr-tap-dot qr-tap-dot-right"
+                  aria-label="Next insight"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    go(index + 1);
+                  }}
+                />
+              )}
               <span className="qr-card-kicker">
                 Insight {index + 1}
               </span>
@@ -623,6 +646,14 @@ export default function QuickReadsReader({
 
         {/* Navigation */}
         <div className="qr-nav">
+          <span className="qr-nav-progress" aria-hidden="true">
+            <span
+              className="qr-nav-progress-fill"
+              style={{
+                width: `${total ? ((index + 1) / total) * 100 : 0}%`,
+              }}
+            />
+          </span>
           <button
             className="qr-nav-btn qr-nav-edge"
             onClick={() => go(index - 1)}

@@ -182,28 +182,12 @@ export const blogsData = {
       {
         type: "heading",
         level: 3,
-        content: "10. Dopamine Detox — Thibaut Meurisse",
+        content: "10. The Art of Clarity — Murthy Thevar",
       },
       {
         type: "paragraph",
         content:
-          "A short, sharp guide to breaking free from distraction and rewiring your focus. Fittingly, the fastest read on this list.",
-      },
-      {
-        type: "paragraph",
-        content:
-          '<a href="/quickreads/dopamine-detox" style="display:inline-block;background:#fb8500;color:#ffffff;padding:9px 18px;border-radius:10px;font-weight:600;text-decoration:none">📖 Read the QuickRead</a> <a href="/books/dopamine-detox" style="color:#fb8500;font-weight:600;margin-left:12px">Buy the paperback →</a>',
-      },
-
-      {
-        type: "heading",
-        level: 2,
-        content: "Bonus: A Homegrown Quick Read",
-      },
-      {
-        type: "paragraph",
-        content:
-          "If you want a clear-thinking reset, don't miss <strong>The Art of Clarity</strong> by Murthy Thevar — a 4.9★ reader favourite on beating overthinking and deciding with confidence.",
+          "A 4.9★ homegrown bestseller on beating overthinking, thinking clearly, and deciding with confidence. A fast, practical reset for a noisy mind.",
       },
       {
         type: "paragraph",

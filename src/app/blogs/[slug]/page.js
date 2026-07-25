@@ -1,7 +1,19 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getBlogBySlug, getAllBlogSlugs, getAllBlogs } from "@/utils/blogs";
+import {
+  slugifyText,
+  readingMinutes,
+  relatedBooksFor,
+  coverFor,
+  headingsFor,
+} from "@/utils/blogExtras";
 import BlogViews from "@/components/UI/BlogViews";
+import BlogCover from "@/components/UI/BlogCover";
+import TableOfContents from "@/components/blog/TableOfContents";
+import RelatedBooks from "@/components/blog/RelatedBooks";
+import PopularPosts from "@/components/blog/PopularPosts";
+import BlogSubscribe from "@/components/blog/BlogSubscribe";
 import {
   Star,
   BookOpen,
@@ -101,6 +113,8 @@ const renderContentBlock = (block, index) => {
       return (
         <HeadingTag
           key={index}
+          id={block.level === 2 ? slugifyText(block.content) : undefined}
+          style={{ scrollMarginTop: "90px" }}
           className={`font-${24 - (block.level - 1) * 2} weight-600 margin-tp-24px margin-btm-12px`}
         >
           <span dangerouslySetInnerHTML={{ __html: block.content }} />
@@ -111,8 +125,7 @@ const renderContentBlock = (block, index) => {
       return (
         <p
           key={index}
-          className="font-15 dark-50"
-          style={{ lineHeight: "1.8", marginBottom: "16px" }}
+          className="font-15 dark-50" style={{ lineHeight: "1.8", marginBottom: "16px" }}
         >
           <span dangerouslySetInnerHTML={{ __html: block.content }} />
         </p>
@@ -132,8 +145,7 @@ const renderContentBlock = (block, index) => {
           }}
         >
           <p
-            className="font-14 dark-50"
-            dangerouslySetInnerHTML={{ __html: block.content }}
+            className="font-14 dark-50" dangerouslySetInnerHTML={{ __html: block.content }}
           />
         </blockquote>
       );
@@ -145,8 +157,7 @@ const renderContentBlock = (block, index) => {
           {block.items.map((item, i) => (
             <li
               key={i}
-              className="font-14 dark-50"
-              style={{ marginBottom: "8px" }}
+              className="font-14 dark-50" style={{ marginBottom: "8px" }}
             >
               <span dangerouslySetInnerHTML={{ __html: item }} />
             </li>
@@ -170,8 +181,7 @@ const renderContentBlock = (block, index) => {
             <h4 className="weight-600 margin-btm-8px">{block.title}</h4>
           )}
           <div
-            className="font-13"
-            dangerouslySetInnerHTML={{ __html: block.content }}
+            className="font-13" dangerouslySetInnerHTML={{ __html: block.content }}
           />
         </div>
       );
@@ -216,13 +226,11 @@ export default async function BlogPage({ params }) {
   return (
     <>
       <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       {faqStructuredData && (
         <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
+          type="application/ld+json" dangerouslySetInnerHTML={{
             __html: JSON.stringify(faqStructuredData),
           }}
         />
@@ -234,8 +242,7 @@ export default async function BlogPage({ params }) {
           <div className="blog-main">
             {/* Breadcrumbs */}
             <nav
-              className="breadcrumbs"
-              style={{ fontSize: "14px", color: "#666", marginBottom: "24px" }}
+              className="breadcrumbs" style={{ fontSize: "14px", color: "#666", marginBottom: "24px" }}
             >
               <Link href="/" style={{ color: "#fb8500" }}>
                 Home
@@ -248,11 +255,21 @@ export default async function BlogPage({ params }) {
               <span style={{ color: "#374151" }}>{blog.title}</span>
             </nav>
 
-            {/* Text-first article header (no cover image) */}
+            {/* Article header with cover image */}
             <header style={{ marginBottom: "28px" }}>
+              <BlogCover
+                src={coverFor(blog)}
+                alt={blog.images?.[0]?.alt || blog.title}
+                fit="cover" wrapperStyle={{
+                  width: "100%",
+                  height: "320px",
+                  borderRadius: "16px",
+                  marginBottom: "20px",
+                }}
+                imgStyle={{ width: "100%", height: "100%" }}
+              />
               <h1
-                className="font-32 weight-700"
-                style={{ lineHeight: 1.2, marginBottom: "12px" }}
+                className="font-32 weight-700" style={{ lineHeight: 1.2, marginBottom: "12px" }}
               >
                 {blog.title}
               </h1>
@@ -274,9 +291,17 @@ export default async function BlogPage({ params }) {
                     day: "numeric",
                   })}
                 </span>
+                <span className="flex items-center gap-4">
+                  <Clock size={14} /> {readingMinutes(blog)} min read
+                </span>
                 <BlogViews slug={blog.slug} />
               </div>
             </header>
+
+            {/* Table of contents (shows on mobile; sidebar handles desktop) */}
+            <div className="blog-toc-mobile">
+              <TableOfContents items={headingsFor(blog)} />
+            </div>
 
             {/* Blog Content - Rendered from JSON */}
             <div className="blog-content" style={{ marginBottom: "40px" }}>
@@ -285,11 +310,16 @@ export default async function BlogPage({ params }) {
               )}
             </div>
 
+            {/* Books featured in this article */}
+            <RelatedBooks books={relatedBooksFor(blog)} />
+
+            {/* Subscribe */}
+            <BlogSubscribe source={`post:${blog.slug}`} />
+
             {/* FAQ Section */}
             {blog.faqs.length > 0 && (
               <div
-                className="flex flex-col gap-24"
-                style={{ marginBottom: "40px" }}
+                className="flex flex-col gap-24" style={{ marginBottom: "40px" }}
               >
                 <h2 className="font-24 weight-600">
                   Frequently Asked Questions
@@ -325,11 +355,21 @@ export default async function BlogPage({ params }) {
 
           </div>
 
-          {/* Right Sidebar - All Blogs Container */}
+          {/* Right Sidebar */}
           <aside className="blog-sidebar">
+            {/* Table of contents (desktop) */}
+            <div className="blog-toc-desktop">
+              <TableOfContents items={headingsFor(blog)} />
+            </div>
+
+            {/* Popular posts by view count */}
+            <PopularPosts
+              posts={allBlogs.map((b) => ({ slug: b.slug, title: b.title }))}
+            />
+
             <div className="sidebar-container">
               <div className="sidebar-header">
-                <h3 className="sidebar-title">📚 All Blogs</h3>
+                <h3 className="sidebar-title">All Blogs</h3>
                 <p className="sidebar-subtitle">Explore more articles</p>
               </div>
 
@@ -341,7 +381,19 @@ export default async function BlogPage({ params }) {
                     className="blog-item"
                   >
                     <div className="blog-item-image">
-                      <div className="blog-item-placeholder">📖</div>
+                      {coverFor(relatedBlog) ? (
+                        <BlogCover
+                          src={coverFor(relatedBlog)}
+                          alt={relatedBlog.title}
+                          fit="cover"
+                          wrapperStyle={{ width: "100%", height: "100%" }}
+                          imgStyle={{ width: "100%", height: "100%" }}
+                        />
+                      ) : (
+                        <div className="blog-item-placeholder">
+                          <BookOpen size={18} />
+                        </div>
+                      )}
                     </div>
                     <div className="blog-item-content">
                       <h4 className="blog-item-title">{relatedBlog.title}</h4>

@@ -356,7 +356,8 @@ export default function ShippingDeliveryPolicy() {
           If all delivery attempts fail (due to the recipient being unavailable,
           the address being inaccessible, or COD payment being refused), the
           parcel will be returned to us as undeliverable. In such cases, the
-          terms set out in Section 9 shall apply.
+          terms set out in Section 9 apply, and for prepaid orders the refund
+          terms in Section 16 below apply.
         </p>
       </section>
 
@@ -495,6 +496,24 @@ export default function ShippingDeliveryPolicy() {
           international orders, please contact us at{" "}
           <a href="mailto:uskillbook@gmail.com">uskillbook@gmail.com</a> and we
           will assess feasibility on a case-by-case basis.
+        </p>
+      </section>
+
+      <section id="prepaid-refund-shipping">
+        <h2>16. Refunds on Undelivered Prepaid Orders</h2>
+        <p>
+          If you have prepaid for an order but are unable to receive it for any
+          reason — for example, the parcel is returned to us undelivered (RTO),
+          delivery is refused, delivery attempts fail, or the address provided
+          is incorrect, incomplete, or unreachable — we will still refund you.
+        </p>
+        <p>
+          In these cases we deduct only a{" "}
+          <strong>small delivery/handling fee</strong> to cover the shipping
+          cost already incurred and the packaging, support, and care effort of
+          our small team, and <strong>refund the remaining amount</strong> to
+          your original payment method or TheBookX wallet. Full details are in
+          our <a href="/refund">Refund &amp; Cancellation Policy</a>.
         </p>
       </section>
 

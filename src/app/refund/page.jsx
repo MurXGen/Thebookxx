@@ -505,8 +505,32 @@ export default function RefundCancellationPolicy() {
         </p>
       </section>
 
+      <section id="prepaid-unreceived">
+        <h2>14. Prepaid Orders You Are Unable to Receive</h2>
+        <p>
+          If you have already paid for an order but are unable to receive it for
+          any reason on your side — for example, the parcel is returned to us
+          undelivered (RTO), delivery is refused, repeated delivery attempts
+          fail, the address provided is incorrect or incomplete, or you are
+          unreachable by the courier — we will still refund you.
+        </p>
+        <p>
+          In such cases, we deduct only a <strong>small delivery/handling fee</strong>{" "}
+          to cover the shipping cost already incurred and the packaging, support,
+          and care effort put in by our small team, and{" "}
+          <strong>refund the remaining amount</strong> to your original payment
+          method or TheBookX wallet. This keeps the refund fair to you while
+          covering the actual logistics cost we have borne on the order.
+        </p>
+        <p>
+          The exact delivery/handling fee depends on the shipping charges applicable
+          to your order and will be communicated to you before the refund is
+          processed.
+        </p>
+      </section>
+
       <section id="disputes">
-        <h2>14. Disputes &amp; Chargebacks</h2>
+        <h2>15. Disputes &amp; Chargebacks</h2>
         <p>
           We strongly request you to contact our customer support team before
           initiating a chargeback with your bank or payment provider. Most

@@ -48,7 +48,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          '<a href="/quickreads/atomic-habits" style="display:inline-block;background:#fb8500;color:#ffffff;padding:9px 18px;border-radius:10px;font-weight:600;text-decoration:none">📖 Read the QuickRead</a> <a href="/books/atomic-habits" style="color:#fb8500;font-weight:600;margin-left:12px">Buy the paperback →</a>',
+          '<a href="/quickreads/atomic-habits" style="display:inline-block;background:#fb8500;color:#ffffff;padding:9px 18px;border-radius:10px;font-weight:600;text-decoration:none">Read the QuickRead</a> <a href="/books/atomic-habits" style="color:#fb8500;font-weight:600;margin-left:12px">Buy the paperback →</a>',
       },
 
       {
@@ -64,7 +64,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          '<a href="/quickreads/the-psychology-of-money" style="display:inline-block;background:#fb8500;color:#ffffff;padding:9px 18px;border-radius:10px;font-weight:600;text-decoration:none">📖 Read the QuickRead</a> <a href="/books/the-psychology-of-money" style="color:#fb8500;font-weight:600;margin-left:12px">Buy the paperback →</a>',
+          '<a href="/quickreads/the-psychology-of-money" style="display:inline-block;background:#fb8500;color:#ffffff;padding:9px 18px;border-radius:10px;font-weight:600;text-decoration:none">Read the QuickRead</a> <a href="/books/the-psychology-of-money" style="color:#fb8500;font-weight:600;margin-left:12px">Buy the paperback →</a>',
       },
 
       {
@@ -80,7 +80,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          '<a href="/quickreads/ikigai" style="display:inline-block;background:#fb8500;color:#ffffff;padding:9px 18px;border-radius:10px;font-weight:600;text-decoration:none">📖 Read the QuickRead</a> <a href="/books/ikigai" style="color:#fb8500;font-weight:600;margin-left:12px">Buy the paperback →</a>',
+          '<a href="/quickreads/ikigai" style="display:inline-block;background:#fb8500;color:#ffffff;padding:9px 18px;border-radius:10px;font-weight:600;text-decoration:none">Read the QuickRead</a> <a href="/books/ikigai" style="color:#fb8500;font-weight:600;margin-left:12px">Buy the paperback →</a>',
       },
 
       {
@@ -96,7 +96,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          '<a href="/quickreads/rich-dad-poor-dad" style="display:inline-block;background:#fb8500;color:#ffffff;padding:9px 18px;border-radius:10px;font-weight:600;text-decoration:none">📖 Read the QuickRead</a> <a href="/books/rich-dad-poor-dad" style="color:#fb8500;font-weight:600;margin-left:12px">Buy the paperback →</a>',
+          '<a href="/quickreads/rich-dad-poor-dad" style="display:inline-block;background:#fb8500;color:#ffffff;padding:9px 18px;border-radius:10px;font-weight:600;text-decoration:none">Read the QuickRead</a> <a href="/books/rich-dad-poor-dad" style="color:#fb8500;font-weight:600;margin-left:12px">Buy the paperback →</a>',
       },
 
       {
@@ -112,7 +112,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          '<a href="/quickreads/the-subtle-art-of-not-giving-a-f-ck" style="display:inline-block;background:#fb8500;color:#ffffff;padding:9px 18px;border-radius:10px;font-weight:600;text-decoration:none">📖 Read the QuickRead</a> <a href="/books/the-subtle-art-of-not-giving-a-f-ck" style="color:#fb8500;font-weight:600;margin-left:12px">Buy the paperback →</a>',
+          '<a href="/quickreads/the-subtle-art-of-not-giving-a-f-ck" style="display:inline-block;background:#fb8500;color:#ffffff;padding:9px 18px;border-radius:10px;font-weight:600;text-decoration:none">Read the QuickRead</a> <a href="/books/the-subtle-art-of-not-giving-a-f-ck" style="color:#fb8500;font-weight:600;margin-left:12px">Buy the paperback →</a>',
       },
 
       {
@@ -128,7 +128,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          '<a href="/quickreads/the-alchemist" style="display:inline-block;background:#fb8500;color:#ffffff;padding:9px 18px;border-radius:10px;font-weight:600;text-decoration:none">📖 Read the QuickRead</a> <a href="/books/the-alchemist" style="color:#fb8500;font-weight:600;margin-left:12px">Buy the paperback →</a>',
+          '<a href="/quickreads/the-alchemist" style="display:inline-block;background:#fb8500;color:#ffffff;padding:9px 18px;border-radius:10px;font-weight:600;text-decoration:none">Read the QuickRead</a> <a href="/books/the-alchemist" style="color:#fb8500;font-weight:600;margin-left:12px">Buy the paperback →</a>',
       },
 
       {
@@ -144,7 +144,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          '<a href="/quickreads/how-to-win-friends-and-influence-people" style="display:inline-block;background:#fb8500;color:#ffffff;padding:9px 18px;border-radius:10px;font-weight:600;text-decoration:none">📖 Read the QuickRead</a> <a href="/books/how-to-win-friends-and-influence-people" style="color:#fb8500;font-weight:600;margin-left:12px">Buy the paperback →</a>',
+          '<a href="/quickreads/how-to-win-friends-and-influence-people" style="display:inline-block;background:#fb8500;color:#ffffff;padding:9px 18px;border-radius:10px;font-weight:600;text-decoration:none">Read the QuickRead</a> <a href="/books/how-to-win-friends-and-influence-people" style="color:#fb8500;font-weight:600;margin-left:12px">Buy the paperback →</a>',
       },
 
       {
@@ -160,7 +160,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          '<a href="/quickreads/deep-work" style="display:inline-block;background:#fb8500;color:#ffffff;padding:9px 18px;border-radius:10px;font-weight:600;text-decoration:none">📖 Read the QuickRead</a> <a href="/books/deep-work" style="color:#fb8500;font-weight:600;margin-left:12px">Buy the paperback →</a>',
+          '<a href="/quickreads/deep-work" style="display:inline-block;background:#fb8500;color:#ffffff;padding:9px 18px;border-radius:10px;font-weight:600;text-decoration:none">Read the QuickRead</a> <a href="/books/deep-work" style="color:#fb8500;font-weight:600;margin-left:12px">Buy the paperback →</a>',
       },
 
       {
@@ -176,7 +176,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          '<a href="/quickreads/the-5-am-club" style="display:inline-block;background:#fb8500;color:#ffffff;padding:9px 18px;border-radius:10px;font-weight:600;text-decoration:none">📖 Read the QuickRead</a> <a href="/books/the-5-am-club" style="color:#fb8500;font-weight:600;margin-left:12px">Buy the paperback →</a>',
+          '<a href="/quickreads/the-5-am-club" style="display:inline-block;background:#fb8500;color:#ffffff;padding:9px 18px;border-radius:10px;font-weight:600;text-decoration:none">Read the QuickRead</a> <a href="/books/the-5-am-club" style="color:#fb8500;font-weight:600;margin-left:12px">Buy the paperback →</a>',
       },
 
       {
@@ -192,7 +192,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          '<a href="/quickreads/the-art-of-clarity" style="display:inline-block;background:#fb8500;color:#ffffff;padding:9px 18px;border-radius:10px;font-weight:600;text-decoration:none">📖 Read the QuickRead</a> <a href="/books/the-art-of-clarity" style="color:#fb8500;font-weight:600;margin-left:12px">Buy the paperback →</a>',
+          '<a href="/quickreads/the-art-of-clarity" style="display:inline-block;background:#fb8500;color:#ffffff;padding:9px 18px;border-radius:10px;font-weight:600;text-decoration:none">Read the QuickRead</a> <a href="/books/the-art-of-clarity" style="color:#fb8500;font-weight:600;margin-left:12px">Buy the paperback →</a>',
       },
 
       {
@@ -1182,7 +1182,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "🎯 What You'll Improve",
+        title: "What You'll Improve",
         content:
           "• Lip mobility and control (bilabial sounds: P, B, M)<br/>• Tongue dexterity (alveolar sounds: T, D, N, L)<br/>• Jaw coordination and release<br/>• Breath control and diaphragmatic support<br/>• Speed-accuracy balance in speech",
       },
@@ -1208,21 +1208,21 @@ export const blogsData = {
         style: "info",
         title: "1. Red Lorry, Yellow Lorry",
         content:
-          "<strong>Focus:</strong> L and R sounds<br/><br/><em>\"Red lorry, yellow lorry, red lorry, yellow lorry\"</em><br/><br/>💡 <strong>Tip from Murthy Thevar:</strong> Start very slow. Place your tongue behind your upper teeth for 'L' and curl it back slightly for 'R'.",
+          "<strong>Focus:</strong> L and R sounds<br/><br/><em>\"Red lorry, yellow lorry, red lorry, yellow lorry\"</em><br/><br/><strong>Tip from Murthy Thevar:</strong> Start very slow. Place your tongue behind your upper teeth for 'L' and curl it back slightly for 'R'.",
       },
       {
         type: "callout",
         style: "info",
         title: "2. Unique New York",
         content:
-          "<strong>Focus:</strong> N, Y, and vowel sounds<br/><br/><em>\"Unique New York, unique New York, you know you need unique New York\"</em><br/><br/>💡 <strong>Tip:</strong> Focus on the transition between 'unique' and 'new.' Keep your jaw relaxed.",
+          "<strong>Focus:</strong> N, Y, and vowel sounds<br/><br/><em>\"Unique New York, unique New York, you know you need unique New York\"</em><br/><br/><strong>Tip:</strong> Focus on the transition between 'unique' and 'new.' Keep your jaw relaxed.",
       },
       {
         type: "callout",
         style: "info",
         title: "3. Three Free Throws",
         content:
-          "<strong>Focus:</strong> TH and F sounds<br/><br/><em>\"Three free throws, three free throws, three free throws\"</em><br/><br/>💡 <strong>Tip:</strong> For 'TH,' place your tongue between your teeth. For 'F,' touch your upper teeth to your bottom lip.",
+          "<strong>Focus:</strong> TH and F sounds<br/><br/><em>\"Three free throws, three free throws, three free throws\"</em><br/><br/><strong>Tip:</strong> For 'TH,' place your tongue between your teeth. For 'F,' touch your upper teeth to your bottom lip.",
       },
 
       {
@@ -1235,21 +1235,21 @@ export const blogsData = {
         style: "info",
         title: "4. She Sells Sea Shells",
         content:
-          "<strong>Focus:</strong> S, SH, and L combinations<br/><br/><em>\"She sells sea shells by the sea shore. The shells she sells are surely seashells. So if she sells shells on the seashore, I'm sure she sells seashore shells.\"</em><br/><br/>💡 <strong>Tip:</strong> A classic! Keep your tongue tip behind your bottom teeth for 'S' and 'SH' sounds. Murthy Thevar recommends this as your daily warm-up.",
+          "<strong>Focus:</strong> S, SH, and L combinations<br/><br/><em>\"She sells sea shells by the sea shore. The shells she sells are surely seashells. So if she sells shells on the seashore, I'm sure she sells seashore shells.\"</em><br/><br/><strong>Tip:</strong> A classic! Keep your tongue tip behind your bottom teeth for 'S' and 'SH' sounds. Murthy Thevar recommends this as your daily warm-up.",
       },
       {
         type: "callout",
         style: "info",
         title: "5. Betty Botter's Butter",
         content:
-          "<strong>Focus:</strong> B, T, and short vowel sounds<br/><br/><em>\"Betty Botter bought some butter. 'But,' she said, 'this butter's bitter. If I put it in my batter, it will make my batter bitter. But a bit of better butter will make my batter better.'\"</em><br/><br/>💡 <strong>Tip:</strong> Exaggerate the 'B' and 'T' sounds. Feel the air release on each consonant.",
+          "<strong>Focus:</strong> B, T, and short vowel sounds<br/><br/><em>\"Betty Botter bought some butter. 'But,' she said, 'this butter's bitter. If I put it in my batter, it will make my batter bitter. But a bit of better butter will make my batter better.'\"</em><br/><br/><strong>Tip:</strong> Exaggerate the 'B' and 'T' sounds. Feel the air release on each consonant.",
       },
       {
         type: "callout",
         style: "info",
         title: "6. Six Slippery Snails",
         content:
-          "<strong>Focus:</strong> S, SL, SN combinations<br/><br/><em>\"Six slippery snails slid slowly down the slippery slope. Six slippery snails slid slowly down the slope.\"</em><br/><br/>💡 <strong>Tip:</strong> Slow down on 'slippery snails', feel the transition between 'S' and 'L.'",
+          "<strong>Focus:</strong> S, SL, SN combinations<br/><br/><em>\"Six slippery snails slid slowly down the slippery slope. Six slippery snails slid slowly down the slope.\"</em><br/><br/><strong>Tip:</strong> Slow down on 'slippery snails', feel the transition between 'S' and 'L.'",
       },
 
       {
@@ -1262,28 +1262,28 @@ export const blogsData = {
         style: "info",
         title: "7. Peter Piper Picked",
         content:
-          "<strong>Focus:</strong> P, hard C/K sounds<br/><br/><em>\"Peter Piper picked a peck of pickled peppers. A peck of pickled peppers Peter Piper picked. If Peter Piper picked a peck of pickled peppers, where's the peck of pickled peppers Peter Piper picked?\"</em><br/><br/>💡 <strong>Tip:</strong> Create a popping sound with your lips for 'P.' Keep your tongue flat for 'K' sounds.",
+          "<strong>Focus:</strong> P, hard C/K sounds<br/><br/><em>\"Peter Piper picked a peck of pickled peppers. A peck of pickled peppers Peter Piper picked. If Peter Piper picked a peck of pickled peppers, where's the peck of pickled peppers Peter Piper picked?\"</em><br/><br/><strong>Tip:</strong> Create a popping sound with your lips for 'P.' Keep your tongue flat for 'K' sounds.",
       },
       {
         type: "callout",
         style: "info",
         title: "8. Through Three Cheese Trees",
         content:
-          "<strong>Focus:</strong> THR, CH, T, and S combinations<br/><br/><em>\"Through three cheese trees three free fleas flew. While these fleas flew, freezy breeze blew. Freezy breeze made these three trees freeze. Freezy trees made these trees' cheese freeze.\"</em><br/><br/>💡 <strong>Tip:</strong> This one is challenging! Practice each phrase separately before combining. Murthy Thevar calls this 'the clarity champion-maker.'",
+          "<strong>Focus:</strong> THR, CH, T, and S combinations<br/><br/><em>\"Through three cheese trees three free fleas flew. While these fleas flew, freezy breeze blew. Freezy breeze made these three trees freeze. Freezy trees made these trees' cheese freeze.\"</em><br/><br/><strong>Tip:</strong> This one is challenging! Practice each phrase separately before combining. Murthy Thevar calls this 'the clarity champion-maker.'",
       },
       {
         type: "callout",
         style: "info",
         title: "9. I Saw Susie Sitting",
         content:
-          "<strong>Focus:</strong> S, Z, and posture awareness<br/><br/><em>\"I saw Susie sitting in a shoe shine shop. Where she sits she shines, and where she shines she sits.\"</em><br/><br/>💡 <strong>Tip:</strong> Sit up straight! Proper posture significantly improves breath support and clarity. This is a key principle from 'The Art of Clarity', your physical state affects your communication.",
+          "<strong>Focus:</strong> S, Z, and posture awareness<br/><br/><em>\"I saw Susie sitting in a shoe shine shop. Where she sits she shines, and where she shines she sits.\"</em><br/><br/><strong>Tip:</strong> Sit up straight! Proper posture significantly improves breath support and clarity. This is a key principle from 'The Art of Clarity', your physical state affects your communication.",
       },
       {
         type: "callout",
         style: "info",
         title: "10. The Sixth Sick Sheikh's Sheep",
         content:
-          "<strong>Focus:</strong> S, SH, K, and complex consonant clusters<br/><br/><em>\"The sixth sick sheikh's sixth sheep's sick.\"</em><br/><br/>💡 <strong>Tip:</strong> The ultimate challenge! Practice one word at a time. This is what Murthy Thevar uses with advanced clients. Master this, and you've mastered clarity in speech!",
+          "<strong>Focus:</strong> S, SH, K, and complex consonant clusters<br/><br/><em>\"The sixth sick sheikh's sixth sheep's sick.\"</em><br/><br/><strong>Tip:</strong> The ultimate challenge! Practice one word at a time. This is what Murthy Thevar uses with advanced clients. Master this, and you've mastered clarity in speech!",
       },
 
       {
@@ -1433,21 +1433,21 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "📅 Week 1-2: Foundation",
+        title: "Week 1-2: Foundation",
         content:
           "Practice the 3 beginner tongue twisters daily + mirror practice for 5 minutes",
       },
       {
         type: "callout",
         style: "info",
-        title: "📅 Week 3: Building Speed",
+        title: "Week 3: Building Speed",
         content:
           "Add 3 intermediate tongue twisters + record and review your speech daily",
       },
       {
         type: "callout",
         style: "info",
-        title: "📅 Week 4: Mastery",
+        title: "Week 4: Mastery",
         content:
           "Master all 10 tongue twisters + apply techniques in real conversations + get feedback",
       },
@@ -1646,7 +1646,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "📊 The 5-Minute Rule Research",
+        title: "The 5-Minute Rule Research",
         content:
           "Studies show that decisions made within 5 minutes of conscious consideration are 87% as good as decisions made after hours of overthinking. Extra time rarely produces better outcomes, it just produces more anxiety.",
       },
@@ -1670,7 +1670,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "⚡ How It Works",
+        title: "How It Works",
         content:
           "When you catch yourself overthinking, count backward: 5-4-3-2-1-GO. Then take one small physical action, stand up, write one word, send one email. The physical interruption breaks the thought loop.",
       },
@@ -1682,7 +1682,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice today:</strong> Set a timer for every hour. When it goes off, notice if you're overthinking anything. If yes, use the 5-second release immediately.",
+          "<strong>Practice today:</strong> Set a timer for every hour. When it goes off, notice if you're overthinking anything. If yes, use the 5-second release immediately.",
       },
 
       {
@@ -1693,7 +1693,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "⏱️ How It Works",
+        title: "How It Works",
         content:
           "Give yourself exactly 2 minutes to make a decision. Use a physical timer. When it goes off, you MUST commit to a choice and take the first action step, no matter how small.",
       },
@@ -1705,7 +1705,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice today:</strong> Apply this to 5 low-stakes decisions (what to eat, what to wear, which task first). Build the muscle before using it on bigger decisions.",
+          "<strong>Practice today:</strong> Apply this to 5 low-stakes decisions (what to eat, what to wear, which task first). Build the muscle before using it on bigger decisions.",
       },
 
       {
@@ -1717,7 +1717,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "👁️ How It Works",
+        title: "How It Works",
         content:
           "Write down the worst possible outcome of your decision. Then ask: 'Can I survive this? Can I handle this? What's the probability?' Most worst-case scenarios are highly unlikely and completely survivable.",
       },
@@ -1729,7 +1729,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice today:</strong> Think of one decision you're avoiding. Write the worst case. Rate its probability (1-10). Rate your ability to handle it (1-10). You'll likely see fear is overestimating risk.",
+          "<strong>Practice today:</strong> Think of one decision you're avoiding. Write the worst case. Rate its probability (1-10). Rate your ability to handle it (1-10). You'll likely see fear is overestimating risk.",
       },
 
       {
@@ -1740,7 +1740,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "🎯 How It Works",
+        title: "How It Works",
         content:
           "Don't wait for 100% certainty, it never comes. Make decisions when you have 70% of the information you'd ideally want. Take action at 70% confidence. The remaining 30% will reveal itself through action.",
       },
@@ -1752,7 +1752,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice today:</strong> Identify one project you're waiting to be 'perfect' before launching. Launch it now at 70%. See what happens.",
+          "<strong>Practice today:</strong> Identify one project you're waiting to be 'perfect' before launching. Launch it now at 70%. See what happens.",
       },
 
       {
@@ -1763,7 +1763,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "✅ How It Works",
+        title: "How It Works",
         content:
           "Repeat this mantra every time you catch yourself over-polishing, re-analyzing, or delaying completion. Say it aloud if needed: 'Done is better than perfect. I can iterate, but I cannot edit a blank page.'",
       },
@@ -1775,7 +1775,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice today:</strong> Complete one task to 'done' status, not 'perfect' status. Notice how good it feels to check it off.",
+          "<strong>Practice today:</strong> Complete one task to 'done' status, not 'perfect' status. Notice how good it feels to check it off.",
       },
 
       {
@@ -1786,7 +1786,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "🛑 How It Works",
+        title: "How It Works",
         content:
           "Create a physical cue to interrupt rumination. Wear a rubber band on your wrist and snap it gently when you catch yourself overthinking. Or visualize a massive red STOP sign. Or say 'STOP' aloud.",
       },
@@ -1798,7 +1798,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice today:</strong> Choose your cue. Every time you notice overthinking, use it immediately. Count how many times you interrupt yourself (it will decrease daily).",
+          "<strong>Practice today:</strong> Choose your cue. Every time you notice overthinking, use it immediately. Count how many times you interrupt yourself (it will decrease daily).",
       },
 
       {
@@ -1809,7 +1809,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "📅 How It Works",
+        title: "How It Works",
         content:
           "Schedule 15 minutes daily for 'worry time.' Write down everything you're overthinking. When time is up, close the notebook and return to your day. Any worries that arise outside this time get postponed to tomorrow's session.",
       },
@@ -1821,7 +1821,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice today:</strong> Set your worry time for 4 PM. When worries come up before then, tell yourself: 'Not now. I'll worry at 4 PM.'",
+          "<strong>Practice today:</strong> Set your worry time for 4 PM. When worries come up before then, tell yourself: 'Not now. I'll worry at 4 PM.'",
       },
 
       {
@@ -1832,7 +1832,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "🧘 How It Works",
+        title: "How It Works",
         content:
           "When overthinking spirals, anchor yourself in your body. Place both feet flat on the floor. Take 3 deep belly breaths. Notice 5 things you can see, 4 you can touch, 3 you can hear, 2 you can smell, 1 you can taste.",
       },
@@ -1844,7 +1844,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice today:</strong> Set 3 random alarms. When they go off, practice this anchoring technique, whether you're overthinking or not. Build the habit before you need it.",
+          "<strong>Practice today:</strong> Set 3 random alarms. When they go off, practice this anchoring technique, whether you're overthinking or not. Build the habit before you need it.",
       },
 
       {
@@ -1855,7 +1855,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "📊 How It Works",
+        title: "How It Works",
         content:
           "Draw a square divided into 4 quadrants: (1) High Impact/Low Effort (DO NOW), (2) High Impact/High Effort (PLAN), (3) Low Impact/Low Effort (DELEGATE), (4) Low Impact/High Effort (DROP). Place your decision in one quadrant. Act accordingly.",
       },
@@ -1867,7 +1867,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice today:</strong> List 5 decisions you're overthinking. Place each in a quadrant. Take action on the 'DO NOW' items immediately.",
+          "<strong>Practice today:</strong> List 5 decisions you're overthinking. Place each in a quadrant. Take action on the 'DO NOW' items immediately.",
       },
 
       {
@@ -1878,7 +1878,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "🔒 How It Works",
+        title: "How It Works",
         content:
           "Once you make a decision, announce it to someone (or write it down with a timestamp). Then implement a 'revision lock', you cannot reconsider for at least 24 hours. This prevents the back-and-forth that fuels overthinking.",
       },
@@ -1890,7 +1890,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice today:</strong> Make one decision you've been avoiding. Tell a friend or colleague. Commit to not revisiting it for 24 hours.",
+          "<strong>Practice today:</strong> Make one decision you've been avoiding. Tell a friend or colleague. Commit to not revisiting it for 24 hours.",
       },
 
       {
@@ -1906,7 +1906,7 @@ export const blogsData = {
       {
         type: "heading",
         level: 3,
-        content: "📆 Day 1-2: Awareness",
+        content: "Day 1-2: Awareness",
       },
       {
         type: "list",
@@ -1921,7 +1921,7 @@ export const blogsData = {
       {
         type: "heading",
         level: 3,
-        content: "📆 Day 3-4: Interruption",
+        content: "Day 3-4: Interruption",
       },
       {
         type: "list",
@@ -1936,7 +1936,7 @@ export const blogsData = {
       {
         type: "heading",
         level: 3,
-        content: "📆 Day 5-6: Replacement",
+        content: "Day 5-6: Replacement",
       },
       {
         type: "list",
@@ -1951,7 +1951,7 @@ export const blogsData = {
       {
         type: "heading",
         level: 3,
-        content: "📆 Day 7: Consolidation",
+        content: "Day 7: Consolidation",
       },
       {
         type: "list",
@@ -1977,9 +1977,9 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "🚨 WHEN YOU'RE OVERWHELMED, DO THIS:",
+        title: "WHEN YOU'RE OVERWHELMED, DO THIS:",
         content:
-          "1️⃣ Take 5 deep breaths (in for 4, hold for 4, out for 6)<br/>2️⃣ Name the specific thought you're overthinking (write it down)<br/>3️⃣ Ask: 'Can I take any action in the next 60 seconds?'<br/>4️⃣ If YES → Do it. If NO → Schedule it for worry time<br/>5️⃣ Move your body (stand, walk, stretch) to break the loop<br/>6️⃣ Say aloud: 'Thinking is not doing. Action cures anxiety.'",
+          "1⃣ Take 5 deep breaths (in for 4, hold for 4, out for 6)<br/>2⃣ Name the specific thought you're overthinking (write it down)<br/>3⃣ Ask: 'Can I take any action in the next 60 seconds?'<br/>4⃣ If YES → Do it. If NO → Schedule it for worry time<br/>5⃣ Move your body (stand, walk, stretch) to break the loop<br/>6⃣ Say aloud: 'Thinking is not doing. Action cures anxiety.'",
       },
 
       {
@@ -2130,7 +2130,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "📚 Want to Dive Deeper?",
+        title: "Want to Dive Deeper?",
         content:
           "These strategies are fully explored in <strong>'The Art of Clarity'</strong> by Murthy Thevar. Chapter 7 covers overthinking in depth with advanced techniques, worksheets, and a complete 60-day transformation program. Get your copy today at https://www.thebookx.in/books/the-art-of-clarity",
       },
@@ -2315,7 +2315,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "📊 The 74GB Reality",
+        title: "The 74GB Reality",
         content:
           "Researchers estimate we consume 74GB of information daily, that's equivalent to watching 16 movies. But here's the kicker: We actively remember less than 1% of it by the next day. Most of what you consume is instantly forgotten, yet it still drains your mental energy.",
       },
@@ -2339,7 +2339,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "🔍 How It Works",
+        title: "How It Works",
         content:
           "Before reading, watching, or listening to anything, ask three questions: <strong>1) Does this serve my current goal? 2) Is this the best use of my time right now? 3) Will I remember this tomorrow?</strong> If you answer 'no' to any question, skip it.",
       },
@@ -2351,7 +2351,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice today:</strong> Apply this filter to everything you consume for one day. You'll be shocked at how much you skip, and how much time you save.",
+          "<strong>Practice today:</strong> Apply this filter to everything you consume for one day. You'll be shocked at how much you skip, and how much time you save.",
       },
 
       {
@@ -2362,7 +2362,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "📚 How It Works",
+        title: "How It Works",
         content:
           "Apply the Pareto Principle to your information consumption: <strong>80% of valuable insights come from 20% of your sources.</strong> Identify that 20%, your top sources that provide real value, and eliminate or drastically reduce the rest.",
       },
@@ -2374,7 +2374,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice today:</strong> List all your information sources (newsletters, podcasts, YouTube channels, social media accounts, websites). Circle your top 3-5 that provide the most value. Unsubscribe from the rest.",
+          "<strong>Practice today:</strong> List all your information sources (newsletters, podcasts, YouTube channels, social media accounts, websites). Circle your top 3-5 that provide the most value. Unsubscribe from the rest.",
       },
 
       {
@@ -2385,7 +2385,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "❓ How It Works",
+        title: "How It Works",
         content:
           "For every piece of information, ask: <strong>'So what? How does this affect me or my work today?'</strong> If you can't articulate a concrete impact within 10 seconds, the information isn't relevant. Discard it.",
       },
@@ -2397,7 +2397,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice today:</strong> Every time you feel the urge to check news or social media, ask 'So what?' first. You'll find most information fails this simple test.",
+          "<strong>Practice today:</strong> Every time you feel the urge to check news or social media, ask 'So what?' first. You'll find most information fails this simple test.",
       },
 
       {
@@ -2408,7 +2408,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "⏰ How It Works",
+        title: "How It Works",
         content:
           "Assign an expiration date to every piece of information you consume. News expires in 24 hours. Social media posts in 1 hour. Research articles in 1 year. Books in 5-10 years. <strong>When information expires, stop revisiting it.</strong>",
       },
@@ -2420,7 +2420,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice today:</strong> Go through your saved articles, bookmarks, and 'read later' lists. Anything older than its expiration date? Delete it. You were never going to read it anyway.",
+          "<strong>Practice today:</strong> Go through your saved articles, bookmarks, and 'read later' lists. Anything older than its expiration date? Delete it. You were never going to read it anyway.",
       },
 
       {
@@ -2431,7 +2431,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "🔄 How It Works",
+        title: "How It Works",
         content:
           "For every new information source you add, remove an existing one. Want to subscribe to a new newsletter? Unsubscribe from one you rarely read. Found a new podcast? Delete one you haven't listened to in months.",
       },
@@ -2443,7 +2443,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice today:</strong> Audit your email subscriptions. Unsubscribe from 10 newsletters. You won't miss them. Promise.",
+          "<strong>Practice today:</strong> Audit your email subscriptions. Unsubscribe from 10 newsletters. You won't miss them. Promise.",
       },
 
       {
@@ -2454,7 +2454,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "🔮 How It Works",
+        title: "How It Works",
         content:
           "Ask yourself: <strong>'Will this information matter in 10 minutes? 10 months? 10 years?'</strong> If it won't matter in 10 months, it's probably not worth deep attention. If it won't matter in 10 minutes, it's definitely not worth breaking focus for.",
       },
@@ -2466,7 +2466,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice today:</strong> The next time you get a notification, apply the 10-10-10 test. You'll start ignoring 90% of them.",
+          "<strong>Practice today:</strong> The next time you get a notification, apply the 10-10-10 test. You'll start ignoring 90% of them.",
       },
 
       {
@@ -2477,7 +2477,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "🎓 How It Works",
+        title: "How It Works",
         content:
           "Instead of consuming raw information directly, follow trusted curators who filter for you. Identify 3-5 experts in each area you care about. <strong>Only consume information they personally recommend or create.</strong>",
       },
@@ -2489,7 +2489,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice today:</strong> For each interest (productivity, health, business, etc.), identify one primary expert you trust. Unfollow everyone else in that space.",
+          "<strong>Practice today:</strong> For each interest (productivity, health, business, etc.), identify one primary expert you trust. Unfollow everyone else in that space.",
       },
 
       {
@@ -2500,7 +2500,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "🚫 How It Works",
+        title: "How It Works",
         content:
           "Designate one day per week (Sundays work well) as an 'information fast.' No news. No social media. No emails. No podcasts. No YouTube. <strong>Just you, your thoughts, and any deep work or creative projects.</strong>",
       },
@@ -2512,7 +2512,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice today:</strong> Schedule your information fast for this Sunday. Tell someone about it for accountability. Start with a half-day if a full day feels overwhelming.",
+          "<strong>Practice today:</strong> Schedule your information fast for this Sunday. Tell someone about it for accountability. Start with a half-day if a full day feels overwhelming.",
       },
 
       {
@@ -2523,7 +2523,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "📁 How It Works",
+        title: "How It Works",
         content:
           "Create three folders: <strong>Now (what you'll read today), Next (this week), and Later (maybe ever).</strong> When you encounter information, immediately file it. Process the Now folder daily, Next weekly, Later monthly. Anything that stays in Later for 2 months gets deleted.",
       },
@@ -2535,7 +2535,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice today:</strong> Set up these three folders in your browser bookmarks, email, or note-taking app. Move everything from your current 'read later' list into one of them.",
+          "<strong>Practice today:</strong> Set up these three folders in your browser bookmarks, email, or note-taking app. Move everything from your current 'read later' list into one of them.",
       },
 
       {
@@ -2547,7 +2547,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "⏳ How It Works",
+        title: "How It Works",
         content:
           "At the start of each day, budget your information consumption time: <strong>30 minutes for news, 20 minutes for social media, 45 minutes for professional reading.</strong> Set timers. When time runs out, stop, even if you haven't finished. The unfinished material was probably unimportant.",
       },
@@ -2559,7 +2559,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice today:</strong> Use your phone's screen time settings to cap social media and news apps at 30 minutes daily. Let the app be the bad guy when time runs out.",
+          "<strong>Practice today:</strong> Use your phone's screen time settings to cap social media and news apps at 30 minutes daily. Let the app be the bad guy when time runs out.",
       },
 
       {
@@ -2574,28 +2574,28 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "🔝 Stage 1: ALL Information (100%)",
+        title: "Stage 1: ALL Information (100%)",
         content:
           "Everything available, news, social media, emails, podcasts, articles, videos, books.",
       },
       {
         type: "callout",
         style: "info",
-        title: "⬇️ Stage 2: Filtered (20%)",
+        title: "Stage 2: Filtered (20%)",
         content:
           "Apply Strategies #1-3 to eliminate obviously irrelevant information.",
       },
       {
         type: "callout",
         style: "info",
-        title: "⬇️ Stage 3: Prioritized (5%)",
+        title: "Stage 3: Prioritized (5%)",
         content:
           "Apply Strategies #4-7 to focus on high-value sources and timely information.",
       },
       {
         type: "callout",
         style: "info",
-        title: "🔽 Stage 4: Consumed (1%)",
+        title: "Stage 4: Consumed (1%)",
         content:
           "What you actually read/watch/listen to with full attention. Make this count.",
       },
@@ -2618,7 +2618,7 @@ export const blogsData = {
       {
         type: "heading",
         level: 3,
-        content: "📆 Day 1: Audit",
+        content: "Day 1: Audit",
       },
       {
         type: "list",
@@ -2633,7 +2633,7 @@ export const blogsData = {
       {
         type: "heading",
         level: 3,
-        content: "📆 Day 2-3: Elimination",
+        content: "Day 2-3: Elimination",
       },
       {
         type: "list",
@@ -2648,7 +2648,7 @@ export const blogsData = {
       {
         type: "heading",
         level: 3,
-        content: "📆 Day 4-5: Implementation",
+        content: "Day 4-5: Implementation",
       },
       {
         type: "list",
@@ -2663,7 +2663,7 @@ export const blogsData = {
       {
         type: "heading",
         level: 3,
-        content: "📆 Day 6: Information Fast",
+        content: "Day 6: Information Fast",
       },
       {
         type: "list",
@@ -2678,7 +2678,7 @@ export const blogsData = {
       {
         type: "heading",
         level: 3,
-        content: "📆 Day 7: Integration",
+        content: "Day 7: Integration",
       },
       {
         type: "list",
@@ -2719,9 +2719,9 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "🚨 WHEN OVERWHELMED, DO THIS:",
+        title: "WHEN OVERWHELMED, DO THIS:",
         content:
-          "1️⃣ Close all open tabs and apps immediately<br/>2️⃣ Take 3 deep breaths (in for 4, hold for 4, out for 6)<br/>3️⃣ Ask: 'What's the ONE thing I need to know right now?'<br/>4️⃣ Search only for that specific answer<br/>5️⃣ When you find it, stop. Close everything again.<br/>6️⃣ Say aloud: 'I can consume it later. I don't need it now.'",
+          "1⃣ Close all open tabs and apps immediately<br/>2⃣ Take 3 deep breaths (in for 4, hold for 4, out for 6)<br/>3⃣ Ask: 'What's the ONE thing I need to know right now?'<br/>4⃣ Search only for that specific answer<br/>5⃣ When you find it, stop. Close everything again.<br/>6⃣ Say aloud: 'I can consume it later. I don't need it now.'",
       },
 
       {
@@ -2790,7 +2790,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "📚 Ready for Deeper Clarity?",
+        title: "Ready for Deeper Clarity?",
         content:
           "These information filtering strategies are fully explored in Chapter 4 of <strong>'The Art of Clarity'</strong> by Murthy Thevar. The chapter includes a complete 30-day information detox, worksheets for identifying your valuable sources, and advanced techniques for deep focus. Get your copy today at https://www.thebookx.in/books/the-art-of-clarity",
       },
@@ -2989,7 +2989,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "📊 The Yes/No Math",
+        title: "The Yes/No Math",
         content:
           "If you say 'yes' to just 2 extra commitments per week, that's 104 unwanted commitments per year. If each takes 2 hours, that's 208 hours, more than 8 full days, spent annually on things you never wanted to do. Imagine what you could do with 8 extra days of focused time.",
       },
@@ -3013,7 +3013,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "⏰ How It Works",
+        title: "How It Works",
         content:
           "When someone makes a request, never answer immediately. Say: <strong>'Let me check my calendar and get back to you by tomorrow.'</strong> This gives you time to evaluate without pressure.",
       },
@@ -3025,7 +3025,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice today:</strong> The next time someone asks for something, use the 24-hour rule. Even if you know you'll say yes, still wait. Build the habit before you need it.",
+          "<strong>Practice today:</strong> The next time someone asks for something, use the 24-hour rule. Even if you know you'll say yes, still wait. Build the habit before you need it.",
       },
 
       {
@@ -3036,7 +3036,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "⚖️ How It Works",
+        title: "How It Works",
         content:
           "Before saying yes, ask yourself: <strong>'What will I have to say no to in order to do this?'</strong> Every yes trades against your time, energy, focus, or existing commitments. Be explicit about the trade-off.",
       },
@@ -3048,7 +3048,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice today:</strong> Write down your top 3 priorities for this week. Before any yes, ask: 'Does this support my priorities?' If not, decline.",
+          "<strong>Practice today:</strong> Write down your top 3 priorities for this week. Before any yes, ask: 'Does this support my priorities?' If not, decline.",
       },
 
       {
@@ -3059,7 +3059,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "🔋 How It Works",
+        title: "How It Works",
         content:
           "Rate every commitment on two scales: <strong>Energy (does it energize or drain me?)</strong> and <strong>Value (does it move my goals forward?)</strong>. Only say yes to things that score high on at least one scale. Say no to anything that drains AND provides little value.",
       },
@@ -3071,7 +3071,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice today:</strong> Audit your last 5 commitments using the Energy Audit. Notice patterns. Which drains you? Stop accepting similar requests.",
+          "<strong>Practice today:</strong> Audit your last 5 commitments using the Energy Audit. Notice patterns. Which drains you? Stop accepting similar requests.",
       },
 
       {
@@ -3082,7 +3082,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "📅 How It Works",
+        title: "How It Works",
         content:
           "Before anyone can fill your time, pre-book your calendar with non-negotiable personal time. Block out: <strong>Sleep (8 hours), Deep Work (3 hours), Exercise (1 hour), Family Time (2 hours), Personal Admin (1 hour).</strong> What remains is available for others.",
       },
@@ -3094,7 +3094,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice today:</strong> Open your calendar for next week. Block out your non-negotiables first. Now see what's left for others. You'll be shocked at how little remains.",
+          "<strong>Practice today:</strong> Open your calendar for next week. Block out your non-negotiables first. Now see what's left for others. You'll be shocked at how little remains.",
       },
 
       {
@@ -3105,7 +3105,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "🗣️ How It Works",
+        title: "How It Works",
         content:
           "Use this template: <strong>'Thank you for thinking of me. I can't commit to this right now, but I appreciate you asking.'</strong> That's it. No excuse. No over-explanation. No apology for having boundaries.",
       },
@@ -3117,7 +3117,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice today:</strong> Memorize the Gracious No script. Practice it in the mirror. Use it for one small request today.",
+          "<strong>Practice today:</strong> Memorize the Gracious No script. Practice it in the mirror. Use it for one small request today.",
       },
 
       {
@@ -3128,7 +3128,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "🔄 How It Works",
+        title: "How It Works",
         content:
           "If you want to soften the no, offer an alternative: <strong>'I can't do X, but I can do Y.'</strong> Or: <strong>'I can't this week, but check with me next month.'</strong> Or: <strong>'I can't help directly, but here's someone who might.'</strong>",
       },
@@ -3140,7 +3140,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice today:</strong> Think of a request you recently declined. How could you have offered a 'No, But...' alternative?",
+          "<strong>Practice today:</strong> Think of a request you recently declined. How could you have offered a 'No, But...' alternative?",
       },
 
       {
@@ -3151,7 +3151,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "🎯 How It Works",
+        title: "How It Works",
         content:
           "Identify your <strong>Top 3 priorities for this month</strong> (work, health, relationships, learning, etc.). Before saying yes, ask: <strong>'Does this serve my Top 3?'</strong> If no, the answer is automatically no.",
       },
@@ -3163,7 +3163,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice today:</strong> Write down your Top 3 priorities for the month. Post them somewhere visible. Use them as your filter for every request.",
+          "<strong>Practice today:</strong> Write down your Top 3 priorities for the month. Post them somewhere visible. Use them as your filter for every request.",
       },
 
       {
@@ -3174,7 +3174,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "🚧 How It Works",
+        title: "How It Works",
         content:
           "For people who repeatedly ask too much, use a clear boundary script: <strong>'I've noticed I've been saying yes more than I should. Going forward, I can only help with [specific boundary]. Thanks for understanding.'</strong>",
       },
@@ -3186,7 +3186,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice today:</strong> Identify one person who drains you with requests. Use the Boundary Script to set a clear limit.",
+          "<strong>Practice today:</strong> Identify one person who drains you with requests. Use the Boundary Script to set a clear limit.",
       },
 
       {
@@ -3197,7 +3197,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "📝 How It Works",
+        title: "How It Works",
         content:
           "Every Sunday, review your past week. <strong>Count how many times you said yes. Count how many times you said no.</strong> If yes significantly outnumbers no, you're overcommitted. Plan specific 'no opportunities' for next week.",
       },
@@ -3209,7 +3209,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice today:</strong> Start your Weekly 'No' Audit today. Count your yeses and nos so far this week.",
+          "<strong>Practice today:</strong> Start your Weekly 'No' Audit today. Count your yeses and nos so far this week.",
       },
 
       {
@@ -3221,7 +3221,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "🦋 How It Works",
+        title: "How It Works",
         content:
           "Stop identifying as 'helpful,' 'nice,' or 'reliable' if those identities make you say yes against your will. <strong>Adopt a new identity: 'I'm someone who protects my priorities.'</strong> Let your no flow from this identity.",
       },
@@ -3233,7 +3233,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice today:</strong> Say aloud: 'I protect my priorities. My time is valuable. Saying no is self-respect.' Repeat until you believe it.",
+          "<strong>Practice today:</strong> Say aloud: 'I protect my priorities. My time is valuable. Saying no is self-respect.' Repeat until you believe it.",
       },
 
       {
@@ -3249,7 +3249,7 @@ export const blogsData = {
       {
         type: "heading",
         level: 3,
-        content: "📆 Day 1-2: Awareness Week",
+        content: "Day 1-2: Awareness Week",
       },
       {
         type: "list",
@@ -3264,7 +3264,7 @@ export const blogsData = {
       {
         type: "heading",
         level: 3,
-        content: "📆 Day 3-4: The Practice No",
+        content: "Day 3-4: The Practice No",
       },
       {
         type: "list",
@@ -3279,7 +3279,7 @@ export const blogsData = {
       {
         type: "heading",
         level: 3,
-        content: "📆 Day 5-6: Setting Boundaries",
+        content: "Day 5-6: Setting Boundaries",
       },
       {
         type: "list",
@@ -3294,7 +3294,7 @@ export const blogsData = {
       {
         type: "heading",
         level: 3,
-        content: "📆 Day 7: Integration & Celebration",
+        content: "Day 7: Integration & Celebration",
       },
       {
         type: "list",
@@ -3334,35 +3334,35 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "📱 For Any Request:",
+        title: "For Any Request:",
         content:
           '"Thanks for asking. I can\'t right now, but I appreciate you thinking of me."',
       },
       {
         type: "callout",
         style: "info",
-        title: "📱 For Work Requests:",
+        title: "For Work Requests:",
         content:
           "\"I'm at capacity currently and want to do justice to my existing commitments. Can't take this on now.\"",
       },
       {
         type: "callout",
         style: "info",
-        title: "📱 For Social Invitations:",
+        title: "For Social Invitations:",
         content:
           '"Thanks for the invite! I can\'t make it this time, but hope you have a wonderful time."',
       },
       {
         type: "callout",
         style: "info",
-        title: "📱 For Family/Friends Who Over-Ask:",
+        title: "For Family/Friends Who Over-Ask:",
         content:
           '"I love you, and I also need to protect my time. Going forward, I can only help with [specific boundary]."',
       },
       {
         type: "callout",
         style: "info",
-        title: "📱 For Yourself (Self-Talk):",
+        title: "For Yourself (Self-Talk):",
         content:
           '"Saying no to this is saying yes to my sanity. I am allowed to protect my energy."',
       },
@@ -3472,7 +3472,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "📚 Want to Go Deeper?",
+        title: "Want to Go Deeper?",
         content:
           "These boundary-setting strategies are fully explored in Chapter 8 of <strong>'The Art of Clarity'</strong> by Murthy Thevar. The chapter includes a complete boundary assessment, scripts for every situation, a 60-day boundary-building program, and advanced techniques for high-stakes situations. Get your copy today at https://www.thebookx.in/books/the-art-of-clarity",
       },
@@ -3655,7 +3655,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "📊 The 2.5 Hour Reality",
+        title: "The 2.5 Hour Reality",
         content:
           "Research from the Journal of Applied Psychology shows that people who design intentional morning routines are 2.5x more likely to report high productivity and mental clarity throughout the day. That's not a small difference, that's the difference between thriving and just surviving.",
       },
@@ -3679,7 +3679,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "📵 How It Works",
+        title: "How It Works",
         content:
           "For the first 90 minutes after waking, keep your phone in another room. No emails. No social media. No news. No messages. <strong>Nothing from the outside world enters your brain during this window.</strong>",
       },
@@ -3696,7 +3696,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice tomorrow:</strong> Charge your phone in the kitchen tonight. Buy an actual alarm clock. Experience a morning without scrolling. Notice the difference in your mental clarity.",
+          "<strong>Practice tomorrow:</strong> Charge your phone in the kitchen tonight. Buy an actual alarm clock. Experience a morning without scrolling. Notice the difference in your mental clarity.",
       },
 
       {
@@ -3707,7 +3707,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "⏰ How It Works",
+        title: "How It Works",
         content:
           "Set your alarm for the time you actually need to wake up, not earlier. <strong>When it goes off, get up immediately.</strong> No snooze. No 'five more minutes.' No bargaining with yourself.",
       },
@@ -3719,7 +3719,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice tomorrow:</strong> Set one alarm. Place it across the room so you have to stand to turn it off. Stand up immediately. This single change transforms morning grogginess.",
+          "<strong>Practice tomorrow:</strong> Set one alarm. Place it across the room so you have to stand to turn it off. Stand up immediately. This single change transforms morning grogginess.",
       },
 
       {
@@ -3731,7 +3731,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "💧 How It Works",
+        title: "How It Works",
         content:
           "Drink 16-20 oz of water immediately upon waking. <strong>Wait at least 20 minutes before consuming caffeine.</strong> This gap allows hydration to reach your brain and lets your body's natural cortisol peak (which occurs 30-45 minutes after waking) do its alertness job first.",
       },
@@ -3743,7 +3743,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice tomorrow:</strong> Keep a water bottle by your bed. Drink it before you even stand up. Set a 20-minute timer before your coffee. Your brain will thank you.",
+          "<strong>Practice tomorrow:</strong> Keep a water bottle by your bed. Drink it before you even stand up. Set a 20-minute timer before your coffee. Your brain will thank you.",
       },
 
       {
@@ -3754,7 +3754,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "✍️ How It Works",
+        title: "How It Works",
         content:
           "Spend exactly 5 minutes each morning writing three things: <strong>1) What I'm grateful for (3 items), 2) What would make today great (1-3 priorities), 3) An affirmation for the day ahead.</strong> Use a timer. Stop precisely at 5 minutes.",
       },
@@ -3766,7 +3766,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice tomorrow:</strong> Put a notebook and pen next to your water bottle. Write for 5 minutes before checking anything else. This single habit has transformed more of Murthy Thevar's clients than any other.",
+          "<strong>Practice tomorrow:</strong> Put a notebook and pen next to your water bottle. Write for 5 minutes before checking anything else. This single habit has transformed more of Murthy Thevar's clients than any other.",
       },
 
       {
@@ -3777,7 +3777,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "☀️ How It Works",
+        title: "How It Works",
         content:
           "Within 30 minutes of waking, get 10-15 minutes of natural sunlight exposure. Go outside. Open a window. Sit near a bright window. <strong>No sunglasses, your eyes need the full spectrum.</strong>",
       },
@@ -3789,7 +3789,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice tomorrow:</strong> Have your morning coffee or tea outside. Even 5 minutes on a balcony or porch makes a difference. On cloudy days, sit by the brightest window in your home.",
+          "<strong>Practice tomorrow:</strong> Have your morning coffee or tea outside. Even 5 minutes on a balcony or porch makes a difference. On cloudy days, sit by the brightest window in your home.",
       },
 
       {
@@ -3800,7 +3800,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "🏃 How It Works",
+        title: "How It Works",
         content:
           "Do 10-15 minutes of movement before any deep mental work. This can be stretching, yoga, a walk, jumping jacks, or a full workout. <strong>The goal is to increase heart rate and blood flow to your brain.</strong>",
       },
@@ -3812,7 +3812,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice tomorrow:</strong> Do 10 jumping jacks or a 5-minute stretch before sitting at your desk. Notice how much clearer your thinking becomes.",
+          "<strong>Practice tomorrow:</strong> Do 10 jumping jacks or a 5-minute stretch before sitting at your desk. Notice how much clearer your thinking becomes.",
       },
 
       {
@@ -3824,7 +3824,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "🎯 How It Works",
+        title: "How It Works",
         content:
           "Each morning, identify: <strong>1 big task (must do today), 3 medium tasks (should do today), and 5 small tasks (could do today).</strong> Tackle the big task first during your peak focus hours.",
       },
@@ -3841,7 +3841,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice tomorrow:</strong> Write your 1-3-5 list before opening your email. Do your #1 big task before checking messages. This alone will double your productivity.",
+          "<strong>Practice tomorrow:</strong> Write your 1-3-5 list before opening your email. Do your #1 big task before checking messages. This alone will double your productivity.",
       },
 
       {
@@ -3852,7 +3852,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "🍳 How It Works",
+        title: "How It Works",
         content:
           "Eat a breakfast that balances protein, healthy fat, and complex carbohydrates. Avoid sugar and refined carbs. <strong>Your brain needs steady fuel, not a spike and crash.</strong>",
       },
@@ -3864,7 +3864,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice tomorrow:</strong> Eat eggs, Greek yogurt, or a protein smoothie instead of cereal or toast. Notice the absence of the 10 AM energy crash.",
+          "<strong>Practice tomorrow:</strong> Eat eggs, Greek yogurt, or a protein smoothie instead of cereal or toast. Notice the absence of the 10 AM energy crash.",
       },
 
       {
@@ -3875,7 +3875,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "🧠 How It Works",
+        title: "How It Works",
         content:
           "Schedule 5 minutes in your morning routine specifically for worrying. <strong>Set a timer and worry intentionally.</strong> Write down everything causing anxiety. When time ends, close the notebook and move on.",
       },
@@ -3887,7 +3887,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice tomorrow:</strong> Set a 5-minute timer immediately after your clarity journal. Write every worry. When timer ends, close the book and tell yourself: 'Not now. I'll worry tomorrow morning.'",
+          "<strong>Practice tomorrow:</strong> Set a 5-minute timer immediately after your clarity journal. Write every worry. When timer ends, close the book and tell yourself: 'Not now. I'll worry tomorrow morning.'",
       },
 
       {
@@ -3898,7 +3898,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "⚡ How It Works",
+        title: "How It Works",
         content:
           "Identify one small, specific action that takes less than 2 minutes and symbolizes 'starting your day.' Do this action immediately after your routine. <strong>Make it the same action every day.</strong>",
       },
@@ -3910,7 +3910,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "💡 <strong>Practice tomorrow:</strong> Choose your First Action Ritual. Do it every morning for 30 days. By Day 30, it will be automatic, and so will your morning clarity.",
+          "<strong>Practice tomorrow:</strong> Choose your First Action Ritual. Do it every morning for 30 days. By Day 30, it will be automatic, and so will your morning clarity.",
       },
 
       {
@@ -3925,7 +3925,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "🌅 The Clarity Morning (60-Minute Version)",
+        title: "The Clarity Morning (60-Minute Version)",
         content:
           "<strong>Minute 0-5:</strong> Wake immediately. No phone. Drink water. Bathroom.<br/><strong>Minute 5-10:</strong> 5-minute clarity journal (gratitude + priorities + affirmation)<br/><strong>Minute 10-15:</strong> 5-minute worry window (contained anxiety)<br/><strong>Minute 15-25:</strong> 10 minutes movement (stretch, walk, jumping jacks)<br/><strong>Minute 25-35:</strong> Morning light exposure (outside or bright window)<br/><strong>Minute 35-40:</strong> Shower and dress (with intention, not autopilot)<br/><strong>Minute 40-45:</strong> Protein-rich breakfast (no sugar)<br/><strong>Minute 45-55:</strong> Review 1-3-5 priorities, plan big task first<br/><strong>Minute 55-60:</strong> First Action Ritual (make bed, wash face, etc.)<br/><strong>Minute 60:</strong> Start #1 big task. Still no phone. Still no email.",
       },
@@ -3942,7 +3942,7 @@ export const blogsData = {
       {
         type: "heading",
         level: 3,
-        content: "📆 Day 1-2: Elimination Week",
+        content: "Day 1-2: Elimination Week",
       },
       {
         type: "list",
@@ -3957,7 +3957,7 @@ export const blogsData = {
       {
         type: "heading",
         level: 3,
-        content: "📆 Day 3-4: Addition Week",
+        content: "Day 3-4: Addition Week",
       },
       {
         type: "list",
@@ -3972,7 +3972,7 @@ export const blogsData = {
       {
         type: "heading",
         level: 3,
-        content: "📆 Day 5-6: Optimization Week",
+        content: "Day 5-6: Optimization Week",
       },
       {
         type: "list",
@@ -3987,7 +3987,7 @@ export const blogsData = {
       {
         type: "heading",
         level: 3,
-        content: "📆 Day 7: Integration & Celebration",
+        content: "Day 7: Integration & Celebration",
       },
       {
         type: "list",
@@ -4084,7 +4084,7 @@ export const blogsData = {
       {
         type: "callout",
         style: "info",
-        title: "📚 Want to Transform Your Entire Day?",
+        title: "Want to Transform Your Entire Day?",
         content:
           "These morning strategies are fully explored in Chapter 5 of <strong>'The Art of Clarity'</strong> by Murthy Thevar. The chapter includes a complete Morning Clarity Assessment, 3 different morning routine templates (30/60/90 minute versions), troubleshooting for night owls and early birds, and a 60-day Morning Mastery program. Get your copy today at https://www.thebookx.in/books/the-art-of-clarity",
       },

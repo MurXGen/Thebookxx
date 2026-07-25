@@ -1,77 +1,118 @@
 import Link from "next/link";
+import { ArrowRight, Clock, TrendingUp } from "lucide-react";
 import { getAllBlogs } from "@/utils/blogs";
+import {
+  getBlogCategories,
+  readingMinutes,
+  isTrending,
+  coverFor,
+} from "@/utils/blogExtras";
+import BlogCover from "@/components/UI/BlogCover";
+import BlogListClient from "@/components/blog/BlogListClient";
+import BlogSubscribe from "@/components/blog/BlogSubscribe";
 
 export const metadata = {
-  // `absolute` prevents the root template from appending a second "| TheBookX".
   title: {
     absolute: "Blog & Insights by Murthy Thevar | TheBookX",
   },
   description:
-    "Articles and insights on clarity, focus and self-improvement from Murthy Thevar, author of The Art of Clarity, curated by TheBookX.",
+    "Book lists, trending reads, reviews and QuickReads from TheBookX — top 10 roundups, self-help, money, romance and more. Curated by Murthy Thevar.",
   alternates: { canonical: "https://www.thebookx.in/blogs" },
 };
 
 export default function BlogsPage() {
   const blogs = getAllBlogs();
+  const categories = getBlogCategories();
+
+  // Featured = newest trending post, else newest post overall.
+  const featured = blogs.find((b) => isTrending(b)) || blogs[0];
+  const trending = blogs
+    .filter((b) => isTrending(b) && b.slug !== featured?.slug)
+    .slice(0, 6);
+
+  // Lightweight, serializable payload for the client grid.
+  const cards = blogs.map((b) => ({
+    slug: b.slug,
+    title: b.title,
+    excerpt: b.excerpt,
+    author: b.author,
+    publishDate: b.publishDate,
+    categories: b.categories || [],
+    cover: coverFor(b),
+    reading: readingMinutes(b),
+  }));
 
   return (
-    <div className="section-1200 flex flex-col gap-32">
-      <div className="text-center">
-        <h1 className="font-36 weight-700">Blogs & Insights</h1>
-        <p className="font-16 dark-50 margin-tp-12px">
-          Discover wisdom and insights from Murthy Thevar
+    <div className="section-1200 blog-index">
+      <div className="blog-index-head">
+        <h1 className="blog-index-title">Blogs &amp; Insights</h1>
+        <p className="blog-index-sub">
+          Book lists, trending reads, reviews &amp; QuickReads — curated for
+          readers who want the best of every shelf.
         </p>
       </div>
 
-      <div
-        style={{
-          display: "grid",
-          gap: "24px",
-          gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
-        }}
-      >
-        {blogs.map((blog) => (
-          <Link
-            href={`/blogs/${blog.slug}`}
-            key={blog.id}
-            style={{ textDecoration: "none" }}
-          >
-            <div
-              style={{
-                background: "#fff",
-                borderRadius: "14px",
-                border: "1px solid var(--hairline, #ececec)",
-                boxShadow: "var(--shadow-xs)",
-                padding: "22px",
-                height: "100%",
-              }}
-            >
-              <div className="flex items-center gap-8 margin-btm-8px">
-                <span className="font-12" style={{ color: "#fb8500" }}>
-                  {new Date(blog.publishDate).toLocaleDateString("en-IN", {
-                    day: "numeric",
-                    month: "short",
-                    year: "numeric",
-                  })}
-                </span>
-                <span className="font-12 dark-50">• {blog.author}</span>
-              </div>
-              <h2 className="font-20 weight-600 margin-btm-12px">
-                {blog.title}
-              </h2>
-              <p className="font-13 dark-50" style={{ lineHeight: 1.6 }}>
-                {(blog.excerpt || "").substring(0, 150)}...
-              </p>
-              <span
-                className="font-13 weight-600"
-                style={{ color: "#fb8500", display: "inline-block", marginTop: "12px" }}
-              >
-                Read article →
+      {/* Featured hero */}
+      {featured && (
+        <Link href={`/blogs/${featured.slug}`} className="blog-hero">
+          <div className="blog-hero-media">
+            <BlogCover
+              src={coverFor(featured)}
+              alt={featured.title}
+              fit="cover" wrapperStyle={{ width: "100%", height: "100%" }}
+              imgStyle={{ width: "100%", height: "100%" }}
+            />
+          </div>
+          <div className="blog-hero-body">
+            <span className="blog-hero-badge">
+              <TrendingUp size={13} /> Featured
+            </span>
+            <h2 className="blog-hero-title">{featured.title}</h2>
+            <p className="blog-hero-excerpt">
+              {(featured.excerpt || "").substring(0, 180)}…
+            </p>
+            <span className="blog-hero-meta">
+              <Clock size={13} /> {readingMinutes(featured)} min read
+              <span className="blog-hero-cta">
+                Read article <ArrowRight size={15} />
               </span>
-            </div>
-          </Link>
-        ))}
-      </div>
+            </span>
+          </div>
+        </Link>
+      )}
+
+      {/* Trending / Top 10 rail */}
+      {trending.length > 0 && (
+        <section className="blog-rail-section">
+          <div className="blog-rail-head">
+            <TrendingUp size={18} /> Trending &amp; Top Lists
+          </div>
+          <div className="blog-rail">
+            {trending.map((b) => (
+              <Link key={b.slug} href={`/blogs/${b.slug}`} className="blog-rail-card">
+                <BlogCover
+                  src={coverFor(b)}
+                  alt={b.title}
+                  fit="cover" wrapperStyle={{ width: "100%", height: "120px" }}
+                  imgStyle={{ width: "100%", height: "100%" }}
+                />
+                <div className="blog-rail-body">
+                  <h3 className="blog-rail-title">{b.title}</h3>
+                  <span className="blog-rail-meta">
+                    <Clock size={11} /> {readingMinutes(b)} min
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Subscribe */}
+      <BlogSubscribe source="blog-index" />
+
+      {/* Category-filterable grid */}
+      <BlogListClient posts={cards} categories={categories} />
     </div>
   );
 }

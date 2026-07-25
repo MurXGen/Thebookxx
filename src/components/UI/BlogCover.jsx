@@ -1,36 +1,40 @@
 "use client";
 
 import { useState } from "react";
+import { BookOpen } from "lucide-react";
 
-// Renders a blog cover image inside its own framed container. If there's no
-// source, or the file fails to load, the WHOLE thing (container included)
-// disappears — so posts without an image show nothing rather than an empty box.
+// Renders a blog cover image inside a framed container. When there's no image
+// (or it fails to load) it shows a branded placeholder instead of an empty box.
+// Pass placeholder={false} to render nothing when there's no image.
 export default function BlogCover({
   src,
   alt = "",
   fit = "cover",
   wrapperStyle,
   imgStyle,
+  placeholder = true,
 }) {
   const [ok, setOk] = useState(Boolean(src));
-  if (!src || !ok) return null;
+  const showImg = src && ok;
+
+  if (!showImg && !placeholder) return null;
+
   return (
-    <div
-      style={{
-        background: "#f3f4f6",
-        display: "flex",
-        justifyContent: "center",
-        overflow: "hidden",
-        ...wrapperStyle,
-      }}
-    >
-      <img
-        src={src}
-        alt={alt}
-        loading="lazy"
-        onError={() => setOk(false)}
-        style={{ objectFit: fit, ...imgStyle }}
-      />
+    <div className="blogcover-wrap" style={wrapperStyle}>
+      {showImg ? (
+        <img
+          src={src}
+          alt={alt}
+          loading="lazy"
+          onError={() => setOk(false)}
+          style={{ objectFit: fit, ...imgStyle }}
+        />
+      ) : (
+        <div className="blogcover-ph" aria-hidden="true">
+          <BookOpen size={26} strokeWidth={1.8} />
+          <span className="blogcover-ph-brand">TheBookX</span>
+        </div>
+      )}
     </div>
   );
 }

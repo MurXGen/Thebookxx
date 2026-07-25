@@ -41,9 +41,9 @@ import { trackPurchase } from "@/lib/ga";
 import {
   trackOrderToGoogleForm,
   creditWalletReward,
-  randomWalletReward,
+  orderWalletReward,
 } from "@/utils/googleFormOrder";
-import ScratchCard from "./ScratchCard";
+import ScratchRewardSheet from "./ScratchRewardSheet";
 import { showToast } from "@/context/ToastContext";
 
 const PINCODE_DATA_KEY = "user_pincode";
@@ -259,9 +259,11 @@ export default function AddressModal({
         const rowPhone = String(o["Phone Number"] ?? "").replace(/\D/g, "");
         if (rowPhone.slice(-10) === digits.slice(-10)) {
           const w = parseFloat(o["Wallet"] ?? o["wallet"] ?? 0);
-          if (!isNaN(w)) bal = Math.max(bal, w);
+          // Sum the ledger: rewards positive, wallet spent on orders negative.
+          if (!isNaN(w)) bal += w;
         }
       });
+      bal = Math.max(0, Math.round(bal));
       setWalletBalance(bal);
       setWalletChecked(true);
       setWalletCheckedPhone(digits);
@@ -562,8 +564,10 @@ export default function AddressModal({
         totalDiscounted,
         offerDiscount,
         offerLabel,
-        walletUsed: walletApplied,
-        walletPhone: walletApplied > 0 ? walletCheckedPhone : "",
+        // Only debit the wallet on the CONFIRMED order row — the earlier
+        // "(unconfirmed)" draft row must not deduct, or it double-counts.
+        walletUsed: confirmed ? walletApplied : 0,
+        walletPhone: confirmed && walletApplied > 0 ? walletCheckedPhone : "",
         deliveryCharge: deliveryChargeForOrder,
         deliveryType: isFaster ? "Faster" : "Standard",
         giftWrapCharge: giftWrapAmountForOrder,
@@ -1695,9 +1699,10 @@ function CODSuccessModal({
     return () => clearTimeout(t);
   }, []);
 
-  // Scratch-card reward — a random ₹20–29 credited to the wallet on scratch.
-  const rewardRef = useRef(randomWalletReward());
+  // Scratch-card reward — amount depends on order value (see orderWalletReward).
+  const rewardRef = useRef(orderWalletReward(totalAmount));
   const reward = rewardRef.current;
+  const [scratchOpen, setScratchOpen] = useState(false);
   const [scratched, setScratched] = useState(false);
   const [walletCredited, setWalletCredited] = useState(false);
   const handleScratchComplete = async () => {
@@ -1761,22 +1766,30 @@ function CODSuccessModal({
 
   return (
     <motion.div
-      className="bill-modal-overlay"
+      className="os-fullpage-overlay"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       onClick={handleOverlayClick}
-      style={{ maxWidth: "980px", margin: "0 auto" }}
     >
       <motion.div
-        className="bill-modal"
-        initial={{ scale: 0.85, opacity: 0, y: 30 }}
-        animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.85, opacity: 0, y: 30 }}
-        transition={{ type: "spring", stiffness: 320, damping: 28 }}
+        className="os-fullpage"
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 24 }}
+        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
         onClick={(e) => e.stopPropagation()}
-        style={{ maxHeight: "85vh", overflowY: "auto" }}
       >
+        {!isProcessing && (
+          <button
+            type="button"
+            className="os-close"
+            onClick={onClose}
+            aria-label="Close"
+          >
+            <X size={22} />
+          </button>
+        )}
         <AnimatePresence mode="wait">
           {isProcessing ? (
             <motion.div
@@ -1995,40 +2008,52 @@ function CODSuccessModal({
                 </motion.div>
               </div>
 
-              {/* 🎁 Scratch card — reveal a ₹20–29 wallet reward */}
-              <motion.div
+              {/* 🎁 Reward teaser — opens the scratch card sheet */}
+              <motion.button
+                type="button"
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.55 }}
-                className="cod-reward-block"
+                className={`reward-teaser${walletCredited ? " done" : ""}`}
+                onClick={() => setScratchOpen(true)}
               >
-                <div className="cod-reward-head">
-                  <Gift size={15} style={{ color: "var(--tertiary)" }} />
-                  <span className="font-13 weight-700">
+                <span className="reward-teaser-ic">
+                  <Gift size={20} />
+                </span>
+                <span className="reward-teaser-tx">
+                  <span className="reward-teaser-tt">
                     {walletCredited
-                      ? "Reward added to your wallet!"
-                      : "Scratch to win a wallet reward"}
+                      ? `₹${reward} added to your wallet!`
+                      : "You've won a scratch card!"}
                   </span>
-                </div>
-                <div className="cod-reward-card-wrap">
-                  <ScratchCard
-                    width={280}
-                    height={150}
-                    revealText={`₹${reward} won! 🎉`}
-                    revealSub="Added to your TheBookX wallet"
-                    onComplete={handleScratchComplete}
-                  />
-                </div>
-                {scratched && (
-                  <div className="cod-reward-note">
+                  <span className="reward-teaser-sub">
+                    {walletCredited
+                      ? "Use it on your next order"
+                      : "Tap to scratch & reveal your wallet reward"}
+                  </span>
+                </span>
+                <span className="reward-teaser-cta">
+                  {walletCredited ? "Done" : "Scratch"}
+                </span>
+              </motion.button>
+
+              <ScratchRewardSheet
+                open={scratchOpen}
+                onClose={() => setScratchOpen(false)}
+                eligible
+                reward={reward}
+                scratched={scratched}
+                onScratch={handleScratchComplete}
+                note={
+                  <>
                     <strong>
                       ₹{reward} is applicable only on your next order.
                     </strong>{" "}
                     If you cancel this order, this wallet amount will be wiped
                     off — so please keep your order to enjoy the reward.
-                  </div>
-                )}
-              </motion.div>
+                  </>
+                }
+              />
 
               <motion.div
                 initial={{ opacity: 0, y: 12 }}
@@ -2254,36 +2279,31 @@ function CODSuccessModal({
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7 }}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "10px",
-                  marginTop: 16,
-                }}
+                className="os-actions"
               >
-                <button
-                  className="pri-big-btn width100 flex flex-row items-center justify-center gap-8"
-                  onClick={onContinue}
-                  style={{ padding: "12px 16px" }}
-                >
-                  Continue Shopping
-                  <ArrowRight size={16} />
-                </button>
+                <div className="os-actions-row">
+                  <button
+                    className="pri-big-btn flex flex-row items-center justify-center gap-8"
+                    onClick={onContinue}
+                  >
+                    Continue Shopping
+                    <ArrowRight size={16} />
+                  </button>
+                  <button
+                    className="sec-big-btn flex flex-row items-center justify-center gap-8"
+                    onClick={handleShareOrder}
+                    aria-label="Send order details on WhatsApp"
+                  >
+                    <FaWhatsapp size={16} color="#25D366" />
+                    Send Order Details
+                  </button>
+                </div>
 
                 <button
-                  className="sec-mid-btn width100 flex flex-row items-center justify-center gap-8"
-                  onClick={handleShareOrder}
-                  style={{ padding: "10px 16px" }}
-                >
-                  <FaWhatsapp size={16} color="#25D366" />
-                  Send Order Details
-                </button>
-
-                <button
-                  className="cod-help-link flex flex-row items-center justify-center gap-6"
+                  className="sec-big-btn width100 flex flex-row items-center justify-center gap-8"
                   onClick={handleNeedHelp}
                 >
-                  <Headphones size={14} />
+                  <Headphones size={15} />
                   Need help? Contact us
                 </button>
               </motion.div>

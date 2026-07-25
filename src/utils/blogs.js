@@ -4,6 +4,267 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "top-bestselling-quick-reading-books": {
+    id: "blog-022",
+    title:
+      "Top 10 Bestselling Quick-Reading Books — Trending QuickReads for Today",
+    slug: "top-bestselling-quick-reading-books",
+    author: "TheBookX Editorial",
+    authorSlug: "murthy-thevar",
+    publishDate: "2026-07-24",
+    lastModified: "2026-07-24",
+    excerpt:
+      "No time to read a whole book? These are today's top bestselling quick-reading books on TheBookX QuickReads — get the key ideas of each bestseller in about 10–15 minutes for just ₹29 (first 10 pages free). Tap to read the QuickRead of each trending title.",
+
+    content: [
+      {
+        type: "paragraph",
+        content:
+          "Some days you want the wisdom of a bestseller without the 300 pages. That's exactly what <strong>TheBookX QuickReads</strong> are for — the core ideas of a great book, distilled into a crisp, visual read you can finish in about <strong>10–15 minutes</strong>. The first 10 pages of every QuickRead are <strong>free</strong>, and the full read unlocks for just <strong>₹29</strong>. Below are today's <strong>trending quick reads</strong> — the bestselling titles readers are opening most right now. Tap the button under each one to start reading.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "What are QuickReads?",
+        content:
+          "QuickReads are bite-sized, key-insight versions of bestselling books — perfect for a commute, a coffee break, or deciding if you want the full paperback. First 10 pages free, then ₹29 to finish. Browse them all here: https://www.thebookx.in/quickreads",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Today's Trending Quick Reads",
+      },
+
+      {
+        type: "heading",
+        level: 3,
+        content: "1. Atomic Habits — James Clear",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The definitive guide to building good habits and breaking bad ones, one tiny 1% change at a time. The perfect quick read to reset your routine today.",
+      },
+      {
+        type: "paragraph",
+        content:
+          '<a href="/quickreads/atomic-habits" style="display:inline-block;background:#fb8500;color:#ffffff;padding:9px 18px;border-radius:10px;font-weight:600;text-decoration:none">📖 Read the QuickRead</a> <a href="/books/atomic-habits" style="color:#fb8500;font-weight:600;margin-left:12px">Buy the paperback →</a>',
+      },
+
+      {
+        type: "heading",
+        level: 3,
+        content: "2. The Psychology of Money — Morgan Housel",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Timeless lessons on wealth, greed, and happiness — why doing well with money is more about behaviour than maths. A must-read in minutes.",
+      },
+      {
+        type: "paragraph",
+        content:
+          '<a href="/quickreads/the-psychology-of-money" style="display:inline-block;background:#fb8500;color:#ffffff;padding:9px 18px;border-radius:10px;font-weight:600;text-decoration:none">📖 Read the QuickRead</a> <a href="/books/the-psychology-of-money" style="color:#fb8500;font-weight:600;margin-left:12px">Buy the paperback →</a>',
+      },
+
+      {
+        type: "heading",
+        level: 3,
+        content: "3. Ikigai — Héctor García & Francesc Miralles",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The Japanese secret to a long, happy, purposeful life. Calm, uplifting, and ideal as a short read to refocus your day.",
+      },
+      {
+        type: "paragraph",
+        content:
+          '<a href="/quickreads/ikigai" style="display:inline-block;background:#fb8500;color:#ffffff;padding:9px 18px;border-radius:10px;font-weight:600;text-decoration:none">📖 Read the QuickRead</a> <a href="/books/ikigai" style="color:#fb8500;font-weight:600;margin-left:12px">Buy the paperback →</a>',
+      },
+
+      {
+        type: "heading",
+        level: 3,
+        content: "4. Rich Dad Poor Dad — Robert Kiyosaki",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The money mindset book that reframes how you think about assets, income, and financial freedom. Quick, punchy, life-changing.",
+      },
+      {
+        type: "paragraph",
+        content:
+          '<a href="/quickreads/rich-dad-poor-dad" style="display:inline-block;background:#fb8500;color:#ffffff;padding:9px 18px;border-radius:10px;font-weight:600;text-decoration:none">📖 Read the QuickRead</a> <a href="/books/rich-dad-poor-dad" style="color:#fb8500;font-weight:600;margin-left:12px">Buy the paperback →</a>',
+      },
+
+      {
+        type: "heading",
+        level: 3,
+        content: "5. The Subtle Art of Not Giving a F*ck — Mark Manson",
+      },
+      {
+        type: "paragraph",
+        content:
+          "A counter-intuitive guide to caring about less, but better. Blunt, funny, and freeing — a great 15-minute perspective shift.",
+      },
+      {
+        type: "paragraph",
+        content:
+          '<a href="/quickreads/the-subtle-art-of-not-giving-a-f-ck" style="display:inline-block;background:#fb8500;color:#ffffff;padding:9px 18px;border-radius:10px;font-weight:600;text-decoration:none">📖 Read the QuickRead</a> <a href="/books/the-subtle-art-of-not-giving-a-f-ck" style="color:#fb8500;font-weight:600;margin-left:12px">Buy the paperback →</a>',
+      },
+
+      {
+        type: "heading",
+        level: 3,
+        content: "6. The Alchemist — Paulo Coelho",
+      },
+      {
+        type: "paragraph",
+        content:
+          "A modern fable about following your dreams and listening to your heart. Short, poetic, and endlessly re-readable.",
+      },
+      {
+        type: "paragraph",
+        content:
+          '<a href="/quickreads/the-alchemist" style="display:inline-block;background:#fb8500;color:#ffffff;padding:9px 18px;border-radius:10px;font-weight:600;text-decoration:none">📖 Read the QuickRead</a> <a href="/books/the-alchemist" style="color:#fb8500;font-weight:600;margin-left:12px">Buy the paperback →</a>',
+      },
+
+      {
+        type: "heading",
+        level: 3,
+        content: "7. How to Win Friends and Influence People — Dale Carnegie",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The all-time classic on people skills — how to be liked, persuade gently, and win cooperation. Practical wisdom you can use today.",
+      },
+      {
+        type: "paragraph",
+        content:
+          '<a href="/quickreads/how-to-win-friends-and-influence-people" style="display:inline-block;background:#fb8500;color:#ffffff;padding:9px 18px;border-radius:10px;font-weight:600;text-decoration:none">📖 Read the QuickRead</a> <a href="/books/how-to-win-friends-and-influence-people" style="color:#fb8500;font-weight:600;margin-left:12px">Buy the paperback →</a>',
+      },
+
+      {
+        type: "heading",
+        level: 3,
+        content: "8. Deep Work — Cal Newport",
+      },
+      {
+        type: "paragraph",
+        content:
+          "How to focus without distraction in a noisy world — and produce your best work faster. Essential for anyone who feels scattered.",
+      },
+      {
+        type: "paragraph",
+        content:
+          '<a href="/quickreads/deep-work" style="display:inline-block;background:#fb8500;color:#ffffff;padding:9px 18px;border-radius:10px;font-weight:600;text-decoration:none">📖 Read the QuickRead</a> <a href="/books/deep-work" style="color:#fb8500;font-weight:600;margin-left:12px">Buy the paperback →</a>',
+      },
+
+      {
+        type: "heading",
+        level: 3,
+        content: "9. The 5 AM Club — Robin Sharma",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Own your morning, elevate your life. A motivating routine framework you can grasp in minutes and start tomorrow.",
+      },
+      {
+        type: "paragraph",
+        content:
+          '<a href="/quickreads/the-5-am-club" style="display:inline-block;background:#fb8500;color:#ffffff;padding:9px 18px;border-radius:10px;font-weight:600;text-decoration:none">📖 Read the QuickRead</a> <a href="/books/the-5-am-club" style="color:#fb8500;font-weight:600;margin-left:12px">Buy the paperback →</a>',
+      },
+
+      {
+        type: "heading",
+        level: 3,
+        content: "10. Dopamine Detox — Thibaut Meurisse",
+      },
+      {
+        type: "paragraph",
+        content:
+          "A short, sharp guide to breaking free from distraction and rewiring your focus. Fittingly, the fastest read on this list.",
+      },
+      {
+        type: "paragraph",
+        content:
+          '<a href="/quickreads/dopamine-detox" style="display:inline-block;background:#fb8500;color:#ffffff;padding:9px 18px;border-radius:10px;font-weight:600;text-decoration:none">📖 Read the QuickRead</a> <a href="/books/dopamine-detox" style="color:#fb8500;font-weight:600;margin-left:12px">Buy the paperback →</a>',
+      },
+
+      {
+        type: "heading",
+        level: 2,
+        content: "Bonus: A Homegrown Quick Read",
+      },
+      {
+        type: "paragraph",
+        content:
+          "If you want a clear-thinking reset, don't miss <strong>The Art of Clarity</strong> by Murthy Thevar — a 4.9★ reader favourite on beating overthinking and deciding with confidence.",
+      },
+      {
+        type: "paragraph",
+        content:
+          '<a href="/quickreads/the-art-of-clarity" style="display:inline-block;background:#fb8500;color:#ffffff;padding:9px 18px;border-radius:10px;font-weight:600;text-decoration:none">📖 Read the QuickRead</a> <a href="/books/the-art-of-clarity" style="color:#fb8500;font-weight:600;margin-left:12px">Buy the paperback →</a>',
+      },
+
+      {
+        type: "callout",
+        style: "success",
+        title: "Start Reading in Minutes",
+        content:
+          "Pick any title above, read the first 10 pages free, and unlock the full QuickRead for ₹29. Explore the whole library at https://www.thebookx.in/quickreads — key ideas from the world's best books, in the time it takes to finish your coffee.",
+      },
+      {
+        type: "paragraph",
+        content:
+          'Prefer the full experience? Every one of these titles is also available as an affordable paperback with free delivery and Cash on Delivery across India. Browse the <a href="/books" style="color:#fb8500;font-weight:600">full catalogue</a> or dive straight into <a href="/quickreads" style="color:#fb8500;font-weight:600">QuickReads</a>.',
+      },
+    ],
+
+    images: [],
+
+    keywords: [
+      "quick reading books",
+      "bestselling quick reads",
+      "short books to read",
+      "book summaries india",
+      "quickreads",
+      "thebookx quickreads",
+      "best books to read in minutes",
+      "trending books today",
+      "TheBookX",
+    ],
+
+    categories: ["QuickReads", "Reading Lists", "Bestsellers"],
+
+    faqs: [
+      {
+        question: "What are TheBookX QuickReads?",
+        answer:
+          "QuickReads are bite-sized, key-insight versions of bestselling books — the core ideas distilled into a short, visual read you can finish in about 10–15 minutes. Browse them at https://www.thebookx.in/quickreads",
+      },
+      {
+        question: "How much does a QuickRead cost?",
+        answer:
+          "The first 10 pages of every QuickRead are free. To unlock the full read it's just ₹29 per title — a fast, affordable way to get the big ideas of a bestseller.",
+      },
+      {
+        question: "Which quick reads are trending right now?",
+        answer:
+          "Today's most-opened QuickReads include Atomic Habits, The Psychology of Money, Ikigai, Rich Dad Poor Dad, and The Subtle Art of Not Giving a F*ck — all readable in minutes on TheBookX.",
+      },
+      {
+        question: "Can I also buy the full paperback?",
+        answer:
+          "Yes. Every QuickRead title is also available as an affordable paperback on TheBookX with free delivery and Cash on Delivery across India.",
+      },
+    ],
+  },
+
   "the-art-of-clarity-book-review": {
     id: "blog-021",
     title:

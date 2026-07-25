@@ -25,6 +25,9 @@ const FORM_FIELD_IDS = {
   advancePaid: "entry.392734436",
   timestamp: "entry.509242940",
   userAgent: "entry.2060171385",
+  // "Wallet" column — a ledger entry: negative when wallet balance is spent on
+  // this order, positive when a reward is credited (see creditWalletReward).
+  wallet: "entry.1030338596",
 };
 
 // Helper function to get delivery charge (you may need to import or define this)
@@ -101,7 +104,8 @@ const fmtSheetTs = (date) => {
   )}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
 };
 
-// Read the current wallet balance (max Wallet across the phone's rows).
+// Read the current wallet balance = SUM of all Wallet ledger entries for the
+// phone (rewards are positive, wallet spent on orders is negative).
 export const fetchWalletBalance = async (phone) => {
   const digits = String(phone || "").replace(/\D/g, "").slice(-10);
   if (digits.length !== 10) return 0;
@@ -122,27 +126,25 @@ export const fetchWalletBalance = async (phone) => {
       const rowPhone = String(o["Phone Number"] ?? "").replace(/\D/g, "");
       if (rowPhone.slice(-10) === digits) {
         const w = parseFloat(o["Wallet"] ?? o["wallet"] ?? 0);
-        if (!isNaN(w)) bal = Math.max(bal, w);
+        if (!isNaN(w)) bal += w;
       }
     });
-    return bal;
+    return Math.max(0, Math.round(bal));
   } catch (e) {
     console.error("Wallet balance read failed:", e);
     return 0;
   }
 };
 
-// Credit `reward` to the shopper's wallet on top of their current balance.
-// Returns { success, reward, balance } where balance is the new cumulative.
+// Credit `reward` to the shopper's wallet as a POSITIVE ledger entry (phone +
+// wallet + timestamp only). The balance is the sum of all entries.
 export const creditWalletReward = async (phone, reward) => {
   const digits = String(phone || "").replace(/\D/g, "").slice(-10);
   if (digits.length !== 10 || !reward) return { success: false };
-  const current = await fetchWalletBalance(digits);
-  const newBalance = Math.round(current + reward);
   try {
     const params = new URLSearchParams();
     params.append(PHONE_FIELD_ID, digits);
-    params.append(WALLET_FIELD_ID, String(newBalance));
+    params.append(WALLET_FIELD_ID, String(Math.round(reward)));
     params.append(TIMESTAMP_FIELD_ID, fmtSheetTs(new Date()));
     await fetch(GOOGLE_FORM_ORDER_URL, {
       method: "POST",
@@ -150,7 +152,7 @@ export const creditWalletReward = async (phone, reward) => {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: params.toString(),
     });
-    return { success: true, reward, balance: newBalance };
+    return { success: true, reward };
   } catch (e) {
     console.error("Wallet credit failed:", e);
     return { success: false };
@@ -159,6 +161,18 @@ export const creditWalletReward = async (phone, reward) => {
 
 // A random scratch-card reward between ₹20 and ₹29 (inclusive).
 export const randomWalletReward = () => 20 + Math.floor(Math.random() * 10);
+
+// Order-value based reward tiers for the checkout scratch card.
+//   order ≥ ₹1000        → ₹50–100
+//   ₹500 ≤ order < ₹1000 → ₹30–40
+//   order < ₹500         → ₹20–50
+export const orderWalletReward = (orderValue) => {
+  const v = Number(orderValue) || 0;
+  const rand = (min, max) => min + Math.floor(Math.random() * (max - min + 1));
+  if (v >= 1000) return rand(50, 100);
+  if (v >= 500) return rand(30, 40);
+  return rand(20, 50);
+};
 
 // Format books list for Google Form
 const formatBooksList = (cartBooks) => {
@@ -241,6 +255,9 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
         : ""),
     tinyUrl: shortLink || "",
     orderStatus: "Getting Shipped",
+    // Record wallet spent on this order as a NEGATIVE ledger entry so the
+    // shopper's balance nets down. Blank when no wallet was used.
+    wallet: walletUsed > 0 ? -Math.round(walletUsed) : "",
     timestamp: formattedTimestamp,
     userAgent:
       typeof navigator !== "undefined"

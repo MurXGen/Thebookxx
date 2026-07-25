@@ -14,6 +14,7 @@ import StoreReviews from "@/components/StoreReviews";
 import OneRupeeHero from "@/components/OneRupeeHero";
 import HomeHero from "@/components/HomeHero";
 import LiveOrdersStrip from "@/components/LiveOrdersStrip";
+import QuickReadsPromo from "@/components/QuickReadsPromo";
 
 // Lazy load components with named exports
 const BestsellerStage = lazy(() => import("@/components/BestsellerStage"));
@@ -129,6 +130,9 @@ export default function HomePage() {
       <LiveOrdersStrip />
 
       <StoreReviews />
+
+      {/* QuickReads feature promo — below the bestseller + reviews section */}
+      <QuickReadsPromo />
 
       <LazySection threshold={0.05}>
         <Suspense fallback={<LoadingFallback delay={0.4} />}>

@@ -8,7 +8,7 @@ import { trackFunnelEvent } from "@/lib/analytics";
 import { EVENTS } from "@/lib/trackingEvents";
 import { useTrackView } from "@/lib/trackingHooks";
 import { trackPincodeToGoogleForm } from "@/utils/googleForm";
-import ScratchCard from "./ScratchCard";
+import ScratchRewardSheet from "./ScratchRewardSheet";
 import { fetchWalletBalance, creditWalletReward } from "@/utils/googleFormOrder";
 
 const PINCODE_STORAGE_KEY = "pincode_modal_last_shown";
@@ -429,83 +429,27 @@ export default function PincodeModal() {
     </AnimatePresence>
 
     {/* 🎁 Reward scratch card — slides up after a phone number is submitted */}
-    <AnimatePresence>
-      {showScratch && (
-        <motion.div
-          className="bill-modal-overlay"
-          style={{ maxWidth: "980px", margin: "0 auto" }}
-          onClick={closeScratch}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
-          <motion.div
-            className="bill-modal"
-            onClick={(e) => e.stopPropagation()}
-            initial={{ y: "100%", opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: "100%", opacity: 0 }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
-          >
-            <div className="bill-header">
-              <span className="weight-600 font-16 flex flex-row items-center gap-8">
-                <Gift size={17} style={{ color: "var(--tertiary)" }} /> A little
-                gift for you!
-              </span>
-              <span className="cursor-pointer" onClick={closeScratch}>
-                <X size={16} />
-              </span>
-            </div>
-
-            <div className="scratch-modal-body">
-              <p className="scratch-modal-sub">
-                Thanks for sharing your details 💛 Scratch the card below to
-                reveal your reward.
-              </p>
-              <div className="cod-reward-card-wrap">
-                <ScratchCard
-                  width={280}
-                  height={160}
-                  revealText={
-                    scratchEligible
-                      ? `₹${scratchReward} won! 🎉`
-                      : "Better luck next time"
-                  }
-                  revealSub={
-                    scratchEligible
-                      ? "Added to your TheBookX wallet"
-                      : "You already have wallet credit 💛"
-                  }
-                  onComplete={handleScratchComplete}
-                />
-              </div>
-              {scratchDone && (
-                <div className="cod-reward-note">
-                  {scratchEligible ? (
-                    <>
-                      <strong>₹{scratchReward} added to your wallet.</strong>{" "}
-                      Use it on your next order — you can see it in your profile.
-                    </>
-                  ) : (
-                    <>
-                      You already have wallet credit waiting for you. Use it on
-                      your next order!
-                    </>
-                  )}
-                </div>
-              )}
-              <button
-                className="pri-big-btn width100"
-                onClick={closeScratch}
-                style={{ marginTop: 12 }}
-              >
-                {scratchDone ? "Awesome, thanks!" : "Maybe later"}
-              </button>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <ScratchRewardSheet
+      open={showScratch}
+      onClose={closeScratch}
+      eligible={scratchEligible}
+      reward={scratchReward}
+      scratched={scratchDone}
+      onScratch={handleScratchComplete}
+      note={
+        scratchEligible ? (
+          <>
+            <strong>₹{scratchReward} added to your wallet.</strong> Use it on
+            your next order — you can see it in your profile.
+          </>
+        ) : (
+          <>
+            You already have wallet credit waiting for you. Use it on your next
+            order!
+          </>
+        )
+      }
+    />
     </>
   );
 }

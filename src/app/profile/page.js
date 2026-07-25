@@ -771,13 +771,17 @@ export default function MyOrdersPage() {
           comment: order["Comment for this order"] || order["Comment"] || "",
         };
       });
-      // Compute wallet balance, read from the "Wallet" column — across ALL
-      // rows (including wallet-only reward rows), max value.
-      const walletValue = parsedOrders.reduce((max, order) => {
-        const raw = order["Wallet"] ?? order["wallet"] ?? 0;
-        const w = parseFloat(raw);
-        return isNaN(w) ? max : Math.max(max, w);
-      }, 0);
+      // Wallet balance = SUM of all "Wallet" ledger entries for this phone
+      // (rewards positive, wallet spent on orders negative). Never below 0.
+      const walletValue = Math.max(
+        0,
+        Math.round(
+          parsedOrders.reduce((sum, order) => {
+            const w = parseFloat(order["Wallet"] ?? order["wallet"] ?? 0);
+            return isNaN(w) ? sum : sum + w;
+          }, 0),
+        ),
+      );
       setWalletBalance(walletValue);
 
       // Only show genuine orders in the list. Wallet-only reward rows (pushed

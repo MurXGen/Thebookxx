@@ -2,6 +2,7 @@
 
 import { books } from "@/utils/book";
 import Image from "next/image";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -14,6 +15,11 @@ import {
   Phone,
   Sparkles,
   X,
+  Zap,
+  Clock,
+  Headphones,
+  ArrowRight,
+  CheckCircle2,
 } from "lucide-react";
 import ScratchCard from "@/components/UI/ScratchCard";
 import ReviewsShowcase from "@/components/ReviewsShowcase";
@@ -340,6 +346,7 @@ export default function ReviewClient() {
           </motion.div>
         )}
       </AnimatePresence>
+
     </div>
   );
 }

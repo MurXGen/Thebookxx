@@ -4621,6 +4621,11 @@ textarea.sec-mid-btn,
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
+/* Icon spinner used inside buttons (Loader2) — just rotate, no border box */
+.lb-spinner {
+  animation: spin 0.8s linear infinite;
+  flex: 0 0 auto;
+}
 
 .load-more-btn {
   padding: 12px 24px;
@@ -23162,6 +23167,315 @@ img[data-loaded="true"] {
   color: var(--dark-50);
   margin: 0;
   line-height: 1.5;
+}
+/* ===== QuickReads promo (below reviews) ===== */
+.qr-promo {
+  margin: 28px auto 8px;
+  max-width: 680px;
+  padding: 0 16px;
+}
+.qr-promo-inner {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  padding: 28px 22px;
+  text-align: center;
+  color: #fff;
+  background:
+    radial-gradient(
+      120% 120% at 0% 0%,
+      rgba(255, 183, 3, 0.35),
+      transparent 55%
+    ),
+    linear-gradient(135deg, #12100e 0%, #23180a 60%, #2a1c08 100%);
+  border: 1px solid rgba(251, 133, 0, 0.35);
+  box-shadow: 0 18px 44px -18px rgba(0, 0, 0, 0.6);
+}
+.qr-promo-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffb703, #fb8500);
+  color: #1a1205;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.qr-promo-title {
+  margin: 14px 0 8px;
+  font-size: 22px;
+  line-height: 1.25;
+  font-weight: 800;
+  color: #fff;
+}
+.qr-promo-sub {
+  margin: 0 auto;
+  max-width: 520px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.78);
+}
+.qr-promo-points {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px 18px;
+  margin: 18px 0 20px;
+}
+.qr-promo-point {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #ffd9a3;
+}
+.qr-promo-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 26px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffb703, #fb8500);
+  color: #1a1205;
+  font-size: 15px;
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 8px 22px -6px rgba(251, 133, 0, 0.6);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.qr-promo-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px -6px rgba(251, 133, 0, 0.7);
+}
+.qr-promo-trust {
+  display: block;
+  margin-top: 14px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* ===== Full-page order success sheet (Flipkart style) ===== */
+.os-fullpage-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  background: rgba(10, 10, 10, 0.35);
+  display: flex;
+  justify-content: center;
+}
+.os-fullpage {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  height: 100%;
+  background: #fff;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 56px 18px calc(24px + env(safe-area-inset-bottom, 0px));
+}
+.os-close {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 12px;
+  background: #f3f4f6;
+  color: var(--foreground);
+  cursor: pointer;
+  z-index: 2;
+}
+.os-close:hover {
+  background: #e9eaec;
+}
+/* Success-modal action buttons */
+.os-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+}
+.os-actions-row {
+  display: flex;
+  gap: 12px;
+}
+.os-actions-row > button {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 13px 14px;
+  white-space: nowrap;
+}
+.os-actions .sec-big-btn {
+  padding: 13px 14px;
+}
+
+/* ===== Scratch reward bottom sheet (blurred backdrop) ===== */
+.scratch-sheet-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1400;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(10, 10, 10, 0.5);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+  padding: 0;
+}
+.scratch-sheet {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  background: #fff;
+  border-radius: 22px 22px 0 0;
+  padding: 22px 18px calc(18px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 -18px 50px rgba(0, 0, 0, 0.4);
+}
+.scratch-sheet-grip {
+  position: absolute;
+  top: 9px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 42px;
+  height: 4px;
+  border-radius: 999px;
+  background: #e2e2e6;
+}
+.scratch-sheet-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 8px;
+  background: #f3f4f6;
+  color: var(--foreground);
+  cursor: pointer;
+}
+.scratch-sheet-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  margin-top: 6px;
+}
+.scratch-sheet-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffb703, #fb8500);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  box-shadow: 0 3px 10px rgba(251, 133, 0, 0.4);
+}
+.scratch-sheet-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--foreground);
+  max-width: 320px;
+}
+.scratch-sheet-card {
+  display: flex;
+  justify-content: center;
+  padding: 4px 0;
+}
+.scratch-sheet-note {
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: center;
+  color: var(--foreground);
+  background: rgba(251, 133, 0, 0.1);
+  border-radius: 10px;
+  padding: 10px 12px;
+  width: 100%;
+}
+.scratch-sheet-note strong {
+  color: #c2410c;
+}
+.scratch-sheet-btn {
+  margin-top: 2px;
+}
+/* Teaser tile that opens the scratch sheet */
+.reward-teaser {
+  width: 100%;
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px dashed var(--tertiary, #fb8500);
+  background: linear-gradient(
+    100deg,
+    rgba(251, 133, 0, 0.08),
+    rgba(255, 183, 3, 0.14)
+  );
+  cursor: pointer;
+  text-align: left;
+}
+.reward-teaser:hover {
+  transform: none;
+}
+.reward-teaser-ic {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #fb8500, #ffb703);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(251, 133, 0, 0.4);
+}
+.reward-teaser-tx {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+  min-width: 0;
+}
+.reward-teaser-tt {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #b45309;
+}
+.reward-teaser-sub {
+  font-size: 11.5px;
+  color: var(--dark-50);
+}
+.reward-teaser-cta {
+  flex: 0 0 auto;
+  font-size: 11px;
+  font-weight: 800;
+  color: #fff;
+  background: #0a0a0a;
+  padding: 6px 12px;
+  border-radius: 999px;
+}
+.reward-teaser.done .reward-teaser-cta {
+  background: var(--success, #16a34a);
 }
 /* Pincode modal — full-width reward teaser stripe under the phone field */
 .pin-win-stripe {

@@ -363,7 +363,10 @@ export default function PincodeModal() {
                         strokeWidth="1"
                       />
                     </svg>
-                    <span>Fill your details &amp; win big with a scratch card!</span>
+                    <span>
+                      Fill your details &amp;{" "}
+                      <span className="pin-win-emph">WIN A SCRATCH CARD</span>
+                    </span>
                   </div>
                 </div>
               </div>

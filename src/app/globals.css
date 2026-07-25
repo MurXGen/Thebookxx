@@ -23186,6 +23186,11 @@ img[data-loaded="true"] {
   letter-spacing: 0.02em;
   color: #b45309;
 }
+.pin-win-emph {
+  font-size: 13.5px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+}
 .pin-win-stripe svg {
   flex: 0 0 auto;
   width: 13px;

@@ -149,6 +149,25 @@ function buildStructuredData(author) {
     });
   }
 
+  // ImageGallery of author + book photos — helps the images rank in Google
+  // Images for "The Art of Clarity" and "Murthy Thevar".
+  const allImages = [
+    ...(author.authorImages || []),
+    ...(author.bookImages || []),
+  ];
+  if (author.isRich && allImages.length > 0) {
+    graph.push({
+      "@type": "ImageGallery",
+      "@id": `${canonical}#gallery`,
+      name: `Murthy Thevar and "The Art of Clarity" book gallery`,
+      associatedMedia: allImages.map((img) => ({
+        "@type": "ImageObject",
+        contentUrl: `https://thebookx.in${img.url}`,
+        caption: img.alt,
+      })),
+    });
+  }
+
   return { "@context": "https://schema.org", "@graph": graph };
 }
 
@@ -373,6 +392,61 @@ export default async function AuthorPage({ params }) {
                         priority={index < 4}
                       />
                     </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ===== "The Art of Clarity" book gallery (aggressive image SEO) ===== */}
+            {author.bookImages?.length > 0 && (
+              <div className="author-gallery flex flex-col gap-16">
+                <div className="flex items-center gap-8">
+                  <Camera size={24} className="orange" />
+                  <h2 className="font-24 weight-600">
+                    “{author.publishedBooks?.[0]?.name || "The Art of Clarity"}”
+                    by {author.name}: Book Gallery
+                  </h2>
+                </div>
+                <p className="font-14 dark-50" style={{ lineHeight: 1.7 }}>
+                  Photos of “
+                  {author.publishedBooks?.[0]?.name || "The Art of Clarity"}”,
+                  the bestselling self-help book by {author.name} on clarity,
+                  decision making and personal growth, in readers&apos; hands
+                  and everyday settings.
+                </p>
+                <div
+                  className="gallery-grid"
+                  style={{ display: "flex", flexDirection: "row", overflow: "auto", borderRadius: "12px", gap: "12px" }}
+                >
+                  {author.bookImages.map((img, index) => (
+                    <figure
+                      key={index}
+                      className="gallery-item"
+                      style={{ position: "relative", flex: "0 0 auto", margin: 0 }}
+                    >
+                      <Image
+                        src={img.url}
+                        alt={img.alt}
+                        title={img.alt}
+                        width={200}
+                        height={260}
+                        style={{ objectFit: "cover", borderRadius: "8px" }}
+                        priority={index < 3}
+                      />
+                      {img.caption && (
+                        <figcaption
+                          style={{
+                            position: "absolute",
+                            width: "1px",
+                            height: "1px",
+                            overflow: "hidden",
+                            clip: "rect(0 0 0 0)",
+                          }}
+                        >
+                          {img.caption}
+                        </figcaption>
+                      )}
+                    </figure>
                   ))}
                 </div>
               </div>

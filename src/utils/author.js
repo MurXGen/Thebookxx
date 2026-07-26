@@ -163,39 +163,95 @@ export const authorData = {
     },
   ],
 
-  // Author images — accurate alt text (no fabricated 'clarity coach' claims).
+  // Author portraits (Gallery of Murthy).
   authorImages: [
     {
       url: "/review/author/murthy-thevar.jpeg",
       alt: "Murthy Thevar, Mumbai-based product designer and author of The Art of Clarity",
       caption:
-        "Murthy Thevar, product designer, developer and author of 'The Art of Clarity'",
-      priority: true,
-    },
-    {
-      url: "/review/author/murthy-thevar-the-author-of-the-art-of-clairty.jpeg",
-      alt: "Murthy Thevar, author of The Art of Clarity and product designer",
-      caption: "Murthy Thevar, author of 'The Art of Clarity'",
-      priority: true,
-    },
-    {
-      url: "/review/author/murthy-thevar-distributing-book-the-art-of-clairty.jpeg",
-      alt: "Murthy Thevar with readers of The Art of Clarity",
-      caption:
-        "Murthy Thevar, author of 'The Art of Clarity', with his readers",
+        "Murthy Thevar, product designer and author of 'The Art of Clarity'",
       priority: true,
     },
     {
       url: "/review/author/murthy-thevar-author-portrait.jpeg",
-      alt: "Murthy Thevar author portrait, The Art of Clarity",
+      alt: "Murthy Thevar author portrait, author of the bestselling book The Art of Clarity",
       caption: "Murthy Thevar, author of 'The Art of Clarity'",
       priority: true,
     },
+  ],
+
+  // Dedicated "The Art of Clarity" book gallery — aggressive per-image SEO so
+  // these rank for image searches of the book.
+  bookImages: [
     {
-      url: "/review/author/murthy-thevar-holding-book.jpeg",
-      alt: "Murthy Thevar holding his book The Art of Clarity",
-      caption: "Murthy Thevar holding his book 'The Art of Clarity'",
-      priority: true,
+      url: "/review/author/the-art-of-clarity-front-cover-portrait.jpeg",
+      alt: "The Art of Clarity front cover, the bestselling self-help book by Murthy Thevar",
+      caption: "'The Art of Clarity' by Murthy Thevar, front cover",
+    },
+    {
+      url: "/review/author/the-art-clarity-book-by-murthy-thevar-2.jpeg",
+      alt: "The Art of Clarity book by Murthy Thevar, a self-help guide to making better decisions",
+      caption: "'The Art of Clarity' by Murthy Thevar",
+    },
+    {
+      url: "/review/author/the-art-clarity-book-by-murthy-thevar-3.jpeg",
+      alt: "The Art of Clarity by Murthy Thevar, one of the bestselling self-help books of the year",
+      caption: "'The Art of Clarity' by Murthy Thevar",
+    },
+    {
+      url: "/review/author/the-art-clarity-book-by-murthy-thevar-on-readers-table.jpeg",
+      alt: "The Art of Clarity by Murthy Thevar on a reader's table",
+      caption: "'The Art of Clarity' by Murthy Thevar on a reader's table",
+    },
+    {
+      url: "/review/reviewers/the-art-of-clarity-natural.jpeg",
+      alt: "The Art of Clarity by Murthy Thevar, bestselling clarity and decision-making book in a natural reading setting",
+      caption: "'The Art of Clarity' by Murthy Thevar",
+    },
+    {
+      url: "/review/reviewers/the-art-of-clarity-natural-1.jpeg",
+      alt: "The Art of Clarity book by Murthy Thevar resting in soft natural light",
+      caption: "'The Art of Clarity' by Murthy Thevar",
+    },
+    {
+      url: "/review/reviewers/the-art-of-clarity-natural-2.jpeg",
+      alt: "The Art of Clarity by Murthy Thevar, self-help book on clarity and better decisions, held in hand",
+      caption: "'The Art of Clarity' by Murthy Thevar",
+    },
+    {
+      url: "/review/reviewers/the-art-of-clarity-natural-3.jpeg",
+      alt: "The Art of Clarity book by Murthy Thevar in a cosy reading corner",
+      caption: "'The Art of Clarity' by Murthy Thevar",
+    },
+    {
+      url: "/review/reviewers/the-art-of-clarity-natural-4.jpeg",
+      alt: "The Art of Clarity by Murthy Thevar, bestselling self-help book photographed outdoors in nature",
+      caption: "'The Art of Clarity' by Murthy Thevar",
+    },
+    {
+      url: "/review/reviewers/the-art-of-clarity-natural-5.jpeg",
+      alt: "A reader holding The Art of Clarity by Murthy Thevar",
+      caption: "A reader with 'The Art of Clarity' by Murthy Thevar",
+    },
+    {
+      url: "/review/reviewers/the-art-of-clarity-natural-6.jpeg",
+      alt: "The Art of Clarity by Murthy Thevar, lifestyle photo of the bestselling self-help book",
+      caption: "'The Art of Clarity' by Murthy Thevar",
+    },
+    {
+      url: "/review/reviewers/the-art-of-clarity-book-scene.jpeg",
+      alt: "The Art of Clarity by Murthy Thevar, book scene on a wooden desk",
+      caption: "'The Art of Clarity' by Murthy Thevar",
+    },
+    {
+      url: "/review/reviewers/the-art-of-clarity-book-scene-3.jpeg",
+      alt: "The Art of Clarity by Murthy Thevar, the bestselling self-help book of the year on display",
+      caption: "'The Art of Clarity' by Murthy Thevar",
+    },
+    {
+      url: "/review/reviewers/the-art-of-clarity-scene-1.jpeg",
+      alt: "The Art of Clarity by Murthy Thevar, self-help book for clearer thinking and better decisions",
+      caption: "'The Art of Clarity' by Murthy Thevar",
     },
   ],
 

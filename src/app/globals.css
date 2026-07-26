@@ -26460,10 +26460,12 @@ img[data-loaded="true"] {
   justify-content: space-between;
   gap: 12px;
   padding: 16px 18px;
-  margin: -1px -1px 0;
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-  border-radius: 18px 18px 0 0;
-  color: #fff;
+  background: linear-gradient(
+    135deg,
+    var(--tertiary-10, #fb850010) 0%,
+    var(--tertiary-light-10, #ffb70310) 100%
+  );
+  border-bottom: 1px solid var(--dark-10, #ececec);
 }
 .upiv3-head-l {
   display: flex;
@@ -26476,21 +26478,20 @@ img[data-loaded="true"] {
   gap: 5px;
   font-size: 10.5px;
   font-weight: 600;
-  color: #86efac;
+  color: var(--success, #008f0c);
   letter-spacing: 0.02em;
 }
 .upiv3-title {
-  font-size: 17px;
-  font-weight: 800;
-  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--foreground);
 }
 .upiv3-x {
   border: none;
-  background: rgba(255, 255, 255, 0.12);
-  color: #fff;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
+  background: transparent;
+  color: var(--foreground);
+  width: 28px;
+  height: 28px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -26625,14 +26626,15 @@ img[data-loaded="true"] {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  font-size: 14.5px;
-  font-weight: 700;
-  color: #fff;
-  background: #0f172a;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--white-100, #fff);
+  background: #0a0a0a;
   border: none;
-  border-radius: 13px;
-  padding: 14px 16px;
+  border-radius: var(--px-12, 12px);
+  padding: var(--px-12, 13px) var(--px-16, 16px);
   cursor: pointer;
+  font-family: var(--font-poppins), sans-serif;
   transition: transform 0.12s ease, opacity 0.15s ease;
 }
 .upiv3-cta:active {
@@ -26767,7 +26769,7 @@ img[data-loaded="true"] {
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
-  background: linear-gradient(135deg, #0f172a, #1e293b);
+  background: #0a0a0a;
   color: #fff;
 }
 .upiv3-qr-top-l {

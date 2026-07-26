@@ -185,9 +185,17 @@ export default function PincodeModal() {
     // Only credit shoppers who don't already hold ₹30+ in their wallet.
     if (phoneNumber && phoneNumber.length === 10) {
       const balance = await fetchWalletBalance(phoneNumber);
-      const eligible = balance < 30;
+      // Eligible only if there's room below ₹29. The reward tops the wallet UP
+      // TO ₹29 total and never crosses it (capped by the remaining room).
+      const room = 29 - balance;
+      const eligible = room > 0;
+      let rew = 0;
+      if (eligible) {
+        rew = 11 + Math.floor(Math.random() * 19); // ₹11–29
+        if (rew > room) rew = room; // never let balance + reward exceed ₹29
+      }
       setScratchEligible(eligible);
-      setScratchReward(eligible ? 11 + Math.floor(Math.random() * 30) : 0);
+      setScratchReward(rew);
       setScratchDone(false);
       setIsOpen(false);
       setShowScratch(true);

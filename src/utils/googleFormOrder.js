@@ -163,15 +163,15 @@ export const creditWalletReward = async (phone, reward) => {
 export const randomWalletReward = () => 20 + Math.floor(Math.random() * 10);
 
 // Order-value based reward tiers for the checkout scratch card.
-//   order ≥ ₹1000        → ₹50–100
-//   ₹500 ≤ order < ₹1000 → ₹30–40
-//   order < ₹500         → ₹20–50
+//   order ≥ ₹1000        → ₹50–60
+//   ₹500 ≤ order < ₹1000 → ₹25–35
+//   order < ₹500         → ₹11–29
 export const orderWalletReward = (orderValue) => {
   const v = Number(orderValue) || 0;
   const rand = (min, max) => min + Math.floor(Math.random() * (max - min + 1));
-  if (v >= 1000) return rand(50, 100);
-  if (v >= 500) return rand(30, 40);
-  return rand(20, 50);
+  if (v >= 1000) return rand(50, 60);
+  if (v >= 500) return rand(25, 35);
+  return rand(11, 29);
 };
 
 // Format books list for Google Form

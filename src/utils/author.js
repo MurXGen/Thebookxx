@@ -55,7 +55,7 @@ export const getAuthorProfile = (slug) => {
       authored.length === 1 ? "title" : "titles"
     } available at TheBookX${
       genres.length ? `, spanning ${genres.slice(0, 4).join(", ")}` : ""
-    }. Browse and buy ${name}'s books online at the lowest prices in India — with books starting at just ₹1, free shipping and Cash on Delivery.`,
+    }. Browse and buy ${name}'s books online at the lowest prices in India, with books starting at just ₹1, free shipping and Cash on Delivery.`,
     publishedBooks: authored.map((b) => ({
       id: b.id,
       name: b.name,
@@ -76,37 +76,69 @@ export const authorData = {
   alternativeNames: [
     "Murthy",
     "Thevar",
-    "Murthy Thevar Author",
-    "M Thevar",
     "Author Murthy Thevar",
-    "Clarity Coach Murthy",
+    "Murthy Thevar portfolio",
+    "Murthy Thevar designer",
+    "Murthy Thevar developer",
   ],
 
-  // Enhanced bio with keywords for both author name and book searches
-  bio: `Murthy Thevar is India's leading clarity coach and bestselling author of "The Art of Clarity". As a renowned speaker and self-help expert, Murthy Thevar has helped over 50,000+ readers transform their thinking and achieve mental clarity. His debut book "The Art of Clarity" (published April 1, 2026) has become a national bestseller, praised for its practical approach to eliminating confusion and making confident decisions. When you search for Murthy Thevar or The Art of Clarity, you'll find a transformative self-help journey that has changed thousands of lives. Unlike other self-help authors, Murthy Thevar focuses on actionable strategies that work in real life.`,
+  // Bio — product designer & author of the bestselling "The Art of Clarity".
+  bio: `Murthy Thevar is a product designer and the author of "The Art of Clarity", one of the bestselling books of the year. A debut that readers have rated too good to be a first book, "The Art of Clarity" has struck a chord with a generation that feels busier, more distracted and more overwhelmed than ever. Murthy's mission is simple: help people think clearly and make better decisions.`,
 
-  // Personal details for better authority
-  born: "January 3, 2004",
   birthplace: "Mumbai, India",
   nationality: "Indian",
-  occupation: "Author, Speaker, Clarity Coach",
+  occupation: "Product Designer & Author of 'The Art of Clarity'",
   genres: [
     "Self-Help",
     "Personal Development",
-    "Mental Clarity",
-    "Productivity",
     "Decision Making",
-    "Overcoming Overthinking",
+    "Productivity",
+    "Clarity",
   ],
 
+  // Book topics / categories Murthy is known for (chips + SEO).
+  categories: ["Self-Help", "Trending", "Motivation", "Decision Making", "Growth"],
+
+  // Longer story, rendered as paragraphs in the About section.
+  story: [
+    `Murthy Thevar is a product designer by craft and an author by calling. His debut book, "The Art of Clarity", released this year and quickly became one of the bestselling titles of the year, praised by readers as "too good for a first book" and celebrated as a clarity guide this generation didn't know it needed.`,
+    `The book didn't come from theory. Over the years, Murthy read deeply across self-help and personal development, hundreds of books, from timeless classics to the latest bestsellers, and kept noticing the same gap. Almost every book tried to help people remember more, hustle harder, or fix their habits. But the real struggle of this generation isn't a short memory or forgetting things. It is decision-making. We are drowning in options, notifications and noise, and the one skill nobody teaches is how to decide with clarity.`,
+    `So Murthy did what a designer does: he stripped away the clutter. He distilled everything he had read, tested and lived into a simple, practical framework for taking smart action and making better decisions with less stress. No jargon, no filler, just clarity you can actually use. That became "The Art of Clarity".`,
+    `As a product designer, Murthy believes clarity isn't only a mindset, it is a design principle. The same instinct that makes an interface effortless to use is the one that makes a life easier to live: remove the noise, and the right choice becomes obvious. That philosophy runs through every page of the book and everything he creates.`,
+    `Today, thousands of readers turn to "The Art of Clarity" to cut through overthinking, quiet the mental clutter and move forward with confidence. If you're searching for Murthy Thevar or "The Art of Clarity", you've found a book and an author built entirely around one idea: a clearer mind makes better decisions.`,
+  ],
+
+  // FAQ (People-Also-Ask visibility + FAQPage schema).
+  faqs: [
+    {
+      q: "Who is Murthy Thevar?",
+      a: `Murthy Thevar is a product designer and the author of "The Art of Clarity", one of the bestselling self-help books of the year. His work focuses on clarity, better decision-making and personal growth.`,
+    },
+    {
+      q: `What is "The Art of Clarity" about?`,
+      a: `It is a practical self-help guide to thinking clearly and making better decisions with less stress, distilled from hundreds of self-help and personal-development books into one simple, usable framework.`,
+    },
+    {
+      q: `What category is "The Art of Clarity"?`,
+      a: `It sits across Self-Help, Motivation, Decision Making and personal Growth, and is one of the trending reads of the year.`,
+    },
+    {
+      q: `Is "The Art of Clarity" good for beginners?`,
+      a: `Yes. It is written in plain language with no jargon, so it works whether you are new to self-help or have already read widely across the genre.`,
+    },
+    {
+      q: "Where can I buy Murthy Thevar's book?",
+      a: `You can buy "The Art of Clarity" on TheBookX, Amazon and Flipkart.`,
+    },
+  ],
+
+  portfolio: "https://themurx.vercel.app",
   website: "https://thebookx.in/author/murthy-thevar",
 
-  // Enhanced social links
+  // Verified links only.
   socialLinks: {
-    instagram: "https://instagram.com/itz_murthy",
-    twitter: "https://twitter.com/murthythevar",
-    linkedin: "https://in.linkedin.com/in/murthy-thevar-holding-book88b31262",
-    youtube: "https://youtube.com/@murthythevar",
+    linkedin: "https://in.linkedin.com/in/murthy-thevar-288b31262",
+    portfolio: "https://themurx.vercel.app",
   },
 
   publishedBooks: [
@@ -114,78 +146,68 @@ export const authorData = {
       id: "bk-002",
       name: "The Art of Clarity",
       slug: "the-art-of-clarity",
-      publishDate: "April 1, 2026",
-      isbn: "978-93-12345-01-2",
+      isbn: "978-93-73358-71-0",
       price: 149,
       pages: 210,
       language: "English",
       image: "/books/the-art-of-clarity.jpeg",
-      description: `"The Art of Clarity" by Murthy Thevar is the #1 bestselling self-help book that transforms your thinking. This book teaches you proven strategies to eliminate confusion, overcome overthinking, and make confident decisions. If you're searching for Murthy Thevar or The Art of Clarity, you've found the ultimate guide to mental clarity. Perfect for anyone seeking personal development, productivity, and peace of mind.`,
+      description: `"The Art of Clarity" by Murthy Thevar is a practical self-help guide to taking smart action and making better decisions with less stress. Written by a designer, it turns clarity into a repeatable way of thinking, designing and living. Available on TheBookX, Amazon and Flipkart.`,
       buyLink: "https://thebookx.in/books/the-art-of-clarity",
       amazonLink:
         "https://www.amazon.in/Art-Clarity-Murthy-Thevar/dp/9373358715",
+      flipkartLink:
+        "https://www.flipkart.com/the-art-of-clarity/p/itmbf0dda9ace8d1?pid=9789373358710",
       ratings: {
-        goodreads: 4.7,
-        amazon: 4.6,
         thebookx: 4.8,
       },
     },
   ],
 
-  // Enhanced author images with SEO-optimized alt text for both author and book searches
+  // Author images — accurate alt text (no fabricated 'clarity coach' claims).
   authorImages: [
     {
       url: "/review/author/murthy-thevar.jpeg",
-      alt: "Murthy Thevar official author portrait - Author of The Art of Clarity, clarity coach and bestselling self-help author",
+      alt: "Murthy Thevar, Mumbai-based product designer and author of The Art of Clarity",
       caption:
-        "Official portrait of Murthy Thevar, acclaimed author of 'The Art of Clarity' and clarity coach",
+        "Murthy Thevar, product designer, developer and author of 'The Art of Clarity'",
       priority: true,
     },
     {
       url: "/review/author/murthy-thevar-the-author-of-the-art-of-clairty.jpeg",
-      alt: "Murthy Thevar speaking at event - Author of The Art of Clarity sharing insights about mental clarity and self-help",
-      caption:
-        "Murthy Thevar speaking at an event, sharing his journey and insights on mental clarity as the author of The Art of Clarity",
+      alt: "Murthy Thevar, author of The Art of Clarity and product designer",
+      caption: "Murthy Thevar, author of 'The Art of Clarity'",
       priority: true,
     },
     {
       url: "/review/author/murthy-thevar-distributing-book-the-art-of-clairty.jpeg",
-      alt: "Murthy Thevar interacting with readers - Author of The Art of Clarity connecting with audience",
+      alt: "Murthy Thevar with readers of The Art of Clarity",
       caption:
-        "Murthy Thevar, author of The Art of Clarity, engaging with his audience and readers at a book event",
+        "Murthy Thevar, author of 'The Art of Clarity', with his readers",
       priority: true,
     },
     {
       url: "/review/author/murthy-thevar-author-portrait.jpeg",
-      alt: "Murthy Thevar at book signing event - Author of The Art of Clarity signing copies for fans",
-      caption:
-        "Murthy Thevar, bestselling author of The Art of Clarity, signing copies for enthusiastic readers",
+      alt: "Murthy Thevar author portrait, The Art of Clarity",
+      caption: "Murthy Thevar, author of 'The Art of Clarity'",
       priority: true,
     },
     {
       url: "/review/author/murthy-thevar-holding-book.jpeg",
-      alt: "Murthy Thevar holding The Art of Clarity book - Author with his bestselling self-help book",
-      caption:
-        "Murthy Thevar proudly holding his bestselling book The Art of Clarity, a transformative self-help guide",
-      priority: true,
-    },
-    {
-      url: "/review/author/murthy-thevar-distributing-book-the-art-of-clairty.jpeg",
-      alt: "Murthy Thevar signed copy of The Art of Clarity - Author signature on self-help book",
-      caption:
-        "Signed copy of The Art of Clarity by Murthy Thevar, a keepsake for readers of this transformative book",
+      alt: "Murthy Thevar holding his book The Art of Clarity",
+      caption: "Murthy Thevar holding his book 'The Art of Clarity'",
       priority: true,
     },
   ],
 
-  // Enhanced achievements
+  // Trust-building recognition for the book.
   achievements: [
-    "Best Debut Author Award 2026 - The Art of Clarity by Murthy Thevar",
-    "Top 10 Bestselling Self-Help Books in India - The Art of Clarity",
-    "Clarity Coach of the Year - Murthy Thevar",
-    "Featured in Leading National Publications - Author Murthy Thevar",
-    "Bestselling Author - The Art of Clarity by Murthy Thevar",
-    "Rated 4.8/5 by 1000+ Readers - The Art of Clarity",
+    'One of the Bestselling Books of the Year: "The Art of Clarity"',
+    'Clarity Book of the Year: "The Art of Clarity" by Murthy Thevar',
+    'Rated "too good for a debut" by readers, a standout first book',
+    "4.8/5 average reader rating across the community",
+    "Loved by thousands of readers across India",
+    "Widely recommended as this generation's go-to guide for better decisions",
+    "A breakout debut author to watch",
   ],
 
   mediaAppearances: [],

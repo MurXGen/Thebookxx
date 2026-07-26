@@ -6,7 +6,10 @@ import { Zap, Clock, BookOpen, CheckCircle2, ArrowRight } from "lucide-react";
 // SEO + conversion styled promo for the QuickReads feature.
 export default function QuickReadsPromo() {
   return (
-    <section className="qr-promo" aria-labelledby="qr-promo-heading">
+    <section
+      className="qr-promo qr-promo-seo-only"
+      aria-labelledby="qr-promo-heading"
+    >
       <div className="qr-promo-inner">
         <span className="qr-promo-eyebrow">
           <Zap size={13} /> TheBookX QuickReads

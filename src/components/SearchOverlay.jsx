@@ -3,11 +3,20 @@
 import BookCard from "@/components/BookCard";
 import RecommendationModal from "@/components/RecommendationModal";
 import { books } from "@/utils/book";
+import { hasQuickRead, QUICKREAD_PRICE } from "@/data/quickreads";
 import { AnimatePresence, motion } from "framer-motion";
-import { X, Loader2 } from "lucide-react";
+import { X, Loader2, Zap } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 const normalize = (str = "") => str.toLowerCase().trim();
+
+// Slug for a book's QuickReads page (matches the rest of the app).
+const qrSlug = (name = "") =>
+  name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
 
 const parsePriceQuery = (query) => {
   const q = normalize(query);
@@ -147,6 +156,14 @@ export default function SearchOverlay({ open, onClose, initialSuggest = false })
       );
     return data;
   })();
+
+  // Grid items: each matched book, plus a QuickReads card right beside any
+  // book that has a QuickRead (rendered as a normal card with a QR badge).
+  const gridItems = [];
+  sortedBooks.forEach((book) => {
+    gridItems.push({ type: "book", book });
+    if (hasQuickRead(book.id)) gridItems.push({ type: "qr", book });
+  });
 
   // Encode search term for WhatsApp
   const whatsappMessage = `Hey hi! I'm looking for a book related to "${query}" but couldn't find it on TheBookX. Could you please help me find it?`;
@@ -357,9 +374,9 @@ export default function SearchOverlay({ open, onClose, initialSuggest = false })
                       </div>
 
                       <div className="book-grid">
-                        {sortedBooks.map((book, idx) => (
+                        {gridItems.map((item, idx) => (
                         <motion.div
-                          key={book.id}
+                          key={`${item.type}-${item.book.id}`}
                           initial={{ opacity: 0, y: 14 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{
@@ -368,7 +385,28 @@ export default function SearchOverlay({ open, onClose, initialSuggest = false })
                             ease: "easeOut",
                           }}
                         >
-                          <BookCard book={book} />
+                          {item.type === "book" ? (
+                            <BookCard book={item.book} />
+                          ) : (
+                            <Link
+                              href={`/quickreads/${qrSlug(item.book.name)}`}
+                              className="search-qr-item"
+                              onClick={onClose}
+                            >
+                              <div className="search-qr-item-cover">
+                                <img src={item.book.image} alt={item.book.name} />
+                                <span className="search-qr-badge">
+                                  <Zap size={11} /> QuickRead
+                                </span>
+                              </div>
+                              <span className="search-qr-item-name">
+                                {item.book.name}
+                              </span>
+                              <span className="search-qr-item-price">
+                                ₹{QUICKREAD_PRICE}
+                              </span>
+                            </Link>
+                          )}
                         </motion.div>
                         ))}
                       </div>

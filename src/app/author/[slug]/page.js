@@ -11,8 +11,8 @@ import {
   Twitter,
   Linkedin,
   MapPin,
-  Users,
   Camera,
+  Globe,
 } from "lucide-react";
 
 function slugify(text) {
@@ -43,12 +43,12 @@ export async function generateMetadata({ params }) {
   const count = author.publishedBooks?.length || 0;
 
   const title = author.isRich
-    ? `${author.name} — Author of “${firstBook?.name}”, Buy Online at Lowest Price | Books Starting at ₹1`
-    : `${author.name} Books — Buy ${author.name} Online at Lowest Price | Books Starting at ₹1`;
+    ? `${author.name}, Author of “${firstBook?.name}” | Buy Online at Lowest Price | Books Starting at ₹1`
+    : `${author.name} Books | Buy ${author.name} Online at Lowest Price | Books Starting at ₹1`;
 
   const description = author.isRich
-    ? `Discover ${author.name}, bestselling author of “${firstBook?.name}”. Browse all books by ${author.name} at TheBookX — lowest prices in India, free shipping, Cash on Delivery, with books starting at just ₹1.`
-    : `Browse all ${count} book${count === 1 ? "" : "s"} by ${author.name} at TheBookX. Buy ${author.name}'s titles online at the lowest prices in India — free delivery, Cash on Delivery, books starting at just ₹1.`;
+    ? `Discover ${author.name}, bestselling author of “${firstBook?.name}”. Browse all books by ${author.name} at TheBookX at the lowest prices in India, with free shipping, Cash on Delivery and books starting at just ₹1.`
+    : `Browse all ${count} book${count === 1 ? "" : "s"} by ${author.name} at TheBookX. Buy ${author.name}'s titles online at the lowest prices in India, with free delivery, Cash on Delivery and books starting at just ₹1.`;
 
   return {
     title,
@@ -111,8 +111,8 @@ function buildStructuredData(author) {
           sameAs: Object.values(author.socialLinks || {}).filter(
             (l) => l && l !== "#",
           ),
-          jobTitle: "Author",
-          award: author.achievements?.slice(0, 6),
+          jobTitle: ["Product Designer", "Author"],
+          award: author.achievements?.slice(0, 8),
           image: author.authorImages?.map((img) => img.url),
           knowsAbout: author.genres,
         }
@@ -135,7 +135,21 @@ function buildStructuredData(author) {
     })),
   };
 
-  return { "@context": "https://schema.org", "@graph": [person, itemList] };
+  const graph = [person, itemList];
+
+  if (author.isRich && author.faqs?.length > 0) {
+    graph.push({
+      "@type": "FAQPage",
+      "@id": `${canonical}#faq`,
+      mainEntity: author.faqs.map((f) => ({
+        "@type": "Question",
+        name: f.q,
+        acceptedAnswer: { "@type": "Answer", text: f.a },
+      })),
+    });
+  }
+
+  return { "@context": "https://schema.org", "@graph": graph };
 }
 
 function BooksByAuthor({ author }) {
@@ -257,24 +271,37 @@ export default async function AuthorPage({ params }) {
                     <span className="flex items-center gap-4">
                       <MapPin size={16} /> {author.birthplace}
                     </span>
-                    <span className="flex items-center gap-4">
-                      <Users size={16} /> 50,000+ Readers
-                    </span>
+                    {author.portfolio && (
+                      <a
+                        href={author.portfolio}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-4"
+                        style={{ color: "white" }}
+                      >
+                        <Globe size={16} /> Portfolio
+                      </a>
+                    )}
                   </div>
                   <div className="flex flex-row gap-12">
                     {author.socialLinks?.instagram && (
-                      <a href={author.socialLinks.instagram} target="_blank" rel="noopener noreferrer" style={{ color: "white" }}>
+                      <a href={author.socialLinks.instagram} target="_blank" rel="noopener noreferrer" style={{ color: "white" }} aria-label="Instagram">
                         <Instagram size={22} />
                       </a>
                     )}
                     {author.socialLinks?.twitter && (
-                      <a href={author.socialLinks.twitter} target="_blank" rel="noopener noreferrer" style={{ color: "white" }}>
+                      <a href={author.socialLinks.twitter} target="_blank" rel="noopener noreferrer" style={{ color: "white" }} aria-label="Twitter">
                         <Twitter size={22} />
                       </a>
                     )}
                     {author.socialLinks?.linkedin && (
-                      <a href={author.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" style={{ color: "white" }}>
+                      <a href={author.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" style={{ color: "white" }} aria-label="LinkedIn">
                         <Linkedin size={22} />
+                      </a>
+                    )}
+                    {author.socialLinks?.portfolio && (
+                      <a href={author.socialLinks.portfolio} target="_blank" rel="noopener noreferrer" style={{ color: "white" }} aria-label="Portfolio website">
+                        <Globe size={22} />
                       </a>
                     )}
                   </div>
@@ -286,16 +313,50 @@ export default async function AuthorPage({ params }) {
               <h2 className="font-24 weight-600 margin-btm-16px">
                 About {author.name}
               </h2>
-              <p className="font-16 dark-50" style={{ lineHeight: "1.8" }}>
-                {author.bio}
-              </p>
+              {author.story?.length > 0 ? (
+                <div className="flex flex-col gap-16">
+                  {author.story.map((para, i) => (
+                    <p
+                      key={i}
+                      className="font-16 dark-50"
+                      style={{ lineHeight: "1.8" }}
+                    >
+                      {para}
+                    </p>
+                  ))}
+                </div>
+              ) : (
+                <p className="font-16 dark-50" style={{ lineHeight: "1.8" }}>
+                  {author.bio}
+                </p>
+              )}
             </div>
+
+            {/* Topics / categories — chips link to category pages (SEO) */}
+            {author.categories?.length > 0 && (
+              <div className="flex flex-col gap-12">
+                <h2 className="font-24 weight-600">
+                  Topics {author.name} writes about
+                </h2>
+                <div className="apx-chips">
+                  {author.categories.map((c) => (
+                    <Link
+                      key={c}
+                      href={`/category/${slugify(c)}`}
+                      className="apx-chip"
+                    >
+                      {c}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {author.authorImages?.length > 0 && (
               <div className="author-gallery flex flex-col gap-24">
                 <div className="flex items-center gap-8">
                   <Camera size={24} className="orange" />
-                  <h2 className="font-24 weight-600">Gallery — {author.name}</h2>
+                  <h2 className="font-24 weight-600">Gallery of {author.name}</h2>
                 </div>
                 <div
                   className="gallery-grid"
@@ -316,6 +377,7 @@ export default async function AuthorPage({ params }) {
                 </div>
               </div>
             )}
+
           </>
         ) : (
           <>
@@ -379,11 +441,26 @@ export default async function AuthorPage({ params }) {
           </div>
         )}
 
+        {/* FAQ (rich only) — People-Also-Ask visibility */}
+        {author.isRich && author.faqs?.length > 0 && (
+          <div className="flex flex-col gap-16">
+            <h2 className="font-24 weight-600">Frequently asked questions</h2>
+            <div className="author-faq">
+              {author.faqs.map((f, i) => (
+                <div key={i} className="author-faq-item">
+                  <h3 className="author-faq-q">{f.q}</h3>
+                  <p className="author-faq-a">{f.a}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* CTA */}
         {author.publishedBooks?.[0] && (
           <div className="apx-cta">
             <h2 className="apx-cta-title">
-              Explore books by {author.name} — starting at ₹1
+              Explore books by {author.name}, starting at ₹1
             </h2>
             <p className="apx-cta-sub">
               Lowest prices in India · Free shipping · Cash on Delivery

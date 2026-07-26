@@ -1011,8 +1011,10 @@ export default function BookDetailsModal({ book }) {
                 </div>
               </div>
 
-              {/* ===== QuickReads add-on — bundle it with the book ===== */}
-              {bookHasQuickRead && (
+              {/* ===== QuickReads add-on — bundle it with the book =====
+                  Temporarily HIDDEN. To re-enable, change `false &&` below
+                  back to just `bookHasQuickRead &&`. */}
+              {false && bookHasQuickRead && (
                 <div
                   className={`bd-qr-addon${isInQrCart(book.id) ? " added" : ""}`}
                 >

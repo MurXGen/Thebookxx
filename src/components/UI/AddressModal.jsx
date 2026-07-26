@@ -42,6 +42,7 @@ import {
   trackOrderToGoogleForm,
   creditWalletReward,
   orderWalletReward,
+  fetchOrderStatusById,
 } from "@/utils/googleFormOrder";
 import ScratchRewardSheet from "./ScratchRewardSheet";
 import { showToast } from "@/context/ToastContext";
@@ -151,6 +152,14 @@ export default function AddressModal({
 
   const [verifyTimer, setVerifyTimer] = useState(30);
   const [canVerify, setCanVerify] = useState(false);
+  // UPI confirmation flow:
+  //  "await"     — QR revealed, waiting for the shopper to tap Verify
+  //  "verifying" — 30s auto-check, polling the sheet every 10s
+  //  "timeout"   — no confirmation in 30s; offer a WhatsApp verify fallback
+  const [upiPhase, setUpiPhase] = useState("await");
+  const [verifyCountdown, setVerifyCountdown] = useState(30);
+  const [upiOrderRef, setUpiOrderRef] = useState("");
+  const upiPollRef = useRef({ poll: null, tick: null });
 
   const [giftWrap, setGiftWrap] = useState(giftWrapSelected);
   // The modal stays mounted, so keep the internal gift-wrap flag in sync with
@@ -353,7 +362,8 @@ export default function AddressModal({
     } catch (_) {}
     if (loginPhone.length !== 10) return;
     const current = phone.replace(/\D/g, "");
-    if (current === loginPhone || loginPrefillRef.current === loginPhone) return;
+    if (current === loginPhone || loginPrefillRef.current === loginPhone)
+      return;
     loginPrefillRef.current = loginPhone;
     setPhone(loginPhone); // drives the wallet lookup + marks this profile loaded
     prefillFromOrders(loginPhone, true); // overwrite with their profile address
@@ -434,22 +444,37 @@ export default function AddressModal({
     else setShowContactFields(false);
   }, [address, city]);
 
+  // UPI verification: once the shopper taps Verify we poll the sheet every 10s
+  // for 30s to see if the admin removed the "(unconfirmed)" tag. Confirmed →
+  // success screen; otherwise → timeout (WhatsApp fallback offered).
   useEffect(() => {
-    if (!qrUnlocked) return;
-    setVerifyTimer(30);
-    setCanVerify(false);
-    const interval = setInterval(() => {
-      setVerifyTimer((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          setCanVerify(true);
-          return 0;
-        }
-        return prev - 1;
-      });
+    if (upiPhase !== "verifying") return;
+    let cancelled = false;
+    const check = async () => {
+      if (!upiOrderRef) return;
+      const { confirmed } = await fetchOrderStatusById(upiOrderRef);
+      if (!cancelled && confirmed) finalizeUPISuccess();
+    };
+    const tick = setInterval(() => {
+      setVerifyCountdown((p) => (p <= 1 ? 0 : p - 1));
     }, 1000);
-    return () => clearInterval(interval);
-  }, [qrUnlocked]);
+    const poll = setInterval(check, 10000);
+    upiPollRef.current = { poll, tick };
+    check(); // immediate first check
+    const to = setTimeout(() => {
+      if (cancelled) return;
+      clearInterval(poll);
+      clearInterval(tick);
+      setUpiPhase((ph) => (ph === "verifying" ? "timeout" : ph));
+    }, 30500);
+    return () => {
+      cancelled = true;
+      clearInterval(poll);
+      clearInterval(tick);
+      clearTimeout(to);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [upiPhase, upiOrderRef]);
 
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem("checkoutAddress") || "null");
@@ -530,6 +555,7 @@ export default function AddressModal({
     paymentType,
     isFaster = fasterDelivery,
     confirmed = false,
+    orderId = undefined,
   ) => {
     try {
       const shortLink = await buildShortLink(paymentType, isFaster);
@@ -575,6 +601,7 @@ export default function AddressModal({
         giftWrapCharge: giftWrapAmountForOrder,
         codHandlingFee: feeForThisOrder,
         cartBooks,
+        orderId,
       }).catch((err) => console.error("Google Form submit failed:", err));
     } catch (err) {
       console.error("Google Form submit threw:", err);
@@ -593,11 +620,16 @@ export default function AddressModal({
     });
     // Sheet write happens HERE, after user has picked delivery speed.
     // Passing `true` explicitly because setFasterDelivery is async.
-    submitToGoogleForm(tempPaymentMethod, true);
-    if (tempPaymentMethod === "COD") {
-      setShowCODFeeModal(true);
-    } else if (tempPaymentMethod === "UPI") {
+    if (tempPaymentMethod === "UPI") {
+      const ref = `TBX${Date.now()}`;
+      setUpiOrderRef(ref);
+      setUpiPhase("await");
+      setQrUnlocked(false);
+      submitToGoogleForm("UPI", true, false, ref);
       setShowUPIPayment(true);
+    } else {
+      submitToGoogleForm(tempPaymentMethod, true);
+      if (tempPaymentMethod === "COD") setShowCODFeeModal(true);
     }
   };
 
@@ -609,11 +641,16 @@ export default function AddressModal({
       delivery_charge: standardDeliveryCharge,
       cart_total: finalPayable,
     });
-    submitToGoogleForm(tempPaymentMethod, false);
-    if (tempPaymentMethod === "COD") {
-      setShowCODFeeModal(true);
-    } else if (tempPaymentMethod === "UPI") {
+    if (tempPaymentMethod === "UPI") {
+      const ref = `TBX${Date.now()}`;
+      setUpiOrderRef(ref);
+      setUpiPhase("await");
+      setQrUnlocked(false);
+      submitToGoogleForm("UPI", false, false, ref);
       setShowUPIPayment(true);
+    } else {
+      submitToGoogleForm(tempPaymentMethod, false);
+      if (tempPaymentMethod === "COD") setShowCODFeeModal(true);
     }
   };
 
@@ -900,25 +937,72 @@ export default function AddressModal({
     trackFunnelEvent(EVENTS.UPI_QR_DOWNLOADED, {});
   };
 
-  const handleVerifyUPIPayment = () => {
-    trackFunnelEvent(EVENTS.UPI_PAYMENT_VERIFIED, {
-      amount: finalPayable,
-      verification_time: verifyTimer,
-    });
-    // GA purchase — only counted here, when the user clicks Verify.
-    trackPurchase({
-      cartItems: cartBooks,
-      totalAmount: netPayable,
-      paymentId: `UPI-${Date.now()}`,
-    });
-    // Log the CONFIRMED UPI order (plain name, no "(unconfirmed)" tag).
-    submitToGoogleForm("UPI", fasterDelivery, true);
-    // Show the same Flipkart-style success screen (with scratch reward);
-    // the order is finalised when the shopper taps Continue.
+  const clearUpiTimers = () => {
+    if (upiPollRef.current.poll) clearInterval(upiPollRef.current.poll);
+    if (upiPollRef.current.tick) clearInterval(upiPollRef.current.tick);
+    upiPollRef.current = { poll: null, tick: null };
+  };
+
+  // Payment confirmed (admin removed the "(unconfirmed)" tag) → success screen.
+  const finalizeUPISuccess = () => {
+    clearUpiTimers();
+    setUpiPhase("confirmed");
     setShowUPIPayment(false);
     persistLogin();
     setSuccessPayment("UPI");
     setShowCODSuccess(true);
+  };
+
+  // Timeout fallback: hand the order to WhatsApp with everything pre-filled.
+  const handleUPIWhatsAppVerify = () => {
+    const bookLines = (cartBooks || [])
+      .map((b, i) => `${i + 1}. ${b.name} × ${b.qty}`)
+      .join("\n");
+    const msg = [
+      "Hi TheBookX 👋",
+      "",
+      "I've *paid via UPI* but my order is still showing as verifying. Please confirm it.",
+      "",
+      `🧾 *Order Ref:* ${upiOrderRef || "-"}`,
+      `👤 *Name:* ${name}`,
+      `📞 *Phone:* ${phone}`,
+      `📍 *Address:* ${fullAddress}, ${city} - ${pincode}`,
+      "",
+      bookLines ? `📚 *Items:*\n${bookLines}` : "",
+      "",
+      `💰 *Amount paid:* ₹${netPayable + getDeliveryCharge(fasterDelivery) + (giftWrap ? giftWrapCharge : 0)}`,
+    ]
+      .filter((l) => l !== "")
+      .join("\n");
+    trackFunnelEvent(EVENTS.UPI_PAYMENT_VERIFIED, {
+      amount: finalPayable,
+      via: "whatsapp_fallback",
+    });
+    window.open(
+      `https://wa.me/917710892108?text=${encodeURIComponent(msg)}`,
+      "_blank",
+    );
+  };
+
+  // Shopper taps the Verify button on the QR screen.
+  const handleVerifyUPIPayment = () => {
+    if (upiPhase === "timeout") {
+      handleUPIWhatsAppVerify();
+      return;
+    }
+    if (upiPhase === "verifying") return; // already checking
+    trackFunnelEvent(EVENTS.UPI_PAYMENT_VERIFIED, {
+      amount: finalPayable,
+      verification_time: verifyTimer,
+    });
+    // Count the purchase intent here (order row already logged as unconfirmed).
+    trackPurchase({
+      cartItems: cartBooks,
+      totalAmount: netPayable,
+      paymentId: `UPI-${upiOrderRef || Date.now()}`,
+    });
+    setVerifyCountdown(30);
+    setUpiPhase("verifying");
   };
 
   // From the UPI page: shopper has no online-payment option → switch to COD
@@ -1192,13 +1276,12 @@ export default function AddressModal({
                 </div>
               )}
 
-              {showContactFields &&
-                (!name.trim() || phone.length !== 10) && (
-                  <div className="addr-warn addr-warn-red">
-                    <AlertCircle size={13} />
-                    <span>Enter your name and a valid 10-digit phone</span>
-                  </div>
-                )}
+              {showContactFields && (!name.trim() || phone.length !== 10) && (
+                <div className="addr-warn addr-warn-red">
+                  <AlertCircle size={13} />
+                  <span>Enter your name and a valid 10-digit phone</span>
+                </div>
+              )}
             </div>
           </motion.div>
         </motion.div>
@@ -1482,14 +1565,18 @@ export default function AddressModal({
             }
             qrUnlocked={qrUnlocked}
             upiCopied={upiCopied}
-            verifyTimer={verifyTimer}
-            canVerify={canVerify}
+            upiPhase={upiPhase}
+            verifyCountdown={verifyCountdown}
             upiId={UPI_ID}
             onRevealQR={handleUPIPaymentClick}
             onCopyUpi={handleCopyUpiId}
             onDownloadQR={handleDownloadQR}
             onVerify={handleVerifyUPIPayment}
-            onClose={() => setShowUPIPayment(false)}
+            onClose={() => {
+              clearUpiTimers();
+              setUpiPhase("await");
+              setShowUPIPayment(false);
+            }}
             onWhatsAppFallback={handleWhatsAppOrderClick}
             onSwitchToCOD={switchToCODFromUPI}
           />
@@ -2392,8 +2479,8 @@ function UPIPaymentModal({
   totalToPay,
   qrUnlocked,
   upiCopied,
-  verifyTimer,
-  canVerify,
+  upiPhase = "await",
+  verifyCountdown = 30,
   upiId,
   onRevealQR,
   onCopyUpi,
@@ -2421,296 +2508,218 @@ function UPIPaymentModal({
         onClick={(e) => e.stopPropagation()}
         style={{ maxHeight: "92vh", overflowY: "auto" }}
       >
-        <div
-          style={{
-            padding: "20px",
-            background:
-              "linear-gradient(135deg, var(--tertiary-10, #fb850010) 0%, var(--tertiary-light-10, #ffb70310) 100%)",
-            borderBottom: "1px solid var(--dark-10)",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <div className="flex flex-col gap-4">
-            <span className="font-12 dark-50 weight-500">Secure Payment</span>
-            <div className="flex flex-row items-center gap-8">
-              <span className="font-16 weight-700">Pay via UPI</span>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Close UPI modal"
-            style={{
-              border: "none",
-              background: "transparent",
-              cursor: "pointer",
-              color: "var(--foreground)",
-            }}
-          >
-            <X size={18} />
-          </button>
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 }}
-            style={{
-              padding: "16px",
-              background: "var(--dark-4)",
-              border: "1px solid var(--dark-10)",
-              borderRadius: "12px",
-              display: "flex",
-              flexDirection: "column",
-              gap: "8px",
-            }}
-          >
-            <div
-              style={{ paddingTop: 8, marginTop: 4 }}
-              className="flex justify-between items-center"
-            >
-              <span className="font-14 weight-600">Total to Pay</span>
-              <span
-                className="weight-700"
-                style={{ fontSize: 22, color: "var(--success)" }}
-              >
-                ₹{totalToPay}
+        <div className="upiv3">
+          {/* Header */}
+          <div className="upiv3-head">
+            <div className="upiv3-head-l">
+              <span className="upiv3-secure">
+                <ShieldCheck size={12} /> Secure UPI Payment
               </span>
+              <span className="upiv3-title">Pay via UPI</span>
             </div>
+            <button
+              type="button"
+              className="upiv3-x"
+              onClick={onClose}
+              aria-label="Close UPI modal"
+            >
+              <X size={18} />
+            </button>
+          </div>
+
+          {/* Payee (merchant) card */}
+          <div className="upiv3-payee">
+            <span className="upiv3-payee-logo">TB</span>
+            <div className="upiv3-payee-info">
+              <span className="upiv3-payee-name">TheBookX</span>
+              <span className="upiv3-payee-upi">{upiId}</span>
+            </div>
+            <span className="upiv3-verified">
+              <ShieldCheck size={11} /> Verified
+            </span>
+          </div>
+
+          {/* Amount */}
+          <div className="upiv3-amount">
+            <span className="upiv3-amount-l">Amount payable</span>
+            <span className="upiv3-amount-v">₹{totalToPay}</span>
             {quickReadTotal > 0 && (
-              <div
-                className="font-11 flex items-center gap-4"
-                style={{ color: "var(--tertiary, #fb8500)", fontWeight: 600 }}
-              >
-                ⚡ Includes {quickReadCount} QuickRead
+              <span className="upiv3-amount-x">
+                ⚡ incl. {quickReadCount} QuickRead
                 {quickReadCount > 1 ? "s" : ""} (₹{quickReadTotal})
-              </div>
+              </span>
             )}
-          </motion.div>
+          </div>
 
           {!qrUnlocked ? (
             <motion.div
+              className="upiv3-reveal"
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.12 }}
-              style={{
-                padding: "24px 16px",
-                border: "2px dashed var(--tertiary)",
-                borderRadius: "12px",
-                background:
-                  "linear-gradient(135deg, var(--tertiary-10, #fb850010) 0%, transparent 100%)",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: "12px",
-                textAlign: "center",
-              }}
+              transition={{ delay: 0.1 }}
             >
-              <motion.div
+              <motion.span
+                className="upiv3-reveal-ic"
                 animate={{ y: [0, -4, 0] }}
                 transition={{
                   duration: 1.6,
                   repeat: Infinity,
                   ease: "easeInOut",
                 }}
-                style={{
-                  width: "56px",
-                  height: "56px",
-                  borderRadius: "50%",
-                  background: "var(--tertiary)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "#fff",
-                }}
               >
                 <QrCode size={26} />
-              </motion.div>
-              <div className="flex flex-col gap-4 items-center">
-                <span className="font-14 weight-700">
-                  Ready to pay ₹{totalToPay}?
-                </span>
-                <span className="font-12 dark-50">
-                  Tap below to reveal the UPI QR code
-                </span>
-              </div>
-              <button
-                className="pri-big-btn width100 flex flex-row items-center justify-center gap-8"
-                onClick={onRevealQR}
-                style={{ maxWidth: 320 }}
-              >
-                <QrCode size={17} />
-                Reveal QR Code to Pay
+              </motion.span>
+              <span className="upiv3-reveal-t">
+                Ready to pay ₹{totalToPay}?
+              </span>
+              <span className="upiv3-reveal-s">
+                Reveal the QR, then scan it in any UPI app to complete the
+                payment securely.
+              </span>
+              <button type="button" className="upiv3-cta" onClick={onRevealQR}>
+                <QrCode size={17} /> Reveal QR &amp; Pay
               </button>
-              <div className="upi-apps">
-                <span className="upi-apps-lbl">Works with</span>
-                <div className="upi-apps-row">
-                  <span className="upi-app">GPay</span>
-                  <span className="upi-app">PhonePe</span>
-                  <span className="upi-app">Paytm</span>
-                  <span className="upi-app">BHIM</span>
+
+              <div className="upiv3-apps">
+                <span className="upiv3-apps-lbl">Pay with any UPI app</span>
+                <div className="upiv3-apps-row">
+                  <span className="upiv3-app gpay">G Pay</span>
+                  <span className="upiv3-app phonepe">PhonePe</span>
+                  <span className="upiv3-app paytm">Paytm</span>
+                  <span className="upiv3-app bhim">BHIM</span>
                 </div>
               </div>
+
+              {onSwitchToCOD && (
+                <>
+                  <div className="upiv3-or">
+                    <span>or</span>
+                  </div>
+                  <button
+                    type="button"
+                    className="upiv3-cod"
+                    onClick={onSwitchToCOD}
+                  >
+                    <span className="upiv3-cod-ic">
+                      <Wallet size={16} />
+                    </span>
+                    <span className="upiv3-cod-tx">
+                      <span className="upiv3-cod-t">Continue with COD</span>
+                      <span className="upiv3-cod-s">Pay at delivery</span>
+                    </span>
+                    <ArrowRight size={16} />
+                  </button>
+                </>
+              )}
+
               <button
-                className="sec-mid-btn flex flex-row items-center gap-8"
+                type="button"
+                className="upiv3-wa"
                 onClick={onWhatsAppFallback}
-                style={{ marginTop: 4 }}
               >
                 <FaWhatsapp size={16} color="#25D366" />
-                <span className="font-12">Prefer WhatsApp? Chat & order</span>
+                <span>Prefer WhatsApp? Chat &amp; order</span>
               </button>
-              {onSwitchToCOD && (
-                <button
-                  type="button"
-                  className="upi-cod-switch"
-                  onClick={onSwitchToCOD}
-                >
-                  <span>
-                    Don&apos;t have an option to pay online? Choose Cash on
-                    Delivery
-                  </span>
-                  <ArrowRight size={16} />
-                </button>
-              )}
             </motion.div>
           ) : (
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
+              className="upiv3-qr"
+              initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3 }}
-              style={{
-                padding: "20px 16px",
-                background: "#fff",
-                border: "1px solid var(--dark-10)",
-                borderRadius: "12px",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: "14px",
-              }}
             >
-              <div
-                className="flex flex-row gap-8 width100 "
-                style={{ justifyContent: "center" }}
-              >
-                {["Scan", "Pay", "Verify"].map((step, i) => (
-                  <div
-                    key={step}
-                    className="flex flex-row items-center justify-center gap-4"
-                    style={{ flex: 1, maxWidth: 90 }}
-                  >
-                    <div
-                      style={{
-                        width: 20,
-                        height: 20,
-                        borderRadius: "50%",
-                        background:
-                          i === 0 ? "var(--tertiary)" : "var(--dark-10)",
-                        color: i === 0 ? "#fff" : "var(--dark-50)",
-                        fontSize: 10,
-                        fontWeight: 700,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {i + 1}
-                    </div>
-                    <span
-                      className="font-10"
-                      style={{
-                        color: i === 0 ? "var(--foreground)" : "var(--dark-50)",
-                      }}
-                    >
-                      {step}
-                    </span>
+              {/* Steps */}
+              <div className="upiv3-steps">
+                {["Scan", "Pay", "Verify"].map((s, i) => (
+                  <div className={`upiv3-step${i === 0 ? " on" : ""}`} key={s}>
+                    <span className="upiv3-step-n">{i + 1}</span>
+                    <span className="upiv3-step-l">{s}</span>
                   </div>
                 ))}
               </div>
 
-              <Image
-                src="/books/uskillbook.png"
-                alt="UPI QR Code"
-                width={280}
-                height={340}
-                style={{
-                  borderRadius: 8,
-                  boxShadow: "0 4px 16px var(--dark-10)",
-                }}
-              />
-
-              <div className="flex flex-row items-center justify-center gap-8 width100">
-                <button
-                  className="sec-mid-btn flex flex-row gap-6 items-center"
-                  onClick={onCopyUpi}
-                  style={{ flex: 1, justifyContent: "center" }}
-                >
-                  <Copy size={14} />
-                  <span className="font-12">
-                    {upiCopied ? "Copied!" : upiId}
-                  </span>
-                </button>
-                <button
-                  className="sec-mid-btn flex flex-row gap-6 items-center"
-                  onClick={onDownloadQR}
-                  style={{ justifyContent: "center" }}
-                >
-                  <Download size={14} />
-                  <span className="font-12">Save</span>
-                </button>
-              </div>
-
-              <span
-                className="font-11 dark-50"
-                style={{ textAlign: "center", lineHeight: 1.5 }}
-              >
-                Pay using any UPI app, Google Pay, PhonePe, Paytm, BHIM, or any
-                bank app
-              </span>
-
-              <div
-                className="width100 flex flex-col gap-6 items-center"
-                style={{ marginTop: 4 }}
-              >
-                <button
-                  className={`pri-big-btn width100 ${!canVerify ? "disabled-btn" : ""}`}
-                  disabled={!canVerify}
-                  onClick={onVerify}
-                  style={{
-                    opacity: canVerify ? 1 : 0.6,
-                    cursor: canVerify ? "pointer" : "not-allowed",
-                  }}
-                >
-                  {canVerify
-                    ? "✅ I've completed payment, Verify"
-                    : `Verifying in ${verifyTimer}s…`}
-                </button>
-                <span className="font-10 dark-50">
-                  Payment verification takes ~30 seconds
+              {/* QR card */}
+              <div className="upiv3-qr-card">
+                <div className="upiv3-qr-top">
+                  <div className="upiv3-qr-top-l">
+                    <span className="upiv3-qr-payee-lbl">Paying to</span>
+                    <span className="upiv3-qr-payee">TheBookX</span>
+                  </div>
+                  <span className="upiv3-qr-amt">₹{totalToPay}</span>
+                </div>
+                <div className="upiv3-qr-img">
+                  <Image
+                    src="/books/uskillbook.png"
+                    alt="UPI QR Code"
+                    width={236}
+                    height={290}
+                  />
+                </div>
+                <span className="upiv3-qr-scan">
+                  Scan with any UPI app to pay
                 </span>
+                <div className="upiv3-qr-brands">
+                  <span className="upiv3-app bhim">BHIM</span>
+                  <span className="upiv3-app gpay">G Pay</span>
+                  <span className="upiv3-app phonepe">PhonePe</span>
+                  <span className="upiv3-app paytm">Paytm</span>
+                </div>
               </div>
+
+              {/* UPI ID + save */}
+              <div className="upiv3-id-row">
+                <button type="button" className="upiv3-id" onClick={onCopyUpi}>
+                  <Copy size={13} />
+                  <span>{upiCopied ? "Copied!" : upiId}</span>
+                </button>
+                <button
+                  type="button"
+                  className="upiv3-save"
+                  onClick={onDownloadQR}
+                >
+                  <Download size={13} /> Save QR
+                </button>
+              </div>
+
+              {/* Verify — three states: await → verifying → timeout */}
+              <button
+                type="button"
+                className={`upiv3-cta${upiPhase === "verifying" ? " loading" : ""}`}
+                disabled={upiPhase === "verifying"}
+                onClick={onVerify}
+              >
+                {upiPhase === "verifying" ? (
+                  <>
+                    <span className="upiv3-spin" /> Verifying payment…{" "}
+                    {verifyCountdown}s
+                  </>
+                ) : upiPhase === "timeout" ? (
+                  <>
+                    <FaWhatsapp size={16} color="#fff" /> Verify payment on
+                    WhatsApp
+                  </>
+                ) : (
+                  "I've paid — Verify payment"
+                )}
+              </button>
+              <span className="upiv3-verify-note">
+                {upiPhase === "verifying"
+                  ? "Confirming your payment with our system…"
+                  : upiPhase === "timeout"
+                    ? "Taking longer than usual — send us the payment on WhatsApp and we'll confirm it."
+                    : "Scan & pay first, then tap verify. We'll confirm within ~30 seconds."}
+              </span>
             </motion.div>
           )}
 
-          <div
-            className="flex flex-row justify-between items-center"
-            style={{
-              padding: "10px 12px",
-              background: "var(--dark-4)",
-              borderRadius: 10,
-            }}
-          >
-            <div className="flex flex-row items-center gap-6">
-              <ShieldCheck size={14} style={{ color: "var(--success)" }} />
-              <span className="font-11 dark-50">Encrypted &amp; secure</span>
-            </div>
-            <div className="flex flex-row items-center gap-6">
-              <Package size={14} style={{ color: "var(--tertiary)" }} />
-              <span className="font-11 dark-50">Order tracked end-to-end</span>
-            </div>
+          {/* Trust footer */}
+          <div className="upiv3-trust">
+            <span>
+              <ShieldCheck size={13} /> 256-bit encrypted
+            </span>
+            <span>
+              <Package size={13} /> Tracked end-to-end
+            </span>
           </div>
         </div>
       </motion.div>

@@ -204,6 +204,8 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
     // Accurate amounts computed at checkout — prefer these over recomputing.
     deliveryCharge: deliveryChargeIn,
     giftWrapCharge: giftWrapChargeIn,
+    // Optional caller-supplied order id so the client can poll this exact row.
+    orderId: orderIdIn,
   } = orderDetails;
 
   // Use the real charge the customer was shown; only fall back to the
@@ -228,7 +230,7 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
   });
 
   const formData = {
-    orderId: `ORD${Date.now()}`,
+    orderId: orderIdIn || `ORD${Date.now()}`,
     customerName: addressData.name || "",
     phone: addressData.phone || "",
     pincode: addressData.pincode || "",
@@ -275,5 +277,49 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
     });
   }
 
-  return submitOrderToGoogleForm(formData);
+  await submitOrderToGoogleForm(formData);
+  // Hand the order id back so the caller can poll this exact row.
+  return formData.orderId;
+};
+
+// Poll helper — reads the orders sheet and reports whether the row for this
+// Order ID has been CONFIRMED (i.e. the "(unconfirmed)" tag was removed from
+// the customer name by the admin after verifying the UPI payment).
+export const fetchOrderStatusById = async (orderId) => {
+  const id = String(orderId || "").trim();
+  if (!id) return { found: false, confirmed: false };
+  try {
+    const url = `https://docs.google.com/spreadsheets/d/${WALLET_SHEET_ID}/gviz/tq?tqx=out:json`;
+    const res = await fetch(url, { cache: "no-store" });
+    const text = await res.text();
+    const data = JSON.parse(text.substring(47, text.length - 2));
+    const headers = data.table.cols.map((c) => c.label);
+    let found = false;
+    let confirmed = false;
+    data.table.rows.forEach((row) => {
+      const o = {};
+      row.c.forEach((cell, i) => {
+        let v = cell?.v;
+        if (v && typeof v === "object" && v.value !== undefined) v = v.value;
+        o[headers[i]] = v;
+      });
+      if (String(o["Order ID"] ?? "").trim() === id) {
+        found = true;
+        const nm = String(o["Customer Name"] ?? "");
+        const st = String(o["Order Status"] ?? "");
+        // Confirmed once the "(unconfirmed)" marker is gone from the name
+        // (or an explicit confirmed/received status is set by the admin).
+        if (
+          !/unconfirmed/i.test(nm) ||
+          /received|confirmed|paid/i.test(st)
+        ) {
+          confirmed = true;
+        }
+      }
+    });
+    return { found, confirmed };
+  } catch (e) {
+    console.error("Order status read failed:", e);
+    return { found: false, confirmed: false };
+  }
 };

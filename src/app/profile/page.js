@@ -1018,7 +1018,7 @@ Please cancel this order. Thank you 🙏`;
 
   const handleRescheduleSubmit = () => {
     if (!rescheduleDate) {
-      alert("Please pick a preferred delivery date.");
+      alert("Please pick a preferred dispatch date.");
       return;
     }
     const order = rescheduleOrder;
@@ -1035,7 +1035,7 @@ Please cancel this order. Thank you 🙏`;
     const lines = [
       "Hi TheBookX 👋",
       "",
-      "I'd like to *reschedule* the delivery of my order.",
+      "I'd like to choose *when to ship* (dispatch) my order.",
       "",
       `📋 *Order ID:* ${order["Order ID"]}`,
       `👤 *Name:* ${order["Customer Name"] || ""}`,
@@ -1049,7 +1049,7 @@ Please cancel this order. Thank you 🙏`;
     if (rescheduleNote.trim()) {
       lines.push(`📝 *Note:* ${rescheduleNote.trim()}`);
     }
-    lines.push("", "Please update the delivery accordingly. Thank you 🙏");
+    lines.push("", "Please dispatch my order accordingly. Thank you 🙏");
 
     const message = lines.join("\n");
 
@@ -1717,7 +1717,7 @@ Please cancel this order. Thank you 🙏`;
                         }}
                       >
                         <CalendarClock size={14} />
-                        Reschedule
+                        When to ship
                       </button>
                     </div>
                   )}
@@ -1966,7 +1966,7 @@ Please cancel this order. Thank you 🙏`;
                     size={18}
                     style={{ color: "var(--tertiary, #fb8500)" }}
                   />
-                  Reschedule Delivery
+                  Choose when to ship
                 </span>
                 <span
                   className="cursor-pointer"
@@ -2001,7 +2001,7 @@ Please cancel this order. Thank you 🙏`;
                 <div className="input-group">
                   <label className="flex flex-row gap-4 items-center">
                     <Calendar size={14} />
-                    Preferred delivery date <span className="red">*</span>
+                    Preferred dispatch date <span className="red">*</span>
                   </label>
                   <input
                     type="date"

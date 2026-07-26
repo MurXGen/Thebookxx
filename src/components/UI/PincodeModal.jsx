@@ -23,6 +23,9 @@ export default function PincodeModal() {
   const [locationData, setLocationData] = useState(null);
   const [startTime, setStartTime] = useState(null);
   const [hasAutoFilled, setHasAutoFilled] = useState(false);
+  // Funnel stage inside the modal: teaser scratch card → details form.
+  // (The real, scratchable reveal is the ScratchRewardSheet shown after submit.)
+  const [stage, setStage] = useState("teaser"); // "teaser" | "form"
   // Scratch-card reward shown after submit (only when a phone number is given).
   const [showScratch, setShowScratch] = useState(false);
   const [scratchEligible, setScratchEligible] = useState(false);
@@ -37,6 +40,27 @@ export default function PincodeModal() {
     }
   };
   const closeScratch = () => setShowScratch(false);
+
+  // Auto-log-in this number into the profile (overrides any existing), then
+  // send the shopper to their profile.
+  const goToProfile = () => {
+    const digits = String(phoneNumber || "").replace(/\D/g, "").slice(-10);
+    if (digits.length === 10) {
+      try {
+        localStorage.setItem("track_orders_phone", digits);
+        let list = [];
+        try {
+          list = JSON.parse(
+            localStorage.getItem("track_orders_saved_phones") || "[]",
+          );
+        } catch (_) {}
+        if (!Array.isArray(list)) list = [];
+        list = [digits, ...list.filter((x) => x !== digits)].slice(0, 5);
+        localStorage.setItem("track_orders_saved_phones", JSON.stringify(list));
+      } catch (_) {}
+    }
+    if (typeof window !== "undefined") window.location.assign("/profile");
+  };
 
   // Track modal view when opened
   useTrackView(EVENTS.PINCODE_MODAL_VIEWED, {}, isOpen);
@@ -82,6 +106,7 @@ export default function PincodeModal() {
     const open = () => {
       if (done) return;
       done = true;
+      setStage("teaser");
       setIsOpen(true);
       setStartTime(Date.now());
       cleanup();
@@ -279,9 +304,61 @@ export default function PincodeModal() {
             exit={{ y: "100%", opacity: 0 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
           >
+            {stage === "teaser" ? (
+              <>
+                <div className="bill-header">
+                  <span className="weight-600 font-16">
+                    🎁 You&apos;ve won a scratch card
+                  </span>
+                  <span className="cursor-pointer" onClick={handleSkip}>
+                    <X size={16} />
+                  </span>
+                </div>
+
+                <div className="pin-teaser">
+                  <button
+                    type="button"
+                    className="pin-teaser-card"
+                    onClick={() => setStage("form")}
+                    aria-label="Scratch to reveal your reward"
+                  >
+                    <span className="pin-teaser-shine" />
+                    <span className="pin-teaser-inner">
+                      <Gift size={30} />
+                      <span className="pin-teaser-t">Scratch to reveal</span>
+                      <span className="pin-teaser-hint">Tap to start</span>
+                    </span>
+                  </button>
+
+                  <p className="pin-teaser-copy">
+                    A wallet reward is hiding under here. Add your{" "}
+                    <b>pincode</b> &amp; <b>mobile number</b> to unlock and
+                    scratch it.
+                  </p>
+
+                  <button
+                    type="button"
+                    className="pri-big-btn width100"
+                    onClick={() => setStage("form")}
+                  >
+                    Scratch &amp; reveal →
+                  </button>
+                  <button
+                    type="button"
+                    className="pin-teaser-skip"
+                    onClick={handleSkip}
+                  >
+                    Skip for now
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
             {/* Header */}
             <div className="bill-header">
-              <span className="weight-600 font-16">📍 Share Your Location</span>
+              <span className="weight-600 font-16">
+                📍 Enter details to unlock
+              </span>
               <span className="cursor-pointer" onClick={handleSkip}>
                 <X size={16} />
               </span>
@@ -417,7 +494,7 @@ export default function PincodeModal() {
                   onClick={handleSubmit}
                   disabled={loading}
                 >
-                  {loading ? "Submitting..." : "Submit"}
+                  {loading ? "Unlocking..." : "Unlock & scratch 🎁"}
                 </LoadingButton>
               </div>
 
@@ -431,6 +508,8 @@ export default function PincodeModal() {
                 </div>
               )}
             </div>
+              </>
+            )}
           </motion.div>
         </motion.div>
       )}
@@ -440,6 +519,11 @@ export default function PincodeModal() {
     <ScratchRewardSheet
       open={showScratch}
       onClose={closeScratch}
+      onViewProfile={
+        String(phoneNumber || "").replace(/\D/g, "").length >= 10
+          ? goToProfile
+          : undefined
+      }
       eligible={scratchEligible}
       reward={scratchReward}
       scratched={scratchDone}

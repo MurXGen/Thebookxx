@@ -617,8 +617,35 @@ export default function AddressModal({
     }
   };
 
+  // Persist the shopper's number so their profile is auto-logged-in. Always
+  // overrides any previously saved number with the one entered at checkout.
+  const persistLogin = () => {
+    const digits = normalizePhone(phone);
+    if (digits.length !== 10) return;
+    try {
+      localStorage.setItem("track_orders_phone", digits);
+      if (name) localStorage.setItem("track_orders_name", name);
+      let list = [];
+      try {
+        list = JSON.parse(
+          localStorage.getItem("track_orders_saved_phones") || "[]",
+        );
+      } catch (_) {}
+      if (!Array.isArray(list)) list = [];
+      list = [digits, ...list.filter((x) => x !== digits)].slice(0, 5);
+      localStorage.setItem("track_orders_saved_phones", JSON.stringify(list));
+    } catch (_) {}
+  };
+
+  // Navigate to the (now auto-logged-in) profile.
+  const goToProfile = () => {
+    persistLogin();
+    if (typeof window !== "undefined") window.location.assign("/profile");
+  };
+
   const triggerCODSuccess = (isFasterDeliverySelected) => {
     setFasterDelivery(isFasterDeliverySelected);
+    persistLogin();
     setSuccessPayment("COD");
     setShowCODSuccess(true);
   };
@@ -889,6 +916,7 @@ export default function AddressModal({
     // Show the same Flipkart-style success screen (with scratch reward);
     // the order is finalised when the shopper taps Continue.
     setShowUPIPayment(false);
+    persistLogin();
     setSuccessPayment("UPI");
     setShowCODSuccess(true);
   };
@@ -1430,6 +1458,7 @@ export default function AddressModal({
                 : handleCODSuccessContinue
             }
             onClose={() => setShowCODSuccess(false)}
+            onViewProfile={goToProfile}
           />
         )}
       </AnimatePresence>
@@ -1709,6 +1738,7 @@ function CODSuccessModal({
   paymentMode = "COD",
   onContinue,
   onClose,
+  onViewProfile,
 }) {
   const isUPI = paymentMode === "UPI";
   const [isProcessing, setIsProcessing] = useState(true);
@@ -2061,6 +2091,7 @@ function CODSuccessModal({
               <ScratchRewardSheet
                 open={scratchOpen}
                 onClose={() => setScratchOpen(false)}
+                onViewProfile={onViewProfile}
                 eligible
                 reward={reward}
                 scratched={scratched}
@@ -2302,9 +2333,19 @@ function CODSuccessModal({
                 transition={{ delay: 0.7 }}
                 className="os-actions"
               >
+                {onViewProfile && (
+                  <button
+                    className="pri-big-btn width100 flex flex-row items-center justify-center gap-8"
+                    onClick={onViewProfile}
+                  >
+                    <User size={16} />
+                    Track order in your profile
+                    <ArrowRight size={16} />
+                  </button>
+                )}
                 <div className="os-actions-row">
                   <button
-                    className="pri-big-btn flex flex-row items-center justify-center gap-8"
+                    className="sec-big-btn flex flex-row items-center justify-center gap-8"
                     onClick={onContinue}
                   >
                     Continue Shopping

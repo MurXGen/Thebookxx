@@ -12,6 +12,7 @@ import ScratchCard from "./ScratchCard";
 export default function ScratchRewardSheet({
   open,
   onClose,
+  onViewProfile,
   eligible = true,
   reward = 0,
   scratched = false,
@@ -88,9 +89,13 @@ export default function ScratchRewardSheet({
             <button
               type="button"
               className="pri-big-btn width100 scratch-sheet-btn"
-              onClick={onClose}
+              onClick={scratched && onViewProfile ? onViewProfile : onClose}
             >
-              {scratched ? "Awesome, thanks!" : "Maybe later"}
+              {scratched
+                ? onViewProfile
+                  ? "View my profile →"
+                  : "Awesome, thanks!"
+                : "Maybe later"}
             </button>
           </motion.div>
         </motion.div>

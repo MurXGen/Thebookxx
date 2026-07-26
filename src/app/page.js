@@ -15,6 +15,7 @@ import OneRupeeHero from "@/components/OneRupeeHero";
 import HomeHero from "@/components/HomeHero";
 import LiveOrdersStrip from "@/components/LiveOrdersStrip";
 import QuickReadsPromo from "@/components/QuickReadsPromo";
+import { BooksSkeleton } from "@/components/UI/BookCardSkeleton";
 
 // Lazy load components with named exports
 const BestsellerStage = lazy(() => import("@/components/BestsellerStage"));
@@ -98,7 +99,8 @@ export default function HomePage() {
         <h1 className="sr-only">
           Buy Books Online in India at Lowest Prices, TheBookX | Books Starting at ₹1
         </h1>
-        <LoadingFallback />
+        <BooksSkeleton />
+        <BooksSkeleton />
       </div>
     );
   }
@@ -135,7 +137,7 @@ export default function HomePage() {
       <QuickReadsPromo />
 
       <LazySection threshold={0.05}>
-        <Suspense fallback={<LoadingFallback delay={0.4} />}>
+        <Suspense fallback={null}>
           <SmoothAppear delay={0.4}>
             <RecommendationModal />
           </SmoothAppear>
@@ -143,7 +145,7 @@ export default function HomePage() {
       </LazySection>
 
       <LazySection threshold={0.05}>
-        <Suspense fallback={<LoadingFallback delay={0.6} />}>
+        <Suspense fallback={<BooksSkeleton />}>
           <SmoothAppear delay={0.6}>
             <CatalogueSection />
           </SmoothAppear>
@@ -152,7 +154,7 @@ export default function HomePage() {
 
       {/* ₹1 books deals carousel, placed below the categories */}
       <LazySection threshold={0.05}>
-        <Suspense fallback={<LoadingFallback delay={0.7} />}>
+        <Suspense fallback={<BooksSkeleton />}>
           <SmoothAppear delay={0.7}>
             <OneRupeeDeals />
           </SmoothAppear>
@@ -161,7 +163,7 @@ export default function HomePage() {
 
       {/* Combo offers — curated multi-book bundles, right-scrolling rail */}
       <LazySection threshold={0.05}>
-        <Suspense fallback={<LoadingFallback delay={0.75} />}>
+        <Suspense fallback={<BooksSkeleton />}>
           <SmoothAppear delay={0.75}>
             <ComboDeals />
           </SmoothAppear>

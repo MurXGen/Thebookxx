@@ -126,6 +126,8 @@ export default function AddressModal({
   const [pincodeError, setPincodeError] = useState("");
   const [showContactFields, setShowContactFields] = useState(false);
   const [showFasterDeliveryModal, setShowFasterDeliveryModal] = useState(false);
+  // Which delivery speed is highlighted in the chooser (tap to select).
+  const [deliverySel, setDeliverySel] = useState("standard");
   const [tempPaymentMethod, setTempPaymentMethod] = useState(null);
   const [addressFormStartTime, setAddressFormStartTime] = useState(null);
   // Tracks the last logged-in phone we prefilled from, so we re-prefill when a
@@ -1193,9 +1195,14 @@ export default function AddressModal({
               onClick={(e) => e.stopPropagation()}
             >
               <div className="bill-header">
-                <span className="weight-600 font-16">
-                  Choose Delivery Speed
-                </span>
+                <div className="flex flex-col gap-4">
+                  <span className="weight-700 font-16">
+                    How fast do you want it?
+                  </span>
+                  <span className="font-11 dark-50">
+                    Tap an option, then continue. Both ship with tracking.
+                  </span>
+                </div>
                 <span
                   className="cursor-pointer"
                   onClick={() => setShowFasterDeliveryModal(false)}
@@ -1204,81 +1211,86 @@ export default function AddressModal({
                 </span>
               </div>
 
-              <div className="faster-delivery-content flex flex-col gap-32">
-                <div className="delivery-option-card standard flex flex-col gap-12">
-                  <div className="flex justify-between items-start">
-                    <div className="flex gap-12">
-                      <Clock size={24} className="gray-500" />
-                      <div className="flex flex-col gap-4">
-                        <h4 className="font-16 weight-600">
-                          Standard Delivery
-                        </h4>
-                        <p className="font-12 dark-50">
-                          Get your order delivered in 5-7 business days
-                        </p>
-                        <div className="flex items-center gap-4 mt-8">
-                          <ShieldCheck size={14} className="green" />
-                          <span className="font-10 green">Free tracking</span>
-                        </div>
-                      </div>
-                    </div>
-                    {!isCartBelow399 && (
-                      <span
-                        className="font-16 weight-600"
-                        style={{ color: "#fb8500" }}
-                      >
-                        {standardDeliveryCharge < 0
-                          ? `₹${standardDeliveryCharge}`
-                          : "FREE"}
-                      </span>
-                    )}
-                  </div>
-                  <button
-                    className="sec-big-btn width100 mt-16"
-                    onClick={handleProceedWithoutFasterDelivery}
-                  >
-                    {isCartBelow399
-                      ? "No fine, continue with standard delivery"
-                      : "I'll continue with this"}
-                  </button>
-                </div>
-
-                <div className="delivery-option-card faster flex flex-col gap-12">
-                  <div className="flex justify-between items-start">
-                    <div className="flex gap-12">
-                      <Zap size={24} className="orange" />
-                      <div className="flex flex-col gap-4">
-                        <h4 className="font-16 weight-600">Faster Delivery</h4>
-                        <p className="font-12 dark-50">
-                          Get your order delivered in 2-5 business days
-                        </p>
-                        <div className="flex flex-row gap-12">
-                          <div className="flex items-center gap-4 mt-8">
-                            <Truck size={14} className="orange" />
-                            <span className="font-10 orange">
-                              Priority shipping
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-4 mt-8">
-                            <ShieldCheck size={14} className="green" />
-                            <span className="font-10 green">
-                              Real-time tracking
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <span className="font-16 weight-600 green">
-                      +₹{fasterDeliveryCharge}
+              <div className="ds-wrap">
+                {/* Standard */}
+                <button
+                  type="button"
+                  className={`ds-opt${deliverySel === "standard" ? " active" : ""}`}
+                  onClick={() => setDeliverySel("standard")}
+                >
+                  <span className="ds-left">
+                    <span className="ds-radio" />
+                    <span className="ds-ic std">
+                      <Clock size={20} />
                     </span>
-                  </div>
-                  <button
-                    className="pri-big-btn width100 mt-16"
-                    onClick={handleProceedWithFasterDelivery}
-                  >
-                    Continue with Faster Delivery
-                  </button>
-                </div>
+                  </span>
+                  <span className="ds-main">
+                    <span className="ds-row">
+                      <span className="ds-title">Standard Delivery</span>
+                      {!isCartBelow399 && (
+                        <span className="ds-price free">
+                          {standardDeliveryCharge < 0
+                            ? `₹${standardDeliveryCharge}`
+                            : "FREE"}
+                        </span>
+                      )}
+                    </span>
+                    <span className="ds-sub">Arrives in 5–7 business days</span>
+                    <span className="ds-tags">
+                      <span className="ds-tag green">
+                        <ShieldCheck size={12} /> Free tracking
+                      </span>
+                    </span>
+                  </span>
+                </button>
+
+                {/* Faster */}
+                <button
+                  type="button"
+                  className={`ds-opt${deliverySel === "faster" ? " active" : ""}`}
+                  onClick={() => setDeliverySel("faster")}
+                >
+                  <span className="ds-flag">Fastest</span>
+                  <span className="ds-left">
+                    <span className="ds-radio" />
+                    <span className="ds-ic fast">
+                      <Zap size={20} />
+                    </span>
+                  </span>
+                  <span className="ds-main">
+                    <span className="ds-row">
+                      <span className="ds-title">Faster Delivery</span>
+                      <span className="ds-price add">
+                        +₹{fasterDeliveryCharge}
+                      </span>
+                    </span>
+                    <span className="ds-sub">Arrives in 2–5 business days</span>
+                    <span className="ds-tags">
+                      <span className="ds-tag orange">
+                        <Truck size={12} /> Priority shipping
+                      </span>
+                      <span className="ds-tag green">
+                        <ShieldCheck size={12} /> Real-time tracking
+                      </span>
+                    </span>
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  className="pri-big-btn width100 ds-continue"
+                  onClick={
+                    deliverySel === "faster"
+                      ? handleProceedWithFasterDelivery
+                      : handleProceedWithoutFasterDelivery
+                  }
+                >
+                  {deliverySel === "faster"
+                    ? `Continue with Faster · +₹${fasterDeliveryCharge}`
+                    : isCartBelow399
+                      ? "Continue with Standard"
+                      : "Continue with Standard · FREE"}
+                </button>
               </div>
             </motion.div>
           </motion.div>
@@ -1617,43 +1629,52 @@ function CODHandlingFeeModal({
             </div>
           </motion.div>
 
-          {/* CTAs, emotionally-charged primary, neutral secondary */}
-          <div className="flex flex-col gap-12" style={{ marginTop: 4 }}>
+          {/* Two clear, equal-weight choices — the shopper picks the one
+              they want. Each spells out exactly what it is + the amount. */}
+          <div className="cod-choice-grid" style={{ marginTop: 2 }}>
             <motion.button
-              initial={{ scale: 0.96, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.18 }}
-              whileTap={{ scale: 0.97 }}
-              whileHover={{ scale: 1.01 }}
+              type="button"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.16 }}
+              whileTap={{ scale: 0.98 }}
               onClick={onSwitchToUPI}
-              className="pri-big-btn width100 flex flex-row items-center justify-center gap-8"
-              style={{
-                background:
-                  "linear-gradient(135deg, var(--tertiary, #fb8500) 0%, var(--tertiary-light, #ffb703) 100%)",
-                position: "relative",
-                overflow: "hidden",
-              }}
+              className="cod-choice cod-choice-upi"
             >
-              <Sparkles size={16} />
-              Skip the ₹{codFee} fee, Pay via UPI
-              <ArrowRight size={16} />
+              <span className="cod-choice-badge">Save ₹{codFee}</span>
+              <span className="cod-choice-ic">
+                <Sparkles size={18} />
+              </span>
+              <span className="cod-choice-title">Pay now via UPI</span>
+              <span className="cod-choice-amt">₹{upiTotal}</span>
+              <span className="cod-choice-sub">Instant · no extra charge</span>
             </motion.button>
 
-            <button
+            <motion.button
               type="button"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.22 }}
+              whileTap={{ scale: 0.98 }}
               onClick={onConfirmCOD}
-              className="sec-mid-btn width100"
-              style={{ padding: "12px 16px" }}
+              className="cod-choice cod-choice-cod"
             >
-              Yes, proceed with COD handling fee
-            </button>
+              <span className="cod-choice-ic cod-ic-neutral">
+                <Wallet size={18} />
+              </span>
+              <span className="cod-choice-title">Cash on Delivery</span>
+              <span className="cod-choice-amt">₹{codTotal}</span>
+              <span className="cod-choice-sub">
+                Pay at door · incl. ₹{codFee} fee
+              </span>
+            </motion.button>
           </div>
 
           <span
             className="font-10 dark-50"
             style={{ textAlign: "center", marginTop: 2 }}
           >
-            Pay UPI from any app, Google Pay, PhonePe, Paytm, BHIM
+            UPI works with Google Pay, PhonePe, Paytm & BHIM
           </span>
         </div>
       </motion.div>
@@ -2476,12 +2497,22 @@ function UPIPaymentModal({
                 </span>
               </div>
               <button
-                className="pri-big-btn width100"
+                className="pri-big-btn width100 flex flex-row items-center justify-center gap-8"
                 onClick={onRevealQR}
                 style={{ maxWidth: 320 }}
               >
+                <QrCode size={17} />
                 Reveal QR Code to Pay
               </button>
+              <div className="upi-apps">
+                <span className="upi-apps-lbl">Works with</span>
+                <div className="upi-apps-row">
+                  <span className="upi-app">GPay</span>
+                  <span className="upi-app">PhonePe</span>
+                  <span className="upi-app">Paytm</span>
+                  <span className="upi-app">BHIM</span>
+                </div>
+              </div>
               <button
                 className="sec-mid-btn flex flex-row items-center gap-8"
                 onClick={onWhatsAppFallback}

@@ -406,11 +406,110 @@ const orderEconomics = (parsedBooks = []) => {
 };
 const WEEKDAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
+// Collapsible analytics section — click the header to wrap it up.
+function An2Section({ title, sub, right, defaultOpen = true, children }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <section className={`an2-card an2-acc${open ? " open" : ""}`}>
+      <button
+        type="button"
+        className="an2-acc-head"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+      >
+        <div className="an2-acc-titles">
+          <h3 className="an2-card-title">{title}</h3>
+          {sub ? <p className="an2-card-sub">{sub}</p> : null}
+        </div>
+        <div className="an2-acc-right">
+          {right}
+          <ChevronDown
+            size={18}
+            className={`an2-acc-chev${open ? " open" : ""}`}
+          />
+        </div>
+      </button>
+      {open && <div className="an2-acc-body">{children}</div>}
+    </section>
+  );
+}
+
+// Wallet adjust modal for the Users tab. Admin enters an amount, then Adds,
+// Deducts, or Sets the balance — written to the sheet by the parent.
+function WalletModal({ user, busy, onClose, onApply }) {
+  const [amount, setAmount] = useState("");
+  const cur = user.wallet || 0;
+  const delta = Math.abs(parseFloat(amount) || 0);
+  return (
+    <div className="wm-backdrop" onClick={onClose}>
+      <div className="wm" onClick={(e) => e.stopPropagation()}>
+        <div className="wm-head">
+          <div>
+            <h3 className="wm-title">Adjust wallet</h3>
+            <p className="wm-who">
+              {user.name || "Customer"} · +91 {user.phone}
+            </p>
+          </div>
+          <button type="button" className="wm-x" onClick={onClose} aria-label="Close">
+            <X size={18} />
+          </button>
+        </div>
+        <div className="wm-cur">
+          <span className="wm-cur-l">Current balance</span>
+          <strong className="wm-cur-v">₹{cur.toLocaleString()}</strong>
+        </div>
+        <label className="wm-lbl">Amount (₹)</label>
+        <input
+          className="wm-input"
+          type="number"
+          inputMode="numeric"
+          placeholder="e.g. 100"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          autoFocus
+        />
+        <div className="wm-actions">
+          <button
+            type="button"
+            className="wm-btn wm-deduct"
+            disabled={busy || !delta}
+            onClick={() => onApply(user, cur - delta)}
+          >
+            − Deduct ₹{delta || 0}
+          </button>
+          <button
+            type="button"
+            className="wm-btn wm-add"
+            disabled={busy || !delta}
+            onClick={() => onApply(user, cur + delta)}
+          >
+            + Add ₹{delta || 0}
+          </button>
+        </div>
+        <button
+          type="button"
+          className="wm-set"
+          disabled={busy || amount === ""}
+          onClick={() => onApply(user, delta)}
+        >
+          Set balance to ₹{delta.toLocaleString()}
+        </button>
+        <p className="wm-note">
+          {busy
+            ? "Updating the sheet…"
+            : "Writes to every order row for this customer. Balance can't go below ₹0."}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 // Toggleable analytics sections (Customize panel).
 // Top-level page sections for the scrollable navigation tabs.
 const SECTION_TABS = [
   { key: "analytics", label: "Analytics" },
-  { key: "indiapost", label: "India Post booking" },
+  { key: "users", label: "Users" },
+  { key: "track", label: "Track orders" },
   { key: "orders", label: "Orders" },
 ];
 
@@ -1113,50 +1212,23 @@ function Accordion({ id, title, icon, open, onToggle, right, children }) {
   );
 }
 
-// ── Loading screen with rotating, learnable tips ──
-const LOADING_TIPS = [
-  "Confirming a COD order within 2 hours noticeably reduces cancellations.",
-  "Tip: bundle combos lift your average order value — push them on slow days.",
-  "Orders marked “Getting Shipped” should get a tracking ID the same day.",
-  "Reader insight: self-help and romance are our fastest-moving genres.",
-  "Add a tracking ID early — customers who can track rarely raise a ticket.",
-  "Prepaid (UPI) orders settle faster and carry zero COD handling cost.",
-  "Watch your run-rate: a steady orders/day trend beats one-off spikes.",
-  "Dispatch before the daily courier cut-off to shorten delivery time.",
-];
-
+// ── Minimal, smooth skeleton loader (light shimmer, no text) ──
 function OrdersLoader() {
-  const [i, setI] = useState(0);
-  useEffect(() => {
-    const t = setInterval(
-      () => setI((p) => (p + 1) % LOADING_TIPS.length),
-      2000,
-    );
-    return () => clearInterval(t);
-  }, []);
   return (
     <div className="my-orders-page">
       <div className="section-1200 p-40">
-        <div className="orders-loader">
-          <div className="loading-spinner"></div>
-          <p className="orders-loader-title">Loading your orders…</p>
-          <AnimatePresence mode="wait">
-            <motion.p
-              key={i}
-              className="orders-loader-tip"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.35 }}
-            >
-              💡 {LOADING_TIPS[i]}
-            </motion.p>
-          </AnimatePresence>
-          <div className="orders-loader-dots">
-            {LOADING_TIPS.map((_, d) => (
-              <span key={d} className={d === i ? "on" : ""} />
+        <div className="an2-skel">
+          <div className="an2-skel-head">
+            <span className="an2-skel-line w-40" />
+            <span className="an2-skel-line w-20" />
+          </div>
+          <div className="an2-skel-stats">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div className="an2-skel-card" key={i} />
             ))}
           </div>
+          <div className="an2-skel-chart" />
+          <div className="an2-skel-chart short" />
         </div>
       </div>
     </div>
@@ -2327,8 +2399,47 @@ export default function ManageOrdersPage() {
     URL.revokeObjectURL(url);
   };
 
-  const [analyticsPeriod, setAnalyticsPeriod] = useState("month"); // day | week | month | all
+  const [analyticsPeriod, setAnalyticsPeriod] = useState("month"); // day | week | month | year | all
   const [periodOffset, setPeriodOffset] = useState(0); // 0 = current, -1 = previous …
+  // Month selected inside the P&L chart when viewing a full year.
+  const [pnlMonth, setPnlMonth] = useState(new Date().getMonth());
+  // Users tab — wallet adjust modal.
+  const [walletModal, setWalletModal] = useState(null); // the user record or null
+  const [walletBusy, setWalletBusy] = useState(false);
+
+  // Minimal hover tooltip for analytics charts (event-delegated so it never
+  // gets clipped inside scrollable chart containers).
+  const [chartTip, setChartTip] = useState(null); // { x, y, text }
+  const onChartMove = (e) => {
+    const el =
+      e.target && e.target.closest ? e.target.closest("[data-tip]") : null;
+    if (!el) {
+      setChartTip((t) => (t ? null : t));
+      return;
+    }
+    setChartTip({
+      x: e.clientX,
+      y: e.clientY,
+      text: el.getAttribute("data-tip"),
+    });
+  };
+  const onChartLeave = () => setChartTip((t) => (t ? null : t));
+
+  // Callback ref on the "today" column — centers it in a scrollable chart so
+  // the default viewport lands on the current date.
+  const centerTodayRef = useCallback((el) => {
+    if (!el || el.dataset.centered) return;
+    el.dataset.centered = "1";
+    requestAnimationFrame(() => {
+      const sc = el.closest(".an2-bars.scroll, .an2-pnl.scroll");
+      if (sc) {
+        sc.scrollLeft = Math.max(
+          0,
+          el.offsetLeft - sc.clientWidth / 2 + el.offsetWidth / 2,
+        );
+      }
+    });
+  }, []);
   const selectPeriod = (k) => {
     setAnalyticsPeriod(k);
     setPeriodOffset(0);
@@ -3089,6 +3200,16 @@ export default function ManageOrdersPage() {
         canNext: periodOffset < 0,
       };
     }
+    if (analyticsPeriod === "year") {
+      const y = new Date(now.getFullYear() + periodOffset, 0, 1);
+      const end = new Date(y.getFullYear() + 1, 0, 1);
+      return {
+        start: y,
+        end,
+        label: String(y.getFullYear()),
+        canNext: periodOffset < 0,
+      };
+    }
     // month
     const m = new Date(now.getFullYear(), now.getMonth() + periodOffset, 1);
     const end = new Date(m.getFullYear(), m.getMonth() + 1, 1);
@@ -3217,6 +3338,453 @@ export default function ManageOrdersPage() {
         : 0,
     };
   }, [analyticsOrders]);
+
+  // ─────────────────────────────────────────────────────────────────────
+  // Curated analytics data layer (rebuilt dashboard). Everything below only
+  // counts orders that actually carry an Order ID, and scopes to the period
+  // filter (Week / Month / Year / …) chosen in the Filters panel.
+  // ─────────────────────────────────────────────────────────────────────
+  const hasOrderId = (o) => !!String(o["Order ID"] || "").trim();
+  const anOrders = useMemo(
+    () => analyticsOrders.filter(hasOrderId),
+    [analyticsOrders],
+  );
+
+  // 1 — Top overview stats for the selected period.
+  const overview = useMemo(() => {
+    const n = anOrders.length;
+    const revenue = anOrders.reduce((s, o) => s + (o.revenue || 0), 0);
+    const cost = anOrders.reduce((s, o) => s + (o.totalCost || 0), 0);
+    const delivery = anOrders.reduce((s, o) => s + (o.deliveryCost || 0), 0);
+    const profit = revenue - cost;
+    const delivered = anOrders.filter((o) =>
+      /delivered/i.test(String(o["Order Status"] || "")),
+    ).length;
+    const cancelled = anOrders.filter((o) =>
+      /cancel/i.test(String(o["Order Status"] || "")),
+    ).length;
+    const codN = anOrders.filter((o) =>
+      /cash|cod/i.test(String(o["Payment Type"] || "")),
+    ).length;
+    const units = anOrders.reduce(
+      (s, o) =>
+        s +
+        (o.parsedBooks || []).reduce(
+          (t, b) => t + (Number(b.quantity) || 1),
+          0,
+        ),
+      0,
+    );
+    return {
+      n,
+      revenue,
+      cost,
+      delivery,
+      profit,
+      units,
+      margin: revenue > 0 ? Math.round((profit / revenue) * 100) : 0,
+      aov: n ? Math.round(revenue / n) : 0,
+      delivered,
+      cancelled,
+      codN,
+      upiN: n - codN,
+    };
+  }, [anOrders]);
+
+  // 2 — Distinct customers (all-time) who currently hold wallet balance.
+  const walletUsers = useMemo(() => {
+    const latest = {};
+    orders.forEach((o) => {
+      const ph = String(o["Phone Number"] || "")
+        .replace(/\D/g, "")
+        .slice(-10);
+      if (!ph) return;
+      const wRaw = o["Wallet"] ?? o["wallet"];
+      if (wRaw === "" || wRaw == null) return;
+      const w = parseFloat(wRaw);
+      if (isNaN(w)) return;
+      const d = getOrderDate(o);
+      const t = d ? d.getTime() : 0;
+      if (!latest[ph] || t >= latest[ph].t) latest[ph] = { t, w };
+    });
+    const holders = Object.values(latest).filter((x) => x.w > 0);
+    return {
+      count: holders.length,
+      total: holders.reduce((s, x) => s + x.w, 0),
+    };
+  }, [orders]);
+
+  // 4 — Total orders bar chart buckets (week→days, month→dates, year→months).
+  const ordersBar = useMemo(() => {
+    const start = periodWindow.start;
+    const tKey = dayKey(new Date());
+    const nowM = new Date().getMonth();
+    const nowY = new Date().getFullYear();
+    if (analyticsPeriod === "week" && start) {
+      const days = [];
+      const idx = {};
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(start);
+        d.setDate(d.getDate() + i);
+        const k = dayKey(d);
+        idx[k] = i;
+        days.push({
+          label: WEEKDAY_LABELS[i],
+          sub: String(d.getDate()),
+          count: 0,
+          isToday: k === tKey,
+        });
+      }
+      anOrders.forEach((o) => {
+        const d = getOrderDate(o);
+        if (d && idx[dayKey(d)] != null) days[idx[dayKey(d)]].count++;
+      });
+      return days;
+    }
+    if (
+      (analyticsPeriod === "month" || analyticsPeriod === "day") &&
+      start
+    ) {
+      const mStart = new Date(start.getFullYear(), start.getMonth(), 1);
+      const mEnd = new Date(start.getFullYear(), start.getMonth() + 1, 1);
+      const days = [];
+      const idx = {};
+      const cur = new Date(mStart);
+      let i = 0;
+      while (cur < mEnd) {
+        const k = dayKey(cur);
+        idx[k] = i++;
+        days.push({
+          label: String(cur.getDate()),
+          sub: WEEKDAY_LABELS[(cur.getDay() + 6) % 7],
+          count: 0,
+          isToday: k === tKey,
+        });
+        cur.setDate(cur.getDate() + 1);
+      }
+      anOrders.forEach((o) => {
+        const d = getOrderDate(o);
+        if (d && idx[dayKey(d)] != null) days[idx[dayKey(d)]].count++;
+      });
+      return days;
+    }
+    // year / all → 12 months
+    const yr = start ? start.getFullYear() : nowY;
+    const months = MONTH_LABELS.map((m, i) => ({
+      label: m,
+      sub: "",
+      count: 0,
+      isToday: i === nowM && yr === nowY,
+    }));
+    anOrders.forEach((o) => {
+      const d = getOrderDate(o);
+      if (d) months[d.getMonth()].count++;
+    });
+    return months;
+  }, [anOrders, analyticsPeriod, periodWindow]);
+
+  // 5 — Orders per weekday across the whole selected period.
+  const weekdayData = useMemo(() => {
+    const arr = WEEKDAY_LABELS.map((l) => ({ label: l, count: 0 }));
+    anOrders.forEach((o) => {
+      const d = getOrderDate(o);
+      if (d) arr[(d.getDay() + 6) % 7].count++;
+    });
+    return arr;
+  }, [anOrders]);
+
+  // 7 — Per-day revenue / cost / profit. Week & month → the whole window.
+  // Year → the month picked in the chart's dropdown (horizontally scrollable).
+  const pnlDays = useMemo(() => {
+    let start, end;
+    const win = periodWindow.start;
+    if (analyticsPeriod === "year" && win) {
+      start = new Date(win.getFullYear(), pnlMonth, 1);
+      end = new Date(win.getFullYear(), pnlMonth + 1, 1);
+    } else if (analyticsPeriod === "week" && win) {
+      start = new Date(win);
+      end = new Date(periodWindow.end);
+    } else if (win) {
+      start = new Date(win.getFullYear(), win.getMonth(), 1);
+      end = new Date(win.getFullYear(), win.getMonth() + 1, 1);
+    } else {
+      const now = new Date();
+      start = new Date(now.getFullYear(), now.getMonth(), 1);
+      end = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    }
+    const tKey = dayKey(new Date());
+    const map = {};
+    const days = [];
+    const cur = new Date(start);
+    while (cur < end) {
+      const rec = {
+        key: dayKey(cur),
+        day: cur.getDate(),
+        wd: WEEKDAY_LABELS[(cur.getDay() + 6) % 7],
+        revenue: 0,
+        cost: 0,
+        profit: 0,
+        isToday: dayKey(cur) === tKey,
+      };
+      map[rec.key] = rec;
+      days.push(rec);
+      cur.setDate(cur.getDate() + 1);
+    }
+    anOrders.forEach((o) => {
+      const d = getOrderDate(o);
+      if (!d) return;
+      const rec = map[dayKey(d)];
+      if (!rec) return;
+      rec.revenue += o.revenue || 0;
+      rec.cost += o.totalCost || 0;
+    });
+    days.forEach((r) => (r.profit = r.revenue - r.cost));
+    return days;
+  }, [anOrders, analyticsPeriod, periodWindow, pnlMonth]);
+
+  // 8 — Per-book profitability + net totals (period-scoped).
+  const bookStats = useMemo(() => {
+    const map = {};
+    anOrders.forEach((o) => {
+      (o.parsedBooks || []).forEach((line) => {
+        const name = String(line.name || "").trim();
+        if (!name) return;
+        const b = BOOK_BY_NAME[name.toLowerCase()];
+        const qty = Number(line.quantity) || 1;
+        const revenue = Number(line.total) || (Number(line.price) || 0) * qty;
+        if (!map[name])
+          map[name] = {
+            name,
+            qty: 0,
+            revenue: 0,
+            unitCost: b ? Number(b.cost) || 0 : 0,
+            matched: !!b,
+          };
+        map[name].qty += qty;
+        map[name].revenue += revenue;
+      });
+    });
+    const rows = Object.values(map)
+      .map((r) => {
+        const cost = r.unitCost * r.qty;
+        return { ...r, cost, profit: r.revenue - cost };
+      })
+      .sort((a, b) => b.profit - a.profit);
+    const totals = rows.reduce(
+      (a, r) => ({
+        qty: a.qty + r.qty,
+        revenue: a.revenue + r.revenue,
+        cost: a.cost + r.cost,
+        profit: a.profit + r.profit,
+      }),
+      { qty: 0, revenue: 0, cost: 0, profit: 0 },
+    );
+    return { rows, totals };
+  }, [anOrders]);
+
+  // 9 — Time-of-day quadrants (6-hour buckets) for the selected period.
+  const quadrantData = useMemo(() => {
+    const q = [
+      { label: "12–6 AM", tag: "Late night", count: 0 },
+      { label: "6 AM–12 PM", tag: "Morning", count: 0 },
+      { label: "12–6 PM", tag: "Afternoon", count: 0 },
+      { label: "6 PM–12 AM", tag: "Evening", count: 0 },
+    ];
+    anOrders.forEach((o) => {
+      const d = getOrderDate(o);
+      if (d) q[Math.floor(d.getHours() / 6)].count++;
+    });
+    return q;
+  }, [anOrders]);
+
+  // Projection & run rate — extrapolate the period's pace to its full length.
+  const projection = useMemo(() => {
+    const now = new Date();
+    const msDay = 86400000;
+    const start = periodWindow.start;
+    const end = periodWindow.end;
+    // No bounded window (all-time / day) → report the observed daily pace only.
+    if (analyticsPeriod === "all" || !start || !end) {
+      const activeDays = Math.max(
+        1,
+        new Set(
+          anOrders.map((o) => dayKey(getOrderDate(o))).filter(Boolean),
+        ).size,
+      );
+      return {
+        hasForecast: false,
+        revPerDay: Math.round(overview.revenue / activeDays),
+        ordPerDay: Math.round((overview.n / activeDays) * 10) / 10,
+        totalDays: activeDays,
+        elapsedDays: activeDays,
+        daysLeft: 0,
+        actualRev: overview.revenue,
+        projectedRev: overview.revenue,
+        projectedOrders: overview.n,
+        progressPct: 100,
+      };
+    }
+    const totalDays = Math.max(1, Math.round((end - start) / msDay));
+    const complete = now >= end;
+    let elapsedDays;
+    if (complete) elapsedDays = totalDays;
+    else if (now < start) elapsedDays = 0;
+    else elapsedDays = Math.min(totalDays, Math.floor((now - start) / msDay) + 1);
+    const eDays = Math.max(1, elapsedDays);
+    const revPerDay = overview.revenue / eDays;
+    const ordPerDay = overview.n / eDays;
+    const daysLeft = Math.max(0, totalDays - elapsedDays);
+    const hasForecast = !complete && totalDays > 1 && daysLeft > 0;
+    const projectedRev = hasForecast
+      ? Math.round(revPerDay * totalDays)
+      : overview.revenue;
+    const projectedOrders = hasForecast
+      ? Math.round(ordPerDay * totalDays)
+      : overview.n;
+    const progressPct =
+      projectedRev > 0
+        ? Math.min(100, Math.round((overview.revenue / projectedRev) * 100))
+        : 0;
+    return {
+      hasForecast,
+      revPerDay: Math.round(revPerDay),
+      ordPerDay: Math.round(ordPerDay * 10) / 10,
+      totalDays,
+      elapsedDays,
+      daysLeft,
+      actualRev: overview.revenue,
+      projectedRev,
+      projectedOrders,
+      progressPct,
+    };
+  }, [anOrders, overview, analyticsPeriod, periodWindow]);
+
+  // ── Users / customer management ────────────────────────────────────────
+  // Aggregate every order by phone number → one record per customer, with
+  // their spend, repeat status, average order size, last order and wallet.
+  const userList = useMemo(() => {
+    const map = {};
+    orders.forEach((o) => {
+      const ph = String(o["Phone Number"] || "")
+        .replace(/\D/g, "")
+        .slice(-10);
+      if (!ph) return;
+      if (!map[ph]) {
+        map[ph] = {
+          phone: ph,
+          name: "",
+          city: "",
+          orders: 0,
+          spent: 0,
+          units: 0,
+          lastT: -1,
+          lastDate: null,
+          walletT: -1,
+          wallet: 0,
+          ids: [],
+        };
+      }
+      const u = map[ph];
+      const d = getOrderDate(o);
+      const t = d ? d.getTime() : 0;
+      if (t >= u.lastT) {
+        u.lastT = t;
+        u.lastDate = d;
+        const nm = String(o["Customer Name"] || "").trim();
+        if (nm) u.name = nm;
+        const c = String(o["City"] || "").trim();
+        if (c) u.city = c;
+      }
+      if (hasOrderId(o)) {
+        u.orders += 1;
+        u.spent += o.revenue || 0;
+        u.units += (o.parsedBooks || []).reduce(
+          (s, b) => s + (Number(b.quantity) || 1),
+          0,
+        );
+        u.ids.push(o["Order ID"]);
+      }
+      const wRaw = o["Wallet"] ?? o["wallet"];
+      if (wRaw !== "" && wRaw != null) {
+        const w = parseFloat(wRaw);
+        if (!isNaN(w) && t >= u.walletT) {
+          u.walletT = t;
+          u.wallet = w;
+        }
+      }
+    });
+    return Object.values(map)
+      .map((u) => ({
+        ...u,
+        avg: u.orders ? Math.round(u.spent / u.orders) : 0,
+        repeat: u.orders > 1,
+      }))
+      .sort((a, b) => b.spent - a.spent);
+  }, [orders]);
+
+  const userSummary = useMemo(() => {
+    const total = userList.length;
+    const repeatUsers = userList.filter((u) => u.repeat);
+    const repeatSpent = repeatUsers.reduce((s, u) => s + u.spent, 0);
+    const repeatOrders = repeatUsers.reduce((s, u) => s + u.orders, 0);
+    const walletTotal = userList.reduce(
+      (s, u) => s + (u.wallet > 0 ? u.wallet : 0),
+      0,
+    );
+    const walletHolders = userList.filter((u) => u.wallet > 0).length;
+    const allSpent = userList.reduce((s, u) => s + u.spent, 0);
+    const allOrders = userList.reduce((s, u) => s + u.orders, 0);
+    return {
+      total,
+      repeatCount: repeatUsers.length,
+      repeatPct: total ? Math.round((repeatUsers.length / total) * 100) : 0,
+      repeatAvg: repeatOrders ? Math.round(repeatSpent / repeatOrders) : 0,
+      overallAvg: allOrders ? Math.round(allSpent / allOrders) : 0,
+      walletTotal,
+      walletHolders,
+    };
+  }, [userList]);
+
+  const filteredUsers = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return userList;
+    return userList.filter(
+      (u) =>
+        u.name.toLowerCase().includes(q) || u.phone.includes(q.replace(/\D/g, "")),
+    );
+  }, [userList, searchQuery]);
+
+  // Write a new wallet balance to EVERY order row of a customer (checkout reads
+  // wallet as the max across a phone's rows, so all rows must agree).
+  const applyWalletChange = async (user, newBalance) => {
+    if (!SHEET_EDIT_API_URL) {
+      alert("Wallet update needs the Sheet edit endpoint configured.");
+      return;
+    }
+    const nb = Math.max(0, Math.round(newBalance));
+    setWalletBusy(true);
+    try {
+      for (const id of user.ids) {
+        // eslint-disable-next-line no-await-in-loop
+        await updateOrderRow(id, { Wallet: nb });
+      }
+      setOrders((prev) =>
+        prev.map((o) => {
+          const ph = String(o["Phone Number"] || "")
+            .replace(/\D/g, "")
+            .slice(-10);
+          return ph === user.phone ? { ...o, Wallet: nb } : o;
+        }),
+      );
+      setWalletModal(null);
+      setTimeout(() => fetchOrders(), 1600);
+    } catch (e) {
+      console.error("Wallet update failed:", e);
+      alert("Could not update wallet. Please try again.");
+    } finally {
+      setWalletBusy(false);
+    }
+  };
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -3678,12 +4246,14 @@ export default function ManageOrdersPage() {
 
   // Status breakdown for the chart / progress bars
   const STATUS_META = [
+    { key: "Pending", color: "#94a3b8" },
     { key: "Processing", color: "#fb8500" },
     { key: "Getting Shipped", color: "#f59e0b" },
     { key: "Shipped", color: "#3b6fe0" },
     { key: "In Transit", color: "#7c4dff" },
     { key: "Out for Delivery", color: "#0ea5e9" },
     { key: "Delivered", color: "#008f0c" },
+    { key: "Money received", color: "#059669" },
     { key: "Cancelled", color: "#ef4444" },
   ];
   const statusCounts = STATUS_META.map((s) => ({
@@ -3927,662 +4497,688 @@ export default function ManageOrdersPage() {
         </div>
 
         {/* ===== Analytics (accordion) ===== */}
+        {/* ===== Analytics (curated dashboard) ===== */}
         {activeTab === "analytics" && (
-        <Accordion
-          id="analytics"
-          title="Analytics"
-          open={accOpen.analytics}
-          onToggle={toggleAcc}
-          right={
-            <div className="flex flex-row gap-8 an-actions">
-              <button
-                className="sec-mid-btn"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  fetchOrders();
-                }}
-                title="Refresh"
-              >
-                <RefreshCw size={14} /> <span className="an-btn-label">Refresh</span>
-              </button>
-              <button
-                className="sec-mid-btn"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowCustomize((s) => !s);
-                }}
-                title="Customize analytics"
-              >
-                <SlidersHorizontal size={14} />{" "}
-                <span className="an-btn-label">Customize</span>
-              </button>
-              <button
-                className="sec-mid-btn"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  exportToCSV();
-                }}
-                title="Export CSV"
-              >
-                <Download size={14} /> <span className="an-btn-label">Export</span>
-              </button>
-            </div>
-          }
-        >
-          <div className="admin-dash">
-            {/* Customize panel — show / hide analytics sections */}
-            {showCustomize && (
-              <div className="an-customize">
-                <div className="an-customize-head">
-                  <span>Show / hide analytics</span>
-                  <button
-                    type="button"
-                    className="an-customize-x"
-                    onClick={() => setShowCustomize(false)}
-                    aria-label="Close"
-                  >
-                    <X size={15} />
-                  </button>
-                </div>
-                <div className="an-customize-grid">
-                  {ANALYTICS_SECTIONS.map((s) => (
-                    <label key={s.key} className="an-customize-item">
-                      <input
-                        type="checkbox"
-                        checked={!!visibleCards[s.key]}
-                        onChange={() => toggleCard(s.key)}
-                      />
-                      {s.label}
-                    </label>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* KPI cards */}
-            {visibleCards.kpis && (
-            <div className="admin-kpis">
-              <div className="kpi kpi-orders">
-                <div className="kpi-ic">
-                  <ShoppingBag size={18} />
-                </div>
-                <span className="kpi-value">{analyticsOrders.length}</span>
-                <span className="kpi-label">Orders</span>
-              </div>
-              <div className="kpi kpi-rev">
-                <div className="kpi-ic">
-                  <IndianRupee size={18} />
-                </div>
-                <span className="kpi-value">
-                  ₹{totalRevenue.toLocaleString()}
-                </span>
-                <span className="kpi-label">Revenue</span>
-              </div>
-              <div className="kpi kpi-cost">
-                <div className="kpi-ic">
-                  <Package size={18} />
-                </div>
-                <span className="kpi-value">₹{totalCost.toLocaleString()}</span>
-                <span className="kpi-label">Total cost</span>
-              </div>
+          <div
+            className="an2"
+            onMouseMove={onChartMove}
+            onMouseLeave={onChartLeave}
+          >
+            {chartTip && (
               <div
-                className={`kpi ${totalPnL >= 0 ? "kpi-profit" : "kpi-loss"}`}
+                className="an2-tip"
+                style={{ left: chartTip.x, top: chartTip.y }}
               >
-                <div className="kpi-ic">
-                  {totalPnL >= 0 ? (
-                    <TrendingUp size={18} />
-                  ) : (
-                    <TrendingDown size={18} />
-                  )}
-                </div>
-                <span className="kpi-value">
-                  {totalPnL >= 0 ? "+" : "−"}₹
-                  {Math.abs(totalPnL).toLocaleString()}
-                </span>
-                <span className="kpi-label">Profit · {marginPct}% margin</span>
+                {chartTip.text}
               </div>
-              <div className="kpi kpi-runrate">
-                <div className="kpi-ic">
-                  <TrendingUp size={18} />
-                </div>
-                <span className="kpi-value">
-                  {ordersPerDay.toFixed(1)}/day
-                </span>
-                <span className="kpi-label">
-                  Run rate · ₹{Math.round(revPerDay).toLocaleString()}/day
-                </span>
-              </div>
-            </div>
             )}
-
-            {/* ===== Bento analytics grid ===== */}
-            <div className="an-bento">
-              {/* Profit & cost — follows the global period tab */}
-              {visibleCards.profitCost && (
-              <div className="an-cell an-wide">
-                <ProfitCostChart
-                  orders={orders}
-                  period={analyticsPeriod}
-                  offset={periodOffset}
-                />
+            {/* Header */}
+            <div className="an2-head">
+              <div>
+                <h2 className="an2-title">Analytics</h2>
+                <p className="an2-sub">
+                  {periodWindow.label} · {overview.n} order
+                  {overview.n === 1 ? "" : "s"} with a valid ID
+                </p>
               </div>
-              )}
-
-              {/* Delivery cost (India Post weight slabs) */}
-              {visibleCards.deliveryCost && (
-              <div className="an-cell an-wide">
-                <div className="admin-chart-card">
-                  <div className="chart-title">Delivery cost · India Post</div>
-                  <div className="dc-stats">
-                    <div className="dc-stat">
-                      <span className="dc-stat-label">Total delivery</span>
-                      <strong className="dc-stat-val dc-orange">
-                        ₹{totalDeliveryCost.toLocaleString()}
-                      </strong>
-                    </div>
-                    <div className="dc-stat">
-                      <span className="dc-stat-label">Avg / order</span>
-                      <strong className="dc-stat-val">
-                        ₹{avgDeliveryCost.toLocaleString()}
-                      </strong>
-                    </div>
-                    <div className="dc-stat">
-                      <span className="dc-stat-label">Total weight</span>
-                      <strong className="dc-stat-val">
-                        {(totalWeight / 1000).toFixed(1)}kg
-                      </strong>
-                    </div>
-                  </div>
-                  <div className="dc-bars">
-                    {deliverySlabs.map((s) => (
-                      <div key={s.label} className="dc-bar-row">
-                        <div className="dc-bar-head">
-                          <span className="dc-bar-label">{s.label}</span>
-                          <span className="dc-bar-rate">₹{s.rate}</span>
-                          <span className="dc-bar-val">
-                            <b>{s.count}</b> order{s.count === 1 ? "" : "s"} · ₹
-                            {s.amount.toLocaleString()}
-                          </span>
-                        </div>
-                        <div className="dc-bar-track">
-                          <div
-                            className="dc-bar-fill"
-                            style={{
-                              width: `${Math.max(
-                                s.count > 0 ? 6 : 0,
-                                (s.count / maxSlabCount) * 100,
-                              )}%`,
-                            }}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="dc-foot">
-                    Cost of goods ₹{totalBooksCost.toLocaleString()} + delivery ₹
-                    {totalDeliveryCost.toLocaleString()} ={" "}
-                    <strong>₹{totalCost.toLocaleString()}</strong> total cost ·
-                    profit{" "}
-                    <strong
-                      className={totalPnL >= 0 ? "dc-pos" : "dc-neg"}
-                    >
-                      {totalPnL >= 0 ? "+" : "−"}₹
-                      {Math.abs(totalPnL).toLocaleString()}
-                    </strong>
-                  </div>
-                </div>
-              </div>
-              )}
-
-              {/* Daily order-volume area chart */}
-              {visibleCards.dailyVolume && (
-              <div className="an-cell an-wide">
-                <DailyVolumeChart ordersByDay={analyticsByDay} />
-              </div>
-              )}
-
-              {/* Orders by status */}
-              {visibleCards.ordersByStatus && (
-              <div className="an-cell">
-                <div className="admin-chart-card">
-                  <div className="chart-title">Orders by status</div>
-                  <div className="status-bars">
-                    {statusCounts.map((s) => (
-                      <div key={s.key} className="status-bar-row">
-                        <span className="sb-label">{s.key}</span>
-                        <div className="sb-track">
-                          <div
-                            className="sb-fill"
-                            style={{
-                              width: `${(s.count / maxStatusCount) * 100}%`,
-                              background: s.color,
-                            }}
-                          />
-                        </div>
-                        <span className="sb-count">{s.count}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              )}
-
-              {/* Order value by status */}
-              {visibleCards.valueByStatus && (
-              <div className="an-cell">
-                <div className="admin-chart-card">
-                  <div className="chart-title">Order value by status</div>
-                  <div className="sv-list">
-                    {statusBreakdown.map((s) => (
-                      <div className="sv-row" key={s.key}>
-                        <span
-                          className="sv-dot"
-                          style={{ background: s.color }}
-                        />
-                        <div className="sv-main">
-                          <div className="sv-top">
-                            <span className="sv-name">
-                              {s.key}
-                              <em className="sv-count">{s.count} orders</em>
-                            </span>
-                            <span className="sv-val">
-                              ₹{s.value.toLocaleString()}
-                            </span>
-                          </div>
-                          <div className="sv-pay">
-                            <span className="sv-pill sv-upi">
-                              {s.upi} UPI · ₹{s.upiVal.toLocaleString()}
-                            </span>
-                            <span className="sv-pill sv-cod">
-                              {s.cod} COD · ₹{s.codVal.toLocaleString()}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                    {statusBreakdown.length === 0 && (
-                      <div className="sv-empty">No orders in this period.</div>
-                    )}
-                  </div>
-                  {breakdownTotals.count > 0 && (
-                    <div className="sv-total">
-                      <span className="sv-name">
-                        Total
-                        <em className="sv-count">
-                          {breakdownTotals.count} orders
-                        </em>
-                      </span>
-                      <span className="sv-total-right">
-                        <span className="sv-val">
-                          ₹{breakdownTotals.value.toLocaleString()}
-                        </span>
-                        <span className="sv-pay">
-                          <span className="sv-pill sv-upi">
-                            {breakdownTotals.upi} UPI · ₹
-                            {breakdownTotals.upiVal.toLocaleString()}
-                          </span>
-                          <span className="sv-pill sv-cod">
-                            {breakdownTotals.cod} COD · ₹
-                            {breakdownTotals.codVal.toLocaleString()}
-                          </span>
-                        </span>
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-              )}
-
-              {/* Top-selling books */}
-              {visibleCards.topBooks && (
-              <div className="an-cell an-wide">
-                <div className="admin-chart-card">
-                  <div className="chart-title">
-                    Top-selling books{" "}
-                    <span className="vol-sub">by units sold</span>
-                  </div>
-                  <HBars
-                    items={insights.topBooks.map((b) => ({
-                      label: b.name,
-                      value: b.units,
-                      display: `${b.units} · ₹${b.revenue.toLocaleString()}`,
-                    }))}
-                  />
-                </div>
-              </div>
-              )}
-
-              {/* Revenue by category */}
-              {visibleCards.categoryRevenue && (
-              <div className="an-cell">
-                <div className="admin-chart-card">
-                  <div className="chart-title">Revenue by category</div>
-                  <HBars
-                    accent="#3b6fe0"
-                    items={insights.topCats.map((c) => ({
-                      label: c.c,
-                      value: c.rev,
-                      display: `₹${c.rev.toLocaleString()}`,
-                    }))}
-                  />
-                </div>
-              </div>
-              )}
-
-              {/* Payment mix */}
-              {visibleCards.paymentMix && (
-              <div className="an-cell">
-                <div className="admin-chart-card">
-                  <div className="chart-title">Payment mix</div>
-                  <div className="pay-mix">
-                    <div className="pay-mix-row">
-                      <div className="pay-mix-head">
-                        <span>UPI / Prepaid</span>
-                        <span>
-                          {insights.upiN} · ₹{insights.upiV.toLocaleString()}
-                        </span>
-                      </div>
-                      <div className="ins-track">
-                        <div
-                          className="ins-fill"
-                          style={{
-                            width: `${insights.count ? (insights.upiN / insights.count) * 100 : 0}%`,
-                            background: "#2563eb",
-                          }}
-                        />
-                      </div>
-                    </div>
-                    <div className="pay-mix-row">
-                      <div className="pay-mix-head">
-                        <span>Cash on Delivery</span>
-                        <span>
-                          {insights.codN} · ₹{insights.codV.toLocaleString()}
-                        </span>
-                      </div>
-                      <div className="ins-track">
-                        <div
-                          className="ins-fill"
-                          style={{
-                            width: `${insights.count ? (insights.codN / insights.count) * 100 : 0}%`,
-                            background: "#fb8500",
-                          }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              )}
-
-              {/* Busiest weekdays */}
-              {visibleCards.weekday && (
-              <div className="an-cell">
-                <div className="admin-chart-card">
-                  <div className="chart-title">Busiest weekdays</div>
-                  <ColBars
-                    accent="#7c3aed"
-                    cols={insights.weekday.map((v, i) => ({
-                      label: WEEKDAY_LABELS[i],
-                      value: v,
-                    }))}
-                  />
-                </div>
-              </div>
-              )}
-
-              {/* Peak order hours */}
-              {visibleCards.hours && (
-              <div className="an-cell">
-                <div className="admin-chart-card">
-                  <div className="chart-title">
-                    Peak order hours{" "}
-                    <span className="vol-sub">
-                      {insights.hasTime ? "0–23h" : "no time data"}
-                    </span>
-                  </div>
-                  {insights.hasTime ? (
-                    <ColBars
-                      accent="#0ea5e9"
-                      showValues={false}
-                      cols={insights.hourArr.map((v, i) => ({
-                        label: i % 3 === 0 ? String(i) : "",
-                        value: v,
-                        hint: `${i}:00`,
-                      }))}
-                    />
-                  ) : (
-                    <div className="sv-empty">
-                      Order timestamps don’t include a time of day.
-                    </div>
-                  )}
-                </div>
-              </div>
-              )}
-
-              {/* Top delivery pincodes */}
-              {visibleCards.pincodes && (
-              <div className="an-cell">
-                <div className="admin-chart-card">
-                  <div className="chart-title">Top delivery pincodes</div>
-                  <HBars
-                    accent="#12b76a"
-                    items={insights.topPins.map((p) => ({
-                      label: p.p,
-                      value: p.c,
-                      display: `${p.c} order${p.c > 1 ? "s" : ""}`,
-                    }))}
-                  />
-                </div>
-              </div>
-              )}
-
-              {/* Yearly cumulative run-rate */}
-              {visibleCards.runRate && (
-              <div className="an-cell an-wide">
-                <RunRateChart orders={orders} />
-              </div>
-              )}
-
-              {/* Operational health ratios */}
-              {visibleCards.health && (
-              <div className="an-cell an-wide">
-                <div className="admin-chart-card">
-                  <div className="chart-title">Operational health</div>
-                  <div className="pc-stripe">
-                    <span className="pc-si">
-                      Avg order value <b>₹{insights.aov.toLocaleString()}</b>
-                    </span>
-                    <span className="pc-si">
-                      Delivered <b className="pc-pos">{insights.deliveredPct}%</b>
-                    </span>
-                    <span className="pc-si">
-                      With tracking <b>{insights.trackedPct}%</b>
-                    </span>
-                    <span className="pc-si">
-                      Cancelled{" "}
-                      <b className={insights.cancelPct > 0 ? "pc-neg" : ""}>
-                        {insights.cancelPct}%
-                      </b>
-                    </span>
-                    <span className="pc-si">
-                      Repeat customers <b>{insights.repeatPct}%</b>
-                    </span>
-                    <span className="pc-si">
-                      Unique customers <b>{insights.uniqueCustomers}</b>
-                    </span>
-                  </div>
-                </div>
-              </div>
-              )}
-
-              {/* Cancelled orders & losses (auto: forfeited postage) */}
-              {visibleCards.cancelled && (
-              <div className="an-cell an-wide">
-                <div className="admin-chart-card">
-                  <div className="chart-title">Cancelled orders &amp; losses</div>
-                  <div className="dc-stats">
-                    <div className="dc-stat">
-                      <span className="dc-stat-label">Cancelled orders</span>
-                      <strong className="dc-stat-val">
-                        {cancelledOrders.length}
-                      </strong>
-                    </div>
-                    <div className="dc-stat">
-                      <span className="dc-stat-label">Cancelled value</span>
-                      <strong className="dc-stat-val">
-                        ₹{cancelledValue.toLocaleString()}
-                      </strong>
-                    </div>
-                    <div className="dc-stat">
-                      <span className="dc-stat-label">Cancelled loss</span>
-                      <strong className="dc-stat-val dc-neg">
-                        −₹{cancelledLoss.toLocaleString()}
-                      </strong>
-                    </div>
-                    <div className="dc-stat">
-                      <span className="dc-stat-label">Net profit</span>
-                      <strong
-                        className={`dc-stat-val ${
-                          netProfit >= 0 ? "dc-pos" : "dc-neg"
-                        }`}
-                      >
-                        {netProfit >= 0 ? "+" : "−"}₹
-                        {Math.abs(netProfit).toLocaleString()}
-                      </strong>
-                    </div>
-                  </div>
-                  <div className="dc-foot">
-                    {cancelledOrders.length} cancelled order
-                    {cancelledOrders.length === 1 ? "" : "s"} × avg postage ₹
-                    {avgDeliveryCost.toLocaleString()} ={" "}
-                    <strong className="dc-neg">
-                      −₹{cancelledLoss.toLocaleString()}
-                    </strong>{" "}
-                    deducted from profit ₹{totalPnL.toLocaleString()} → net{" "}
-                    <strong className={netProfit >= 0 ? "dc-pos" : "dc-neg"}>
-                      ₹{netProfit.toLocaleString()}
-                    </strong>
-                  </div>
-                </div>
-              </div>
-              )}
-            </div>
-          </div>
-        </Accordion>
-        )}
-
-        {/* ===== Book profitability table (accordion, below analytics) ===== */}
-        {activeTab === "analytics" && (
-        <Accordion
-          id="bookProfit"
-          title="Book profitability"
-          open={accOpen.bookProfit}
-          onToggle={toggleAcc}
-          right={<span className="acc-count">{bookProfitRows.length}</span>}
-        >
-          <div className="bp-wrap">
-            {/* Summary cards */}
-            <div className="bp-summary">
-              <div className="bp-sum-card">
-                <span className="bp-sum-label">Books sold</span>
-                <strong className="bp-sum-val">{bpTotals.qty}</strong>
-              </div>
-              <div className="bp-sum-card">
-                <span className="bp-sum-label">Order cost (goods)</span>
-                <strong className="bp-sum-val bp-slate">
-                  ₹{bpTotals.cost.toLocaleString()}
-                </strong>
-              </div>
-              <div className="bp-sum-card">
-                <span className="bp-sum-label">Delivery expense</span>
-                <strong className="bp-sum-val bp-orange">
-                  ₹{bpDelivery.toLocaleString()}
-                </strong>
-              </div>
-              <div className="bp-sum-card">
-                <span className="bp-sum-label">Order profit</span>
-                <strong
-                  className={`bp-sum-val ${bpOrderProfit >= 0 ? "bp-pos" : "bp-neg"}`}
+              <div className="an2-actions">
+                <button
+                  type="button"
+                  className="an2-btn"
+                  onClick={() => fetchOrders()}
+                  title="Refresh"
                 >
-                  {bpOrderProfit >= 0 ? "+" : "−"}₹
-                  {Math.abs(bpOrderProfit).toLocaleString()}
-                </strong>
+                  <RefreshCw size={14} /> <span>Refresh</span>
+                </button>
+                <button
+                  type="button"
+                  className="an2-btn"
+                  onClick={exportToCSV}
+                  title="Export CSV"
+                >
+                  <Download size={14} /> <span>Export</span>
+                </button>
               </div>
             </div>
 
-            <div className="bp-table-scroll">
-              <table className="bp-table">
-                <thead>
-                  <tr>
-                    <th className="bp-th-name">Book</th>
-                    <th>Qty</th>
-                    <th>Cost/book</th>
-                    <th>Price/book</th>
-                    <th>Profit/book</th>
-                    <th>Total cost</th>
-                    <th>Total profit</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {bookProfitRows.map((r) => (
-                    <tr key={r.name}>
-                      <td className="bp-td-name">
-                        <span className="bp-name-txt">{r.name}</span>
-                        {!r.matched && (
-                          <span className="bp-unmatched" title="Not matched to catalogue — cost unknown">
-                            no cost
-                          </span>
-                        )}
-                      </td>
-                      <td>{r.qty}</td>
-                      <td>₹{r.unitCost.toLocaleString()}</td>
-                      <td>₹{r.avgPrice.toLocaleString()}</td>
-                      <td className={r.unitProfit >= 0 ? "bp-pos" : "bp-neg"}>
-                        {r.unitProfit >= 0 ? "+" : "−"}₹
-                        {Math.abs(r.unitProfit).toLocaleString()}
-                      </td>
-                      <td>₹{r.cost.toLocaleString()}</td>
-                      <td className={r.profit >= 0 ? "bp-pos" : "bp-neg"}>
-                        {r.profit >= 0 ? "+" : "−"}₹
-                        {Math.abs(r.profit).toLocaleString()}
-                      </td>
-                    </tr>
-                  ))}
-                  {bookProfitRows.length === 0 && (
-                    <tr>
-                      <td colSpan={7} className="bp-empty">
-                        No book sales in this period.
-                      </td>
-                    </tr>
+            {/* Overview stats */}
+            <div className="an2-stats">
+              <div className="an2-stat s-orders">
+                <div className="an2-stat-ic">
+                  <ShoppingBag size={16} />
+                </div>
+                <span className="an2-stat-val">{overview.n}</span>
+                <span className="an2-stat-lbl">Orders</span>
+                <span className="an2-stat-x">
+                  {overview.delivered} delivered · {overview.cancelled} cancelled
+                </span>
+              </div>
+              <div className="an2-stat s-rev">
+                <div className="an2-stat-ic">
+                  <IndianRupee size={16} />
+                </div>
+                <span className="an2-stat-val">
+                  ₹{overview.revenue.toLocaleString()}
+                </span>
+                <span className="an2-stat-lbl">Revenue</span>
+                <span className="an2-stat-x">
+                  Avg order ₹{overview.aov.toLocaleString()}
+                </span>
+              </div>
+              <div className="an2-stat s-cost">
+                <div className="an2-stat-ic">
+                  <Package size={16} />
+                </div>
+                <span className="an2-stat-val">
+                  ₹{overview.cost.toLocaleString()}
+                </span>
+                <span className="an2-stat-lbl">Total cost</span>
+                <span className="an2-stat-x">
+                  incl. ₹{overview.delivery.toLocaleString()} delivery
+                </span>
+              </div>
+              <div className="an2-stat s-profit">
+                <div className="an2-stat-ic">
+                  {overview.profit >= 0 ? (
+                    <TrendingUp size={16} />
+                  ) : (
+                    <TrendingDown size={16} />
                   )}
-                </tbody>
-                {bookProfitRows.length > 0 && (
-                  <tfoot>
-                    <tr>
-                      <td className="bp-td-name">Total</td>
-                      <td>{bpTotals.qty}</td>
-                      <td>—</td>
-                      <td>—</td>
-                      <td>—</td>
-                      <td>₹{bpTotals.cost.toLocaleString()}</td>
-                      <td className={bpTotals.profit >= 0 ? "bp-pos" : "bp-neg"}>
-                        {bpTotals.profit >= 0 ? "+" : "−"}₹
-                        {Math.abs(bpTotals.profit).toLocaleString()}
-                      </td>
-                    </tr>
-                  </tfoot>
-                )}
-              </table>
+                </div>
+                <span className="an2-stat-val">
+                  {overview.profit >= 0 ? "+" : "−"}₹
+                  {Math.abs(overview.profit).toLocaleString()}
+                </span>
+                <span className="an2-stat-lbl">
+                  {overview.profit >= 0 ? "Profit" : "Loss"} · {overview.margin}%
+                </span>
+                <span className="an2-stat-x">
+                  Net {netProfit >= 0 ? "+" : "−"}₹
+                  {Math.abs(netProfit).toLocaleString()}
+                </span>
+              </div>
+              <div className="an2-stat s-units">
+                <div className="an2-stat-ic">
+                  <BarChart3 size={16} />
+                </div>
+                <span className="an2-stat-val">{overview.units}</span>
+                <span className="an2-stat-lbl">Books sold</span>
+                <span className="an2-stat-x">across {overview.n} orders</span>
+              </div>
             </div>
-            <p className="bp-note">
-              Cost sourced from the catalogue per book; profit = price charged −
-              cost. This table follows the <b>analytics period</b> (day / week /
-              month / all) and the <b>Filters</b> (status, payment, date) +
-              search — e.g. pick “Week” with status “Delivered”.
-            </p>
+
+            {/* Wallet holders */}
+            <div className="an2-wallet">
+              <div className="an2-wallet-ic">
+                <Wallet size={20} />
+              </div>
+              <div className="an2-wallet-main">
+                <span className="an2-wallet-num">{walletUsers.count}</span>
+                <span className="an2-wallet-lbl">
+                  customer{walletUsers.count === 1 ? "" : "s"} hold wallet
+                  balance
+                </span>
+              </div>
+              <div className="an2-wallet-liab">
+                <span className="an2-wallet-liab-num">
+                  ₹{walletUsers.total.toLocaleString()}
+                </span>
+                <span className="an2-wallet-liab-lbl">total outstanding</span>
+              </div>
+            </div>
+
+            {/* Projections & run rate */}
+            <An2Section
+              title="Projections & run rate"
+              sub={
+                projection.hasForecast
+                  ? `Current pace projected to the full ${
+                      analyticsPeriod === "week"
+                        ? "week"
+                        : analyticsPeriod === "year"
+                          ? "year"
+                          : "month"
+                    }`
+                  : "Observed sales pace for this period"
+              }
+              right={
+                <span className="an2-card-total">
+                  ₹{projection.revPerDay.toLocaleString()}/day
+                </span>
+              }
+            >
+              <div className="an2-proj-tiles">
+                <div className="an2-proj-tile">
+                  <span className="an2-proj-lbl">Run rate</span>
+                  <strong className="an2-proj-val">
+                    ₹{projection.revPerDay.toLocaleString()}
+                    <small>/day</small>
+                  </strong>
+                  <span className="an2-proj-x">
+                    {projection.ordPerDay} orders/day
+                  </span>
+                </div>
+                <div className="an2-proj-tile">
+                  <span className="an2-proj-lbl">So far</span>
+                  <strong className="an2-proj-val">
+                    ₹{projection.actualRev.toLocaleString()}
+                  </strong>
+                  <span className="an2-proj-x">
+                    {overview.n} orders · day {projection.elapsedDays}/
+                    {projection.totalDays}
+                  </span>
+                </div>
+                <div className="an2-proj-tile hot">
+                  <span className="an2-proj-lbl">
+                    Projected{" "}
+                    {analyticsPeriod === "week"
+                      ? "week"
+                      : analyticsPeriod === "year"
+                        ? "year"
+                        : analyticsPeriod === "month"
+                          ? "month"
+                          : "total"}
+                  </span>
+                  <strong className="an2-proj-val hot">
+                    ₹{projection.projectedRev.toLocaleString()}
+                  </strong>
+                  <span className="an2-proj-x">
+                    ~{projection.projectedOrders} orders
+                    {projection.hasForecast
+                      ? ` · ${projection.daysLeft} day${projection.daysLeft === 1 ? "" : "s"} left`
+                      : " · final"}
+                  </span>
+                </div>
+              </div>
+              {projection.hasForecast && (
+                <div className="an2-proj-prog">
+                  <div className="an2-proj-prog-head">
+                    <span>Achieved {projection.progressPct}% of projection</span>
+                    <span>
+                      ₹{projection.actualRev.toLocaleString()} / ₹
+                      {projection.projectedRev.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="an2-proj-bar">
+                    <div
+                      className="an2-proj-fill"
+                      style={{ width: `${projection.progressPct}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+            </An2Section>
+
+            {/* Orders by status — count, value & payment split */}
+            <An2Section
+              title="Orders by status"
+              sub="Where every order stands — value & COD/UPI split"
+              right={
+                <span className="an2-card-total">{breakdownTotals.count}</span>
+              }
+            >
+              <div className="an2-status-list">
+                {statusBreakdown.length === 0 && (
+                  <div className="an2-bp-empty">No orders in this period.</div>
+                )}
+                {statusBreakdown.map((s) => (
+                  <div
+                    className={`an2-status-row${/pending/i.test(s.key) ? " pending" : ""}`}
+                    key={s.key}
+                  >
+                    <span
+                      className="an2-status-dot"
+                      style={{ background: s.color }}
+                    />
+                    <div className="an2-status-main">
+                      <span className="an2-status-name">{s.key}</span>
+                      <span className="an2-status-split">
+                        {s.cod} COD · ₹{Math.round(s.codVal).toLocaleString()}
+                        <span className="an2-status-sep">|</span>
+                        {s.upi} UPI · ₹{Math.round(s.upiVal).toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="an2-status-nums">
+                      <span className="an2-status-count">
+                        {s.count} order{s.count === 1 ? "" : "s"}
+                      </span>
+                      <span className="an2-status-val">
+                        ₹{Math.round(s.value).toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </An2Section>
+
+            {/* Total orders bar chart */}
+            <An2Section
+              title="Total orders"
+              sub={
+                analyticsPeriod === "year" || analyticsPeriod === "all"
+                  ? "By month"
+                  : analyticsPeriod === "week"
+                    ? "By day of week"
+                    : "By date"
+              }
+              right={<span className="an2-card-total">{overview.n}</span>}
+            >
+              {(() => {
+                const max = Math.max(1, ...ordersBar.map((b) => b.count));
+                return (
+                  <div
+                    className={`an2-bars${ordersBar.length > 16 ? " scroll" : ""}`}
+                  >
+                    {ordersBar.map((b, i) => (
+                      <div
+                        className={`an2-bar-col${b.isToday ? " today" : ""}`}
+                        key={i}
+                        ref={b.isToday ? centerTodayRef : undefined}
+                      >
+                        <span className="an2-bar-cap">{b.count || ""}</span>
+                        <div className="an2-bar-track">
+                          <div
+                            className="an2-bar an2-bar-grad"
+                            style={{ height: `${(b.count / max) * 100}%` }}
+                            data-tip={`${b.label}${b.sub ? " " + b.sub : ""}: ${b.count} order${b.count === 1 ? "" : "s"}`}
+                          />
+                        </div>
+                        <span className="an2-bar-x">{b.label}</span>
+                        {b.sub ? (
+                          <span className="an2-bar-xsub">{b.sub}</span>
+                        ) : null}
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
+            </An2Section>
+
+            {/* Orders by weekday */}
+            <An2Section
+              title="Orders by weekday"
+              sub={`Which days bring the most orders this ${analyticsPeriod}`}
+            >
+              {(() => {
+                const max = Math.max(1, ...weekdayData.map((b) => b.count));
+                const busiest = weekdayData.reduce(
+                  (a, b) => (b.count > a.count ? b : a),
+                  weekdayData[0],
+                );
+                return (
+                  <div className="an2-bars">
+                    {weekdayData.map((b, i) => (
+                      <div className="an2-bar-col" key={i}>
+                        <span className="an2-bar-cap">{b.count || ""}</span>
+                        <div className="an2-bar-track">
+                          <div
+                            className={`an2-bar an2-bar-wd${b.label === busiest.label && busiest.count > 0 ? " peak" : ""}`}
+                            style={{ height: `${(b.count / max) * 100}%` }}
+                            data-tip={`${b.label}: ${b.count} order${b.count === 1 ? "" : "s"}`}
+                          />
+                        </div>
+                        <span className="an2-bar-x">{b.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
+            </An2Section>
+
+            {/* Profit / cost per day */}
+            <An2Section
+              title="Profit & cost by day"
+              sub={`Cost vs profit for each day${analyticsPeriod === "year" ? " of the chosen month" : ""}`}
+              right={
+                <div className="an2-pnl-right">
+                  <div className="an2-legend">
+                    <span className="an2-leg">
+                      <i className="an2-dot d-cost" /> Cost
+                    </span>
+                    <span className="an2-leg">
+                      <i className="an2-dot d-profit" /> Profit
+                    </span>
+                    <span className="an2-leg">
+                      <i className="an2-dot d-loss" /> Loss
+                    </span>
+                  </div>
+                  {analyticsPeriod === "year" && (
+                    <div
+                      className="admin-select-wrap an2-month-sel"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <select
+                        className="admin-select"
+                        value={pnlMonth}
+                        onChange={(e) => setPnlMonth(Number(e.target.value))}
+                      >
+                        {MONTH_LABELS.map((m, i) => (
+                          <option key={i} value={i}>
+                            {m}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                </div>
+              }
+            >
+              {(() => {
+                const posMax = Math.max(
+                  1,
+                  ...pnlDays.map((d) => Math.max(d.cost, d.profit > 0 ? d.profit : 0)),
+                );
+                const negMax = Math.max(
+                  1,
+                  ...pnlDays.map((d) => (d.profit < 0 ? -d.profit : 0)),
+                );
+                const hasLoss = pnlDays.some((d) => d.profit < 0);
+                return (
+                  <div
+                    className={`an2-pnl${pnlDays.length > 14 ? " scroll" : ""}`}
+                  >
+                    {pnlDays.map((d) => (
+                      <div
+                        className={`an2-pnl-col${d.isToday ? " today" : ""}`}
+                        key={d.key}
+                        ref={d.isToday ? centerTodayRef : undefined}
+                      >
+                        <div className="an2-pnl-pos">
+                          <div
+                            className="an2-pnl-bar b-cost"
+                            style={{ height: `${(d.cost / posMax) * 100}%` }}
+                            data-tip={`${d.wd} ${d.day} · Cost ₹${Math.round(d.cost).toLocaleString()}`}
+                          />
+                          <div
+                            className="an2-pnl-bar b-profit"
+                            style={{
+                              height: `${((d.profit > 0 ? d.profit : 0) / posMax) * 100}%`,
+                            }}
+                            data-tip={`${d.wd} ${d.day} · Profit ₹${Math.round(d.profit).toLocaleString()}`}
+                          />
+                        </div>
+                        {hasLoss && (
+                          <div className="an2-pnl-neg">
+                            <div
+                              className="an2-pnl-bar b-loss"
+                              style={{
+                                height: `${((d.profit < 0 ? -d.profit : 0) / negMax) * 100}%`,
+                              }}
+                              data-tip={`${d.wd} ${d.day} · Loss ₹${Math.round(-d.profit).toLocaleString()}`}
+                            />
+                          </div>
+                        )}
+                        <span className="an2-pnl-x">{d.day}</span>
+                        <span className="an2-pnl-xsub">{d.wd}</span>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
+            </An2Section>
+
+            {/* Delivery & India Post weight slabs */}
+            <An2Section
+              title="Delivery & India Post"
+              sub="Postage by weight slab for this period"
+              right={
+                <span className="an2-card-total">
+                  ₹{totalDeliveryCost.toLocaleString()}
+                </span>
+              }
+            >
+              <div className="an2-bp-sum">
+                <div className="an2-bp-sc">
+                  <span className="an2-bp-sc-l">Total weight</span>
+                  <strong className="an2-bp-sc-v">
+                    {(totalWeight / 1000).toFixed(2)} kg
+                  </strong>
+                </div>
+                <div className="an2-bp-sc">
+                  <span className="an2-bp-sc-l">Postage cost</span>
+                  <strong className="an2-bp-sc-v v-cost">
+                    ₹{totalDeliveryCost.toLocaleString()}
+                  </strong>
+                </div>
+                <div className="an2-bp-sc">
+                  <span className="an2-bp-sc-l">Avg / order</span>
+                  <strong className="an2-bp-sc-v">
+                    ₹{avgDeliveryCost.toLocaleString()}
+                  </strong>
+                </div>
+                <div className="an2-bp-sc">
+                  <span className="an2-bp-sc-l">Orders</span>
+                  <strong className="an2-bp-sc-v">{overview.n}</strong>
+                </div>
+              </div>
+              <div className="an2-slabs">
+                {deliverySlabs.map((s) => (
+                  <div className="an2-slab" key={s.label}>
+                    <span className="an2-slab-l">
+                      {s.label} · ₹{s.rate}
+                    </span>
+                    <div className="an2-slab-track">
+                      <div
+                        className="an2-slab-fill"
+                        style={{ width: `${(s.count / maxSlabCount) * 100}%` }}
+                        data-tip={`${s.label} @ ₹${s.rate}: ${s.count} order${s.count === 1 ? "" : "s"} · ₹${s.amount.toLocaleString()}`}
+                      />
+                    </div>
+                    <span className="an2-slab-c">
+                      {s.count} order{s.count === 1 ? "" : "s"} · ₹
+                      {s.amount.toLocaleString()}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </An2Section>
+
+            {/* Orders by time of day (6-hour quadrants) */}
+            <An2Section
+              title="Orders by time of day"
+              sub="When customers place orders (6-hour blocks)"
+            >
+              {(() => {
+                const max = Math.max(1, ...quadrantData.map((q) => q.count));
+                return (
+                  <div className="an2-quads">
+                    {quadrantData.map((q, i) => (
+                      <div className="an2-quad" key={i}>
+                        <div className="an2-quad-track">
+                          <div
+                            className="an2-quad-bar"
+                            style={{ height: `${(q.count / max) * 100}%` }}
+                            data-tip={`${q.label} · ${q.tag}: ${q.count} order${q.count === 1 ? "" : "s"}`}
+                          >
+                            <span className="an2-quad-num">{q.count}</span>
+                          </div>
+                        </div>
+                        <span className="an2-quad-lbl">{q.label}</span>
+                        <span className="an2-quad-tag">{q.tag}</span>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
+            </An2Section>
+
+            {/* Book profitability */}
+            <An2Section
+              title="Book profitability"
+              sub={`Per-title quantity, cost and profit for this ${analyticsPeriod}`}
+              right={
+                <span className="an2-card-total">{bookStats.rows.length}</span>
+              }
+            >
+              <div className="an2-bp-sum">
+                <div className="an2-bp-sc">
+                  <span className="an2-bp-sc-l">Books sold</span>
+                  <strong className="an2-bp-sc-v">{bookStats.totals.qty}</strong>
+                </div>
+                <div className="an2-bp-sc">
+                  <span className="an2-bp-sc-l">Revenue</span>
+                  <strong className="an2-bp-sc-v v-rev">
+                    ₹{bookStats.totals.revenue.toLocaleString()}
+                  </strong>
+                </div>
+                <div className="an2-bp-sc">
+                  <span className="an2-bp-sc-l">Goods cost</span>
+                  <strong className="an2-bp-sc-v v-cost">
+                    ₹{bookStats.totals.cost.toLocaleString()}
+                  </strong>
+                </div>
+                <div className="an2-bp-sc">
+                  <span className="an2-bp-sc-l">Net profit</span>
+                  <strong
+                    className={`an2-bp-sc-v ${bookStats.totals.profit >= 0 ? "v-pos" : "v-neg"}`}
+                  >
+                    {bookStats.totals.profit >= 0 ? "+" : "−"}₹
+                    {Math.abs(bookStats.totals.profit).toLocaleString()}
+                  </strong>
+                </div>
+              </div>
+              <div className="an2-bp-scroll">
+                <table className="an2-bp-table">
+                  <thead>
+                    <tr>
+                      <th>Book</th>
+                      <th className="ta-r">Qty</th>
+                      <th className="ta-r">Revenue</th>
+                      <th className="ta-r">Cost</th>
+                      <th className="ta-r">Profit / loss</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {bookStats.rows.length === 0 && (
+                      <tr>
+                        <td colSpan={5} className="an2-bp-empty">
+                          No book sales in this period.
+                        </td>
+                      </tr>
+                    )}
+                    {bookStats.rows.map((r) => (
+                      <tr key={r.name}>
+                        <td>
+                          <span className="an2-bp-name">{r.name}</span>
+                          {!r.matched && (
+                            <span className="an2-bp-warn" title="No catalogue cost — profit assumes ₹0 cost">
+                              cost?
+                            </span>
+                          )}
+                        </td>
+                        <td className="ta-r">{r.qty}</td>
+                        <td className="ta-r">₹{Math.round(r.revenue).toLocaleString()}</td>
+                        <td className="ta-r">₹{Math.round(r.cost).toLocaleString()}</td>
+                        <td
+                          className={`ta-r an2-bp-p ${r.profit >= 0 ? "v-pos" : "v-neg"}`}
+                        >
+                          {r.profit >= 0 ? "+" : "−"}₹
+                          {Math.abs(Math.round(r.profit)).toLocaleString()}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </An2Section>
+
+            {/* Payment mix + customers */}
+            <div className="an2-grid2">
+              <An2Section title="Payment mix" sub="COD vs online (UPI)">
+                {(() => {
+                  const tot = overview.codN + overview.upiN || 1;
+                  const codPct = Math.round((overview.codN / tot) * 100);
+                  return (
+                    <>
+                      <div className="an2-mix-bar">
+                        <div
+                          className="an2-mix-seg seg-cod"
+                          style={{ width: `${codPct}%` }}
+                        />
+                        <div
+                          className="an2-mix-seg seg-upi"
+                          style={{ width: `${100 - codPct}%` }}
+                        />
+                      </div>
+                      <div className="an2-mix-legend">
+                        <span className="an2-leg">
+                          <i className="an2-dot d-cod" /> COD · {overview.codN} (
+                          {codPct}%)
+                        </span>
+                        <span className="an2-leg">
+                          <i className="an2-dot d-upi" /> UPI · {overview.upiN} (
+                          {100 - codPct}%)
+                        </span>
+                      </div>
+                    </>
+                  );
+                })()}
+              </An2Section>
+
+              <An2Section
+                title="Customers"
+                sub={`Reach & loyalty this ${analyticsPeriod}`}
+              >
+                <div className="an2-cust">
+                  <div className="an2-cust-item">
+                    <span className="an2-cust-num">{insights.uniqueCustomers}</span>
+                    <span className="an2-cust-lbl">Unique customers</span>
+                  </div>
+                  <div className="an2-cust-item">
+                    <span className="an2-cust-num">{insights.repeat}</span>
+                    <span className="an2-cust-lbl">Repeat buyers</span>
+                  </div>
+                  <div className="an2-cust-item">
+                    <span className="an2-cust-num">{insights.repeatPct}%</span>
+                    <span className="an2-cust-lbl">Repeat rate</span>
+                  </div>
+                </div>
+              </An2Section>
+            </div>
+
+            {/* Top books + revenue by category */}
+            <div className="an2-grid2">
+              <An2Section title="Top-selling books" sub="By units sold">
+                <HBars
+                  items={insights.topBooks.map((b) => ({
+                    label: b.name,
+                    value: b.units,
+                    display: `${b.units}`,
+                  }))}
+                />
+              </An2Section>
+
+              <An2Section
+                title="Revenue by category"
+                sub="Where the money comes from"
+              >
+                <HBars
+                  items={insights.topCats.map((c) => ({
+                    label: c.c,
+                    value: c.rev,
+                    display: `₹${Math.round(c.rev).toLocaleString()}`,
+                  }))}
+                  accent="#7c3aed"
+                />
+              </An2Section>
+            </div>
+
+            <An2Section
+              title="Top delivery pincodes"
+              sub="Where your orders ship to most"
+            >
+              <HBars
+                items={insights.topPins.map((p) => ({
+                  label: p.p,
+                  value: p.c,
+                  display: `${p.c}`,
+                }))}
+                accent="#0ea5e9"
+              />
+            </An2Section>
           </div>
-        </Accordion>
         )}
+
 
         {/* Search + Filter row */}
         <div className="admin-search">
@@ -4630,6 +5226,7 @@ export default function ManageOrdersPage() {
                         <option value="day">Day</option>
                         <option value="week">Week</option>
                         <option value="month">Month</option>
+                        <option value="year">Year</option>
                         <option value="all">All time</option>
                       </select>
                     </div>
@@ -4714,131 +5311,155 @@ export default function ManageOrdersPage() {
           </AnimatePresence>
         </div>
 
-        {/* ===== Calendar (accordion) ===== */}
-        {/* ===== Orders calendar modal (opened from the tab row) ===== */}
-        {showCalModal && (
-          <div
-            className="mo-cal-modal-overlay"
-            onClick={() => setShowCalModal(false)}
-          >
-            <div
-              className="mo-cal-modal"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="mo-cal-modal-head">
-                <span className="mo-cal-modal-title">
-                  <Calendar size={16} /> Orders calendar
-                </span>
-                <button
-                  type="button"
-                  className="mo-cal-modal-close"
-                  onClick={() => setShowCalModal(false)}
-                  aria-label="Close calendar"
-                >
-                  <X size={18} />
-                </button>
-              </div>
-              <div className="admin-cal-wrap admin-cal-standalone">
-                <OrdersCalendar
-                  calMonth={calMonth}
-                  setCalMonth={setCalMonth}
-                  ordersByDay={ordersByDay}
-                  selectedDate={selectedDate}
-                  setSelectedDate={setSelectedDate}
-                  dateFrom={dateFrom}
-                  dateTo={dateTo}
-                  setDateFrom={setDateFrom}
-                  setDateTo={setDateTo}
-                />
-                {selectedDate && (
-                  <div className="admin-cal-selected">
-                    Showing orders for{" "}
-                    <strong>
-                      {new Date(selectedDate + "T00:00:00").toLocaleDateString(
-                        "en-IN",
-                        { day: "numeric", month: "short", year: "numeric" },
-                      )}
-                    </strong>
-                    <button
-                      type="button"
-                      className="admin-cal-clear"
-                      onClick={() => setSelectedDate("")}
-                    >
-                      <X size={13} /> Show all
-                    </button>
-                  </div>
-                )}
-                {dateFrom && dateTo && (
-                  <div className="admin-cal-selected">
-                    Showing orders from{" "}
-                    <strong>
-                      {new Date(dateFrom + "T00:00:00").toLocaleDateString(
-                        "en-IN",
-                        {
-                          day: "numeric",
-                          month: "short",
-                        },
-                      )}
-                    </strong>{" "}
-                    to{" "}
-                    <strong>
-                      {new Date(dateTo + "T00:00:00").toLocaleDateString(
-                        "en-IN",
-                        {
-                          day: "numeric",
-                          month: "short",
-                          year: "numeric",
-                        },
-                      )}
-                    </strong>
-                    <button
-                      type="button"
-                      className="admin-cal-clear"
-                      onClick={() => {
-                        setDateFrom("");
-                        setDateTo("");
-                      }}
-                    >
-                      <X size={13} /> Show all
-                    </button>
-                  </div>
-                )}
+        {/* ===== Users (customer management) ===== */}
+        {activeTab === "users" && (
+          <div className="an2 um">
+            <div className="an2-head">
+              <div>
+                <h2 className="an2-title">Users</h2>
+                <p className="an2-sub">
+                  {userSummary.total} customer
+                  {userSummary.total === 1 ? "" : "s"} · manage wallets &amp; see
+                  loyalty
+                </p>
               </div>
             </div>
+
+            <div className="an2-stats">
+              <div className="an2-stat s-orders">
+                <div className="an2-stat-ic">
+                  <User size={16} />
+                </div>
+                <span className="an2-stat-val">{userSummary.total}</span>
+                <span className="an2-stat-lbl">Total customers</span>
+              </div>
+              <div className="an2-stat s-profit">
+                <div className="an2-stat-ic">
+                  <TrendingUp size={16} />
+                </div>
+                <span className="an2-stat-val">{userSummary.repeatCount}</span>
+                <span className="an2-stat-lbl">
+                  Repeat buyers · {userSummary.repeatPct}%
+                </span>
+              </div>
+              <div className="an2-stat s-aov">
+                <div className="an2-stat-ic">
+                  <IndianRupee size={16} />
+                </div>
+                <span className="an2-stat-val">
+                  ₹{userSummary.repeatAvg.toLocaleString()}
+                </span>
+                <span className="an2-stat-lbl">Avg order · repeat</span>
+              </div>
+              <div className="an2-stat s-units">
+                <div className="an2-stat-ic">
+                  <IndianRupee size={16} />
+                </div>
+                <span className="an2-stat-val">
+                  ₹{userSummary.overallAvg.toLocaleString()}
+                </span>
+                <span className="an2-stat-lbl">Avg order · all</span>
+              </div>
+              <div className="an2-stat s-rev">
+                <div className="an2-stat-ic">
+                  <Wallet size={16} />
+                </div>
+                <span className="an2-stat-val">
+                  ₹{userSummary.walletTotal.toLocaleString()}
+                </span>
+                <span className="an2-stat-lbl">
+                  Wallet liability · {userSummary.walletHolders} holder
+                  {userSummary.walletHolders === 1 ? "" : "s"}
+                </span>
+              </div>
+            </div>
+
+            <section className="an2-card">
+              <div className="an2-card-head">
+                <div>
+                  <h3 className="an2-card-title">All customers</h3>
+                  <p className="an2-card-sub">
+                    Search by name or phone in the bar above
+                  </p>
+                </div>
+                <span className="an2-card-total">{filteredUsers.length}</span>
+              </div>
+              <div className="um-list">
+                {filteredUsers.length === 0 && (
+                  <div className="an2-bp-empty">No customers found.</div>
+                )}
+                {filteredUsers.map((u) => (
+                  <div className="um-row" key={u.phone}>
+                    <div className="um-avatar">
+                      {(u.name || u.phone).slice(0, 1).toUpperCase()}
+                    </div>
+                    <div className="um-main">
+                      <div className="um-name-row">
+                        <span className="um-name">{u.name || "Unknown"}</span>
+                        {u.repeat && (
+                          <span className="um-badge repeat">Repeat</span>
+                        )}
+                        {u.wallet > 0 && (
+                          <span className="um-badge wallet">
+                            ₹{u.wallet.toLocaleString()} wallet
+                          </span>
+                        )}
+                      </div>
+                      <div className="um-meta">
+                        <span>+91 {u.phone}</span>
+                        {u.city ? <span>· {u.city}</span> : null}
+                        {u.lastDate ? (
+                          <span>
+                            · last{" "}
+                            {u.lastDate.toLocaleDateString("en-IN", {
+                              day: "numeric",
+                              month: "short",
+                              year: "numeric",
+                            })}
+                          </span>
+                        ) : null}
+                      </div>
+                    </div>
+                    <div className="um-stats">
+                      <div className="um-stat">
+                        <strong>{u.orders}</strong>
+                        <span>orders</span>
+                      </div>
+                      <div className="um-stat">
+                        <strong>₹{u.spent.toLocaleString()}</strong>
+                        <span>spent</span>
+                      </div>
+                      <div className="um-stat">
+                        <strong>₹{u.avg.toLocaleString()}</strong>
+                        <span>avg</span>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      className="um-wallet-btn"
+                      onClick={() => setWalletModal(u)}
+                    >
+                      <Wallet size={14} /> Wallet
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {walletModal && (
+              <WalletModal
+                user={walletModal}
+                busy={walletBusy}
+                onClose={() => setWalletModal(null)}
+                onApply={applyWalletChange}
+              />
+            )}
           </div>
         )}
 
-        {/* ===== India Post booking sheet (accordion) ===== */}
-        {activeTab === "indiapost" && (
-        <Accordion
-          id="indiapost"
-          title="India Post booking (copy-paste)"
-          icon={<Truck size={16} />}
-          open={accOpen.indiapost}
-          onToggle={toggleAcc}
-          right={
-            <span className="acc-count">
-              {
-                orders.filter((o) =>
-                  /getting shipped/i.test(o["Order Status"] || ""),
-                ).length
-              }
-            </span>
-          }
-        >
-          <IndiaPostSheet
-            orders={orders}
-            copyToClipboard={copyToClipboard}
-            copiedId={copiedId}
-          />
-        </Accordion>
-        )}
-
-        {/* ===== Orders (accordion) ===== */}
-        {activeTab === "orders" && (
+        {/* ===== Track orders ===== */}
+        {activeTab === "track" && (
         <>
-        {/* ── Track & notify: its own section — paste tracking IDs, look them
-            up, change/save order status, and message customers ── */}
         <Accordion
           id="tracknotify"
           title="Track & notify"
@@ -4991,6 +5612,12 @@ export default function ManageOrdersPage() {
             )}
           </div>
         </Accordion>
+        </>
+        )}
+
+        {/* ===== Orders (accordion) ===== */}
+        {activeTab === "orders" && (
+        <>
 
         <Accordion
           id="orders"

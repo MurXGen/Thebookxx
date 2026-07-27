@@ -4026,10 +4026,20 @@ export default function ManageOrdersPage() {
   };
 
   const handleTrackPackage = (shippingId) => {
-    if (shippingId) {
-      navigator.clipboard.writeText(shippingId);
-      alert(`Tracking ID ${shippingId} copied to clipboard!`);
-      window.open("https://www.indiapost.gov.in", "_blank");
+    const id = String(shippingId || "").trim();
+    if (!id) return;
+    try {
+      navigator.clipboard.writeText(id);
+    } catch (_) {}
+    const ok = window.confirm(
+      `Tracking ID "${id}" copied.\n\nClick OK to open India Post tracking — paste the ID there to track this parcel.`,
+    );
+    if (ok) {
+      window.open(
+        "https://www.indiapost.gov.in/_layouts/15/DOP.Portal.Tracking/TrackConsignment.aspx",
+        "_blank",
+        "noopener,noreferrer",
+      );
     }
   };
 
@@ -5459,15 +5469,7 @@ export default function ManageOrdersPage() {
 
         {/* ===== Track orders ===== */}
         {activeTab === "track" && (
-        <>
-        <Accordion
-          id="tracknotify"
-          title="Track & notify"
-          open={accOpen.tracknotify ?? true}
-          onToggle={toggleAcc}
-          right={<span className="acc-count">{trackList.length}</span>}
-        >
-          <div className="mo-track-notify">
+          <div className="mo-track-notify mo-track-plain">
             <div className="mo-track-head">
               <span className="mo-track-title">
                 <Truck size={15} /> Track &amp; notify
@@ -5528,7 +5530,17 @@ export default function ManageOrdersPage() {
                             </td>
                             <td>{r["Customer Name"] || "—"}</td>
                             <td className="mo-track-tid">
-                              {r["Shipping ID"]}
+                              <button
+                                type="button"
+                                className="mo-track-tid-btn"
+                                title="Copy ID & open India Post tracking"
+                                onClick={() =>
+                                  handleTrackPackage(r["Shipping ID"])
+                                }
+                              >
+                                {r["Shipping ID"]}
+                                <ExternalLink size={12} />
+                              </button>
                             </td>
                             <td>
                               <select
@@ -5611,8 +5623,6 @@ export default function ManageOrdersPage() {
               </>
             )}
           </div>
-        </Accordion>
-        </>
         )}
 
         {/* ===== Orders (accordion) ===== */}

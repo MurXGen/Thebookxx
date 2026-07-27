@@ -23371,6 +23371,21 @@ img[data-loaded="true"] {
   transform: translateY(-2px);
 }
 
+/* ===== Monsoon rain overlay ===== */
+.rain-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  pointer-events: none;
+  z-index: 60;
+}
+@media (prefers-reduced-motion: reduce) {
+  .rain-canvas {
+    display: none;
+  }
+}
+
 /* ===== Book-card skeletons (loading placeholders) ===== */
 @keyframes skelShimmer {
   0% {
@@ -26958,4 +26973,33 @@ img[data-loaded="true"] {
   to {
     transform: rotate(360deg);
   }
+}
+
+/* Track & notify — shown plain (no accordion card) in the Track orders tab */
+.mo-track-plain {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+/* Clickable tracking ID → copies + opens India Post tracking */
+.mo-track-tid-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(251, 133, 0, 0.1);
+  border: 1px solid rgba(251, 133, 0, 0.28);
+  color: var(--tertiary, #fb8500);
+  font-weight: 700;
+  font-size: 12px;
+  border-radius: 8px;
+  padding: 4px 9px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.mo-track-tid-btn:hover {
+  background: rgba(251, 133, 0, 0.18);
+}
+.mo-dark .mo-track-tid-btn {
+  background: rgba(251, 133, 0, 0.16);
 }

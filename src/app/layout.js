@@ -6,6 +6,7 @@ import AnalyticsTracker from "@/components/AnalyticsTracker";
 import { ToastProvider } from "@/context/ToastContext";
 import RegisterSW from "@/components/RegisterSW";
 import GlobalHaptics from "@/components/UI/GlobalHaptics";
+import RainEffect from "@/components/UI/RainEffect";
 import { PLProvider } from "@/context/PLContext";
 
 /* Font */
@@ -234,6 +235,9 @@ export default function RootLayout({ children }) {
               <RegisterSW />
               <GlobalHaptics />
               <AnalyticsTracker />
+              {/* Monsoon rain effect — temporarily disabled. Re-enable by
+                  uncommenting the line below. */}
+              {/* <RainEffect /> */}
               <div className="app-shell">{children}</div>
             </PLProvider>
           </StoreProvider>

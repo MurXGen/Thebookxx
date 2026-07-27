@@ -4035,11 +4035,7 @@ export default function ManageOrdersPage() {
       `Tracking ID "${id}" copied.\n\nClick OK to open India Post tracking — paste the ID there to track this parcel.`,
     );
     if (ok) {
-      window.open(
-        "https://www.indiapost.gov.in/_layouts/15/DOP.Portal.Tracking/TrackConsignment.aspx",
-        "_blank",
-        "noopener,noreferrer",
-      );
+      window.open(INDIA_POST_URL, "_blank", "noopener,noreferrer");
     }
   };
 

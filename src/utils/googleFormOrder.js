@@ -256,7 +256,7 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
         ? ` · Wallet used ₹${walletUsed}${walletPhone ? ` (${walletPhone})` : ""}`
         : ""),
     tinyUrl: shortLink || "",
-    orderStatus: "Getting Shipped",
+    orderStatus: "Processing",
     // Record wallet spent on this order as a NEGATIVE ledger entry so the
     // shopper's balance nets down. Blank when no wallet was used.
     wallet: walletUsed > 0 ? -Math.round(walletUsed) : "",

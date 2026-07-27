@@ -1010,12 +1010,40 @@ function IpField({ label, value, hint, id, copiedId, onCopy }) {
 }
 
 // Per-order copy-paste block, ordered exactly like the India Post form flow.
-function IndiaPostSheet({ orders, copyToClipboard, copiedId }) {
-  const shipping = (orders || []).filter((o) =>
-    /getting shipped/i.test(o["Order Status"] || ""),
-  );
-  if (!shipping.length)
+function IndiaPostSheet({
+  orders,
+  copyToClipboard,
+  copiedId,
+  search = "",
+  bypassFilter = false,
+}) {
+  const shippingAll = bypassFilter
+    ? orders || []
+    : (orders || []).filter((o) =>
+        /getting shipped/i.test(o["Order Status"] || ""),
+      );
+  const q = String(search || "").trim().toLowerCase();
+  const shipping = !q
+    ? shippingAll
+    : shippingAll.filter((o) => {
+        const isCOD = /cash|cod/i.test(o["Payment Type"] || "");
+        const payText = isCOD ? "cod cash on delivery" : "upi prepaid online";
+        const amount = String(o["Total Amount"] || o.revenue || "");
+        const name = String(o["Customer Name"] || "").toLowerCase();
+        const pin = String(o["Pincode"] || "");
+        const phone = String(o["Phone Number"] || "");
+        return (
+          name.includes(q) ||
+          amount.includes(q) ||
+          payText.includes(q) ||
+          pin.includes(q) ||
+          phone.includes(q)
+        );
+      });
+  if (!shippingAll.length)
     return <p className="ip-empty">No “Getting Shipped” orders right now.</p>;
+  if (!shipping.length)
+    return <p className="ip-empty">No orders match “{search}”.</p>;
   return (
     <div className="ip-sheet">
       <div className="ip-note">
@@ -2266,6 +2294,8 @@ export default function ManageOrdersPage() {
   const [showToolsMenu, setShowToolsMenu] = useState(false); // kebab menu
   const [showListMenu, setShowListMenu] = useState(false); // orders list kebab
   const [showCalc, setShowCalc] = useState(false); // calculator modal
+  const [showIndiaPost, setShowIndiaPost] = useState(false); // India Post modal
+  const [ipSearch, setIpSearch] = useState(""); // India Post modal search
   const [waPickerOrder, setWaPickerOrder] = useState(null); // WhatsApp picker
   const [waCustomText, setWaCustomText] = useState(""); // custom WA message
   const [darkMode, setDarkMode] = useState(false); // page dark theme
@@ -2302,6 +2332,37 @@ export default function ManageOrdersPage() {
       localStorage.setItem("mo_order_notes", JSON.stringify(orderNotes));
     } catch {}
   }, [orderNotes]);
+
+  // ── Per-order "booked with India Post" flags (localStorage) ──
+  const [bookedOrders, setBookedOrders] = useState({});
+  const [bookOrder, setBookOrder] = useState(null); // order object for the modal
+  const bookedHydrated = useRef(false);
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(
+        localStorage.getItem("mo_booked_orders") || "{}",
+      );
+      if (saved && typeof saved === "object") setBookedOrders(saved);
+    } catch {}
+    bookedHydrated.current = true;
+  }, []);
+  useEffect(() => {
+    if (!bookedHydrated.current) return;
+    try {
+      localStorage.setItem("mo_booked_orders", JSON.stringify(bookedOrders));
+    } catch {}
+  }, [bookedOrders]);
+  const markOrderBooked = (orderId) => {
+    if (!orderId) return;
+    setBookedOrders((p) => ({ ...p, [orderId]: true }));
+  };
+  const unmarkOrderBooked = (orderId) => {
+    setBookedOrders((p) => {
+      const n = { ...p };
+      delete n[orderId];
+      return n;
+    });
+  };
   const saveOrderNote = (orderId, text) => {
     setOrderNotes((m) => {
       const next = { ...m };
@@ -3145,6 +3206,13 @@ export default function ManageOrdersPage() {
     });
     return [...set].sort((a, b) => a.localeCompare(b));
   }, [orders]);
+
+  const gettingShippedCount = useMemo(
+    () =>
+      orders.filter((o) => /getting shipped/i.test(o["Order Status"] || ""))
+        .length,
+    [orders],
+  );
 
   // Orders received per calendar day → { "YYYY-MM-DD": count }
   const ordersByDay = useMemo(() => {
@@ -4442,6 +4510,21 @@ export default function ManageOrdersPage() {
                         }}
                       >
                         <Calculator size={16} /> Calculator
+                      </button>
+                      <button
+                        type="button"
+                        className="mo-menu-item"
+                        onClick={() => {
+                          setShowIndiaPost(true);
+                          setShowToolsMenu(false);
+                        }}
+                      >
+                        <Truck size={16} /> India Post booking
+                        {gettingShippedCount > 0 && (
+                          <span className="mo-menu-count">
+                            {gettingShippedCount}
+                          </span>
+                        )}
                       </button>
                     </motion.div>
                   </>
@@ -6106,7 +6189,8 @@ export default function ManageOrdersPage() {
                         )}
                       </div>
 
-                      {/* Per-order note — critical, attention-grabbing when set */}
+                      {/* Note + Book online — one row, secondary buttons */}
+                      <div className="mo-card-actions">
                       {orderNotes[orderId] ? (
                         <button
                           type="button"
@@ -6140,6 +6224,33 @@ export default function ManageOrdersPage() {
                           <StickyNote size={14} /> Add note
                         </button>
                       )}
+
+                      {/* Book online with India Post — opens this order's
+                          booking sheet; shows a tick once marked done. */}
+                      <button
+                        type="button"
+                        className={`mo-book-btn${bookedOrders[orderId] ? " done" : ""}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setBookOrder(order);
+                        }}
+                        title={
+                          bookedOrders[orderId]
+                            ? "Booked with India Post"
+                            : "Book online with India Post"
+                        }
+                      >
+                        {bookedOrders[orderId] ? (
+                          <>
+                            <CheckCircle size={14} /> Booked
+                          </>
+                        ) : (
+                          <>
+                            <Truck size={14} /> Book online
+                          </>
+                        )}
+                      </button>
+                      </div>
 
                       <AnimatePresence initial={false}>
                         {isExpanded && (
@@ -6482,6 +6593,161 @@ export default function ManageOrdersPage() {
       {/* ===== Calculator ===== */}
       <AnimatePresence>
         {showCalc && <CalculatorModal onClose={() => setShowCalc(false)} />}
+      </AnimatePresence>
+
+      {/* ===== India Post booking (modal) ===== */}
+      <AnimatePresence>
+        {showIndiaPost && (
+          <motion.div
+            className="bill-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowIndiaPost(false)}
+            style={{ maxWidth: "980px", margin: "0 auto" }}
+          >
+            <motion.div
+              className="bill-modal ip-modal"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+              style={{ maxHeight: "92vh", overflowY: "auto" }}
+            >
+              <div className="ip-modal-head">
+                <div className="flex flex-col gap-2">
+                  <span className="weight-700 font-16 flex items-center gap-6">
+                    <Truck size={17} /> India Post booking
+                  </span>
+                  <span className="font-11 dark-50">
+                    {gettingShippedCount} “Getting Shipped” order
+                    {gettingShippedCount === 1 ? "" : "s"} · tap any field to
+                    copy into the portal
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className="ip-modal-x"
+                  onClick={() => setShowIndiaPost(false)}
+                  aria-label="Close"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <div className="ip-modal-search">
+                <Search size={15} />
+                <input
+                  className="ip-modal-search-input"
+                  placeholder="Search by name, price, pincode, UPI or COD…"
+                  value={ipSearch}
+                  onChange={(e) => setIpSearch(e.target.value)}
+                />
+                {ipSearch && (
+                  <button
+                    type="button"
+                    className="ip-modal-search-clear"
+                    onClick={() => setIpSearch("")}
+                    aria-label="Clear search"
+                  >
+                    <X size={14} />
+                  </button>
+                )}
+              </div>
+
+              <div className="ip-modal-body">
+                <IndiaPostSheet
+                  orders={orders}
+                  copyToClipboard={copyToClipboard}
+                  copiedId={copiedId}
+                  search={ipSearch}
+                />
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ===== Book online with India Post (single order) ===== */}
+      <AnimatePresence>
+        {bookOrder && (
+          <motion.div
+            className="bill-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setBookOrder(null)}
+            style={{ maxWidth: "980px", margin: "0 auto" }}
+          >
+            <motion.div
+              className="bill-modal ip-modal"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+              style={{ maxHeight: "92vh", overflowY: "auto" }}
+            >
+              <div className="ip-modal-head">
+                <div className="flex flex-col gap-2">
+                  <span className="weight-700 font-16 flex items-center gap-6">
+                    <Truck size={17} /> Book online · India Post
+                  </span>
+                  <span className="font-11 dark-50">
+                    {bookOrder["Customer Name"] || "—"} · Order{" "}
+                    {bookOrder["Order ID"] || "—"} · tap any field to copy
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className="ip-modal-x"
+                  onClick={() => setBookOrder(null)}
+                  aria-label="Close"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <div className="ip-modal-body">
+                <IndiaPostSheet
+                  orders={[bookOrder]}
+                  copyToClipboard={copyToClipboard}
+                  copiedId={copiedId}
+                  bypassFilter
+                />
+              </div>
+
+              <div className="ip-book-foot">
+                {bookedOrders[bookOrder["Order ID"]] ? (
+                  <>
+                    <span className="ip-book-done">
+                      <CheckCircle size={16} /> Marked as booked
+                    </span>
+                    <button
+                      type="button"
+                      className="ip-book-undo"
+                      onClick={() => unmarkOrderBooked(bookOrder["Order ID"])}
+                    >
+                      Undo
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    type="button"
+                    className="ip-book-done-btn"
+                    onClick={() => {
+                      markOrderBooked(bookOrder["Order ID"]);
+                      setBookOrder(null);
+                    }}
+                  >
+                    <CheckCircle size={16} /> Mark as done (booked)
+                  </button>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
       </AnimatePresence>
 
       {/* ===== WhatsApp message picker (per order) ===== */}

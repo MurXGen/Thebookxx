@@ -151,12 +151,12 @@ export default function PincodeModal() {
   };
 
   const handleSubmit = async () => {
-    if (!pincode || pincode.length !== 6) {
-      setError("Please enter a valid 6-digit pincode");
+    // Phone is now REQUIRED; pincode is optional.
+    if (phoneNumber.length !== 10) {
+      setError("Please enter a valid 10-digit mobile number");
       trackFunnelEvent(EVENTS.PINCODE_SUBMITTED, {
         status: "error",
-        error_reason: "invalid_pincode",
-        pincode_length: pincode.length,
+        error_reason: "invalid_phone",
       });
       return;
     }
@@ -164,7 +164,11 @@ export default function PincodeModal() {
     setLoading(true);
     setError("");
 
-    const location = await fetchLocationDetails(pincode);
+    // Only look up the city/state when a full pincode was entered.
+    const location =
+      pincode && pincode.length === 6
+        ? await fetchLocationDetails(pincode)
+        : null;
     const timeSpent = startTime
       ? Math.floor((Date.now() - startTime) / 1000)
       : null;
@@ -210,13 +214,13 @@ export default function PincodeModal() {
     // Only credit shoppers who don't already hold ₹30+ in their wallet.
     if (phoneNumber && phoneNumber.length === 10) {
       const balance = await fetchWalletBalance(phoneNumber);
-      // Eligible only if there's room below ₹29. The reward tops the wallet UP
-      // TO ₹29 total and never crosses it (capped by the remaining room).
+      // Eligible only if there's room below ₹29. Reward is ₹11–16, and still
+      // capped so the balance never crosses ₹29.
       const room = 29 - balance;
       const eligible = room > 0;
       let rew = 0;
       if (eligible) {
-        rew = 11 + Math.floor(Math.random() * 19); // ₹11–29
+        rew = 11 + Math.floor(Math.random() * 6); // ₹11–16
         if (rew > room) rew = room; // never let balance + reward exceed ₹29
       }
       setScratchEligible(eligible);
@@ -332,8 +336,7 @@ export default function PincodeModal() {
 
                   <p className="pin-teaser-copy">
                     A wallet reward is hiding under here. Add your{" "}
-                    <b>pincode</b> &amp; <b>mobile number</b> to unlock and
-                    scratch it.
+                    <b>mobile number</b> to unlock and scratch it.
                   </p>
 
                   <button
@@ -370,7 +373,7 @@ export default function PincodeModal() {
                 <div className="input-group">
                   <label className="flex flex-row gap-4 flex-center items-center">
                     <MapPin size={14} />
-                    Enter Pincode <span className="red">*</span>
+                    Enter Pincode <span className="gray-500">(Optional)</span>
                   </label>
                   <input
                     className={`sec-mid-btn ${error ? "error-border" : ""}`}
@@ -387,11 +390,11 @@ export default function PincodeModal() {
                     </span>
                   )}
                 </div>
-                {/* Optional Phone Number Field */}
+                {/* Phone Number (required) */}
                 <div className="input-group">
                   <label className="flex flex-row gap-4 flex-center items-center">
                     <Phone size={14} />
-                    Phone Number <span className="gray-500">(Optional)</span>
+                    Phone Number <span className="red">*</span>
                   </label>
                   <input
                     className="sec-mid-btn"
@@ -401,6 +404,7 @@ export default function PincodeModal() {
                     onChange={(e) =>
                       setPhoneNumber(e.target.value.replace(/\D/g, ""))
                     }
+                    onKeyPress={(e) => e.key === "Enter" && handleSubmit()}
                   />
                   <span className="font-10 gray-500 mt-4">
                     Get notified about special offers and delivery updates
@@ -492,7 +496,7 @@ export default function PincodeModal() {
                 <LoadingButton
                   className="pri-big-btn width100"
                   onClick={handleSubmit}
-                  disabled={loading}
+                  disabled={loading || phoneNumber.length !== 10}
                 >
                   {loading ? "Unlocking..." : "Unlock & scratch 🎁"}
                 </LoadingButton>

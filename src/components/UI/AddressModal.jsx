@@ -127,6 +127,8 @@ export default function AddressModal({
   const [pincodeError, setPincodeError] = useState("");
   const [showContactFields, setShowContactFields] = useState(false);
   const [showFasterDeliveryModal, setShowFasterDeliveryModal] = useState(false);
+  // Full-page payment selection sheet (UPI / COD / WhatsApp + coins toggle).
+  const [showPaySelect, setShowPaySelect] = useState(false);
   // Which delivery speed is highlighted in the chooser (tap to select).
   const [deliverySel, setDeliverySel] = useState("standard");
   const [tempPaymentMethod, setTempPaymentMethod] = useState(null);
@@ -278,7 +280,7 @@ export default function AddressModal({
       setWalletBalance(bal);
       setWalletChecked(true);
       setWalletCheckedPhone(digits);
-      setWalletEnabled(bal > 0); // auto-on when they have credit; they can turn off
+      setWalletEnabled(false); // coins off by default; user opts in at payment
     } catch (e) {
       console.error("Wallet check failed:", e);
       setWalletBalance(0);
@@ -370,11 +372,23 @@ export default function AddressModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
-  // Wallet applied = min(balance, ₹399 cap, goods total) when enabled.
-  const walletApplied =
-    walletEnabled && walletBalance > 0
-      ? Math.min(walletBalance, WALLET_MAX_PER_ORDER, Math.max(0, finalPayable))
-      : 0;
+  // How much wallet (coins) can be applied to THIS order, by order value:
+  //   ₹151–300  → up to ₹15
+  //   ₹300–500  → up to ₹30
+  //   > ₹500    → full available balance
+  // (always capped by the actual balance and the goods total.)
+  const walletCapForOrder = (() => {
+    const v = totalDiscounted;
+    if (v > 500) return walletBalance; // use full balance
+    if (v >= 300) return 30; // ₹30 cap for 300–500
+    return 15; // ₹15 cap for 151–300
+  })();
+  const maxWalletUsable = Math.min(
+    walletBalance,
+    walletCapForOrder,
+    Math.max(0, finalPayable),
+  );
+  const walletApplied = walletEnabled && walletBalance > 0 ? maxWalletUsable : 0;
   // QuickReads add-on rides on the same bill (flat, no delivery/offer applied).
   const qrAddOn = quickReadTotal || 0;
   const netPayable = Math.max(0, finalPayable - walletApplied) + qrAddOn;
@@ -802,6 +816,48 @@ export default function AddressModal({
     onClose();
   };
 
+  // NEW consolidated flow: delivery speed + coins are chosen before this, so
+  // routing goes straight to the payment step (no speed modal). `isFaster`
+  // comes from the add-on checkbox in the address form.
+  const submitAndRoute = (method, isFaster) => {
+    if (method === "UPI") {
+      const ref = `TBX${Date.now()}`;
+      setUpiOrderRef(ref);
+      setUpiPhase("await");
+      setQrUnlocked(false);
+      submitToGoogleForm("UPI", isFaster, false, ref);
+      setShowUPIPayment(true);
+    } else if (method === "COD") {
+      // The ₹29 fee is already disclosed on the Summary & Pay sheet, so place
+      // the COD order directly (no second fee-confirmation modal).
+      trackPurchase({
+        cartItems: cartBooks,
+        totalAmount: netPayable,
+        paymentId: `COD-${Date.now()}`,
+      });
+      submitToGoogleForm("COD", isFaster, true);
+      notifyCODToTelegram(isFaster);
+      triggerCODSuccess(isFaster);
+    }
+  };
+
+  const beginPayment = (method) => {
+    if (!isFormValid()) {
+      showToast(validationMessage(), "error");
+      return;
+    }
+    setShowPaySelect(false);
+    trackFunnelEvent(EVENTS.PAYMENT_METHOD_SELECTED, {
+      method,
+      cart_total: finalPayable,
+    });
+    if (method === "WhatsApp") {
+      handleWhatsAppOrderClick();
+      return;
+    }
+    submitAndRoute(method, fasterDelivery);
+  };
+
   const handleCODClick = () => {
     if (!isFormValid()) return;
     // NOTE: Form submission is intentionally NOT here, it now fires inside
@@ -921,9 +977,12 @@ export default function AddressModal({
   };
 
   const handleCopyUpiId = () => {
-    navigator.clipboard.writeText(UPI_ID);
+    try {
+      navigator.clipboard.writeText(UPI_ID);
+    } catch (_) {}
     setUpiCopied(true);
     setTimeout(() => setUpiCopied(false), 3000);
+    showToast("UPI ID copied to clipboard", "success");
     trackFunnelEvent(EVENTS.UPI_LINK_COPIED, {});
   };
 
@@ -934,6 +993,7 @@ export default function AddressModal({
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    showToast("QR code downloaded", "success");
     trackFunnelEvent(EVENTS.UPI_QR_DOWNLOADED, {});
   };
 
@@ -953,11 +1013,29 @@ export default function AddressModal({
     setShowCODSuccess(true);
   };
 
-  // Timeout fallback: hand the order to WhatsApp with everything pre-filled.
-  const handleUPIWhatsAppVerify = () => {
+  // Timeout fallback: hand the order to WhatsApp with everything pre-filled,
+  // including a MERCHANT CONFIRMATION LINK. The merchant opens the link, enters
+  // the password and the order is confirmed (+ wallet debited) on the sheet.
+  const handleUPIWhatsAppVerify = async () => {
     const bookLines = (cartBooks || [])
       .map((b, i) => `${i + 1}. ${b.name} × ${b.qty}`)
       .join("\n");
+    const amountPaid =
+      netPayable + getDeliveryCharge(fasterDelivery) + (giftWrap ? giftWrapCharge : 0);
+
+    // Merchant confirm link → /{orderId}?w=<walletUsed>
+    const origin =
+      typeof window !== "undefined" ? window.location.origin : "https://thebookx.in";
+    let confirmLink = `${origin}/${encodeURIComponent(upiOrderRef || "")}${
+      walletApplied > 0 ? `?w=${walletApplied}` : ""
+    }`;
+    try {
+      if (typeof shortenUrl === "function") {
+        const short = await shortenUrl(confirmLink);
+        if (short) confirmLink = short;
+      }
+    } catch (_) {}
+
     const msg = [
       "Hi TheBookX 👋",
       "",
@@ -967,10 +1045,15 @@ export default function AddressModal({
       `👤 *Name:* ${name}`,
       `📞 *Phone:* ${phone}`,
       `📍 *Address:* ${fullAddress}, ${city} - ${pincode}`,
-      "",
+      bookLines ? "" : "",
       bookLines ? `📚 *Items:*\n${bookLines}` : "",
       "",
-      `💰 *Amount paid:* ₹${netPayable + getDeliveryCharge(fasterDelivery) + (giftWrap ? giftWrapCharge : 0)}`,
+      `💰 *Amount paid:* ₹${amountPaid}`,
+      walletApplied > 0 ? `👛 *Wallet used:* ₹${walletApplied}` : "",
+      "",
+      "———",
+      "🔐 *Merchant only* — confirm this order:",
+      confirmLink,
     ]
       .filter((l) => l !== "")
       .join("\n");
@@ -1189,82 +1272,70 @@ export default function AddressModal({
                 )}
               </AnimatePresence>
 
-              {/* Wallet balance — auto-detected from the entered number, only
-                  shown when the customer actually has credit */}
-              {walletChecked &&
-                walletCheckedPhone === phone.replace(/\D/g, "") &&
-                walletBalance > 0 && (
-                  <label className="wc-apply wc-card">
-                    <span className="wc-icon">
-                      <Wallet size={16} />
-                    </span>
-                    <span className="wc-apply-txt">
-                      <span className="wc-bal">
-                        Wallet balance ₹{walletBalance}
+              {/* ===== Delivery add-on: FREE standard, or opt into Faster ===== */}
+              <div className="deliv-addon">
+                <div className="deliv-addon-row">
+                  <div className="deliv-addon-l">
+                    <Truck size={18} className="green" />
+                    <div className="flex flex-col">
+                      <span className="deliv-addon-t">Free delivery</span>
+                      <span className="deliv-addon-s">
+                        Reaches you in 3–9 days · included at no charge
                       </span>
-                      <span className="wc-apply-note">
-                        {walletEnabled
-                          ? `Applying ₹${walletApplied} to this order`
-                          : `Tap to use up to ₹${WALLET_MAX_PER_ORDER}`}
-                      </span>
-                    </span>
+                    </div>
+                  </div>
+                  <span className="deliv-addon-free">FREE</span>
+                </div>
+
+                <label className="deliv-addon-row deliv-addon-opt">
+                  <div className="deliv-addon-l">
                     <span
-                      className={`wc-switch${walletEnabled ? " on" : ""}`}
+                      className={`deliv-check${fasterDelivery ? " on" : ""}`}
                       aria-hidden="true"
                     >
-                      <span className="wc-knob">
-                        {walletEnabled && <Check size={11} strokeWidth={3} />}
-                      </span>
+                      {fasterDelivery && <Check size={12} strokeWidth={3} />}
                     </span>
-                    <input
-                      type="checkbox"
-                      className="wc-switch-input"
-                      checked={walletEnabled}
-                      onChange={(e) => setWalletEnabled(e.target.checked)}
-                    />
-                  </label>
-                )}
+                    <div className="flex flex-col">
+                      <span className="deliv-addon-t">Faster delivery</span>
+                      <span className="deliv-addon-s">
+                        Priority dispatch · reaches within 2–5 days
+                      </span>
+                    </div>
+                  </div>
+                  <span className="deliv-addon-price">
+                    +₹{fasterDeliveryCharge}
+                  </span>
+                  <input
+                    type="checkbox"
+                    className="wc-switch-input"
+                    checked={fasterDelivery}
+                    onChange={(e) => setFasterDelivery(e.target.checked)}
+                  />
+                </label>
+              </div>
 
               <div className="bill-row total">
                 <span className="font-16 weight-600">Total Payable</span>
                 <span className="font-20 weight-700 green">
                   ₹
-                  {getTotalWithDelivery(false) +
-                    (giftWrapSelected ? giftWrapCharge : 0)}
+                  {getTotalWithDelivery(fasterDelivery) +
+                    (giftWrap || giftWrapSelected ? giftWrapCharge : 0)}
                 </span>
               </div>
 
               {showContactFields && (
                 <div className="flex flex-col gap-12 items-start mt-16">
-                  <div className="flex flex-row gap-12">
-                    <LoadingButton
-                      className="pri-big-btn width100 flex flex-col"
-                      onClick={() => attemptPayment("UPI")}
-                    >
-                      <p className="weight-600">Pay with UPI</p>
-                      <span className="font-10">No extra charges</span>
-                    </LoadingButton>
-
-                    <LoadingButton
-                      className="sec-big-btn width100 flex flex-col"
-                      onClick={() => attemptPayment("COD")}
-                    >
-                      <p className="weight-600">Cash on Delivery</p>
-                      <span className="font-10">Pay at your doorstep</span>
-                    </LoadingButton>
-                  </div>
-
                   <LoadingButton
-                    className="sec-big-btn width100"
-                    onClick={() => attemptPayment("WhatsApp")}
+                    className="pri-big-btn width100"
+                    onClick={() => {
+                      if (!isFormValid()) {
+                        showToast(validationMessage(), "error");
+                        return;
+                      }
+                      setShowPaySelect(true);
+                    }}
                   >
-                    <div className="flex flex-row gap-12 items-center">
-                      <FaWhatsapp size={30} color="#25D366" />
-                      <div className="flex flex-col items-start">
-                        <p className="weight-600">WhatsApp</p>
-                        <span className="font-10">Chat &amp; order</span>
-                      </div>
-                    </div>
+                    Proceed to payment →
                   </LoadingButton>
                 </div>
               )}
@@ -1286,6 +1357,174 @@ export default function AddressModal({
           </motion.div>
         </motion.div>
       )}
+
+      {/* ========== Payment selection (full-page) ========== */}
+      <AnimatePresence>
+        {showPaySelect && (
+          <motion.div
+            className="bill-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowPaySelect(false)}
+            style={{ maxWidth: "980px", margin: "0 auto" }}
+          >
+            <motion.div
+              className="bill-modal"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+              style={{ maxHeight: "92vh", overflowY: "auto" }}
+            >
+              <div className="bill-header">
+                <span className="weight-600 font-16">Summary &amp; pay</span>
+                <span
+                  className="cursor-pointer"
+                  onClick={() => setShowPaySelect(false)}
+                >
+                  <X size={16} />
+                </span>
+              </div>
+
+              <div className="pay-sel">
+                {/* Bill summary */}
+                <div className="pay-sel-bill">
+                  <div className="ps-row">
+                    <span>Item total</span>
+                    <span>₹{totalDiscounted}</span>
+                  </div>
+                  {offerDiscount > 0 && (
+                    <div className="ps-row">
+                      <span>Offer {offerLabel ? `(${offerLabel})` : ""}</span>
+                      <span className="ps-green">−₹{offerDiscount}</span>
+                    </div>
+                  )}
+                  {qrAddOn > 0 && (
+                    <div className="ps-row">
+                      <span>QuickReads ({quickReadItems.length})</span>
+                      <span>+₹{qrAddOn}</span>
+                    </div>
+                  )}
+                  <div className="ps-row">
+                    <span>{fasterDelivery ? "Faster delivery" : "Delivery"}</span>
+                    <span>
+                      {getDeliveryCharge(fasterDelivery) > 0
+                        ? `+₹${getDeliveryCharge(fasterDelivery)}`
+                        : "FREE"}
+                    </span>
+                  </div>
+                  {(giftWrap || giftWrapSelected) && giftWrapCharge > 0 && (
+                    <div className="ps-row">
+                      <span>🎁 Gift wrap</span>
+                      <span>+₹{giftWrapCharge}</span>
+                    </div>
+                  )}
+                  {walletApplied > 0 && (
+                    <div className="ps-row">
+                      <span>Coins applied</span>
+                      <span className="ps-green">−₹{walletApplied}</span>
+                    </div>
+                  )}
+                  <div className="ps-row ps-total">
+                    <span>Total payable</span>
+                    <span>
+                      ₹
+                      {getTotalWithDelivery(fasterDelivery) +
+                        (giftWrap || giftWrapSelected ? giftWrapCharge : 0)}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Coins toggle (default off) */}
+                {walletBalance > 0 && (
+                  <label className="pay-sel-coins">
+                    <span className="wc-icon">
+                      <Wallet size={16} />
+                    </span>
+                    <span className="wc-apply-txt">
+                      <span className="wc-bal">
+                        Use coins · balance ₹{walletBalance}
+                      </span>
+                      <span className="wc-apply-note">
+                        {walletEnabled
+                          ? `Applying ₹${walletApplied} to this order`
+                          : `You can use up to ₹${maxWalletUsable} on this order`}
+                      </span>
+                    </span>
+                    <span
+                      className={`wc-switch${walletEnabled ? " on" : ""}`}
+                      aria-hidden="true"
+                    >
+                      <span className="wc-knob">
+                        {walletEnabled && <Check size={11} strokeWidth={3} />}
+                      </span>
+                    </span>
+                    <input
+                      type="checkbox"
+                      className="wc-switch-input"
+                      checked={walletEnabled}
+                      onChange={(e) => setWalletEnabled(e.target.checked)}
+                    />
+                  </label>
+                )}
+
+                {/* Two clear payment choices */}
+                <div className="cod-choice-grid">
+                  <button
+                    type="button"
+                    onClick={() => beginPayment("UPI")}
+                    className="cod-choice cod-choice-upi"
+                  >
+                    <span className="cod-choice-badge">
+                      Save ₹{codHandlingFee}
+                    </span>
+                    <span className="cod-choice-ic">
+                      <Sparkles size={18} />
+                    </span>
+                    <span className="cod-choice-title">Pay now via UPI</span>
+                    <span className="cod-choice-amt">₹{upiTotalForFlow}</span>
+                    <span className="cod-choice-sub">Instant · no extra charge</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => beginPayment("COD")}
+                    className="cod-choice cod-choice-cod"
+                  >
+                    <span className="cod-choice-ic cod-ic-neutral">
+                      <Wallet size={18} />
+                    </span>
+                    <span className="cod-choice-title">Cash on Delivery</span>
+                    <span className="cod-choice-amt">₹{codTotalWithFee}</span>
+                    <span className="cod-choice-sub">
+                      Pay at door · incl. ₹{codHandlingFee} fee
+                    </span>
+                  </button>
+                </div>
+
+                <div className="pay-sel-or">or</div>
+
+                <button
+                  type="button"
+                  className="sec-big-btn width100 flex flex-row items-center justify-center gap-8"
+                  onClick={() => beginPayment("WhatsApp")}
+                >
+                  <FaWhatsapp size={18} color="#25D366" /> Order on WhatsApp
+                </button>
+
+                <span
+                  className="font-10 dark-50"
+                  style={{ textAlign: "center" }}
+                >
+                  UPI works with Google Pay, PhonePe, Paytm &amp; BHIM
+                </span>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ========== Faster Delivery Modal ========== */}
       <AnimatePresence>
@@ -2492,21 +2731,19 @@ function UPIPaymentModal({
 }) {
   return (
     <motion.div
-      className="bill-modal-overlay"
+      className="os-fullpage-overlay"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      style={{ maxWidth: "980px", margin: "0 auto" }}
       onClick={onClose}
     >
       <motion.div
-        className="bill-modal upi-payment-modal-v2"
-        initial={{ y: "100%" }}
-        animate={{ y: 0 }}
-        exit={{ y: "100%" }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="os-fullpage upi-payment-modal-v2"
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 24 }}
+        transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
         onClick={(e) => e.stopPropagation()}
-        style={{ maxHeight: "92vh", overflowY: "auto" }}
       >
         <div className="upiv3">
           {/* Header */}
@@ -2658,12 +2895,6 @@ function UPIPaymentModal({
                 <span className="upiv3-qr-scan">
                   Scan with any UPI app to pay
                 </span>
-                <div className="upiv3-qr-brands">
-                  <span className="upiv3-app bhim">BHIM</span>
-                  <span className="upiv3-app gpay">G Pay</span>
-                  <span className="upiv3-app phonepe">PhonePe</span>
-                  <span className="upiv3-app paytm">Paytm</span>
-                </div>
               </div>
 
               {/* UPI ID + save */}

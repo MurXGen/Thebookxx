@@ -1336,16 +1336,18 @@ Please cancel this order. Thank you 🙏`;
                       </span>
                     </div>
 
-                    <span
-                      className="font-10 dark-50"
+                    <Link
+                      href="/wallet"
+                      className="font-11 weight-700"
                       style={{
-                        textAlign: "right",
-                        maxWidth: 120,
-                        lineHeight: 1.4,
+                        flexShrink: 0,
+                        textDecoration: "none",
+                        color: "var(--tertiary, #fb8500)",
+                        whiteSpace: "nowrap",
                       }}
                     >
-                      Available on your next order
-                    </span>
+                      View wallet →
+                    </Link>
                   </motion.div>
                 )}
               </div>

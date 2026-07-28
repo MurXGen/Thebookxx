@@ -67,7 +67,34 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [navHidden, setNavHidden] = useState(false);
+  const [walletBalance, setWalletBalance] = useState(0);
+  const [walletExpiring, setWalletExpiring] = useState(0);
+  const [showExpiryTip, setShowExpiryTip] = useState(false);
   const { cart, qrCart } = useStore();
+
+  // Load the shopper's wallet balance (+ expiry warning) for the header chip.
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const { getSavedPhone } = await import("@/utils/userPhone");
+        const phone = getSavedPhone();
+        if (!phone) return;
+        const { fetchWalletLedger } = await import("@/utils/walletLedger");
+        const led = await fetchWalletLedger(phone);
+        if (!alive) return;
+        setWalletBalance(led.balance);
+        setWalletExpiring(led.expiringSoon);
+        if (led.expiringSoon > 0) {
+          setShowExpiryTip(true);
+          setTimeout(() => alive && setShowExpiryTip(false), 8000);
+        }
+      } catch (_) {}
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   // Hide the navbar when scrolling down, reveal it when scrolling up / at top.
   useEffect(() => {
@@ -181,6 +208,21 @@ export default function Navbar() {
             >
               <FaWhatsapp size={24} color="#25D366" />
             </a>
+            <Link
+              href="/profile"
+              aria-label="Wallet"
+              className="nav-ic nav-wallet-chip"
+            >
+              <Wallet size={22} />
+              {walletBalance > 0 && (
+                <span className="nav-wallet-badge">₹{walletBalance}</span>
+              )}
+              {showExpiryTip && walletExpiring > 0 && (
+                <span className="nav-wallet-tip" role="status">
+                  ₹{walletExpiring} expiring soon — use it on your next order!
+                </span>
+              )}
+            </Link>
             <Link
               href="/profile"
               aria-label="Profile"

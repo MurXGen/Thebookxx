@@ -163,15 +163,19 @@ export const creditWalletReward = async (phone, reward) => {
 export const randomWalletReward = () => 20 + Math.floor(Math.random() * 10);
 
 // Order-value based reward tiers for the checkout scratch card.
-//   order ≥ ₹1000        → ₹50–60
-//   ₹500 ≤ order < ₹1000 → ₹25–35
-//   order < ₹500         → ₹11–29
+//   ₹151–300  → ₹11–15
+//   ₹300–500  → ₹15–30
+//   ₹500–800  → ₹30–35
+//   ₹800–1600 → ₹35–60
+//   > ₹1600   → ₹60–100
 export const orderWalletReward = (orderValue) => {
   const v = Number(orderValue) || 0;
   const rand = (min, max) => min + Math.floor(Math.random() * (max - min + 1));
-  if (v >= 1000) return rand(50, 60);
-  if (v >= 500) return rand(25, 35);
-  return rand(11, 29);
+  if (v >= 1600) return rand(60, 100);
+  if (v >= 800) return rand(35, 60);
+  if (v >= 500) return rand(30, 35);
+  if (v >= 300) return rand(15, 30);
+  return rand(11, 15);
 };
 
 // Format books list for Google Form
@@ -322,4 +326,68 @@ export const fetchOrderStatusById = async (orderId) => {
     console.error("Order status read failed:", e);
     return { found: false, confirmed: false };
   }
+};
+
+// Fetch the full latest row for an Order ID (used by the merchant confirm page).
+export const fetchOrderById = async (orderId) => {
+  const id = String(orderId || "").trim();
+  if (!id) return null;
+  try {
+    const url = `https://docs.google.com/spreadsheets/d/${WALLET_SHEET_ID}/gviz/tq?tqx=out:json`;
+    const res = await fetch(url, { cache: "no-store" });
+    const text = await res.text();
+    const data = JSON.parse(text.substring(47, text.length - 2));
+    const headers = data.table.cols.map((c) => c.label);
+    let match = null;
+    data.table.rows.forEach((row) => {
+      const o = {};
+      row.c.forEach((cell, i) => {
+        let v = cell?.v;
+        if (v && typeof v === "object" && v.value !== undefined) v = v.value;
+        o[headers[i]] = v;
+      });
+      if (String(o["Order ID"] ?? "").trim() === id) match = o; // keep last
+    });
+    return match;
+  } catch (e) {
+    console.error("Order fetch failed:", e);
+    return null;
+  }
+};
+
+// Push a CONFIRMED order (merchant-confirmed) from a fetched row: strips the
+// "(unconfirmed)" tag and records the wallet debit on the same row.
+export const submitConfirmedOrder = async (row, { walletUsed = 0 } = {}) => {
+  if (!row) return { success: false };
+  const cleanName = String(row["Customer Name"] || "")
+    .replace(/\s*\(unconfirmed\)\s*/i, "")
+    .trim();
+  const num = (v) => {
+    const n = parseFloat(v);
+    return isNaN(n) ? 0 : n;
+  };
+  const orderData = {
+    orderId: String(row["Order ID"] || `ORD${Date.now()}`),
+    customerName: cleanName,
+    phone: String(row["Phone Number"] || ""),
+    pincode: String(row["Pincode"] || ""),
+    city: String(row["City"] || ""),
+    state: String(row["State"] || ""),
+    address: String(row["Address"] || ""),
+    booksList: String(row["Books List"] || ""),
+    totalAmount: String(row["Total Amount"] || ""),
+    paymentType: String(row["Payment Type"] || "UPI Payment"),
+    deliveryType: String(row["Delivery Type"] || ""),
+    deliveryCharge: num(row["Delivery Charge"]),
+    giftWrap: String(row["Gift Wrap"] || "No"),
+    giftWrapCharge: num(row["Gift Wrap Charge"]),
+    offerApplied:
+      String(row["Offer Applied"] || "") +
+      (walletUsed > 0 ? ` · Wallet used ₹${walletUsed}` : ""),
+    orderStatus: "Processing",
+    wallet: walletUsed > 0 ? -Math.round(walletUsed) : "",
+    timestamp: fmtSheetTs(new Date()),
+  };
+  const ok = await submitOrderToGoogleForm(orderData);
+  return { success: !!ok, orderData };
 };

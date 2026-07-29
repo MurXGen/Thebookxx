@@ -645,4 +645,5 @@ export const bookImages = {
   "who-moved-my-cheese": `${BOOK_IMAGE_BASE_PATH}/who-moved-my-cheese.jpeg`,
   "the-one-minute-manager": `${BOOK_IMAGE_BASE_PATH}/the-one-minute-manager.jpeg`,
   "good-to-great": `${BOOK_IMAGE_BASE_PATH}/good-to-great.jpeg`,
+  "the-personal-mba": `${BOOK_IMAGE_BASE_PATH}/the-personal-mba.jpeg`,
 };

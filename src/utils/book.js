@@ -10515,4 +10515,21 @@ export const books = [
     weight: 500,
     cost: 130,
   },
+  {
+    id: "bk-664",
+    name: "The Personal MBA",
+    image: bookImages["the-personal-mba"],
+    description:
+      "Buy The Personal MBA by Josh Kaufman online at the lowest price on TheBookX.in. A master class in business — the core concepts of sales, marketing, finance, operations and human psychology distilled into one practical guide, no expensive degree required. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
+    author: "Josh Kaufman",
+    pages: "400-460",
+    language: "English",
+    size: "Paperback",
+    stock: 20,
+    catalogue: ["self-help", "finance", "motivation", "bestseller", "trending"],
+    originalPrice: calculateOriginalPrice(349),
+    discountedPrice: 349,
+    weight: 600,
+    cost: 150,
+  },
 ];

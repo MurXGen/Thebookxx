@@ -938,52 +938,41 @@ _Thank you for shopping with TheBookX! 📚✨_
           </div>
 
           {recTrending.length > 0 && (
-            <section className="bag-rec">
-              <h2 className="bag-rec-h2">🔥 Trending now</h2>
-              <div className="bag-rec-rail">
+            <section
+              className="catalogue-section-2 trending-section"
+              style={{ marginTop: "24px" }}
+            >
+              <HorizontalScroll title="Trending now">
                 {recTrending.map((b) => (
-                  <div key={b.id} className="bag-rec-item">
-                    <BookCard book={b} />
-                  </div>
+                  <BookCard key={b.id} book={b} />
                 ))}
-              </div>
+              </HorizontalScroll>
             </section>
           )}
 
           {recBest.length > 0 && (
-            <section className="bag-rec">
-              <h2 className="bag-rec-h2">⭐ Bestsellers</h2>
-              <div className="bag-rec-rail">
+            <section
+              className="catalogue-section-2"
+              style={{ marginTop: "24px" }}
+            >
+              <HorizontalScroll title="Bestsellers">
                 {recBest.map((b) => (
-                  <div key={b.id} className="bag-rec-item">
-                    <BookCard book={b} />
-                  </div>
+                  <BookCard key={b.id} book={b} />
                 ))}
-              </div>
+              </HorizontalScroll>
             </section>
           )}
 
           {recQuick.length > 0 && (
-            <section className="bag-rec">
-              <h2 className="bag-rec-h2">
-                <Zap size={16} className="orange" /> QuickReads
-              </h2>
-              <div className="bag-rec-rail">
+            <section
+              className="catalogue-section-2"
+              style={{ marginTop: "24px" }}
+            >
+              <HorizontalScroll title="QuickReads">
                 {recQuick.map((b) => (
-                  <Link
-                    key={b.id}
-                    href="/quickreads"
-                    className="bag-qr-item"
-                  >
-                    <img src={b.image} alt={b.name} className="bag-qr-cover" />
-                    <span className="bag-qr-badge">
-                      <Zap size={10} /> QuickRead
-                    </span>
-                    <span className="bag-qr-name">{b.name}</span>
-                    <span className="bag-qr-price">₹{QUICKREAD_PRICE}</span>
-                  </Link>
+                  <BookCard key={b.id} book={b} />
                 ))}
-              </div>
+              </HorizontalScroll>
             </section>
           )}
         </>

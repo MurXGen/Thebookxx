@@ -10566,4 +10566,21 @@ export const books = [
     weight: 250,
     cost: 130,
   },
+  {
+    id: "bk-667",
+    name: "You Were Never Meant To Read This",
+    image: bookImages["you-were-never-meant-to-read-this"],
+    description:
+      "Buy You Were Never Meant To Read This by Shrijeet Shandilya online at the lowest price on TheBookX.in. From the bestselling author of Can We Be Strangers Again?, a tender return to a world of love, loss and everything in between — bittersweet, nostalgic and impossible to put down. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
+    author: "Shrijeet Shandilya",
+    pages: "180-220",
+    language: "English",
+    size: "Paperback",
+    stock: 20,
+    catalogue: ["fiction", "romance", "poetry", "bestseller", "trending"],
+    originalPrice: calculateOriginalPrice(199),
+    discountedPrice: 179,
+    weight: 150,
+    cost: 130,
+  },
 ];

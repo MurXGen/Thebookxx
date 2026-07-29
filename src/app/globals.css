@@ -27889,3 +27889,132 @@ img[data-loaded="true"] {
   background: #1c1e22;
   border-color: rgba(255, 255, 255, 0.08);
 }
+
+/* Monthly run-rate — multi-line race chart */
+.an2-mrr {
+  position: relative;
+  width: 100%;
+}
+.an2-mrr-svg {
+  width: 100%;
+  height: 220px;
+  display: block;
+  overflow: visible;
+}
+.an2-mrr-blink {
+  position: absolute;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  color: var(--bc, #fb8500);
+  background: currentColor;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 3;
+}
+.an2-mrr-blink::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  animation: mrrPulse 1.4s ease-out infinite;
+}
+@keyframes mrrPulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(2.8);
+    opacity: 0;
+  }
+}
+.an2-mrr-x {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+  padding: 0 4px;
+}
+.an2-mrr-x span {
+  font-size: 9.5px;
+  color: var(--dark-50);
+}
+.an2-mrr-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin-top: 12px;
+}
+.an2-mrr-leg {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--dark-50);
+  font-weight: 600;
+}
+.an2-mrr-leg i {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  display: inline-block;
+}
+.an2-mrr-leg b {
+  color: var(--foreground);
+  font-weight: 800;
+}
+.an2-mrr-leg-live {
+  font-size: 8px;
+  font-weight: 800;
+  color: #fff;
+  background: #ef4444;
+  border-radius: 999px;
+  padding: 1px 5px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.an2-mrr-tip {
+  position: absolute;
+  top: 4px;
+  transform: translateX(-50%);
+  background: #111827;
+  color: #fff;
+  border-radius: 10px;
+  padding: 8px 10px;
+  min-width: 128px;
+  max-height: 210px;
+  overflow: auto;
+  pointer-events: none;
+  z-index: 20;
+  box-shadow: 0 10px 24px -10px rgba(0, 0, 0, 0.55);
+}
+.an2-mrr-tip-day {
+  font-size: 10px;
+  font-weight: 700;
+  opacity: 0.8;
+  margin-bottom: 6px;
+}
+.an2-mrr-tip-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  padding: 1px 0;
+}
+.an2-mrr-tip-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  flex: 0 0 auto;
+}
+.an2-mrr-tip-m {
+  flex: 1;
+}
+.an2-mrr-tip-v {
+  font-weight: 800;
+}
+.mo-dark .an2-mrr-tip {
+  background: #f3f4f6;
+  color: #111827;
+}

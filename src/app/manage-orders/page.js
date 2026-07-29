@@ -947,6 +947,21 @@ const MONTH_LABELS = [
   "Nov",
   "Dec",
 ];
+// Distinct line colours for the 12 monthly run-rate lines.
+const MONTH_COLORS = [
+  "#fb8500",
+  "#2563eb",
+  "#16a34a",
+  "#db2777",
+  "#7c3aed",
+  "#0ea5e9",
+  "#f59e0b",
+  "#14b8a6",
+  "#ef4444",
+  "#8b5cf6",
+  "#65a30d",
+  "#e11d48",
+];
 
 // Reusable collapsible accordion section.
 // ── India Post copy-paste helpers ──────────────────────────────────────────
@@ -2467,6 +2482,9 @@ export default function ManageOrdersPage() {
   // Users tab — wallet adjust modal.
   const [walletModal, setWalletModal] = useState(null); // the user record or null
   const [walletBusy, setWalletBusy] = useState(false);
+  // Monthly run-rate chart hover (day-of-month under the cursor).
+  const [mrrTip, setMrrTip] = useState(null); // { day, x }
+  const mrrRef = useRef(null);
 
   // Minimal hover tooltip for analytics charts (event-delegated so it never
   // gets clipped inside scrollable chart containers).
@@ -2485,6 +2503,25 @@ export default function ManageOrdersPage() {
     });
   };
   const onChartLeave = () => setChartTip((t) => (t ? null : t));
+
+  // Monthly run-rate: map cursor X to a day-of-month (1…31) for the tooltip.
+  const onMrrMove = (e) => {
+    const el = mrrRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    if (!r.width) return;
+    const W = 700,
+      padL = 6,
+      padR = 6;
+    const leftF = padL / W;
+    const rightF = 1 - padR / W;
+    let frac = (e.clientX - r.left) / r.width;
+    frac = Math.max(leftF, Math.min(rightF, frac));
+    const dayFrac = (frac - leftF) / (rightF - leftF);
+    const day = Math.min(31, Math.max(1, Math.round(dayFrac * 30) + 1));
+    setMrrTip({ day, x: e.clientX - r.left });
+  };
+  const onMrrLeave = () => setMrrTip(null);
 
   // Callback ref on the "today" column — centers it in a scrollable chart so
   // the default viewport lands on the current date.
@@ -3727,6 +3764,50 @@ export default function ManageOrdersPage() {
     };
   }, [anOrders, overview, analyticsPeriod, periodWindow]);
 
+  // Monthly run rate — one line per month of the CURRENT year, plotted by
+  // day-of-month (x = 1…31). Each point is the running cumulative order count
+  // for that month through that day. Past months run to their last day; the
+  // current month stops at today (blinking dot, no line beyond). Only valid IDs.
+  const monthlyRunRate = useMemo(() => {
+    const y = new Date().getFullYear();
+    const now = new Date();
+    const curMonth = now.getMonth();
+    const curDay = now.getDate();
+    // daily[m][day] = orders placed on that calendar day (day is 1-indexed).
+    const daily = Array.from({ length: 12 }, (_, m) =>
+      new Array(new Date(y, m + 1, 0).getDate() + 1).fill(0),
+    );
+    orders.forEach((o) => {
+      if (!hasOrderId(o)) return;
+      const d = getOrderDate(o);
+      if (!d || d.getFullYear() !== y) return;
+      daily[d.getMonth()][d.getDate()] += 1;
+    });
+    const months = daily
+      .map((arr, m) => {
+        const daysInMonth = arr.length - 1;
+        const lastDay =
+          m < curMonth ? daysInMonth : m === curMonth ? curDay : 0;
+        let run = 0;
+        const pts = [];
+        for (let day = 1; day <= lastDay; day++) {
+          run += arr[day] || 0;
+          pts.push({ day, value: run });
+        }
+        return {
+          month: m,
+          label: MONTH_LABELS[m],
+          color: MONTH_COLORS[m],
+          pts,
+          total: run,
+          isCurrent: m === curMonth,
+        };
+      })
+      .filter((mm) => mm.pts.length > 0 && mm.total > 0);
+    const max = Math.max(1, ...months.map((mm) => mm.total));
+    return { year: y, curMonth, curDay, months, max };
+  }, [orders]);
+
   // ── Users / customer management ────────────────────────────────────────
   // Aggregate every order by phone number → one record per customer, with
   // their spend, repeat status, average order size, last order and wallet.
@@ -4910,6 +4991,160 @@ export default function ManageOrdersPage() {
                       </div>
                     ))}
                   </div>
+                );
+              })()}
+            </An2Section>
+
+            {/* Monthly run rate — one line per month, plotted by day-of-month */}
+            <An2Section
+              title={`Monthly run rate · ${monthlyRunRate.year}`}
+              sub="Cumulative orders by day — one competing line per month"
+            >
+              {(() => {
+                const { months, max, year } = monthlyRunRate;
+                const W = 700;
+                const H = 220;
+                const padL = 6;
+                const padR = 6;
+                const padT = 12;
+                const padB = 8;
+                const iW = W - padL - padR;
+                const iH = H - padT - padB;
+                const xOf = (day) => padL + iW * ((day - 1) / 30);
+                const yOf = (v) => padT + iH - (v / max) * iH;
+                const linePath = (pts) =>
+                  pts
+                    .map(
+                      (p, i) => `${i === 0 ? "M" : "L"}${xOf(p.day)},${yOf(p.value)}`,
+                    )
+                    .join(" ");
+                const cur = months.find((m) => m.isCurrent);
+                let blink = null;
+                if (cur && cur.pts.length) {
+                  const last = cur.pts[cur.pts.length - 1];
+                  blink = {
+                    leftPct: (xOf(last.day) / W) * 100,
+                    topPct: (yOf(last.value) / H) * 100,
+                    color: cur.color,
+                  };
+                }
+                const hoverDay = mrrTip?.day;
+                const hoverRows = hoverDay
+                  ? months
+                      .map((m) => {
+                        const p = m.pts.find((pt) => pt.day === hoverDay);
+                        return p
+                          ? { label: m.label, color: m.color, value: p.value }
+                          : null;
+                      })
+                      .filter(Boolean)
+                      .sort((a, b) => b.value - a.value)
+                  : [];
+                if (!months.length)
+                  return (
+                    <p className="an2-bp-empty">No orders yet this year.</p>
+                  );
+                return (
+                  <>
+                    <div
+                      className="an2-mrr"
+                      ref={mrrRef}
+                      onMouseMove={onMrrMove}
+                      onMouseLeave={onMrrLeave}
+                    >
+                      <svg
+                        className="an2-mrr-svg"
+                        viewBox={`0 0 ${W} ${H}`}
+                        preserveAspectRatio="none"
+                        role="img"
+                        aria-label="Monthly run-rate lines"
+                      >
+                        {hoverDay && (
+                          <line
+                            x1={xOf(hoverDay)}
+                            y1={padT}
+                            x2={xOf(hoverDay)}
+                            y2={padT + iH}
+                            stroke="var(--dark-20, #cbd5e1)"
+                            strokeWidth="1"
+                            strokeDasharray="3 3"
+                            vectorEffect="non-scaling-stroke"
+                          />
+                        )}
+                        {months.map((m) => (
+                          <path
+                            key={m.month}
+                            d={linePath(m.pts)}
+                            fill="none"
+                            stroke={m.color}
+                            strokeWidth="2"
+                            vectorEffect="non-scaling-stroke"
+                            strokeLinejoin="round"
+                            strokeLinecap="round"
+                            opacity={
+                              hoverDay
+                                ? m.pts.some((p) => p.day === hoverDay)
+                                  ? 1
+                                  : 0.25
+                                : 0.9
+                            }
+                          />
+                        ))}
+                      </svg>
+
+                      {blink && (
+                        <span
+                          className="an2-mrr-blink"
+                          style={{
+                            left: `${blink.leftPct}%`,
+                            top: `${blink.topPct}%`,
+                            "--bc": blink.color,
+                          }}
+                          title="Today"
+                        />
+                      )}
+
+                      {hoverDay && hoverRows.length > 0 && (
+                        <div
+                          className="an2-mrr-tip"
+                          style={{ left: mrrTip.x }}
+                        >
+                          <div className="an2-mrr-tip-day">
+                            Day {hoverDay} · {year}
+                          </div>
+                          {hoverRows.map((r) => (
+                            <div className="an2-mrr-tip-row" key={r.label}>
+                              <i
+                                className="an2-mrr-tip-dot"
+                                style={{ background: r.color }}
+                              />
+                              <span className="an2-mrr-tip-m">{r.label}</span>
+                              <span className="an2-mrr-tip-v">{r.value}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="an2-mrr-x">
+                      {[1, 5, 10, 15, 20, 25, 31].map((d) => (
+                        <span key={d}>{d}</span>
+                      ))}
+                    </div>
+
+                    <div className="an2-mrr-legend">
+                      {months.map((m) => (
+                        <span className="an2-mrr-leg" key={m.month}>
+                          <i style={{ background: m.color }} />
+                          {m.label}
+                          <b>{m.total}</b>
+                          {m.isCurrent && (
+                            <span className="an2-mrr-leg-live">live</span>
+                          )}
+                        </span>
+                      ))}
+                    </div>
+                  </>
                 );
               })()}
             </An2Section>

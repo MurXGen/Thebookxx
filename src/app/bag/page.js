@@ -1060,39 +1060,6 @@ _Thank you for shopping with TheBookX! 📚✨_
       {/* Wishlist — horizontal strip below the added books */}
       <WishlistStrip />
 
-      <div className={`gift-wrap-section ${giftWrap ? "selected" : ""}`}>
-        <label className="gift-wrap-label">
-          <input
-            type="checkbox"
-            checked={giftWrap}
-            onChange={(e) => setGiftWrap(e.target.checked)}
-            className="gift-wrap-checkbox"
-          />
-          <div className="gift-wrap-checkbox-custom">
-            <svg
-              className={`checkbox-icon ${giftWrap ? "checked" : ""}`}
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
-          </div>
-          <div className="gift-wrap-content">
-            <div className="gift-wrap-text">
-              <span className="gift-wrap-title">Gift Wrap this order</span>
-              <span className="gift-wrap-desc">
-                Beautifully wrapped with a personalized message
-              </span>
-            </div>
-            <div className="gift-wrap-price">
-              <span className="gift-wrap-amount">+ ₹{GIFT_WRAP_CHARGE}</span>
-            </div>
-          </div>
-        </label>
-      </div>
-
       {recommendedBooks.length > 0 && (
         <div className="cart-sep">
           <span className="cart-sep-line" />

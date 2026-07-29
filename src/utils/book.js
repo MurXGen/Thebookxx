@@ -10549,4 +10549,21 @@ export const books = [
     weight: 140,
     cost: 110,
   },
+  {
+    id: "bk-666",
+    name: "Talk Like TED",
+    image: bookImages["talk-like-ted"],
+    description:
+      "Buy Talk Like TED by Carmine Gallo online at the lowest price on TheBookX.in. The 9 public-speaking secrets of the world's top minds — a practical guide to crafting and delivering presentations that are emotional, novel and memorable, drawn from analysis of hundreds of the best TED talks. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
+    author: "Carmine Gallo",
+    pages: "270-320",
+    language: "English",
+    size: "Paperback",
+    stock: 20,
+    catalogue: ["self-help", "communication", "motivation", "bestseller", "trending"],
+    originalPrice: calculateOriginalPrice(199),
+    discountedPrice: 179,
+    weight: 250,
+    cost: 130,
+  },
 ];

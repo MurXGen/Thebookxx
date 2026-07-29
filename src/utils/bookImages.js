@@ -646,4 +646,5 @@ export const bookImages = {
   "the-one-minute-manager": `${BOOK_IMAGE_BASE_PATH}/the-one-minute-manager.jpeg`,
   "good-to-great": `${BOOK_IMAGE_BASE_PATH}/good-to-great.jpeg`,
   "the-personal-mba": `${BOOK_IMAGE_BASE_PATH}/the-personal-mba.jpeg`,
+  "the-power-of-your-subconscious-mind": `${BOOK_IMAGE_BASE_PATH}/the-power-of-your-subconscious-mind.jpeg`,
 };

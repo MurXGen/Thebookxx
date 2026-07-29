@@ -243,7 +243,12 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
     address: addressData.address || "",
     booksList: formattedBooksList,
     totalAmount: totalWithDelivery || finalPayable,
-    paymentType: paymentType === "COD" ? "Cash on Delivery" : "UPI Payment",
+    paymentType:
+      paymentType === "COD"
+        ? "Cash on Delivery"
+        : paymentType === "WhatsApp"
+          ? "WhatsApp"
+          : "UPI Payment",
     deliveryType: fasterDeliveryChoice
       ? `Faster Delivery (${deliveryLabel})`
       : `Standard Delivery (${deliveryLabel})`,

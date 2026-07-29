@@ -245,6 +245,17 @@ function BagContent() {
 
   const hasOneRupeeItem = cartBooks.some((book) => book.discountedPrice === 1);
 
+  // Recommendations for the empty-bag state (exclude ₹1 books).
+  const recTrending = books
+    .filter((b) => (b.catalogue || []).includes("trending") && b.discountedPrice !== 1)
+    .slice(0, 10);
+  const recBest = books
+    .filter((b) => (b.catalogue || []).includes("bestseller") && b.discountedPrice !== 1)
+    .slice(0, 10);
+  const recQuick = books
+    .filter((b) => quickReadFrameCount(b.id) > 0 && b.discountedPrice !== 1)
+    .slice(0, 10);
+
   // QuickReads in the bag (separate slice)
   const qrItems = (qrCart || [])
     .map((id) => books.find((b) => b.id === id))
@@ -357,11 +368,29 @@ function BagContent() {
     false,
     hasOneRupeeItem,
   );
-  const fasterDeliveryCharge = getDeliveryCharge(
-    totalDiscounted,
-    true,
-    hasOneRupeeItem,
+  // Faster-delivery pricing is by total cart WEIGHT (grams):
+  //   <200 → ₹40 · 200–400 → ₹69 · 400–800 → ₹99 · 800–1200 → ₹150
+  //   1200–1500 → ₹180 · 1500–2000 → ₹220 · >2000 → not available (contact us)
+  const cartWeight = cartBooks.reduce(
+    (s, b) => s + (Number(b.weight) || 0) * (b.qty || 1),
+    0,
   );
+  const fasterUnavailable = cartWeight > 2000;
+  // Gift wrap add-on price by order value: +₹15 up to ₹500, +₹35 above.
+  const giftWrapChargeEff = totalDiscounted > 500 ? 35 : 15;
+  const fasterDeliveryCharge = fasterUnavailable
+    ? 0
+    : cartWeight < 200
+      ? 40
+      : cartWeight < 400
+        ? 69
+        : cartWeight < 800
+          ? 99
+          : cartWeight < 1200
+            ? 150
+            : cartWeight < 1500
+              ? 180
+              : 220;
   const standardDeliveryLabel = getDeliveryLabel(
     totalDiscounted,
     false,
@@ -688,12 +717,14 @@ _Thank you for shopping with TheBookX! 📚✨_
     addressData,
     fasterDeliveryChoice,
     giftWrapSelected,
+    method = "COD",
   ) => {
-    setPaymentMethod("COD");
+    const isWhatsApp = method === "WhatsApp";
+    setPaymentMethod(isWhatsApp ? "WhatsApp" : "COD");
 
     const viewBagLinkWithDetails = generateViewBagLinkWithDetails(
       addressData,
-      "COD",
+      method,
       fasterDeliveryChoice,
       giftWrapSelected,
     );
@@ -702,22 +733,24 @@ _Thank you for shopping with TheBookX! 📚✨_
     const shortLink = await shortenUrl(viewBagLinkWithDetails);
     setIsShortening(false);
 
-    // Notify on every order — mobile and desktop. The fetch uses keepalive so
-    // it completes even though redirectToWhatsApp navigates away right after.
-    await sendOrderToTelegram(
-      addressData,
-      "COD",
-      fasterDeliveryChoice,
-      giftWrapSelected,
-      shortLink,
-    );
+    // Telegram notify on COD orders only — the "Order on WhatsApp" button
+    // must NOT push to Telegram (the customer is messaging us directly).
+    if (!isWhatsApp) {
+      await sendOrderToTelegram(
+        addressData,
+        "COD",
+        fasterDeliveryChoice,
+        giftWrapSelected,
+        shortLink,
+      );
+    }
 
     // Bundle any QuickReads onto this same order before redirecting.
-    await submitBundledQuickReads(addressData, "COD");
+    await submitBundledQuickReads(addressData, method);
 
     redirectToWhatsApp(
       addressData,
-      "COD",
+      method,
       fasterDeliveryChoice,
       giftWrapSelected,
       shortLink,
@@ -890,13 +923,70 @@ _Thank you for shopping with TheBookX! 📚✨_
 
 
       {cartBooks.length === 0 && qrItems.length === 0 && (
-        <div className="bag-empty-tab">
-          <BookOpen size={30} />
-          <p className="font-14 dark-50">Your bag is empty.</p>
-          <Link href="/books" className="pri-big-btn">
-            Browse books
-          </Link>
-        </div>
+        <>
+          <div className="bag-empty-hero">
+            <span className="bag-empty-ic">
+              <BookOpen size={30} />
+            </span>
+            <p className="bag-empty-title">Your bag is empty</p>
+            <p className="bag-empty-sub">
+              Add a book and unlock free delivery, wallet rewards and more.
+            </p>
+            <Link href="/books" className="pri-big-btn">
+              Browse all books
+            </Link>
+          </div>
+
+          {recTrending.length > 0 && (
+            <section className="bag-rec">
+              <h2 className="bag-rec-h2">🔥 Trending now</h2>
+              <div className="bag-rec-rail">
+                {recTrending.map((b) => (
+                  <div key={b.id} className="bag-rec-item">
+                    <BookCard book={b} />
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {recBest.length > 0 && (
+            <section className="bag-rec">
+              <h2 className="bag-rec-h2">⭐ Bestsellers</h2>
+              <div className="bag-rec-rail">
+                {recBest.map((b) => (
+                  <div key={b.id} className="bag-rec-item">
+                    <BookCard book={b} />
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {recQuick.length > 0 && (
+            <section className="bag-rec">
+              <h2 className="bag-rec-h2">
+                <Zap size={16} className="orange" /> QuickReads
+              </h2>
+              <div className="bag-rec-rail">
+                {recQuick.map((b) => (
+                  <Link
+                    key={b.id}
+                    href="/quickreads"
+                    className="bag-qr-item"
+                  >
+                    <img src={b.image} alt={b.name} className="bag-qr-cover" />
+                    <span className="bag-qr-badge">
+                      <Zap size={10} /> QuickRead
+                    </span>
+                    <span className="bag-qr-name">{b.name}</span>
+                    <span className="bag-qr-price">₹{QUICKREAD_PRICE}</span>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
+        </>
       )}
 
       {(cartBooks.length > 0 || qrItems.length > 0) && (
@@ -1135,9 +1225,10 @@ _Thank you for shopping with TheBookX! 📚✨_
         standardDeliveryLabel={standardDeliveryLabel}
         fasterDeliveryCharge={fasterDeliveryCharge}
         fasterDeliveryLabel={fasterDeliveryLabel}
+        fasterUnavailable={fasterUnavailable}
         totalWithStandardDelivery={totalWithStandardDelivery}
-        giftWrapCharge={GIFT_WRAP_CHARGE}
-        giftWrapSelected={giftWrap}
+        giftWrapCharge={giftWrapChargeEff}
+        giftWrapSelected={false}
         handleCODCheckout={handleCODCheckout}
         handleUPICheckout={handleUPICheckout}
         notifyTelegram={sendOrderToTelegram}
@@ -1164,11 +1255,12 @@ _Thank you for shopping with TheBookX! 📚✨_
         standardDeliveryLabel={standardDeliveryLabel}
         fasterDeliveryCharge={fasterDeliveryCharge}
         fasterDeliveryLabel={fasterDeliveryLabel}
+        fasterUnavailable={fasterUnavailable}
         totalWithStandardDelivery={totalWithStandardDelivery}
         cartBooks={cartBooks}
         isFasterDelivery={false}
-        giftWrapCharge={giftWrap ? GIFT_WRAP_CHARGE : 0}
-        giftWrapSelected={giftWrap}
+        giftWrapCharge={giftWrapChargeEff}
+        giftWrapSelected={false}
         hideDeliveryCharges={needsShippingNudge}
         quickReadItems={hasBundledQr ? qrItems : []}
         quickReadUnitPrice={QUICKREAD_PRICE}

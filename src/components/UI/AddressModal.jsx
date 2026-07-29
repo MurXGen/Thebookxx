@@ -87,6 +87,7 @@ export default function AddressModal({
   notifyTelegram,
   standardDeliveryCharge = 0,
   fasterDeliveryCharge = 119,
+  fasterUnavailable = false,
   totalWithStandardDelivery = 0,
   giftWrapCharge = 0,
   giftWrapSelected = false,
@@ -572,7 +573,21 @@ export default function AddressModal({
     orderId = undefined,
   ) => {
     try {
-      const shortLink = await buildShortLink(paymentType, isFaster);
+      // Build the link SYNCHRONOUSLY (no await on the URL shortener). Awaiting
+      // a slow shortener here used to delay the sheet POST — if the shopper
+      // abandoned before it resolved, the "(unconfirmed)" row never got written.
+      let shortLink = "";
+      try {
+        if (typeof generateViewBagLinkWithDetails === "function") {
+          shortLink =
+            generateViewBagLinkWithDetails(
+              { name, phone, address, area, city, district, pincode },
+              paymentType,
+              isFaster,
+              giftWrap || giftWrapSelected,
+            ) || "";
+        }
+      } catch (_) {}
       const feeForThisOrder = paymentType === "COD" ? codHandlingFee : 0;
       const deliveryChargeForOrder = getDeliveryCharge(isFaster);
       const giftWrapOn = giftWrap || giftWrapSelected;
@@ -904,6 +919,7 @@ export default function AddressModal({
         },
         fasterDelivery,
         giftWrap,
+        "WhatsApp",
       );
     }
     onClose();
@@ -1272,8 +1288,10 @@ export default function AddressModal({
                 )}
               </AnimatePresence>
 
-              {/* ===== Delivery add-on: FREE standard, or opt into Faster ===== */}
+              {/* ===== Add-ons: shown only once the name is filled ===== */}
+              {name.trim() && (
               <div className="deliv-addon">
+                <span className="deliv-addon-head">Add-ons</span>
                 <div className="deliv-addon-row">
                   <div className="deliv-addon-l">
                     <Truck size={18} className="green" />
@@ -1287,32 +1305,80 @@ export default function AddressModal({
                   <span className="deliv-addon-free">FREE</span>
                 </div>
 
+                {fasterUnavailable ? (
+                  <div className="deliv-addon-row deliv-addon-opt">
+                    <div className="deliv-addon-l">
+                      <Truck size={18} className="dark-50" />
+                      <div className="flex flex-col">
+                        <span className="deliv-addon-t">Faster delivery</span>
+                        <span className="deliv-addon-s">
+                          Not available for this order weight
+                        </span>
+                        <a
+                          href="https://wa.me/917710892108?text=Hi%20TheBookX%2C%20I%27d%20like%20faster%20delivery%20for%20my%20heavy%20order"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="deliv-addon-link"
+                        >
+                          Contact support for options →
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <label className="deliv-addon-row deliv-addon-opt">
+                    <div className="deliv-addon-l">
+                      <span
+                        className={`deliv-check${fasterDelivery ? " on" : ""}`}
+                        aria-hidden="true"
+                      >
+                        {fasterDelivery && <Check size={12} strokeWidth={3} />}
+                      </span>
+                      <div className="flex flex-col">
+                        <span className="deliv-addon-t">Faster delivery</span>
+                        <span className="deliv-addon-s">
+                          Priority dispatch · reaches within 2–5 days
+                        </span>
+                      </div>
+                    </div>
+                    <span className="deliv-addon-price">
+                      +₹{fasterDeliveryCharge}
+                    </span>
+                    <input
+                      type="checkbox"
+                      className="wc-switch-input"
+                      checked={fasterDelivery}
+                      onChange={(e) => setFasterDelivery(e.target.checked)}
+                    />
+                  </label>
+                )}
+
+                {/* Gift wrap add-on with a 3D gift logo when opted */}
                 <label className="deliv-addon-row deliv-addon-opt">
                   <div className="deliv-addon-l">
                     <span
-                      className={`deliv-check${fasterDelivery ? " on" : ""}`}
+                      className={`deliv-check${giftWrap ? " on" : ""}`}
                       aria-hidden="true"
                     >
-                      {fasterDelivery && <Check size={12} strokeWidth={3} />}
+                      {giftWrap && <Check size={12} strokeWidth={3} />}
                     </span>
                     <div className="flex flex-col">
-                      <span className="deliv-addon-t">Faster delivery</span>
+                      <span className="deliv-addon-t">Gift wrap</span>
                       <span className="deliv-addon-s">
-                        Priority dispatch · reaches within 2–5 days
+                        Wrapped with a ribbon · perfect to gift
                       </span>
                     </div>
                   </div>
-                  <span className="deliv-addon-price">
-                    +₹{fasterDeliveryCharge}
-                  </span>
+                  <span className="deliv-addon-price">+₹{giftWrapCharge}</span>
                   <input
                     type="checkbox"
                     className="wc-switch-input"
-                    checked={fasterDelivery}
-                    onChange={(e) => setFasterDelivery(e.target.checked)}
+                    checked={giftWrap}
+                    onChange={(e) => setGiftWrap(e.target.checked)}
                   />
                 </label>
               </div>
+              )}
 
               <div className="bill-row total">
                 <span className="font-16 weight-600">Total Payable</span>
@@ -1389,42 +1455,34 @@ export default function AddressModal({
               </div>
 
               <div className="pay-sel">
-                {/* Bill summary */}
+                {/* Simple summary — books, deliver-to, and the total only */}
                 <div className="pay-sel-bill">
-                  <div className="ps-row">
-                    <span>Item total</span>
-                    <span>₹{totalDiscounted}</span>
+                  <div className="ps-sum-books">
+                    {(cartBooks || []).map((b, i) => (
+                      <span key={i} className="ps-sum-book">
+                        {b.name}
+                        {b.qty > 1 ? ` × ${b.qty}` : ""}
+                      </span>
+                    ))}
+                    {quickReadItems.length > 0 && (
+                      <span className="ps-sum-book">
+                        {quickReadItems.length} QuickRead
+                        {quickReadItems.length > 1 ? "s" : ""}
+                      </span>
+                    )}
                   </div>
-                  {offerDiscount > 0 && (
-                    <div className="ps-row">
-                      <span>Offer {offerLabel ? `(${offerLabel})` : ""}</span>
-                      <span className="ps-green">−₹{offerDiscount}</span>
-                    </div>
-                  )}
-                  {qrAddOn > 0 && (
-                    <div className="ps-row">
-                      <span>QuickReads ({quickReadItems.length})</span>
-                      <span>+₹{qrAddOn}</span>
-                    </div>
-                  )}
-                  <div className="ps-row">
-                    <span>{fasterDelivery ? "Faster delivery" : "Delivery"}</span>
+                  <div className="ps-sum-addr">
+                    <MapPin size={13} />
                     <span>
-                      {getDeliveryCharge(fasterDelivery) > 0
-                        ? `+₹${getDeliveryCharge(fasterDelivery)}`
-                        : "FREE"}
+                      {name}, {fullAddress}, {city} - {pincode}
                     </span>
                   </div>
-                  {(giftWrap || giftWrapSelected) && giftWrapCharge > 0 && (
-                    <div className="ps-row">
-                      <span>🎁 Gift wrap</span>
-                      <span>+₹{giftWrapCharge}</span>
-                    </div>
-                  )}
-                  {walletApplied > 0 && (
-                    <div className="ps-row">
-                      <span>Coins applied</span>
-                      <span className="ps-green">−₹{walletApplied}</span>
+                  {giftWrap && (
+                    <div className="ps-sum-gift">
+                      <span className="gift-3d on">
+                        <Gift size={16} />
+                      </span>
+                      <span>Gift wrapped · +₹{giftWrapCharge}</span>
                     </div>
                   )}
                   <div className="ps-row ps-total">

@@ -211,17 +211,17 @@ export default function PincodeModal() {
     setLoading(false);
 
     // If they shared a valid phone number, reward them with a scratch card.
-    // Only credit shoppers who don't already hold ₹30+ in their wallet.
+    // The total wallet balance is capped at ₹16 for pincode rewards.
     if (phoneNumber && phoneNumber.length === 10) {
       const balance = await fetchWalletBalance(phoneNumber);
-      // Eligible only if there's room below ₹29. Reward is ₹11–16, and still
-      // capped so the balance never crosses ₹29.
-      const room = 29 - balance;
+      // Eligible only if there's room below ₹16. Reward is ₹11–16, and still
+      // capped so the balance never crosses ₹16 (e.g. balance ₹10 → max ₹6).
+      const room = 16 - balance;
       const eligible = room > 0;
       let rew = 0;
       if (eligible) {
         rew = 11 + Math.floor(Math.random() * 6); // ₹11–16
-        if (rew > room) rew = room; // never let balance + reward exceed ₹29
+        if (rew > room) rew = room; // never let balance + reward exceed ₹16
       }
       setScratchEligible(eligible);
       setScratchReward(rew);

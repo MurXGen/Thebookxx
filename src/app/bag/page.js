@@ -1057,31 +1057,18 @@ _Thank you for shopping with TheBookX! 📚✨_
         </div>
       </div>
 
-      {/* Wishlist — horizontal strip below the added books */}
-      <WishlistStrip />
-
-      {recommendedBooks.length > 0 && (
-        <div className="cart-sep">
-          <span className="cart-sep-line" />
-          <span className="cart-sep-label">
-            <Sparkles size={13} /> You may also add
-          </span>
-          <span className="cart-sep-line" />
-        </div>
-      )}
-
-      {recommendedBooks.length > 0 && (
-        <div className="cart-recommendations">
-          <div className="cart-rec-head">
-            <span className="cart-rec-title">
-              Readers who picked these also loved…
-            </span>
-            <span className="cart-rec-sub">
-              Hand-picked for you, add one more and make it a reading you'll
-              remember ❤️
-            </span>
-          </div>
-          <LazyBookGrid items={recommendedBooks} batch={20} />
+      {cartBooks.length > 0 && (
+        <div className="cart-cta-row">
+          <button
+            type="button"
+            className="sec-mid-btn cart-cta-btn"
+            onClick={() => setShowRecommendationModal(true)}
+          >
+            <Sparkle size={14} /> Need suggestions?
+          </button>
+          <Link href="/books" className="sec-mid-btn cart-cta-btn">
+            <BookOpen size={14} /> Browse books
+          </Link>
         </div>
       )}
 

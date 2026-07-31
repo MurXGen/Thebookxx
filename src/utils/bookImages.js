@@ -649,4 +649,5 @@ export const bookImages = {
   "the-power-of-your-subconscious-mind": `${BOOK_IMAGE_BASE_PATH}/the-power-of-your-subconscious-mind.jpeg`,
   "talk-like-ted": `${BOOK_IMAGE_BASE_PATH}/talk-like-ted.jpeg`,
   "you-were-never-meant-to-read-this": `${BOOK_IMAGE_BASE_PATH}/you-were-never-meant-to-read-this.jpeg`,
+  "i-cannot-say-goodbye-to-you": `${BOOK_IMAGE_BASE_PATH}/i-cannot-say-goodbye-to-you.jpeg`,
 };

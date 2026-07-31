@@ -10583,4 +10583,21 @@ export const books = [
     weight: 150,
     cost: 130,
   },
+  {
+    id: "bk-668",
+    name: "I Cannot Say Goodbye to You",
+    image: bookImages["i-cannot-say-goodbye-to-you"],
+    description:
+      "Buy I Cannot Say Goodbye to You by Rithvik Singh online at the lowest price on TheBookX.in. An unforgettable, emotional romance from one of India's most popular young writers — a story of profound loss, second chances and a love that refuses to let go. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
+    author: "Rithvik Singh",
+    pages: "180-220",
+    language: "English",
+    size: "Paperback",
+    stock: 20,
+    catalogue: ["fiction", "romance", "poetry", "bestseller", "trending"],
+    originalPrice: calculateOriginalPrice(199),
+    discountedPrice: 179,
+    weight: 120,
+    cost: 130,
+  },
 ];

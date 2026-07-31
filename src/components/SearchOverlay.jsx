@@ -120,12 +120,15 @@ export default function SearchOverlay({ open, onClose, initialSuggest = false })
         // 1️⃣ Name match
         const nameMatch = normalize(book.name).includes(q);
 
-        // 2️⃣ Catalogue match
+        // 2️⃣ Author match
+        const authorMatch = normalize(book.author).includes(q);
+
+        // 3️⃣ Catalogue match
         const catalogueMatch = book.catalogue?.some((cat) =>
           normalize(cat).includes(q),
         );
 
-        // 3️⃣ Price match
+        // 4️⃣ Price match
         const priceRule = parsePriceQuery(q);
         let priceMatch = false;
 
@@ -141,7 +144,7 @@ export default function SearchOverlay({ open, onClose, initialSuggest = false })
           }
         }
 
-        return nameMatch || catalogueMatch || priceMatch;
+        return nameMatch || authorMatch || catalogueMatch || priceMatch;
       });
 
   // Apply the chosen sort to the matched results (relevance keeps match order)

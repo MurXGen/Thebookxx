@@ -12392,6 +12392,19 @@ img[data-loaded="true"] {
     height: 94px;
   }
 }
+.cart-cta-row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 18px 16px 100px;
+}
+.cart-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .cart-recommendations {
   margin-top: 4px;
 }

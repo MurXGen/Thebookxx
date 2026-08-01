@@ -208,6 +208,9 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
     // Accurate amounts computed at checkout — prefer these over recomputing.
     deliveryCharge: deliveryChargeIn,
     giftWrapCharge: giftWrapChargeIn,
+    // Chargeable bookmark add-on (no dedicated sheet column — noted in offer field).
+    bookmarkSelected = false,
+    bookmarkCharge: bookmarkChargeIn = 0,
     // Optional caller-supplied order id so the client can poll this exact row.
     orderId: orderIdIn,
   } = orderDetails;
@@ -263,6 +266,9 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
       (offerDiscount > 0 ? `${offerLabel} (₹${offerDiscount} OFF)` : "None") +
       (walletUsed > 0
         ? ` · Wallet used ₹${walletUsed}${walletPhone ? ` (${walletPhone})` : ""}`
+        : "") +
+      (bookmarkSelected
+        ? ` · Bookmark +₹${bookmarkChargeIn || 9}`
         : ""),
     tinyUrl: shortLink || "",
     orderStatus: "Processing",

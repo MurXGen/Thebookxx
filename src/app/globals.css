@@ -24148,6 +24148,8 @@ img[data-loaded="true"] {
   font-size: 13px;
   font-weight: 800;
   color: var(--tertiary, #fb8500);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 .deliv-addon-link {
   font-size: 11.5px;
@@ -26748,6 +26750,15 @@ img[data-loaded="true"] {
 .cod-choice-cod:hover {
   border-color: var(--tertiary, #fb8500);
 }
+/* Selected state (cards are tap-to-select, confirm below) */
+.cod-choice-upi.selected {
+  border-color: #008f0c;
+  box-shadow: 0 0 0 3px rgba(0, 143, 12, 0.14);
+}
+.cod-choice-cod.selected {
+  border-color: var(--tertiary, #fb8500);
+  box-shadow: 0 0 0 3px rgba(251, 133, 0, 0.14);
+}
 .cod-choice-badge {
   position: absolute;
   top: 10px;
@@ -27735,6 +27746,242 @@ img[data-loaded="true"] {
   to {
     transform: rotate(360deg);
   }
+}
+
+/* ===== UPI modal v3 — QR loader / waiting / timeout (Instamart-style) ===== */
+.upiv3-qr-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 0 14px 12px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(16, 185, 129, 0.12);
+  color: #047857;
+  font-size: 12px;
+  font-weight: 700;
+}
+.upiv3-qr-img {
+  position: relative;
+}
+.upiv3-qr-img img {
+  transition: filter 0.5s ease, opacity 0.5s ease;
+}
+.upiv3-qr-img.loading img {
+  filter: blur(9px);
+  opacity: 0.55;
+}
+.upiv3-qr-img.ready img {
+  filter: blur(0);
+  opacity: 1;
+}
+.upiv3-qr-loader {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--foreground);
+}
+.upiv3-spin.lg {
+  width: 26px;
+  height: 26px;
+  border-width: 3px;
+}
+.upiv3-qr-loader .upiv3-spin,
+.upiv3-waiting .upiv3-spin {
+  border-color: rgba(0, 0, 0, 0.12);
+  border-top-color: var(--tertiary, #fb8500);
+}
+.upiv3-instruct {
+  text-align: center;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--dark-50);
+  margin: 14px 12px 10px;
+  max-width: 340px;
+}
+.upiv3-apps-row.big {
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.upiv3-apps-row.big .upiv3-app {
+  font-size: 12px;
+  padding: 8px 12px;
+}
+.upiv3-waiting {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 14px auto 4px;
+  padding: 11px 16px;
+  border-radius: 12px;
+  background: var(--dark-4, #f3f4f6);
+  width: 100%;
+  max-width: 320px;
+}
+.upiv3-waiting-t {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--foreground);
+}
+.upiv3-waiting-c {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--tertiary, #fb8500);
+  font-variant-numeric: tabular-nums;
+}
+.upiv3-timeout {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  max-width: 320px;
+  margin: 14px auto 4px;
+}
+.upiv3-cod-link {
+  background: none;
+  border: none;
+  color: var(--dark-50);
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+/* ===== Choose payment method — selectable cards + comparison ===== */
+.pay-pick {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 4px 0 2px;
+}
+.pay-pick-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  padding: 13px 14px;
+  border-radius: 14px;
+  border: 1.5px solid var(--dark-10, #e5e7eb);
+  background: #fff;
+  cursor: pointer;
+  transition:
+    border-color 0.16s ease,
+    background 0.16s ease,
+    box-shadow 0.16s ease;
+}
+.pay-pick-card.sel {
+  border-color: var(--tertiary, #fb8500);
+  background: rgba(251, 133, 0, 0.05);
+  box-shadow: 0 0 0 3px rgba(251, 133, 0, 0.1);
+}
+.pay-pick-radio {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--dark-20, #d1d5db);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+.pay-pick-card.sel .pay-pick-radio {
+  background: var(--tertiary, #fb8500);
+  border-color: var(--tertiary, #fb8500);
+}
+.pay-pick-ic {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.pay-pick-ic.upi {
+  background: rgba(16, 185, 129, 0.12);
+  color: #047857;
+}
+.pay-pick-ic.cod {
+  background: var(--dark-4, #f3f4f6);
+  color: var(--foreground);
+}
+.pay-pick-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.pay-pick-t {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--foreground);
+}
+.pay-pick-s {
+  font-size: 11px;
+  color: var(--dark-50);
+}
+.pay-pick-right {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+.pay-pick-amt {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--foreground);
+}
+.pay-pick-tag {
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 999px;
+}
+.pay-pick-tag.save {
+  background: rgba(16, 185, 129, 0.15);
+  color: #047857;
+}
+.pay-pick-tag.fee {
+  background: rgba(239, 68, 68, 0.12);
+  color: #b91c1c;
+}
+.pay-compare {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0 4px;
+  padding: 10px 12px;
+  border-radius: 11px;
+  font-size: 12px;
+  line-height: 1.45;
+}
+.pay-compare.warn {
+  background: rgba(239, 68, 68, 0.08);
+  color: #b91c1c;
+}
+.pay-compare.good {
+  background: rgba(16, 185, 129, 0.1);
+  color: #047857;
+}
+.pay-compare svg {
+  flex: 0 0 auto;
+}
+.pay-confirm-btn {
+  margin-top: 8px;
+  gap: 8px;
 }
 
 /* Track & notify — shown plain (no accordion card) in the Track orders tab */

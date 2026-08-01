@@ -301,7 +301,7 @@ function BagContent() {
       (b.catalogue || []).some((c) => cartCategories.has(c)),
   );
 
-  const MIN_CHECKOUT_AMOUNT = 151;
+  const MIN_CHECKOUT_AMOUNT = 199;
   const cartOffers = getCartOffers(hasOneRupeeItem);
 
   const totalOriginal = cartBooks.reduce(
@@ -315,10 +315,10 @@ function BagContent() {
   );
 
   const needsShippingNudge =
-    totalDiscounted < 399 && hasOneRupeeItem && !hasAcceptedShipping;
+    totalDiscounted < 499 && hasOneRupeeItem && !hasAcceptedShipping;
 
   useEffect(() => {
-    if (totalDiscounted >= 399 || !hasOneRupeeItem) {
+    if (totalDiscounted >= 499 || !hasOneRupeeItem) {
       setHasAcceptedShipping(false);
     }
   }, [totalDiscounted, hasOneRupeeItem]);
@@ -355,7 +355,7 @@ function BagContent() {
 
   const finalPayable = totalDiscounted - offerDiscount;
   // Gift wrap (+₹25) counts toward the checkout minimum, so a ₹149 cart can
-  // reach the ₹151 minimum by opting into gift wrapping.
+  // reach the ₹199 minimum by opting into gift wrapping.
   const checkoutValue = totalDiscounted + (giftWrap ? GIFT_WRAP_CHARGE : 0);
   const canCheckout = checkoutValue >= MIN_CHECKOUT_AMOUNT;
   const amountNeededToCheckout = Math.max(

@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Truck, Check, ArrowRight, Sparkles, Loader2 } from "lucide-react";
 import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 
-const FREE_SHIPPING_THRESHOLD = 399;
+const FREE_SHIPPING_THRESHOLD = 499;
 const INITIAL_DISPLAY_COUNT = 8;
 const LOAD_MORE_COUNT = 8;
 

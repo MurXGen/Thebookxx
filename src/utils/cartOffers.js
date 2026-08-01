@@ -3,20 +3,20 @@
 // Get base offers based on whether ₹1 items are present
 export const getCartOffers = (hasOneRupeeItem = false) => {
   if (hasOneRupeeItem) {
-    // ₹1 books present → first goal is reaching ₹399 to unlock free delivery,
+    // ₹1 books present → first goal is reaching ₹499 to unlock free delivery,
     // then progressively bigger flat discounts. Bands are contiguous so the
     // strip always shows the NEXT target (never a dead-end "unlocked").
     return [
       {
         min: 0,
-        target: 399,
+        target: 499,
         type: "free_shipping",
         reward: "Free delivery",
         message: "Add ₹{remaining} more to unlock Free delivery",
         icon: "gift",
       },
       {
-        min: 399,
+        min: 499,
         target: 650,
         type: "flat",
         value: 100,
@@ -44,19 +44,19 @@ export const getCartOffers = (hasOneRupeeItem = false) => {
       },
     ];
   } else {
-    // No ₹1 books → delivery is already free (from the ₹151 checkout min), so
+    // No ₹1 books → delivery is already free (from the ₹199 checkout min), so
     // free delivery reads as "availed" and the goals push toward flat discounts.
     return [
       {
         min: 0,
-        target: 151,
+        target: 199,
         type: "free_shipping",
         reward: "Free delivery",
         message: "Add ₹{remaining} more to checkout with Free delivery",
         icon: "gift",
       },
       {
-        min: 151,
+        min: 199,
         target: 450,
         type: "flat",
         value: 50,
@@ -104,16 +104,16 @@ export const getDeliveryCharge = (
 ) => {
   // If ₹1 items are in cart - charge ₹100 handling fee (instead of free)
   if (hasOneRupeeItem) {
-    // Below 399 - Charge ₹100 handling fee + faster delivery if selected
-    if (orderAmount < 399) {
+    // Below 499 - Charge ₹100 handling fee + faster delivery if selected
+    if (orderAmount < 499) {
       if (isFasterDelivery) {
         return 119; // ₹219 total
       }
       return 100; // ₹100 handling fee
     }
 
-    // Between 399 and 599 - Charge ₹100 handling fee, faster delivery extra
-    if (orderAmount >= 399 && orderAmount < 599) {
+    // Between 499 and 599 - Free delivery, faster delivery extra
+    if (orderAmount >= 499 && orderAmount < 599) {
       if (isFasterDelivery) {
         return 119; // ₹219 total
       }
@@ -144,16 +144,16 @@ export const getDeliveryCharge = (
 
   // No ₹1 items - Free delivery for eligible orders
   else {
-    // Below 151 - Cannot checkout (will be handled by checkout minimum)
-    if (orderAmount < 151) {
+    // Below 199 - Cannot checkout (will be handled by checkout minimum)
+    if (orderAmount < 199) {
       if (isFasterDelivery) {
         return 119;
       }
       return 0;
     }
 
-    // Between 151 and 399 - Free standard, faster 119
-    if (orderAmount >= 151 && orderAmount < 399) {
+    // Between 199 and 399 - Free standard, faster 119
+    if (orderAmount >= 199 && orderAmount < 399) {
       if (isFasterDelivery) {
         return 119;
       }
@@ -228,7 +228,7 @@ export const getDeliveryLabel = (
       if (orderAmount >= 399 && orderAmount < 599) {
         return "Free Delivery";
       }
-      if (orderAmount >= 151 && orderAmount < 399) {
+      if (orderAmount >= 199 && orderAmount < 399) {
         return "Free Delivery";
       }
       return "Standard Delivery";
@@ -274,8 +274,8 @@ export const getDeliveryDescription = (
       if (orderAmount >= 399 && orderAmount < 599) {
         return "Complimentary shipping on orders above ₹399";
       }
-      if (orderAmount >= 151 && orderAmount < 399) {
-        return "Complimentary shipping on orders above ₹151";
+      if (orderAmount >= 199 && orderAmount < 399) {
+        return "Complimentary shipping on orders above ₹199";
       }
       return "Get your order delivered in 5-7 business days";
     }
@@ -293,7 +293,7 @@ export const getOriginalCharge = (orderAmount, isFasterDelivery = false) => {
 
 // Helper to get minimum checkout amount based on ₹1 items
 export const getMinCheckoutAmount = (hasOneRupeeItem = false) => {
-  return hasOneRupeeItem ? 399 : 151;
+  return hasOneRupeeItem ? 499 : 199;
 };
 
 export const CART_OFFERS = (() => {

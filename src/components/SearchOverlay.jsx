@@ -5,11 +5,15 @@ import RecommendationModal from "@/components/RecommendationModal";
 import { books } from "@/utils/book";
 import { hasQuickRead, QUICKREAD_PRICE } from "@/data/quickreads";
 import { AnimatePresence, motion } from "framer-motion";
-import { X, Loader2, Zap } from "lucide-react";
+import { X, Loader2, Zap, ChevronLeft, ChevronRight, Clock } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 const normalize = (str = "") => str.toLowerCase().trim();
+
+// "Loose" form — lowercase with every non-alphanumeric char removed. Lets
+// "off cam", "off-cam" and "offcam" all match "The Off-Campus Set".
+const loose = (str = "") => str.toLowerCase().replace(/[^a-z0-9]+/g, "");
 
 // Slug for a book's QuickReads page (matches the rest of the app).
 const qrSlug = (name = "") =>
@@ -51,6 +55,34 @@ export default function SearchOverlay({ open, onClose, initialSuggest = false })
   const [isSearching, setIsSearching] = useState(false);
   const [sortType, setSortType] = useState("relevance");
   const [showRecommendationModal, setShowRecommendationModal] = useState(false);
+  // Recent searches (persisted in localStorage), shown as scrollable chips.
+  const [recentSearches, setRecentSearches] = useState([]);
+  const chipsRef = useRef(null);
+
+  // Load saved searches whenever the overlay opens.
+  useEffect(() => {
+    if (!open) return;
+    try {
+      const saved = JSON.parse(localStorage.getItem("recent_searches") || "[]");
+      if (Array.isArray(saved)) setRecentSearches(saved.filter(Boolean).slice(0, 12));
+    } catch (_) {}
+  }, [open]);
+
+  const scrollChips = (dir) => {
+    const el = chipsRef.current;
+    if (!el) return;
+    el.scrollBy({ left: dir === "left" ? -160 : 160, behavior: "smooth" });
+  };
+
+  const removeRecent = (term) => {
+    setRecentSearches((prev) => {
+      const next = prev.filter((r) => r !== term);
+      try {
+        localStorage.setItem("recent_searches", JSON.stringify(next));
+      } catch (_) {}
+      return next;
+    });
+  };
 
   // Auto focus input
   useEffect(() => {
@@ -116,17 +148,53 @@ export default function SearchOverlay({ open, onClose, initialSuggest = false })
     ? []
     : books.filter((book) => {
         const q = normalize(debouncedQuery);
+        // Loose query (punctuation/space stripped) + individual word tokens.
+        const looseQ = loose(debouncedQuery);
+        const tokens = debouncedQuery
+          .toLowerCase()
+          .split(/[^a-z0-9]+/)
+          .filter(Boolean);
+
+        // Split a field into its words.
+        const wordsOf = (str) =>
+          str.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+
+        // Every query token must be a PREFIX of some word (order-independent) —
+        // so "off" matches the word "off" in "Off-Campus" but NOT the "off"
+        // buried inside "coffee". Handles "off cam", "campus off", etc.
+        const everyTokenIsWordPrefix = (words) =>
+          tokens.length > 0 &&
+          tokens.every((t) => words.some((w) => w.startsWith(t)));
+
+        // The glued query (spaces/hyphens removed) must match starting AT a word
+        // boundary — so "offcampus" / "off c" match "Off-Campus" but not the
+        // mid-word "off" in "coffee".
+        const startsAtWordBoundary = (words) => {
+          if (!looseQ) return false;
+          for (let i = 0; i < words.length; i++) {
+            let joined = "";
+            for (let j = i; j < words.length && joined.length < looseQ.length; j++) {
+              joined += words[j];
+            }
+            if (joined.startsWith(looseQ)) return true;
+          }
+          return false;
+        };
 
         // 1️⃣ Name match
-        const nameMatch = normalize(book.name).includes(q);
+        const nameWords = wordsOf(book.name);
+        const nameMatch =
+          startsAtWordBoundary(nameWords) || everyTokenIsWordPrefix(nameWords);
 
         // 2️⃣ Author match
-        const authorMatch = normalize(book.author).includes(q);
+        const authorWords = wordsOf(book.author);
+        const authorMatch =
+          startsAtWordBoundary(authorWords) ||
+          everyTokenIsWordPrefix(authorWords);
 
         // 3️⃣ Catalogue match
-        const catalogueMatch = book.catalogue?.some((cat) =>
-          normalize(cat).includes(q),
-        );
+        const catalogueMatch =
+          looseQ && book.catalogue?.some((cat) => loose(cat).includes(looseQ));
 
         // 4️⃣ Price match
         const priceRule = parsePriceQuery(q);
@@ -146,6 +214,26 @@ export default function SearchOverlay({ open, onClose, initialSuggest = false })
 
         return nameMatch || authorMatch || catalogueMatch || priceMatch;
       });
+
+  // Save a search term to recents once it settles with results. Collapses the
+  // typing chain (e.g. "off" then "off cam" keeps only "off cam") and dedupes.
+  useEffect(() => {
+    const term = debouncedQuery.trim();
+    if (!open || term.length < 2 || filteredBooks.length === 0) return;
+    setRecentSearches((prev) => {
+      const tl = term.toLowerCase();
+      const cleaned = prev.filter((r) => {
+        const rl = r.toLowerCase();
+        return rl !== tl && !tl.startsWith(rl);
+      });
+      const next = [term, ...cleaned].slice(0, 12);
+      try {
+        localStorage.setItem("recent_searches", JSON.stringify(next));
+      } catch (_) {}
+      return next;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedQuery, open]);
 
   // Apply the chosen sort to the matched results (relevance keeps match order)
   const sortedBooks = (() => {
@@ -250,6 +338,51 @@ export default function SearchOverlay({ open, onClose, initialSuggest = false })
                   </AnimatePresence>
                 </div>
               </div>
+
+              {/* Recent searches — horizontally scrollable chips with arrows */}
+              {recentSearches.length > 0 && (
+                <div className="search-recent">
+                  <button
+                    type="button"
+                    className="sr-arrow"
+                    onClick={() => scrollChips("left")}
+                    aria-label="Scroll recent searches left"
+                  >
+                    <ChevronLeft size={16} />
+                  </button>
+                  <div className="sr-chips" ref={chipsRef}>
+                    {recentSearches.map((term) => (
+                      <span
+                        key={term}
+                        className="sr-chip"
+                        onClick={() => setQuery(term)}
+                      >
+                        <Clock size={12} />
+                        <span className="sr-chip-t">{term}</span>
+                        <button
+                          type="button"
+                          className="sr-chip-x"
+                          aria-label={`Remove ${term}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeRecent(term);
+                          }}
+                        >
+                          <X size={11} />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                  <button
+                    type="button"
+                    className="sr-arrow"
+                    onClick={() => scrollChips("right")}
+                    aria-label="Scroll recent searches right"
+                  >
+                    <ChevronRight size={16} />
+                  </button>
+                </div>
+              )}
 
               {/* Body, animated between placeholder / loader / empty / results */}
               <div className="search-body" style={{ paddingBottom: 100 }}>

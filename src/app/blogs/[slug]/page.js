@@ -14,6 +14,8 @@ import TableOfContents from "@/components/blog/TableOfContents";
 import RelatedBooks from "@/components/blog/RelatedBooks";
 import PopularPosts from "@/components/blog/PopularPosts";
 import BlogSubscribe from "@/components/blog/BlogSubscribe";
+import BlogShare from "@/components/blog/BlogShare";
+import InlineBookAd from "@/components/blog/InlineBookAd";
 import {
   Star,
   BookOpen,
@@ -223,6 +225,12 @@ export default async function BlogPage({ params }) {
   // Filter out current blog from related blogs
   const relatedBlogs = allBlogs.filter((b) => b.slug !== slug).slice(0, 5);
 
+  // Books this post features — used both for the mid-article ads and the
+  // "featured books" widget at the end.
+  const featuredBooks = relatedBooksFor(blog);
+  // Positions (0-based block index) to drop an in-article book ad after.
+  const adPositions = [3, 8, 13];
+
   return (
     <>
       <script
@@ -273,6 +281,8 @@ export default async function BlogPage({ params }) {
               >
                 {blog.title}
               </h1>
+              {/* Dek / standfirst — like a news article subtitle */}
+              <p className="blog-dek">{blog.excerpt}</p>
               <div className="flex flex-row gap-16 flex-wrap font-14 dark-50">
                 <span className="flex items-center gap-4">
                   By{" "}
@@ -296,6 +306,8 @@ export default async function BlogPage({ params }) {
                 </span>
                 <BlogViews slug={blog.slug} />
               </div>
+              {/* Share / follow row */}
+              <BlogShare title={blog.title} slug={blog.slug} />
             </header>
 
             {/* Table of contents (shows on mobile; sidebar handles desktop) */}
@@ -303,15 +315,29 @@ export default async function BlogPage({ params }) {
               <TableOfContents items={headingsFor(blog)} />
             </div>
 
-            {/* Blog Content - Rendered from JSON */}
+            {/* Blog Content — with in-article book ads woven between sections */}
             <div className="blog-content" style={{ marginBottom: "40px" }}>
-              {blog.content.map((block, index) =>
-                renderContentBlock(block, index),
-              )}
+              {blog.content.map((block, index) => {
+                const nodes = [renderContentBlock(block, index)];
+                const pos = adPositions.indexOf(index);
+                if (
+                  pos !== -1 &&
+                  featuredBooks.length &&
+                  blog.content.length > index + 2
+                ) {
+                  nodes.push(
+                    <InlineBookAd
+                      key={`ad-${index}`}
+                      book={featuredBooks[pos % featuredBooks.length]}
+                    />,
+                  );
+                }
+                return nodes;
+              })}
             </div>
 
             {/* Books featured in this article */}
-            <RelatedBooks books={relatedBooksFor(blog)} />
+            <RelatedBooks books={featuredBooks} />
 
             {/* Subscribe */}
             <BlogSubscribe source={`post:${blog.slug}`} />

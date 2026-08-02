@@ -12,6 +12,7 @@ import {
   ShieldCheck,
   Truck,
   RefreshCw,
+  Info,
   X,
   MapPin,
   AlertCircle,
@@ -132,8 +133,8 @@ export default function AddressModal({
   // Full-page payment selection sheet (UPI / COD / WhatsApp + coins toggle).
   const [showPaySelect, setShowPaySelect] = useState(false);
   // Which method is currently highlighted on the "Choose payment method" sheet.
-  // Defaults to COD; the shopper confirms with the button below.
-  const [paySel, setPaySel] = useState("COD");
+  // Defaults to none — the shopper must pick, then confirm with the button below.
+  const [paySel, setPaySel] = useState(null);
   // Which delivery speed is highlighted in the chooser (tap to select).
   const [deliverySel, setDeliverySel] = useState("standard");
   const [tempPaymentMethod, setTempPaymentMethod] = useState(null);
@@ -1340,12 +1341,20 @@ export default function AddressModal({
                 <div className="deliv-addon-row">
                   <div className="deliv-addon-l">
                     <Truck size={18} className="green" />
-                    <div className="flex flex-col">
-                      <span className="deliv-addon-t">Free delivery</span>
-                      <span className="deliv-addon-s">
+                    <span className="deliv-addon-t">Free delivery</span>
+                    <span
+                      className="deliv-addon-info"
+                      tabIndex={0}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
+                    >
+                      <Info size={13} />
+                      <span className="deliv-addon-tip">
                         Reaches you in 3–9 days · included at no charge
                       </span>
-                    </div>
+                    </span>
                   </div>
                   <span className="deliv-addon-free">FREE</span>
                 </div>
@@ -1354,21 +1363,29 @@ export default function AddressModal({
                   <div className="deliv-addon-row deliv-addon-opt">
                     <div className="deliv-addon-l">
                       <Truck size={18} className="dark-50" />
-                      <div className="flex flex-col">
-                        <span className="deliv-addon-t">Faster delivery</span>
-                        <span className="deliv-addon-s">
+                      <span className="deliv-addon-t">Faster delivery</span>
+                      <span
+                        className="deliv-addon-info"
+                        tabIndex={0}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }}
+                      >
+                        <Info size={13} />
+                        <span className="deliv-addon-tip">
                           Not available for this order weight
                         </span>
-                        <a
-                          href="https://wa.me/917710892108?text=Hi%20TheBookX%2C%20I%27d%20like%20faster%20delivery%20for%20my%20heavy%20order"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="deliv-addon-link"
-                        >
-                          Contact support for options →
-                        </a>
-                      </div>
+                      </span>
                     </div>
+                    <a
+                      href="https://wa.me/917710892108?text=Hi%20TheBookX%2C%20I%27d%20like%20faster%20delivery%20for%20my%20heavy%20order"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="deliv-addon-link"
+                    >
+                      Contact support →
+                    </a>
                   </div>
                 ) : (
                   <label className="deliv-addon-row deliv-addon-opt">
@@ -1379,12 +1396,17 @@ export default function AddressModal({
                       >
                         {fasterDelivery && <Check size={12} strokeWidth={3} />}
                       </span>
-                      <div className="flex flex-col">
-                        <span className="deliv-addon-t">Faster delivery</span>
-                        <span className="deliv-addon-s">
+                      <span className="deliv-addon-t">Faster delivery</span>
+                      <span
+                        className="deliv-addon-info"
+                        tabIndex={0}
+                        onClick={(e) => e.preventDefault()}
+                      >
+                        <Info size={13} />
+                        <span className="deliv-addon-tip">
                           Priority dispatch · reaches within 2–5 days
                         </span>
-                      </div>
+                      </span>
                     </div>
                     <span className="deliv-addon-price">
                       +₹{fasterDeliveryCharge}
@@ -1407,12 +1429,17 @@ export default function AddressModal({
                     >
                       {giftWrap && <Check size={12} strokeWidth={3} />}
                     </span>
-                    <div className="flex flex-col">
-                      <span className="deliv-addon-t">Gift wrap</span>
-                      <span className="deliv-addon-s">
+                    <span className="deliv-addon-t">Gift wrap</span>
+                    <span
+                      className="deliv-addon-info"
+                      tabIndex={0}
+                      onClick={(e) => e.preventDefault()}
+                    >
+                      <Info size={13} />
+                      <span className="deliv-addon-tip">
                         Wrapped with a ribbon · perfect to gift
                       </span>
-                    </div>
+                    </span>
                   </div>
                   <span className="deliv-addon-price">+₹{giftWrapCharge}</span>
                   <input
@@ -1432,13 +1459,18 @@ export default function AddressModal({
                     >
                       {bookmark && <Check size={12} strokeWidth={3} />}
                     </span>
-                    <div className="flex flex-col">
-                      <span className="deliv-addon-t">Bookmark</span>
-                      <span className="deliv-addon-s">
+                    <span className="deliv-addon-t">Bookmark</span>
+                    <span
+                      className="deliv-addon-info"
+                      tabIndex={0}
+                      onClick={(e) => e.preventDefault()}
+                    >
+                      <Info size={13} />
+                      <span className="deliv-addon-tip">
                         A handpicked bookmark tucked into your parcel — never
                         lose your page again
                       </span>
-                    </div>
+                    </span>
                   </div>
                   <span className="deliv-addon-price">+₹{BOOKMARK_CHARGE}</span>
                   <input
@@ -1467,7 +1499,7 @@ export default function AddressModal({
                         showToast(validationMessage(), "error");
                         return;
                       }
-                      setPaySel("COD");
+                      setPaySel(null);
                       setShowPaySelect(true);
                     }}
                   >
@@ -1643,17 +1675,29 @@ export default function AddressModal({
                   </button>
                 </div>
 
-                {/* Confirm — label nudges toward UPI */}
+                {/* Small hint — what you gain/lose with the current choice */}
+                <div className={`pay-hint${paySel === "COD" ? " warn" : ""}`}>
+                  {paySel === "UPI"
+                    ? `You save ₹${codFeeAmount} by paying online now.`
+                    : paySel === "COD"
+                      ? `Heads up — a ₹${codFeeAmount} handling fee applies with Cash on Delivery.`
+                      : `Pay online to save ₹${codFeeAmount} vs Cash on Delivery.`}
+                </div>
+
+                {/* Confirm — CTA depends on the selected method */}
                 <button
                   type="button"
                   className="pri-big-btn width100 pay-confirm-btn"
-                  onClick={() => beginPayment(paySel)}
+                  disabled={!paySel}
+                  onClick={() => paySel && beginPayment(paySel)}
                 >
                   <span className="flex flex-row items-center justify-center gap-6">
-                    {paySel === "COD"
-                      ? `I'm okay to pay ₹${codFeeAmount} extra`
-                      : `Save ₹${codFeeAmount} · Pay ₹${upiTotalForFlow} via UPI`}
-                    <ArrowRight size={18} strokeWidth={2.5} />
+                    {paySel === "UPI"
+                      ? `Pay online and save ₹${codFeeAmount}`
+                      : paySel === "COD"
+                        ? "Continue with Cash on Delivery"
+                        : "Select a payment method"}
+                    {paySel && <ArrowRight size={18} strokeWidth={2.5} />}
                   </span>
                 </button>
 

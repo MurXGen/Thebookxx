@@ -6333,14 +6333,24 @@ export default function ManageOrdersPage() {
                       {/* Amount (big, green) — above the covers; opens detail.
                           WhatsApp icon opens the message picker for this order. */}
                       <div className="mo-amount-row">
-                        <button
-                          type="button"
-                          className="mo-amount"
-                          onClick={() => setDetailOrder(order)}
-                          title="View order details"
-                        >
-                          ₹{order.revenue.toLocaleString()}
-                        </button>
+                        {(() => {
+                          const rev = Number(order.revenue) || 0;
+                          const fee = Math.round(rev * 0.059);
+                          const net = Math.round(rev - fee);
+                          return (
+                            <button
+                              type="button"
+                              className="mo-amount"
+                              onClick={() => setDetailOrder(order)}
+                              title={`Net after 5.9% deduction (₹${rev.toLocaleString()} − ₹${fee}) · tap for details`}
+                            >
+                              ₹{net.toLocaleString()}
+                              <span className="mo-amount-fee">
+                                −₹{fee.toLocaleString()} (5.9%)
+                              </span>
+                            </button>
+                          );
+                        })()}
                         <button
                           type="button"
                           className="mo-wa-btn"

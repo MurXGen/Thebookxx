@@ -180,6 +180,17 @@ export default function AddressModal({
   const [bookmark, setBookmark] = useState(false);
   const BOOKMARK_CHARGE = 9;
 
+  // Add-on info tooltip — rendered fixed to the viewport so it never gets
+  // clipped by the modal's overflow. Shown on hover/tap of an (i) icon.
+  const [addonTip, setAddonTip] = useState(null); // { text, x, y }
+  const showAddonTip = (e) => {
+    const el = e.currentTarget;
+    const text = el.getAttribute("data-tip") || "";
+    const r = el.getBoundingClientRect();
+    setAddonTip({ text, x: r.left + r.width / 2, y: r.top });
+  };
+  const hideAddonTip = () => setAddonTip(null);
+
   const UPI_ID = "7977960242-1@okbizaxis";
 
   useEffect(() => {
@@ -945,7 +956,9 @@ export default function AddressModal({
 
   const handleWhatsAppOrderClick = () => {
     if (!isFormValid()) return;
-    submitToGoogleForm("WhatsApp", fasterDelivery, true);
+    // WhatsApp-button orders are logged as unconfirmed (name keeps the
+    // "(unconfirmed)" tag) until we confirm the chat/payment manually.
+    submitToGoogleForm("WhatsApp", fasterDelivery, false);
     trackFunnelEvent(EVENTS.PAYMENT_METHOD_SELECTED, {
       method: "WhatsApp",
       cart_total: finalPayable,
@@ -1202,7 +1215,16 @@ export default function AddressModal({
       : "";
 
   return (
-    <AnimatePresence>
+    <>
+      {addonTip && (
+        <div
+          className="addon-tip-fixed"
+          style={{ left: addonTip.x, top: addonTip.y - 10 }}
+        >
+          {addonTip.text}
+        </div>
+      )}
+      <AnimatePresence>
       {open && (
         <motion.div
           className="bill-modal-overlay"
@@ -1277,11 +1299,11 @@ export default function AddressModal({
 
               <div className="input-group">
                 <label>
-                  Full Address <span className="red">*</span>
+                  Flat · Street · Landmark <span className="red">*</span>
                 </label>
                 <textarea
                   className="sec-mid-btn textarea"
-                  placeholder="House no, building, street, area, landmark…"
+                  placeholder="Flat / house no, street, area & a nearby landmark…"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   rows={3}
@@ -1344,16 +1366,16 @@ export default function AddressModal({
                     <span className="deliv-addon-t">Free delivery</span>
                     <span
                       className="deliv-addon-info"
-                      tabIndex={0}
+                      data-tip="Reaches you in 3–9 days · included at no charge"
+                      onMouseEnter={showAddonTip}
+                      onMouseLeave={hideAddonTip}
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
+                        showAddonTip(e);
                       }}
                     >
                       <Info size={13} />
-                      <span className="deliv-addon-tip">
-                        Reaches you in 3–9 days · included at no charge
-                      </span>
                     </span>
                   </div>
                   <span className="deliv-addon-free">FREE</span>
@@ -1366,16 +1388,16 @@ export default function AddressModal({
                       <span className="deliv-addon-t">Faster delivery</span>
                       <span
                         className="deliv-addon-info"
-                        tabIndex={0}
+                        data-tip="Not available for this order weight"
+                        onMouseEnter={showAddonTip}
+                        onMouseLeave={hideAddonTip}
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
+                          showAddonTip(e);
                         }}
                       >
                         <Info size={13} />
-                        <span className="deliv-addon-tip">
-                          Not available for this order weight
-                        </span>
                       </span>
                     </div>
                     <a
@@ -1399,13 +1421,15 @@ export default function AddressModal({
                       <span className="deliv-addon-t">Faster delivery</span>
                       <span
                         className="deliv-addon-info"
-                        tabIndex={0}
-                        onClick={(e) => e.preventDefault()}
+                        data-tip="Priority dispatch · reaches within 2–5 days"
+                        onMouseEnter={showAddonTip}
+                        onMouseLeave={hideAddonTip}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          showAddonTip(e);
+                        }}
                       >
                         <Info size={13} />
-                        <span className="deliv-addon-tip">
-                          Priority dispatch · reaches within 2–5 days
-                        </span>
                       </span>
                     </div>
                     <span className="deliv-addon-price">
@@ -1432,13 +1456,15 @@ export default function AddressModal({
                     <span className="deliv-addon-t">Gift wrap</span>
                     <span
                       className="deliv-addon-info"
-                      tabIndex={0}
-                      onClick={(e) => e.preventDefault()}
+                      data-tip="Wrapped with a ribbon · perfect to gift"
+                      onMouseEnter={showAddonTip}
+                      onMouseLeave={hideAddonTip}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        showAddonTip(e);
+                      }}
                     >
                       <Info size={13} />
-                      <span className="deliv-addon-tip">
-                        Wrapped with a ribbon · perfect to gift
-                      </span>
                     </span>
                   </div>
                   <span className="deliv-addon-price">+₹{giftWrapCharge}</span>
@@ -1462,14 +1488,15 @@ export default function AddressModal({
                     <span className="deliv-addon-t">Bookmark</span>
                     <span
                       className="deliv-addon-info"
-                      tabIndex={0}
-                      onClick={(e) => e.preventDefault()}
+                      data-tip="A handpicked bookmark tucked into your parcel — never lose your page again"
+                      onMouseEnter={showAddonTip}
+                      onMouseLeave={hideAddonTip}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        showAddonTip(e);
+                      }}
                     >
                       <Info size={13} />
-                      <span className="deliv-addon-tip">
-                        A handpicked bookmark tucked into your parcel — never
-                        lose your page again
-                      </span>
                     </span>
                   </div>
                   <span className="deliv-addon-price">+₹{BOOKMARK_CHARGE}</span>
@@ -1560,26 +1587,52 @@ export default function AddressModal({
               </div>
 
               <div className="pay-sel">
-                {/* Simple summary — books, deliver-to, and the total only */}
+                {/* Summary — books (horizontal), deliver-to, and the total */}
                 <div className="pay-sel-bill">
-                  <div className="ps-sum-books">
+                  {(() => {
+                    const bookCount =
+                      (cartBooks || []).reduce((s, b) => s + (b.qty || 1), 0) +
+                      quickReadItems.length;
+                    return (
+                      <div className="ps-books-head">
+                        <span className="ps-books-count">
+                          {bookCount} {bookCount > 1 ? "items" : "item"}
+                        </span>
+                        <span className="ps-books-total">₹{totalDiscounted}</span>
+                      </div>
+                    );
+                  })()}
+                  <div className="ps-books-scroll">
                     {(cartBooks || []).map((b, i) => (
-                      <span key={i} className="ps-sum-book">
-                        {b.name}
-                        {b.qty > 1 ? ` × ${b.qty}` : ""}
+                      <span key={i} className="ps-book-cover" title={b.name}>
+                        <img src={b.image} alt={b.name} loading="lazy" />
+                        {b.qty > 1 && (
+                          <span className="ps-book-qty">×{b.qty}</span>
+                        )}
                       </span>
                     ))}
                     {quickReadItems.length > 0 && (
-                      <span className="ps-sum-book">
+                      <span className="ps-book-chip">
                         {quickReadItems.length} QuickRead
                         {quickReadItems.length > 1 ? "s" : ""}
                       </span>
                     )}
                   </div>
-                  <div className="ps-sum-addr">
-                    <MapPin size={13} />
-                    <span>
+
+                  <div className="ps-deliver">
+                    <span className="ps-deliver-ic">
+                      <MapPin size={14} />
+                    </span>
+                    <span className="ps-deliver-addr">
                       {name}, {fullAddress}, {city} - {pincode}
+                    </span>
+                    <span className="ps-deliver-type">
+                      {fasterDelivery ? (
+                        <Zap size={12} />
+                      ) : (
+                        <Truck size={12} />
+                      )}
+                      {fasterDelivery ? "Faster" : "Standard"}
                     </span>
                   </div>
                   {giftWrap && (
@@ -1673,15 +1726,6 @@ export default function AddressModal({
                       Pay at door · incl. ₹{codFeeAmount} fee
                     </span>
                   </button>
-                </div>
-
-                {/* Small hint — what you gain/lose with the current choice */}
-                <div className={`pay-hint${paySel === "COD" ? " warn" : ""}`}>
-                  {paySel === "UPI"
-                    ? `You save ₹${codFeeAmount} by paying online now.`
-                    : paySel === "COD"
-                      ? `Heads up — a ₹${codFeeAmount} handling fee applies with Cash on Delivery.`
-                      : `Pay online to save ₹${codFeeAmount} vs Cash on Delivery.`}
                 </div>
 
                 {/* Confirm — CTA depends on the selected method */}
@@ -2015,7 +2059,8 @@ export default function AddressModal({
           />
         )}
       </AnimatePresence>
-    </AnimatePresence>
+      </AnimatePresence>
+    </>
   );
 }
 
@@ -2298,6 +2343,24 @@ function CODSuccessModal({
     });
   })();
 
+  // Estimated delivery RANGE, e.g. "10 – 12 Aug" (or across months).
+  const deliveryRange = (() => {
+    const start = new Date();
+    start.setDate(start.getDate() + (fasterDelivery ? 2 : 3));
+    const end = new Date();
+    end.setDate(end.getDate() + (fasterDelivery ? 5 : 9));
+    const sameMonth = start.getMonth() === end.getMonth();
+    const startStr = start.toLocaleDateString("en-IN", {
+      day: "numeric",
+      ...(sameMonth ? {} : { month: "short" }),
+    });
+    const endStr = end.toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "short",
+    });
+    return `${startStr} – ${endStr}`;
+  })();
+
   const handleShareOrder = () => {
     const itemsList = (cartBooks || [])
       .map((b, i) => `${i + 1}. ${b.name} × ${b.qty}`)
@@ -2559,16 +2622,13 @@ function CODSuccessModal({
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5 }}
                   style={{
-                    marginTop: 10,
+                    marginTop: 14,
                     display: "flex",
                     flexDirection: "column",
-                    gap: 4,
+                    gap: 10,
                     alignItems: "center",
                   }}
                 >
-                  <span className="font-14 weight-600">
-                    Delivery by {deliveryByDate}
-                  </span>
                   <Link
                     href="/profile"
                     className="font-13 weight-600"
@@ -2642,20 +2702,6 @@ function CODSuccessModal({
                 }}
               >
                 <div className="flex flex-row gap-12 items-start">
-                  <Truck
-                    size={18}
-                    style={{ color: "var(--success)", marginTop: 2 }}
-                  />
-                  <div className="flex flex-col" style={{ flex: 1 }}>
-                    <span className="font-12 dark-50">Delivery in</span>
-                    <span className="font-14 weight-600">{deliveryWindow}</span>
-                    <span className="font-10 dark-50" style={{ marginTop: 2 }}>
-                      Shipping ID will be shared once dispatched
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex flex-row gap-12 items-start">
                   <MapPin
                     size={18}
                     style={{ color: "var(--tertiary)", marginTop: 2 }}
@@ -2671,6 +2717,21 @@ function CODSuccessModal({
                     </span>
                     <span className="font-12 dark-50">+91 {phone}</span>
                   </div>
+                </div>
+
+                {/* Estimated delivery range — full width, medium highlight */}
+                <div className="cod-eta">
+                  <span className="cod-eta-ic">
+                    {fasterDelivery ? <Zap size={15} /> : <Truck size={15} />}
+                  </span>
+                  <span className="cod-eta-tx">
+                    <span className="cod-eta-lbl">Estimated delivery</span>
+                    <span className="cod-eta-date">{deliveryRange}</span>
+                    <span className="cod-eta-win">
+                      {fasterDelivery ? "Priority" : "Standard"} ·{" "}
+                      {deliveryWindow} · Shipping ID shared once dispatched
+                    </span>
+                  </span>
                 </div>
 
                 {/* Itemised order breakdown, books + bill */}

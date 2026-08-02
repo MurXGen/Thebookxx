@@ -735,8 +735,12 @@ export default function MyOrdersPage() {
         const isUnconfirmed = /\(unconfirmed\)/i.test(
           order["Customer Name"] || "",
         );
+        // Only UPI and COD orders belong in the profile — WhatsApp-button
+        // orders are handled over chat and must not show here.
+        const isWhatsApp = /whatsapp/i.test(order["Payment Type"] || "");
         return (
           !isUnconfirmed &&
+          !isWhatsApp &&
           String(orderPhone).trim() === String(phone).trim()
         );
       });

@@ -157,7 +157,10 @@ export default function SearchOverlay({ open, onClose, initialSuggest = false })
 
         // Split a field into its words.
         const wordsOf = (str) =>
-          str.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+          String(str || "")
+            .toLowerCase()
+            .split(/[^a-z0-9]+/)
+            .filter(Boolean);
 
         // Every query token must be a PREFIX of some word (order-independent) —
         // so "off" matches the word "off" in "Off-Campus" but NOT the "off"

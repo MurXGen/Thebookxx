@@ -180,16 +180,6 @@ export default function AddressModal({
   const [bookmark, setBookmark] = useState(false);
   const BOOKMARK_CHARGE = 9;
 
-  // Add-on info tooltip — rendered fixed to the viewport so it never gets
-  // clipped by the modal's overflow. Shown on hover/tap of an (i) icon.
-  const [addonTip, setAddonTip] = useState(null); // { text, x, y }
-  const showAddonTip = (e) => {
-    const el = e.currentTarget;
-    const text = el.getAttribute("data-tip") || "";
-    const r = el.getBoundingClientRect();
-    setAddonTip({ text, x: r.left + r.width / 2, y: r.top });
-  };
-  const hideAddonTip = () => setAddonTip(null);
 
   const UPI_ID = "7977960242-1@okbizaxis";
 
@@ -1215,15 +1205,6 @@ export default function AddressModal({
       : "";
 
   return (
-    <>
-      {addonTip && (
-        <div
-          className="addon-tip-fixed"
-          style={{ left: addonTip.x, top: addonTip.y - 10 }}
-        >
-          {addonTip.text}
-        </div>
-      )}
       <AnimatePresence>
       {open && (
         <motion.div
@@ -1363,20 +1344,12 @@ export default function AddressModal({
                 <div className="deliv-addon-row">
                   <div className="deliv-addon-l">
                     <Truck size={18} className="green" />
-                    <span className="deliv-addon-t">Free delivery</span>
-                    <span
-                      className="deliv-addon-info"
-                      data-tip="Reaches you in 3–9 days · included at no charge"
-                      onMouseEnter={showAddonTip}
-                      onMouseLeave={hideAddonTip}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        showAddonTip(e);
-                      }}
-                    >
-                      <Info size={13} />
-                    </span>
+                    <div className="flex flex-col">
+                      <span className="deliv-addon-t">Free delivery</span>
+                      <span className="deliv-addon-s">
+                        Reaches you in 3–9 days · included at no charge
+                      </span>
+                    </div>
                   </div>
                   <span className="deliv-addon-free">FREE</span>
                 </div>
@@ -1385,20 +1358,12 @@ export default function AddressModal({
                   <div className="deliv-addon-row deliv-addon-opt">
                     <div className="deliv-addon-l">
                       <Truck size={18} className="dark-50" />
-                      <span className="deliv-addon-t">Faster delivery</span>
-                      <span
-                        className="deliv-addon-info"
-                        data-tip="Not available for this order weight"
-                        onMouseEnter={showAddonTip}
-                        onMouseLeave={hideAddonTip}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          showAddonTip(e);
-                        }}
-                      >
-                        <Info size={13} />
-                      </span>
+                      <div className="flex flex-col">
+                        <span className="deliv-addon-t">Faster delivery</span>
+                        <span className="deliv-addon-s">
+                          Not available for this order weight
+                        </span>
+                      </div>
                     </div>
                     <a
                       href="https://wa.me/917710892108?text=Hi%20TheBookX%2C%20I%27d%20like%20faster%20delivery%20for%20my%20heavy%20order"
@@ -1418,19 +1383,12 @@ export default function AddressModal({
                       >
                         {fasterDelivery && <Check size={12} strokeWidth={3} />}
                       </span>
-                      <span className="deliv-addon-t">Faster delivery</span>
-                      <span
-                        className="deliv-addon-info"
-                        data-tip="Priority dispatch · reaches within 2–5 days"
-                        onMouseEnter={showAddonTip}
-                        onMouseLeave={hideAddonTip}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          showAddonTip(e);
-                        }}
-                      >
-                        <Info size={13} />
-                      </span>
+                      <div className="flex flex-col">
+                        <span className="deliv-addon-t">Faster delivery</span>
+                        <span className="deliv-addon-s">
+                          Priority dispatch · reaches within 2–5 days
+                        </span>
+                      </div>
                     </div>
                     <span className="deliv-addon-price">
                       +₹{fasterDeliveryCharge}
@@ -1453,19 +1411,12 @@ export default function AddressModal({
                     >
                       {giftWrap && <Check size={12} strokeWidth={3} />}
                     </span>
-                    <span className="deliv-addon-t">Gift wrap</span>
-                    <span
-                      className="deliv-addon-info"
-                      data-tip="Wrapped with a ribbon · perfect to gift"
-                      onMouseEnter={showAddonTip}
-                      onMouseLeave={hideAddonTip}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        showAddonTip(e);
-                      }}
-                    >
-                      <Info size={13} />
-                    </span>
+                    <div className="flex flex-col">
+                      <span className="deliv-addon-t">Gift wrap</span>
+                      <span className="deliv-addon-s">
+                        Wrapped with a ribbon · perfect to gift
+                      </span>
+                    </div>
                   </div>
                   <span className="deliv-addon-price">+₹{giftWrapCharge}</span>
                   <input
@@ -1485,19 +1436,13 @@ export default function AddressModal({
                     >
                       {bookmark && <Check size={12} strokeWidth={3} />}
                     </span>
-                    <span className="deliv-addon-t">Bookmark</span>
-                    <span
-                      className="deliv-addon-info"
-                      data-tip="A handpicked bookmark tucked into your parcel — never lose your page again"
-                      onMouseEnter={showAddonTip}
-                      onMouseLeave={hideAddonTip}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        showAddonTip(e);
-                      }}
-                    >
-                      <Info size={13} />
-                    </span>
+                    <div className="flex flex-col">
+                      <span className="deliv-addon-t">Bookmark</span>
+                      <span className="deliv-addon-s">
+                        A handpicked bookmark tucked into your parcel — never
+                        lose your page again
+                      </span>
+                    </div>
                   </div>
                   <span className="deliv-addon-price">+₹{BOOKMARK_CHARGE}</span>
                   <input
@@ -2060,7 +2005,6 @@ export default function AddressModal({
         )}
       </AnimatePresence>
       </AnimatePresence>
-    </>
   );
 }
 

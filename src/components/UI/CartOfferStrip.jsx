@@ -2,11 +2,11 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { getCartOffers } from "@/utils/cartOffers";
-import { motion, animate } from "framer-motion";
+import { motion, animate, AnimatePresence } from "framer-motion";
 import { useStore } from "@/context/StoreContext";
 import { books } from "@/utils/book"; // 👈 needed to map id → image
 import Link from "next/link";
-import { ArrowRight, Check } from "lucide-react";
+import { ArrowRight, Check, Lock, Gift, X } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 export default function CartOfferStrip({ discountedAmount }) {
@@ -90,6 +90,9 @@ export default function CartOfferStrip({ discountedAmount }) {
     }
   }, [appliedOffer]);
 
+  /* 📋 Offer detail sheet */
+  const [showOfferSheet, setShowOfferSheet] = useState(false);
+
   /* 🧠 Message — always point to the NEXT target to drive AOV */
   const message = useMemo(() => {
     /* 🎉 Everything unlocked (only at the very top of the ladder) */
@@ -153,7 +156,10 @@ export default function CartOfferStrip({ discountedAmount }) {
     <>
       {/* LEFT */}
       <div className="offer-left">
-        <div className="offer-message">{message}</div>
+        <div className="offer-msg-row">
+          <div className="offer-message">{message}</div>
+          <span className="offer-see-all">See all offers</span>
+        </div>
 
         <div className="progress-bar">
           <motion.div
@@ -166,7 +172,6 @@ export default function CartOfferStrip({ discountedAmount }) {
             style={{ left: `${progress}%` }}
           />
         </div>
-
       </div>
 
       {/* RIGHT */}
@@ -194,18 +199,84 @@ export default function CartOfferStrip({ discountedAmount }) {
     </>
   );
 
-  /* Wrap the whole strip in a Link when not already on home */
-  if (isHomePage) {
-    return <div className="offer-strip">{stripContent}</div>;
-  }
-
   return (
-    <Link
-      href={getCTALink()}
-      className="offer-strip"
-      style={{ textDecoration: "none", display: "flex" }}
-    >
-      {stripContent}
-    </Link>
+    <>
+      <div
+        className="offer-strip"
+        role="button"
+        tabIndex={0}
+        onClick={() => setShowOfferSheet(true)}
+        style={{ cursor: "pointer" }}
+      >
+        {stripContent}
+      </div>
+
+      {/* 📋 Offer detail sheet — all reward tiers with progress */}
+      <AnimatePresence>
+        {showOfferSheet && (
+          <motion.div
+            className="offer-sheet-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowOfferSheet(false)}
+          >
+            <motion.div
+              className="offer-sheet"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="offer-sheet-head">
+                <span className="offer-sheet-title">
+                  <Gift size={16} /> Unlock more rewards
+                </span>
+                <button
+                  type="button"
+                  className="offer-sheet-x"
+                  onClick={() => setShowOfferSheet(false)}
+                  aria-label="Close"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+              <p className="offer-sheet-sub">
+                Your cart: <b>₹{discountedAmount}</b>
+              </p>
+              <div className="offer-sheet-list">
+                {CART_OFFERS.map((o) => {
+                  const unlocked = discountedAmount >= o.target;
+                  const left = Math.max(o.target - discountedAmount, 0);
+                  return (
+                    <div
+                      key={`${o.type}-${o.target}`}
+                      className={`offer-tier${unlocked ? " unlocked" : ""}`}
+                    >
+                      <span className="offer-tier-ic">
+                        {unlocked ? <Check size={14} /> : <Lock size={13} />}
+                      </span>
+                      <span className="offer-tier-main">
+                        <span className="offer-tier-reward">{o.reward}</span>
+                        <span className="offer-tier-note">
+                          {unlocked
+                            ? "Unlocked 🎉"
+                            : `Add ₹${left} more (spend ₹${o.target})`}
+                        </span>
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+              <Link href="/books" className="pri-big-btn width100 offer-sheet-cta">
+                Add more books
+                <ArrowRight size={17} strokeWidth={2.5} />
+              </Link>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

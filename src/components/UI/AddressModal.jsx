@@ -1213,7 +1213,7 @@ export default function AddressModal({
           style={{ maxWidth: "980px", margin: "0 auto" }}
         >
           <motion.div
-            className="bill-modal"
+            className="bill-modal addr-modal"
             onClick={(e) => e.stopPropagation()}
             initial={{ y: "100%" }}
             animate={{ y: 0 }}
@@ -1454,35 +1454,10 @@ export default function AddressModal({
                 </label>
               </div>
               )}
+            </div>
 
-              <div className="bill-row total">
-                <span className="font-16 weight-600">Total Payable</span>
-                <span className="font-20 weight-700 green">
-                  ₹{getTotalWithDelivery(fasterDelivery) + addOnsCharge}
-                </span>
-              </div>
-
-              {showContactFields && (
-                <div className="flex flex-col gap-12 items-start mt-16">
-                  <LoadingButton
-                    className="pri-big-btn width100"
-                    onClick={() => {
-                      if (!isFormValid()) {
-                        showToast(validationMessage(), "error");
-                        return;
-                      }
-                      setPaySel(null);
-                      setShowPaySelect(true);
-                    }}
-                  >
-                    <span className="flex flex-row items-center justify-center gap-6">
-                      Proceed to payment
-                      <ArrowRight size={18} strokeWidth={2.5} />
-                    </span>
-                  </LoadingButton>
-                </div>
-              )}
-
+            {/* Fixed footer — total + proceed stay pinned, form scrolls above */}
+            <div className="addr-footer">
               {!isAddressValid() && (
                 <div className="addr-warn addr-warn-orange">
                   <AlertCircle size={13} />
@@ -1495,6 +1470,32 @@ export default function AddressModal({
                   <AlertCircle size={13} />
                   <span>Enter your name and a valid 10-digit phone</span>
                 </div>
+              )}
+
+              <div className="bill-row total" style={{ marginBottom: 0 }}>
+                <span className="font-16 weight-600">Total Payable</span>
+                <span className="font-20 weight-700 green">
+                  ₹{getTotalWithDelivery(fasterDelivery) + addOnsCharge}
+                </span>
+              </div>
+
+              {showContactFields && (
+                <LoadingButton
+                  className="pri-big-btn width100"
+                  onClick={() => {
+                    if (!isFormValid()) {
+                      showToast(validationMessage(), "error");
+                      return;
+                    }
+                    setPaySel(null);
+                    setShowPaySelect(true);
+                  }}
+                >
+                  <span className="flex flex-row items-center justify-center gap-6">
+                    Proceed to payment
+                    <ArrowRight size={18} strokeWidth={2.5} />
+                  </span>
+                </LoadingButton>
               )}
             </div>
           </motion.div>
@@ -1513,13 +1514,12 @@ export default function AddressModal({
             style={{ maxWidth: "980px", margin: "0 auto" }}
           >
             <motion.div
-              className="bill-modal"
+              className="bill-modal pay-sel-modal"
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ duration: 0.4, ease: "easeOut" }}
               onClick={(e) => e.stopPropagation()}
-              style={{ maxHeight: "92vh", overflowY: "auto" }}
             >
               <div className="bill-header">
                 <span className="weight-600 font-16">Choose payment method</span>
@@ -1673,39 +1673,42 @@ export default function AddressModal({
                   </button>
                 </div>
 
-                {/* Confirm — CTA depends on the selected method */}
-                <button
-                  type="button"
-                  className="pri-big-btn width100 pay-confirm-btn"
-                  disabled={!paySel}
-                  onClick={() => paySel && beginPayment(paySel)}
-                >
-                  <span className="flex flex-row items-center justify-center gap-6">
-                    {paySel === "UPI"
-                      ? `Pay online and save ₹${codFeeAmount}`
-                      : paySel === "COD"
-                        ? "Continue with Cash on Delivery"
-                        : "Select a payment method"}
-                    {paySel && <ArrowRight size={18} strokeWidth={2.5} />}
-                  </span>
-                </button>
+                {/* Payment pain-point / reassurance messaging */}
+                <p className="pay-reason">
+                  <ShieldCheck size={12} /> COD adds a small handling fee (India
+                  Post raised their rates). Paying online is instant, secure and
+                  confirms your order right away.
+                </p>
+              </div>
 
-                <div className="pay-sel-or">or</div>
-
-                <button
-                  type="button"
-                  className="sec-big-btn width100 flex flex-row items-center justify-center gap-8"
-                  onClick={() => beginPayment("WhatsApp")}
-                >
-                  <FaWhatsapp size={18} color="#25D366" /> Order on WhatsApp
-                </button>
-
-                <span
-                  className="font-10 dark-50"
-                  style={{ textAlign: "center" }}
-                >
-                  UPI works with Google Pay, PhonePe, Paytm &amp; BHIM
-                </span>
+              {/* Fixed footer — pay button (full width) + WhatsApp order */}
+              <div className="pay-sel-footer">
+                <div className="pay-sel-footer-row">
+                  <button
+                    type="button"
+                    className="pri-big-btn pay-confirm-btn"
+                    disabled={!paySel}
+                    onClick={() => paySel && beginPayment(paySel)}
+                  >
+                    <span className="flex flex-row items-center justify-center gap-6">
+                      {paySel === "UPI"
+                        ? `Pay & save ₹${codFeeAmount}`
+                        : paySel === "COD"
+                          ? "Cash on Delivery"
+                          : "Select a payment method"}
+                      {paySel && <ArrowRight size={18} strokeWidth={2.5} />}
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    className="pay-sel-wa"
+                    onClick={() => beginPayment("WhatsApp")}
+                    aria-label="Order on WhatsApp"
+                  >
+                    <FaWhatsapp size={18} color="#25D366" />
+                    <span>WhatsApp order</span>
+                  </button>
+                </div>
               </div>
             </motion.div>
           </motion.div>
@@ -2255,9 +2258,24 @@ function CODSuccessModal({
   useEffect(() => {
     const t = setTimeout(() => {
       setIsProcessing(false);
-    }, 3000);
+    }, 1600);
     return () => clearTimeout(t);
   }, []);
+
+  // Haptic buzz while the receipt "prints" (gentle pulses for ~3.4s, then stop).
+  useEffect(() => {
+    if (isProcessing) return;
+    if (typeof navigator !== "undefined" && navigator.vibrate) {
+      const pattern = [];
+      for (let i = 0; i < 34; i++) pattern.push(16, 84);
+      navigator.vibrate(pattern);
+    }
+    return () => {
+      if (typeof navigator !== "undefined" && navigator.vibrate) {
+        navigator.vibrate(0);
+      }
+    };
+  }, [isProcessing]);
 
   // Scratch-card reward — amount depends on order value (see orderWalletReward).
   const rewardRef = useRef(orderWalletReward(totalAmount));
@@ -2305,6 +2323,14 @@ function CODSuccessModal({
     return `${startStr} – ${endStr}`;
   })();
 
+  // Stable display order ref + date for the printed receipt.
+  const orderRef = useRef("TBX" + String(Date.now()).slice(-8)).current;
+  const todayStr = new Date().toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+
   const handleShareOrder = () => {
     const itemsList = (cartBooks || [])
       .map((b, i) => `${i + 1}. ${b.name} × ${b.qty}`)
@@ -2344,30 +2370,21 @@ function CODSuccessModal({
 
   return (
     <motion.div
-      className="os-fullpage-overlay"
+      className="bill-modal-overlay cod-success-overlay"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       onClick={handleOverlayClick}
+      style={{ maxWidth: "980px", margin: "0 auto" }}
     >
       <motion.div
-        className="os-fullpage"
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 24 }}
-        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+        className="bill-modal cod-success-modal"
+        initial={{ y: "100%" }}
+        animate={{ y: 0 }}
+        exit={{ y: "100%" }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
         onClick={(e) => e.stopPropagation()}
       >
-        {!isProcessing && (
-          <button
-            type="button"
-            className="os-close"
-            onClick={onClose}
-            aria-label="Close"
-          >
-            <X size={22} />
-          </button>
-        )}
         <AnimatePresence mode="wait">
           {isProcessing ? (
             <motion.div
@@ -2379,7 +2396,8 @@ function CODSuccessModal({
               style={{
                 padding: "48px 20px",
                 textAlign: "center",
-                minHeight: 240,
+                flex: 1,
+                width: "100%",
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
@@ -2474,143 +2492,138 @@ function CODSuccessModal({
           ) : (
             <motion.div
               key="success"
+              className="cod-success-body"
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.35 }}
             >
-              <div
-                style={{ padding: "32px 20px 20px 20px", textAlign: "center" }}
-              >
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 260,
-                    damping: 18,
-                    delay: 0.1,
-                  }}
-                  style={{
-                    width: "72px",
-                    height: "72px",
-                    margin: "0 auto 16px",
-                    borderRadius: "50%",
-                    background:
-                      "linear-gradient(135deg, var(--success, #008f0c), #00b510)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    boxShadow: "0 8px 24px rgba(0, 143, 12, 0.35)",
-                  }}
-                >
-                  <CheckCircle2 size={40} color="#fff" strokeWidth={3} />
-                </motion.div>
-
-                <div style={{ position: "relative", height: 0 }}>
-                  {[...Array(8)].map((_, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, scale: 0, x: 0, y: 0 }}
-                      animate={{
-                        opacity: [0, 1, 0],
-                        scale: [0, 1, 0.6],
-                        x: Math.cos((i * Math.PI * 2) / 8) * 80,
-                        y: Math.sin((i * Math.PI * 2) / 8) * 80 - 80,
-                      }}
-                      transition={{
-                        duration: 1.2,
-                        delay: 0.4,
-                        ease: "easeOut",
-                      }}
-                      style={{
-                        position: "absolute",
-                        left: "50%",
-                        top: 0,
-                        width: 8,
-                        height: 8,
-                        borderRadius: "50%",
-                        background: [
-                          "#fb8500",
-                          "#ffb703",
-                          "#008f0c",
-                          "#fb8500",
-                        ][i % 4],
-                        pointerEvents: "none",
-                      }}
-                    />
-                  ))}
+              <div className="cod-success-scroll">
+              {/* 🧾 Printed receipt — slides out of the printer slot */}
+              <div className="rcpt-stage">
+                <div className="rcpt-printer" aria-hidden="true">
+                  <span className="rcpt-lip" />
                 </div>
-
-                <motion.h2
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                  className="weight-700"
-                  style={{ fontSize: "20px", margin: "8px 0 6px" }}
-                >
-                  🎉 Order Confirmed!
-                </motion.h2>
-
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.45 }}
-                  className="font-14 dark-50"
-                  style={{ margin: 0 }}
-                >
-                  Thanks for shopping with us!
-                </motion.p>
-
                 <motion.div
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 }}
-                  style={{
-                    marginTop: 14,
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 10,
-                    alignItems: "center",
-                  }}
+                  className="rcpt"
+                  initial={{ y: "-109%" }}
+                  animate={{ y: 0 }}
+                  transition={{ duration: 3.4, ease: "linear", delay: 0.2 }}
                 >
-                  <Link
-                    href="/profile"
-                    className="font-13 weight-600"
-                    style={{ color: "var(--tertiary, #fb8500)" }}
-                  >
+                  <div className="rcpt-head">
+                    <span className="rcpt-brand">TheBookX</span>
+                    <span className="rcpt-status">
+                      <CheckCircle2 size={13} strokeWidth={3} /> ORDER CONFIRMED
+                    </span>
+                    <span className="rcpt-thanks">Thank you for your order!</span>
+                  </div>
+
+                  <div className="rcpt-dash" />
+
+                  <div className="rcpt-line">
+                    <span>Order</span>
+                    <b>{orderRef}</b>
+                  </div>
+                  <div className="rcpt-line">
+                    <span>Date</span>
+                    <span>{todayStr}</span>
+                  </div>
+                  <div className="rcpt-line">
+                    <span>Payment</span>
+                    <span>{isUPI ? "UPI · Paid" : "Cash on Delivery"}</span>
+                  </div>
+
+                  <div className="rcpt-dash" />
+
+                  <div className="rcpt-items">
+                    {cartBooks?.map((b, i) => (
+                      <div className="rcpt-item" key={i}>
+                        <span className="rcpt-item-nm">
+                          {i + 1}. {b.name}
+                        </span>
+                        <span className="rcpt-item-q">
+                          {b.qty} × ₹{b.discountedPrice}
+                        </span>
+                        <span className="rcpt-item-amt">
+                          ₹{b.discountedPrice * b.qty}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="rcpt-dash" />
+
+                  <div className="rcpt-line">
+                    <span>Subtotal</span>
+                    <span>₹{totalDiscounted}</span>
+                  </div>
+                  {offerDiscount > 0 && (
+                    <div className="rcpt-line green">
+                      <span>Offer{offerLabel ? ` (${offerLabel})` : ""}</span>
+                      <span>-₹{offerDiscount}</span>
+                    </div>
+                  )}
+                  {walletApplied > 0 && (
+                    <div className="rcpt-line green">
+                      <span>Wallet</span>
+                      <span>-₹{walletApplied}</span>
+                    </div>
+                  )}
+                  <div className="rcpt-line">
+                    <span>
+                      {fasterDelivery ? "Faster delivery" : "Standard delivery"}
+                    </span>
+                    <span>
+                      {deliveryCharge > 0 ? `+₹${deliveryCharge}` : "FREE"}
+                    </span>
+                  </div>
+                  {giftWrap && giftWrapCharge > 0 && (
+                    <div className="rcpt-line">
+                      <span>Gift wrap</span>
+                      <span>+₹{giftWrapCharge}</span>
+                    </div>
+                  )}
+                  {quickReadTotal > 0 && (
+                    <div className="rcpt-line">
+                      <span>QuickReads ({quickReadCount})</span>
+                      <span>+₹{quickReadTotal}</span>
+                    </div>
+                  )}
+                  {codFee > 0 && (
+                    <div className="rcpt-line">
+                      <span>COD handling fee</span>
+                      <span>+₹{codFee}</span>
+                    </div>
+                  )}
+
+                  <div className="rcpt-dash bold" />
+                  <div className="rcpt-total">
+                    <span>{isUPI ? "PAID" : "TO PAY"}</span>
+                    <span>₹{totalAmount}</span>
+                  </div>
+                  <div className="rcpt-dash" />
+
+                  <div className="rcpt-block">
+                    <span className="rcpt-block-lbl">DELIVER TO</span>
+                    <span className="rcpt-block-v">{name}</span>
+                    <span className="rcpt-block-s">
+                      {address}, {city} - {pincode}
+                    </span>
+                    <span className="rcpt-block-s">+91 {phone}</span>
+                  </div>
+
+                  <div className="rcpt-eta-line">
+                    {fasterDelivery ? <Zap size={12} /> : <Truck size={12} />}
+                    Est. delivery {deliveryRange} · {deliveryWindow}
+                  </div>
+
+                  <div className="rcpt-barcode" aria-hidden="true" />
+                  <span className="rcpt-barcode-no">* {orderRef} *</span>
+
+                  <Link href="/profile" className="rcpt-track">
                     Track &amp; manage order →
                   </Link>
                 </motion.div>
               </div>
-
-              {/* 🎁 Reward teaser — opens the scratch card sheet */}
-              <motion.button
-                type="button"
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.55 }}
-                className={`reward-teaser${walletCredited ? " done" : ""}`}
-                onClick={() => setScratchOpen(true)}
-              >
-                <span className="reward-teaser-ic">
-                  <Gift size={20} />
-                </span>
-                <span className="reward-teaser-tx">
-                  <span className="reward-teaser-tt">
-                    {walletCredited
-                      ? `₹${reward} added to your wallet!`
-                      : "You've won a scratch card!"}
-                  </span>
-                  <span className="reward-teaser-sub">
-                    {walletCredited
-                      ? "Use it on your next order"
-                      : "Tap to scratch & reveal your wallet reward"}
-                  </span>
-                </span>
-                <span className="reward-teaser-cta">
-                  {walletCredited ? "Done" : "Scratch"}
-                </span>
-              </motion.button>
 
               <ScratchRewardSheet
                 open={scratchOpen}
@@ -2631,269 +2644,47 @@ function CODSuccessModal({
                 }
               />
 
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.55 }}
-                style={{
-                  padding: "16px",
-                  background: "var(--dark-4)",
-                  border: "1px solid var(--dark-10)",
-                  borderRadius: "12px",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "14px",
-                }}
-              >
-                <div className="flex flex-row gap-12 items-start">
-                  <MapPin
-                    size={18}
-                    style={{ color: "var(--tertiary)", marginTop: 2 }}
-                  />
-                  <div className="flex flex-col" style={{ flex: 1 }}>
-                    <span className="font-12 dark-50">Delivery Address</span>
-                    <span className="font-14 weight-500">{name}</span>
-                    <span
-                      className="font-12"
-                      style={{ color: "var(--foreground)" }}
-                    >
-                      {address}, {city} - {pincode}
-                    </span>
-                    <span className="font-12 dark-50">+91 {phone}</span>
-                  </div>
-                </div>
 
-                {/* Estimated delivery range — full width, medium highlight */}
-                <div className="cod-eta">
-                  <span className="cod-eta-ic">
-                    {fasterDelivery ? <Zap size={15} /> : <Truck size={15} />}
-                  </span>
-                  <span className="cod-eta-tx">
-                    <span className="cod-eta-lbl">Estimated delivery</span>
-                    <span className="cod-eta-date">{deliveryRange}</span>
-                    <span className="cod-eta-win">
-                      {fasterDelivery ? "Priority" : "Standard"} ·{" "}
-                      {deliveryWindow} · Shipping ID shared once dispatched
-                    </span>
-                  </span>
-                </div>
-
-                {/* Itemised order breakdown, books + bill */}
-                <div
-                  style={{
-                    borderTop: "1px dashed var(--dark-20)",
-                    paddingTop: 12,
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 10,
-                  }}
-                >
-                  {/* Books section header */}
-                  <div className="flex flex-row items-center gap-8">
-                    <Package size={14} style={{ color: "var(--tertiary)" }} />
-                    <span className="font-12 weight-700">
-                      Order Items ({cartBooks?.length || 0})
-                    </span>
-                  </div>
-
-                  {/* Book line items */}
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: 6,
-                      maxHeight: 180,
-                      overflowY: "auto",
-                    }}
-                  >
-                    {cartBooks?.map((book, idx) => (
-                      <div
-                        key={idx}
-                        className="flex flex-row justify-between items-start gap-8"
-                      >
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div
-                            className="font-12 weight-500"
-                            style={{
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              whiteSpace: "nowrap",
-                            }}
-                          >
-                            {idx + 1}. {book.name}
-                          </div>
-                          <span className="font-10 dark-50">
-                            {book.qty} × ₹{book.discountedPrice}
-                          </span>
-                        </div>
-                        <span className="font-12 weight-600">
-                          ₹{book.discountedPrice * book.qty}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Bill rows */}
-                  <div
-                    style={{
-                      borderTop: "1px dashed var(--dark-20)",
-                      paddingTop: 10,
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: 6,
-                    }}
-                  >
-                    <div className="flex flex-row justify-between font-12">
-                      <span className="dark-50">Subtotal</span>
-                      <span>₹{totalDiscounted}</span>
-                    </div>
-
-                    {offerDiscount > 0 && (
-                      <div className="flex flex-row justify-between font-12">
-                        <span className="dark-50">
-                          Offer {offerLabel ? `(${offerLabel})` : ""}
-                        </span>
-                        <span
-                          className="weight-600"
-                          style={{ color: "var(--success)" }}
-                        >
-                          -₹{offerDiscount}
-                        </span>
-                      </div>
-                    )}
-
-                    {walletApplied > 0 && (
-                      <div className="flex flex-row justify-between font-12">
-                        <span className="dark-50">Wallet balance</span>
-                        <span
-                          className="weight-600"
-                          style={{ color: "var(--success)" }}
-                        >
-                          -₹{walletApplied}
-                        </span>
-                      </div>
-                    )}
-
-                    <div className="flex flex-row justify-between font-12">
-                      <span className="dark-50">
-                        {fasterDelivery
-                          ? "Faster Delivery"
-                          : "Standard Delivery"}
-                      </span>
-                      <span
-                        className="weight-500"
-                        style={{
-                          color:
-                            deliveryCharge > 0
-                              ? "var(--foreground)"
-                              : "var(--success)",
-                        }}
-                      >
-                        {deliveryCharge > 0 ? `+₹${deliveryCharge}` : "FREE"}
-                      </span>
-                    </div>
-
-                    {giftWrap && giftWrapCharge > 0 && (
-                      <div className="flex flex-row justify-between font-12">
-                        <span className="dark-50">🎁 Gift Wrap</span>
-                        <span className="weight-500">+₹{giftWrapCharge}</span>
-                      </div>
-                    )}
-
-                    {quickReadTotal > 0 && (
-                      <div className="flex flex-row justify-between font-12">
-                        <span className="dark-50">
-                          ⚡ QuickReads ({quickReadCount})
-                        </span>
-                        <span
-                          className="weight-600"
-                          style={{ color: "var(--tertiary)" }}
-                        >
-                          +₹{quickReadTotal}
-                        </span>
-                      </div>
-                    )}
-
-                    {codFee > 0 && (
-                      <div className="flex flex-row justify-between font-12">
-                        <span className="dark-50">COD handling fee</span>
-                        <span
-                          className="weight-600"
-                          style={{ color: "var(--tertiary)" }}
-                        >
-                          +₹{codFee}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Final total */}
-                  <div
-                    style={{
-                      borderTop: "1px solid var(--dark-10)",
-                      paddingTop: 10,
-                    }}
-                    className="flex flex-row justify-between items-center"
-                  >
-                    <div className="flex flex-col">
-                      <span className="font-14 weight-700">
-                        {isUPI ? "Amount paid" : "To pay at delivery"}
-                      </span>
-                      {codFee > 0 && (
-                        <span className="font-10 dark-50">
-                          Includes ₹{codFee} COD fee
-                        </span>
-                      )}
-                    </div>
-                    <span className="font-18 weight-700 green">
-                      ₹{totalAmount}
-                    </span>
-                  </div>
-                </div>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7 }}
-                className="os-actions"
-              >
-                {onViewProfile && (
-                  <button
-                    className="pri-big-btn width100 flex flex-row items-center justify-center gap-8"
-                    onClick={onViewProfile}
-                  >
-                    <User size={16} />
-                    Track order in your profile
-                    <ArrowRight size={16} />
-                  </button>
-                )}
-                <div className="os-actions-row">
-                  <button
-                    className="sec-big-btn flex flex-row items-center justify-center gap-8"
-                    onClick={onContinue}
-                  >
-                    Continue Shopping
-                    <ArrowRight size={16} />
-                  </button>
-                  <button
-                    className="sec-big-btn flex flex-row items-center justify-center gap-8"
-                    onClick={handleShareOrder}
-                    aria-label="Send order details on WhatsApp"
-                  >
-                    <FaWhatsapp size={16} color="#25D366" />
-                    Send Order Details
-                  </button>
-                </div>
-
+              </div>
+              {/* Fixed footer — compact reward + two actions in one row */}
+              <div className="cod-success-footer">
                 <button
-                  className="sec-big-btn width100 flex flex-row items-center justify-center gap-8"
-                  onClick={handleNeedHelp}
+                  type="button"
+                  className={`reward-teaser compact${walletCredited ? " done" : ""}`}
+                  onClick={() => setScratchOpen(true)}
                 >
-                  <Headphones size={15} />
-                  Need help? Contact us
+                  <span className="reward-teaser-ic">
+                    <Gift size={16} />
+                  </span>
+                  <span className="reward-teaser-tt">
+                    {walletCredited
+                      ? `₹${reward} added to your wallet`
+                      : "You've won a scratch card!"}
+                  </span>
+                  <span className="reward-teaser-cta">
+                    {walletCredited ? "Done" : "Scratch"}
+                  </span>
                 </button>
-              </motion.div>
+
+                <div className="cod-success-actions">
+                  {onViewProfile && (
+                    <button
+                      className="pri-big-btn flex flex-row items-center justify-center gap-6"
+                      onClick={onViewProfile}
+                    >
+                      <User size={15} />
+                      View profile
+                    </button>
+                  )}
+                  <button
+                    className="sec-big-btn flex flex-row items-center justify-center gap-6"
+                    onClick={handleNeedHelp}
+                  >
+                    <Headphones size={14} />
+                    Need help
+                  </button>
+                </div>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -2931,39 +2722,29 @@ function UPIPaymentModal({
 }) {
   return (
     <motion.div
-      className="os-fullpage-overlay upiv3-overlay"
+      className="bill-modal-overlay upiv3-overlay"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       onClick={onClose}
+      style={{ maxWidth: "980px", margin: "0 auto" }}
     >
       <motion.div
-        className="os-fullpage upi-payment-modal-v2"
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 24 }}
-        transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+        className="bill-modal upiv3-modal"
+        initial={{ y: "100%" }}
+        animate={{ y: 0 }}
+        exit={{ y: "100%" }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="upiv3">
-          {/* Header */}
-          <div className="upiv3-head">
-            <div className="upiv3-head-l">
-              <span className="upiv3-secure">
-                <ShieldCheck size={12} /> Secure UPI Payment
-              </span>
-              <span className="upiv3-title">Pay via UPI</span>
-            </div>
-            <button
-              type="button"
-              className="upiv3-x"
-              onClick={onClose}
-              aria-label="Close UPI modal"
-            >
-              <X size={18} />
-            </button>
-          </div>
+        <div className="bill-header">
+          <span className="weight-600 font-16">Pay with UPI</span>
+          <span className="cursor-pointer" onClick={onClose}>
+            <X size={16} />
+          </span>
+        </div>
 
+        <div className="upiv3 upiv3-scroll">
           {/* Payee (merchant) card */}
           <div className="upiv3-payee">
             <span className="upiv3-payee-logo">TB</span>
@@ -2976,18 +2757,6 @@ function UPIPaymentModal({
             </span>
           </div>
 
-          {/* Amount */}
-          <div className="upiv3-amount">
-            <span className="upiv3-amount-l">Amount payable</span>
-            <span className="upiv3-amount-v">₹{totalToPay}</span>
-            {quickReadTotal > 0 && (
-              <span className="upiv3-amount-x">
-                ⚡ incl. {quickReadCount} QuickRead
-                {quickReadCount > 1 ? "s" : ""} (₹{quickReadTotal})
-              </span>
-            )}
-          </div>
-
           {/* QR shows immediately; a 2s loader blurs it while it "generates" */}
           <motion.div
             className="upiv3-qr"
@@ -2995,10 +2764,6 @@ function UPIPaymentModal({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="upiv3-qr-banner">
-              <Zap size={13} /> QR is the faster &amp; safer way to pay
-            </div>
-
             {/* QR card */}
             <div className="upiv3-qr-card">
               <div className="upiv3-qr-top">
@@ -3015,8 +2780,8 @@ function UPIPaymentModal({
                 <Image
                   src="/books/uskillbook.png"
                   alt="UPI QR Code"
-                  width={236}
-                  height={290}
+                  width={300}
+                  height={360}
                 />
                 {!qrUnlocked && (
                   <div className="upiv3-qr-loader">
@@ -3033,73 +2798,6 @@ function UPIPaymentModal({
               </span>
             </div>
 
-            {/* UPI ID + save */}
-            <div className="upiv3-id-row">
-              <button type="button" className="upiv3-id" onClick={onCopyUpi}>
-                <Copy size={13} />
-                <span>{upiCopied ? "Copied!" : upiId}</span>
-              </button>
-              <button
-                type="button"
-                className="upiv3-save"
-                onClick={onDownloadQR}
-                disabled={!qrUnlocked}
-              >
-                <Download size={13} /> Save QR
-              </button>
-            </div>
-
-            {qrUnlocked && (
-              <>
-                <p className="upiv3-instruct">
-                  Kindly open any of these apps — or any UPI app — scan the QR
-                  above and complete your payment.
-                </p>
-                <div className="upiv3-apps-row big">
-                  <span className="upiv3-app gpay">G Pay</span>
-                  <span className="upiv3-app phonepe">PhonePe</span>
-                  <span className="upiv3-app paytm">Paytm</span>
-                  <span className="upiv3-app bhim">BHIM</span>
-                </div>
-
-                {upiPhase === "timeout" ? (
-                  <div className="upiv3-timeout">
-                    <button
-                      type="button"
-                      className="sec-big-btn width100 flex flex-row items-center justify-center gap-8"
-                      onClick={onCheckStatus}
-                    >
-                      <RefreshCw size={15} /> Check payment status
-                    </button>
-                    <button
-                      type="button"
-                      className="sec-big-btn width100 flex flex-row items-center justify-center gap-8"
-                      onClick={onWhatsAppFallback}
-                    >
-                      <FaWhatsapp size={16} color="#25D366" /> Verify on WhatsApp
-                    </button>
-                  </div>
-                ) : (
-                  <div className="upiv3-waiting">
-                    <span className="upiv3-spin" />
-                    <span className="upiv3-waiting-t">
-                      Waiting for payment confirmation…
-                    </span>
-                    <span className="upiv3-waiting-c">{verifyCountdown}s</span>
-                  </div>
-                )}
-
-                {onSwitchToCOD && upiPhase !== "verifying" && (
-                  <button
-                    type="button"
-                    className="upiv3-cod-link"
-                    onClick={onSwitchToCOD}
-                  >
-                    Can't pay online? Continue with Cash on Delivery
-                  </button>
-                )}
-              </>
-            )}
           </motion.div>
 
           {/* Trust footer */}
@@ -3111,6 +2809,58 @@ function UPIPaymentModal({
               <Package size={13} /> Tracked end-to-end
             </span>
           </div>
+        </div>
+
+        {/* Fixed footer — UPI id / Save QR + verify actions + COD link */}
+        <div className="upiv3-footer">
+          <div className="upiv3-id-row">
+            <button type="button" className="upiv3-id" onClick={onCopyUpi}>
+              <Copy size={13} />
+              <span>{upiCopied ? "Copied!" : upiId}</span>
+            </button>
+            <button
+              type="button"
+              className="upiv3-save"
+              onClick={onDownloadQR}
+              disabled={!qrUnlocked}
+            >
+              <Download size={13} /> Save QR
+            </button>
+          </div>
+
+          <div className="upiv3-actions-row">
+            {upiPhase === "timeout" ? (
+              <button
+                type="button"
+                className="sec-big-btn flex flex-row items-center justify-center gap-6"
+                onClick={onCheckStatus}
+              >
+                <RefreshCw size={15} /> Check again
+              </button>
+            ) : (
+              <span className="sec-big-btn is-loading flex flex-row items-center justify-center gap-6">
+                <span className="upiv3-spin dark" /> Verifying… {verifyCountdown}
+                s
+              </span>
+            )}
+            <button
+              type="button"
+              className="sec-big-btn flex flex-row items-center justify-center gap-6"
+              onClick={onWhatsAppFallback}
+            >
+              <FaWhatsapp size={16} color="#25D366" /> Verify on WhatsApp
+            </button>
+          </div>
+
+          {onSwitchToCOD && (
+            <button
+              type="button"
+              className="upiv3-cod-link"
+              onClick={onSwitchToCOD}
+            >
+              Can't pay online? Continue with Cash on Delivery
+            </button>
+          )}
         </div>
       </motion.div>
     </motion.div>

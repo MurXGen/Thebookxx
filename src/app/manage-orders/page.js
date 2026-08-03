@@ -2279,6 +2279,8 @@ export default function ManageOrdersPage() {
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  // Users tab — filter to customers holding a wallet balance for ≥ N days.
+  const [walletHoldFilter, setWalletHoldFilter] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -3830,6 +3832,7 @@ export default function ManageOrdersPage() {
           lastDate: null,
           walletT: -1,
           wallet: 0,
+          walletFirstCreditT: Infinity,
           ids: [],
         };
       }
@@ -3860,13 +3863,23 @@ export default function ManageOrdersPage() {
           u.walletT = t;
           u.wallet = w;
         }
+        // Earliest positive credit → how long the balance has been held.
+        if (!isNaN(w) && w > 0 && t > 0 && t < u.walletFirstCreditT) {
+          u.walletFirstCreditT = t;
+        }
       }
     });
+    const nowT = Date.now();
     return Object.values(map)
       .map((u) => ({
         ...u,
         avg: u.orders ? Math.round(u.spent / u.orders) : 0,
         repeat: u.orders > 1,
+        // Days the wallet balance has been held (from earliest credit).
+        holdingDays:
+          u.wallet > 0 && isFinite(u.walletFirstCreditT)
+            ? Math.max(0, Math.floor((nowT - u.walletFirstCreditT) / 86400000))
+            : null,
       }))
       .sort((a, b) => b.spent - a.spent);
   }, [orders]);
@@ -3896,12 +3909,22 @@ export default function ManageOrdersPage() {
 
   const filteredUsers = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
-    if (!q) return userList;
-    return userList.filter(
-      (u) =>
-        u.name.toLowerCase().includes(q) || u.phone.includes(q.replace(/\D/g, "")),
-    );
-  }, [userList, searchQuery]);
+    let list = userList;
+    if (q) {
+      list = list.filter(
+        (u) =>
+          u.name.toLowerCase().includes(q) ||
+          u.phone.includes(q.replace(/\D/g, "")),
+      );
+    }
+    // Wallet holding-days filter — only users sitting on a balance for ≥ N days.
+    if (walletHoldFilter > 0) {
+      list = list.filter(
+        (u) => u.wallet > 0 && (u.holdingDays || 0) >= walletHoldFilter,
+      );
+    }
+    return list;
+  }, [userList, searchQuery, walletHoldFilter]);
 
   // Write a new wallet balance to EVERY order row of a customer (checkout reads
   // wallet as the max across a phone's rows, so all rows must agree).
@@ -5706,7 +5729,21 @@ export default function ManageOrdersPage() {
                     Search by name or phone in the bar above
                   </p>
                 </div>
-                <span className="an2-card-total">{filteredUsers.length}</span>
+                <div className="um-head-right">
+                  <select
+                    className="um-hold-filter"
+                    value={walletHoldFilter}
+                    onChange={(e) => setWalletHoldFilter(Number(e.target.value))}
+                    title="Filter by how long the wallet balance has been held"
+                  >
+                    <option value={0}>Wallet holding: all</option>
+                    <option value={7}>Holding ≥ 7 days</option>
+                    <option value={15}>Holding ≥ 15 days</option>
+                    <option value={30}>Holding ≥ 30 days</option>
+                    <option value={45}>Holding ≥ 45 days (expiring soon)</option>
+                  </select>
+                  <span className="an2-card-total">{filteredUsers.length}</span>
+                </div>
               </div>
               <div className="um-list">
                 {filteredUsers.length === 0 && (
@@ -5726,6 +5763,13 @@ export default function ManageOrdersPage() {
                         {u.wallet > 0 && (
                           <span className="um-badge wallet">
                             ₹{u.wallet.toLocaleString()} wallet
+                          </span>
+                        )}
+                        {u.wallet > 0 && u.holdingDays != null && (
+                          <span
+                            className={`um-badge hold${u.holdingDays >= 45 ? " urgent" : ""}`}
+                          >
+                            holding {u.holdingDays}d
                           </span>
                         )}
                       </div>

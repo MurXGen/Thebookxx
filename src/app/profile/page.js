@@ -357,6 +357,25 @@ export default function MyOrdersPage() {
   const toggleOrder = (key) =>
     setExpandedOrders((p) => ({ ...p, [key]: !p[key] }));
 
+  // Track button on the collapsed card — opens India Post tracking with the
+  // Shipping ID copied; if not dispatched yet, expands the card's timeline so
+  // customers see status here instead of asking on WhatsApp.
+  const handleTrackOrder = (order, key) => {
+    const sid = String(order["Shipping ID"] || order.shippingId || "").trim();
+    if (sid) {
+      try {
+        navigator.clipboard.writeText(sid);
+      } catch (_) {}
+      window.open(
+        "https://www.indiapost.gov.in/",
+        "_blank",
+        "noopener,noreferrer",
+      );
+    } else if (!expandedOrders[key]) {
+      toggleOrder(key);
+    }
+  };
+
   // ----- NEW state for cancel + reschedule -----
   const [showRescheduleModal, setShowRescheduleModal] = useState(false);
   const [rescheduleOrder, setRescheduleOrder] = useState(null);
@@ -1479,6 +1498,9 @@ Please cancel this order. Thank you 🙏`;
                         <span className="oss-count">
                           {summaryItems.length || 0}{" "}
                           {summaryItems.length === 1 ? "item" : "items"}
+                          {order["Payment Type"]
+                            ? ` · ${order["Payment Type"].replace("Payment", "").trim()}`
+                            : ""}
                         </span>
                         <span className="oss-total">₹{summaryTotal}</span>
                       </div>
@@ -1488,6 +1510,28 @@ Please cancel this order. Thank you 🙏`;
                       />
                     </div>
                   </button>
+
+                  {/* Always-visible status + track (so customers don't have to
+                      ask on WhatsApp to know where their order is) */}
+                  <div className="order-card-cta">
+                    <div className="occ-status">
+                      <span className="occ-status-lbl">Delivery status</span>
+                      <span
+                        className={`order-status-badge ${getStatusColor(order.status)}`}
+                      >
+                        {getStatusIcon(order.status)}
+                        <span>{order.status}</span>
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      className="order-track-btn"
+                      onClick={() => handleTrackOrder(order, orderKey)}
+                    >
+                      <Truck size={14} />
+                      {order.shippingId ? "Track shipment" : "Track order"}
+                    </button>
+                  </div>
 
                   <AnimatePresence initial={false}>
                     {isExpanded && (

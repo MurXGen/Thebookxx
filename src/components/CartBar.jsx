@@ -52,6 +52,18 @@ export default function CartBar({ tab = "books" }) {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // When the shopper adds an item (or increases qty) while scrolled down and
+  // the bar is hidden, slide it back up so they see it update immediately.
+  const prevItemCountRef = useRef(
+    cart.reduce((s, i) => s + (i.qty || 1), 0) + (qrCart?.length || 0),
+  );
+  useEffect(() => {
+    const count =
+      cart.reduce((s, i) => s + (i.qty || 1), 0) + (qrCart?.length || 0);
+    if (count > prevItemCountRef.current) setBarHidden(false);
+    prevItemCountRef.current = count;
+  }, [cart, qrCart]);
+
   // Draw attention to the Search/Suggest quick actions: the first time the
   // user is active in the session (scroll / tap / key / pointer move), shake
   // the pill for ~3 seconds. When the shake ends, smoothly slide a hint label

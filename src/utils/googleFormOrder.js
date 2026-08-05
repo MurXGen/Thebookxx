@@ -256,7 +256,11 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
       ? `Faster Delivery (${deliveryLabel})`
       : `Standard Delivery (${deliveryLabel})`,
     deliveryCharge: deliveryCharge || 0,
-    giftWrap: giftWrapSelected ? "Yes" : "No",
+    // Gift-wrap column records both gift wrap and the free bookmark, e.g.
+    // "No", "No-Bookmark", "Yes", "Yes-Bookmark".
+    giftWrap: `${giftWrapSelected ? "Yes" : "No"}${
+      bookmarkSelected ? "-Bookmark" : ""
+    }`,
     giftWrapCharge: giftWrapSelected
       ? Number.isFinite(giftWrapChargeIn)
         ? giftWrapChargeIn
@@ -266,9 +270,6 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
       (offerDiscount > 0 ? `${offerLabel} (₹${offerDiscount} OFF)` : "None") +
       (walletUsed > 0
         ? ` · Wallet used ₹${walletUsed}${walletPhone ? ` (${walletPhone})` : ""}`
-        : "") +
-      (bookmarkSelected
-        ? ` · Bookmark +₹${bookmarkChargeIn || 9}`
         : ""),
     tinyUrl: shortLink || "",
     orderStatus: "Processing",

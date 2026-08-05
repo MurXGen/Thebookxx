@@ -24455,10 +24455,20 @@ img[data-loaded="true"] {
   font-weight: 800;
   color: var(--success, #16a34a);
 }
+.deliv-free-badge {
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: var(--success, #16a34a);
+  background: rgba(22, 163, 74, 0.12);
+  border-radius: 999px;
+  padding: 2px 7px;
+  white-space: nowrap;
+}
 .deliv-addon-price {
   font-size: 13px;
   font-weight: 800;
-  color: var(--tertiary, #fb8500);
+  color: var(--foreground);
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -24640,19 +24650,19 @@ img[data-loaded="true"] {
 .pay-sel-wa {
   flex: 0 0 auto;
   display: inline-flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  padding: 8px 12px;
+  gap: 7px;
+  padding: 0 16px;
   border-radius: 12px;
   border: 1px solid var(--dark-10, #e5e7eb);
   background: #fff;
   color: var(--foreground);
-  font-size: 10.5px;
+  font-size: 13px;
   font-weight: 700;
   cursor: pointer;
-  line-height: 1.1;
+  line-height: 1;
 }
 .pay-sel-wa:hover {
   border-color: #25d366;

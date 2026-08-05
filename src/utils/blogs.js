@@ -4,6 +4,161 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "how-to-read-more-books-2026-reading-challenge": {
+    id: "blog-023",
+    title:
+      "How to Read More Books in 2026: Join the Reading Challenge (and Where to Start)",
+    slug: "how-to-read-more-books-2026-reading-challenge",
+    author: "TheBookX Editorial",
+    authorSlug: "murthy-thevar",
+    publishDate: "2026-08-05",
+    lastModified: "2026-08-05",
+    excerpt:
+      "The 2026 reading challenge is everywhere — over 6 million readers have pledged to read more this year. Here's how to actually build the habit, set a goal you'll finish, and the books to start with, all available on TheBookX.",
+
+    content: [
+      {
+        type: "paragraph",
+        content:
+          "\"Read more books\" is one of 2026's most popular goals — and this year people are actually doing it. Reading challenges have exploded, with <strong>over 6 million readers</strong> pledging to finish more books in 2026 than ever before. But a pledge is easy; the habit is hard. If your bookmark has been stuck on page 40 of the same book since January, this guide is for you: how reading changes you, how to build the habit for real, how to set a challenge you'll actually complete, and exactly which books to start with.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Why 'Read More' Became 2026's Biggest Resolution",
+      },
+      {
+        type: "paragraph",
+        content:
+          "In a world of infinite scroll, reading a book has become a quiet act of rebellion — and a genuine competitive advantage. Deep reading builds focus, empathy, vocabulary, and the kind of slow, connected thinking that short-form video erodes. Students who read widely perform better across subjects, and professionals who read consistently make sharper decisions. That's why reading challenges have caught fire this year: they turn a vague wish into a shared, measurable habit.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The best part? You don't need to read fast or read 100 books. You need a system that makes picking up a book the easy, default choice — and a stack of books you're genuinely excited to open.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "How to Actually Read More in 2026",
+      },
+      {
+        type: "list",
+        style: "ordered",
+        items: [
+          "<strong>Read a little, daily.</strong> Twenty minutes a day beats a five-hour weekend binge you never get to. Anchor it to an existing habit — after your morning chai, before bed.",
+          "<strong>Always carry a book.</strong> Physical or not, the winner of your attention is whatever is within reach. Keep a paperback in your bag for queues and commutes.",
+          "<strong>Quit books guilt-free.</strong> Life's too short for a book you're not enjoying. Abandoning a dull read protects the habit; finishing out of duty kills it.",
+          "<strong>Track it visibly.</strong> A simple list of finished titles is weirdly motivating. Momentum builds when you can see the streak.",
+          "<strong>Make it social.</strong> Join a challenge, tell a friend, trade recommendations. Accountability turns intention into action.",
+        ],
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "The two-page rule",
+        content:
+          "On days you 'don't feel like reading,' commit to just two pages. You'll almost always keep going — and on the rare day you don't, two pages still kept the habit alive. Consistency compounds.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Set a Reading Challenge You'll Actually Finish",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The number one reason reading challenges fail is an unrealistic goal. Fifty-two books sounds inspiring in January and crushing by March. Instead, pick a target you can beat: if you read 4 books last year, aim for 8. Beating your goal early feels amazing and keeps you going; falling behind makes you quit.",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<strong>Beginner:</strong> 6–12 books — one a month, with room to spare.",
+          "<strong>Regular reader:</strong> 15–24 books — roughly two a month.",
+          "<strong>Ambitious:</strong> 30+ — but only if reading is already a daily habit.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "What to Read First: Books to Kickstart Your Challenge",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The right first book makes the whole challenge stick — something engaging, not intimidating. Here are hand-picked, beginner-friendly bestsellers (all available on TheBookX with free delivery and Cash on Delivery across India) to get your streak going:",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear — perfect if your real goal is building <em>any</em> habit, including reading.",
+          "<a href=\"/books/ikigai\" style=\"color:#fb8500;font-weight:600\">Ikigai</a> — short, calming, and quietly profound; an easy, satisfying first finish.",
+          "<a href=\"/books/the-alchemist\" style=\"color:#fb8500;font-weight:600\">The Alchemist</a> by Paulo Coelho — a fable you'll race through in a weekend.",
+          "<a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> by Morgan Housel — bite-sized chapters that make you feel smart fast.",
+          "<a href=\"/books/rich-dad-poor-dad\" style=\"color:#fb8500;font-weight:600\">Rich Dad Poor Dad</a> by Robert Kiyosaki — punchy, practical, and hard to put down.",
+          "<a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar — a fast, focused reset for a noisy mind.",
+        ],
+      },
+      {
+        type: "paragraph",
+        content:
+          "Stack two or three of these on your desk where you can see them. A visible to-read pile is one of the strongest nudges there is.",
+      },
+      {
+        type: "callout",
+        style: "success",
+        title: "Start your 2026 challenge today",
+        content:
+          "Pick your first book, set a goal you can beat, and read two pages tonight. Browse the full collection — bestsellers from ₹1, free delivery, and Cash on Delivery across India — at https://www.thebookx.in/books",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Reading more in 2026 isn't about willpower or speed. It's about making books the easy choice and starting with one you can't put down. Set your goal, grab your first read, and let the streak begin.",
+      },
+    ],
+
+    images: [],
+
+    keywords: [
+      "how to read more books",
+      "2026 reading challenge",
+      "reading habit",
+      "books to read in 2026",
+      "how to build a reading habit",
+      "best books for beginners",
+      "reading goals",
+      "TheBookX",
+    ],
+
+    categories: ["Reading Habit", "Education", "Reading Lists"],
+
+    faqs: [
+      {
+        question: "How many books should I aim to read in 2026?",
+        answer:
+          "Pick a goal you can beat. If you read 4 books last year, aim for 8. Beating your target early keeps you motivated; an unrealistic number is the main reason reading challenges fail.",
+      },
+      {
+        question: "How do I build a reading habit that lasts?",
+        answer:
+          "Read a little every day (even 20 minutes), always keep a book within reach, quit books you don't enjoy, and track your finished titles. Anchoring reading to an existing routine makes it automatic.",
+      },
+      {
+        question: "What's the best book to start a reading challenge with?",
+        answer:
+          "Start with something engaging and not intimidating — Ikigai, The Alchemist, or Atomic Habits are great first reads. All are available on TheBookX with free delivery and Cash on Delivery.",
+      },
+      {
+        question: "Where can I buy affordable books in India?",
+        answer:
+          "TheBookX offers bestselling paperbacks with books from ₹1, free delivery, and Cash on Delivery across India. Browse the full catalogue at https://www.thebookx.in/books",
+      },
+    ],
+  },
+
   "top-bestselling-quick-reading-books": {
     id: "blog-022",
     title:

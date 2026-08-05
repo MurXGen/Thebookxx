@@ -69,14 +69,15 @@ export default function BillModal({
   const deliveryCharge = getDeliveryCharge();
 
   // When hiding delivery, the displayed total excludes it.
-  // Final total still includes gift wrap (that's already a confirmed selection).
+  // Only add gift wrap when it's actually selected.
   const qrTotal = quickReadTotal || 0;
+  const gwCharge = giftWrapSelected ? giftWrapCharge : 0;
   const finalTotal =
     (hideDeliveryCharges
-      ? finalPayable + giftWrapCharge
+      ? finalPayable + gwCharge
       : totalWithDelivery !== null
         ? totalWithDelivery
-        : finalPayable + deliveryCharge + giftWrapCharge) + qrTotal;
+        : finalPayable + deliveryCharge + gwCharge) + qrTotal;
 
   return (
     <div className="bill-modal-overlay" onClick={onClose}>
@@ -132,9 +133,9 @@ export default function BillModal({
                     </div>
                   ) : (
                     <span className="flex flex-col gap-4">
-                      <span>💛 Handling & Care Fee</span>
+                      <span>💛 Handling &amp; Care</span>
                       <span className="font-10 dark-50">
-                        (packing, support & secure shipping)
+                        packing, support &amp; secure shipping
                       </span>
                     </span>
                   )}

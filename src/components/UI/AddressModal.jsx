@@ -176,9 +176,9 @@ export default function AddressModal({
     setGiftWrap(giftWrapSelected);
   }, [giftWrapSelected]);
 
-  // Chargeable bookmark add-on (promotional / blank / casual).
+  // Free bookmark add-on (promotional / blank / casual) — no charge.
   const [bookmark, setBookmark] = useState(false);
-  const BOOKMARK_CHARGE = 9;
+  const BOOKMARK_CHARGE = 0;
 
 
   const UPI_ID = "7977960242-1@okbizaxis";
@@ -388,12 +388,10 @@ export default function AddressModal({
   //   ₹300–500  → up to ₹30
   //   > ₹500    → full available balance
   // (always capped by the actual balance and the goods total.)
-  const walletCapForOrder = (() => {
-    const v = totalDiscounted;
-    if (v > 500) return walletBalance; // use full balance
-    if (v >= 300) return 30; // ₹30 cap for 300–500
-    return 15; // ₹15 cap for 151–300
-  })();
+  // Coins redemption: if the wallet balance is above ₹100 they can redeem up
+  // to 50% of it; ₹100 or below can be used in full.
+  const walletCapForOrder =
+    walletBalance > 100 ? Math.floor(walletBalance * 0.5) : walletBalance;
   const maxWalletUsable = Math.min(
     walletBalance,
     walletCapForOrder,
@@ -1343,15 +1341,35 @@ export default function AddressModal({
                 <span className="deliv-addon-head">Add-ons</span>
                 <div className="deliv-addon-row">
                   <div className="deliv-addon-l">
-                    <Truck size={18} className="green" />
+                    <Truck
+                      size={18}
+                      className={standardDeliveryCharge > 0 ? "" : "green"}
+                    />
                     <div className="flex flex-col">
-                      <span className="deliv-addon-t">Free delivery</span>
+                      <span className="deliv-addon-t flex flex-row items-center gap-6">
+                        {standardDeliveryCharge > 0
+                          ? "Standard delivery"
+                          : "Free delivery"}
+                        {standardDeliveryCharge > 0 && (
+                          <span className="deliv-free-badge">
+                            FREE above ₹199
+                          </span>
+                        )}
+                      </span>
                       <span className="deliv-addon-s">
-                        Reaches you in 3–9 days · included at no charge
+                        {standardDeliveryCharge > 0
+                          ? "Reaches you in 3–9 days"
+                          : "Reaches you in 3–9 days · included at no charge"}
                       </span>
                     </div>
                   </div>
-                  <span className="deliv-addon-free">FREE</span>
+                  {standardDeliveryCharge > 0 ? (
+                    <span className="deliv-addon-price">
+                      +₹{standardDeliveryCharge}
+                    </span>
+                  ) : (
+                    <span className="deliv-addon-free">FREE</span>
+                  )}
                 </div>
 
                 {fasterUnavailable ? (
@@ -1444,7 +1462,7 @@ export default function AddressModal({
                       </span>
                     </div>
                   </div>
-                  <span className="deliv-addon-price">+₹{BOOKMARK_CHARGE}</span>
+                  <span className="deliv-addon-free">FREE</span>
                   <input
                     type="checkbox"
                     className="wc-switch-input"
@@ -1593,7 +1611,7 @@ export default function AddressModal({
                       <span className="gift-3d on">
                         <Bookmark size={15} />
                       </span>
-                      <span>Bookmark added · +₹{BOOKMARK_CHARGE}</span>
+                      <span>Bookmark added · FREE</span>
                     </div>
                   )}
                   <div className="ps-row ps-total">
@@ -1673,12 +1691,6 @@ export default function AddressModal({
                   </button>
                 </div>
 
-                {/* Payment pain-point / reassurance messaging */}
-                <p className="pay-reason">
-                  <ShieldCheck size={12} /> COD adds a small handling fee (India
-                  Post raised their rates). Paying online is instant, secure and
-                  confirms your order right away.
-                </p>
               </div>
 
               {/* Fixed footer — pay button (full width) + WhatsApp order */}
@@ -1701,12 +1713,12 @@ export default function AddressModal({
                   </button>
                   <button
                     type="button"
-                    className="pay-sel-wa"
+                    className="sec-big-btn pay-sel-wa"
                     onClick={() => beginPayment("WhatsApp")}
                     aria-label="Order on WhatsApp"
                   >
                     <FaWhatsapp size={18} color="#25D366" />
-                    <span>WhatsApp order</span>
+                    <span>Order</span>
                   </button>
                 </div>
               </div>

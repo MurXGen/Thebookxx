@@ -301,7 +301,9 @@ function BagContent() {
       (b.catalogue || []).some((c) => cartCategories.has(c)),
   );
 
-  const MIN_CHECKOUT_AMOUNT = 199;
+  // Normal carts can check out below ₹199 (a ₹69 delivery fee applies); ₹1-book
+  // carts keep the higher threshold. Derived so both flows stay consistent.
+  const MIN_CHECKOUT_AMOUNT = getMinCheckoutAmount(hasOneRupeeItem);
   const cartOffers = getCartOffers(hasOneRupeeItem);
 
   const totalOriginal = cartBooks.reduce(
@@ -378,9 +380,8 @@ function BagContent() {
   const fasterUnavailable = cartWeight > 2000;
   // Gift wrap add-on price by order value: +₹15 up to ₹500, +₹35 above.
   const giftWrapChargeEff = totalDiscounted > 500 ? 35 : 15;
-  const fasterDeliveryCharge = fasterUnavailable
-    ? 0
-    : cartWeight < 200
+  const fasterDeliveryChargeBase =
+    cartWeight < 200
       ? 40
       : cartWeight < 400
         ? 69
@@ -391,6 +392,11 @@ function BagContent() {
             : cartWeight < 1500
               ? 180
               : 220;
+  // Faster delivery must always cost MORE than standard delivery (e.g. when a
+  // sub-₹199 order already has a ₹69 standard fee, faster becomes ₹100).
+  const fasterDeliveryCharge = fasterUnavailable
+    ? 0
+    : Math.max(fasterDeliveryChargeBase, standardDeliveryCharge + 31);
   const standardDeliveryLabel = getDeliveryLabel(
     totalDiscounted,
     false,

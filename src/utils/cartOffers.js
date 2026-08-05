@@ -44,15 +44,15 @@ export const getCartOffers = (hasOneRupeeItem = false) => {
       },
     ];
   } else {
-    // No ₹1 books → delivery is already free (from the ₹199 checkout min), so
-    // free delivery reads as "availed" and the goals push toward flat discounts.
+    // No ₹1 books → orders below ₹199 carry a small ₹69 delivery fee; reaching
+    // ₹199 unlocks FREE delivery, then the goals push toward flat discounts.
     return [
       {
         min: 0,
         target: 199,
         type: "free_shipping",
-        reward: "Free delivery",
-        message: "Add ₹{remaining} more to checkout with Free delivery",
+        reward: "FREE delivery",
+        message: "Add ₹{remaining} more for FREE delivery",
         icon: "gift",
       },
       {
@@ -144,12 +144,12 @@ export const getDeliveryCharge = (
 
   // No ₹1 items - Free delivery for eligible orders
   else {
-    // Below 199 - Cannot checkout (will be handled by checkout minimum)
+    // Below 199 - checkout allowed, but a small ₹69 delivery fee applies
     if (orderAmount < 199) {
       if (isFasterDelivery) {
         return 119;
       }
-      return 0;
+      return 69;
     }
 
     // Between 199 and 399 - Free standard, faster 119
@@ -277,7 +277,7 @@ export const getDeliveryDescription = (
       if (orderAmount >= 199 && orderAmount < 399) {
         return "Complimentary shipping on orders above ₹199";
       }
-      return "Get your order delivered in 5-7 business days";
+      return "₹69 delivery fee · free on orders above ₹199";
     }
   }
 };
@@ -291,9 +291,11 @@ export const getOriginalCharge = (orderAmount, isFasterDelivery = false) => {
   return null;
 };
 
-// Helper to get minimum checkout amount based on ₹1 items
+// Helper to get minimum checkout amount based on ₹1 items. Normal carts can
+// now check out below ₹199 (a ₹69 delivery fee applies); ₹1-book carts keep
+// the higher ₹499 threshold.
 export const getMinCheckoutAmount = (hasOneRupeeItem = false) => {
-  return hasOneRupeeItem ? 499 : 199;
+  return hasOneRupeeItem ? 499 : 99;
 };
 
 export const CART_OFFERS = (() => {

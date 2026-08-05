@@ -247,7 +247,7 @@ export function StoreProvider({ children }) {
 
   // Get minimum checkout amount based on ₹1 items
   const getMinCheckoutAmount = () => {
-    return hasOneRupeeItem ? 499 : 99;
+    return hasOneRupeeItem ? 199 : 99;
   };
 
   // Check if cart meets minimum checkout

@@ -8,6 +8,7 @@ import { getCatalogueData, getBooksByCategory } from "@/utils/catalogueUtils";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { books as ALL_BOOKS } from "@/utils/book";
 
 export default function CatalogueSection() {
   const router = useRouter();
@@ -55,6 +56,17 @@ export default function CatalogueSection() {
 
         {/* Horizontally scrollable 3D category cards (books pop out) */}
         <div className="catalogue-scroll">
+          {/* All books — jump straight to the full catalogue */}
+          <CatalogueCard
+            label="All books"
+            count={ALL_BOOKS.length}
+            covers={ALL_BOOKS.filter((b) => b.image)
+              .slice(0, 3)
+              .map((b) => b.image)}
+            onClick={() => router.push("/books")}
+            color="#fef3e2"
+          />
+
           {catalogueData.map((cat) => (
             <CatalogueCard
               key={cat.key}

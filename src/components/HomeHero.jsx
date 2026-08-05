@@ -33,12 +33,14 @@ export default function HomeHero() {
         </p>
 
         <div className="home-hero-cta">
-          <Link href="/books" className="pri-big-btn home-hero-btn">
-            Browse all books <ArrowRight size={16} />
-          </Link>
-          <Link href="/blogs" className="sec-big-btn home-hero-btn">
-            Read the blog
-          </Link>
+          <a
+            href="https://www.instagram.com/thebookx.in/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="pri-big-btn home-hero-btn"
+          >
+            Join community <ArrowRight size={16} />
+          </a>
         </div>
 
         <div className="home-hero-stats">

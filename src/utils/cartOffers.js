@@ -295,7 +295,7 @@ export const getOriginalCharge = (orderAmount, isFasterDelivery = false) => {
 // now check out below ₹199 (a ₹69 delivery fee applies); ₹1-book carts keep
 // the higher ₹499 threshold.
 export const getMinCheckoutAmount = (hasOneRupeeItem = false) => {
-  return hasOneRupeeItem ? 499 : 99;
+  return hasOneRupeeItem ? 199 : 99;
 };
 
 export const CART_OFFERS = (() => {

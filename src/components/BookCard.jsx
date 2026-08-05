@@ -3,7 +3,7 @@
 import { useStore } from "@/context/StoreContext";
 import { trackAddToCart } from "@/lib/ga";
 import { books } from "@/utils/book";
-import { Book, Minus, Plus, Share2, ShoppingCart } from "lucide-react";
+import { Book, Minus, Plus, Share2, ShoppingCart, Bell } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
@@ -363,7 +363,23 @@ export default function BookCard({ book }) {
 
           {/* Add to cart — full width, dashed divider above, below the price */}
           <div className="bookcard-cart-row">
-              {qty === 0 ? (
+              {book.stock === 0 ? (
+                <a
+                  href={`https://wa.me/917710892108?text=${encodeURIComponent(
+                    `Hi TheBookX 👋, please make "${book.name}"${
+                      book.author ? ` by ${book.author}` : ""
+                    } available and notify me when it's back in stock.`,
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bookcard-notify-btn"
+                  aria-label={`Notify me when ${book.name} is back in stock`}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Bell size={16} />
+                  <span>Notify me</span>
+                </a>
+              ) : qty === 0 ? (
                 <LoadingButton
                   className="bookcard-add-btn"
                   onClick={handleAddToCart}

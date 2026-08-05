@@ -650,4 +650,8 @@ export const bookImages = {
   "talk-like-ted": `${BOOK_IMAGE_BASE_PATH}/talk-like-ted.jpeg`,
   "you-were-never-meant-to-read-this": `${BOOK_IMAGE_BASE_PATH}/you-were-never-meant-to-read-this.jpeg`,
   "i-cannot-say-goodbye-to-you": `${BOOK_IMAGE_BASE_PATH}/i-cannot-say-goodbye-to-you.jpeg`,
+  "focus-on-what-matters": `${BOOK_IMAGE_BASE_PATH}/focus-on-what-matters.jpeg`,
+  "do-it-today": `${BOOK_IMAGE_BASE_PATH}/do-it-today.jpeg`,
+  "think-straight": `${BOOK_IMAGE_BASE_PATH}/think-straight.jpeg`,
+  "we-are-there-for-each-other": `${BOOK_IMAGE_BASE_PATH}/we-are-there-for-each-other.jpeg`,
 };

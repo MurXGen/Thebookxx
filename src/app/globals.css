@@ -8452,6 +8452,8 @@ textarea.sec-mid-btn,
   opacity: 0.88;
 }
 
+
+
 .order-id-section {
   display: flex;
   align-items: baseline;
@@ -17018,6 +17020,33 @@ img[data-loaded="true"] {
 .bookcard-cart-row {
   width: 100%;
   margin-top: 6px;
+}
+/* Notify-me (WhatsApp) button for out-of-stock books */
+.bookcard-notify-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 46px;
+  box-sizing: border-box;
+  border-radius: 12px;
+  border: 1.5px solid var(--dark-10, #e5e7eb);
+  background: #fff;
+  color: var(--foreground);
+  font-size: 13.5px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.bookcard-notify-btn:hover {
+  border-color: #25d366;
+  background: rgba(37, 211, 102, 0.06);
+}
+.bookcard-notify-btn svg {
+  color: var(--tertiary, #fb8500);
+  flex: 0 0 auto;
 }
 .bookcard-add-btn {
   display: flex;

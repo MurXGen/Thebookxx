@@ -62,6 +62,7 @@ import { FaWhatsapp } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { books as ALL_BOOKS } from "@/utils/book";
+import { creditWalletReward } from "@/utils/googleFormOrder";
 
 // ---- Book cover lookup (order stores names; resolve to cover image) ----
 const BOOK_IMAGE_BY_NAME = (() => {
@@ -497,7 +498,7 @@ function WalletModal({ user, busy, onClose, onApply }) {
         <p className="wm-note">
           {busy
             ? "Updating the sheet…"
-            : "Writes to every order row for this customer. Balance can't go below ₹0."}
+            : "Adds a signed entry (+ credit / − deduct) to the sheet against this number. Balance can't go below ₹0."}
         </p>
       </div>
     </div>
@@ -2281,6 +2282,12 @@ export default function ManageOrdersPage() {
   const [searchQuery, setSearchQuery] = useState("");
   // Users tab — filter to customers holding a wallet balance for ≥ N days.
   const [walletHoldFilter, setWalletHoldFilter] = useState(0);
+  // Users tab — its own search box (separate from the Orders search).
+  const [userSearch, setUserSearch] = useState("");
+  // Users tab — show only customers whose wallet balance is above this amount.
+  const [walletMinFilter, setWalletMinFilter] = useState(0);
+  // Users tab — sort order: recent | walletAsc | walletDesc.
+  const [userSort, setUserSort] = useState("recent");
   const [showFilters, setShowFilters] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -2603,13 +2610,17 @@ export default function ManageOrdersPage() {
   // Orders calendar now lives in a modal opened from the tab row.
   const [showCalModal, setShowCalModal] = useState(false);
 
-  // ── Track & notify: paste a tracking (shipping) ID, look up the order from
-  // the sheet, stack matches in a table, and fire a WhatsApp stage message.
-  // The stacked list persists across sessions (localStorage).
+  // ── Track & notify: paste many India Post article numbers (or the raw SMS /
+  // booking-report text) into a textarea; we extract every article number,
+  // match each against an order by Shipping ID, and stack the matches grouped
+  // by date. Status changes + the list persist across sessions (localStorage).
   const [trackInput, setTrackInput] = useState("");
   const [trackError, setTrackError] = useState("");
   const [trackList, setTrackList] = useState([]);
   const [trackPicks, setTrackPicks] = useState({});
+  const [trackFailed, setTrackFailed] = useState([]);
+  const [trackSummary, setTrackSummary] = useState(null);
+  const [trackDateOpen, setTrackDateOpen] = useState({});
   useEffect(() => {
     try {
       const raw = localStorage.getItem("mo_track_notify");
@@ -2621,60 +2632,92 @@ export default function ManageOrdersPage() {
       localStorage.setItem("mo_track_notify", JSON.stringify(next));
     } catch {}
   };
-  const addTracking = () => {
-    const val = trackInput.trim();
-    if (!val) return;
-    const match = orders.find(
-      (o) =>
-        String(o["Shipping ID"] || "")
-          .trim()
-          .toLowerCase() === val.toLowerCase(),
-    );
-    if (!match) {
-      setTrackError(`No order found for tracking ID "${val}".`);
+  // Pull every India Post article number out of pasted text (raw IDs or a full
+  // SMS / booking-report), uppercased & de-duplicated.
+  const extractArticleNumbers = (text) => {
+    const found = String(text || "")
+      .toUpperCase()
+      .match(/[A-Z]{2}\d{9}IN/g);
+    return found ? [...new Set(found)] : [];
+  };
+  const sidUp = (v) => String(v || "").trim().toUpperCase();
+  const addTrackingBatch = () => {
+    const ids = extractArticleNumbers(trackInput);
+    if (ids.length === 0) {
+      setTrackError(
+        "No tracking IDs found. Paste article numbers (e.g. CX042819326IN) or the SMS text.",
+      );
+      setTrackSummary(null);
       return;
     }
-    const slim = {
-      "Order ID": match["Order ID"] || "",
-      "Customer Name": match["Customer Name"] || "",
-      "Phone Number": match["Phone Number"] || "",
-      "Shipping ID": match["Shipping ID"] || val,
-      shippingId: match["Shipping ID"] || val,
-      status: match["Order Status"] || "Processing",
-    };
+    let added = 0;
+    let dup = 0;
+    const failed = [];
     setTrackList((prev) => {
-      if (
-        prev.some(
-          (r) =>
-            String(r["Shipping ID"]).toLowerCase() === val.toLowerCase(),
-        )
-      ) {
-        return prev;
-      }
-      const next = [...prev, slim];
+      const next = [...prev];
+      const have = new Set(prev.map((r) => sidUp(r["Shipping ID"])));
+      ids.forEach((id) => {
+        const match = orders.find((o) => sidUp(o["Shipping ID"]) === id);
+        if (!match) {
+          failed.push(id);
+          return;
+        }
+        if (have.has(id)) {
+          dup += 1;
+          return;
+        }
+        const d = getOrderDate(match);
+        next.push({
+          "Order ID": match["Order ID"] || "",
+          "Customer Name": match["Customer Name"] || "",
+          "Phone Number": match["Phone Number"] || "",
+          "Shipping ID": id,
+          shippingId: id,
+          booksList: String(match["Books List"] || ""),
+          city: String(match["City"] || ""),
+          amount: match.revenue || 0,
+          dateT: d ? d.getTime() : 0,
+          dateLabel: d
+            ? d.toLocaleDateString("en-IN", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+              })
+            : "Undated",
+          status: match["Order Status"] || "Processing",
+        });
+        have.add(id);
+        added += 1;
+      });
       persistTrackList(next);
       return next;
     });
-    setTrackInput("");
+    setTrackFailed(failed);
+    setTrackSummary({ added, dup, failed: failed.length, total: ids.length });
     setTrackError("");
+    if (added > 0) setTrackInput("");
   };
-  const removeTracking = (idx) => {
+  const removeTracking = (sid) => {
     setTrackList((prev) => {
-      const next = prev.filter((_, i) => i !== idx);
+      const next = prev.filter((r) => sidUp(r["Shipping ID"]) !== sidUp(sid));
       persistTrackList(next);
       return next;
     });
   };
   const clearTracking = () => {
     setTrackList([]);
+    setTrackFailed([]);
+    setTrackSummary(null);
     persistTrackList([]);
   };
-  // Change an order's status right from the Track & notify row and save it to
+  // Change an order's status right from a Track & notify card and save it to
   // the sheet (Apps Script) — plus optimistically reflect it in the list.
-  const updateTrackStatus = (idx, val) => {
-    const row = trackList[idx];
+  const updateTrackStatus = (sid, val) => {
+    const row = trackList.find((r) => sidUp(r["Shipping ID"]) === sidUp(sid));
     setTrackList((prev) => {
-      const next = prev.map((r, i) => (i === idx ? { ...r, status: val } : r));
+      const next = prev.map((r) =>
+        sidUp(r["Shipping ID"]) === sidUp(sid) ? { ...r, status: val } : r,
+      );
       persistTrackList(next);
       return next;
     });
@@ -2821,9 +2864,20 @@ export default function ManageOrdersPage() {
         return order;
       });
 
+      // Only keep rows that have a customer name — drop nameless/incomplete
+      // rows entirely. Exception: wallet-ledger rows (phone + Wallet, no name,
+      // no Order ID) are retained so wallet balances stay correct; they never
+      // surface in the orders list (they carry no Order ID).
+      const named = parsedOrders.filter((o) => {
+        const name = String(o["Customer Name"] || "").trim();
+        if (name) return true;
+        const w = o["Wallet"];
+        return w !== "" && w != null && !isNaN(parseFloat(w));
+      });
+
       // Initial sort, the filter useEffect immediately re-sorts using the
       // current sortOrder, so this is just a placeholder.
-      const sorted = sortByDateDesc(parsedOrders);
+      const sorted = sortByDateDesc(named);
 
       setOrders(sorted);
       setFilteredOrders(sorted);
@@ -3859,28 +3913,33 @@ export default function ManageOrdersPage() {
       const wRaw = o["Wallet"] ?? o["wallet"];
       if (wRaw !== "" && wRaw != null) {
         const w = parseFloat(wRaw);
-        if (!isNaN(w) && t >= u.walletT) {
-          u.walletT = t;
-          u.wallet = w;
-        }
-        // Earliest positive credit → how long the balance has been held.
-        if (!isNaN(w) && w > 0 && t > 0 && t < u.walletFirstCreditT) {
-          u.walletFirstCreditT = t;
+        if (!isNaN(w)) {
+          // SUM the ledger — rewards are positive, wallet spent is negative.
+          // Matches the customer-facing balance (fetchWalletBalance sums too).
+          u.wallet += w;
+          // Earliest positive credit → how long the balance has been held.
+          if (w > 0 && t > 0 && t < u.walletFirstCreditT) {
+            u.walletFirstCreditT = t;
+          }
         }
       }
     });
     const nowT = Date.now();
     return Object.values(map)
-      .map((u) => ({
-        ...u,
-        avg: u.orders ? Math.round(u.spent / u.orders) : 0,
-        repeat: u.orders > 1,
-        // Days the wallet balance has been held (from earliest credit).
-        holdingDays:
-          u.wallet > 0 && isFinite(u.walletFirstCreditT)
-            ? Math.max(0, Math.floor((nowT - u.walletFirstCreditT) / 86400000))
-            : null,
-      }))
+      .map((u) => {
+        const wallet = Math.max(0, Math.round(u.wallet));
+        return {
+          ...u,
+          wallet,
+          avg: u.orders ? Math.round(u.spent / u.orders) : 0,
+          repeat: u.orders > 1,
+          // Days the wallet balance has been held (from earliest credit).
+          holdingDays:
+            wallet > 0 && isFinite(u.walletFirstCreditT)
+              ? Math.max(0, Math.floor((nowT - u.walletFirstCreditT) / 86400000))
+              : null,
+        };
+      })
       .sort((a, b) => b.spent - a.spent);
   }, [orders]);
 
@@ -3908,12 +3967,12 @@ export default function ManageOrdersPage() {
   }, [userList]);
 
   const filteredUsers = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
+    const q = userSearch.trim().toLowerCase();
     let list = userList;
     if (q) {
       list = list.filter(
         (u) =>
-          u.name.toLowerCase().includes(q) ||
+          (u.name || "").toLowerCase().includes(q) ||
           u.phone.includes(q.replace(/\D/g, "")),
       );
     }
@@ -3923,33 +3982,54 @@ export default function ManageOrdersPage() {
         (u) => u.wallet > 0 && (u.holdingDays || 0) >= walletHoldFilter,
       );
     }
-    return list;
-  }, [userList, searchQuery, walletHoldFilter]);
+    // Wallet-balance threshold — only customers holding more than ₹N.
+    if (walletMinFilter > 0) {
+      list = list.filter((u) => (u.wallet || 0) > walletMinFilter);
+    }
+    // Sort
+    const sorted = [...list];
+    if (userSort === "walletAsc") {
+      sorted.sort((a, b) => (a.wallet || 0) - (b.wallet || 0));
+    } else if (userSort === "walletDesc") {
+      sorted.sort((a, b) => (b.wallet || 0) - (a.wallet || 0));
+    } else {
+      // recent — most recent order first
+      sorted.sort(
+        (a, b) => (b.lastDate?.getTime() || 0) - (a.lastDate?.getTime() || 0),
+      );
+    }
+    return sorted;
+  }, [userList, userSearch, walletHoldFilter, walletMinFilter, userSort]);
 
-  // Write a new wallet balance to EVERY order row of a customer (checkout reads
-  // wallet as the max across a phone's rows, so all rows must agree).
+  // Adjust a customer's wallet by APPENDING a signed ledger row to the orders
+  // sheet (phone + delta + timestamp). The balance is the SUM of every Wallet
+  // entry, so a positive delta credits and a negative delta deducts — exactly
+  // what the customer profile reads. Never overwrite existing rows.
   const applyWalletChange = async (user, newBalance) => {
-    if (!SHEET_EDIT_API_URL) {
-      alert("Wallet update needs the Sheet edit endpoint configured.");
+    const target = Math.max(0, Math.round(newBalance));
+    const cur = Math.round(user.wallet || 0);
+    const delta = target - cur;
+    if (delta === 0) {
+      setWalletModal(null);
       return;
     }
-    const nb = Math.max(0, Math.round(newBalance));
     setWalletBusy(true);
     try {
-      for (const id of user.ids) {
-        // eslint-disable-next-line no-await-in-loop
-        await updateOrderRow(id, { Wallet: nb });
-      }
-      setOrders((prev) =>
-        prev.map((o) => {
-          const ph = String(o["Phone Number"] || "")
-            .replace(/\D/g, "")
-            .slice(-10);
-          return ph === user.phone ? { ...o, Wallet: nb } : o;
-        }),
-      );
+      const res = await creditWalletReward(user.phone, delta);
+      if (!res || !res.success) throw new Error("Ledger append failed");
+      // Reflect the new balance locally by appending a matching ledger row.
+      setOrders((prev) => [
+        ...prev,
+        {
+          "Order ID": "",
+          "Customer Name": user.name || "",
+          "Phone Number": user.phone,
+          Wallet: delta,
+          Timestamp: new Date().toISOString(),
+        },
+      ]);
       setWalletModal(null);
-      setTimeout(() => fetchOrders(), 1600);
+      setTimeout(() => fetchOrders(), 1800);
     } catch (e) {
       console.error("Wallet update failed:", e);
       alert("Could not update wallet. Please try again.");
@@ -4519,9 +4599,6 @@ export default function ManageOrdersPage() {
             <ArrowLeft size={18} />
             <div className="flex flex-col">
               <h1 className="font-24">Manage Orders</h1>
-              <p className="font-12 dark-50">
-                View, manage, and track all customer orders
-              </p>
             </div>
           </Link>
 
@@ -4677,15 +4754,17 @@ export default function ManageOrdersPage() {
                 </button>
               </div>
             )}
-            <button
-              type="button"
-              className="mo-cal-icon-btn"
-              onClick={() => setShowCalModal(true)}
-              title="Open orders calendar"
-              aria-label="Open orders calendar"
-            >
-              <Calendar size={18} />
-            </button>
+            {activeTab === "analytics" && (
+              <button
+                type="button"
+                className="mo-cal-icon-btn"
+                onClick={() => setShowCalModal(true)}
+                title="Open orders calendar"
+                aria-label="Open orders calendar"
+              >
+                <Calendar size={18} />
+              </button>
+            )}
           </div>
         </div>
 
@@ -4705,34 +4784,6 @@ export default function ManageOrdersPage() {
                 {chartTip.text}
               </div>
             )}
-            {/* Header */}
-            <div className="an2-head">
-              <div>
-                <h2 className="an2-title">Analytics</h2>
-                <p className="an2-sub">
-                  {periodWindow.label} · {overview.n} order
-                  {overview.n === 1 ? "" : "s"} with a valid ID
-                </p>
-              </div>
-              <div className="an2-actions">
-                <button
-                  type="button"
-                  className="an2-btn"
-                  onClick={() => fetchOrders()}
-                  title="Refresh"
-                >
-                  <RefreshCw size={14} /> <span>Refresh</span>
-                </button>
-                <button
-                  type="button"
-                  className="an2-btn"
-                  onClick={exportToCSV}
-                  title="Export CSV"
-                >
-                  <Download size={14} /> <span>Export</span>
-                </button>
-              </div>
-            </div>
 
             {/* Overview stats */}
             <div className="an2-stats">
@@ -4798,25 +4849,18 @@ export default function ManageOrdersPage() {
                 <span className="an2-stat-lbl">Books sold</span>
                 <span className="an2-stat-x">across {overview.n} orders</span>
               </div>
-            </div>
-
-            {/* Wallet holders */}
-            <div className="an2-wallet">
-              <div className="an2-wallet-ic">
-                <Wallet size={20} />
-              </div>
-              <div className="an2-wallet-main">
-                <span className="an2-wallet-num">{walletUsers.count}</span>
-                <span className="an2-wallet-lbl">
-                  customer{walletUsers.count === 1 ? "" : "s"} hold wallet
-                  balance
-                </span>
-              </div>
-              <div className="an2-wallet-liab">
-                <span className="an2-wallet-liab-num">
+              <div className="an2-stat s-wallet">
+                <div className="an2-stat-ic">
+                  <Wallet size={16} />
+                </div>
+                <span className="an2-stat-val">
                   ₹{walletUsers.total.toLocaleString()}
                 </span>
-                <span className="an2-wallet-liab-lbl">total outstanding</span>
+                <span className="an2-stat-lbl">Wallet outstanding</span>
+                <span className="an2-stat-x">
+                  {walletUsers.count} customer
+                  {walletUsers.count === 1 ? "" : "s"} hold balance
+                </span>
               </div>
             </div>
 
@@ -5527,41 +5571,132 @@ export default function ManageOrdersPage() {
         )}
 
 
-        {/* Search + Filter row */}
+        {/* Search + Filter row — inside the Orders tab only */}
+        {activeTab === "orders" && (
         <div className="admin-search">
-          <div className="flex flex-row gap-12 width100">
-            <input
-              type="text"
-              className="sec-mid-btn width100"
-              placeholder="Search by name, order ID, phone, or shipping ID..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <button
-              className="sec-mid-btn"
-              onClick={() => setShowFilters(!showFilters)}
-              style={{ maxWidth: "fit-content" }}
-            >
-              <Filter size={16} />
-              Filters
-              {(statusFilter !== "all" ||
-                paymentFilter !== "all" ||
-                dateFrom ||
-                dateTo) && <span className="orange weight-600">●</span>}
-            </button>
-          </div>
+          {(() => {
+            const chips = [];
+            if (statusFilter !== "active")
+              chips.push({
+                key: "status",
+                label: `Status: ${statusFilter === "all" ? "All" : statusFilter}`,
+                clear: () => setStatusFilter("active"),
+              });
+            if (paymentFilter !== "all")
+              chips.push({
+                key: "pay",
+                label: `Payment: ${paymentFilter}`,
+                clear: () => setPaymentFilter("all"),
+              });
+            if (dateFrom)
+              chips.push({
+                key: "from",
+                label: `From: ${dateFrom}`,
+                clear: () => setDateFrom(""),
+              });
+            if (dateTo)
+              chips.push({
+                key: "to",
+                label: `To: ${dateTo}`,
+                clear: () => setDateTo(""),
+              });
+            if (selectedDate)
+              chips.push({
+                key: "date",
+                label: `Date: ${selectedDate}`,
+                clear: () => setSelectedDate(""),
+              });
+            const clearAll = () => {
+              setStatusFilter("active");
+              setPaymentFilter("all");
+              setDateFrom("");
+              setDateTo("");
+              setSelectedDate("");
+            };
+            return (
+              <>
+                <div className="admin-search-bar">
+                  <div className="admin-search-input">
+                    <Search size={16} />
+                    <input
+                      type="text"
+                      placeholder="Search by name, order ID, phone, or shipping ID..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                    {searchQuery && (
+                      <button
+                        type="button"
+                        className="admin-search-x"
+                        onClick={() => setSearchQuery("")}
+                        aria-label="Clear search"
+                      >
+                        <X size={15} />
+                      </button>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    className={`admin-filter-btn${showFilters ? " open" : ""}`}
+                    onClick={() => setShowFilters(!showFilters)}
+                    aria-expanded={showFilters}
+                  >
+                    <Filter size={16} />
+                    Filters
+                    {chips.length > 0 && (
+                      <span className="admin-filter-count">{chips.length}</span>
+                    )}
+                  </button>
+                </div>
 
-          {/* Filter dropdown panel */}
-          <AnimatePresence>
-            {showFilters && (
-              <motion.div
-                className="admin-filter-panel"
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <div className="admin-filter-grid">
+                {chips.length > 0 && (
+                  <div className="admin-chips">
+                    {chips.map((c) => (
+                      <span className="admin-chip" key={c.key}>
+                        {c.label}
+                        <button
+                          type="button"
+                          onClick={c.clear}
+                          aria-label={`Remove ${c.label}`}
+                        >
+                          <X size={12} />
+                        </button>
+                      </span>
+                    ))}
+                    <button
+                      type="button"
+                      className="admin-chips-clear"
+                      onClick={clearAll}
+                    >
+                      Clear all
+                    </button>
+                  </div>
+                )}
+
+                {/* Filter dropdown panel */}
+                <AnimatePresence>
+                  {showFilters && (
+                    <motion.div
+                      className="admin-filter-panel"
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <div className="admin-filter-head">
+                        <span className="admin-filter-title">
+                          <SlidersHorizontal size={15} /> Filters
+                        </span>
+                        <button
+                          type="button"
+                          className="admin-filter-x"
+                          onClick={() => setShowFilters(false)}
+                          aria-label="Close filters"
+                        >
+                          <X size={16} />
+                        </button>
+                      </div>
+                      <div className="admin-filter-grid">
                   <div className="admin-field">
                     <label className="admin-field-label">Analytics period</label>
                     <div className="admin-select-wrap">
@@ -5633,45 +5768,37 @@ export default function ManageOrdersPage() {
                       onChange={(e) => setDateTo(e.target.value)}
                     />
                   </div>
-                </div>
+                      </div>
 
-                {(statusFilter !== "all" ||
-                  paymentFilter !== "all" ||
-                  dateFrom ||
-                  dateTo ||
-                  selectedDate) && (
-                  <button
-                    className="admin-clear-all"
-                    onClick={() => {
-                      setStatusFilter("all");
-                      setPaymentFilter("all");
-                      setDateFrom("");
-                      setDateTo("");
-                      setSelectedDate("");
-                    }}
-                  >
-                    <X size={14} /> Clear all filters
-                  </button>
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
+                      <div className="admin-filter-foot">
+                        <button
+                          type="button"
+                          className="admin-filter-reset"
+                          disabled={chips.length === 0}
+                          onClick={clearAll}
+                        >
+                          <X size={14} /> Reset
+                        </button>
+                        <button
+                          type="button"
+                          className="admin-filter-done"
+                          onClick={() => setShowFilters(false)}
+                        >
+                          Done
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </>
+            );
+          })()}
         </div>
+        )}
 
         {/* ===== Users (customer management) ===== */}
         {activeTab === "users" && (
           <div className="an2 um">
-            <div className="an2-head">
-              <div>
-                <h2 className="an2-title">Users</h2>
-                <p className="an2-sub">
-                  {userSummary.total} customer
-                  {userSummary.total === 1 ? "" : "s"} · manage wallets &amp; see
-                  loyalty
-                </p>
-              </div>
-            </div>
-
             <div className="an2-stats">
               <div className="an2-stat s-orders">
                 <div className="an2-stat-ic">
@@ -5726,24 +5853,69 @@ export default function ManageOrdersPage() {
                 <div>
                   <h3 className="an2-card-title">All customers</h3>
                   <p className="an2-card-sub">
-                    Search by name or phone in the bar above
+                    Search, filter by wallet balance & sort
                   </p>
                 </div>
-                <div className="um-head-right">
-                  <select
-                    className="um-hold-filter"
-                    value={walletHoldFilter}
-                    onChange={(e) => setWalletHoldFilter(Number(e.target.value))}
-                    title="Filter by how long the wallet balance has been held"
-                  >
-                    <option value={0}>Wallet holding: all</option>
-                    <option value={7}>Holding ≥ 7 days</option>
-                    <option value={15}>Holding ≥ 15 days</option>
-                    <option value={30}>Holding ≥ 30 days</option>
-                    <option value={45}>Holding ≥ 45 days (expiring soon)</option>
-                  </select>
-                  <span className="an2-card-total">{filteredUsers.length}</span>
+                <span className="an2-card-total">{filteredUsers.length}</span>
+              </div>
+
+              {/* Users toolbar — own search + wallet filters + sort */}
+              <div className="um-toolbar">
+                <div className="um-search">
+                  <Search size={15} />
+                  <input
+                    type="text"
+                    placeholder="Search name or phone…"
+                    value={userSearch}
+                    onChange={(e) => setUserSearch(e.target.value)}
+                  />
+                  {userSearch && (
+                    <button
+                      type="button"
+                      className="um-search-x"
+                      onClick={() => setUserSearch("")}
+                      aria-label="Clear search"
+                    >
+                      <X size={14} />
+                    </button>
+                  )}
                 </div>
+                <select
+                  className="um-hold-filter"
+                  value={walletMinFilter}
+                  onChange={(e) => setWalletMinFilter(Number(e.target.value))}
+                  title="Show only customers whose wallet balance is above this"
+                >
+                  <option value={0}>Balance: any</option>
+                  <option value={1}>Balance above ₹0</option>
+                  <option value={10}>Balance above ₹10</option>
+                  <option value={25}>Balance above ₹25</option>
+                  <option value={50}>Balance above ₹50</option>
+                  <option value={100}>Balance above ₹100</option>
+                  <option value={200}>Balance above ₹200</option>
+                </select>
+                <select
+                  className="um-hold-filter"
+                  value={walletHoldFilter}
+                  onChange={(e) => setWalletHoldFilter(Number(e.target.value))}
+                  title="Filter by how long the wallet balance has been held"
+                >
+                  <option value={0}>Holding: all</option>
+                  <option value={7}>Holding ≥ 7 days</option>
+                  <option value={15}>Holding ≥ 15 days</option>
+                  <option value={30}>Holding ≥ 30 days</option>
+                  <option value={45}>Holding ≥ 45 days</option>
+                </select>
+                <select
+                  className="um-hold-filter"
+                  value={userSort}
+                  onChange={(e) => setUserSort(e.target.value)}
+                  title="Sort customers"
+                >
+                  <option value="recent">Sort: Recent</option>
+                  <option value="walletDesc">Wallet: High → Low</option>
+                  <option value="walletAsc">Wallet: Low → High</option>
+                </select>
               </div>
               <div className="um-list">
                 {filteredUsers.length === 0 && (
@@ -5802,13 +5974,30 @@ export default function ManageOrdersPage() {
                         <span>avg</span>
                       </div>
                     </div>
-                    <button
-                      type="button"
-                      className="um-wallet-btn"
-                      onClick={() => setWalletModal(u)}
-                    >
-                      <Wallet size={14} /> Wallet
-                    </button>
+                    <div className="um-actions">
+                      {u.wallet > 0 && (
+                        <button
+                          type="button"
+                          className="um-wa-btn"
+                          title="Message on WhatsApp about their wallet balance"
+                          onClick={() =>
+                            openWhatsApp(
+                              u.phone,
+                              `Hi${u.name ? " " + u.name.split(" ")[0] : ""}! 🎁 You have ₹${u.wallet} waiting in your TheBookX wallet. Use it on your next order before it expires — view your balance & orders here: ${PROFILE_URL}`,
+                            )
+                          }
+                        >
+                          <FaWhatsapp size={16} />
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        className="um-wallet-btn"
+                        onClick={() => setWalletModal(u)}
+                      >
+                        <Wallet size={14} /> Wallet
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -5828,158 +6017,220 @@ export default function ManageOrdersPage() {
         {/* ===== Track orders ===== */}
         {activeTab === "track" && (
           <div className="mo-track-notify mo-track-plain">
-            <div className="mo-track-head">
-              <span className="mo-track-title">
-                <Truck size={15} /> Track &amp; notify
-              </span>
-              <span className="mo-track-sub">
-                Paste a tracking ID to pull the order, then WhatsApp the
-                customer. Entries are saved here as you add them.
-              </span>
-            </div>
-            <div className="mo-track-input-row">
-              <input
-                className="admin-input mo-track-input"
-                placeholder="Paste tracking ID and press Enter…"
+            <div className="mo-track-paste">
+              <textarea
+                className="admin-input mo-track-textarea"
+                rows={5}
+                placeholder={
+                  "Paste tracking IDs or the SMS text here…\ne.g. CX042819326IN  EY484883105IN  CM149478023IN"
+                }
                 value={trackInput}
                 onChange={(e) => setTrackInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    addTracking();
-                  }
-                }}
               />
-              <button
-                type="button"
-                className="mo-track-add"
-                onClick={addTracking}
-              >
-                <Search size={15} /> Search
-              </button>
+              <div className="mo-track-paste-actions">
+                <span className="mo-track-hint">
+                  {extractArticleNumbers(trackInput).length} ID
+                  {extractArticleNumbers(trackInput).length === 1 ? "" : "s"}{" "}
+                  detected
+                </span>
+                <button
+                  type="button"
+                  className="mo-track-add"
+                  disabled={extractArticleNumbers(trackInput).length === 0}
+                  onClick={addTrackingBatch}
+                >
+                  <Search size={15} /> Match orders
+                </button>
+              </div>
             </div>
             {trackError && (
               <div className="mo-track-error">{trackError}</div>
             )}
-            {trackList.length > 0 && (
-              <>
-                <div className="mo-track-table-wrap">
-                  <table className="mo-track-table">
-                    <thead>
-                      <tr>
-                        <th>#</th>
-                        <th>Order</th>
-                        <th>Customer</th>
-                        <th>Tracking ID</th>
-                        <th>Status</th>
-                        <th>Notify on WhatsApp</th>
-                        <th></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {trackList.map((r, i) => {
-                        const key = String(r["Shipping ID"]);
-                        const stage = trackPicks[key] || "ofd";
-                        return (
-                          <tr key={key}>
-                            <td className="mo-track-num">{i + 1}</td>
-                            <td className="mo-track-oid">
-                              {r["Order ID"] || "—"}
-                            </td>
-                            <td>{r["Customer Name"] || "—"}</td>
-                            <td className="mo-track-tid">
-                              <button
-                                type="button"
-                                className="mo-track-tid-btn"
-                                title="Copy ID & open India Post tracking"
-                                onClick={() =>
-                                  handleTrackPackage(r["Shipping ID"])
-                                }
-                              >
-                                {r["Shipping ID"]}
-                                <ExternalLink size={12} />
-                              </button>
-                            </td>
-                            <td>
-                              <select
-                                className="bulk-wa-select mo-track-status"
-                                value={r.status || "Processing"}
-                                onChange={(e) =>
-                                  updateTrackStatus(i, e.target.value)
-                                }
-                                title="Change & save order status"
-                              >
-                                {TRACK_STATUS_OPTIONS.map((s) => (
-                                  <option key={s} value={s}>
-                                    {s}
-                                  </option>
-                                ))}
-                              </select>
-                            </td>
-                            <td>
-                              <div className="mo-track-wa">
-                                <select
-                                  className="bulk-wa-select"
-                                  value={stage}
-                                  onChange={(e) =>
-                                    setTrackPicks((p) => ({
-                                      ...p,
-                                      [key]: e.target.value,
-                                    }))
-                                  }
-                                >
-                                  {waMessages({}).map((m) => (
-                                    <option key={m.key} value={m.key}>
-                                      {m.label}
-                                    </option>
-                                  ))}
-                                </select>
-                                <button
-                                  type="button"
-                                  className="mo-track-send"
-                                  title="Send on WhatsApp"
-                                  aria-label="Send on WhatsApp"
-                                  onClick={() => {
-                                    const msg = waMessages(r).find(
-                                      (m) => m.key === stage,
-                                    );
-                                    if (msg)
-                                      openWhatsApp(r["Phone Number"], msg.text);
-                                  }}
-                                >
-                                  <FaWhatsapp size={15} />
-                                </button>
-                              </div>
-                            </td>
-                            <td>
-                              <button
-                                type="button"
-                                className="mo-track-del"
-                                title="Remove"
-                                aria-label="Remove"
-                                onClick={() => removeTracking(i)}
-                              >
-                                <X size={14} />
-                              </button>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-                <div className="mo-track-foot">
-                  <span>{trackList.length} tracked</span>
-                  <button
-                    type="button"
-                    className="mo-track-clear"
-                    onClick={clearTracking}
-                  >
-                    Clear all
-                  </button>
-                </div>
-              </>
+            {trackSummary && (
+              <div className="mo-track-summary">
+                <span className="mo-track-chip ok">
+                  <Check size={13} /> {trackSummary.added} added
+                </span>
+                {trackSummary.dup > 0 && (
+                  <span className="mo-track-chip dup">
+                    {trackSummary.dup} already listed
+                  </span>
+                )}
+                {trackSummary.failed > 0 && (
+                  <span className="mo-track-chip fail">
+                    <AlertCircle size={13} /> {trackSummary.failed} not matched
+                  </span>
+                )}
+              </div>
             )}
+            {trackFailed.length > 0 && (
+              <div className="mo-track-failed">
+                <span className="mo-track-failed-title">
+                  No order found for these IDs:
+                </span>
+                <div className="mo-track-failed-ids">
+                  {trackFailed.map((id) => (
+                    <span key={id} className="mo-track-failed-id">
+                      {id}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {trackList.length > 0 &&
+              (() => {
+                const groups = (() => {
+                  const g = {};
+                  trackList.forEach((r) => {
+                    const k = r.dateLabel || "Undated";
+                    if (!g[k])
+                      g[k] = { label: k, dateT: r.dateT || 0, rows: [] };
+                    g[k].rows.push(r);
+                  });
+                  return Object.values(g).sort((a, b) => b.dateT - a.dateT);
+                })();
+                return (
+                  <div className="mo-track-groups">
+                    {groups.map((grp) => {
+                      const open = trackDateOpen[grp.label] !== false;
+                      return (
+                        <div className="mo-track-group" key={grp.label}>
+                          <button
+                            type="button"
+                            className="mo-track-group-head"
+                            onClick={() =>
+                              setTrackDateOpen((p) => ({
+                                ...p,
+                                [grp.label]: !open,
+                              }))
+                            }
+                          >
+                            <span className="mo-track-group-date">
+                              <Calendar size={14} /> {grp.label}
+                            </span>
+                            <span className="mo-track-group-count">
+                              {grp.rows.length}
+                            </span>
+                            <ChevronDown
+                              size={16}
+                              className={`mo-track-caret${open ? " open" : ""}`}
+                            />
+                          </button>
+                          {open && (
+                            <div className="mo-track-cards">
+                              {grp.rows.map((r) => {
+                                const key = String(r["Shipping ID"]);
+                                const stage = trackPicks[key] || "ofd";
+                                return (
+                                  <div className="mo-track-card" key={key}>
+                                    <div className="mo-track-card-top">
+                                      <div className="mo-track-card-who">
+                                        <span className="mo-track-card-name">
+                                          {r["Customer Name"] || "Unknown"}
+                                        </span>
+                                        <span className="mo-track-card-meta">
+                                          {r["Order ID"] || "—"}
+                                          {r.city ? ` · ${r.city}` : ""}
+                                          {r.amount ? ` · ₹${r.amount}` : ""}
+                                        </span>
+                                      </div>
+                                      <button
+                                        type="button"
+                                        className="mo-track-del"
+                                        title="Remove"
+                                        aria-label="Remove"
+                                        onClick={() => removeTracking(key)}
+                                      >
+                                        <X size={14} />
+                                      </button>
+                                    </div>
+                                    {r.booksList && (
+                                      <div className="mo-track-card-books">
+                                        {r.booksList}
+                                      </div>
+                                    )}
+                                    <button
+                                      type="button"
+                                      className="mo-track-tid-btn"
+                                      title="Copy ID & open India Post tracking"
+                                      onClick={() => handleTrackPackage(key)}
+                                    >
+                                      {key}
+                                      <ExternalLink size={12} />
+                                    </button>
+                                    <div className="mo-track-card-row">
+                                      <select
+                                        className="bulk-wa-select mo-track-status"
+                                        value={r.status || "Processing"}
+                                        onChange={(e) =>
+                                          updateTrackStatus(key, e.target.value)
+                                        }
+                                        title="Change & save order status"
+                                      >
+                                        {TRACK_STATUS_OPTIONS.map((s) => (
+                                          <option key={s} value={s}>
+                                            {s}
+                                          </option>
+                                        ))}
+                                      </select>
+                                      <div className="mo-track-wa">
+                                        <select
+                                          className="bulk-wa-select"
+                                          value={stage}
+                                          onChange={(e) =>
+                                            setTrackPicks((p) => ({
+                                              ...p,
+                                              [key]: e.target.value,
+                                            }))
+                                          }
+                                        >
+                                          {waMessages({}).map((m) => (
+                                            <option key={m.key} value={m.key}>
+                                              {m.label}
+                                            </option>
+                                          ))}
+                                        </select>
+                                        <button
+                                          type="button"
+                                          className="mo-track-send"
+                                          title="Send on WhatsApp"
+                                          aria-label="Send on WhatsApp"
+                                          onClick={() => {
+                                            const msg = waMessages(r).find(
+                                              (m) => m.key === stage,
+                                            );
+                                            if (msg)
+                                              openWhatsApp(
+                                                r["Phone Number"],
+                                                msg.text,
+                                              );
+                                          }}
+                                        >
+                                          <FaWhatsapp size={15} />
+                                        </button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                    <div className="mo-track-foot">
+                      <span>{trackList.length} tracked</span>
+                      <button
+                        type="button"
+                        className="mo-track-clear"
+                        onClick={clearTracking}
+                      >
+                        Clear all
+                      </button>
+                    </div>
+                  </div>
+                );
+              })()}
           </div>
         )}
 

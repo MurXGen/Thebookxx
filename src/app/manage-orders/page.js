@@ -7343,6 +7343,31 @@ export default function ManageOrdersPage() {
                 ))}
               </div>
 
+              {/* Send the printed-receipt / invoice link (opens the receipt
+                  modal for the customer via thebookx.in?orderID=…). */}
+              <button
+                type="button"
+                className="wa-receipt-btn"
+                onClick={() => {
+                  const oid = String(
+                    waPickerOrder["Order ID"] || "",
+                  ).trim();
+                  const nm = String(waPickerOrder["Customer Name"] || "")
+                    .replace(/\s*\(unconfirmed\)\s*/i, "")
+                    .trim();
+                  const invoice = `https://thebookx.in?orderID=${encodeURIComponent(
+                    oid,
+                  )}`;
+                  const msg = `Hi${
+                    nm ? " " + nm.split(" ")[0] : ""
+                  } 👋 Thank you for shopping with TheBookX!\n\n🧾 View your invoice & full order details: ${invoice}\n👤 Track all your orders anytime: ${PROFILE_URL}`;
+                  openWhatsApp(waPickerOrder["Phone Number"], msg);
+                  setWaPickerOrder(null);
+                }}
+              >
+                <FaWhatsapp size={15} /> Send receipt / invoice
+              </button>
+
               <div className="wa-custom">
                 <span className="wa-custom-label">
                   <Pencil size={13} /> Custom message

@@ -2238,7 +2238,7 @@ function CODHandlingFeeModal({
 // =====================================================================
 // ============== Sub-component: CODSuccessModal =======================
 // =====================================================================
-function CODSuccessModal({
+export function CODSuccessModal({
   name,
   phone,
   address,
@@ -2263,6 +2263,16 @@ function CODSuccessModal({
   onContinue,
   onClose,
   onViewProfile,
+  // When false, hide the scratch-card reward (used for the shared invoice
+  // opened via thebookx.in?orderID=…). Defaults to the full checkout flow.
+  showReward = true,
+  // Real order id / date to print on the receipt (falls back to a generated
+  // ref for the live checkout flow).
+  orderRefIn = "",
+  dateIn = "",
+  // Loading-screen copy (invoice view overrides the checkout wording).
+  loadingTitle = "Placing your order…",
+  loadingSub = "Just a moment, confirming your details",
 }) {
   const isUPI = paymentMode === "UPI";
   const [isProcessing, setIsProcessing] = useState(true);
@@ -2335,13 +2345,17 @@ function CODSuccessModal({
     return `${startStr} – ${endStr}`;
   })();
 
-  // Stable display order ref + date for the printed receipt.
-  const orderRef = useRef("TBX" + String(Date.now()).slice(-8)).current;
-  const todayStr = new Date().toLocaleDateString("en-IN", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
+  // Stable display order ref + date for the printed receipt. When opened from
+  // a shared invoice link we print the real order id/date instead.
+  const generatedRef = useRef("TBX" + String(Date.now()).slice(-8)).current;
+  const orderRef = orderRefIn || generatedRef;
+  const todayStr =
+    dateIn ||
+    new Date().toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
 
   const handleShareOrder = () => {
     const itemsList = (cartBooks || [])
@@ -2468,7 +2482,7 @@ function CODSuccessModal({
                 className="weight-700"
                 style={{ fontSize: 18, margin: "8px 0 4px" }}
               >
-                Placing your order…
+                {loadingTitle}
               </motion.h2>
               <motion.p
                 initial={{ opacity: 0 }}
@@ -2477,7 +2491,7 @@ function CODSuccessModal({
                 className="font-12 dark-50"
                 style={{ margin: 0 }}
               >
-                Just a moment, confirming your details
+                {loadingSub}
               </motion.p>
 
               <div className="flex flex-row gap-6" style={{ marginTop: 12 }}>
@@ -2637,46 +2651,50 @@ function CODSuccessModal({
                 </motion.div>
               </div>
 
-              <ScratchRewardSheet
-                open={scratchOpen}
-                onClose={() => setScratchOpen(false)}
-                onViewProfile={onViewProfile}
-                eligible
-                reward={reward}
-                scratched={scratched}
-                onScratch={handleScratchComplete}
-                note={
-                  <>
-                    <strong>
-                      ₹{reward} is applicable only on your next order.
-                    </strong>{" "}
-                    If you cancel this order, this wallet amount will be wiped
-                    off — so please keep your order to enjoy the reward.
-                  </>
-                }
-              />
+              {showReward && (
+                <ScratchRewardSheet
+                  open={scratchOpen}
+                  onClose={() => setScratchOpen(false)}
+                  onViewProfile={onViewProfile}
+                  eligible
+                  reward={reward}
+                  scratched={scratched}
+                  onScratch={handleScratchComplete}
+                  note={
+                    <>
+                      <strong>
+                        ₹{reward} is applicable only on your next order.
+                      </strong>{" "}
+                      If you cancel this order, this wallet amount will be wiped
+                      off — so please keep your order to enjoy the reward.
+                    </>
+                  }
+                />
+              )}
 
 
               </div>
               {/* Fixed footer — compact reward + two actions in one row */}
               <div className="cod-success-footer">
-                <button
-                  type="button"
-                  className={`reward-teaser compact${walletCredited ? " done" : ""}`}
-                  onClick={() => setScratchOpen(true)}
-                >
-                  <span className="reward-teaser-ic">
-                    <Gift size={16} />
-                  </span>
-                  <span className="reward-teaser-tt">
-                    {walletCredited
-                      ? `₹${reward} added to your wallet`
-                      : "You've won a scratch card!"}
-                  </span>
-                  <span className="reward-teaser-cta">
-                    {walletCredited ? "Done" : "Scratch"}
-                  </span>
-                </button>
+                {showReward && (
+                  <button
+                    type="button"
+                    className={`reward-teaser compact${walletCredited ? " done" : ""}`}
+                    onClick={() => setScratchOpen(true)}
+                  >
+                    <span className="reward-teaser-ic">
+                      <Gift size={16} />
+                    </span>
+                    <span className="reward-teaser-tt">
+                      {walletCredited
+                        ? `₹${reward} added to your wallet`
+                        : "You've won a scratch card!"}
+                    </span>
+                    <span className="reward-teaser-cta">
+                      {walletCredited ? "Done" : "Scratch"}
+                    </span>
+                  </button>
+                )}
 
                 <div className="cod-success-actions">
                   {onViewProfile && (

@@ -19811,6 +19811,26 @@ img[data-loaded="true"] {
 .wa-picker-chip:hover {
   background: rgba(37, 211, 102, 0.18);
 }
+.wa-receipt-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: none;
+  background: #25d366;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.wa-receipt-btn:hover {
+  background: #1da851;
+}
 .wa-custom {
   display: flex;
   flex-direction: column;

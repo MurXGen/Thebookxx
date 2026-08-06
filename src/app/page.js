@@ -15,6 +15,7 @@ import OneRupeeHero from "@/components/OneRupeeHero";
 import HomeHero from "@/components/HomeHero";
 import LiveOrdersStrip from "@/components/LiveOrdersStrip";
 import QuickReadsPromo from "@/components/QuickReadsPromo";
+import InvoiceParamModal from "@/components/InvoiceParamModal";
 import { BooksSkeleton } from "@/components/UI/BookCardSkeleton";
 
 // Lazy load components with named exports
@@ -113,6 +114,10 @@ export default function HomePage() {
 
   return (
     <>
+      {/* Shared invoice — opens the printed receipt when arriving via
+          thebookx.in?orderID=… (no scratch card). */}
+      <InvoiceParamModal />
+
       <IntroVideo />
 
       <Navbar />

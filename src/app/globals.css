@@ -13102,35 +13102,26 @@ img[data-loaded="true"] {
   align-items: center;
   gap: 10px;
 }
-.review-cf-reviews-cta {
+/* Dark "Write a Review" pill next to the pause button */
+.review-cf-write-btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 9px 16px;
+  padding: 12px 22px;
   border-radius: 999px;
-  border: 1px solid var(--hairline, #ececec);
-  background: var(--background, #fff);
-  color: var(--foreground);
-  font-size: 13px;
+  background: var(--foreground, #111);
+  color: #fff;
+  font-size: 14px;
   font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 4px 14px -8px rgba(0, 0, 0, 0.35);
+  text-decoration: none;
+  box-shadow: 0 8px 22px -12px rgba(0, 0, 0, 0.5);
   transition:
-    background 0.15s ease,
-    border-color 0.15s ease;
+    transform 0.12s ease,
+    filter 0.15s ease;
 }
-.review-cf-reviews-cta:hover {
-  border-color: var(--tertiary, #fb8500);
-  color: var(--tertiary, #fb8500);
-}
-.review-cf-cta-caret {
-  transition: transform 0.2s ease;
-}
-.review-cf-reviews-cta.open .review-cf-cta-caret {
-  transform: rotate(180deg);
-}
-.review-cf-reviews {
-  margin-top: 6px;
+.review-cf-write-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.08);
 }
 .review-cf-playpause {
   display: inline-flex;

@@ -2,8 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Pause, Play, ChevronDown, MessageSquare, Star } from "lucide-react";
-import StoreReviews from "@/components/StoreReviews";
+import { Pause, Play, Star, ArrowRight } from "lucide-react";
 
 // Real buyer photos + their short review. Drop the photos into
 // /public/review/bookreviews/ named review-1.jpeg … review-N.jpeg. Any missing
@@ -122,7 +121,6 @@ export default function ReviewGallery() {
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
-  const [showReviews, setShowReviews] = useState(false);
   const sectionRef = useRef(null);
   const [inView, setInView] = useState(true);
 
@@ -268,34 +266,16 @@ export default function ReviewGallery() {
             </motion.button>
           )}
 
-          <button
-            type="button"
-            className={`review-cf-reviews-cta${showReviews ? " open" : ""}`}
-            onClick={() => setShowReviews((v) => !v)}
-            aria-expanded={showReviews}
+          <a
+            href="https://www.thebookx.in/review"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="review-cf-write-btn"
           >
-            <MessageSquare size={15} />
-            {showReviews ? "Hide reader reviews" : "Read verified reviews"}
-            <ChevronDown size={16} className="review-cf-cta-caret" />
-          </button>
+            Write a Review
+            <ArrowRight size={16} />
+          </a>
         </div>
-
-        {/* Verified reviewer comments — slides down on demand */}
-        <AnimatePresence initial={false}>
-          {showReviews && (
-            <motion.div
-              key="store-reviews"
-              className="review-cf-reviews"
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              style={{ overflow: "hidden" }}
-            >
-              <StoreReviews />
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
     </section>
   );

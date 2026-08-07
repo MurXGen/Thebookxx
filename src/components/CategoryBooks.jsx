@@ -5,7 +5,7 @@ import HorizontalScroll from "./UI/HorizontalScroll";
 
 const categoryConfig = {
   business: {
-    title: "📈 Business & Finance",
+    title: " Business & Finance",
     keywords: [
       "business",
       "finance",
@@ -14,11 +14,11 @@ const categoryConfig = {
       "economics",
       "management",
     ],
-    icon: "📈",
+    icon: "",
     className: "business-section",
   },
   selfhelp: {
-    title: "💪 Self-Help & Motivation",
+    title: " Self-Help & Motivation",
     keywords: [
       "self-help",
       "selfhelp",
@@ -27,19 +27,19 @@ const categoryConfig = {
       "inspirational",
       "mindset",
     ],
-    icon: "💪",
+    icon: "",
     className: "selfhelp-section",
   },
   romance: {
-    title: "💕 Romance Novels",
+    title: " Romance Novels",
     keywords: ["romance", "love", "romantic", "relationship", "fiction"],
-    icon: "💕",
+    icon: "",
     className: "romance-section",
   },
   trending: {
-    title: "🔥 Trending Books",
+    title: " Trending Books",
     keywords: ["trending", "bestseller", "popular", "hot"],
-    icon: "🔥",
+    icon: "",
     className: "trending-section",
   },
 };

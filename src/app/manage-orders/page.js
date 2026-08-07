@@ -107,55 +107,62 @@ const waMessages = (order) => {
     order?.shippingId || order?.["Shipping ID"] || "",
   ).trim();
   const hi = `Hi ${name}`;
-  const id = orderId ? ` (Order ${orderId})` : "";
 
-  // Signature block appended to every message.
-  const profileLine = `\n\n🔎 View your order anytime: ${PROFILE_URL}\n— Team TheBookX 📚`;
-  // Tracking block, only when a tracking ID is present.
-  const trackBlock = tracking
-    ? `\n\n📦 Tracking ID: *${tracking}*\n🚚 Track on India Post: ${INDIA_POST_URL}`
-    : "";
+  // Link block appended below every message: the customer's order link, the
+  // tracking ID and the India Post tracking link (tracking lines only when a
+  // tracking ID exists). Kept short and consistent across all stages.
+  const orderLink = orderId
+    ? `https://thebookx.in?orderID=${encodeURIComponent(orderId)}`
+    : PROFILE_URL;
+  const linkBlock =
+    `\n\nYour order details: ${orderLink}` +
+    (tracking
+      ? `\nTracking ID: *${tracking}*\nTrack on India Post: ${INDIA_POST_URL}`
+      : "") +
+    `\n— Team TheBookX`;
 
+  // Every message opens with the *stage headline*, then a short note, then the
+  // link block below.
   return [
     {
       key: "confirm",
-      label: "✅ Confirm order",
-      text: `${hi}, this is TheBookX 📚\n\nWe've received your order${id}. Please reply *YES* to confirm it, so we can pack and ship it right away.${profileLine}`,
+      label: "Confirm order",
+      text: `*Confirm your order*\n\n${hi}, we've received your order. Please reply *YES* to confirm so we can pack and ship it right away.${linkBlock}`,
     },
     {
       key: "about",
-      label: "📦 About to ship",
-      text: `${hi}, good news! 🎉\n\nYour TheBookX order${id} is packed and about to ship. We'll share the tracking details with you shortly.${profileLine}`,
+      label: "About to ship",
+      text: `*About to ship*\n\n${hi}, your TheBookX order is packed and about to ship. Tracking details will follow shortly.${linkBlock}`,
     },
     {
       key: "shipped",
-      label: "🚚 Shipped",
-      text: `${hi}, your TheBookX order${id} has been shipped 🚚\n\nExpected delivery is within *5 to 9 days*. It may be slightly delayed if the weather doesn't support — thank you for your patience!${trackBlock}${profileLine}`,
+      label: "Shipped",
+      text: `*Shipped*\n\n${hi}, your order is on its way! Expected delivery in *5–9 days* (slight delays possible in bad weather — thanks for your patience).${linkBlock}`,
     },
     {
       key: "ofd",
-      label: "🛵 Out for delivery",
-      text: `${hi}, your TheBookX order${id} is out for delivery today 🛵\n\nPlease keep your phone reachable so our delivery partner can reach you.${trackBlock}${profileLine}`,
+      label: "Out for delivery",
+      text: `*Out for delivery*\n\n${hi}, your TheBookX order is out for delivery today. Please keep your phone reachable so our delivery partner can reach you.${linkBlock}`,
     },
     {
       key: "delivered",
-      label: "🎉 Delivered",
-      text: `${hi}, your TheBookX order${id} has been delivered ✅\n\nWe hope you love your books! A quick review would mean a lot to us 💛${profileLine}`,
+      label: "Delivered",
+      text: `*Delivered*\n\n${hi}, your order has been delivered! We hope you love your books — a quick review would mean a lot to us.${linkBlock}`,
     },
     {
       key: "received",
-      label: "📥 Received order",
-      text: `${hi}, this is TheBookX 📚\n\nWe've *received your order*${id}. It will be *shipped within 1–2 days*, and your tracking ID will be shared here as soon as it's dispatched.\n\nThank you for shopping with us! 💛${profileLine}`,
+      label: "Received order",
+      text: `*Order received*\n\n${hi}, we've received your order. It will be *shipped within 1–2 days* and your tracking ID will be shared here as soon as it's dispatched.${linkBlock}`,
     },
     {
       key: "unable",
-      label: "⚠️ Unable to ship",
-      text: `${hi}, this is TheBookX 📚\n\nWe tried to process your order${id}, but it *couldn't be shipped successfully* due to a mismatch in the *address or phone number* provided.\n\nPlease share your *correct full address (with pincode) and a reachable phone number* so we can dispatch it right away.${profileLine}`,
+      label: "Unable to ship",
+      text: `*Unable to ship*\n\n${hi}, we couldn't ship your order due to a mismatch in the *address or phone number*. Please share your *correct full address (with pincode) and a reachable phone number* so we can dispatch it right away.${linkBlock}`,
     },
     {
       key: "verify",
-      label: "📍 Ask details checkup",
-      text: `${hi}, this is TheBookX 📚\n\nBefore we ship your order${id}, could you please *re-check your delivery details*? The current address/number provided may *not be sufficient for successful delivery*.\n\nKindly reply with your *complete address, landmark, pincode and an active phone number* so your books reach you safely. 🙏${profileLine}`,
+      label: "Ask details checkup",
+      text: `*Please re-check your details*\n\n${hi}, before we ship your order, kindly re-check your delivery details — the current address/number may not be enough for successful delivery. Reply with your *complete address, landmark, pincode and active phone number*.${linkBlock}`,
     },
   ];
 };
@@ -317,7 +324,7 @@ const getOrderDate = (order) =>
   parseAnyDate(order["Timestamp"]) ||
   parseAnyDate(order["Order Date"]);
 
-// Sort orders by date. order = "desc" → newest first, "asc" → oldest first.
+// Sort orders by date. order = "desc" newest first, "asc" oldest first.
 // Rows without a parseable date always go to the bottom.
 const sortByDate = (list, order = "desc") =>
   [...list].sort((a, b) => {
@@ -365,13 +372,13 @@ const parseBooksList = (booksStr) => {
   return parsedBooks;
 };
 
-// Fast name → book lookup (for genre/category attribution of order items).
+// Fast name book lookup (for genre/category attribution of order items).
 const BOOK_BY_NAME = {};
 ALL_BOOKS.forEach((b) => {
   if (b?.name) BOOK_BY_NAME[b.name.toLowerCase().trim()] = b;
 });
 
-// India Post weight-slab delivery charge (grams → ₹). Extend the top slab
+// India Post weight-slab delivery charge (grams ₹). Extend the top slab
 // as needed for parcels heavier than 4kg.
 const indiaPostDeliveryCost = (grams) => {
   const g = Number(grams) || 0;
@@ -393,7 +400,12 @@ const orderEconomics = (parsedBooks = []) => {
   let unmatched = 0;
   parsedBooks.forEach((line) => {
     const qty = Number(line.quantity) || 1;
-    const b = BOOK_BY_NAME[String(line.name || "").toLowerCase().trim()];
+    const b =
+      BOOK_BY_NAME[
+        String(line.name || "")
+          .toLowerCase()
+          .trim()
+      ];
     if (b) {
       matched += 1;
       booksCost += (Number(b.cost) || 0) * qty;
@@ -451,7 +463,12 @@ function WalletModal({ user, busy, onClose, onApply }) {
               {user.name || "Customer"} · +91 {user.phone}
             </p>
           </div>
-          <button type="button" className="wm-x" onClick={onClose} aria-label="Close">
+          <button
+            type="button"
+            className="wm-x"
+            onClick={onClose}
+            aria-label="Close"
+          >
             <X size={18} />
           </button>
         </div>
@@ -576,7 +593,11 @@ function HBars({ items, accent = "var(--tertiary, #fb8500)" }) {
 }
 
 // Reusable vertical column bars (weekday, hour-of-day …)
-function ColBars({ cols, accent = "var(--tertiary, #fb8500)", showValues = true }) {
+function ColBars({
+  cols,
+  accent = "var(--tertiary, #fb8500)",
+  showValues = true,
+}) {
   const max = Math.max(1, ...cols.map((c) => c.value));
   return (
     <div className="ins-cols">
@@ -589,7 +610,10 @@ function ColBars({ cols, accent = "var(--tertiary, #fb8500)", showValues = true 
           <div className="ins-col-track">
             <div
               className="ins-col-fill"
-              style={{ height: `${(c.value / max) * 100}%`, background: accent }}
+              style={{
+                height: `${(c.value / max) * 100}%`,
+                background: accent,
+              }}
             >
               {showValues && c.value > 0 && (
                 <span className="ins-col-v">{c.value}</span>
@@ -684,12 +708,12 @@ function OrdersCalendar({
   const handleCellClick = (key) => {
     if (rangeMode) {
       if (!rangeStart) {
-        // first click → start; clear any previous range
+        // first click start; clear any previous range
         setRangeStart(key);
         setDateFrom("");
         setDateTo("");
       } else {
-        // second click → complete range (ordered)
+        // second click complete range (ordered)
         const [lo, hi] =
           rangeStart <= key ? [rangeStart, key] : [key, rangeStart];
         setDateFrom(lo);
@@ -1038,7 +1062,9 @@ function IndiaPostSheet({
     : (orders || []).filter((o) =>
         /getting shipped/i.test(o["Order Status"] || ""),
       );
-  const q = String(search || "").trim().toLowerCase();
+  const q = String(search || "")
+    .trim()
+    .toLowerCase();
   const shipping = !q
     ? shippingAll
     : shippingAll.filter((o) => {
@@ -1063,10 +1089,11 @@ function IndiaPostSheet({
   return (
     <div className="ip-sheet">
       <div className="ip-note">
-        <b>Same for every parcel:</b> Drop-off pincode <b>400017</b> → pick{" "}
+        <b>Same for every parcel:</b> Drop-off pincode <b>400017</b> pick{" "}
         <b>Dharavi Road S.O</b> · after typing weight choose the lowest rate (
         <b>India Post Parcel Retail</b>) · Mail Shape ={" "}
-        <b>Box Type (Non Roll Form)</b> · Delivery Type = <b>Normal Delivery</b>.
+        <b>Box Type (Non Roll Form)</b> · Delivery Type = <b>Normal Delivery</b>
+        .
       </div>
       {shipping.map((o, i) => {
         const books = (o.parsedBooks || []).length || 1;
@@ -1083,9 +1110,7 @@ function IndiaPostSheet({
           <div className="ip-order" key={o["Order ID"] || i}>
             <div className="ip-order-head">
               <span className="ip-order-sr">{i + 1}</span>
-              <span className="ip-order-name">
-                {o["Customer Name"] || "—"}
-              </span>
+              <span className="ip-order-name">{o["Customer Name"] || "—"}</span>
               <span className={`ip-tag ${isCOD ? "cod" : "prepaid"}`}>
                 {isCOD ? `COD ₹${amount}` : "Prepaid — no COD"}
               </span>
@@ -1138,10 +1163,7 @@ function IndiaPostSheet({
                   onCopy={copyToClipboard}
                 />
               ) : (
-                <IpField
-                  label="COD"
-                  hint="Prepaid — leave COD unchecked"
-                />
+                <IpField label="COD" hint="Prepaid — leave COD unchecked" />
               )}
               <div className="ip-step">4 · Receiver details</div>
               <IpField
@@ -1291,8 +1313,18 @@ function ProfitCostChart({ orders, period = "month", offset = 0 }) {
   else if (period === "week") now.setDate(realNow.getDate() + offset * 7);
   else if (period === "month") now.setMonth(realNow.getMonth() + offset);
   const MON = [
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
   ];
   const fmt = (d) => `${d.getDate()}/${d.getMonth() + 1}`;
 
@@ -1342,10 +1374,10 @@ function ProfitCostChart({ orders, period = "month", offset = 0 }) {
   };
 
   // Bucketing drills down with the global period tab:
-  //   Day   → the days of the selected week's context (last 14 days)
-  //   Week  → the 7 days (Mon–Sun) of the selected week
-  //   Month → each week within the selected month
-  //   All   → every month (horizontally scrollable)
+  // Day the days of the selected week's context (last 14 days)
+  // Week the 7 days (Mon–Sun) of the selected week
+  // Month each week within the selected month
+  // All every month (horizontally scrollable)
   let cols = [];
   let granularityLabel = "";
   if (period === "day") {
@@ -1390,7 +1422,7 @@ function ProfitCostChart({ orders, period = "month", offset = 0 }) {
       });
     }
   } else {
-    // All time → every month from the first order to now (scrollable)
+    // All time every month from the first order to now (scrollable)
     granularityLabel = "monthly · all time";
     const start = earliest
       ? new Date(earliest.getFullYear(), earliest.getMonth(), 1)
@@ -1429,7 +1461,9 @@ function ProfitCostChart({ orders, period = "month", offset = 0 }) {
   const ay = (v) => aPadTop + aih - ((v - vMin) / vRange) * aih;
   const aZero = ay(0);
   const linePts = (key) =>
-    cols.map((c, i) => `${ax(i).toFixed(1)},${ay(c[key]).toFixed(1)}`).join(" ");
+    cols
+      .map((c, i) => `${ax(i).toFixed(1)},${ay(c[key]).toFixed(1)}`)
+      .join(" ");
   const areaPath = (key) =>
     nCols === 0
       ? ""
@@ -1495,87 +1529,139 @@ function ProfitCostChart({ orders, period = "month", offset = 0 }) {
       </div>
 
       {mode === "area" ? (
-      <div className={`wk-scroll ${period === "all" ? "pc-scroll-x" : ""}`}>
-        <div
-          className="pc-area-wrap"
-          style={
-            period === "all"
-              ? { minWidth: `${Math.max(AW, nCols * 46)}px` }
-              : undefined
-          }
-        >
-          <svg
-            className="pc-area-svg"
-            viewBox={`0 0 ${AW} ${AH}`}
-            preserveAspectRatio="none"
-            role="img"
+        <div className={`wk-scroll ${period === "all" ? "pc-scroll-x" : ""}`}>
+          <div
+            className="pc-area-wrap"
+            style={
+              period === "all"
+                ? { minWidth: `${Math.max(AW, nCols * 46)}px` }
+                : undefined
+            }
           >
-            <defs>
-              <linearGradient id="pcCostFill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="rgba(148,163,184,0.30)" />
-                <stop offset="100%" stopColor="rgba(148,163,184,0)" />
-              </linearGradient>
-              <linearGradient id="pcProfitFill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="rgba(10,143,12,0.30)" />
-                <stop offset="100%" stopColor="rgba(10,143,12,0)" />
-              </linearGradient>
-            </defs>
-            {/* zero baseline */}
-            <line
-              x1="0"
-              y1={aZero}
-              x2={AW}
-              y2={aZero}
-              stroke="var(--hairline,#ececec)"
-              strokeWidth="1"
-              vectorEffect="non-scaling-stroke"
-            />
-            <path d={costAreaD} fill="url(#pcCostFill)" />
-            <path d={profitAreaD} fill="url(#pcProfitFill)" />
-            <polyline
-              points={costLinePts}
-              fill="none"
-              stroke="#94a3b8"
-              strokeWidth="2.5"
-              strokeLinejoin="round"
-              strokeLinecap="round"
-              vectorEffect="non-scaling-stroke"
-            />
-            <polyline
-              points={profitLinePts}
-              fill="none"
-              stroke="var(--success,#0a8f0c)"
-              strokeWidth="2.5"
-              strokeLinejoin="round"
-              strokeLinecap="round"
-              vectorEffect="non-scaling-stroke"
-            />
-            {cols.map((c, i) => (
-              <g key={i}>
-                <circle
-                  cx={ax(i)}
-                  cy={ay(c.cost)}
-                  r={hover === i ? 4 : 2.4}
-                  fill="#fff"
-                  stroke="#94a3b8"
-                  strokeWidth="2"
-                  vectorEffect="non-scaling-stroke"
-                />
-                <circle
-                  cx={ax(i)}
-                  cy={ay(c.profit)}
-                  r={hover === i ? 4 : 2.4}
-                  fill="#fff"
-                  stroke="var(--success,#0a8f0c)"
-                  strokeWidth="2"
-                  vectorEffect="non-scaling-stroke"
-                />
-              </g>
-            ))}
-          </svg>
+            <svg
+              className="pc-area-svg"
+              viewBox={`0 0 ${AW} ${AH}`}
+              preserveAspectRatio="none"
+              role="img"
+            >
+              <defs>
+                <linearGradient id="pcCostFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="rgba(148,163,184,0.30)" />
+                  <stop offset="100%" stopColor="rgba(148,163,184,0)" />
+                </linearGradient>
+                <linearGradient id="pcProfitFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="rgba(10,143,12,0.30)" />
+                  <stop offset="100%" stopColor="rgba(10,143,12,0)" />
+                </linearGradient>
+              </defs>
+              {/* zero baseline */}
+              <line
+                x1="0"
+                y1={aZero}
+                x2={AW}
+                y2={aZero}
+                stroke="var(--hairline,#ececec)"
+                strokeWidth="1"
+                vectorEffect="non-scaling-stroke"
+              />
+              <path d={costAreaD} fill="url(#pcCostFill)" />
+              <path d={profitAreaD} fill="url(#pcProfitFill)" />
+              <polyline
+                points={costLinePts}
+                fill="none"
+                stroke="#94a3b8"
+                strokeWidth="2.5"
+                strokeLinejoin="round"
+                strokeLinecap="round"
+                vectorEffect="non-scaling-stroke"
+              />
+              <polyline
+                points={profitLinePts}
+                fill="none"
+                stroke="var(--success,#0a8f0c)"
+                strokeWidth="2.5"
+                strokeLinejoin="round"
+                strokeLinecap="round"
+                vectorEffect="non-scaling-stroke"
+              />
+              {cols.map((c, i) => (
+                <g key={i}>
+                  <circle
+                    cx={ax(i)}
+                    cy={ay(c.cost)}
+                    r={hover === i ? 4 : 2.4}
+                    fill="#fff"
+                    stroke="#94a3b8"
+                    strokeWidth="2"
+                    vectorEffect="non-scaling-stroke"
+                  />
+                  <circle
+                    cx={ax(i)}
+                    cy={ay(c.profit)}
+                    r={hover === i ? 4 : 2.4}
+                    fill="#fff"
+                    stroke="var(--success,#0a8f0c)"
+                    strokeWidth="2"
+                    vectorEffect="non-scaling-stroke"
+                  />
+                </g>
+              ))}
+            </svg>
 
-          {/* Transparent hover columns + x-axis labels overlaid on the chart */}
-          <div className="pc-area-cols">
+            {/* Transparent hover columns + x-axis labels overlaid on the chart */}
+            <div className="pc-area-cols">
+              {cols.map((c, i) => {
+                const tipSide =
+                  i >= cols.length - 2
+                    ? "pc-tip-right"
+                    : i <= 1
+                      ? "pc-tip-left"
+                      : "";
+                return (
+                  <div
+                    key={i}
+                    className={`pc-acol${hover === i ? " on" : ""}`}
+                    onMouseEnter={() => setHover(i)}
+                    onMouseLeave={() => setHover((h) => (h === i ? null : h))}
+                    onClick={() => setHover((h) => (h === i ? null : i))}
+                  >
+                    {hover === i && (
+                      <div className={`pc-tip ${tipSide}`}>
+                        <div className="pc-tip-h">{c.hint}</div>
+                        <div className="pc-tip-r">
+                          <span>Revenue</span>
+                          <b>₹{c.rev.toLocaleString()}</b>
+                        </div>
+                        <div className="pc-tip-r">
+                          <span>Cost</span>
+                          <b>₹{c.cost.toLocaleString()}</b>
+                        </div>
+                        <div className="pc-tip-r">
+                          <span>Profit</span>
+                          <b className={c.profit >= 0 ? "pc-pos" : "pc-neg"}>
+                            ₹{c.profit.toLocaleString()}
+                          </b>
+                        </div>
+                        <div className="pc-tip-r">
+                          <span>Orders</span>
+                          <b>{c.n || 0}</b>
+                        </div>
+                        <div className="pc-tip-r">
+                          <span>Books</span>
+                          <b>{c.qty || 0}</b>
+                        </div>
+                      </div>
+                    )}
+                    <span className="pc-lbl">{c.label}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className={`wk-scroll ${period === "all" ? "pc-scroll-x" : ""}`}>
+          <div className={`pc-bars pc-bars-${period}`}>
             {cols.map((c, i) => {
               const tipSide =
                 i >= cols.length - 2
@@ -1586,7 +1672,7 @@ function ProfitCostChart({ orders, period = "month", offset = 0 }) {
               return (
                 <div
                   key={i}
-                  className={`pc-acol${hover === i ? " on" : ""}`}
+                  className="pc-col"
                   onMouseEnter={() => setHover(i)}
                   onMouseLeave={() => setHover((h) => (h === i ? null : h))}
                   onClick={() => setHover((h) => (h === i ? null : i))}
@@ -1618,76 +1704,24 @@ function ProfitCostChart({ orders, period = "month", offset = 0 }) {
                       </div>
                     </div>
                   )}
+                  <div className="pc-bar-track">
+                    <div
+                      className="pc-seg pc-seg-profit"
+                      style={{
+                        height: `${(Math.max(0, c.profit) / maxRev) * 100}%`,
+                      }}
+                    />
+                    <div
+                      className="pc-seg pc-seg-cost"
+                      style={{ height: `${(c.cost / maxRev) * 100}%` }}
+                    />
+                  </div>
                   <span className="pc-lbl">{c.label}</span>
                 </div>
               );
             })}
           </div>
         </div>
-      </div>
-      ) : (
-      <div className={`wk-scroll ${period === "all" ? "pc-scroll-x" : ""}`}>
-        <div className={`pc-bars pc-bars-${period}`}>
-          {cols.map((c, i) => {
-            const tipSide =
-              i >= cols.length - 2
-                ? "pc-tip-right"
-                : i <= 1
-                  ? "pc-tip-left"
-                  : "";
-            return (
-              <div
-                key={i}
-                className="pc-col"
-                onMouseEnter={() => setHover(i)}
-                onMouseLeave={() => setHover((h) => (h === i ? null : h))}
-                onClick={() => setHover((h) => (h === i ? null : i))}
-              >
-                {hover === i && (
-                  <div className={`pc-tip ${tipSide}`}>
-                    <div className="pc-tip-h">{c.hint}</div>
-                    <div className="pc-tip-r">
-                      <span>Revenue</span>
-                      <b>₹{c.rev.toLocaleString()}</b>
-                    </div>
-                    <div className="pc-tip-r">
-                      <span>Cost</span>
-                      <b>₹{c.cost.toLocaleString()}</b>
-                    </div>
-                    <div className="pc-tip-r">
-                      <span>Profit</span>
-                      <b className={c.profit >= 0 ? "pc-pos" : "pc-neg"}>
-                        ₹{c.profit.toLocaleString()}
-                      </b>
-                    </div>
-                    <div className="pc-tip-r">
-                      <span>Orders</span>
-                      <b>{c.n || 0}</b>
-                    </div>
-                    <div className="pc-tip-r">
-                      <span>Books</span>
-                      <b>{c.qty || 0}</b>
-                    </div>
-                  </div>
-                )}
-                <div className="pc-bar-track">
-                  <div
-                    className="pc-seg pc-seg-profit"
-                    style={{
-                      height: `${(Math.max(0, c.profit) / maxRev) * 100}%`,
-                    }}
-                  />
-                  <div
-                    className="pc-seg pc-seg-cost"
-                    style={{ height: `${(c.cost / maxRev) * 100}%` }}
-                  />
-                </div>
-                <span className="pc-lbl">{c.label}</span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
       )}
     </div>
   );
@@ -1751,9 +1785,7 @@ function RunRateChart({ orders }) {
     const s = seriesByMonth[m];
     return n + (s.length ? s[s.length - 1].cum : 0);
   }, 0);
-  const dayOfYear = Math.ceil(
-    (now - new Date(year, 0, 0)) / 86400000,
-  );
+  const dayOfYear = Math.ceil((now - new Date(year, 0, 0)) / 86400000);
   const perDayAvg = totalYear / Math.max(1, dayOfYear);
   let bestDay = 0;
   months.forEach((m) =>
@@ -1824,7 +1856,13 @@ function RunRateChart({ orders }) {
 
           {/* X-axis date labels */}
           {dayLabels.map((d) => (
-            <text key={d} x={x(d)} y={H - 8} textAnchor="middle" className="rr-x">
+            <text
+              key={d}
+              x={x(d)}
+              y={H - 8}
+              textAnchor="middle"
+              className="rr-x"
+            >
               {d}
             </text>
           ))}
@@ -1922,8 +1960,7 @@ function RunRateChart({ orders }) {
               className="rr-swatch"
               style={{ background: COLORS[m % COLORS.length] }}
             />
-            {MONTH_LABELS[m]}{" "}
-            <b>{seriesByMonth[m].slice(-1)[0]?.cum || 0}</b>
+            {MONTH_LABELS[m]} <b>{seriesByMonth[m].slice(-1)[0]?.cum || 0}</b>
           </span>
         ))}
       </div>
@@ -1971,8 +2008,18 @@ function WeeklyBarChart({ orders }) {
   });
 
   const MON = [
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
   ];
 
   let cols = [];
@@ -2204,11 +2251,26 @@ function CalculatorModal({ onClose }) {
   };
 
   const keys = [
-    "C", "( )", "%", "÷",
-    "7", "8", "9", "×",
-    "4", "5", "6", "−",
-    "1", "2", "3", "+",
-    "0", ".", "⌫", "=",
+    "C",
+    "( )",
+    "%",
+    "÷",
+    "7",
+    "8",
+    "9",
+    "×",
+    "4",
+    "5",
+    "6",
+    "−",
+    "1",
+    "2",
+    "3",
+    "+",
+    "0",
+    ".",
+    "⌫",
+    "=",
   ];
   const handleKey = (k) => {
     if (k === "C") return clearAll();
@@ -2218,9 +2280,7 @@ function CalculatorModal({ onClose }) {
       const opens = (expr.match(/\(/g) || []).length;
       const closes = (expr.match(/\)/g) || []).length;
       const last = expr.slice(-1);
-      return push(
-        opens > closes && /[0-9)]/.test(last) ? ")" : "(",
-      );
+      return push(opens > closes && /[0-9)]/.test(last) ? ")" : "(");
     }
     const map = { "÷": "/", "×": "*", "−": "-" };
     push(map[k] || k);
@@ -2343,9 +2403,7 @@ export default function ManageOrdersPage() {
   const orderNotesHydrated = useRef(false);
   useEffect(() => {
     try {
-      const saved = JSON.parse(
-        localStorage.getItem("mo_order_notes") || "{}",
-      );
+      const saved = JSON.parse(localStorage.getItem("mo_order_notes") || "{}");
       if (saved && typeof saved === "object") setOrderNotes(saved);
     } catch {}
     orderNotesHydrated.current = true;
@@ -2445,9 +2503,7 @@ export default function ManageOrdersPage() {
   const loadPinnedTxns = () => {
     try {
       const saved = JSON.parse(localStorage.getItem("mo_txns") || "[]");
-      setPinnedTxns(
-        Array.isArray(saved) ? saved.filter((t) => t.pinned) : [],
-      );
+      setPinnedTxns(Array.isArray(saved) ? saved.filter((t) => t.pinned) : []);
     } catch {
       setPinnedTxns([]);
     }
@@ -2471,9 +2527,7 @@ export default function ManageOrdersPage() {
       ]);
     });
     const csv = rows
-      .map((r) =>
-        r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(","),
-      )
+      .map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(","))
       .join("\n");
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
@@ -2538,7 +2592,7 @@ export default function ManageOrdersPage() {
     if (!el || el.dataset.centered) return;
     el.dataset.centered = "1";
     requestAnimationFrame(() => {
-      const sc = el.closest(".an2-bars.scroll, .an2-pnl.scroll");
+      const sc = el.closest(".an2-bars.scroll,.an2-pnl.scroll");
       if (sc) {
         sc.scrollLeft = Math.max(
           0,
@@ -2640,7 +2694,10 @@ export default function ManageOrdersPage() {
       .match(/[A-Z]{2}\d{9}IN/g);
     return found ? [...new Set(found)] : [];
   };
-  const sidUp = (v) => String(v || "").trim().toUpperCase();
+  const sidUp = (v) =>
+    String(v || "")
+      .trim()
+      .toUpperCase();
   const addTrackingBatch = () => {
     const ids = extractArticleNumbers(trackInput);
     if (ids.length === 0) {
@@ -2927,7 +2984,7 @@ export default function ManageOrdersPage() {
     }
   }, []);
 
-  // First ever visit → set a baseline so we don't flag every order as new
+  // First ever visit set a baseline so we don't flag every order as new
   useEffect(() => {
     if (!orders.length || seenIds !== null) return;
     const ids = orders.map((o) => o["Order ID"]).filter(Boolean);
@@ -2991,10 +3048,10 @@ export default function ManageOrdersPage() {
         @page { margin: 10mm; }
         * { box-sizing: border-box; }
         body { font-family: system-ui, sans-serif; margin: 0; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10mm; padding: 10mm; }
-        .cell { break-inside: avoid; text-align: center; }
-        .cell img { width: 100%; height: auto; display: block; }
-        .ph { border: 1px dashed #999; padding: 60px 10px; color: #666; font-size: 13px; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10mm; padding: 10mm; }
+.cell { break-inside: avoid; text-align: center; }
+.cell img { width: 100%; height: auto; display: block; }
+.ph { border: 1px dashed #999; padding: 60px 10px; color: #666; font-size: 13px; }
       </style></head>
       <body><div class="grid">${html}</div>
       <script>window.onload=function(){setTimeout(function(){window.print();},400);};<\/script>
@@ -3045,7 +3102,7 @@ export default function ManageOrdersPage() {
     codAmount: o.revenue,
   });
 
-  // Each order → ONE combined frame (India Post CDF + From/To label together).
+  // Each order ONE combined frame (India Post CDF + From/To label together).
   // "format" is "pdf" (all frames in one ordered file, best for printing) or
   // "png" (one image per order).
   const downloadFormsFor = (orders, format, filename) => {
@@ -3058,7 +3115,7 @@ export default function ManageOrdersPage() {
     }
   };
 
-  // Selected rows (table view) → combined shipping form(s).
+  // Selected rows (table view) combined shipping form(s).
   const downloadSelectedForms = (format) => {
     const chosen = filteredOrders.filter((o) =>
       selectedIds.includes(o["Order ID"]),
@@ -3070,7 +3127,7 @@ export default function ManageOrdersPage() {
     );
   };
 
-  // Every order in the current filter → combined shipping form(s).
+  // Every order in the current filter combined shipping form(s).
   const downloadAllForms = (format) => {
     downloadFormsFor(
       filteredOrders,
@@ -3139,11 +3196,7 @@ export default function ManageOrdersPage() {
         ctx.strokeRect(dx, dy, CW, CH);
         ctx.fillStyle = "#666";
         ctx.font = "13px sans-serif";
-        ctx.fillText(
-          (items[idx].name || "").slice(0, 22),
-          dx + 8,
-          dy + CH / 2,
-        );
+        ctx.fillText((items[idx].name || "").slice(0, 22), dx + 8, dy + CH / 2);
       }
     });
     canvas.toBlob((blob) => {
@@ -3307,7 +3360,7 @@ export default function ManageOrdersPage() {
     [orders],
   );
 
-  // Orders received per calendar day → { "YYYY-MM-DD": count }
+  // Orders received per calendar day { "YYYY-MM-DD": count }
   const ordersByDay = useMemo(() => {
     const map = {};
     orders.forEach((o) => {
@@ -3575,7 +3628,7 @@ export default function ManageOrdersPage() {
     };
   }, [orders]);
 
-  // 4 — Total orders bar chart buckets (week→days, month→dates, year→months).
+  // 4 — Total orders bar chart buckets (weekdays, monthdates, yearmonths).
   const ordersBar = useMemo(() => {
     const start = periodWindow.start;
     const tKey = dayKey(new Date());
@@ -3602,10 +3655,7 @@ export default function ManageOrdersPage() {
       });
       return days;
     }
-    if (
-      (analyticsPeriod === "month" || analyticsPeriod === "day") &&
-      start
-    ) {
+    if ((analyticsPeriod === "month" || analyticsPeriod === "day") && start) {
       const mStart = new Date(start.getFullYear(), start.getMonth(), 1);
       const mEnd = new Date(start.getFullYear(), start.getMonth() + 1, 1);
       const days = [];
@@ -3629,7 +3679,7 @@ export default function ManageOrdersPage() {
       });
       return days;
     }
-    // year / all → 12 months
+    // year / all 12 months
     const yr = start ? start.getFullYear() : nowY;
     const months = MONTH_LABELS.map((m, i) => ({
       label: m,
@@ -3654,8 +3704,8 @@ export default function ManageOrdersPage() {
     return arr;
   }, [anOrders]);
 
-  // 7 — Per-day revenue / cost / profit. Week & month → the whole window.
-  // Year → the month picked in the chart's dropdown (horizontally scrollable).
+  // 7 — Per-day revenue / cost / profit. Week & month the whole window.
+  // Year the month picked in the chart's dropdown (horizontally scrollable).
   const pnlDays = useMemo(() => {
     let start, end;
     const win = periodWindow.start;
@@ -3764,13 +3814,12 @@ export default function ManageOrdersPage() {
     const msDay = 86400000;
     const start = periodWindow.start;
     const end = periodWindow.end;
-    // No bounded window (all-time / day) → report the observed daily pace only.
+    // No bounded window (all-time / day) report the observed daily pace only.
     if (analyticsPeriod === "all" || !start || !end) {
       const activeDays = Math.max(
         1,
-        new Set(
-          anOrders.map((o) => dayKey(getOrderDate(o))).filter(Boolean),
-        ).size,
+        new Set(anOrders.map((o) => dayKey(getOrderDate(o))).filter(Boolean))
+          .size,
       );
       return {
         hasForecast: false,
@@ -3790,7 +3839,8 @@ export default function ManageOrdersPage() {
     let elapsedDays;
     if (complete) elapsedDays = totalDays;
     else if (now < start) elapsedDays = 0;
-    else elapsedDays = Math.min(totalDays, Math.floor((now - start) / msDay) + 1);
+    else
+      elapsedDays = Math.min(totalDays, Math.floor((now - start) / msDay) + 1);
     const eDays = Math.max(1, elapsedDays);
     const revPerDay = overview.revenue / eDays;
     const ordPerDay = overview.n / eDays;
@@ -3865,7 +3915,7 @@ export default function ManageOrdersPage() {
   }, [orders]);
 
   // ── Users / customer management ────────────────────────────────────────
-  // Aggregate every order by phone number → one record per customer, with
+  // Aggregate every order by phone number one record per customer, with
   // their spend, repeat status, average order size, last order and wallet.
   const userList = useMemo(() => {
     const map = {};
@@ -3917,7 +3967,7 @@ export default function ManageOrdersPage() {
           // SUM the ledger — rewards are positive, wallet spent is negative.
           // Matches the customer-facing balance (fetchWalletBalance sums too).
           u.wallet += w;
-          // Earliest positive credit → how long the balance has been held.
+          // Earliest positive credit how long the balance has been held.
           if (w > 0 && t > 0 && t < u.walletFirstCreditT) {
             u.walletFirstCreditT = t;
           }
@@ -3936,7 +3986,10 @@ export default function ManageOrdersPage() {
           // Days the wallet balance has been held (from earliest credit).
           holdingDays:
             wallet > 0 && isFinite(u.walletFirstCreditT)
-              ? Math.max(0, Math.floor((nowT - u.walletFirstCreditT) / 86400000))
+              ? Math.max(
+                  0,
+                  Math.floor((nowT - u.walletFirstCreditT) / 86400000),
+                )
               : null,
         };
       })
@@ -4192,9 +4245,9 @@ export default function ManageOrdersPage() {
 
     // Preserve the original order date, do NOT overwrite with the current time.
     // The raw value from gviz can be either the serialized form
-    //   "Date(2026,4,20,23,14,14)"
+    // "Date(2026,4,20,23,14,14)"
     // or the plain-text form
-    //   "20/05/2026 23:14:14"
+    // "20/05/2026 23:14:14"
     // We normalize both via parseAnyDate, then re-emit in the same
     // `dd/mm/yyyy hh:mm:ss` format that new orders use, so the sheet stays
     // consistent. If parsing fails for any reason, fall back to the raw value
@@ -4571,8 +4624,7 @@ export default function ManageOrdersPage() {
   const listOrders = filteredOrders.filter((o) => {
     if (orderPickFilter === "picked") return isOrderFullyPicked(o);
     if (orderPickFilter === "pending") return !isOrderFullyPicked(o);
-    if (orderPickFilter === "noted")
-      return !!orderNotes[o["Order ID"]];
+    if (orderPickFilter === "noted") return !!orderNotes[o["Order ID"]];
     return true;
   });
   const notedOrdersCount = filteredOrders.filter(
@@ -4794,7 +4846,8 @@ export default function ManageOrdersPage() {
                 <span className="an2-stat-val">{overview.n}</span>
                 <span className="an2-stat-lbl">Orders</span>
                 <span className="an2-stat-x">
-                  {overview.delivered} delivered · {overview.cancelled} cancelled
+                  {overview.delivered} delivered · {overview.cancelled}{" "}
+                  cancelled
                 </span>
               </div>
               <div className="an2-stat s-rev">
@@ -4834,7 +4887,8 @@ export default function ManageOrdersPage() {
                   {Math.abs(overview.profit).toLocaleString()}
                 </span>
                 <span className="an2-stat-lbl">
-                  {overview.profit >= 0 ? "Profit" : "Loss"} · {overview.margin}%
+                  {overview.profit >= 0 ? "Profit" : "Loss"} · {overview.margin}
+                  %
                 </span>
                 <span className="an2-stat-x">
                   Net {netProfit >= 0 ? "+" : "−"}₹
@@ -4930,7 +4984,9 @@ export default function ManageOrdersPage() {
               {projection.hasForecast && (
                 <div className="an2-proj-prog">
                   <div className="an2-proj-prog-head">
-                    <span>Achieved {projection.progressPct}% of projection</span>
+                    <span>
+                      Achieved {projection.progressPct}% of projection
+                    </span>
                     <span>
                       ₹{projection.actualRev.toLocaleString()} / ₹
                       {projection.projectedRev.toLocaleString()}
@@ -5082,7 +5138,8 @@ export default function ManageOrdersPage() {
                 const linePath = (pts) =>
                   pts
                     .map(
-                      (p, i) => `${i === 0 ? "M" : "L"}${xOf(p.day)},${yOf(p.value)}`,
+                      (p, i) =>
+                        `${i === 0 ? "M" : "L"}${xOf(p.day)},${yOf(p.value)}`,
                     )
                     .join(" ");
                 const cur = months.find((m) => m.isCurrent);
@@ -5172,10 +5229,7 @@ export default function ManageOrdersPage() {
                       )}
 
                       {hoverDay && hoverRows.length > 0 && (
-                        <div
-                          className="an2-mrr-tip"
-                          style={{ left: mrrTip.x }}
-                        >
+                        <div className="an2-mrr-tip" style={{ left: mrrTip.x }}>
                           <div className="an2-mrr-tip-day">
                             Day {hoverDay} · {year}
                           </div>
@@ -5257,7 +5311,9 @@ export default function ManageOrdersPage() {
               {(() => {
                 const posMax = Math.max(
                   1,
-                  ...pnlDays.map((d) => Math.max(d.cost, d.profit > 0 ? d.profit : 0)),
+                  ...pnlDays.map((d) =>
+                    Math.max(d.cost, d.profit > 0 ? d.profit : 0),
+                  ),
                 );
                 const negMax = Math.max(
                   1,
@@ -5404,7 +5460,9 @@ export default function ManageOrdersPage() {
               <div className="an2-bp-sum">
                 <div className="an2-bp-sc">
                   <span className="an2-bp-sc-l">Books sold</span>
-                  <strong className="an2-bp-sc-v">{bookStats.totals.qty}</strong>
+                  <strong className="an2-bp-sc-v">
+                    {bookStats.totals.qty}
+                  </strong>
                 </div>
                 <div className="an2-bp-sc">
                   <span className="an2-bp-sc-l">Revenue</span>
@@ -5452,14 +5510,21 @@ export default function ManageOrdersPage() {
                         <td>
                           <span className="an2-bp-name">{r.name}</span>
                           {!r.matched && (
-                            <span className="an2-bp-warn" title="No catalogue cost — profit assumes ₹0 cost">
+                            <span
+                              className="an2-bp-warn"
+                              title="No catalogue cost — profit assumes ₹0 cost"
+                            >
                               cost?
                             </span>
                           )}
                         </td>
                         <td className="ta-r">{r.qty}</td>
-                        <td className="ta-r">₹{Math.round(r.revenue).toLocaleString()}</td>
-                        <td className="ta-r">₹{Math.round(r.cost).toLocaleString()}</td>
+                        <td className="ta-r">
+                          ₹{Math.round(r.revenue).toLocaleString()}
+                        </td>
+                        <td className="ta-r">
+                          ₹{Math.round(r.cost).toLocaleString()}
+                        </td>
                         <td
                           className={`ta-r an2-bp-p ${r.profit >= 0 ? "v-pos" : "v-neg"}`}
                         >
@@ -5493,12 +5558,12 @@ export default function ManageOrdersPage() {
                       </div>
                       <div className="an2-mix-legend">
                         <span className="an2-leg">
-                          <i className="an2-dot d-cod" /> COD · {overview.codN} (
-                          {codPct}%)
+                          <i className="an2-dot d-cod" /> COD · {overview.codN}{" "}
+                          ({codPct}%)
                         </span>
                         <span className="an2-leg">
-                          <i className="an2-dot d-upi" /> UPI · {overview.upiN} (
-                          {100 - codPct}%)
+                          <i className="an2-dot d-upi" /> UPI · {overview.upiN}{" "}
+                          ({100 - codPct}%)
                         </span>
                       </div>
                     </>
@@ -5512,7 +5577,9 @@ export default function ManageOrdersPage() {
               >
                 <div className="an2-cust">
                   <div className="an2-cust-item">
-                    <span className="an2-cust-num">{insights.uniqueCustomers}</span>
+                    <span className="an2-cust-num">
+                      {insights.uniqueCustomers}
+                    </span>
                     <span className="an2-cust-lbl">Unique customers</span>
                   </div>
                   <div className="an2-cust-item">
@@ -5570,230 +5637,244 @@ export default function ManageOrdersPage() {
           </div>
         )}
 
-
         {/* Search + Filter row — inside the Orders tab only */}
         {activeTab === "orders" && (
-        <div className="admin-search">
-          {(() => {
-            const chips = [];
-            if (statusFilter !== "active")
-              chips.push({
-                key: "status",
-                label: `Status: ${statusFilter === "all" ? "All" : statusFilter}`,
-                clear: () => setStatusFilter("active"),
-              });
-            if (paymentFilter !== "all")
-              chips.push({
-                key: "pay",
-                label: `Payment: ${paymentFilter}`,
-                clear: () => setPaymentFilter("all"),
-              });
-            if (dateFrom)
-              chips.push({
-                key: "from",
-                label: `From: ${dateFrom}`,
-                clear: () => setDateFrom(""),
-              });
-            if (dateTo)
-              chips.push({
-                key: "to",
-                label: `To: ${dateTo}`,
-                clear: () => setDateTo(""),
-              });
-            if (selectedDate)
-              chips.push({
-                key: "date",
-                label: `Date: ${selectedDate}`,
-                clear: () => setSelectedDate(""),
-              });
-            const clearAll = () => {
-              setStatusFilter("active");
-              setPaymentFilter("all");
-              setDateFrom("");
-              setDateTo("");
-              setSelectedDate("");
-            };
-            return (
-              <>
-                <div className="admin-search-bar">
-                  <div className="admin-search-input">
-                    <Search size={16} />
-                    <input
-                      type="text"
-                      placeholder="Search by name, order ID, phone, or shipping ID..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                    {searchQuery && (
-                      <button
-                        type="button"
-                        className="admin-search-x"
-                        onClick={() => setSearchQuery("")}
-                        aria-label="Clear search"
-                      >
-                        <X size={15} />
-                      </button>
-                    )}
-                  </div>
-                  <button
-                    type="button"
-                    className={`admin-filter-btn${showFilters ? " open" : ""}`}
-                    onClick={() => setShowFilters(!showFilters)}
-                    aria-expanded={showFilters}
-                  >
-                    <Filter size={16} />
-                    Filters
-                    {chips.length > 0 && (
-                      <span className="admin-filter-count">{chips.length}</span>
-                    )}
-                  </button>
-                </div>
-
-                {chips.length > 0 && (
-                  <div className="admin-chips">
-                    {chips.map((c) => (
-                      <span className="admin-chip" key={c.key}>
-                        {c.label}
+          <div className="admin-search">
+            {(() => {
+              const chips = [];
+              if (statusFilter !== "active")
+                chips.push({
+                  key: "status",
+                  label: `Status: ${statusFilter === "all" ? "All" : statusFilter}`,
+                  clear: () => setStatusFilter("active"),
+                });
+              if (paymentFilter !== "all")
+                chips.push({
+                  key: "pay",
+                  label: `Payment: ${paymentFilter}`,
+                  clear: () => setPaymentFilter("all"),
+                });
+              if (dateFrom)
+                chips.push({
+                  key: "from",
+                  label: `From: ${dateFrom}`,
+                  clear: () => setDateFrom(""),
+                });
+              if (dateTo)
+                chips.push({
+                  key: "to",
+                  label: `To: ${dateTo}`,
+                  clear: () => setDateTo(""),
+                });
+              if (selectedDate)
+                chips.push({
+                  key: "date",
+                  label: `Date: ${selectedDate}`,
+                  clear: () => setSelectedDate(""),
+                });
+              const clearAll = () => {
+                setStatusFilter("active");
+                setPaymentFilter("all");
+                setDateFrom("");
+                setDateTo("");
+                setSelectedDate("");
+              };
+              return (
+                <>
+                  <div className="admin-search-bar">
+                    <div className="admin-search-input">
+                      <Search size={16} />
+                      <input
+                        type="text"
+                        placeholder="Search by name, order ID, phone, or shipping ID..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                      />
+                      {searchQuery && (
                         <button
                           type="button"
-                          onClick={c.clear}
-                          aria-label={`Remove ${c.label}`}
+                          className="admin-search-x"
+                          onClick={() => setSearchQuery("")}
+                          aria-label="Clear search"
                         >
-                          <X size={12} />
+                          <X size={15} />
                         </button>
-                      </span>
-                    ))}
+                      )}
+                    </div>
                     <button
                       type="button"
-                      className="admin-chips-clear"
-                      onClick={clearAll}
+                      className={`admin-filter-btn${showFilters ? " open" : ""}`}
+                      onClick={() => setShowFilters(!showFilters)}
+                      aria-expanded={showFilters}
                     >
-                      Clear all
+                      <Filter size={16} />
+                      Filters
+                      {chips.length > 0 && (
+                        <span className="admin-filter-count">
+                          {chips.length}
+                        </span>
+                      )}
                     </button>
                   </div>
-                )}
 
-                {/* Filter dropdown panel */}
-                <AnimatePresence>
-                  {showFilters && (
-                    <motion.div
-                      className="admin-filter-panel"
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <div className="admin-filter-head">
-                        <span className="admin-filter-title">
-                          <SlidersHorizontal size={15} /> Filters
+                  {chips.length > 0 && (
+                    <div className="admin-chips">
+                      {chips.map((c) => (
+                        <span className="admin-chip" key={c.key}>
+                          {c.label}
+                          <button
+                            type="button"
+                            onClick={c.clear}
+                            aria-label={`Remove ${c.label}`}
+                          >
+                            <X size={12} />
+                          </button>
                         </span>
-                        <button
-                          type="button"
-                          className="admin-filter-x"
-                          onClick={() => setShowFilters(false)}
-                          aria-label="Close filters"
-                        >
-                          <X size={16} />
-                        </button>
-                      </div>
-                      <div className="admin-filter-grid">
-                  <div className="admin-field">
-                    <label className="admin-field-label">Analytics period</label>
-                    <div className="admin-select-wrap">
-                      <select
-                        className="admin-select"
-                        value={analyticsPeriod}
-                        onChange={(e) => selectPeriod(e.target.value)}
+                      ))}
+                      <button
+                        type="button"
+                        className="admin-chips-clear"
+                        onClick={clearAll}
                       >
-                        <option value="day">Day</option>
-                        <option value="week">Week</option>
-                        <option value="month">Month</option>
-                        <option value="year">Year</option>
-                        <option value="all">All time</option>
-                      </select>
+                        Clear all
+                      </button>
                     </div>
-                  </div>
-                  <div className="admin-field">
-                    <label className="admin-field-label">Order Status</label>
-                    <div className="admin-select-wrap">
-                      <select
-                        className="admin-select"
-                        value={statusFilter}
-                        onChange={(e) => setStatusFilter(e.target.value)}
-                      >
-                        <option value="active">
-                          Active (Pending + Processing + Getting Shipped)
-                        </option>
-                        <option value="all">All Statuses</option>
-                        {distinctStatuses.map((s) => (
-                          <option key={s} value={s}>
-                            {s}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                  <div className="admin-field">
-                    <label className="admin-field-label">Payment Type</label>
-                    <div className="admin-select-wrap">
-                      <select
-                        className="admin-select"
-                        value={paymentFilter}
-                        onChange={(e) => setPaymentFilter(e.target.value)}
-                      >
-                        <option value="all">All Payments</option>
-                        {distinctPayments.map((p) => (
-                          <option key={p} value={p}>
-                            {p}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                  <div className="admin-field">
-                    <label className="admin-field-label">From date</label>
-                    <input
-                      type="date"
-                      className="admin-input"
-                      value={dateFrom}
-                      onChange={(e) => setDateFrom(e.target.value)}
-                    />
-                  </div>
-                  <div className="admin-field">
-                    <label className="admin-field-label">To date</label>
-                    <input
-                      type="date"
-                      className="admin-input"
-                      value={dateTo}
-                      onChange={(e) => setDateTo(e.target.value)}
-                    />
-                  </div>
-                      </div>
-
-                      <div className="admin-filter-foot">
-                        <button
-                          type="button"
-                          className="admin-filter-reset"
-                          disabled={chips.length === 0}
-                          onClick={clearAll}
-                        >
-                          <X size={14} /> Reset
-                        </button>
-                        <button
-                          type="button"
-                          className="admin-filter-done"
-                          onClick={() => setShowFilters(false)}
-                        >
-                          Done
-                        </button>
-                      </div>
-                    </motion.div>
                   )}
-                </AnimatePresence>
-              </>
-            );
-          })()}
-        </div>
+
+                  {/* Filter dropdown panel */}
+                  <AnimatePresence>
+                    {showFilters && (
+                      <motion.div
+                        className="admin-filter-panel"
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <div className="admin-filter-head">
+                          <span className="admin-filter-title">
+                            <SlidersHorizontal size={15} /> Filters
+                          </span>
+                          <button
+                            type="button"
+                            className="admin-filter-x"
+                            onClick={() => setShowFilters(false)}
+                            aria-label="Close filters"
+                          >
+                            <X size={16} />
+                          </button>
+                        </div>
+                        <div className="admin-filter-grid">
+                          <div className="admin-field">
+                            <label className="admin-field-label">
+                              Analytics period
+                            </label>
+                            <div className="admin-select-wrap">
+                              <select
+                                className="admin-select"
+                                value={analyticsPeriod}
+                                onChange={(e) => selectPeriod(e.target.value)}
+                              >
+                                <option value="day">Day</option>
+                                <option value="week">Week</option>
+                                <option value="month">Month</option>
+                                <option value="year">Year</option>
+                                <option value="all">All time</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div className="admin-field">
+                            <label className="admin-field-label">
+                              Order Status
+                            </label>
+                            <div className="admin-select-wrap">
+                              <select
+                                className="admin-select"
+                                value={statusFilter}
+                                onChange={(e) =>
+                                  setStatusFilter(e.target.value)
+                                }
+                              >
+                                <option value="active">
+                                  Active (Pending + Processing + Getting
+                                  Shipped)
+                                </option>
+                                <option value="all">All Statuses</option>
+                                {distinctStatuses.map((s) => (
+                                  <option key={s} value={s}>
+                                    {s}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          </div>
+                          <div className="admin-field">
+                            <label className="admin-field-label">
+                              Payment Type
+                            </label>
+                            <div className="admin-select-wrap">
+                              <select
+                                className="admin-select"
+                                value={paymentFilter}
+                                onChange={(e) =>
+                                  setPaymentFilter(e.target.value)
+                                }
+                              >
+                                <option value="all">All Payments</option>
+                                {distinctPayments.map((p) => (
+                                  <option key={p} value={p}>
+                                    {p}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          </div>
+                          <div className="admin-field">
+                            <label className="admin-field-label">
+                              From date
+                            </label>
+                            <input
+                              type="date"
+                              className="admin-input"
+                              value={dateFrom}
+                              onChange={(e) => setDateFrom(e.target.value)}
+                            />
+                          </div>
+                          <div className="admin-field">
+                            <label className="admin-field-label">To date</label>
+                            <input
+                              type="date"
+                              className="admin-input"
+                              value={dateTo}
+                              onChange={(e) => setDateTo(e.target.value)}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="admin-filter-foot">
+                          <button
+                            type="button"
+                            className="admin-filter-reset"
+                            disabled={chips.length === 0}
+                            onClick={clearAll}
+                          >
+                            <X size={14} /> Reset
+                          </button>
+                          <button
+                            type="button"
+                            className="admin-filter-done"
+                            onClick={() => setShowFilters(false)}
+                          >
+                            Done
+                          </button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </>
+              );
+            })()}
+          </div>
         )}
 
         {/* ===== Users (customer management) ===== */}
@@ -5913,8 +5994,8 @@ export default function ManageOrdersPage() {
                   title="Sort customers"
                 >
                   <option value="recent">Sort: Recent</option>
-                  <option value="walletDesc">Wallet: High → Low</option>
-                  <option value="walletAsc">Wallet: Low → High</option>
+                  <option value="walletDesc">Wallet: High Low</option>
+                  <option value="walletAsc">Wallet: Low High</option>
                 </select>
               </div>
               <div className="um-list">
@@ -5983,7 +6064,7 @@ export default function ManageOrdersPage() {
                           onClick={() =>
                             openWhatsApp(
                               u.phone,
-                              `Hi${u.name ? " " + u.name.split(" ")[0] : ""}! 🎁 You have ₹${u.wallet} waiting in your TheBookX wallet. Use it on your next order before it expires — view your balance & orders here: ${PROFILE_URL}`,
+                              `Hi${u.name ? " " + u.name.split(" ")[0] : ""}! You have ₹${u.wallet} waiting in your TheBookX wallet. Use it on your next order before it expires — view your balance & orders here: ${PROFILE_URL}`,
                             )
                           }
                         >
@@ -6022,7 +6103,7 @@ export default function ManageOrdersPage() {
                 className="admin-input mo-track-textarea"
                 rows={5}
                 placeholder={
-                  "Paste tracking IDs or the SMS text here…\ne.g. CX042819326IN  EY484883105IN  CM149478023IN"
+                  "Paste tracking IDs or the SMS text here…\ne.g. CX042819326IN EY484883105IN CM149478023IN"
                 }
                 value={trackInput}
                 onChange={(e) => setTrackInput(e.target.value)}
@@ -6030,7 +6111,9 @@ export default function ManageOrdersPage() {
               <div className="mo-track-paste-actions">
                 <span className="mo-track-hint">
                   {extractArticleNumbers(trackInput).length} ID
-                  {extractArticleNumbers(trackInput).length === 1 ? "" : "s"}{" "}
+                  {extractArticleNumbers(trackInput).length === 1
+                    ? ""
+                    : "s"}{" "}
                   detected
                 </span>
                 <button
@@ -6043,9 +6126,7 @@ export default function ManageOrdersPage() {
                 </button>
               </div>
             </div>
-            {trackError && (
-              <div className="mo-track-error">{trackError}</div>
-            )}
+            {trackError && <div className="mo-track-error">{trackError}</div>}
             {trackSummary && (
               <div className="mo-track-summary">
                 <span className="mo-track-chip ok">
@@ -6236,897 +6317,928 @@ export default function ManageOrdersPage() {
 
         {/* ===== Orders (accordion) ===== */}
         {activeTab === "orders" && (
-        <>
-
-        <Accordion
-          id="orders"
-          title="Orders"
-          open={accOpen.orders}
-          onToggle={toggleAcc}
-          right={<span className="acc-count">{filteredOrders.length}</span>}
-        >
-          {filteredOrders.length > 0 ? (
-            <div className="flex flex-col gap-12">
-              <div className="orders-list-header">
-                <span className="orders-count">
-                  {listOrders.length}{" "}
-                  {listOrders.length === 1 ? "Order" : "Orders"}
-                  <span className="orders-picked-stat">
-                    · {pickedOrdersCount}/{filteredOrders.length} picked
-                  </span>
-                </span>
-                <div className="orders-header-right mo-menu-wrap">
-                  <div className="mo-view-toggle mo-view-icons">
-                    <button
-                      type="button"
-                      className="mo-view-btn"
-                      onClick={() =>
-                        setSortOrder((s) => (s === "desc" ? "asc" : "desc"))
-                      }
-                      title={
-                        sortOrder === "desc"
-                          ? "Latest first (tap for oldest)"
-                          : "Oldest first (tap for latest)"
-                      }
-                      aria-label="Toggle sort order"
-                    >
-                      <motion.span
-                        animate={{ rotate: sortOrder === "desc" ? 0 : 180 }}
-                        transition={{
-                          type: "spring",
-                          stiffness: 320,
-                          damping: 22,
-                        }}
-                        style={{ display: "inline-flex" }}
-                      >
-                        <ArrowUpDown size={16} />
-                      </motion.span>
-                    </button>
-                    <span className="mo-view-div" />
-                    <button
-                      type="button"
-                      className={`mo-view-btn${orderView === "cards" ? " active" : ""}`}
-                      onClick={() => setOrderView("cards")}
-                      title="Card view"
-                      aria-label="Card view"
-                    >
-                      <LayoutGrid size={16} />
-                    </button>
-                    <button
-                      type="button"
-                      className={`mo-view-btn${orderView === "table" ? " active" : ""}`}
-                      onClick={() => setOrderView("table")}
-                      title="Table view"
-                      aria-label="Table view"
-                    >
-                      <List size={16} />
-                    </button>
-                    <span className="mo-view-div" />
-                    <button
-                      type="button"
-                      className="mo-view-btn"
-                      onClick={() => setShowListMenu((v) => !v)}
-                      title="More"
-                      aria-haspopup="true"
-                      aria-expanded={showListMenu}
-                    >
-                      <MoreVertical size={16} />
-                    </button>
-                  </div>
-                  <AnimatePresence>
-                    {showListMenu && (
-                      <>
-                        <div
-                          className="mo-menu-backdrop"
-                          onClick={() => setShowListMenu(false)}
-                        />
-                        <motion.div
-                          className="mo-menu"
-                          role="menu"
-                          initial={{ opacity: 0, scale: 0.94, y: -6 }}
-                          animate={{ opacity: 1, scale: 1, y: 0 }}
-                          exit={{ opacity: 0, scale: 0.94, y: -6 }}
-                          transition={{ duration: 0.16, ease: "easeOut" }}
-                        >
-                          <button
-                            type="button"
-                            className="mo-menu-item"
-                            onClick={() => {
-                              exportGettingShippedCSV();
-                              setShowListMenu(false);
-                            }}
-                          >
-                            <Download size={16} /> Shipped CSV
-                          </button>
-                          <button
-                            type="button"
-                            className="mo-menu-item"
-                            onClick={() => {
-                              downloadCoversPNG();
-                              setShowListMenu(false);
-                            }}
-                          >
-                            <Download size={16} /> Covers PNG
-                          </button>
-                        </motion.div>
-                      </>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </div>
-
-              <div className="orders-toolbar">
-                <div className="mo-view-toggle">
-                  {[
-                    { k: "all", label: "All" },
-                    { k: "pending", label: "Not picked" },
-                    { k: "picked", label: "Picked" },
-                    {
-                      k: "noted",
-                      label: `Noted${notedOrdersCount > 0 ? ` (${notedOrdersCount})` : ""}`,
-                    },
-                  ].map((f) => (
-                    <button
-                      key={f.k}
-                      type="button"
-                      className={`mo-view-btn${orderPickFilter === f.k ? " active" : ""}`}
-                      onClick={() => setOrderPickFilter(f.k)}
-                    >
-                      {f.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {orderView === "table" && selectedIds.length > 0 && (
-                <div className="orders-bulk-bar">
-                  <div className="bulk-head">
-                    <span className="bulk-count">
-                      {selectedIds.length} selected
-                    </span>
-                    <button
-                      type="button"
-                      className="mo-view-btn bulk-clear"
-                      onClick={() => setSelectedIds([])}
-                    >
-                      Clear
-                    </button>
-                  </div>
-
-                  {/* Download section — combined shipping form for selected */}
-                  <div className="bulk-section">
-                    <div className="mo-dl-group">
-                      <span className="mo-dl-group-label">
-                        <span className="mo-dl-icon">
-                          <Download size={20} />
-                        </span>
-                        <span className="mo-dl-text">
-                          Shipping form
-                          <em>India Post + From/To in one frame</em>
-                        </span>
+          <>
+            <Accordion
+              id="orders"
+              title="Orders"
+              open={accOpen.orders}
+              onToggle={toggleAcc}
+              right={<span className="acc-count">{filteredOrders.length}</span>}
+            >
+              {filteredOrders.length > 0 ? (
+                <div className="flex flex-col gap-12">
+                  <div className="orders-list-header">
+                    <span className="orders-count">
+                      {listOrders.length}{" "}
+                      {listOrders.length === 1 ? "Order" : "Orders"}
+                      <span className="orders-picked-stat">
+                        · {pickedOrdersCount}/{filteredOrders.length} picked
                       </span>
-                      <button
-                        type="button"
-                        className="mo-form-btn mo-dl-pdf"
-                        onClick={() => downloadSelectedForms("pdf")}
-                        title="All selected orders in one printable PDF (one order per page)"
-                      >
-                        PDF
-                      </button>
-                      <button
-                        type="button"
-                        className="mo-form-btn mo-dl-png"
-                        onClick={() => downloadSelectedForms("png")}
-                        title="One PNG image per selected order"
-                      >
-                        PNG
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="bulk-divider" />
-
-                  {/* Bulk WhatsApp — choose a stage from the dropdown, then hit
-                      the arrow to message all selected readers */}
-                  <div className="bulk-wa-row">
-                    <span className="bulk-wa-label">
-                      <MessageCircle size={13} /> Message all on WhatsApp:
                     </span>
-                    <div className="bulk-wa-picker">
-                      <select
-                        className="bulk-wa-select"
-                        value={waPick}
-                        onChange={(e) => setWaPick(e.target.value)}
-                      >
-                        <option value="">Choose a message…</option>
-                        {waMessages({}).map((m) => (
-                          <option key={m.key} value={m.key}>
-                            {m.label}
-                          </option>
-                        ))}
-                      </select>
-                      {waPick && (
+                    <div className="orders-header-right mo-menu-wrap">
+                      <div className="mo-view-toggle mo-view-icons">
                         <button
                           type="button"
-                          className="bulk-wa-go"
-                          title="Send this message to all selected"
-                          onClick={() => {
-                            setBulkStage(waPick);
-                            setBulkSent([]);
-                          }}
+                          className="mo-view-btn"
+                          onClick={() =>
+                            setSortOrder((s) => (s === "desc" ? "asc" : "desc"))
+                          }
+                          title={
+                            sortOrder === "desc"
+                              ? "Latest first (tap for oldest)"
+                              : "Oldest first (tap for latest)"
+                          }
+                          aria-label="Toggle sort order"
                         >
-                          <ArrowRight size={18} />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {orderView === "cards" ? (
-                <div className="admin-orders-grid">
-                {listOrders.map((order, idx) => {
-                  const orderId = order["Order ID"];
-                  const books = order.parsedBooks || [];
-                  const pnl = order.pnl;
-                  const hasTracking =
-                    order.shippingId && String(order.shippingId).trim() !== "";
-                  const tinyUrl = order["TinyURL"];
-                  const hasTinyUrl = tinyUrl && String(tinyUrl).trim() !== "";
-                  const fullAddress = [
-                    order["Address"],
-                    order["City"],
-                    order["State"],
-                  ]
-                    .filter(Boolean)
-                    .join(", ");
-                  const addressLine = order["Pincode"]
-                    ? `${fullAddress} - ${order["Pincode"]}`
-                    : fullAddress;
-
-                  const isExpanded = false; // details now open in a slide-up modal
-                  const isPacked = !!packedOrders[orderId];
-                  const pickedCount = books.reduce(
-                    (n, _b, i) =>
-                      n + (pickChecked[bookKey(orderId, i)] ? 1 : 0),
-                    0,
-                  );
-                  const allPicked =
-                    books.length > 0 && pickedCount === books.length;
-                  // Value (₹) of the books picked so far vs the full order.
-                  const pickedValue = books.reduce(
-                    (s, b, i) =>
-                      s +
-                      (pickChecked[bookKey(orderId, i)] ? b.total || 0 : 0),
-                    0,
-                  );
-                  const totalBooksValue = books.reduce(
-                    (s, b) => s + (b.total || 0),
-                    0,
-                  );
-                  // Relative age of the order ("2 days ago") for the card badge
-                  const orderDate = getOrderDate(order);
-                  let agoLabel = "";
-                  if (orderDate) {
-                    const days = Math.floor(
-                      (Date.now() - orderDate.getTime()) / 86400000,
-                    );
-                    agoLabel =
-                      days <= 0
-                        ? "Today"
-                        : days === 1
-                          ? "Yesterday"
-                          : `${days} days ago`;
-                  }
-                  const isCOD = /cash|cod/i.test(order["Payment Type"] || "");
-                  const oidStr = String(orderId || "");
-                  const formData = {
-                    orderId,
-                    customerName: order["Customer Name"],
-                    customerAddress: order["Address"],
-                    customerCity: order["City"],
-                    customerState: order["State"],
-                    customerPincode: order["Pincode"],
-                    customerPhone: order["Phone Number"],
-                    totalValueRs: order.revenue,
-                    isCOD,
-                    codAmount: order.revenue,
-                  };
-
-                  return (
-                    <div
-                      key={orderId || idx}
-                      className={`admin-order-card mo-card${isPacked ? " packed" : ""}`}
-                    >
-                      <div className="mo-card-top">
-                        <div className="mo-card-id">
-                          <div className="mo-name-row">
-                            <span className="mo-srno">{idx + 1}</span>
-                            <span className="mo-name">
-                              {order["Customer Name"] || "—"}
-                            </span>
-                          </div>
-                          <div
-                            className="mo-meta"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <Phone size={12} />
-                            <span className="mo-meta-val">
-                              +91 {order["Phone Number"]}
-                            </span>
-                            <button
-                              type="button"
-                              className="mo-copy-ic"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                copyToClipboard(
-                                  String(order["Phone Number"] || ""),
-                                  `phone-${idx}`,
-                                );
-                              }}
-                              title="Copy phone"
-                            >
-                              {copiedId === `phone-${idx}` ? (
-                                <Check size={12} className="text-green" />
-                              ) : (
-                                <Copy size={11} className="gray-500" />
-                              )}
-                            </button>
-                          </div>
-                          <div
-                            className="mo-meta"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <span className="mo-meta-label">Order</span>
-                            <span className="mo-meta-val">
-                              {oidStr.slice(0, -3)}
-                              <span className="mo-oid-hl">
-                                {oidStr.slice(-3)}
-                              </span>
-                            </span>
-                            <button
-                              type="button"
-                              className="mo-copy-ic"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                copyToClipboard(orderId, `order-${idx}`);
-                              }}
-                              title="Copy order ID"
-                            >
-                              {copiedId === `order-${idx}` ? (
-                                <Check size={12} className="text-green" />
-                              ) : (
-                                <Copy size={11} className="gray-500" />
-                              )}
-                            </button>
-                          </div>
-                        </div>
-                        <div className="mo-card-badges">
-                          {agoLabel && (
-                            <span
-                              className="mo-ago"
-                              title={
-                                orderDate
-                                  ? orderDate.toLocaleString("en-IN")
-                                  : ""
-                              }
-                            >
-                              <Clock size={11} /> {agoLabel}
-                            </span>
-                          )}
-                          <span
-                            className={`mo-pay-pill ${isCOD ? "cod" : "upi"}`}
-                          >
-                            {isCOD ? "COD" : "UPI"}
-                          </span>
-                          <span className="mo-status-pill">
-                            {order.status}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Amount (big, green) — above the covers; opens detail.
-                          WhatsApp icon opens the message picker for this order. */}
-                      <div className="mo-amount-row">
-                        {(() => {
-                          const rev = Number(order.revenue) || 0;
-                          const fee = Math.round(rev * 0.059);
-                          const net = Math.round(rev - fee);
-                          return (
-                            <button
-                              type="button"
-                              className="mo-amount"
-                              onClick={() => setDetailOrder(order)}
-                              title={`Net after 5.9% deduction (₹${rev.toLocaleString()} − ₹${fee}) · tap for details`}
-                            >
-                              ₹{net.toLocaleString()}
-                              <span className="mo-amount-fee">
-                                −₹{fee.toLocaleString()} (5.9%)
-                              </span>
-                            </button>
-                          );
-                        })()}
-                        <button
-                          type="button"
-                          className="mo-wa-btn"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setWaCustomText("");
-                            setWaPickerOrder(order);
-                          }}
-                          title="WhatsApp the customer"
-                          aria-label="WhatsApp the customer"
-                        >
-                          <FaWhatsapp size={18} />
-                        </button>
-                      </div>
-
-                      {/* Book covers — scrollable row, tap to mark picked */}
-                      {books.length > 0 && (
-                        <div
-                          className="mo-covers"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          {books.map((b, ci) => {
-                            const img = getBookImage(b.name);
-                            const checked =
-                              !!pickChecked[bookKey(orderId, ci)];
-                            return (
-                              <button
-                                key={ci}
-                                type="button"
-                                className={`mo-cover${checked ? " checked" : ""}`}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  toggleBook(orderId, ci);
-                                }}
-                                title={b.name}
-                              >
-                                {img ? (
-                                  <img src={img} alt={b.name} loading="lazy" />
-                                ) : (
-                                  <div className="mo-cover-ph">
-                                    <Package size={18} />
-                                  </div>
-                                )}
-                                <span className="mo-cover-check">
-                                  <Check size={16} />
-                                </span>
-                              </button>
-                            );
-                          })}
-                        </div>
-                      )}
-
-                      {/* Date · book count · picked badge — below the images */}
-                      <div className="mo-card-desc">
-                        <span className="mo-desc-item">
-                          <Calendar size={11} />
-                          {formatDate(
-                            order["Timestamp(D)"] || order["Timestamp"],
-                          )}
-                        </span>
-                        <span className="aoc-dot">·</span>
-                        <span>
-                          {books.length} book{books.length > 1 ? "s" : ""}
-                        </span>
-                        {books.length > 0 && (
-                          <span
-                            className={`mo-pick-badge ${
-                              allPicked
-                                ? "done"
-                                : pickedCount > 0
-                                  ? "partial"
-                                  : ""
-                            }`}
-                          >
-                            {allPicked
-                              ? `✓ Picked · ₹${pickedValue.toLocaleString()}`
-                              : pickedCount > 0
-                                ? `Partially picked ${pickedCount}/${books.length} · ₹${pickedValue.toLocaleString()} of ₹${totalBooksValue.toLocaleString()}`
-                                : "Not picked"}
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Note + Book online — one row, secondary buttons */}
-                      <div className="mo-card-actions">
-                      {orderNotes[orderId] ? (
-                        <button
-                          type="button"
-                          className="mo-note-flag"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setNoteEditor({
-                              orderId,
-                              draft: orderNotes[orderId],
-                            });
-                          }}
-                          title="Edit note"
-                        >
-                          <span className="mo-note-flag-ic">
-                            <AlertCircle size={15} />
-                          </span>
-                          <span className="mo-note-flag-txt">
-                            {orderNotes[orderId]}
-                          </span>
-                          <Pencil size={13} className="mo-note-flag-edit" />
-                        </button>
-                      ) : (
-                        <button
-                          type="button"
-                          className="mo-note-add"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setNoteEditor({ orderId, draft: "" });
-                          }}
-                        >
-                          <StickyNote size={14} /> Add note
-                        </button>
-                      )}
-
-                      {/* Book online with India Post — opens this order's
-                          booking sheet; shows a tick once marked done. */}
-                      <button
-                        type="button"
-                        className={`mo-book-btn${bookedOrders[orderId] ? " done" : ""}`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setBookOrder(order);
-                        }}
-                        title={
-                          bookedOrders[orderId]
-                            ? "Booked with India Post"
-                            : "Book online with India Post"
-                        }
-                      >
-                        {bookedOrders[orderId] ? (
-                          <>
-                            <CheckCircle size={14} /> Booked
-                          </>
-                        ) : (
-                          <>
-                            <Truck size={14} /> Book online
-                          </>
-                        )}
-                      </button>
-                      </div>
-
-                      <AnimatePresence initial={false}>
-                        {isExpanded && (
-                          <motion.div
-                            key="body"
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: "auto", opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
+                          <motion.span
+                            animate={{ rotate: sortOrder === "desc" ? 0 : 180 }}
                             transition={{
-                              duration: 0.28,
-                              ease: [0.32, 0.72, 0, 1],
+                              type: "spring",
+                              stiffness: 320,
+                              damping: 22,
                             }}
-                            style={{ overflow: "hidden" }}
+                            style={{ display: "inline-flex" }}
                           >
-                            <div className="aoc-body">
-                              <div className="aoc-section">
-                                <div className="aoc-section-title">
-                                  <MapPin size={13} /> Shipping
-                                </div>
-                                {addressLine && (
-                                  <button
-                                    type="button"
-                                    className="aoc-rowline"
-                                    onClick={() =>
-                                      copyToClipboard(
-                                        addressLine,
-                                        `address-${idx}`,
-                                      )
-                                    }
-                                    title="Copy address"
-                                  >
-                                    <span className="aoc-rowline-text">
-                                      {addressLine}
-                                    </span>
-                                    {copiedId === `address-${idx}` ? (
-                                      <Check size={13} className="text-green" />
-                                    ) : (
-                                      <Copy size={13} className="gray-500" />
-                                    )}
-                                  </button>
-                                )}
-                                {(hasTracking || hasTinyUrl) && (
-                                  <div className="aoc-track">
-                                    {hasTracking ? (
-                                      <span className="aoc-track-id">
-                                        Tracking:{" "}
-                                        <strong>{order.shippingId}</strong>
-                                      </span>
-                                    ) : (
-                                      <span className="aoc-track-id">
-                                        Order link ready
-                                      </span>
-                                    )}
-                                    <div className="flex flex-row gap-8">
-                                      {hasTracking && (
-                                        <button
-                                          type="button"
-                                          className="track-btn-small flex flex-row items-center gap-4"
-                                          onClick={() =>
-                                            handleTrackPackage(order.shippingId)
-                                          }
-                                        >
-                                          <Truck size={12} /> Track
-                                        </button>
-                                      )}
-                                      {hasTinyUrl && (
-                                        <button
-                                          type="button"
-                                          className="track-btn-small flex flex-row items-center gap-4"
-                                          onClick={() =>
-                                            window.open(
-                                              tinyUrl,
-                                              "_blank",
-                                              "noopener,noreferrer",
-                                            )
-                                          }
-                                        >
-                                          <ShoppingBag size={12} /> User bag{" "}
-                                          <ExternalLink size={10} />
-                                        </button>
-                                      )}
-                                    </div>
-                                  </div>
-                                )}
-                              </div>
-
-                              <div className="aoc-section">
-                                <div className="aoc-section-title">
-                                  <MessageCircle size={13} /> WhatsApp the
-                                  customer
-                                </div>
-                                <div className="aoc-wa-grid">
-                                  {waMessages(order).map((m) => (
-                                    <button
-                                      key={m.key}
-                                      type="button"
-                                      className="aoc-wa-btn"
-                                      title={m.text}
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        openWhatsApp(
-                                          order["Phone Number"],
-                                          m.text,
-                                        );
-                                      }}
-                                    >
-                                      {m.label}
-                                    </button>
-                                  ))}
-                                </div>
-                              </div>
-
-                              <div className="aoc-section">
-                                <div className="aoc-section-title">
-                                  <Package size={13} /> Items ({books.length})
-                                </div>
-                                <div className="aoc-books-row">
-                                  {books.length > 0 ? (
-                                    books.map((b, bi) => {
-                                      const img = getBookImage(b.name);
-                                      return (
-                                        <div key={bi} className="aoc-book">
-                                          <div className="aoc-book-thumb">
-                                            {img ? (
-                                              <img
-                                                src={img}
-                                                alt={b.name}
-                                                className="aoc-book-img"
-                                                loading="lazy"
-                                              />
-                                            ) : (
-                                              <div className="aoc-book-ph">
-                                                <Package size={20} />
-                                              </div>
-                                            )}
-                                            {b.quantity > 1 && (
-                                              <span className="aoc-book-qty">
-                                                ×{b.quantity}
-                                              </span>
-                                            )}
-                                          </div>
-                                          <span
-                                            className="aoc-book-name"
-                                            title={b.name}
-                                          >
-                                            {b.name}
-                                          </span>
-                                          <span className="aoc-book-price">
-                                            {b.total > 0
-                                              ? `₹${b.total}`
-                                              : b.price > 0
-                                                ? `₹${b.price}`
-                                                : "—"}
-                                          </span>
-                                        </div>
-                                      );
-                                    })
-                                  ) : (
-                                    <div className="aoc-book aoc-book-empty">
-                                      Books not listed
-                                    </div>
-                                  )}
-                                </div>
-                                {(order["Delivery Charge"] > 0 ||
-                                  order["Gift Wrap"] === "Yes" ||
-                                  order["Offer Applied"]) && (
-                                  <div className="aoc-extras">
-                                    {order["Delivery Charge"] > 0 && (
-                                      <span className="aoc-extra">
-                                        Delivery +₹{order["Delivery Charge"]}
-                                      </span>
-                                    )}
-                                    {order["Gift Wrap"] === "Yes" && (
-                                      <span className="aoc-extra">
-                                        <Gift size={11} /> Gift wrap +₹
-                                        {order["Gift Wrap Charge"] || 0}
-                                      </span>
-                                    )}
-                                    {order["Offer Applied"] && (
-                                      <span className="aoc-extra">
-                                        Offer: {order["Offer Applied"]}
-                                      </span>
-                                    )}
-                                  </div>
-                                )}
-                              </div>
-
-                              <div className="aoc-money">
-                                <div className="aoc-money-cell">
-                                  <span>Revenue</span>
-                                  <strong>
-                                    ₹{order.revenue.toLocaleString()}
-                                  </strong>
-                                </div>
-                                <div className="aoc-money-cell">
-                                  <span>Cost</span>
-                                  <strong>
-                                    ₹{order.totalCost.toLocaleString()}
-                                  </strong>
-                                </div>
-                                <div
-                                  className={`aoc-money-cell ${pnl >= 0 ? "pos" : "neg"}`}
-                                >
-                                  <span>Profit</span>
-                                  <strong>
-                                    {pnl >= 0 ? "+" : "−"}₹
-                                    {Math.abs(pnl).toLocaleString()}
-                                  </strong>
-                                </div>
-                              </div>
-
-                              <div className="aoc-foot">
-                                <div className="aoc-meta">
-                                  <span>{order["Payment Type"] || "—"}</span>
-                                  <span className="aoc-dot">·</span>
-                                  <span>{order["Delivery Type"] || "—"}</span>
-                                </div>
-                                <button
-                                  type="button"
-                                  className="aoc-edit"
-                                  onClick={() => openEditModal(order)}
-                                >
-                                  <Edit size={14} /> Edit
-                                </button>
-                              </div>
-                            </div>
-                          </motion.div>
+                            <ArrowUpDown size={16} />
+                          </motion.span>
+                        </button>
+                        <span className="mo-view-div" />
+                        <button
+                          type="button"
+                          className={`mo-view-btn${orderView === "cards" ? " active" : ""}`}
+                          onClick={() => setOrderView("cards")}
+                          title="Card view"
+                          aria-label="Card view"
+                        >
+                          <LayoutGrid size={16} />
+                        </button>
+                        <button
+                          type="button"
+                          className={`mo-view-btn${orderView === "table" ? " active" : ""}`}
+                          onClick={() => setOrderView("table")}
+                          title="Table view"
+                          aria-label="Table view"
+                        >
+                          <List size={16} />
+                        </button>
+                        <span className="mo-view-div" />
+                        <button
+                          type="button"
+                          className="mo-view-btn"
+                          onClick={() => setShowListMenu((v) => !v)}
+                          title="More"
+                          aria-haspopup="true"
+                          aria-expanded={showListMenu}
+                        >
+                          <MoreVertical size={16} />
+                        </button>
+                      </div>
+                      <AnimatePresence>
+                        {showListMenu && (
+                          <>
+                            <div
+                              className="mo-menu-backdrop"
+                              onClick={() => setShowListMenu(false)}
+                            />
+                            <motion.div
+                              className="mo-menu"
+                              role="menu"
+                              initial={{ opacity: 0, scale: 0.94, y: -6 }}
+                              animate={{ opacity: 1, scale: 1, y: 0 }}
+                              exit={{ opacity: 0, scale: 0.94, y: -6 }}
+                              transition={{ duration: 0.16, ease: "easeOut" }}
+                            >
+                              <button
+                                type="button"
+                                className="mo-menu-item"
+                                onClick={() => {
+                                  exportGettingShippedCSV();
+                                  setShowListMenu(false);
+                                }}
+                              >
+                                <Download size={16} /> Shipped CSV
+                              </button>
+                              <button
+                                type="button"
+                                className="mo-menu-item"
+                                onClick={() => {
+                                  downloadCoversPNG();
+                                  setShowListMenu(false);
+                                }}
+                              >
+                                <Download size={16} /> Covers PNG
+                              </button>
+                            </motion.div>
+                          </>
                         )}
                       </AnimatePresence>
                     </div>
-                  );
-                })}
-                </div>
-              ) : (
-                <div className="mo-table-wrap">
-                  <table className="mo-table">
-                    <thead>
-                      <tr>
-                        <th className="mo-th-check">
-                          <input
-                            type="checkbox"
-                            checked={
-                              listOrders.length > 0 &&
-                              listOrders.every((o) =>
-                                selectedIds.includes(o["Order ID"]),
-                              )
-                            }
-                            onChange={(e) =>
-                              setSelectedIds(
-                                e.target.checked
-                                  ? listOrders.map((o) => o["Order ID"])
-                                  : [],
-                              )
-                            }
-                            aria-label="Select all"
-                          />
-                        </th>
-                        <th>#</th>
-                        <th>Name</th>
-                        <th>Phone</th>
-                        <th>Order</th>
-                        <th>Amount</th>
-                        <th>Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {listOrders.map((order, i) => {
-                        const oid = order["Order ID"];
-                        const sel = selectedIds.includes(oid);
-                        return (
-                          <tr
-                            key={oid || i}
-                            className={`mo-trow${sel ? " sel" : ""}`}
+                  </div>
+
+                  <div className="orders-toolbar">
+                    <div className="mo-view-toggle">
+                      {[
+                        { k: "all", label: "All" },
+                        { k: "pending", label: "Not picked" },
+                        { k: "picked", label: "Picked" },
+                        {
+                          k: "noted",
+                          label: `Noted${notedOrdersCount > 0 ? ` (${notedOrdersCount})` : ""}`,
+                        },
+                      ].map((f) => (
+                        <button
+                          key={f.k}
+                          type="button"
+                          className={`mo-view-btn${orderPickFilter === f.k ? " active" : ""}`}
+                          onClick={() => setOrderPickFilter(f.k)}
+                        >
+                          {f.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {orderView === "table" && selectedIds.length > 0 && (
+                    <div className="orders-bulk-bar">
+                      <div className="bulk-head">
+                        <span className="bulk-count">
+                          {selectedIds.length} selected
+                        </span>
+                        <button
+                          type="button"
+                          className="mo-view-btn bulk-clear"
+                          onClick={() => setSelectedIds([])}
+                        >
+                          Clear
+                        </button>
+                      </div>
+
+                      {/* Download section — combined shipping form for selected */}
+                      <div className="bulk-section">
+                        <div className="mo-dl-group">
+                          <span className="mo-dl-group-label">
+                            <span className="mo-dl-icon">
+                              <Download size={20} />
+                            </span>
+                            <span className="mo-dl-text">
+                              Shipping form
+                              <em>India Post + From/To in one frame</em>
+                            </span>
+                          </span>
+                          <button
+                            type="button"
+                            className="mo-form-btn mo-dl-pdf"
+                            onClick={() => downloadSelectedForms("pdf")}
+                            title="All selected orders in one printable PDF (one order per page)"
                           >
-                            <td
-                              className="mo-td-check"
-                              onClick={(e) => e.stopPropagation()}
+                            PDF
+                          </button>
+                          <button
+                            type="button"
+                            className="mo-form-btn mo-dl-png"
+                            onClick={() => downloadSelectedForms("png")}
+                            title="One PNG image per selected order"
+                          >
+                            PNG
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="bulk-divider" />
+
+                      {/* Bulk WhatsApp — choose a stage from the dropdown, then hit
+                      the arrow to message all selected readers */}
+                      <div className="bulk-wa-row">
+                        <span className="bulk-wa-label">
+                          <MessageCircle size={13} /> Message all on WhatsApp:
+                        </span>
+                        <div className="bulk-wa-picker">
+                          <select
+                            className="bulk-wa-select"
+                            value={waPick}
+                            onChange={(e) => setWaPick(e.target.value)}
+                          >
+                            <option value="">Choose a message…</option>
+                            {waMessages({}).map((m) => (
+                              <option key={m.key} value={m.key}>
+                                {m.label}
+                              </option>
+                            ))}
+                          </select>
+                          {waPick && (
+                            <button
+                              type="button"
+                              className="bulk-wa-go"
+                              title="Send this message to all selected"
+                              onClick={() => {
+                                setBulkStage(waPick);
+                                setBulkSent([]);
+                              }}
                             >
-                              <input
-                                type="checkbox"
-                                checked={sel}
-                                onChange={(e) =>
-                                  setSelectedIds((prev) =>
-                                    e.target.checked
-                                      ? [...prev, oid]
-                                      : prev.filter((x) => x !== oid),
-                                  )
-                                }
-                                aria-label="Select order"
-                              />
-                            </td>
-                            <td onClick={() => setDetailOrder(order)}>
-                              {i + 1}
-                            </td>
-                            <td
-                              className="mo-td-name"
-                              onClick={() => setDetailOrder(order)}
-                            >
-                              {order["Customer Name"] || "—"}
-                            </td>
-                            <td className="mo-td-mono">
-                              {order["Phone Number"]}
-                            </td>
-                            <td className="mo-td-mono">
-                              …{String(oid || "").slice(-6)}
-                            </td>
-                            <td
-                              className="mo-td-amt"
-                              onClick={() => setDetailOrder(order)}
-                            >
-                              ₹{(order.revenue || 0).toLocaleString()}
-                            </td>
-                            <td>
-                              <span className="mo-status-pill sm">
-                                {order.status}
+                              <ArrowRight size={18} />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {orderView === "cards" ? (
+                    <div className="admin-orders-grid">
+                      {listOrders.map((order, idx) => {
+                        const orderId = order["Order ID"];
+                        const books = order.parsedBooks || [];
+                        const pnl = order.pnl;
+                        const hasTracking =
+                          order.shippingId &&
+                          String(order.shippingId).trim() !== "";
+                        const tinyUrl = order["TinyURL"];
+                        const hasTinyUrl =
+                          tinyUrl && String(tinyUrl).trim() !== "";
+                        const fullAddress = [
+                          order["Address"],
+                          order["City"],
+                          order["State"],
+                        ]
+                          .filter(Boolean)
+                          .join(", ");
+                        const addressLine = order["Pincode"]
+                          ? `${fullAddress} - ${order["Pincode"]}`
+                          : fullAddress;
+
+                        const isExpanded = false; // details now open in a slide-up modal
+                        const isPacked = !!packedOrders[orderId];
+                        const pickedCount = books.reduce(
+                          (n, _b, i) =>
+                            n + (pickChecked[bookKey(orderId, i)] ? 1 : 0),
+                          0,
+                        );
+                        const allPicked =
+                          books.length > 0 && pickedCount === books.length;
+                        // Value (₹) of the books picked so far vs the full order.
+                        const pickedValue = books.reduce(
+                          (s, b, i) =>
+                            s +
+                            (pickChecked[bookKey(orderId, i)]
+                              ? b.total || 0
+                              : 0),
+                          0,
+                        );
+                        const totalBooksValue = books.reduce(
+                          (s, b) => s + (b.total || 0),
+                          0,
+                        );
+                        // Relative age of the order ("2 days ago") for the card badge
+                        const orderDate = getOrderDate(order);
+                        let agoLabel = "";
+                        if (orderDate) {
+                          const days = Math.floor(
+                            (Date.now() - orderDate.getTime()) / 86400000,
+                          );
+                          agoLabel =
+                            days <= 0
+                              ? "Today"
+                              : days === 1
+                                ? "Yesterday"
+                                : `${days} days ago`;
+                        }
+                        const isCOD = /cash|cod/i.test(
+                          order["Payment Type"] || "",
+                        );
+                        const oidStr = String(orderId || "");
+                        const formData = {
+                          orderId,
+                          customerName: order["Customer Name"],
+                          customerAddress: order["Address"],
+                          customerCity: order["City"],
+                          customerState: order["State"],
+                          customerPincode: order["Pincode"],
+                          customerPhone: order["Phone Number"],
+                          totalValueRs: order.revenue,
+                          isCOD,
+                          codAmount: order.revenue,
+                        };
+
+                        return (
+                          <div
+                            key={orderId || idx}
+                            className={`admin-order-card mo-card${isPacked ? " packed" : ""}`}
+                          >
+                            <div className="mo-card-top">
+                              <div className="mo-card-id">
+                                <div className="mo-name-row">
+                                  <span className="mo-srno">{idx + 1}</span>
+                                  <span className="mo-name">
+                                    {order["Customer Name"] || "—"}
+                                  </span>
+                                </div>
+                                <div
+                                  className="mo-meta"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <Phone size={12} />
+                                  <span className="mo-meta-val">
+                                    +91 {order["Phone Number"]}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    className="mo-copy-ic"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      copyToClipboard(
+                                        String(order["Phone Number"] || ""),
+                                        `phone-${idx}`,
+                                      );
+                                    }}
+                                    title="Copy phone"
+                                  >
+                                    {copiedId === `phone-${idx}` ? (
+                                      <Check size={12} className="text-green" />
+                                    ) : (
+                                      <Copy size={11} className="gray-500" />
+                                    )}
+                                  </button>
+                                </div>
+                                <div
+                                  className="mo-meta"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <span className="mo-meta-label">Order</span>
+                                  <span className="mo-meta-val">
+                                    {oidStr.slice(0, -3)}
+                                    <span className="mo-oid-hl">
+                                      {oidStr.slice(-3)}
+                                    </span>
+                                  </span>
+                                  <button
+                                    type="button"
+                                    className="mo-copy-ic"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      copyToClipboard(orderId, `order-${idx}`);
+                                    }}
+                                    title="Copy order ID"
+                                  >
+                                    {copiedId === `order-${idx}` ? (
+                                      <Check size={12} className="text-green" />
+                                    ) : (
+                                      <Copy size={11} className="gray-500" />
+                                    )}
+                                  </button>
+                                </div>
+                              </div>
+                              <div className="mo-card-badges">
+                                {agoLabel && (
+                                  <span
+                                    className="mo-ago"
+                                    title={
+                                      orderDate
+                                        ? orderDate.toLocaleString("en-IN")
+                                        : ""
+                                    }
+                                  >
+                                    <Clock size={11} /> {agoLabel}
+                                  </span>
+                                )}
+                                <span
+                                  className={`mo-pay-pill ${isCOD ? "cod" : "upi"}`}
+                                >
+                                  {isCOD ? "COD" : "UPI"}
+                                </span>
+                                <span className="mo-status-pill">
+                                  {order.status}
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Amount (big, green) — above the covers; opens detail.
+                          WhatsApp icon opens the message picker for this order. */}
+                            <div className="mo-amount-row">
+                              {(() => {
+                                const rev = Number(order.revenue) || 0;
+                                const fee = Math.round(rev * 0.059);
+                                const net = Math.round(rev - fee);
+                                return (
+                                  <button
+                                    type="button"
+                                    className="mo-amount"
+                                    onClick={() => setDetailOrder(order)}
+                                    title={`Net after 5.9% deduction (₹${rev.toLocaleString()} − ₹${fee}) · tap for details`}
+                                  >
+                                    ₹{net.toLocaleString()}
+                                    <span className="mo-amount-fee">
+                                      −₹{fee.toLocaleString()} (5.9%)
+                                    </span>
+                                  </button>
+                                );
+                              })()}
+                              <button
+                                type="button"
+                                className="mo-wa-btn"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setWaCustomText("");
+                                  setWaPickerOrder(order);
+                                }}
+                                title="WhatsApp the customer"
+                                aria-label="WhatsApp the customer"
+                              >
+                                <FaWhatsapp size={18} />
+                              </button>
+                            </div>
+
+                            {/* Book covers — scrollable row, tap to mark picked */}
+                            {books.length > 0 && (
+                              <div
+                                className="mo-covers"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                {books.map((b, ci) => {
+                                  const img = getBookImage(b.name);
+                                  const checked =
+                                    !!pickChecked[bookKey(orderId, ci)];
+                                  return (
+                                    <button
+                                      key={ci}
+                                      type="button"
+                                      className={`mo-cover${checked ? " checked" : ""}`}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        toggleBook(orderId, ci);
+                                      }}
+                                      title={b.name}
+                                    >
+                                      {img ? (
+                                        <img
+                                          src={img}
+                                          alt={b.name}
+                                          loading="lazy"
+                                        />
+                                      ) : (
+                                        <div className="mo-cover-ph">
+                                          <Package size={18} />
+                                        </div>
+                                      )}
+                                      <span className="mo-cover-check">
+                                        <Check size={16} />
+                                      </span>
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            )}
+
+                            {/* Date · book count · picked badge — below the images */}
+                            <div className="mo-card-desc">
+                              <span className="mo-desc-item">
+                                <Calendar size={11} />
+                                {formatDate(
+                                  order["Timestamp(D)"] || order["Timestamp"],
+                                )}
                               </span>
-                            </td>
-                          </tr>
+                              <span className="aoc-dot">·</span>
+                              <span>
+                                {books.length} book{books.length > 1 ? "s" : ""}
+                              </span>
+                              {books.length > 0 && (
+                                <span
+                                  className={`mo-pick-badge ${
+                                    allPicked
+                                      ? "done"
+                                      : pickedCount > 0
+                                        ? "partial"
+                                        : ""
+                                  }`}
+                                >
+                                  {allPicked
+                                    ? ` Picked · ₹${pickedValue.toLocaleString()}`
+                                    : pickedCount > 0
+                                      ? `Partially picked ${pickedCount}/${books.length} · ₹${pickedValue.toLocaleString()} of ₹${totalBooksValue.toLocaleString()}`
+                                      : "Not picked"}
+                                </span>
+                              )}
+                            </div>
+
+                            {/* Note + Book online — one row, secondary buttons */}
+                            <div className="mo-card-actions">
+                              {orderNotes[orderId] ? (
+                                <button
+                                  type="button"
+                                  className="mo-note-flag"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setNoteEditor({
+                                      orderId,
+                                      draft: orderNotes[orderId],
+                                    });
+                                  }}
+                                  title="Edit note"
+                                >
+                                  <span className="mo-note-flag-ic">
+                                    <AlertCircle size={15} />
+                                  </span>
+                                  <span className="mo-note-flag-txt">
+                                    {orderNotes[orderId]}
+                                  </span>
+                                  <Pencil
+                                    size={13}
+                                    className="mo-note-flag-edit"
+                                  />
+                                </button>
+                              ) : (
+                                <button
+                                  type="button"
+                                  className="mo-note-add"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setNoteEditor({ orderId, draft: "" });
+                                  }}
+                                >
+                                  <StickyNote size={14} /> Add note
+                                </button>
+                              )}
+
+                              {/* Book online with India Post — opens this order's
+                          booking sheet; shows a tick once marked done. */}
+                              <button
+                                type="button"
+                                className={`mo-book-btn${bookedOrders[orderId] ? " done" : ""}`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setBookOrder(order);
+                                }}
+                                title={
+                                  bookedOrders[orderId]
+                                    ? "Booked with India Post"
+                                    : "Book online with India Post"
+                                }
+                              >
+                                {bookedOrders[orderId] ? (
+                                  <>
+                                    <CheckCircle size={14} /> Booked
+                                  </>
+                                ) : (
+                                  <>
+                                    <Truck size={14} /> Book online
+                                  </>
+                                )}
+                              </button>
+                            </div>
+
+                            <AnimatePresence initial={false}>
+                              {isExpanded && (
+                                <motion.div
+                                  key="body"
+                                  initial={{ height: 0, opacity: 0 }}
+                                  animate={{ height: "auto", opacity: 1 }}
+                                  exit={{ height: 0, opacity: 0 }}
+                                  transition={{
+                                    duration: 0.28,
+                                    ease: [0.32, 0.72, 0, 1],
+                                  }}
+                                  style={{ overflow: "hidden" }}
+                                >
+                                  <div className="aoc-body">
+                                    <div className="aoc-section">
+                                      <div className="aoc-section-title">
+                                        <MapPin size={13} /> Shipping
+                                      </div>
+                                      {addressLine && (
+                                        <button
+                                          type="button"
+                                          className="aoc-rowline"
+                                          onClick={() =>
+                                            copyToClipboard(
+                                              addressLine,
+                                              `address-${idx}`,
+                                            )
+                                          }
+                                          title="Copy address"
+                                        >
+                                          <span className="aoc-rowline-text">
+                                            {addressLine}
+                                          </span>
+                                          {copiedId === `address-${idx}` ? (
+                                            <Check
+                                              size={13}
+                                              className="text-green"
+                                            />
+                                          ) : (
+                                            <Copy
+                                              size={13}
+                                              className="gray-500"
+                                            />
+                                          )}
+                                        </button>
+                                      )}
+                                      {(hasTracking || hasTinyUrl) && (
+                                        <div className="aoc-track">
+                                          {hasTracking ? (
+                                            <span className="aoc-track-id">
+                                              Tracking:{" "}
+                                              <strong>
+                                                {order.shippingId}
+                                              </strong>
+                                            </span>
+                                          ) : (
+                                            <span className="aoc-track-id">
+                                              Order link ready
+                                            </span>
+                                          )}
+                                          <div className="flex flex-row gap-8">
+                                            {hasTracking && (
+                                              <button
+                                                type="button"
+                                                className="track-btn-small flex flex-row items-center gap-4"
+                                                onClick={() =>
+                                                  handleTrackPackage(
+                                                    order.shippingId,
+                                                  )
+                                                }
+                                              >
+                                                <Truck size={12} /> Track
+                                              </button>
+                                            )}
+                                            {hasTinyUrl && (
+                                              <button
+                                                type="button"
+                                                className="track-btn-small flex flex-row items-center gap-4"
+                                                onClick={() =>
+                                                  window.open(
+                                                    tinyUrl,
+                                                    "_blank",
+                                                    "noopener,noreferrer",
+                                                  )
+                                                }
+                                              >
+                                                <ShoppingBag size={12} /> User
+                                                bag <ExternalLink size={10} />
+                                              </button>
+                                            )}
+                                          </div>
+                                        </div>
+                                      )}
+                                    </div>
+
+                                    <div className="aoc-section">
+                                      <div className="aoc-section-title">
+                                        <MessageCircle size={13} /> WhatsApp the
+                                        customer
+                                      </div>
+                                      <div className="aoc-wa-grid">
+                                        {waMessages(order).map((m) => (
+                                          <button
+                                            key={m.key}
+                                            type="button"
+                                            className="aoc-wa-btn"
+                                            title={m.text}
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              openWhatsApp(
+                                                order["Phone Number"],
+                                                m.text,
+                                              );
+                                            }}
+                                          >
+                                            {m.label}
+                                          </button>
+                                        ))}
+                                      </div>
+                                    </div>
+
+                                    <div className="aoc-section">
+                                      <div className="aoc-section-title">
+                                        <Package size={13} /> Items (
+                                        {books.length})
+                                      </div>
+                                      <div className="aoc-books-row">
+                                        {books.length > 0 ? (
+                                          books.map((b, bi) => {
+                                            const img = getBookImage(b.name);
+                                            return (
+                                              <div
+                                                key={bi}
+                                                className="aoc-book"
+                                              >
+                                                <div className="aoc-book-thumb">
+                                                  {img ? (
+                                                    <img
+                                                      src={img}
+                                                      alt={b.name}
+                                                      className="aoc-book-img"
+                                                      loading="lazy"
+                                                    />
+                                                  ) : (
+                                                    <div className="aoc-book-ph">
+                                                      <Package size={20} />
+                                                    </div>
+                                                  )}
+                                                  {b.quantity > 1 && (
+                                                    <span className="aoc-book-qty">
+                                                      ×{b.quantity}
+                                                    </span>
+                                                  )}
+                                                </div>
+                                                <span
+                                                  className="aoc-book-name"
+                                                  title={b.name}
+                                                >
+                                                  {b.name}
+                                                </span>
+                                                <span className="aoc-book-price">
+                                                  {b.total > 0
+                                                    ? `₹${b.total}`
+                                                    : b.price > 0
+                                                      ? `₹${b.price}`
+                                                      : "—"}
+                                                </span>
+                                              </div>
+                                            );
+                                          })
+                                        ) : (
+                                          <div className="aoc-book aoc-book-empty">
+                                            Books not listed
+                                          </div>
+                                        )}
+                                      </div>
+                                      {(order["Delivery Charge"] > 0 ||
+                                        order["Gift Wrap"] === "Yes" ||
+                                        order["Offer Applied"]) && (
+                                        <div className="aoc-extras">
+                                          {order["Delivery Charge"] > 0 && (
+                                            <span className="aoc-extra">
+                                              Delivery +₹
+                                              {order["Delivery Charge"]}
+                                            </span>
+                                          )}
+                                          {order["Gift Wrap"] === "Yes" && (
+                                            <span className="aoc-extra">
+                                              <Gift size={11} /> Gift wrap +₹
+                                              {order["Gift Wrap Charge"] || 0}
+                                            </span>
+                                          )}
+                                          {order["Offer Applied"] && (
+                                            <span className="aoc-extra">
+                                              Offer: {order["Offer Applied"]}
+                                            </span>
+                                          )}
+                                        </div>
+                                      )}
+                                    </div>
+
+                                    <div className="aoc-money">
+                                      <div className="aoc-money-cell">
+                                        <span>Revenue</span>
+                                        <strong>
+                                          ₹{order.revenue.toLocaleString()}
+                                        </strong>
+                                      </div>
+                                      <div className="aoc-money-cell">
+                                        <span>Cost</span>
+                                        <strong>
+                                          ₹{order.totalCost.toLocaleString()}
+                                        </strong>
+                                      </div>
+                                      <div
+                                        className={`aoc-money-cell ${pnl >= 0 ? "pos" : "neg"}`}
+                                      >
+                                        <span>Profit</span>
+                                        <strong>
+                                          {pnl >= 0 ? "+" : "−"}₹
+                                          {Math.abs(pnl).toLocaleString()}
+                                        </strong>
+                                      </div>
+                                    </div>
+
+                                    <div className="aoc-foot">
+                                      <div className="aoc-meta">
+                                        <span>
+                                          {order["Payment Type"] || "—"}
+                                        </span>
+                                        <span className="aoc-dot">·</span>
+                                        <span>
+                                          {order["Delivery Type"] || "—"}
+                                        </span>
+                                      </div>
+                                      <button
+                                        type="button"
+                                        className="aoc-edit"
+                                        onClick={() => openEditModal(order)}
+                                      >
+                                        <Edit size={14} /> Edit
+                                      </button>
+                                    </div>
+                                  </div>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                          </div>
                         );
                       })}
-                    </tbody>
-                  </table>
+                    </div>
+                  ) : (
+                    <div className="mo-table-wrap">
+                      <table className="mo-table">
+                        <thead>
+                          <tr>
+                            <th className="mo-th-check">
+                              <input
+                                type="checkbox"
+                                checked={
+                                  listOrders.length > 0 &&
+                                  listOrders.every((o) =>
+                                    selectedIds.includes(o["Order ID"]),
+                                  )
+                                }
+                                onChange={(e) =>
+                                  setSelectedIds(
+                                    e.target.checked
+                                      ? listOrders.map((o) => o["Order ID"])
+                                      : [],
+                                  )
+                                }
+                                aria-label="Select all"
+                              />
+                            </th>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Order</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {listOrders.map((order, i) => {
+                            const oid = order["Order ID"];
+                            const sel = selectedIds.includes(oid);
+                            return (
+                              <tr
+                                key={oid || i}
+                                className={`mo-trow${sel ? " sel" : ""}`}
+                              >
+                                <td
+                                  className="mo-td-check"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked={sel}
+                                    onChange={(e) =>
+                                      setSelectedIds((prev) =>
+                                        e.target.checked
+                                          ? [...prev, oid]
+                                          : prev.filter((x) => x !== oid),
+                                      )
+                                    }
+                                    aria-label="Select order"
+                                  />
+                                </td>
+                                <td onClick={() => setDetailOrder(order)}>
+                                  {i + 1}
+                                </td>
+                                <td
+                                  className="mo-td-name"
+                                  onClick={() => setDetailOrder(order)}
+                                >
+                                  {order["Customer Name"] || "—"}
+                                </td>
+                                <td className="mo-td-mono">
+                                  {order["Phone Number"]}
+                                </td>
+                                <td className="mo-td-mono">
+                                  …{String(oid || "").slice(-6)}
+                                </td>
+                                <td
+                                  className="mo-td-amt"
+                                  onClick={() => setDetailOrder(order)}
+                                >
+                                  ₹{(order.revenue || 0).toLocaleString()}
+                                </td>
+                                <td>
+                                  <span className="mo-status-pill sm">
+                                    {order.status}
+                                  </span>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="error-state">
+                  <div className="error-icon"></div>
+                  <p>No orders found</p>
+                  <span className="font-12 gray-500">
+                    Try adjusting your search or filters
+                  </span>
                 </div>
               )}
-            </div>
-          ) : (
-            <div className="error-state">
-              <div className="error-icon">📭</div>
-              <p>No orders found</p>
-              <span className="font-12 gray-500">
-                Try adjusting your search or filters
-              </span>
-            </div>
-          )}
-        </Accordion>
-        </>
+            </Accordion>
+          </>
         )}
       </div>
 
@@ -7349,9 +7461,7 @@ export default function ManageOrdersPage() {
                 type="button"
                 className="wa-receipt-btn"
                 onClick={() => {
-                  const oid = String(
-                    waPickerOrder["Order ID"] || "",
-                  ).trim();
+                  const oid = String(waPickerOrder["Order ID"] || "").trim();
                   const nm = String(waPickerOrder["Customer Name"] || "")
                     .replace(/\s*\(unconfirmed\)\s*/i, "")
                     .trim();
@@ -7360,7 +7470,7 @@ export default function ManageOrdersPage() {
                   )}`;
                   const msg = `Hi${
                     nm ? " " + nm.split(" ")[0] : ""
-                  } 👋 Thank you for shopping with TheBookX!\n\n🧾 View your invoice & full order details: ${invoice}\n👤 Track all your orders anytime: ${PROFILE_URL}`;
+                  } Thank you for shopping with TheBookX!\n\n View your invoice & full order details: ${invoice}\n Track all your orders anytime: ${PROFILE_URL}`;
                   openWhatsApp(waPickerOrder["Phone Number"], msg);
                   setWaPickerOrder(null);
                 }}
@@ -7565,7 +7675,6 @@ export default function ManageOrdersPage() {
         )}
       </AnimatePresence>
 
-
       {/* ===== Bulk WhatsApp send (slide-up) ===== */}
       <AnimatePresence>
         {bulkStage && (
@@ -7727,8 +7836,7 @@ export default function ManageOrdersPage() {
                     >
                       <span className="pt-note">
                         <Pin size={12} className="tx-pinned-ic" />
-                        {t.note ||
-                          (t.type === "income" ? "Income" : "Expense")}
+                        {t.note || (t.type === "income" ? "Income" : "Expense")}
                       </span>
                       <span className={`pt-amt ${t.type}`}>
                         {t.type === "income" ? "+" : "−"}₹
@@ -7769,9 +7877,7 @@ export default function ManageOrdersPage() {
                           </span>
                           <span className="aoc-dot">·</span>
                           <span>
-                            {formatDate(
-                              o["Timestamp(D)"] || o["Timestamp"],
-                            )}
+                            {formatDate(o["Timestamp(D)"] || o["Timestamp"])}
                           </span>
                           <span className="aoc-dot">·</span>
                           <span>
@@ -7783,7 +7889,7 @@ export default function ManageOrdersPage() {
                   })
                 ) : (
                   <p className="mo-new-empty">
-                    No new orders since your last visit 🎉
+                    No new orders since your last visit
                   </p>
                 )}
               </div>
@@ -7813,7 +7919,7 @@ export default function ManageOrdersPage() {
             const oid = order["Order ID"];
             const dbooks = order.parsedBooks || [];
             const dpnl = order.pnl;
-            // Books not yet picked (checked) → offer an out-of-stock hold message
+            // Books not yet picked (checked) offer an out-of-stock hold message
             const dUnpicked = dbooks.filter(
               (_b, i) => !pickChecked[bookKey(oid, i)],
             );
@@ -7822,7 +7928,7 @@ export default function ManageOrdersPage() {
               : "there";
             const oosMany = dUnpicked.length > 1;
             const oosMessage =
-              `Hi ${dCustName}, this is TheBookX 📚\n\n` +
+              `Hi ${dCustName}, this is TheBookX \n\n` +
               `A quick update on your order${
                 oid ? ` (Order ${oid})` : ""
               } — the following ${dUnpicked.length} book${
@@ -7835,9 +7941,9 @@ export default function ManageOrdersPage() {
                 oosMany ? "they're" : "it's"
               } back*. Until then we're *holding your order as Processing* so your ${
                 oosMany ? "copies are" : "copy is"
-              } reserved for you. 🙏\n\n` +
-              `Thank you for your patience! 💛\n\n` +
-              `🔎 View your order anytime: ${PROFILE_URL}\n— Team TheBookX 📚`;
+              } reserved for you. \n\n` +
+              `Thank you for your patience! \n\n` +
+              ` View your order anytime: ${PROFILE_URL}\n— Team TheBookX `;
             const dHasTracking =
               order.shippingId && String(order.shippingId).trim() !== "";
             const dTiny = order["TinyURL"];
@@ -8035,7 +8141,7 @@ export default function ManageOrdersPage() {
                               openWhatsApp(order["Phone Number"], oosMessage)
                             }
                           >
-                            📕 Out of stock ({dUnpicked.length}) · hold
+                            Out of stock ({dUnpicked.length}) · hold
                           </button>
                         )}
                       </div>

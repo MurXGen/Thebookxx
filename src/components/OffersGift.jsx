@@ -45,13 +45,13 @@ export default function OffersGift() {
 
   return (
     <>
-      {/* 🎁 Gift Button */}
+      {/* Gift Button */}
       <button className="gift-fab" onClick={handleGiftClick}>
         <FiGift size={22} />
         <span className="gift-pulse" />
       </button>
 
-      {/* 🌫️ Overlay + Modal */}
+      {/* Overlay + Modal */}
       <AnimatePresence>
         {open && (
           <>

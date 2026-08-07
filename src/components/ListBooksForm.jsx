@@ -60,8 +60,7 @@ export default function ListBooksForm() {
   });
   const [error, setError] = useState("");
 
-  const toggleAddon = (key) =>
-    setAddons((a) => ({ ...a, [key]: !a[key] }));
+  const toggleAddon = (key) => setAddons((a) => ({ ...a, [key]: !a[key] }));
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -77,7 +76,7 @@ export default function ListBooksForm() {
       (a) => a.label,
     );
 
-    const msg = `📚 *New Book Listing Request — TheBookX*
+    const msg = ` *New Book Listing Request — TheBookX*
 
 *I'm a:* ${role}
 *Listing type:* ${listingLabel}
@@ -89,10 +88,10 @@ export default function ListBooksForm() {
 ${selectedAddons.length ? selectedAddons.map((a) => `• ${a}`).join("\n") : "• (none selected)"}
 
 *Contact*
-👤 ${name}
-📞 ${phone}${email ? `\n✉️ ${email}` : ""}${
-      message ? `\n\n*Message:* ${message}` : ""
-    }
+ ${name}
+ ${phone}${email ? `\n ${email}` : ""}${
+   message ? `\n\n*Message:* ${message}` : ""
+ }
 
 _Sent from the List Your Books page on thebookx.in_`;
 
@@ -180,7 +179,8 @@ _Sent from the List Your Books page on thebookx.in_`;
 
       {/* Add-ons */}
       <label className="lb-label">
-        Add-ons <span className="lb-optional">(optional, boost your sales)</span>
+        Add-ons{" "}
+        <span className="lb-optional">(optional, boost your sales)</span>
       </label>
       <div className="lb-addons">
         {ADDONS.map(({ key, label, desc, icon: Icon }) => (
@@ -191,7 +191,7 @@ _Sent from the List Your Books page on thebookx.in_`;
             onClick={() => toggleAddon(key)}
             aria-pressed={addons[key]}
           >
-            <span className="lb-addon-check">{addons[key] ? "✓" : ""}</span>
+            <span className="lb-addon-check">{addons[key] ? "" : ""}</span>
             <Icon size={20} className="lb-addon-icon" />
             <span className="lb-addon-text">
               <span className="lb-addon-label">{label}</span>
@@ -262,8 +262,8 @@ _Sent from the List Your Books page on thebookx.in_`;
         Continue on WhatsApp
       </button>
       <p className="lb-note">
-        We&apos;ll open WhatsApp with your details pre-filled — just hit send and
-        our team takes it from there.
+        We&apos;ll open WhatsApp with your details pre-filled — just hit send
+        and our team takes it from there.
       </p>
     </form>
   );

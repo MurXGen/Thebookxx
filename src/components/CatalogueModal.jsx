@@ -160,7 +160,7 @@ export default function CatalogueModal({ category, onClose }) {
                       color: "#666",
                     }}
                   >
-                    ✨ You{"'"}ve seen all {visibleBooks.length} books ✨
+                    You{"'"}ve seen all {visibleBooks.length} books
                   </div>
                 )}
               </>

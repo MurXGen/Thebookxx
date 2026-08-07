@@ -22,10 +22,10 @@ const STATS_ROTATION_INTERVAL = 5000;
 
 // Order stats with different timeframes
 const orderStats = [
-  { label: "in last hour", value: 29, suffix: "+", icon: "🔥" },
-  { label: "for the today", value: 100, suffix: "+", icon: "🔥" },
-  { label: "for this week", value: 210, suffix: "+", icon: "⭐" },
-  { label: "for this month", value: 329, suffix: "+", icon: "🏆" },
+  { label: "in last hour", value: 29, suffix: "+", icon: "" },
+  { label: "for the today", value: 100, suffix: "+", icon: "" },
+  { label: "for this week", value: 210, suffix: "+", icon: "" },
+  { label: "for this month", value: 329, suffix: "+", icon: "" },
 ];
 
 export default function BestsellerStage() {
@@ -112,7 +112,10 @@ export default function BestsellerStage() {
   const currentStat = orderStats[currentStatIndex];
 
   return (
-    <section ref={sectionRef} className="bestseller-stage bestseller-stage--merged">
+    <section
+      ref={sectionRef}
+      className="bestseller-stage bestseller-stage--merged"
+    >
       {/* Promo message lives in the hero above; the duplicated header,
           trust chips and label were removed to avoid repetition. */}
 
@@ -121,7 +124,7 @@ export default function BestsellerStage() {
         <div className="carousel-track">
           {visibleBooks.map((book) => {
             // Calculate position styles
-            // 🔥 Responsive base distance
+            // Responsive base distance
             const baseOffset =
               typeof window !== "undefined" && window.innerWidth > 680
                 ? 220

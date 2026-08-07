@@ -204,7 +204,7 @@ export default function BookCard({ book }) {
         {/* Limited Time Offer Badge */}
         {isOneRupee && book.stock > 0 && (
           <span className="flex flex-row justify-center font-10 price-drop-badge">
-            🔥 Limited period - Just ₹1
+            Limited period - Just ₹1
           </span>
         )}
 
@@ -363,69 +363,65 @@ export default function BookCard({ book }) {
 
           {/* Add to cart — full width, dashed divider above, below the price */}
           <div className="bookcard-cart-row">
-              {book.stock === 0 ? (
-                <a
-                  href={`https://wa.me/917710892108?text=${encodeURIComponent(
-                    `Hi TheBookX 👋, please make "${book.name}"${
-                      book.author ? ` by ${book.author}` : ""
-                    } available and notify me when it's back in stock.`,
-                  )}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bookcard-notify-btn"
-                  aria-label={`Notify me when ${book.name} is back in stock`}
-                  onClick={(e) => e.stopPropagation()}
+            {book.stock === 0 ? (
+              <a
+                href={`https://wa.me/917710892108?text=${encodeURIComponent(
+                  `Hi TheBookX, please make "${book.name}"${
+                    book.author ? ` by ${book.author}` : ""
+                  } available and notify me when it's back in stock.`,
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bookcard-notify-btn"
+                aria-label={`Notify me when ${book.name} is back in stock`}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Bell size={16} />
+                <span>Notify me</span>
+              </a>
+            ) : qty === 0 ? (
+              <LoadingButton
+                className="bookcard-add-btn"
+                onClick={handleAddToCart}
+                aria-label={`Add ${book.name} to cart`}
+                aria-disabled={isOneRupeeLimitReached}
+              >
+                <span className="bc-add-inner">
+                  <ShoppingCart size={17} />
+                  <span>Add to Cart</span>
+                </span>
+              </LoadingButton>
+            ) : (
+              <div className="bookcard-qty">
+                <button
+                  onClick={() => decreaseQty(book.id)}
+                  className="minus-cart"
+                  aria-label={`Decrease quantity of ${book.name}`}
                 >
-                  <Bell size={16} />
-                  <span>Notify me</span>
-                </a>
-              ) : qty === 0 ? (
-                <LoadingButton
-                  className="bookcard-add-btn"
-                  onClick={handleAddToCart}
-                  aria-label={`Add ${book.name} to cart`}
-                  aria-disabled={isOneRupeeLimitReached}
+                  <Minus size={14} />
+                </button>
+
+                <span className="qty" aria-label={`Quantity: ${qty}`}>
+                  {qty}
+                </span>
+
+                <button
+                  onClick={handleIncreaseQty}
+                  className="plus-cart"
+                  aria-label={`Increase quantity of ${book.name}`}
+                  aria-disabled={isOneRupee}
                 >
-                  <span className="bc-add-inner">
-                    <ShoppingCart size={17} />
-                    <span>Add to Cart</span>
-                  </span>
-                </LoadingButton>
-              ) : (
-                <div className="bookcard-qty">
-                  <button
-                    onClick={() => decreaseQty(book.id)}
-                    className="minus-cart"
-                    aria-label={`Decrease quantity of ${book.name}`}
-                  >
-                    <Minus size={14} />
-                  </button>
-
-                  <span className="qty" aria-label={`Quantity: ${qty}`}>
-                    {qty}
-                  </span>
-
-                  <button
-                    onClick={handleIncreaseQty}
-                    className="plus-cart"
-                    aria-label={`Increase quantity of ${book.name}`}
-                    aria-disabled={isOneRupee}
-                  >
-                    <Plus size={14} />
-                  </button>
-                </div>
-              )}
+                  <Plus size={14} />
+                </button>
+              </div>
+            )}
           </div>
 
-          {/* Stock Status Display */}
-          {book.stock && book.stock < 10 && book.stock > 0 && (
+          {/* Stock Status Display — only when in stock & running low */}
+          {book.stock > 0 && book.stock < 10 && (
             <div className="font-10 orange">
-              ⚡ Only {book.stock} left, order soon!
+              Only {book.stock} left, order soon!
             </div>
-          )}
-
-          {book.stock === 0 && (
-            <div className="font-10 red">❌ Out of Stock</div>
           )}
         </div>
       </article>

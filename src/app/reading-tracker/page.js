@@ -103,7 +103,9 @@ export default function ReadingTrackerPage() {
 
   const handleImportOrderedBooks = () => {
     const toAdd = orderedBooks.filter(
-      (b) => importSelected.includes(b.id) && !trackedBooks.some((t) => t.id === b.id),
+      (b) =>
+        importSelected.includes(b.id) &&
+        !trackedBooks.some((t) => t.id === b.id),
     );
     if (!toAdd.length) {
       setShowImportModal(false);
@@ -150,7 +152,11 @@ export default function ReadingTrackerPage() {
       ...bookNotes,
       [notesBook.id]: [
         ...(bookNotes[notesBook.id] || []),
-        { id: `${Date.now()}-${Math.random().toString(36).slice(2, 6)}`, text, ts: Date.now() },
+        {
+          id: `${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+          text,
+          ts: Date.now(),
+        },
       ],
     };
     setBookNotes(next);
@@ -287,7 +293,7 @@ export default function ReadingTrackerPage() {
       return;
     }
 
-    const message = `*📚 READING TRACKER - THEBOOKX*\n\nI want to receive daily reading reminders at 11 PM for my reading goal.\n\n📖 Book: ${selectedBook?.name}\n👤 Name: Reading Tracker User\n📞 Phone: +91${notifyPhone}\n\nPlease send me daily reminders to complete my reading goal.🙏`;
+    const message = `* READING TRACKER - THEBOOKX*\n\nI want to receive daily reading reminders at 11 PM for my reading goal.\n\n Book: ${selectedBook?.name}\n Name: Reading Tracker User\n Phone: +91${notifyPhone}\n\nPlease send me daily reminders to complete my reading goal.`;
 
     window.open(
       `https://wa.me/917710892108?text=${encodeURIComponent(message)}`,
@@ -437,7 +443,10 @@ export default function ReadingTrackerPage() {
               Import the books you've ordered, search our catalogue, or add your
               own — then log your daily pages to build a streak.
             </p>
-            <button className="pri-big-btn rt-empty-btn" onClick={openImportModal}>
+            <button
+              className="pri-big-btn rt-empty-btn"
+              onClick={openImportModal}
+            >
               <BookOpen size={16} /> Import my ordered books
             </button>
           </div>
@@ -750,7 +759,10 @@ export default function ReadingTrackerPage() {
                 </div>
               ) : (
                 <>
-                  <p className="font-12 dark-50" style={{ margin: "4px 0 10px" }}>
+                  <p
+                    className="font-12 dark-50"
+                    style={{ margin: "4px 0 10px" }}
+                  >
                     Select the books you'd like to track:
                   </p>
                   <div className="rt-import-list">

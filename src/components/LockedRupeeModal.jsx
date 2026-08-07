@@ -31,7 +31,7 @@ export default function LockedRupeeModal({ isOpen, onClose }) {
               <X size={18} />
             </button>
 
-            <div className="locked-modal-icon">🔒</div>
+            <div className="locked-modal-icon"></div>
 
             <h2 className="locked-modal-title">₹1 Books Are Locked</h2>
 

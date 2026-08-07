@@ -4,6 +4,157 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "2026-booker-prize-longlist-what-to-read": {
+    id: "blog-024",
+    title:
+      "The 2026 Booker Prize Longlist Is Here: What It Means and Great Books to Read Now",
+    slug: "2026-booker-prize-longlist-what-to-read",
+    author: "TheBookX Editorial",
+    authorSlug: "murthy-thevar",
+    publishDate: "2026-08-05",
+    lastModified: "2026-08-05",
+    excerpt:
+      "The 2026 Booker Prize longlist just dropped — 13 novels, returning winners, and fresh debut voices. Here's what the list means, why literary prizes matter, and acclaimed reads you can start today on TheBookX.",
+
+    content: [
+      {
+        type: "paragraph",
+        content:
+          "Book lovers have a new reading list this week: the <strong>2026 Booker Prize longlist</strong> has been announced — 13 novels in the running for one of the most prestigious awards in English-language fiction. Every year the 'Booker dozen' sparks a global conversation about what great fiction looks like right now, and this year is no exception, with returning giants and exciting new voices sitting side by side. Here's what the list means, why prizes like this matter, and — because a longlist is really just a great to-read pile — the acclaimed books you can start reading today.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "What Is the Booker Prize — and Why It Matters",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The Booker Prize celebrates the best long-form fiction written in English and published in the UK or Ireland each year. Winning — or even being longlisted — can transform a book's fortunes overnight, introducing an author to millions of new readers worldwide. For readers, the longlist is a curated shortcut to serious, ambitious storytelling: a signal that these are books worth your time.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "This year's longlist of 13 titles spans seven countries and three continents, mixing household names with first-time novelists — a reminder that great writing comes from everywhere, not just the usual places.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Big Names and New Voices on the 2026 List",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The 2026 longlist features work from celebrated authors including <strong>Douglas Stuart</strong> (winner in 2020 for <em>Shuggie Bain</em>), <strong>Marlon James</strong> (winner in 2015), and <strong>Elizabeth Strout</strong>, a repeat nominee. Alongside these established names sit <strong>three debut authors</strong> — proof that the Booker still champions bold new talent, not just familiar favourites.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "Key dates",
+        content:
+          "The Booker Prize shortlist will be announced on 22 September 2026, and the winner on 9 November 2026. The winning author receives £50,000 — but the bigger prize is the wave of readers who discover the book.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "You Don't Need a Prize List to Read Great Fiction",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Here's the good news: the qualities the Booker rewards — sharp writing, big ideas, unforgettable characters — already live in countless books you can pick up right now, often for a fraction of the price of a new hardback. Prize season is the perfect nudge to finally read that modern classic or timeless title you've been meaning to get to.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "So while the literary world waits for the shortlist, don't wait to read. Build your own longlist from books that have already stood the test of time and reader love.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Acclaimed Reads to Pick Up Today",
+      },
+      {
+        type: "paragraph",
+        content:
+          "These modern classics and reader favourites carry the same literary punch — all available on TheBookX with free delivery and Cash on Delivery across India:",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          '<a href="/books/the-alchemist" style="color:#fb8500;font-weight:600">The Alchemist</a> by Paulo Coelho — a modern fable read and loved the world over.',
+          '<a href="/books/the-metamorphosis" style="color:#fb8500;font-weight:600">The Metamorphosis</a> by Franz Kafka — a short, haunting masterpiece of world literature.',
+          '<a href="/books/the-trial" style="color:#fb8500;font-weight:600">The Trial</a> by Franz Kafka — unsettling, brilliant, and endlessly discussed.',
+          '<a href="/books/meditations" style="color:#fb8500;font-weight:600">Meditations</a> by Marcus Aurelius — timeless wisdom that still tops reading lists two thousand years on.',
+          '<a href="/books/the-laws-of-human-nature" style="color:#fb8500;font-weight:600">The Laws of Human Nature</a> by Robert Greene — a deep, gripping study of what drives people.',
+          '<a href="/books/the-art-of-clarity" style="color:#fb8500;font-weight:600">The Art of Clarity</a> by Murthy Thevar — a sharp, homegrown read on thinking clearly.',
+        ],
+      },
+      {
+        type: "paragraph",
+        content:
+          "Pick one, set it on your nightstand, and start tonight. The best reading list is the one you actually open.",
+      },
+      {
+        type: "callout",
+        style: "success",
+        title: "Build your own longlist",
+        content:
+          "Browse acclaimed fiction and timeless classics — bestsellers from ₹1, free delivery, and Cash on Delivery across India — at https://www.thebookx.in/books",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Literary prizes come and go, but the habit of reading great books is the real reward. Whether you follow the Booker to the finish line in November or build a longlist of your own, the important thing is simple: keep turning the pages.",
+      },
+    ],
+
+    coverImage: "/blogs/2026-booker-prize-longlist-what-to-read.jpeg",
+
+    images: [
+      {
+        url: "/blogs/2026-booker-prize-longlist-what-to-read.jpeg",
+        alt: "A young woman smiling as she reads a book by a sunlit window, surrounded by novels",
+        caption:
+          "Prize season is the perfect nudge to start your own reading longlist",
+        category: "Literary News",
+      },
+    ],
+
+    keywords: [
+      "2026 booker prize longlist",
+      "booker prize 2026",
+      "booker prize longlist",
+      "best literary fiction 2026",
+      "books to read 2026",
+      "modern classic books",
+      "acclaimed novels",
+      "TheBookX",
+    ],
+
+    categories: ["Literary News", "Book Awards", "Reading Lists"],
+
+    faqs: [
+      {
+        question:
+          "When is the 2026 Booker Prize shortlist and winner announced?",
+        answer:
+          "The 2026 Booker Prize shortlist is announced on 22 September 2026, and the winner on 9 November 2026. The winning author receives £50,000.",
+      },
+      {
+        question: "How many books are on the Booker Prize longlist?",
+        answer:
+          "The Booker Prize longlist — often called the 'Booker dozen' — features 13 novels. The 2026 list spans seven countries and includes both past winners and debut authors.",
+      },
+      {
+        question: "Where can I buy great literary fiction affordably in India?",
+        answer:
+          "TheBookX offers acclaimed novels and modern classics with books from ₹1, free delivery, and Cash on Delivery across India. Browse the full catalogue at https://www.thebookx.in/books",
+      },
+    ],
+  },
+
   "how-to-read-more-books-2026-reading-challenge": {
     id: "blog-023",
     title:
@@ -93,12 +244,12 @@ export const blogsData = {
         type: "list",
         style: "unordered",
         items: [
-          "<a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear — perfect if your real goal is building <em>any</em> habit, including reading.",
-          "<a href=\"/books/ikigai\" style=\"color:#fb8500;font-weight:600\">Ikigai</a> — short, calming, and quietly profound; an easy, satisfying first finish.",
-          "<a href=\"/books/the-alchemist\" style=\"color:#fb8500;font-weight:600\">The Alchemist</a> by Paulo Coelho — a fable you'll race through in a weekend.",
-          "<a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> by Morgan Housel — bite-sized chapters that make you feel smart fast.",
-          "<a href=\"/books/rich-dad-poor-dad\" style=\"color:#fb8500;font-weight:600\">Rich Dad Poor Dad</a> by Robert Kiyosaki — punchy, practical, and hard to put down.",
-          "<a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar — a fast, focused reset for a noisy mind.",
+          '<a href="/books/atomic-habits" style="color:#fb8500;font-weight:600">Atomic Habits</a> by James Clear — perfect if your real goal is building <em>any</em> habit, including reading.',
+          '<a href="/books/ikigai" style="color:#fb8500;font-weight:600">Ikigai</a> — short, calming, and quietly profound; an easy, satisfying first finish.',
+          '<a href="/books/the-alchemist" style="color:#fb8500;font-weight:600">The Alchemist</a> by Paulo Coelho — a fable you\'ll race through in a weekend.',
+          '<a href="/books/the-psychology-of-money" style="color:#fb8500;font-weight:600">The Psychology of Money</a> by Morgan Housel — bite-sized chapters that make you feel smart fast.',
+          '<a href="/books/rich-dad-poor-dad" style="color:#fb8500;font-weight:600">Rich Dad Poor Dad</a> by Robert Kiyosaki — punchy, practical, and hard to put down.',
+          '<a href="/books/the-art-of-clarity" style="color:#fb8500;font-weight:600">The Art of Clarity</a> by Murthy Thevar — a fast, focused reset for a noisy mind.',
         ],
       },
       {
@@ -420,7 +571,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "If your mind feels like a browser with forty tabs open, <strong>'The Art of Clarity' by Murthy Thevar</strong> was written for you. It has quietly become one of the most talked-about self-help books in India — a practical, no-fluff guide to thinking clearly, deciding faster, and communicating in a way people actually understand. In this review we break down what the book is really about, its biggest lessons, who it's for, and — the part most people ask about — <strong>what real readers are saying</strong> after finishing it. You can grab a copy on <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">TheBookX here</a>.",
+          'If your mind feels like a browser with forty tabs open, <strong>\'The Art of Clarity\' by Murthy Thevar</strong> was written for you. It has quietly become one of the most talked-about self-help books in India — a practical, no-fluff guide to thinking clearly, deciding faster, and communicating in a way people actually understand. In this review we break down what the book is really about, its biggest lessons, who it\'s for, and — the part most people ask about — <strong>what real readers are saying</strong> after finishing it. You can grab a copy on <a href="/books/the-art-of-clarity" style="color:#fb8500;font-weight:600">TheBookX here</a>.',
       },
       {
         type: "heading",
@@ -463,7 +614,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "This is a book for the chronic overthinker, the student or professional buried in information, the founder juggling too many decisions, and anyone who has ever said “I know what I mean, I just can't explain it.” If you enjoyed <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> for behaviour or <a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> for decision-making, <em>The Art of Clarity</em> is the missing piece for how you <strong>think</strong> in the first place.",
+          'This is a book for the chronic overthinker, the student or professional buried in information, the founder juggling too many decisions, and anyone who has ever said “I know what I mean, I just can\'t explain it.” If you enjoyed <a href="/books/atomic-habits" style="color:#fb8500;font-weight:600">Atomic Habits</a> for behaviour or <a href="/books/the-psychology-of-money" style="color:#fb8500;font-weight:600">The Psychology of Money</a> for decision-making, <em>The Art of Clarity</em> is the missing piece for how you <strong>think</strong> in the first place.',
       },
       {
         type: "heading",
@@ -511,7 +662,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "That line captures the whole book. <em>The Art of Clarity</em> won't overwhelm you with frameworks; it does the opposite. It hands you fewer, sharper tools and trusts you to use them. If you want to pair it with more great reads, browse the full <a href=\"/category/self-help\" style=\"color:#fb8500;font-weight:600\">self-help collection on TheBookX</a> — books from ₹1, free delivery, and COD.",
+          'That line captures the whole book. <em>The Art of Clarity</em> won\'t overwhelm you with frameworks; it does the opposite. It hands you fewer, sharper tools and trusts you to use them. If you want to pair it with more great reads, browse the full <a href="/category/self-help" style="color:#fb8500;font-weight:600">self-help collection on TheBookX</a> — books from ₹1, free delivery, and COD.',
       },
       {
         type: "heading",
@@ -521,7 +672,7 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "If you read one self-help book this year, make it a clear one. <strong>The Art of Clarity</strong> is short enough to finish in a couple of sittings and useful enough to re-read every few months. It's affordable, honest, and genuinely practical — an easy recommendation for anyone who wants a quieter mind and sharper decisions. <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">Get your copy on TheBookX</a> and start reading today.",
+          'If you read one self-help book this year, make it a clear one. <strong>The Art of Clarity</strong> is short enough to finish in a couple of sittings and useful enough to re-read every few months. It\'s affordable, honest, and genuinely practical — an easy recommendation for anyone who wants a quieter mind and sharper decisions. <a href="/books/the-art-of-clarity" style="color:#fb8500;font-weight:600">Get your copy on TheBookX</a> and start reading today.',
       },
     ],
 
@@ -671,14 +822,14 @@ export const blogsData = {
         type: "list",
         style: "unordered",
         items: [
-          "<a href=\"https://www.thebookx.in/books/ugly-love\"><strong>Ugly Love</strong> by Colleen Hoover</a> — a raw, emotional look at how walls come down and love sneaks in anyway.",
-          "<a href=\"https://www.thebookx.in/books/twisted-love\"><strong>Twisted Love</strong> by Ana Huang</a> — the addictive slow burn that shows attraction turning into something real.",
-          "<a href=\"https://www.thebookx.in/books/the-deal\"><strong>The Deal</strong> by Elle Kennedy</a> — friendship-first romance and the fun, honest way trust becomes love.",
-          "<a href=\"https://www.thebookx.in/books/pride-and-prejudice\"><strong>Pride and Prejudice</strong> by Jane Austen</a> — the timeless masterclass on letting go of pride and letting someone in.",
-          "<a href=\"https://www.thebookx.in/books/red-white-royal-blue\"><strong>Red, White &amp; Royal Blue</strong> by Casey McQuiston</a> — enemies-to-lovers warmth that makes falling look joyful.",
-          "<a href=\"https://www.thebookx.in/books/when-haru-was-here\"><strong>When Haru Was Here</strong></a> — a tender, moving story about connection, loss, and loving fully.",
-          "<a href=\"https://www.thebookx.in/books/i-want-to-eat-your-pancreas\"><strong>I Want to Eat Your Pancreas</strong> by Yoru Sumino</a> — an aching, beautiful reminder to love while you can.",
-          "<a href=\"https://www.thebookx.in/books/can-we-be-strangers-again\"><strong>Can We Be Strangers Again</strong></a> — for anyone learning that heartbreak is part of how we learn to love.",
+          '<a href="https://www.thebookx.in/books/ugly-love"><strong>Ugly Love</strong> by Colleen Hoover</a> — a raw, emotional look at how walls come down and love sneaks in anyway.',
+          '<a href="https://www.thebookx.in/books/twisted-love"><strong>Twisted Love</strong> by Ana Huang</a> — the addictive slow burn that shows attraction turning into something real.',
+          '<a href="https://www.thebookx.in/books/the-deal"><strong>The Deal</strong> by Elle Kennedy</a> — friendship-first romance and the fun, honest way trust becomes love.',
+          '<a href="https://www.thebookx.in/books/pride-and-prejudice"><strong>Pride and Prejudice</strong> by Jane Austen</a> — the timeless masterclass on letting go of pride and letting someone in.',
+          '<a href="https://www.thebookx.in/books/red-white-royal-blue"><strong>Red, White &amp; Royal Blue</strong> by Casey McQuiston</a> — enemies-to-lovers warmth that makes falling look joyful.',
+          '<a href="https://www.thebookx.in/books/when-haru-was-here"><strong>When Haru Was Here</strong></a> — a tender, moving story about connection, loss, and loving fully.',
+          '<a href="https://www.thebookx.in/books/i-want-to-eat-your-pancreas"><strong>I Want to Eat Your Pancreas</strong> by Yoru Sumino</a> — an aching, beautiful reminder to love while you can.',
+          '<a href="https://www.thebookx.in/books/can-we-be-strangers-again"><strong>Can We Be Strangers Again</strong></a> — for anyone learning that heartbreak is part of how we learn to love.',
         ],
       },
       {
@@ -889,8 +1040,7 @@ export const blogsData = {
 
   "declutter-your-mind-overwhelmed-to-focused": {
     id: "blog-009",
-    title:
-      "From Overwhelmed to Focused: How to Declutter Your Mind in 2026",
+    title: "From Overwhelmed to Focused: How to Declutter Your Mind in 2026",
     slug: "declutter-your-mind-overwhelmed-to-focused",
     author: "Murthy Thevar",
     authorSlug: "murthy-thevar",

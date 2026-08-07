@@ -16,6 +16,7 @@ import HomeHero from "@/components/HomeHero";
 import LiveOrdersStrip from "@/components/LiveOrdersStrip";
 import QuickReadsPromo from "@/components/QuickReadsPromo";
 import InvoiceParamModal from "@/components/InvoiceParamModal";
+import ReviewGallery from "@/components/ReviewGallery";
 import { BooksSkeleton } from "@/components/UI/BookCardSkeleton";
 
 // Lazy load components with named exports
@@ -98,7 +99,8 @@ export default function HomePage() {
       <div className="min-h-screen flex flex-col gap-32">
         <Navbar />
         <h1 className="sr-only">
-          Buy Books Online in India at Lowest Prices, TheBookX | Books Starting at ₹1
+          Buy Books Online in India at Lowest Prices, TheBookX | Books Starting
+          at ₹1
         </h1>
         <BooksSkeleton />
         <BooksSkeleton />
@@ -129,14 +131,16 @@ export default function HomePage() {
 
       {/* <UnlockModal /> */}
 
-      <BestsellerStage />
+      {/* Review-photo trust gallery — replaces the Bestseller carousel */}
+      <ReviewGallery />
       {/* Floating ₹1 gift box temporarily removed */}
       {/* <OneRupeeHero /> */}
 
       {/* Live-orders social proof — below the bestseller section, by reviews */}
       <LiveOrdersStrip />
 
-      <StoreReviews />
+      {/* Verified store reviews now live inside ReviewGallery, revealed via its
+          "Read verified reviews" CTA. */}
 
       {/* QuickReads feature promo — below the bestseller + reviews section */}
       <QuickReadsPromo />

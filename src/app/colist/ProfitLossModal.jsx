@@ -250,7 +250,7 @@ export default function ProfitLossModal({
           {/* Show current saved settings info */}
           {existingPL && Object.keys(existingPL).length > 0 && (
             <div className="saved-info-message">
-              <span className="font-12 green">✓ Loaded saved P&L data</span>
+              <span className="font-12 green"> Loaded saved P&L data</span>
               {existingPL.settings?.useCustomBookCosts && (
                 <span className="font-12 gray-500 ml-12">
                   Custom book costs applied

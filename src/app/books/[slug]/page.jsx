@@ -12,15 +12,15 @@ function slugify(text) {
     .replace(/(^-|-$)/g, "");
 }
 
-// ✅ Metadata (also handles redirect case)
+// Metadata (also handles redirect case)
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   const decodedSlug = decodeURIComponent(slug).toLowerCase();
 
-  // 1️⃣ Try normal slug match
+  // 1⃣ Try normal slug match
   let book = books.find((b) => slugify(b.name) === decodedSlug);
 
-  // 2️⃣ If not found → try ID match
+  // 2⃣ If not found try ID match
   if (!book) {
     const bookById = books.find((b) => b.id.toLowerCase() === decodedSlug);
 
@@ -108,26 +108,26 @@ export async function generateMetadata({ params }) {
   };
 }
 
-// ✅ Page logic with redirect
+// Page logic with redirect
 export default async function BookDetailsPage({ params }) {
   const { slug } = await params;
   const decodedSlug = decodeURIComponent(slug).toLowerCase();
 
-  // 1️⃣ Try slug
+  // 1⃣ Try slug
   let book = books.find((b) => slugify(b.name) === decodedSlug);
 
-  // 2️⃣ If not found → try ID → redirect
+  // 2⃣ If not found try ID redirect
   if (!book) {
     const bookById = books.find((b) => b.id.toLowerCase() === decodedSlug);
 
     if (bookById) {
       const correctSlug = slugify(bookById.name);
 
-      // 🔥 THIS IS THE KEY LINE
+      // THIS IS THE KEY LINE
       redirect(`/books/${correctSlug}`);
     }
 
-    // 3️⃣ Not found at all
+    // 3⃣ Not found at all
     notFound();
   }
 

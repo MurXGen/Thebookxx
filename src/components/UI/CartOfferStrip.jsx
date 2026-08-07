@@ -4,13 +4,13 @@ import { useEffect, useMemo, useState } from "react";
 import { getCartOffers } from "@/utils/cartOffers";
 import { motion, animate, AnimatePresence } from "framer-motion";
 import { useStore } from "@/context/StoreContext";
-import { books } from "@/utils/book"; // 👈 needed to map id → image
+import { books } from "@/utils/book"; // needed to map id image
 import Link from "next/link";
 import { ArrowRight, Check, Lock, Gift, X } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 export default function CartOfferStrip({ discountedAmount }) {
-  const { cart } = useStore(); // ✅ FIX: real cart connection
+  const { cart } = useStore(); // FIX: real cart connection
   const pathname = usePathname();
 
   const isBagPage = pathname === "/bag";
@@ -18,7 +18,7 @@ export default function CartOfferStrip({ discountedAmount }) {
 
   if (discountedAmount === null || discountedAmount === undefined) return null;
 
-  /* 🛒 Merge cart with book data and check for ₹1 items */
+  /* Merge cart with book data and check for ₹1 items */
   const cartItems = useMemo(() => {
     return cart.map((item) => {
       const book = books.find((b) => b.id === item.id);
@@ -30,16 +30,16 @@ export default function CartOfferStrip({ discountedAmount }) {
     });
   }, [cart]);
 
-  /* ✅ Check if cart has any ₹1 book */
+  /* Check if cart has any ₹1 book */
   const hasOneRupeeItem = cartItems.some((item) => item.discountedPrice === 1);
 
-  /* ✅ Get dynamic offers based on ₹1 item presence */
+  /* Get dynamic offers based on ₹1 item presence */
   const CART_OFFERS = getCartOffers(hasOneRupeeItem);
 
-  /* ✅ Correct cart count */
+  /* Correct cart count */
   const cartCount = cart.reduce((acc, item) => acc + item.qty, 0);
 
-  /* 🎯 Offer Logic */
+  /* Offer Logic */
   const progressOffer = CART_OFFERS.find(
     (o) => discountedAmount >= o.min && discountedAmount < o.target,
   );
@@ -54,7 +54,7 @@ export default function CartOfferStrip({ discountedAmount }) {
 
   const target = progressOffer?.target || discountedAmount;
 
-  /* ✅ What the shopper has ALREADY unlocked (shown below the bar) */
+  /* What the shopper has ALREADY unlocked (shown below the bar) */
   const freeDeliveryAvailed = hasOneRupeeItem
     ? discountedAmount >= 399
     : discountedAmount >= 151;
@@ -65,7 +65,7 @@ export default function CartOfferStrip({ discountedAmount }) {
   if (freeDeliveryAvailed) availedChips.push("Free delivery");
   if (flatAvailed) availedChips.push(flatAvailed.reward);
 
-  /* 🎬 Smooth progress */
+  /* Smooth progress */
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
@@ -80,7 +80,7 @@ export default function CartOfferStrip({ discountedAmount }) {
     return () => controls.stop();
   }, [discountedAmount, target]);
 
-  /* 🎉 Confetti */
+  /* Confetti */
   const [showConfetti, setShowConfetti] = useState(false);
 
   useEffect(() => {
@@ -90,16 +90,19 @@ export default function CartOfferStrip({ discountedAmount }) {
     }
   }, [appliedOffer]);
 
-  /* 📋 Offer detail sheet */
+  /* Offer detail sheet */
   const [showOfferSheet, setShowOfferSheet] = useState(false);
 
-  /* 🧠 Message — always point to the NEXT target to drive AOV */
+  /* Message — always point to the NEXT target to drive AOV */
   const message = useMemo(() => {
-    /* 🎉 Everything unlocked (only at the very top of the ladder) */
+    /* Everything unlocked (only at the very top of the ladder) */
     if (!progressOffer) {
       return (
         <>
-          <span className="highlight-reward">🎉 You've unlocked every offer!</span>
+          <span className="highlight-reward">
+            {" "}
+            You've unlocked every offer!
+          </span>
         </>
       );
     }
@@ -121,9 +124,9 @@ export default function CartOfferStrip({ discountedAmount }) {
   /* Get the target message for the CTA based on ₹1 items */
   const getCTAMessage = () => {
     if (hasOneRupeeItem) {
-      return "Add more to unlock offers →";
+      return "Add more to unlock offers ";
     }
-    return "Continue shopping →";
+    return "Continue shopping ";
   };
 
   /* Get the correct link based on cart state */
@@ -134,7 +137,7 @@ export default function CartOfferStrip({ discountedAmount }) {
     return "/"; // Send to home page
   };
 
-  /* 🖼️ Preview cards */
+  /* Preview cards */
   const previewItems = cartItems.slice(0, 3);
 
   /* Get the appropriate offer text for display */
@@ -151,7 +154,7 @@ export default function CartOfferStrip({ discountedAmount }) {
 
   const offerDisplay = getOfferDisplay();
 
-  /* 🧱 The card content stays identical whether wrapped in Link or div */
+  /* The card content stays identical whether wrapped in Link or div */
   const stripContent = (
     <>
       {/* LEFT */}
@@ -211,7 +214,7 @@ export default function CartOfferStrip({ discountedAmount }) {
         {stripContent}
       </div>
 
-      {/* 📋 Offer detail sheet — all reward tiers with progress */}
+      {/* Offer detail sheet — all reward tiers with progress */}
       <AnimatePresence>
         {showOfferSheet && (
           <motion.div
@@ -261,7 +264,7 @@ export default function CartOfferStrip({ discountedAmount }) {
                         <span className="offer-tier-reward">{o.reward}</span>
                         <span className="offer-tier-note">
                           {unlocked
-                            ? "Unlocked 🎉"
+                            ? "Unlocked "
                             : `Add ₹${left} more (spend ₹${o.target})`}
                         </span>
                       </span>
@@ -269,7 +272,10 @@ export default function CartOfferStrip({ discountedAmount }) {
                   );
                 })}
               </div>
-              <Link href="/books" className="pri-big-btn width100 offer-sheet-cta">
+              <Link
+                href="/books"
+                className="pri-big-btn width100 offer-sheet-cta"
+              >
                 Add more books
                 <ArrowRight size={17} strokeWidth={2.5} />
               </Link>

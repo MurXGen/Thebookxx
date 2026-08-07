@@ -10,7 +10,15 @@ import LoadingButton from "./UI/LoadingButton";
 import { motion, AnimatePresence } from "framer-motion";
 import InstallPWA from "./InstallPWA";
 import { HiOutlineShoppingBag } from "react-icons/hi2";
-import { ArrowRight, Zap, Clock, Gift, Lock, Sparkles, Search } from "lucide-react";
+import {
+  ArrowRight,
+  Zap,
+  Clock,
+  Gift,
+  Lock,
+  Sparkles,
+  Search,
+} from "lucide-react";
 import SearchOverlay from "./SearchOverlay";
 import RecommendationModal from "./RecommendationModal";
 import { getRemainingOfferTime, getOneRupeeOfferData } from "@/utils/book";
@@ -84,7 +92,13 @@ export default function CartBar({ tab = "books" }) {
       );
       cleanup();
     };
-    const events = ["scroll", "pointerdown", "keydown", "pointermove", "touchstart"];
+    const events = [
+      "scroll",
+      "pointerdown",
+      "keydown",
+      "pointermove",
+      "touchstart",
+    ];
     const cleanup = () =>
       events.forEach((e) => window.removeEventListener(e, trigger));
     events.forEach((e) =>
@@ -96,7 +110,7 @@ export default function CartBar({ tab = "books" }) {
     };
   }, []);
 
-  // Open the Suggest modal on load when the URL carries ?suggest
+  // Open the Suggest modal on load when the URL carries?suggest
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (window.location.search.includes("suggest")) {
@@ -320,7 +334,7 @@ export default function CartBar({ tab = "books" }) {
           tabIndex={fabHint ? 0 : -1}
           aria-hidden={!fabHint}
         >
-          Need a book? Ask Suggest ✨
+          Need a book? Ask Suggest
         </button>
         <button
           type="button"
@@ -352,7 +366,7 @@ export default function CartBar({ tab = "books" }) {
         onClose={() => setSuggestOpen(false)}
       />
 
-      {/* 🎁 OFFER STRIP (books only — QuickReads has no cart offer) */}
+      {/* OFFER STRIP (books only — QuickReads has no cart offer) */}
       <AnimatePresence mode="wait">
         {!isQuickReads && hasCart && (
           <motion.div
@@ -368,7 +382,7 @@ export default function CartBar({ tab = "books" }) {
         )}
       </AnimatePresence>
 
-      {/* ⚡ QUICKREADS CART CTA */}
+      {/* QUICKREADS CART CTA */}
       <AnimatePresence mode="wait">
         {isQuickReads && qrCount > 0 && (
           <motion.div
@@ -400,7 +414,7 @@ export default function CartBar({ tab = "books" }) {
         )}
       </AnimatePresence>
 
-      {/* 🛒 CART CTA (books) */}
+      {/* CART CTA (books) */}
       <AnimatePresence mode="wait">
         {!isQuickReads && hasCart && (
           <motion.div

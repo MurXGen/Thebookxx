@@ -5,7 +5,15 @@ import { useState, useEffect, useMemo } from "react";
 import { books } from "@/utils/book";
 import LazyBookGrid from "@/components/UI/LazyBookGrid";
 import SearchOverlay from "@/components/SearchOverlay";
-import { Filter, X, ChevronDown, ChevronUp, Search, ArrowLeft, LayoutGrid } from "lucide-react";
+import {
+  Filter,
+  X,
+  ChevronDown,
+  ChevronUp,
+  Search,
+  ArrowLeft,
+  LayoutGrid,
+} from "lucide-react";
 import Script from "next/script";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -31,7 +39,7 @@ export default function BooksPage() {
   const [sortType, setSortType] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
   const [priceRange, setPriceRange] = useState({ min: 0, max: 5000 });
-  // Text query from ?q= (powers the Google sitelinks search box without the
+  // Text query from?q= (powers the Google sitelinks search box without the
   // useSearchParams Suspense requirement, read straight from the URL).
   const [textQuery, setTextQuery] = useState("");
 
@@ -41,7 +49,7 @@ export default function BooksPage() {
     if (q) setTextQuery(q);
   }, []);
 
-  /* 📚 Categories with a representative cover + count for the side rail */
+  /* Categories with a representative cover + count for the side rail */
   const railCategories = useMemo(() => {
     const map = new Map();
     books.forEach((b) => {
@@ -61,11 +69,15 @@ export default function BooksPage() {
   );
 
   const allCovers = useMemo(
-    () => books.filter((b) => b.image).slice(0, 2).map((b) => b.image),
+    () =>
+      books
+        .filter((b) => b.image)
+        .slice(0, 2)
+        .map((b) => b.image),
     [],
   );
 
-  /* 🔄 Filter + Sort books */
+  /* Filter + Sort books */
   const filteredBooks = useMemo(() => {
     let data = [...books];
 
@@ -73,7 +85,7 @@ export default function BooksPage() {
       data = data.filter((b) => b.catalogue?.includes(selectedCategory));
     }
 
-    // Free-text query (name or category) from the URL ?q= parameter
+    // Free-text query (name or category) from the URL?q= parameter
     const q = textQuery.trim().toLowerCase();
     if (q) {
       data = data.filter(
@@ -206,7 +218,9 @@ export default function BooksPage() {
             {selectedCategory === "all"
               ? "All Books"
               : getCategoryLabel(selectedCategory)}
-            <span className="page-title-count">{filteredBooks.length} books</span>
+            <span className="page-title-count">
+              {filteredBooks.length} books
+            </span>
           </h1>
           <div className="header-actions">
             <button
@@ -215,7 +229,11 @@ export default function BooksPage() {
               aria-label="Toggle filters"
             >
               <Filter size={14} />
-              {showFilters ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+              {showFilters ? (
+                <ChevronUp size={14} />
+              ) : (
+                <ChevronDown size={14} />
+              )}
             </button>
             {hasActiveFilters && (
               <button
@@ -353,19 +371,25 @@ export default function BooksPage() {
                   <div className="sort-options">
                     <button
                       className={`sort-btn ${sortType === "low" ? "active" : ""}`}
-                      onClick={() => setSortType(sortType === "low" ? null : "low")}
+                      onClick={() =>
+                        setSortType(sortType === "low" ? null : "low")
+                      }
                     >
                       Price: Low to High
                     </button>
                     <button
                       className={`sort-btn ${sortType === "high" ? "active" : ""}`}
-                      onClick={() => setSortType(sortType === "high" ? null : "high")}
+                      onClick={() =>
+                        setSortType(sortType === "high" ? null : "high")
+                      }
                     >
                       Price: High to Low
                     </button>
                     <button
                       className={`sort-btn ${sortType === "name" ? "active" : ""}`}
-                      onClick={() => setSortType(sortType === "name" ? null : "name")}
+                      onClick={() =>
+                        setSortType(sortType === "name" ? null : "name")
+                      }
                     >
                       Name A-Z
                     </button>
@@ -392,7 +416,7 @@ export default function BooksPage() {
           ) : (
             <div className="no-results">
               <div className="no-results-content">
-                <span className="no-results-icon">📚</span>
+                <span className="no-results-icon"></span>
                 <h3>No books found</h3>
                 <p>Try adjusting your filters or search criteria</p>
                 <button className="reset-filters-btn" onClick={clearFilters}>

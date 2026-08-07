@@ -1,18 +1,44 @@
 "use client";
 
-import Link from "next/link";
-import { ArrowRight, BadgeCheck, Truck, RotateCcw, Star } from "lucide-react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  ArrowRight,
+  BadgeCheck,
+  Truck,
+  RotateCcw,
+  Star,
+  X,
+} from "lucide-react";
+import { FaWhatsapp, FaInstagram } from "react-icons/fa";
 import { books } from "@/utils/book";
+
+const INSTAGRAM_URL = "https://www.instagram.com/thebookx.in/";
+const WHATSAPP_GROUP_URL =
+  "https://chat.whatsapp.com/Lk3okPbq21s8kJeoM3UA4c?mode=gi_t";
+
+// Overlapping member avatars shown in the Join-community sheet. Drop these
+// files into /public/review/promotions/ — any missing one is skipped.
+const COMMUNITY_AVATARS = [
+  "/review/promotions/member-1.jpeg",
+  "/review/promotions/member-2.jpeg",
+  "/review/promotions/member-3.jpeg",
+  "/review/promotions/member-4.jpeg",
+  "/review/promotions/member-5.jpeg",
+];
 
 // Static, above-the-fold hero. Gives the homepage a clear value proposition and
 // a real H1 before the animated Bestsellers carousel. All stats are derived
 // from the catalogue / policies, no invented numbers.
 export default function HomeHero() {
   const titleCount = Math.max(100, Math.floor(books.length / 100) * 100);
+  const [communityOpen, setCommunityOpen] = useState(false);
+  const [avatarBroken, setAvatarBroken] = useState({});
+  const avatars = COMMUNITY_AVATARS.filter((src) => !avatarBroken[src]);
 
   const stats = [
     { icon: BadgeCheck, label: `${titleCount}+ titles` },
-    { icon: Star, label: "4.4★ avg rating" },
+    { icon: Star, label: "4.4 avg rating" },
     { icon: Truck, label: "Free delivery" },
     { icon: RotateCcw, label: "7-day returns" },
   ];
@@ -20,27 +46,52 @@ export default function HomeHero() {
   return (
     <section className="home-hero">
       <div className="home-hero-inner">
-        <span className="home-hero-eyebrow">📚 India’s friendly online bookstore</span>
+        <span className="home-hero-eyebrow">
+          India’s friendly online bookstore
+        </span>
 
         <h1 className="home-hero-title">
-          Buy Books Online in India, {" "}
+          Buy Books Online in India,{" "}
           <span className="home-hero-accent">Starting at ₹1</span>
         </h1>
 
         <p className="home-hero-sub">
-          Hand-picked bestsellers, self-help and fiction at the lowest prices, starting at just ₹1.
-          Cash on Delivery, free shipping and easy 7-day returns across India.
+          Hand-picked bestsellers, self-help and fiction at the lowest prices,
+          starting at just ₹1. Cash on Delivery, free shipping and easy 7-day
+          returns across India.
         </p>
 
         <div className="home-hero-cta">
-          <a
-            href="https://www.instagram.com/thebookx.in/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="pri-big-btn home-hero-btn"
+          <button
+            type="button"
+            className="home-hero-community-btn"
+            onClick={() => setCommunityOpen(true)}
+            aria-label="Join our community"
           >
-            Join community <ArrowRight size={16} />
-          </a>
+            {avatars.length > 0 && (
+              <span className="community-avatars">
+                {avatars.map((src) => (
+                  <img
+                    key={src}
+                    src={src}
+                    alt=""
+                    className="community-avatar"
+                    loading="lazy"
+                    onError={() =>
+                      setAvatarBroken((prev) => ({ ...prev, [src]: true }))
+                    }
+                  />
+                ))}
+              </span>
+            )}
+            <span className="home-hero-community-label">
+              Join community
+              <span className="home-hero-community-sub">
+                5,000+ book lovers
+              </span>
+            </span>
+            <ArrowRight size={18} />
+          </button>
         </div>
 
         <div className="home-hero-stats">
@@ -52,6 +103,94 @@ export default function HomeHero() {
           ))}
         </div>
       </div>
+
+      {/* Join-community bottom sheet — Instagram + WhatsApp group */}
+      <AnimatePresence>
+        {communityOpen && (
+          <motion.div
+            className="bill-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setCommunityOpen(false)}
+            style={{ maxWidth: "980px", margin: "0 auto" }}
+          >
+            <motion.div
+              className="bill-modal community-sheet"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+              drag="y"
+              dragConstraints={{ top: 0, bottom: 0 }}
+              dragElastic={{ top: 0, bottom: 0.6 }}
+              onDragEnd={(e, info) => {
+                if (info.offset.y > 120 || info.velocity.y > 700)
+                  setCommunityOpen(false);
+              }}
+            >
+              <div className="bill-header">
+                <span className="weight-600 font-16">Join our community</span>
+                <span
+                  className="cursor-pointer"
+                  onClick={() => setCommunityOpen(false)}
+                >
+                  <X size={18} />
+                </span>
+              </div>
+
+              {avatars.length > 0 && (
+                <div className="community-avatars">
+                  {avatars.map((src) => (
+                    <img
+                      key={src}
+                      src={src}
+                      alt=""
+                      className="community-avatar"
+                      loading="lazy"
+                      onError={() =>
+                        setAvatarBroken((prev) => ({ ...prev, [src]: true }))
+                      }
+                    />
+                  ))}
+                  <span className="community-avatars-note">
+                    Join 5,000+ book lovers
+                  </span>
+                </div>
+              )}
+
+              <p className="community-sub">
+                Be first to know about ₹1 drops, new arrivals and exclusive
+                offers. Pick where you’d like to join us.
+              </p>
+
+              <div className="community-actions">
+                <a
+                  href={WHATSAPP_GROUP_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="community-btn wa"
+                  onClick={() => setCommunityOpen(false)}
+                >
+                  <FaWhatsapp size={20} />
+                  <span>Join WhatsApp group</span>
+                </a>
+                <a
+                  href={INSTAGRAM_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="community-btn ig"
+                  onClick={() => setCommunityOpen(false)}
+                >
+                  <FaInstagram size={20} />
+                  <span>Follow on Instagram</span>
+                </a>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }

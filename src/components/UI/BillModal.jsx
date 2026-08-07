@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 import { useTrackView } from "@/lib/trackingHooks";
 import { EVENTS } from "@/lib/trackingEvents";
 
@@ -81,12 +82,19 @@ export default function BillModal({
 
   return (
     <div className="bill-modal-overlay" onClick={onClose}>
-      <div className="bill-modal" onClick={(e) => e.stopPropagation()}>
+      <motion.div
+        className="bill-modal"
+        onClick={(e) => e.stopPropagation()}
+        drag="y"
+        dragConstraints={{ top: 0, bottom: 0 }}
+        dragElastic={{ top: 0, bottom: 0.6 }}
+        onDragEnd={(e, info) => {
+          if (info.offset.y > 120 || info.velocity.y > 700) onClose();
+        }}
+      >
         <div className="bill-header">
           <span className="font-16 weight-600">Bill Details</span>
-          <span className="cursor-pointer" onClick={onClose}>
-            ✕
-          </span>
+          <span className="cursor-pointer" onClick={onClose}></span>
         </div>
 
         <div className="bill-row">
@@ -121,19 +129,19 @@ export default function BillModal({
                 <span>
                   {isFasterDelivery ? (
                     <span className="flex items-center gap-4">
-                      <span>🚀 Faster Delivery</span>
+                      <span> Faster Delivery</span>
                       <span className="font-10 orange">(2-5 days)</span>
                     </span>
                   ) : deliveryCharge === 100 ? (
                     <div className="flex flex-col">
                       <span> Standard Delivery</span>
                       <span className="dark-50 font-10">
-                        Books more than ₹399 : Free Delivery
+                        Books more than ₹399: Free Delivery
                       </span>
                     </div>
                   ) : (
                     <span className="flex flex-col gap-4">
-                      <span>💛 Handling &amp; Care</span>
+                      <span> Handling &amp; Care</span>
                       <span className="font-10 dark-50">
                         packing, support &amp; secure shipping
                       </span>
@@ -157,7 +165,7 @@ export default function BillModal({
 
             {deliveryCharge === 0 && !isFasterDelivery && (
               <div className="bill-row">
-                <span>📦 Free Delivery</span>
+                <span> Free Delivery</span>
                 <span className="green">FREE</span>
               </div>
             )}
@@ -168,7 +176,7 @@ export default function BillModal({
         {hideDeliveryCharges && (
           <div className="bill-row" style={{ opacity: 0.7 }}>
             <span className="font-10 dark-50">
-              📦 Shipping will be calculated at checkout
+              Shipping will be calculated at checkout
             </span>
           </div>
         )}
@@ -176,7 +184,7 @@ export default function BillModal({
         {/* Gift Wrap */}
         {giftWrapSelected && giftWrapCharge > 0 && (
           <div className="bill-row">
-            <span>🎁 Gift Wrap</span>
+            <span> Gift Wrap</span>
             <span className="orange">+ ₹{giftWrapCharge}</span>
           </div>
         )}
@@ -208,7 +216,7 @@ export default function BillModal({
           <span>You Pay</span>
           <span className="weight-700 green font-20">₹{finalTotal}</span>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

@@ -25,6 +25,7 @@ import {
   CheckCircle2,
   Check,
   XCircle,
+  Bell,
   Bookmark,
   Minus,
   Plus,
@@ -44,7 +45,11 @@ import Script from "next/script";
 import { useEffect, useState, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { flyToCart } from "@/lib/flyToCart";
-import { hasQuickRead, QUICKREAD_PRICE, quickReadFrameCount } from "@/data/quickreads";
+import {
+  hasQuickRead,
+  QUICKREAD_PRICE,
+  quickReadFrameCount,
+} from "@/data/quickreads";
 import QuickReadsReader from "./quickreads/QuickReadsReader";
 import BookCard from "./BookCard";
 import Link from "next/link";
@@ -305,11 +310,7 @@ function FrequentlyBought({ book, companion, onAddBoth }) {
             {orig > total && <s className="bd-combo-orig">₹{orig}</s>}
           </div>
           {save > 0 && <span className="bd-combo-save">Save ₹{save}</span>}
-          <button
-            type="button"
-            className="bd-combo-btn"
-            onClick={onAddBoth}
-          >
+          <button type="button" className="bd-combo-btn" onClick={onAddBoth}>
             <ShoppingCart size={16} />
             Add both to cart
           </button>
@@ -335,7 +336,9 @@ function ReviewsSummary({ rating, reviewCount, dist }) {
           ))}
         </div>
         <div className="bd-rs-num">{Number(rating).toFixed(2)}</div>
-        <div className="bd-rs-count">Based on {reviewCount.toLocaleString()} reviews</div>
+        <div className="bd-rs-count">
+          Based on {reviewCount.toLocaleString()} reviews
+        </div>
       </div>
       <div className="bd-rs-bars">
         {[5, 4, 3, 2, 1].map((star) => {
@@ -343,7 +346,7 @@ function ReviewsSummary({ rating, reviewCount, dist }) {
           const pct = reviewCount ? (c / reviewCount) * 100 : 0;
           return (
             <div className="bd-rs-row" key={star}>
-              <span className="bd-rs-star">{star}★</span>
+              <span className="bd-rs-star">{star}</span>
               <div className="bd-rs-track">
                 <div className="bd-rs-fill" style={{ width: `${pct}%` }} />
               </div>
@@ -425,7 +428,9 @@ export default function BookDetailsModal({ book }) {
     {
       q: `What is the price of ${book.name}?`,
       a: `${book.name}${byAuthor} is available at just ₹${book.discountedPrice} on TheBookX${
-        discountPct ? ` (${discountPct}% off the ₹${book.originalPrice} MRP)` : ""
+        discountPct
+          ? ` (${discountPct}% off the ₹${book.originalPrice} MRP)`
+          : ""
       }, one of the lowest prices for this book online in India.`,
     },
     {
@@ -463,12 +468,14 @@ export default function BookDetailsModal({ book }) {
     const ATOMIC = books.find((b) => b.id === "bk-005"); // Atomic Habits
     if (book.id === "bk-002") return ATOMIC || relatedBooks[0] || null;
     if (book.catalogue?.includes("self-help"))
-      return (ART && ART.id !== book.id ? ART : ATOMIC) || relatedBooks[0] || null;
+      return (
+        (ART && ART.id !== book.id ? ART : ATOMIC) || relatedBooks[0] || null
+      );
     return relatedBooks[0] || null;
   }, [book.id, book.catalogue, relatedBooks]);
 
   // Star distribution for the reviews summary. Use real per-star counts when
-  // reviews exist; otherwise synthesize a realistic 5★-skewed spread that sums
+  // reviews exist; otherwise synthesize a realistic 5-skewed spread that sums
   // to reviewCount so the bars always render.
   const reviewDist = useMemo(() => {
     const d = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
@@ -872,7 +879,7 @@ export default function BookDetailsModal({ book }) {
                 </div>
               )}
               {isOneRupee && book.stock > 0 && (
-                <div className="bd-deal-badge">🔥 Just ₹1</div>
+                <div className="bd-deal-badge"> Just ₹1</div>
               )}
 
               {/* Format chips — sit directly below the cover image */}
@@ -979,36 +986,31 @@ export default function BookDetailsModal({ book }) {
                 />
                 <meta itemProp="seller" content="TheBookX" />
 
-                <div className="bd-stock-line">
-                  {isOutOfStock ? (
-                    <>
-                      <XCircle size={14} className="bd-stock-icon-danger" />
-                      <span className="bd-stock-text bd-text-danger">
-                        Currently out of stock
-                      </span>
-                    </>
-                  ) : book.stock < 10 ? (
-                    <>
-                      <CheckCircle2
-                        size={14}
-                        className="bd-stock-icon-warning"
-                      />
-                      <span className="bd-stock-text bd-text-warning">
-                        Only {book.stock} left, order soon
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle2
-                        size={14}
-                        className="bd-stock-icon-success"
-                      />
-                      <span className="bd-stock-text bd-text-success">
-                        In stock, delivers in 3-7 days
-                      </span>
-                    </>
-                  )}
-                </div>
+                {!isOutOfStock && (
+                  <div className="bd-stock-line">
+                    {book.stock < 10 ? (
+                      <>
+                        <CheckCircle2
+                          size={14}
+                          className="bd-stock-icon-warning"
+                        />
+                        <span className="bd-stock-text bd-text-warning">
+                          Only {book.stock} left, order soon
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle2
+                          size={14}
+                          className="bd-stock-icon-success"
+                        />
+                        <span className="bd-stock-text bd-text-success">
+                          In stock, delivers in 3-7 days
+                        </span>
+                      </>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* ===== QuickReads add-on — bundle it with the book =====
@@ -1031,7 +1033,9 @@ export default function BookDetailsModal({ book }) {
                     </span>
                   </div>
                   <div className="bd-qr-addon-right">
-                    <span className="bd-qr-addon-price">+₹{QUICKREAD_PRICE}</span>
+                    <span className="bd-qr-addon-price">
+                      +₹{QUICKREAD_PRICE}
+                    </span>
                     <div className="bd-qr-addon-actions">
                       <button
                         type="button"
@@ -1137,6 +1141,21 @@ export default function BookDetailsModal({ book }) {
                   Go to Bag
                 </Link>
               </div>
+            ) : isOutOfStock ? (
+              <a
+                href={`https://wa.me/917710892108?text=${encodeURIComponent(
+                  `Hi TheBookX, please make "${book.name}"${
+                    book.author ? ` by ${book.author}` : ""
+                  } available and notify me when it's back in stock.`,
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bd-cta-primary bd-cta-notify"
+                aria-label={`Notify me when ${book.name} is back in stock`}
+              >
+                <Bell size={18} />
+                Notify me
+              </a>
             ) : (
               <LoadingButton
                 className="bd-cta-primary"
@@ -1144,7 +1163,7 @@ export default function BookDetailsModal({ book }) {
                 aria-disabled={isAddDisabled}
                 icon={<ShoppingCart size={18} />}
               >
-                {isOutOfStock ? "Out of Stock" : "Add to Cart"}
+                Add to Cart
               </LoadingButton>
             )}
           </div>
@@ -1213,12 +1232,12 @@ export default function BookDetailsModal({ book }) {
                     </dd>
                   </div>
                 )}
-                <div className="bd-spec-row">
-                  <dt className="bd-spec-label">Availability</dt>
-                  <dd className="bd-spec-value">
-                    {book.stock > 0 ? `${book.stock} in stock` : "Out of stock"}
-                  </dd>
-                </div>
+                {!isOutOfStock && (
+                  <div className="bd-spec-row">
+                    <dt className="bd-spec-label">Availability</dt>
+                    <dd className="bd-spec-value">{book.stock} in stock</dd>
+                  </div>
+                )}
               </dl>
             </Accordion>
 
@@ -1357,14 +1376,17 @@ export default function BookDetailsModal({ book }) {
           {/* ===== SEO content block — readable, keyword-rich prose ===== */}
           <section className="bd-seo-block" aria-label={`About ${book.name}`}>
             <h2 className="bd-seo-title">
-              Buy {book.name}{byAuthor} online in India
+              Buy {book.name}
+              {byAuthor} online in India
             </h2>
             <p className="bd-seo-text">
               Looking to buy <strong>{book.name}</strong>
               {byAuthor} online at the lowest price in India? You&apos;re in the
               right place. TheBookX offers {book.name} for just ₹
               {book.discountedPrice}
-              {discountPct ? ` — ${discountPct}% off the ₹${book.originalPrice} MRP` : ""}
+              {discountPct
+                ? ` — ${discountPct}% off the ₹${book.originalPrice} MRP`
+                : ""}
               , with <strong>free delivery</strong>,{" "}
               <strong>Cash on Delivery (COD)</strong> and fast UPI checkout
               available across India. Every copy is 100% genuine and ships in
@@ -1450,14 +1472,31 @@ export default function BookDetailsModal({ book }) {
                   color={inWishlist ? "var(--danger)" : "var(--foreground)"}
                 />
               </button>
-              <LoadingButton
-                className="bd-sticky-add-btn"
-                onClick={handleAddToCart}
-                aria-disabled={isAddDisabled}
-                icon={<ShoppingCart size={18} />}
-              >
-                {isOutOfStock ? "Out of Stock" : "Add to Cart"}
-              </LoadingButton>
+              {isOutOfStock ? (
+                <a
+                  href={`https://wa.me/917710892108?text=${encodeURIComponent(
+                    `Hi TheBookX, please make "${book.name}"${
+                      book.author ? ` by ${book.author}` : ""
+                    } available and notify me when it's back in stock.`,
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bd-sticky-add-btn bd-cta-notify"
+                  aria-label={`Notify me when ${book.name} is back in stock`}
+                >
+                  <Bell size={18} />
+                  Notify me
+                </a>
+              ) : (
+                <LoadingButton
+                  className="bd-sticky-add-btn"
+                  onClick={handleAddToCart}
+                  aria-disabled={isAddDisabled}
+                  icon={<ShoppingCart size={18} />}
+                >
+                  Add to Cart
+                </LoadingButton>
+              )}
             </>
           )}
         </div>

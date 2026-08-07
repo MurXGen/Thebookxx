@@ -54,7 +54,7 @@ export default function ScratchRewardSheet({
               <span className="scratch-sheet-title">
                 {scratched
                   ? eligible
-                    ? "Reward unlocked! 🎉"
+                    ? "Reward unlocked! "
                     : "Better luck next time"
                   : "Scratch the card to reveal your reward"}
               </span>
@@ -65,12 +65,12 @@ export default function ScratchRewardSheet({
                 width={300}
                 height={190}
                 revealText={
-                  eligible ? `₹${reward} won! 🎉` : "Better luck next time"
+                  eligible ? `₹${reward} won! ` : "Better luck next time"
                 }
                 revealSub={
                   eligible
                     ? "Added to your TheBookX wallet"
-                    : "You already have wallet credit 💛"
+                    : "You already have wallet credit "
                 }
                 onComplete={onScratch}
               />
@@ -93,7 +93,7 @@ export default function ScratchRewardSheet({
             >
               {scratched
                 ? onViewProfile
-                  ? "View my profile →"
+                  ? "View my profile "
                   : "Awesome, thanks!"
                 : "Maybe later"}
             </button>

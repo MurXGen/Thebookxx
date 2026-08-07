@@ -200,7 +200,7 @@ export default function BookReviews({ bookId, bookName, authorName }) {
                     </div>
                   </div>
                   {review.verified && (
-                    <span className="verified-badge">✓ Verified</span>
+                    <span className="verified-badge"> Verified</span>
                   )}
                 </div>
 
@@ -289,7 +289,7 @@ export default function BookReviews({ bookId, bookName, authorName }) {
         {/* All reviews loaded message */}
         {/* {!hasMore && visibleReviews.length > 0 && (
           <div className="all-reviews-loaded font-12 flex flex-row justify-center">
-            ✨ You've seen all reviews for "{bookName}" ✨
+             You've seen all reviews for "{bookName}"
           </div>
         )} */}
       </div>

@@ -22,7 +22,7 @@ export default function SlideConfirm({ onComplete, disabled, resetTrigger }) {
     }
   };
 
-  // 🔹 Reset when modal closes
+  // Reset when modal closes
   useEffect(() => {
     animate(x, 0, { type: "spring", stiffness: 300 });
   }, [resetTrigger]);

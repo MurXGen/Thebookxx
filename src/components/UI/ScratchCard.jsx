@@ -10,7 +10,7 @@ export default function ScratchCard({
   width = 300,
   height = 180,
   revealText = "Better luck next time",
-  revealSub = "Thanks for reviewing 💛",
+  revealSub = "Thanks for reviewing ",
   onComplete,
 }) {
   const canvasRef = useRef(null);
@@ -35,7 +35,7 @@ export default function ScratchCard({
     ctx.font = "bold 16px Poppins, sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText("✨ Scratch here ✨", width / 2, height / 2);
+    ctx.fillText(" Scratch here ", width / 2, height / 2);
 
     let drawing = false;
     let done = false;

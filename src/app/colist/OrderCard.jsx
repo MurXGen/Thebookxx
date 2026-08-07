@@ -183,7 +183,7 @@ export default function OrderCard({
           <span
             className={`status-badge ${order.paymentStatus === "paid" ? "paid" : "pending"}`}
           >
-            {order.paymentStatus === "paid" ? "✅ Paid" : "⏳ Pending"}
+            {order.paymentStatus === "paid" ? " Paid" : "⏳ Pending"}
           </span>
           {order.paymentStatus === "pending" && order.status?.advancePaid && (
             <span className="advance-badge">
@@ -245,7 +245,7 @@ export default function OrderCard({
             {hasCustomBookCosts && (
               <div className="profit-item">
                 <span className="font-10 gray-500">
-                  📊 Custom book costs applied
+                  Custom book costs applied
                 </span>
               </div>
             )}
@@ -563,7 +563,7 @@ function ViewStatusDetails({ order, codInfo }) {
       )}
       <p>
         <strong>Payment Status:</strong>{" "}
-        {order.paymentStatus === "paid" ? "✅ Paid" : "⏳ Pending"}
+        {order.paymentStatus === "paid" ? " Paid" : "⏳ Pending"}
       </p>
       {order.paymentStatus === "pending" && order.status?.advancePaid && (
         <p>
@@ -580,11 +580,11 @@ function ViewStatusDetails({ order, codInfo }) {
         )}
       <p>
         <strong>Item Shipped:</strong>{" "}
-        {order.status?.isShipped ? "✅ Yes" : "❌ No"}
+        {order.status?.isShipped ? " Yes" : " No"}
       </p>
       <p>
         <strong>Item Delivered:</strong>{" "}
-        {order.status?.isDelivered ? "✅ Yes" : "❌ No"}
+        {order.status?.isDelivered ? " Yes" : " No"}
       </p>
     </>
   );

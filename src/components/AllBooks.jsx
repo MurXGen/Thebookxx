@@ -264,7 +264,7 @@ export default function AllBooks() {
 
       {filteredBooks.length === 0 && (
         <div style={{ textAlign: "center", padding: "60px 20px" }}>
-          <div style={{ fontSize: "48px", marginBottom: "12px" }}>📚</div>
+          <div style={{ fontSize: "48px", marginBottom: "12px" }}></div>
           <h3 className="font-16 weight-600">No books match your filters</h3>
           <p className="font-12 dark-50 mt-8">
             Try adjusting your filters or clear them to see all books
@@ -316,7 +316,7 @@ export default function AllBooks() {
             color: "#666",
           }}
         >
-          ✨ You{"'"}ve seen all {visibleBooks.length} books ✨
+          You{"'"}ve seen all {visibleBooks.length} books
         </div>
       )}
 

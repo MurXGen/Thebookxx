@@ -28,16 +28,35 @@ import { trackEvent } from "@/lib/ga";
 // Rotating trust promos shown in the black stripe below the navbar.
 // Meaningful, contextual one-liners (white text, colour-accented icon).
 const TRUST_PROMOS = [
-  { icon: Truck, label: "Free delivery on every order across India", color: "#22c55e" },
-  { icon: Wallet, label: "Pay cash on delivery — order worry-free", color: "#60a5fa" },
-  { icon: ShieldCheck, label: "Trusted by thousands of happy readers", color: "#fbbf24" },
-  { icon: Sparkles, label: "Grab bestselling books from just ₹1", color: "#f472b6" },
+  {
+    icon: Truck,
+    label: "Free delivery on every order across India",
+    color: "#22c55e",
+  },
+  {
+    icon: Wallet,
+    label: "Pay cash on delivery — order worry-free",
+    color: "#60a5fa",
+  },
+  {
+    icon: ShieldCheck,
+    label: "Trusted by thousands of happy readers",
+    color: "#fbbf24",
+  },
+  {
+    icon: Sparkles,
+    label: "Grab bestselling books from just ₹1",
+    color: "#f472b6",
+  },
 ];
 
 function RotatingTrust() {
   const [i, setI] = useState(0);
   useEffect(() => {
-    const t = setInterval(() => setI((p) => (p + 1) % TRUST_PROMOS.length), 2200);
+    const t = setInterval(
+      () => setI((p) => (p + 1) % TRUST_PROMOS.length),
+      2200,
+    );
     return () => clearInterval(t);
   }, []);
   const { icon: Icon, label, color } = TRUST_PROMOS[i];
@@ -126,7 +145,7 @@ export default function Navbar() {
       <header className={`navbar-wrapper${navHidden ? " nav-hidden" : ""}`}>
         {/* <div className="flex flex-row justify-between">
           <div className="mobile-offer-strip width100">
-            
+
             <motion.span
               className="badge-star"
               animate={{ rotate: 360 }}
@@ -135,7 +154,7 @@ export default function Navbar() {
               <Star size={14} />
             </motion.span>
 
-            
+
             <div className="offer-text-wrapper">
               <AnimatePresence mode="wait">
                 <motion.span
@@ -152,7 +171,7 @@ export default function Navbar() {
             </div>
           </div>
         </div> */}
-        {/* 🔥 Mobile promo strip */}
+        {/* Mobile promo strip */}
 
         <nav className="navbar section-1200">
           {/* LEFT — menu + brand */}

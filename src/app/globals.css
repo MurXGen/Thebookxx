@@ -10545,6 +10545,16 @@ textarea.sec-mid-btn,
   cursor: not-allowed;
 }
 
+/* Out-of-stock "Notify me" CTA (WhatsApp) — reuses primary/sticky sizing */
+.bd-cta-notify {
+  text-decoration: none;
+  background: #25d366 !important;
+  color: #fff !important;
+}
+.bd-cta-notify:hover {
+  filter: brightness(1.04);
+}
+
 /* ---------- Accordions ---------- */
 .bd-accordions {
   display: flex;
@@ -12095,6 +12105,111 @@ img[data-loaded="true"] {
   border-radius: var(--r-pill);
   background: var(--dark-20);
   margin: 2px auto 12px;
+  cursor: grab;
+}
+
+/* Join-community bottom sheet */
+.community-avatars {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin: 4px 0 2px;
+}
+.community-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--background, #fff);
+  box-shadow: 0 2px 6px -2px rgba(0, 0, 0, 0.3);
+  margin-left: -14px;
+}
+.community-avatar:first-child {
+  margin-left: 0;
+}
+.community-avatars-note {
+  margin-left: 12px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--dark-50, #6b7280);
+}
+/* Merged hero button: overlapping avatars + label, feels like one button */
+.home-hero-community-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 20px 8px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--hairline, #ececec);
+  background: var(--background, #fff);
+  color: var(--foreground);
+  cursor: pointer;
+  box-shadow: 0 8px 22px -14px rgba(0, 0, 0, 0.4);
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.15s ease;
+}
+.home-hero-community-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 26px -14px rgba(0, 0, 0, 0.45);
+}
+.home-hero-community-btn .community-avatars {
+  margin: 0;
+}
+.home-hero-community-label {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.15;
+  font-size: 15px;
+  font-weight: 800;
+}
+.home-hero-community-sub {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--dark-50, #6b7280);
+}
+.community-sub {
+  font-size: 13.5px;
+  color: var(--dark-50);
+  line-height: 1.5;
+  margin: 6px 0 18px;
+}
+.community-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.community-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+  transition: filter 0.15s ease, transform 0.1s ease;
+}
+.community-btn:active {
+  transform: scale(0.99);
+}
+.community-btn.wa {
+  background: #25d366;
+}
+.community-btn.ig {
+  background: linear-gradient(
+    92deg,
+    #f9ce34 0%,
+    #ee2a7b 45%,
+    #6228d7 100%
+  );
+}
+.community-btn:hover {
+  filter: brightness(1.04);
 }
 
 /* ---------- Cards: gentle elevation on the common patterns ---------- */
@@ -12859,6 +12974,190 @@ img[data-loaded="true"] {
   scroll-snap-type: x proximity;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
+}
+
+/* Review-photo trust gallery — coverflow carousel (replaces bestsellers) */
+.review-gallery-wrapper {
+  width: 100%;
+  margin: 8px 0;
+}
+.review-cf-header {
+  text-align: center;
+}
+.review-cf-title {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--foreground);
+  margin: 0;
+}
+.review-cf-subtitle {
+  text-align: center;
+  font-size: 13px;
+  color: var(--dark-50, #6b7280);
+  margin: 4px 0 0;
+}
+/* Active buyer caption */
+.review-cf-caption {
+  min-height: 92px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+.review-cf-caption-inner {
+  max-width: 460px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.review-cf-stars {
+  display: inline-flex;
+  gap: 2px;
+}
+.review-cf-text {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.45;
+  font-weight: 600;
+  color: var(--foreground);
+}
+.review-cf-author {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--dark-50, #6b7280);
+}
+.review-cf-verified {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #15803d;
+  background: rgba(34, 197, 94, 0.13);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+.review-cf {
+  position: relative;
+  height: 320px;
+  overflow: hidden;
+}
+.review-cf-track {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+/* White fade masks on both edges */
+.review-cf-mask {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 16%;
+  z-index: 20;
+  pointer-events: none;
+}
+.review-cf-mask-left {
+  left: 0;
+  background: linear-gradient(
+    90deg,
+    var(--background, #fff) 12%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+.review-cf-mask-right {
+  right: 0;
+  background: linear-gradient(
+    270deg,
+    var(--background, #fff) 12%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+.review-cf-card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 220px;
+  height: 300px;
+  margin-left: -110px;
+  margin-top: -150px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--hairline, #ececec);
+  background: var(--surface-2, #faf9f7);
+  box-shadow: 0 10px 30px -14px rgba(0, 0, 0, 0.4);
+}
+.review-cf-card img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.review-cf-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+.review-cf-reviews-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--hairline, #ececec);
+  background: var(--background, #fff);
+  color: var(--foreground);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px -8px rgba(0, 0, 0, 0.35);
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+.review-cf-reviews-cta:hover {
+  border-color: var(--tertiary, #fb8500);
+  color: var(--tertiary, #fb8500);
+}
+.review-cf-cta-caret {
+  transition: transform 0.2s ease;
+}
+.review-cf-reviews-cta.open .review-cf-cta-caret {
+  transform: rotate(180deg);
+}
+.review-cf-reviews {
+  margin-top: 6px;
+}
+.review-cf-playpause {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--hairline, #ececec);
+  background: var(--background, #fff);
+  color: var(--foreground);
+  cursor: pointer;
+  box-shadow: 0 4px 14px -8px rgba(0, 0, 0, 0.35);
+}
+@media (max-width: 680px) {
+  .review-cf {
+    height: 280px;
+  }
+  .review-cf-mask {
+    width: 22%;
+  }
+  .review-cf-card {
+    width: 180px;
+    height: 250px;
+    margin-left: -90px;
+    margin-top: -125px;
+  }
 }
 .catalogue-scroll::-webkit-scrollbar {
   display: none;

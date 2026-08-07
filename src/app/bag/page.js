@@ -87,7 +87,7 @@ function BagContent() {
     }
   }, []);
 
-  // A shared bag link: /bag?shared=bk-002:1,bk-005:2 → show the shared books
+  // A shared bag link: /bag?shared=bk-002:1,bk-005:2 show the shared books
   useEffect(() => {
     const shared = searchParams.get("shared");
     if (!shared) return;
@@ -113,7 +113,7 @@ function BagContent() {
       if (navigator.share && window.innerWidth <= 768) {
         await navigator.share({
           title: "My TheBookX bag",
-          text: "Check out the books I picked on TheBookX 📚",
+          text: "Check out the books I picked on TheBookX ",
           url,
         });
       } else {
@@ -169,7 +169,7 @@ function BagContent() {
             <div className="bill-header">
               <div className="flex flex-col">
                 <span className="weight-600 font-16 flex items-center gap-8">
-                  📚 A bag was shared with you
+                  A bag was shared with you
                 </span>
                 <span className="font-12 gray-500">
                   {sharedBooks.length} book
@@ -247,10 +247,16 @@ function BagContent() {
 
   // Recommendations for the empty-bag state (exclude ₹1 books).
   const recTrending = books
-    .filter((b) => (b.catalogue || []).includes("trending") && b.discountedPrice !== 1)
+    .filter(
+      (b) =>
+        (b.catalogue || []).includes("trending") && b.discountedPrice !== 1,
+    )
     .slice(0, 10);
   const recBest = books
-    .filter((b) => (b.catalogue || []).includes("bestseller") && b.discountedPrice !== 1)
+    .filter(
+      (b) =>
+        (b.catalogue || []).includes("bestseller") && b.discountedPrice !== 1,
+    )
     .slice(0, 10);
   const recQuick = books
     .filter((b) => quickReadFrameCount(b.id) > 0 && b.discountedPrice !== 1)
@@ -268,7 +274,9 @@ function BagContent() {
   const [openReaderBook, setOpenReaderBook] = useState(null);
   useEffect(() => {
     const ids = unlockedBookIds();
-    setLibraryBooks(ids.map((id) => books.find((b) => b.id === id)).filter(Boolean));
+    setLibraryBooks(
+      ids.map((id) => books.find((b) => b.id === id)).filter(Boolean),
+    );
   }, []);
 
   // Honor the tab the user actually selected (so clicking "Books" always shows
@@ -350,9 +358,7 @@ function BagContent() {
     upsellAccepted && cartBooks.some((b) => b.id === ART_UPSELL_ID) ? 40 : 0;
   if (upsellDiscount) {
     offerDiscount += upsellDiscount;
-    offerLabel = offerLabel
-      ? `${offerLabel} + ₹40 add-on`
-      : "₹40 book add-on";
+    offerLabel = offerLabel ? `${offerLabel} + ₹40 add-on` : "₹40 book add-on";
   }
 
   const finalPayable = totalDiscounted - offerDiscount;
@@ -371,8 +377,8 @@ function BagContent() {
     hasOneRupeeItem,
   );
   // Faster-delivery pricing is by total cart WEIGHT (grams):
-  //   <200 → ₹40 · 200–400 → ₹69 · 400–800 → ₹99 · 800–1200 → ₹150
-  //   1200–1500 → ₹180 · 1500–2000 → ₹220 · >2000 → not available (contact us)
+  // <200 ₹40 · 200–400 ₹69 · 400–800 ₹99 · 800–1200 ₹150
+  // 1200–1500 ₹180 · 1500–2000 ₹220 · >2000 not available (contact us)
   const cartWeight = cartBooks.reduce(
     (s, b) => s + (Number(b.weight) || 0) * (b.qty || 1),
     0,
@@ -453,42 +459,42 @@ function BagContent() {
 
     let deliveryInfo = `${addressData.city || "Not specified"} - ${addressData.pincode || "Not specified"}`;
     if (fasterDeliveryChoice) {
-      deliveryInfo += ` 🚀 (${deliveryLabel} +₹${deliveryCharge})`;
+      deliveryInfo += ` (${deliveryLabel} +₹${deliveryCharge})`;
     } else if (deliveryCharge > 0) {
-      deliveryInfo += ` 📦 (${deliveryLabel} +₹${deliveryCharge})`;
+      deliveryInfo += ` (${deliveryLabel} +₹${deliveryCharge})`;
     } else {
-      deliveryInfo += ` 📦 (Free Delivery)`;
+      deliveryInfo += ` (Free Delivery)`;
     }
 
     if (giftWrapSelected) {
-      deliveryInfo += ` 🎁 (Gift Wrap +₹${GIFT_WRAP_CHARGE})`;
+      deliveryInfo += ` (Gift Wrap +₹${GIFT_WRAP_CHARGE})`;
     }
 
     if (codFee > 0) {
-      deliveryInfo += ` 💵 (COD Handling Fee +₹${codFee})`;
+      deliveryInfo += ` (COD Handling Fee +₹${codFee})`;
     }
 
     if (bundledQrTotal > 0) {
-      deliveryInfo += ` ⚡ (${qrItems.length} QuickRead${qrItems.length > 1 ? "s" : ""} +₹${bundledQrTotal})`;
+      deliveryInfo += ` (${qrItems.length} QuickRead${qrItems.length > 1 ? "s" : ""} +₹${bundledQrTotal})`;
     }
 
     return `
 *CONFIRM MY ORDER*
 
-✨👋 Hey hi, I want to confirm my order! 👋✨
+ Hey hi, I want to confirm my order!
 
-👤 *Name:* ${addressData.name || "Customer"}
-📞 *Phone:* ${addressData.phone || "Not provided"}
+ *Name:* ${addressData.name || "Customer"}
+ *Phone:* ${addressData.phone || "Not provided"}
 
-📍 *Delivery:* ${deliveryInfo}
+ *Delivery:* ${deliveryInfo}
 
-💰 *Total Amount:* ₹${totalWithDelivery}${codFee > 0 ? ` (incl. ₹${codFee} COD fee)` : ""}
-💳 *Payment:* ${paymentType === "COD" ? "Cash on Delivery" : "UPI Payment"}
+ *Total Amount:* ₹${totalWithDelivery}${codFee > 0 ? ` (incl. ₹${codFee} COD fee)` : ""}
+ *Payment:* ${paymentType === "COD" ? "Cash on Delivery" : "UPI Payment"}
 
-🔗 *View Full Order Details:*
+ *View Full Order Details:*
 ${shortLink}
 
-Thank you! 🙏
+Thank you!
 `;
   };
 
@@ -512,31 +518,31 @@ Thank you! 🙏
 
     const qrLines =
       bundledQrTotal > 0
-        ? `\n\n━━━━━━━━━━━━━━━━━━━━\n*⚡ QUICKREADS (billed together)*\n━━━━━━━━━━━━━━━━━━━━\n${qrItems
+        ? `\n\n━━━━━━━━━━━━━━━━━━━━\n* QUICKREADS (billed together)*\n━━━━━━━━━━━━━━━━━━━━\n${qrItems
             .map((b, idx) => `${idx + 1}. *${b.name}* = ₹${QUICKREAD_PRICE}`)
             .join("\n")}`
         : "";
 
     const orderMessage = `
-🛍️ *NEW ORDER - THEBOOKX*
+ *NEW ORDER - THEBOOKX*
 
 ━━━━━━━━━━━━━━━━━━━━
-*👤 CUSTOMER DETAILS*
+* CUSTOMER DETAILS*
 ━━━━━━━━━━━━━━━━━━━━
-👨 *Name:* ${addressData.name || "Customer"}
-📞 *Phone:* ${addressData.phone || "Not provided"}
+ *Name:* ${addressData.name || "Customer"}
+ *Phone:* ${addressData.phone || "Not provided"}
 
 ━━━━━━━━━━━━━━━━━━━━
-*📍 DELIVERY ADDRESS*
+* DELIVERY ADDRESS*
 ━━━━━━━━━━━━━━━━━━━━
-🏠 *Address:* ${addressData.address || "Not provided"}
-🏙️ *City:* ${addressData.city || "Not specified"}
-🗺️ *District:* ${addressData.district || "Not specified"}
-📍 *State:* ${addressData.state || "Not specified"}
-📮 *Pincode:* ${addressData.pincode || "Not specified"}
+ *Address:* ${addressData.address || "Not provided"}
+ *City:* ${addressData.city || "Not specified"}
+ *District:* ${addressData.district || "Not specified"}
+ *State:* ${addressData.state || "Not specified"}
+ *Pincode:* ${addressData.pincode || "Not specified"}
 
 ━━━━━━━━━━━━━━━━━━━━
-*📦 ORDER SUMMARY*
+* ORDER SUMMARY*
 ━━━━━━━━━━━━━━━━━━━━
 ${cartBooks
   .map(
@@ -546,24 +552,24 @@ ${cartBooks
   .join("\n")}${qrLines}
 
 ━━━━━━━━━━━━━━━━━━━━
-*💰 BILL DETAILS*
+* BILL DETAILS*
 ━━━━━━━━━━━━━━━━━━━━
-📚 Subtotal: ₹${totalDiscounted}
-🎁 Offer Discount: -₹${offerDiscount}
-🚚 Delivery: ${deliveryLabel}
-📦 Delivery Charge: +₹${deliveryCharge}${giftWrapSelected ? `\n🎁 Gift Wrap: +₹${GIFT_WRAP_CHARGE}` : ""}${codFee > 0 ? `\n💵 COD Handling Fee: +₹${codFee}` : ""}${bundledQrTotal > 0 ? `\n⚡ QuickReads (${qrItems.length}): +₹${bundledQrTotal}` : ""}
+ Subtotal: ₹${totalDiscounted}
+ Offer Discount: -₹${offerDiscount}
+ Delivery: ${deliveryLabel}
+ Delivery Charge: +₹${deliveryCharge}${giftWrapSelected ? `\n Gift Wrap: +₹${GIFT_WRAP_CHARGE}` : ""}${codFee > 0 ? `\n COD Handling Fee: +₹${codFee}` : ""}${bundledQrTotal > 0 ? `\n QuickReads (${qrItems.length}): +₹${bundledQrTotal}` : ""}
 ━━━━━━━━━━━━━━━━━━━━
-*💵 TOTAL PAYABLE: ₹${totalWithDelivery}*${codFee > 0 ? `\n_(includes ₹${codFee} COD fee, collected at delivery)_` : ""}
+* TOTAL PAYABLE: ₹${totalWithDelivery}*${codFee > 0 ? `\n_(includes ₹${codFee} COD fee, collected at delivery)_` : ""}
 
 ━━━━━━━━━━━━━━━━━━━━
-*💳 PAYMENT METHOD*
+* PAYMENT METHOD*
 ━━━━━━━━━━━━━━━━━━━━
-${paymentType === "COD" ? `💵 Cash on Delivery (incl. ₹${codFee} fee)` : "📱 UPI Payment"}
+${paymentType === "COD" ? ` Cash on Delivery (incl. ₹${codFee} fee)` : " UPI Payment"}
 
-🔗 *Order Link:* ${shortLink}
+ *Order Link:* ${shortLink}
 
 ━━━━━━━━━━━━━━━━━━━━
-_Thank you for shopping with TheBookX! 📚✨_
+_Thank you for shopping with TheBookX! _
     `;
 
     const url = "https://api.journalx.app/api/bookxTelegram/order";
@@ -577,8 +583,8 @@ _Thank you for shopping with TheBookX! 📚✨_
     });
 
     // 1) Try sendBeacon first — it is designed to reliably deliver data even
-    //    when the page immediately navigates away (the WhatsApp redirect on
-    //    mobile was killing the old fetch before it left the device).
+    // when the page immediately navigates away (the WhatsApp redirect on
+    // mobile was killing the old fetch before it left the device).
     let delivered = false;
     try {
       if (typeof navigator !== "undefined" && navigator.sendBeacon) {
@@ -590,7 +596,7 @@ _Thank you for shopping with TheBookX! 📚✨_
     }
 
     // 2) Fallback: keepalive fetch (also survives navigation). Fire-and-forget
-    //    so it never blocks/delays the WhatsApp redirect.
+    // so it never blocks/delays the WhatsApp redirect.
     if (!delivered) {
       fetch(url, {
         method: "POST",
@@ -927,7 +933,6 @@ _Thank you for shopping with TheBookX! 📚✨_
         }
       />
 
-
       {cartBooks.length === 0 && qrItems.length === 0 && (
         <>
           <div className="bag-empty-hero">
@@ -985,188 +990,198 @@ _Thank you for shopping with TheBookX! 📚✨_
       )}
 
       {(cartBooks.length > 0 || qrItems.length > 0) && (
-      <>
-      {cartBooks.length > 0 && (
-        <CartOfferStrip discountedAmount={totalDiscounted} />
-      )}
+        <>
+          {cartBooks.length > 0 && (
+            <CartOfferStrip discountedAmount={totalDiscounted} />
+          )}
 
-      <div className="cart-items-panel">
-        <div className="cart-items-list">
-          {cartBooks.map((book) => (
-            <CartItemRow key={book.id} book={book} />
-          ))}
-          {qrItems.map((b) => (
-            <div key={b.id} className="cart-row cart-row-qr">
-              <Link
-                href="/quickreads"
-                className="cart-row-cover"
-                aria-label={`${b.name} — QuickRead`}
-              >
-                <img
-                  src={b.image}
-                  alt={b.name}
-                  className="cart-row-img"
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                  }}
-                />
-              </Link>
-              <div className="cart-row-body">
-                <div className="cart-row-info">
-                  <Link href="/quickreads" className="cart-row-title">
-                    {b.name}
-                  </Link>
-                  <Link href="/quickreads" className="cart-row-cat">
-                    QuickReads
-                  </Link>
-
-                  <div
-                    className="cart-stepper"
-                    role="group"
-                    aria-label="Quantity"
+          <div className="cart-items-panel">
+            <div className="cart-items-list">
+              {cartBooks.map((book) => (
+                <CartItemRow key={book.id} book={book} />
+              ))}
+              {qrItems.map((b) => (
+                <div key={b.id} className="cart-row cart-row-qr">
+                  <Link
+                    href="/quickreads"
+                    className="cart-row-cover"
+                    aria-label={`${b.name} — QuickRead`}
                   >
-                    <button
-                      type="button"
-                      className="cart-step-btn cart-step-minus"
-                      onClick={() => removeQuickRead(b.id)}
-                      aria-label={`Remove ${b.name}`}
-                    >
-                      <Minus size={16} />
-                    </button>
-                    <span className="cart-step-qty">1</span>
-                    <button
-                      type="button"
-                      className="cart-step-btn cart-step-plus"
-                      aria-disabled="true"
-                      onClick={() =>
-                        showToast("One copy per QuickRead is enough", "info")
-                      }
-                      aria-label="Only one QuickRead copy allowed"
-                    >
-                      <Plus size={16} />
-                    </button>
+                    <img
+                      src={b.image}
+                      alt={b.name}
+                      className="cart-row-img"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
+                  </Link>
+                  <div className="cart-row-body">
+                    <div className="cart-row-info">
+                      <Link href="/quickreads" className="cart-row-title">
+                        {b.name}
+                      </Link>
+                      <Link href="/quickreads" className="cart-row-cat">
+                        QuickReads
+                      </Link>
+
+                      <div
+                        className="cart-stepper"
+                        role="group"
+                        aria-label="Quantity"
+                      >
+                        <button
+                          type="button"
+                          className="cart-step-btn cart-step-minus"
+                          onClick={() => removeQuickRead(b.id)}
+                          aria-label={`Remove ${b.name}`}
+                        >
+                          <Minus size={16} />
+                        </button>
+                        <span className="cart-step-qty">1</span>
+                        <button
+                          type="button"
+                          className="cart-step-btn cart-step-plus"
+                          aria-disabled="true"
+                          onClick={() =>
+                            showToast(
+                              "One copy per QuickRead is enough",
+                              "info",
+                            )
+                          }
+                          aria-label="Only one QuickRead copy allowed"
+                        >
+                          <Plus size={16} />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="cart-row-aside">
+                      <div className="cart-row-aside-price">
+                        <span className="cart-row-aside-now">
+                          ₹{QUICKREAD_PRICE}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
+              ))}
+            </div>
+          </div>
 
-                <div className="cart-row-aside">
-                  <div className="cart-row-aside-price">
-                    <span className="cart-row-aside-now">
-                      ₹{QUICKREAD_PRICE}
+          {/* Wishlist — horizontal strip below the added books */}
+          <WishlistStrip />
+
+          {recommendedBooks.length > 0 && (
+            <div className="cart-sep">
+              <span className="cart-sep-line" />
+              <span className="cart-sep-label">
+                <Sparkles size={13} /> You may also add
+              </span>
+              <span className="cart-sep-line" />
+            </div>
+          )}
+
+          {recommendedBooks.length > 0 && (
+            <div className="cart-recommendations">
+              <div className="cart-rec-head">
+                <span className="cart-rec-title">
+                  Readers who picked these also loved…
+                </span>
+                <span className="cart-rec-sub">
+                  Hand-picked for you, add one more and make it a reading you'll
+                  remember
+                </span>
+              </div>
+              <LazyBookGrid items={recommendedBooks} batch={20} />
+            </div>
+          )}
+
+          {cartBooks.length > 0 ? (
+            <div className="fixed-bill-bar flex flex-col">
+              <div className="flex flex-row justify-between width100 items-center">
+                <div className="bill-left">
+                  <span className="font-12 dark-50">Total payable</span>
+                  <div className="flex flex-col">
+                    <div className="flex flex-row gap-8 items-center">
+                      <span className="font-16 weight-600 discounted">
+                        ₹{displayedFixedBarTotalWithQr}
+                      </span>
+                      {offerDiscount > 0 && (
+                        <span className="strike dark-50 original">
+                          ₹{totalDiscounted + bundledQrTotal}
+                        </span>
+                      )}
+                    </div>
+
+                    {appliedOffer && (
+                      <span className="font-14 green weight-600">
+                        {offerLabel}
+                      </span>
+                    )}
+                  </div>
+
+                  <span
+                    className="view-bill-text"
+                    onClick={() => setShowBill(true)}
+                  >
+                    View bill
+                  </span>
+                </div>
+
+                <div className="flex flex-row items-center gap-12">
+                  <span
+                    type="button"
+                    onClick={() => setShowRecommendationModal(true)}
+                    className="tertiary-btn flex flex-row gap-4 items-center"
+                    aria-label="Get book suggestions"
+                  >
+                    <Sparkle size={12} />
+                    Suggest Me
+                  </span>
+                  <button
+                    type="button"
+                    className="pri-big-btn"
+                    onClick={handleConfirmOrderClick}
+                    aria-disabled={isCheckoutDisabled}
+                    style={
+                      isCheckoutDisabled
+                        ? { opacity: 0.6, cursor: "not-allowed" }
+                        : undefined
+                    }
+                  >
+                    {isShortening ? "Preparing…" : "Confirm Order"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="fixed-bill-bar flex flex-col">
+              <div className="flex flex-row justify-between width100 items-center">
+                <div className="bill-left">
+                  <span className="font-12 dark-50">Total payable</span>
+                  <div className="flex flex-col">
+                    <span className="font-16 weight-600 discounted">
+                      ₹{qrTotal}
+                    </span>
+                    <span className="font-14 green weight-600">
+                      {qrItems.length} QuickRead{qrItems.length > 1 ? "s" : ""}
                     </span>
                   </div>
                 </div>
+                <button
+                  type="button"
+                  className="pri-big-btn"
+                  onClick={() => setShowQrCheckout(true)}
+                >
+                  Checkout QuickReads
+                </button>
               </div>
             </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Wishlist — horizontal strip below the added books */}
-      <WishlistStrip />
-
-      {recommendedBooks.length > 0 && (
-        <div className="cart-sep">
-          <span className="cart-sep-line" />
-          <span className="cart-sep-label">
-            <Sparkles size={13} /> You may also add
-          </span>
-          <span className="cart-sep-line" />
-        </div>
-      )}
-
-      {recommendedBooks.length > 0 && (
-        <div className="cart-recommendations">
-          <div className="cart-rec-head">
-            <span className="cart-rec-title">
-              Readers who picked these also loved…
-            </span>
-            <span className="cart-rec-sub">
-              Hand-picked for you, add one more and make it a reading you'll
-              remember ❤️
-            </span>
-          </div>
-          <LazyBookGrid items={recommendedBooks} batch={20} />
-        </div>
-      )}
-
-      {cartBooks.length > 0 ? (
-      <div className="fixed-bill-bar flex flex-col">
-        <div className="flex flex-row justify-between width100 items-center">
-          <div className="bill-left">
-            <span className="font-12 dark-50">Total payable</span>
-            <div className="flex flex-col">
-              <div className="flex flex-row gap-8 items-center">
-                <span className="font-16 weight-600 discounted">
-                  ₹{displayedFixedBarTotalWithQr}
-                </span>
-                {offerDiscount > 0 && (
-                  <span className="strike dark-50 original">
-                    ₹{totalDiscounted + bundledQrTotal}
-                  </span>
-                )}
-              </div>
-
-              {appliedOffer && (
-                <span className="font-14 green weight-600">{offerLabel}</span>
-              )}
-            </div>
-
-            <span className="view-bill-text" onClick={() => setShowBill(true)}>
-              View bill
-            </span>
-          </div>
-
-          <div className="flex flex-row items-center gap-12">
-            <span
-              type="button"
-              onClick={() => setShowRecommendationModal(true)}
-              className="tertiary-btn flex flex-row gap-4 items-center"
-              aria-label="Get book suggestions"
-            >
-              <Sparkle size={12} />
-              Suggest Me
-            </span>
-            <button
-              type="button"
-              className="pri-big-btn"
-              onClick={handleConfirmOrderClick}
-              aria-disabled={isCheckoutDisabled}
-              style={
-                isCheckoutDisabled
-                  ? { opacity: 0.6, cursor: "not-allowed" }
-                  : undefined
-              }
-            >
-              {isShortening ? "Preparing…" : "Confirm Order"}
-            </button>
-          </div>
-        </div>
-      </div>
-      ) : (
-      <div className="fixed-bill-bar flex flex-col">
-        <div className="flex flex-row justify-between width100 items-center">
-          <div className="bill-left">
-            <span className="font-12 dark-50">Total payable</span>
-            <div className="flex flex-col">
-              <span className="font-16 weight-600 discounted">₹{qrTotal}</span>
-              <span className="font-14 green weight-600">
-                {qrItems.length} QuickRead{qrItems.length > 1 ? "s" : ""}
-              </span>
-            </div>
-          </div>
-          <button
-            type="button"
-            className="pri-big-btn"
-            onClick={() => setShowQrCheckout(true)}
-          >
-            Checkout QuickReads
-          </button>
-        </div>
-      </div>
-      )}
-      </>
+          )}
+        </>
       )}
 
       <FreeShippingNudgeModal

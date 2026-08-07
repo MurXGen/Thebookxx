@@ -15,14 +15,14 @@ export default function GlobalHaptics() {
 
       if (!target) return;
 
-      // 🔥 Add visual vibration
+      // Add visual vibration
       target.classList.add("button-vibrate");
 
       setTimeout(() => {
         target.classList.remove("button-vibrate");
       }, 250);
 
-      // 🔥 Trigger haptic
+      // Trigger haptic
       triggerHaptic();
     };
 

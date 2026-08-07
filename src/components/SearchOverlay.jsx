@@ -5,7 +5,14 @@ import RecommendationModal from "@/components/RecommendationModal";
 import { books } from "@/utils/book";
 import { hasQuickRead, QUICKREAD_PRICE } from "@/data/quickreads";
 import { AnimatePresence, motion } from "framer-motion";
-import { X, Loader2, Zap, ChevronLeft, ChevronRight, Clock } from "lucide-react";
+import {
+  X,
+  Loader2,
+  Zap,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+} from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
@@ -48,7 +55,11 @@ const parsePriceQuery = (query) => {
   return null;
 };
 
-export default function SearchOverlay({ open, onClose, initialSuggest = false }) {
+export default function SearchOverlay({
+  open,
+  onClose,
+  initialSuggest = false,
+}) {
   const inputRef = useRef(null);
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
@@ -64,7 +75,8 @@ export default function SearchOverlay({ open, onClose, initialSuggest = false })
     if (!open) return;
     try {
       const saved = JSON.parse(localStorage.getItem("recent_searches") || "[]");
-      if (Array.isArray(saved)) setRecentSearches(saved.filter(Boolean).slice(0, 12));
+      if (Array.isArray(saved))
+        setRecentSearches(saved.filter(Boolean).slice(0, 12));
     } catch (_) {}
   }, [open]);
 
@@ -176,7 +188,11 @@ export default function SearchOverlay({ open, onClose, initialSuggest = false })
           if (!looseQ) return false;
           for (let i = 0; i < words.length; i++) {
             let joined = "";
-            for (let j = i; j < words.length && joined.length < looseQ.length; j++) {
+            for (
+              let j = i;
+              j < words.length && joined.length < looseQ.length;
+              j++
+            ) {
               joined += words[j];
             }
             if (joined.startsWith(looseQ)) return true;
@@ -184,22 +200,22 @@ export default function SearchOverlay({ open, onClose, initialSuggest = false })
           return false;
         };
 
-        // 1️⃣ Name match
+        // 1⃣ Name match
         const nameWords = wordsOf(book.name);
         const nameMatch =
           startsAtWordBoundary(nameWords) || everyTokenIsWordPrefix(nameWords);
 
-        // 2️⃣ Author match
+        // 2⃣ Author match
         const authorWords = wordsOf(book.author);
         const authorMatch =
           startsAtWordBoundary(authorWords) ||
           everyTokenIsWordPrefix(authorWords);
 
-        // 3️⃣ Catalogue match
+        // 3⃣ Catalogue match
         const catalogueMatch =
           looseQ && book.catalogue?.some((cat) => loose(cat).includes(looseQ));
 
-        // 4️⃣ Price match
+        // 4⃣ Price match
         const priceRule = parsePriceQuery(q);
         let priceMatch = false;
 
@@ -241,12 +257,16 @@ export default function SearchOverlay({ open, onClose, initialSuggest = false })
   // Apply the chosen sort to the matched results (relevance keeps match order)
   const sortedBooks = (() => {
     const data = [...filteredBooks];
-    if (sortType === "low") data.sort((a, b) => a.discountedPrice - b.discountedPrice);
-    else if (sortType === "high") data.sort((a, b) => b.discountedPrice - a.discountedPrice);
+    if (sortType === "low")
+      data.sort((a, b) => a.discountedPrice - b.discountedPrice);
+    else if (sortType === "high")
+      data.sort((a, b) => b.discountedPrice - a.discountedPrice);
     else if (sortType === "discount")
       data.sort(
         (a, b) =>
-          b.originalPrice - b.discountedPrice - (a.originalPrice - a.discountedPrice),
+          b.originalPrice -
+          b.discountedPrice -
+          (a.originalPrice - a.discountedPrice),
       );
     return data;
   })();
@@ -497,8 +517,8 @@ export default function SearchOverlay({ open, onClose, initialSuggest = false })
                         <div className="flex flex-row flex-wrap gap-8">
                           {[
                             { k: "relevance", l: "Relevance" },
-                            { k: "low", l: "Price ↑" },
-                            { k: "high", l: "Price ↓" },
+                            { k: "low", l: "Price " },
+                            { k: "high", l: "Price " },
                             { k: "discount", l: "Discount" },
                           ].map((s) => (
                             <button
@@ -514,39 +534,42 @@ export default function SearchOverlay({ open, onClose, initialSuggest = false })
 
                       <div className="book-grid">
                         {gridItems.map((item, idx) => (
-                        <motion.div
-                          key={`${item.type}-${item.book.id}`}
-                          initial={{ opacity: 0, y: 14 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{
-                            duration: 0.28,
-                            delay: Math.min(idx * 0.03, 0.3),
-                            ease: "easeOut",
-                          }}
-                        >
-                          {item.type === "book" ? (
-                            <BookCard book={item.book} />
-                          ) : (
-                            <Link
-                              href={`/quickreads/${qrSlug(item.book.name)}`}
-                              className="search-qr-item"
-                              onClick={onClose}
-                            >
-                              <div className="search-qr-item-cover">
-                                <img src={item.book.image} alt={item.book.name} />
-                                <span className="search-qr-badge">
-                                  <Zap size={11} /> QuickRead
+                          <motion.div
+                            key={`${item.type}-${item.book.id}`}
+                            initial={{ opacity: 0, y: 14 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{
+                              duration: 0.28,
+                              delay: Math.min(idx * 0.03, 0.3),
+                              ease: "easeOut",
+                            }}
+                          >
+                            {item.type === "book" ? (
+                              <BookCard book={item.book} />
+                            ) : (
+                              <Link
+                                href={`/quickreads/${qrSlug(item.book.name)}`}
+                                className="search-qr-item"
+                                onClick={onClose}
+                              >
+                                <div className="search-qr-item-cover">
+                                  <img
+                                    src={item.book.image}
+                                    alt={item.book.name}
+                                  />
+                                  <span className="search-qr-badge">
+                                    <Zap size={11} /> QuickRead
+                                  </span>
+                                </div>
+                                <span className="search-qr-item-name">
+                                  {item.book.name}
                                 </span>
-                              </div>
-                              <span className="search-qr-item-name">
-                                {item.book.name}
-                              </span>
-                              <span className="search-qr-item-price">
-                                ₹{QUICKREAD_PRICE}
-                              </span>
-                            </Link>
-                          )}
-                        </motion.div>
+                                <span className="search-qr-item-price">
+                                  ₹{QUICKREAD_PRICE}
+                                </span>
+                              </Link>
+                            )}
+                          </motion.div>
                         ))}
                       </div>
                     </motion.div>

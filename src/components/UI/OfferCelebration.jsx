@@ -14,7 +14,7 @@ export default function OfferCelebration() {
     const onUnlock = (e) => {
       const reward = e.detail?.reward || "Offer";
       // Anchor just ABOVE the on-screen cart offer strip. There can be more
-      // than one .offer-strip in the DOM, so pick the bottom-most visible one.
+      // than one.offer-strip in the DOM, so pick the bottom-most visible one.
       let style;
       const vh = window.innerHeight;
       const strips = Array.from(document.querySelectorAll(".offer-strip"))
@@ -52,13 +52,8 @@ export default function OfferCelebration() {
   if (!state) return null;
 
   return (
-    <div
-      className="offer-pop"
-      role="status"
-      key={state.id}
-      style={state.style}
-    >
-      <span className="offer-pop-emoji">🎉</span>
+    <div className="offer-pop" role="status" key={state.id} style={state.style}>
+      <span className="offer-pop-emoji"></span>
       <span className="offer-pop-text">{state.reward} unlocked!</span>
     </div>
   );

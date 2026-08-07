@@ -14,9 +14,9 @@ const LOAD_MORE_COUNT = 8;
  * FreeShippingNudgeModal
  *
  * Shown when:
- *   - user clicks "Confirm Order" AND
- *   - cart is below ₹399 AND
- *   - they haven't already chosen to skip this nudge
+ * - user clicks "Confirm Order" AND
+ * - cart is below ₹399 AND
+ * - they haven't already chosen to skip this nudge
  *
  * Visual style mirrors the "Claim Now" sliding strip, orange gradient hero,
  * pulsing shadow, wiggling icon, to draw attention without using fake urgency
@@ -24,12 +24,12 @@ const LOAD_MORE_COUNT = 8;
  * with the rest of the catalogue.
  *
  * Props:
- *   open                 : boolean
- *   onClose              : () => void     // X button, stays on bag page
- *   onSkip               : () => void     // "I'm fine to pay delivery"
- *   onProceedAfterUnlock : () => void     // cart reached ₹399 inside this modal
- *   cartBooks            : array          // current cart books (live)
- *   totalDiscounted      : number         // live cart total
+ * open: boolean
+ * onClose: () => void // X button, stays on bag page
+ * onSkip: () => void // "I'm fine to pay delivery"
+ * onProceedAfterUnlock: () => void // cart reached ₹399 inside this modal
+ * cartBooks: array // current cart books (live)
+ * totalDiscounted: number // live cart total
  */
 export default function FreeShippingNudgeModal({
   open,
@@ -343,7 +343,7 @@ export default function FreeShippingNudgeModal({
                             lineHeight: 1.2,
                           }}
                         >
-                          You unlocked free delivery 🎉
+                          You unlocked free delivery
                         </div>
                         <div
                           style={{

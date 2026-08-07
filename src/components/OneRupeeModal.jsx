@@ -10,12 +10,12 @@ import { useEffect, useMemo } from "react";
  * OneRupeeModal, sliding bottom-sheet that lists all ₹1 books.
  *
  * Props:
- *   isOpen          : boolean
- *   onClose         : () => void
- *   mode            : "permanentUnlocked" | "timerActive" | "locked" (default: "permanentUnlocked")
- *   remainingForUnlock : number   // only used for "locked" subtitle
- *   liveRemainingTime  : number   // seconds; only used for "timerActive" subtitle
- *   onAddBooksClick    : () => void  // optional CTA in locked state (e.g. scroll to catalogue)
+ * isOpen: boolean
+ * onClose: () => void
+ * mode: "permanentUnlocked" | "timerActive" | "locked" (default: "permanentUnlocked")
+ * remainingForUnlock: number // only used for "locked" subtitle
+ * liveRemainingTime: number // seconds; only used for "timerActive" subtitle
+ * onAddBooksClick: () => void // optional CTA in locked state (e.g. scroll to catalogue)
  */
 export default function OneRupeeModal({
   isOpen,
@@ -139,9 +139,7 @@ export default function OneRupeeModal({
                       {oneRupeeBooks.length} books available at ₹1
                     </span>
                     {mode === "permanentUnlocked" && (
-                      <span className="font-12 green weight-600">
-                        ✓ Unlocked
-                      </span>
+                      <span className="font-12 green weight-600">Unlocked</span>
                     )}
                   </div>
 

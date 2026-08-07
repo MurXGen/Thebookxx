@@ -183,7 +183,7 @@ export default function RootLayout({ children }) {
         <Script id="ga-init" strategy="afterInteractive">
           {`
             var GA_PROD_HOSTS = ["thebookx.in", "www.thebookx.in"];
-            var GA_IS_PROD = GA_PROD_HOSTS.indexOf(window.location.hostname) !== -1;
+            var GA_IS_PROD = GA_PROD_HOSTS.indexOf(window.location.hostname)!== -1;
             if (!${ADMIN_GUARD} && GA_IS_PROD) {
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
@@ -201,11 +201,11 @@ export default function RootLayout({ children }) {
           `}
         </Script>
 
-        {/* ✅ Meta Pixel Code, skipped on admin paths */}
+        {/* Meta Pixel Code, skipped on admin paths */}
         <Script id="meta-pixel" strategy="afterInteractive">
           {`
             if (!${ADMIN_GUARD}) {
-              !function(f,b,e,v,n,t,s)
+!function(f,b,e,v,n,t,s)
               {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
               n.callMethod.apply(n,arguments):n.queue.push(arguments)};
               if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
@@ -228,7 +228,10 @@ export default function RootLayout({ children }) {
           />
         </noscript>
       </head>
-      <body className={poppins.variable} style={{ width: "100%", margin: "0 auto" }}>
+      <body
+        className={poppins.variable}
+        style={{ width: "100%", margin: "0 auto" }}
+      >
         <ToastProvider>
           <StoreProvider>
             <PLProvider>

@@ -10,9 +10,9 @@ import { Clock, Truck, Wallet, ShieldCheck, Sparkles } from "lucide-react";
 
 /**
  * The /1rupee experience:
- *  - Until a ₹1 book is in the cart, show a slim promo stripe + the ₹1 grid.
- *  - Once a ₹1 book is added, blur-swap to the full AllBooks catalogue so the
- *    shopper can keep adding regular books.
+ * - Until a ₹1 book is in the cart, show a slim promo stripe + the ₹1 grid.
+ * - Once a ₹1 book is added, blur-swap to the full AllBooks catalogue so the
+ * shopper can keep adding regular books.
  */
 export default function OneRupeeExperience() {
   const { cart } = useStore();
@@ -38,8 +38,8 @@ export default function OneRupeeExperience() {
         >
           {/* Slim promo stripe */}
           <section className="or-hero">
-            <span className="or-spark or-spark-1">✨</span>
-            <span className="or-spark or-spark-2">✨</span>
+            <span className="or-spark or-spark-1"></span>
+            <span className="or-spark or-spark-2"></span>
 
             <div className="or-hero-badge">
               <Clock size={13} /> Limited-time offer

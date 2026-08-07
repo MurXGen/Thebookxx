@@ -169,7 +169,7 @@ export default function ReviewClient() {
         <div className="rv-win">
           <Gift size={18} />
           <span>
-            Leave a review for a <b>chance to win a book for FREE</b> 🎁
+            Leave a review for a <b>chance to win a book for FREE</b>
           </span>
         </div>
       </div>
@@ -289,11 +289,7 @@ export default function ReviewClient() {
           </div>
         </div>
 
-        <button
-          className="rv-submit"
-          onClick={handleSubmit}
-          disabled={loading}
-        >
+        <button className="rv-submit" onClick={handleSubmit} disabled={loading}>
           {loading ? "Submitting…" : "Submit & Scratch to win"}
         </button>
 
@@ -327,13 +323,11 @@ export default function ReviewClient() {
               >
                 <X size={18} />
               </button>
-              <div className="rv-scratch-head">
-                🎉 Thanks for your review!
-              </div>
+              <div className="rv-scratch-head">Thanks for your review!</div>
               <p className="rv-scratch-sub">Scratch the card below</p>
               <ScratchCard
                 revealText="Better luck next time"
-                revealSub="We'll be in touch if you win 💛"
+                revealSub="We'll be in touch if you win "
               />
               <button
                 type="button"
@@ -346,7 +340,6 @@ export default function ReviewClient() {
           </motion.div>
         )}
       </AnimatePresence>
-
     </div>
   );
 }

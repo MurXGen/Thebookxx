@@ -161,9 +161,9 @@ export default function AddressModal({
   const [verifyTimer, setVerifyTimer] = useState(30);
   const [canVerify, setCanVerify] = useState(false);
   // UPI confirmation flow:
-  //  "await"     — QR revealed, waiting for the shopper to tap Verify
-  //  "verifying" — 30s auto-check, polling the sheet every 10s
-  //  "timeout"   — no confirmation in 30s; offer a WhatsApp verify fallback
+  // "await" — QR revealed, waiting for the shopper to tap Verify
+  // "verifying" — 30s auto-check, polling the sheet every 10s
+  // "timeout" — no confirmation in 30s; offer a WhatsApp verify fallback
   const [upiPhase, setUpiPhase] = useState("await");
   const [verifyCountdown, setVerifyCountdown] = useState(30);
   const [upiOrderRef, setUpiOrderRef] = useState("");
@@ -179,7 +179,6 @@ export default function AddressModal({
   // Free bookmark add-on (promotional / blank / casual) — no charge.
   const [bookmark, setBookmark] = useState(false);
   const BOOKMARK_CHARGE = 0;
-
 
   const UPI_ID = "7977960242-1@okbizaxis";
 
@@ -384,9 +383,9 @@ export default function AddressModal({
   }, [open]);
 
   // How much wallet (coins) can be applied to THIS order, by order value:
-  //   ₹151–300  → up to ₹15
-  //   ₹300–500  → up to ₹30
-  //   > ₹500    → full available balance
+  // ₹151–300 up to ₹15
+  // ₹300–500 up to ₹30
+  // > ₹500 full available balance
   // (always capped by the actual balance and the goods total.)
   // Coins redemption: if the wallet balance is above ₹100 they can redeem up
   // to 50% of it; ₹100 or below can be used in full.
@@ -397,7 +396,8 @@ export default function AddressModal({
     walletCapForOrder,
     Math.max(0, finalPayable),
   );
-  const walletApplied = walletEnabled && walletBalance > 0 ? maxWalletUsable : 0;
+  const walletApplied =
+    walletEnabled && walletBalance > 0 ? maxWalletUsable : 0;
   // QuickReads add-on rides on the same bill (flat, no delivery/offer applied).
   const qrAddOn = quickReadTotal || 0;
   const netPayable = Math.max(0, finalPayable - walletApplied) + qrAddOn;
@@ -474,8 +474,8 @@ export default function AddressModal({
   }, [address, city]);
 
   // UPI verification: once the shopper taps Verify we poll the sheet every 10s
-  // for 30s to see if the admin removed the "(unconfirmed)" tag. Confirmed →
-  // success screen; otherwise → timeout (WhatsApp fallback offered).
+  // for 30s to see if the admin removed the "(unconfirmed)" tag. Confirmed
+  // success screen; otherwise timeout (WhatsApp fallback offered).
   useEffect(() => {
     if (upiPhase !== "verifying") return;
     let cancelled = false;
@@ -1066,7 +1066,7 @@ export default function AddressModal({
     upiPollRef.current = { poll: null, tick: null };
   };
 
-  // Payment confirmed (admin removed the "(unconfirmed)" tag) → success screen.
+  // Payment confirmed (admin removed the "(unconfirmed)" tag) success screen.
   const finalizeUPISuccess = () => {
     clearUpiTimers();
     setUpiPhase("confirmed");
@@ -1084,11 +1084,15 @@ export default function AddressModal({
       .map((b, i) => `${i + 1}. ${b.name} × ${b.qty}`)
       .join("\n");
     const amountPaid =
-      netPayable + getDeliveryCharge(fasterDelivery) + (giftWrap ? giftWrapCharge : 0);
+      netPayable +
+      getDeliveryCharge(fasterDelivery) +
+      (giftWrap ? giftWrapCharge : 0);
 
-    // Merchant confirm link → /{orderId}?w=<walletUsed>
+    // Merchant confirm link /{orderId}?w=<walletUsed>
     const origin =
-      typeof window !== "undefined" ? window.location.origin : "https://thebookx.in";
+      typeof window !== "undefined"
+        ? window.location.origin
+        : "https://thebookx.in";
     let confirmLink = `${origin}/${encodeURIComponent(upiOrderRef || "")}${
       walletApplied > 0 ? `?w=${walletApplied}` : ""
     }`;
@@ -1100,22 +1104,22 @@ export default function AddressModal({
     } catch (_) {}
 
     const msg = [
-      "Hi TheBookX 👋",
+      "Hi TheBookX ",
       "",
       "I've *paid via UPI* but my order is still showing as verifying. Please confirm it.",
       "",
-      `🧾 *Order Ref:* ${upiOrderRef || "-"}`,
-      `👤 *Name:* ${name}`,
-      `📞 *Phone:* ${phone}`,
-      `📍 *Address:* ${fullAddress}, ${city} - ${pincode}`,
+      ` *Order Ref:* ${upiOrderRef || "-"}`,
+      ` *Name:* ${name}`,
+      ` *Phone:* ${phone}`,
+      ` *Address:* ${fullAddress}, ${city} - ${pincode}`,
       bookLines ? "" : "",
-      bookLines ? `📚 *Items:*\n${bookLines}` : "",
+      bookLines ? ` *Items:*\n${bookLines}` : "",
       "",
-      `💰 *Amount paid:* ₹${amountPaid}`,
-      walletApplied > 0 ? `👛 *Wallet used:* ₹${walletApplied}` : "",
+      ` *Amount paid:* ₹${amountPaid}`,
+      walletApplied > 0 ? ` *Wallet used:* ₹${walletApplied}` : "",
       "",
       "———",
-      "🔐 *Merchant only* — confirm this order:",
+      " *Merchant only* — confirm this order:",
       confirmLink,
     ]
       .filter((l) => l !== "")
@@ -1151,7 +1155,7 @@ export default function AddressModal({
     setUpiPhase("verifying");
   };
 
-  // From the UPI page: shopper has no online-payment option → switch to COD
+  // From the UPI page: shopper has no online-payment option switch to COD
   // and place the order directly (skips the fee-disclosure step).
   const switchToCODFromUPI = () => {
     setShowUPIPayment(false);
@@ -1203,7 +1207,7 @@ export default function AddressModal({
       : "";
 
   return (
-      <AnimatePresence>
+    <AnimatePresence>
       {open && (
         <motion.div
           className="bill-modal-overlay"
@@ -1337,140 +1341,144 @@ export default function AddressModal({
 
               {/* ===== Add-ons: shown only once the name is filled ===== */}
               {name.trim() && (
-              <div className="deliv-addon">
-                <span className="deliv-addon-head">Add-ons</span>
-                <div className="deliv-addon-row">
-                  <div className="deliv-addon-l">
-                    <Truck
-                      size={18}
-                      className={standardDeliveryCharge > 0 ? "" : "green"}
-                    />
-                    <div className="flex flex-col">
-                      <span className="deliv-addon-t flex flex-row items-center gap-6">
-                        {standardDeliveryCharge > 0
-                          ? "Standard delivery"
-                          : "Free delivery"}
-                        {standardDeliveryCharge > 0 && (
-                          <span className="deliv-free-badge">
-                            FREE above ₹199
-                          </span>
-                        )}
-                      </span>
-                      <span className="deliv-addon-s">
-                        {standardDeliveryCharge > 0
-                          ? "Reaches you in 3–9 days"
-                          : "Reaches you in 3–9 days · included at no charge"}
-                      </span>
-                    </div>
-                  </div>
-                  {standardDeliveryCharge > 0 ? (
-                    <span className="deliv-addon-price">
-                      +₹{standardDeliveryCharge}
-                    </span>
-                  ) : (
-                    <span className="deliv-addon-free">FREE</span>
-                  )}
-                </div>
-
-                {fasterUnavailable ? (
-                  <div className="deliv-addon-row deliv-addon-opt">
+                <div className="deliv-addon">
+                  <span className="deliv-addon-head">Add-ons</span>
+                  <div className="deliv-addon-row">
                     <div className="deliv-addon-l">
-                      <Truck size={18} className="dark-50" />
+                      <Truck
+                        size={18}
+                        className={standardDeliveryCharge > 0 ? "" : "green"}
+                      />
                       <div className="flex flex-col">
-                        <span className="deliv-addon-t">Faster delivery</span>
+                        <span className="deliv-addon-t flex flex-row items-center gap-6">
+                          {standardDeliveryCharge > 0
+                            ? "Standard delivery"
+                            : "Free delivery"}
+                          {standardDeliveryCharge > 0 && (
+                            <span className="deliv-free-badge">
+                              FREE above ₹199
+                            </span>
+                          )}
+                        </span>
                         <span className="deliv-addon-s">
-                          Not available for this order weight
+                          {standardDeliveryCharge > 0
+                            ? "Reaches you in 3–9 days"
+                            : "Reaches you in 3–9 days · included at no charge"}
                         </span>
                       </div>
                     </div>
-                    <a
-                      href="https://wa.me/917710892108?text=Hi%20TheBookX%2C%20I%27d%20like%20faster%20delivery%20for%20my%20heavy%20order"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="deliv-addon-link"
-                    >
-                      Contact support →
-                    </a>
+                    {standardDeliveryCharge > 0 ? (
+                      <span className="deliv-addon-price">
+                        +₹{standardDeliveryCharge}
+                      </span>
+                    ) : (
+                      <span className="deliv-addon-free">FREE</span>
+                    )}
                   </div>
-                ) : (
+
+                  {fasterUnavailable ? (
+                    <div className="deliv-addon-row deliv-addon-opt">
+                      <div className="deliv-addon-l">
+                        <Truck size={18} className="dark-50" />
+                        <div className="flex flex-col">
+                          <span className="deliv-addon-t">Faster delivery</span>
+                          <span className="deliv-addon-s">
+                            Not available for this order weight
+                          </span>
+                        </div>
+                      </div>
+                      <a
+                        href="https://wa.me/917710892108?text=Hi%20TheBookX%2C%20I%27d%20like%20faster%20delivery%20for%20my%20heavy%20order"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="deliv-addon-link"
+                      >
+                        Contact support
+                      </a>
+                    </div>
+                  ) : (
+                    <label className="deliv-addon-row deliv-addon-opt">
+                      <div className="deliv-addon-l">
+                        <span
+                          className={`deliv-check${fasterDelivery ? " on" : ""}`}
+                          aria-hidden="true"
+                        >
+                          {fasterDelivery && (
+                            <Check size={12} strokeWidth={3} />
+                          )}
+                        </span>
+                        <div className="flex flex-col">
+                          <span className="deliv-addon-t">Faster delivery</span>
+                          <span className="deliv-addon-s">
+                            Priority dispatch · reaches within 2–5 days
+                          </span>
+                        </div>
+                      </div>
+                      <span className="deliv-addon-price">
+                        +₹{fasterDeliveryCharge}
+                      </span>
+                      <input
+                        type="checkbox"
+                        className="wc-switch-input"
+                        checked={fasterDelivery}
+                        onChange={(e) => setFasterDelivery(e.target.checked)}
+                      />
+                    </label>
+                  )}
+
+                  {/* Gift wrap add-on with a 3D gift logo when opted */}
                   <label className="deliv-addon-row deliv-addon-opt">
                     <div className="deliv-addon-l">
                       <span
-                        className={`deliv-check${fasterDelivery ? " on" : ""}`}
+                        className={`deliv-check${giftWrap ? " on" : ""}`}
                         aria-hidden="true"
                       >
-                        {fasterDelivery && <Check size={12} strokeWidth={3} />}
+                        {giftWrap && <Check size={12} strokeWidth={3} />}
                       </span>
                       <div className="flex flex-col">
-                        <span className="deliv-addon-t">Faster delivery</span>
+                        <span className="deliv-addon-t">Gift wrap</span>
                         <span className="deliv-addon-s">
-                          Priority dispatch · reaches within 2–5 days
+                          Wrapped with a ribbon · perfect to gift
                         </span>
                       </div>
                     </div>
                     <span className="deliv-addon-price">
-                      +₹{fasterDeliveryCharge}
+                      +₹{giftWrapCharge}
                     </span>
                     <input
                       type="checkbox"
                       className="wc-switch-input"
-                      checked={fasterDelivery}
-                      onChange={(e) => setFasterDelivery(e.target.checked)}
+                      checked={giftWrap}
+                      onChange={(e) => setGiftWrap(e.target.checked)}
                     />
                   </label>
-                )}
 
-                {/* Gift wrap add-on with a 3D gift logo when opted */}
-                <label className="deliv-addon-row deliv-addon-opt">
-                  <div className="deliv-addon-l">
-                    <span
-                      className={`deliv-check${giftWrap ? " on" : ""}`}
-                      aria-hidden="true"
-                    >
-                      {giftWrap && <Check size={12} strokeWidth={3} />}
-                    </span>
-                    <div className="flex flex-col">
-                      <span className="deliv-addon-t">Gift wrap</span>
-                      <span className="deliv-addon-s">
-                        Wrapped with a ribbon · perfect to gift
+                  {/* Bookmark add-on — chargeable ₹9 */}
+                  <label className="deliv-addon-row deliv-addon-opt">
+                    <div className="deliv-addon-l">
+                      <span
+                        className={`deliv-check${bookmark ? " on" : ""}`}
+                        aria-hidden="true"
+                      >
+                        {bookmark && <Check size={12} strokeWidth={3} />}
                       </span>
+                      <div className="flex flex-col">
+                        <span className="deliv-addon-t">Bookmark</span>
+                        <span className="deliv-addon-s">
+                          A handpicked bookmark tucked into your parcel — never
+                          lose your page again
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                  <span className="deliv-addon-price">+₹{giftWrapCharge}</span>
-                  <input
-                    type="checkbox"
-                    className="wc-switch-input"
-                    checked={giftWrap}
-                    onChange={(e) => setGiftWrap(e.target.checked)}
-                  />
-                </label>
-
-                {/* Bookmark add-on — chargeable ₹9 */}
-                <label className="deliv-addon-row deliv-addon-opt">
-                  <div className="deliv-addon-l">
-                    <span
-                      className={`deliv-check${bookmark ? " on" : ""}`}
-                      aria-hidden="true"
-                    >
-                      {bookmark && <Check size={12} strokeWidth={3} />}
-                    </span>
-                    <div className="flex flex-col">
-                      <span className="deliv-addon-t">Bookmark</span>
-                      <span className="deliv-addon-s">
-                        A handpicked bookmark tucked into your parcel — never
-                        lose your page again
-                      </span>
-                    </div>
-                  </div>
-                  <span className="deliv-addon-free">FREE</span>
-                  <input
-                    type="checkbox"
-                    className="wc-switch-input"
-                    checked={bookmark}
-                    onChange={(e) => setBookmark(e.target.checked)}
-                  />
-                </label>
-              </div>
+                    <span className="deliv-addon-free">FREE</span>
+                    <input
+                      type="checkbox"
+                      className="wc-switch-input"
+                      checked={bookmark}
+                      onChange={(e) => setBookmark(e.target.checked)}
+                    />
+                  </label>
+                </div>
               )}
             </div>
 
@@ -1540,7 +1548,9 @@ export default function AddressModal({
               onClick={(e) => e.stopPropagation()}
             >
               <div className="bill-header">
-                <span className="weight-600 font-16">Choose payment method</span>
+                <span className="weight-600 font-16">
+                  Choose payment method
+                </span>
                 <span
                   className="cursor-pointer"
                   onClick={() => setShowPaySelect(false)}
@@ -1561,7 +1571,9 @@ export default function AddressModal({
                         <span className="ps-books-count">
                           {bookCount} {bookCount > 1 ? "items" : "item"}
                         </span>
-                        <span className="ps-books-total">₹{totalDiscounted}</span>
+                        <span className="ps-books-total">
+                          ₹{totalDiscounted}
+                        </span>
                       </div>
                     );
                   })()}
@@ -1590,11 +1602,7 @@ export default function AddressModal({
                       {name}, {fullAddress}, {city} - {pincode}
                     </span>
                     <span className="ps-deliver-type">
-                      {fasterDelivery ? (
-                        <Zap size={12} />
-                      ) : (
-                        <Truck size={12} />
-                      )}
+                      {fasterDelivery ? <Zap size={12} /> : <Truck size={12} />}
                       {fasterDelivery ? "Faster" : "Standard"}
                     </span>
                   </div>
@@ -1690,7 +1698,6 @@ export default function AddressModal({
                     </span>
                   </button>
                 </div>
-
               </div>
 
               {/* Fixed footer — pay button (full width) + WhatsApp order */}
@@ -1870,7 +1877,7 @@ export default function AddressModal({
             >
               <div className="upsell-badges">
                 <span className="upsell-badge hot">
-                  🔥 2,300+ readers added this
+                  2,300+ readers added this
                 </span>
                 <span className="upsell-badge deal">₹40 OFF today</span>
               </div>
@@ -1882,7 +1889,7 @@ export default function AddressModal({
                 )}
               </div>
 
-              <p className="upsell-kicker">Wait — one last thing ✨</p>
+              <p className="upsell-kicker">Wait — one last thing </p>
               <h3 className="upsell-title">
                 Add <em>“The Art of Clarity”</em> to your order?
               </h3>
@@ -1914,7 +1921,7 @@ export default function AddressModal({
                   className="pri-big-btn width100 upsell-yes"
                   onClick={acceptUpsell}
                 >
-                  Yes, let me read this as well →
+                  Yes, let me read this as well
                 </button>
                 <button
                   type="button"
@@ -2019,7 +2026,7 @@ export default function AddressModal({
           />
         )}
       </AnimatePresence>
-      </AnimatePresence>
+    </AnimatePresence>
   );
 }
 
@@ -2273,6 +2280,9 @@ export function CODSuccessModal({
   // Loading-screen copy (invoice view overrides the checkout wording).
   loadingTitle = "Placing your order…",
   loadingSub = "Just a moment, confirming your details",
+  // Replay the print haptic on first tap — needed for the shared-invoice flow
+  // where there's no prior user gesture (browsers block auto-vibration).
+  hapticOnTap = false,
 }) {
   const isUPI = paymentMode === "UPI";
   const [isProcessing, setIsProcessing] = useState(true);
@@ -2298,6 +2308,22 @@ export function CODSuccessModal({
       }
     };
   }, [isProcessing]);
+
+  // Shared-invoice flow (opened via a link) has no prior user gesture, so the
+  // auto-vibration above is blocked by the browser. Replay the same print buzz
+  // on the customer's first tap once the receipt has started printing.
+  useEffect(() => {
+    if (isProcessing || !hapticOnTap) return;
+    if (typeof navigator === "undefined" || !navigator.vibrate) return;
+    const buzz = () => {
+      const pattern = [];
+      for (let i = 0; i < 34; i++) pattern.push(16, 84);
+      navigator.vibrate(pattern);
+      window.removeEventListener("pointerdown", buzz);
+    };
+    window.addEventListener("pointerdown", buzz, { once: true });
+    return () => window.removeEventListener("pointerdown", buzz);
+  }, [isProcessing, hapticOnTap]);
 
   // Scratch-card reward — amount depends on order value (see orderWalletReward).
   const rewardRef = useRef(orderWalletReward(totalAmount));
@@ -2361,7 +2387,7 @@ export function CODSuccessModal({
     const itemsList = (cartBooks || [])
       .map((b, i) => `${i + 1}. ${b.name} × ${b.qty}`)
       .join("\n");
-    const msg = `🎉 My TheBookX order is confirmed!\n\n📦 Delivery by ${deliveryByDate}\n📍 ${name}, ${address}, ${city} - ${pincode}\n\nItems:\n${itemsList}\n\nTotal: ₹${totalAmount}\n\nShop books from ₹1 → https://thebookx.in`;
+    const msg = ` My TheBookX order is confirmed!\n\n Delivery by ${deliveryByDate}\n ${name}, ${address}, ${city} - ${pincode}\n\nItems:\n${itemsList}\n\nTotal: ₹${totalAmount}\n\nShop books from ₹1 https://thebookx.in`;
     if (navigator.share) {
       navigator
         .share({ title: "My TheBookX order", text: msg })
@@ -2382,7 +2408,7 @@ export function CODSuccessModal({
           `${i + 1}. ${b.name} × ${b.qty} = ₹${b.discountedPrice * b.qty}`,
       )
       .join("\n");
-    const msg = `Hi TheBookX 👋\n\nI just placed a COD order and need help:\n\n👤 Name: ${name}\n📞 Phone: ${phone}\n📍 Address: ${address}, ${city} - ${pincode}\n🚚 Delivery: ${fasterDelivery ? "Faster" : "Standard"}\n\nItems:\n${itemsList}\n\nTotal: ₹${totalAmount}`;
+    const msg = `Hi TheBookX \n\nI just placed a COD order and need help:\n\n Name: ${name}\n Phone: ${phone}\n Address: ${address}, ${city} - ${pincode}\n Delivery: ${fasterDelivery ? "Faster" : "Standard"}\n\nItems:\n${itemsList}\n\nTotal: ₹${totalAmount}`;
     window.open(
       `https://wa.me/917710892108?text=${encodeURIComponent(msg)}`,
       "_blank",
@@ -2524,155 +2550,159 @@ export function CODSuccessModal({
               transition={{ duration: 0.35 }}
             >
               <div className="cod-success-scroll">
-              {/* 🧾 Printed receipt — slides out of the printer slot */}
-              <div className="rcpt-stage">
-                <div className="rcpt-printer" aria-hidden="true">
-                  <span className="rcpt-lip" />
-                </div>
-                <motion.div
-                  className="rcpt"
-                  initial={{ y: "-109%" }}
-                  animate={{ y: 0 }}
-                  transition={{ duration: 3.4, ease: "linear", delay: 0.2 }}
-                >
-                  <div className="rcpt-head">
-                    <span className="rcpt-brand">TheBookX</span>
-                    <span className="rcpt-status">
-                      <CheckCircle2 size={13} strokeWidth={3} /> ORDER CONFIRMED
-                    </span>
-                    <span className="rcpt-thanks">Thank you for your order!</span>
+                {/* Printed receipt — slides out of the printer slot */}
+                <div className="rcpt-stage">
+                  <div className="rcpt-printer" aria-hidden="true">
+                    <span className="rcpt-lip" />
                   </div>
+                  <motion.div
+                    className="rcpt"
+                    initial={{ y: "-109%" }}
+                    animate={{ y: 0 }}
+                    transition={{ duration: 3.4, ease: "linear", delay: 0.2 }}
+                  >
+                    <div className="rcpt-head">
+                      <span className="rcpt-brand">TheBookX</span>
+                      <span className="rcpt-status">
+                        <CheckCircle2 size={13} strokeWidth={3} /> ORDER
+                        CONFIRMED
+                      </span>
+                      <span className="rcpt-thanks">
+                        Thank you for your order!
+                      </span>
+                    </div>
 
-                  <div className="rcpt-dash" />
+                    <div className="rcpt-dash" />
 
-                  <div className="rcpt-line">
-                    <span>Order</span>
-                    <b>{orderRef}</b>
-                  </div>
-                  <div className="rcpt-line">
-                    <span>Date</span>
-                    <span>{todayStr}</span>
-                  </div>
-                  <div className="rcpt-line">
-                    <span>Payment</span>
-                    <span>{isUPI ? "UPI · Paid" : "Cash on Delivery"}</span>
-                  </div>
+                    <div className="rcpt-line">
+                      <span>Order</span>
+                      <b>{orderRef}</b>
+                    </div>
+                    <div className="rcpt-line">
+                      <span>Date</span>
+                      <span>{todayStr}</span>
+                    </div>
+                    <div className="rcpt-line">
+                      <span>Payment</span>
+                      <span>{isUPI ? "UPI · Paid" : "Cash on Delivery"}</span>
+                    </div>
 
-                  <div className="rcpt-dash" />
+                    <div className="rcpt-dash" />
 
-                  <div className="rcpt-items">
-                    {cartBooks?.map((b, i) => (
-                      <div className="rcpt-item" key={i}>
-                        <span className="rcpt-item-nm">
-                          {i + 1}. {b.name}
-                        </span>
-                        <span className="rcpt-item-q">
-                          {b.qty} × ₹{b.discountedPrice}
-                        </span>
-                        <span className="rcpt-item-amt">
-                          ₹{b.discountedPrice * b.qty}
-                        </span>
+                    <div className="rcpt-items">
+                      {cartBooks?.map((b, i) => (
+                        <div className="rcpt-item" key={i}>
+                          <span className="rcpt-item-nm">
+                            {i + 1}. {b.name}
+                          </span>
+                          <span className="rcpt-item-q">
+                            {b.qty} × ₹{b.discountedPrice}
+                          </span>
+                          <span className="rcpt-item-amt">
+                            ₹{b.discountedPrice * b.qty}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="rcpt-dash" />
+
+                    <div className="rcpt-line">
+                      <span>Subtotal</span>
+                      <span>₹{totalDiscounted}</span>
+                    </div>
+                    {offerDiscount > 0 && (
+                      <div className="rcpt-line green">
+                        <span>Offer{offerLabel ? ` (${offerLabel})` : ""}</span>
+                        <span>-₹{offerDiscount}</span>
                       </div>
-                    ))}
-                  </div>
-
-                  <div className="rcpt-dash" />
-
-                  <div className="rcpt-line">
-                    <span>Subtotal</span>
-                    <span>₹{totalDiscounted}</span>
-                  </div>
-                  {offerDiscount > 0 && (
-                    <div className="rcpt-line green">
-                      <span>Offer{offerLabel ? ` (${offerLabel})` : ""}</span>
-                      <span>-₹{offerDiscount}</span>
-                    </div>
-                  )}
-                  {walletApplied > 0 && (
-                    <div className="rcpt-line green">
-                      <span>Wallet</span>
-                      <span>-₹{walletApplied}</span>
-                    </div>
-                  )}
-                  <div className="rcpt-line">
-                    <span>
-                      {fasterDelivery ? "Faster delivery" : "Standard delivery"}
-                    </span>
-                    <span>
-                      {deliveryCharge > 0 ? `+₹${deliveryCharge}` : "FREE"}
-                    </span>
-                  </div>
-                  {giftWrap && giftWrapCharge > 0 && (
+                    )}
+                    {walletApplied > 0 && (
+                      <div className="rcpt-line green">
+                        <span>Wallet</span>
+                        <span>-₹{walletApplied}</span>
+                      </div>
+                    )}
                     <div className="rcpt-line">
-                      <span>Gift wrap</span>
-                      <span>+₹{giftWrapCharge}</span>
+                      <span>
+                        {fasterDelivery
+                          ? "Faster delivery"
+                          : "Standard delivery"}
+                      </span>
+                      <span>
+                        {deliveryCharge > 0 ? `+₹${deliveryCharge}` : "FREE"}
+                      </span>
                     </div>
-                  )}
-                  {quickReadTotal > 0 && (
-                    <div className="rcpt-line">
-                      <span>QuickReads ({quickReadCount})</span>
-                      <span>+₹{quickReadTotal}</span>
+                    {giftWrap && giftWrapCharge > 0 && (
+                      <div className="rcpt-line">
+                        <span>Gift wrap</span>
+                        <span>+₹{giftWrapCharge}</span>
+                      </div>
+                    )}
+                    {quickReadTotal > 0 && (
+                      <div className="rcpt-line">
+                        <span>QuickReads ({quickReadCount})</span>
+                        <span>+₹{quickReadTotal}</span>
+                      </div>
+                    )}
+                    {codFee > 0 && (
+                      <div className="rcpt-line">
+                        <span>COD handling fee</span>
+                        <span>+₹{codFee}</span>
+                      </div>
+                    )}
+
+                    <div className="rcpt-dash bold" />
+                    <div className="rcpt-total">
+                      <span>{isUPI ? "PAID" : "TO PAY"}</span>
+                      <span>₹{totalAmount}</span>
                     </div>
-                  )}
-                  {codFee > 0 && (
-                    <div className="rcpt-line">
-                      <span>COD handling fee</span>
-                      <span>+₹{codFee}</span>
+                    <div className="rcpt-dash" />
+
+                    <div className="rcpt-block">
+                      <span className="rcpt-block-lbl">DELIVER TO</span>
+                      <span className="rcpt-block-v">{name}</span>
+                      <span className="rcpt-block-s">
+                        {address}, {city} - {pincode}
+                      </span>
+                      <span className="rcpt-block-s">+91 {phone}</span>
                     </div>
-                  )}
 
-                  <div className="rcpt-dash bold" />
-                  <div className="rcpt-total">
-                    <span>{isUPI ? "PAID" : "TO PAY"}</span>
-                    <span>₹{totalAmount}</span>
-                  </div>
-                  <div className="rcpt-dash" />
+                    <div className="rcpt-eta-line">
+                      {fasterDelivery ? <Zap size={12} /> : <Truck size={12} />}
+                      Est. delivery {deliveryRange} · {deliveryWindow}
+                    </div>
 
-                  <div className="rcpt-block">
-                    <span className="rcpt-block-lbl">DELIVER TO</span>
-                    <span className="rcpt-block-v">{name}</span>
-                    <span className="rcpt-block-s">
-                      {address}, {city} - {pincode}
-                    </span>
-                    <span className="rcpt-block-s">+91 {phone}</span>
-                  </div>
+                    <div className="rcpt-barcode" aria-hidden="true" />
+                    <span className="rcpt-barcode-no">* {orderRef} *</span>
 
-                  <div className="rcpt-eta-line">
-                    {fasterDelivery ? <Zap size={12} /> : <Truck size={12} />}
-                    Est. delivery {deliveryRange} · {deliveryWindow}
-                  </div>
+                    <Link href="/profile" className="rcpt-track">
+                      Track &amp; manage order
+                    </Link>
+                  </motion.div>
+                </div>
 
-                  <div className="rcpt-barcode" aria-hidden="true" />
-                  <span className="rcpt-barcode-no">* {orderRef} *</span>
-
-                  <Link href="/profile" className="rcpt-track">
-                    Track &amp; manage order →
-                  </Link>
-                </motion.div>
-              </div>
-
-              {showReward && (
-                <ScratchRewardSheet
-                  open={scratchOpen}
-                  onClose={() => setScratchOpen(false)}
-                  onViewProfile={onViewProfile}
-                  eligible
-                  reward={reward}
-                  scratched={scratched}
-                  onScratch={handleScratchComplete}
-                  note={
-                    <>
-                      <strong>
-                        ₹{reward} is applicable only on your next order.
-                      </strong>{" "}
-                      If you cancel this order, this wallet amount will be wiped
-                      off — so please keep your order to enjoy the reward.
-                    </>
-                  }
-                />
-              )}
-
-
+                {showReward && (
+                  <ScratchRewardSheet
+                    open={scratchOpen}
+                    onClose={() => setScratchOpen(false)}
+                    onViewProfile={onViewProfile}
+                    eligible
+                    reward={reward}
+                    scratched={scratched}
+                    onScratch={handleScratchComplete}
+                    note={
+                      <>
+                        <strong>
+                          ₹{reward} is applicable only on your next order.
+                        </strong>{" "}
+                        If you cancel this order, this wallet amount will be
+                        wiped off — so please keep your order to enjoy the
+                        reward.
+                      </>
+                    }
+                  />
+                )}
               </div>
               {/* Fixed footer — compact reward + two actions in one row */}
               <div className="cod-success-footer">
@@ -2827,7 +2857,6 @@ function UPIPaymentModal({
                   : "Hang tight — preparing your QR"}
               </span>
             </div>
-
           </motion.div>
 
           {/* Trust footer */}
@@ -2869,8 +2898,8 @@ function UPIPaymentModal({
               </button>
             ) : (
               <span className="sec-big-btn is-loading flex flex-row items-center justify-center gap-6">
-                <span className="upiv3-spin dark" /> Verifying… {verifyCountdown}
-                s
+                <span className="upiv3-spin dark" /> Verifying…{" "}
+                {verifyCountdown}s
               </span>
             )}
             <button

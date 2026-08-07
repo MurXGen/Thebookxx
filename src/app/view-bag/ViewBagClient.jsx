@@ -314,7 +314,7 @@ function drawDeclarationForm(c, startY, data) {
     font: "11px sans-serif",
     align: "center",
   });
-  // YES [ ]   NO [X], rendered as labels with drawn checkboxes for the icon
+  // YES [ ] NO [X], rendered as labels with drawn checkboxes for the icon
   const cx = c.W / 2;
   c.text("YES", cx - 70, y + 71, { font: "bold 11px sans-serif" });
   c.drawCheckbox(cx - 42, y + 58, 14, false);
@@ -337,7 +337,7 @@ function drawDeclarationForm(c, startY, data) {
   if (isCOD) {
     const H_COD = 45;
     c.rect(X, y, W, H_COD); // border only, no fill
-    c.text(`COLLECT CASH:   Rs. ${codAmount || 0} /-`, X + 10, y + 28, {
+    c.text(`COLLECT CASH: Rs. ${codAmount || 0} /-`, X + 10, y + 28, {
       font: "bold 14px sans-serif",
     });
     y += H_COD;
@@ -484,7 +484,7 @@ function drawAddressLabel(c, startY, data) {
   // cash-to-collect amount immediately on picking up the parcel.
   if (isCOD && codAmount) {
     c.rect(X, y, W, 50);
-    c.text(`COLLECT CASH ON DELIVERY:  Rs. ${codAmount} /-`, c.W / 2, y + 32, {
+    c.text(`COLLECT CASH ON DELIVERY: Rs. ${codAmount} /-`, c.W / 2, y + 32, {
       font: "bold 20px sans-serif",
       align: "center",
     });
@@ -823,7 +823,7 @@ export default function ViewBagClient() {
       offerDiscountValue = Math.round(
         (totalDiscountedValue * appliedOffer.value) / 100,
       );
-      offerLabelValue = "Free delivery 🚚";
+      offerLabelValue = "Free delivery ";
     }
   }
 
@@ -1307,7 +1307,7 @@ export default function ViewBagClient() {
       align: "center",
     });
     y += 18;
-    text("For any queries: support@thebookx.in  |  +91 77108 92108", W / 2, y, {
+    text("For any queries: support@thebookx.in | +91 77108 92108", W / 2, y, {
       font: "11px sans-serif",
       color: COLORS.muted,
       align: "center",
@@ -1327,7 +1327,7 @@ export default function ViewBagClient() {
     }, "image/png");
   };
 
-  // ===== India Post CDF-I declaration export (canvas → PNG) =====
+  // ===== India Post CDF-I declaration export (canvas PNG) =====
   // Plain lined form matching the official India Post CDF-I layout.
   // Sender block is pre-filled with TheBookX details; addressee block uses
   // customer data from this order. COD orders get a highlighted "Cash on
@@ -1354,7 +1354,7 @@ export default function ViewBagClient() {
     c.download(`india_post_cdf_${orderData.orderId || Date.now()}.png`);
   };
 
-  // ===== Simple FROM / TO address label (canvas → PNG) =====
+  // ===== Simple FROM / TO address label (canvas PNG) =====
   // No frills, just a lined table with sender (TheBookX) on the left and
   // the customer addressee on the right. Good for cutting and pasting onto
   // a parcel.
@@ -1460,7 +1460,7 @@ export default function ViewBagClient() {
     // The "Check Order Status" footer, appears on every message, mirrors the
     // CTA from the reference screenshot.
     const footer =
-      `\n\n🔗 *Check Order Status:* ${orderStatusUrl}\n` +
+      `\n\n *Check Order Status:* ${orderStatusUrl}\n` +
       `\nReply STOP to unsubscribe`;
 
     if (messageType === "shipping") {
@@ -1480,7 +1480,7 @@ export default function ViewBagClient() {
     } else if (messageType === "shipped") {
       message = encodeURIComponent(
         `Hello ${customerName},\n\n` +
-          `Your order has been shipped! 🚚\n\n` +
+          `Your order has been shipped! \n\n` +
           `*Order Details:*\n` +
           `Order ID: #${orderId}\n` +
           `Tracking ID: ${savedTrackingId || "Will share soon"}\n` +
@@ -1488,13 +1488,13 @@ export default function ViewBagClient() {
           `Items: ${itemsSummary || "Your items"}\n\n` +
           `Expected delivery in ${deliveryDays} business days.\n` +
           `Track your shipment: https://www.indiapost.gov.in\n\n` +
-          `Happy reading! 📖✨` +
+          `Happy reading! ` +
           footer,
       );
     } else if (messageType === "out_for_delivery") {
       message = encodeURIComponent(
         `Hello ${customerName},\n\n` +
-          `Great news! Your order is *out for delivery* today. 🚚\n\n` +
+          `Great news! Your order is *out for delivery* today. \n\n` +
           `*Order Details:*\n` +
           `Order ID: #${orderId}\n` +
           `Tracking ID: ${savedTrackingId || "Not available"}\n` +
@@ -1666,9 +1666,9 @@ export default function ViewBagClient() {
                 <span className="font-14">Payment Method</span>
                 <span className="font-14 weight-500">
                   {isCOD
-                    ? "💵 Cash on Delivery"
+                    ? " Cash on Delivery"
                     : isUPI
-                      ? "📱 UPI Payment"
+                      ? " UPI Payment"
                       : orderData.paymentMethod}
                 </span>
               </div>
@@ -1677,7 +1677,7 @@ export default function ViewBagClient() {
                 <div className="flex justify-between items-center">
                   <span className="font-14">Gift Wrap</span>
                   <span className="font-14 weight-500 orange">
-                    🎁 Included (+₹{giftWrapCharge})
+                    Included (+₹{giftWrapCharge})
                   </span>
                 </div>
               )}
@@ -1686,7 +1686,7 @@ export default function ViewBagClient() {
                 <div className="flex justify-between items-center">
                   <span className="font-14">COD Handling Fee</span>
                   <span className="font-14 weight-500 orange">
-                    💵 +₹{codHandlingFee}
+                    +₹{codHandlingFee}
                   </span>
                 </div>
               )}
@@ -2115,7 +2115,7 @@ export default function ViewBagClient() {
                     itemProp="image"
                   />
                 ) : (
-                  <div className="book-image-placeholder">📘</div>
+                  <div className="book-image-placeholder"></div>
                 )}
               </div>
               <div className="pad_16 flex flex-col gap-12 book-card">
@@ -2186,13 +2186,13 @@ export default function ViewBagClient() {
         )}
         {isGiftWrap && giftWrapCharge > 0 && (
           <div className="flex justify-between orange">
-            <span>🎁 Gift Wrap</span>
+            <span> Gift Wrap</span>
             <span>+ ₹{giftWrapCharge}</span>
           </div>
         )}
         {codHandlingFee > 0 && (
           <div className="flex justify-between orange">
-            <span>💵 COD Handling Fee</span>
+            <span> COD Handling Fee</span>
             <span>+ ₹{codHandlingFee}</span>
           </div>
         )}
@@ -2207,7 +2207,7 @@ export default function ViewBagClient() {
         {/* Primary CTA, chat with support, prefilled with order context */}
         <a
           href={`https://wa.me/917710892108?text=${encodeURIComponent(
-            `Hey hi 👋\n\nI need help with my order #${orderData?.orderId || "N/A"}.\n\nCould you please let me know when it will be shipped?\n\nThanks!`,
+            `Hey hi \n\nI need help with my order #${orderData?.orderId || "N/A"}.\n\nCould you please let me know when it will be shipped?\n\nThanks!`,
           )}`}
           target="_blank"
           rel="noopener noreferrer"
@@ -2218,7 +2218,7 @@ export default function ViewBagClient() {
           Chat on WhatsApp
         </a>
 
-        {/* Export Invoice, canvas → PNG */}
+        {/* Export Invoice, canvas PNG */}
         <button
           onClick={exportInvoice}
           className="sec-big-btn flex items-center justify-center gap-8"

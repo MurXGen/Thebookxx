@@ -73,10 +73,7 @@ export default function InvoiceParamModal() {
   if (!open || !order) return null;
 
   const books = parseBooks(order["Books List"]);
-  const subtotal = books.reduce(
-    (s, b) => s + b.discountedPrice * b.qty,
-    0,
-  );
+  const subtotal = books.reduce((s, b) => s + b.discountedPrice * b.qty, 0);
   const payType = String(order["Payment Type"] || "");
   const isCOD = /cod|cash/i.test(payType);
   const deliveryType = String(order["Delivery Type"] || "");
@@ -87,6 +84,7 @@ export default function InvoiceParamModal() {
       <CODSuccessModal
         key="invoice"
         showReward={false}
+        hapticOnTap
         loadingTitle="Fetching your invoice…"
         loadingSub="Loading your order details"
         orderRefIn={String(order["Order ID"] || "")}

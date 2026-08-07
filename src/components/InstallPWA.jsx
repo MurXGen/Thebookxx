@@ -15,12 +15,12 @@ export default function InstallPWA() {
       setDeferredPrompt(e);
       setShowInstall(true);
 
-      // 👀 Prompt shown
+      // Prompt shown
       trackEvent("pwa_install_prompt_shown");
     };
 
     const installedHandler = () => {
-      // ✅ ACTUAL install completed
+      // ACTUAL install completed
       trackEvent("pwa_installed");
       setShowInstall(false);
     };
@@ -37,7 +37,7 @@ export default function InstallPWA() {
   const handleInstall = async () => {
     if (!deferredPrompt) return;
 
-    // 👆 Button clicked
+    // Button clicked
     trackEvent("pwa_install_clicked");
 
     deferredPrompt.prompt();

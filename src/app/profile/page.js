@@ -47,8 +47,7 @@ import { books as ALL_BOOKS } from "@/utils/book";
 
 // Match an order-item name to its book cover (order items come from the sheet,
 // so names may vary slightly — try exact then partial match).
-const normName = (s) =>
-  (s || "").toLowerCase().replace(/[^a-z0-9]+/g, "");
+const normName = (s) => (s || "").toLowerCase().replace(/[^a-z0-9]+/g, "");
 const BOOK_IMAGE_BY_NAME = {};
 ALL_BOOKS.forEach((b) => {
   if (b.image) BOOK_IMAGE_BY_NAME[normName(b.name)] = b.image;
@@ -70,12 +69,12 @@ const SUPPORT_WHATSAPP = "917710892108";
 // Module-level date parser, handles every format the Google Sheet emits
 // =====================================================================
 // The "Timestamp" / "Timestamp (D)" columns can hold any of:
-//   "20/05/2026 23:14:14"        (dd/mm/yyyy, 24-hour, NO am/pm, NO comma)
-//   "20/05/2026, 23:14:12"       (dd/mm/yyyy, 24-hour, with comma)
-//   "27/05/2026, 04:50:03 pm"    (dd/mm/yyyy, 12-hour with am/pm)
-//   "Date(2026,4,27,16,50,3)"    (Google Sheets serialized, months 0-based)
-//   Date object instances        (some gviz responses)
-//   ISO strings                  (fallback)
+// "20/05/2026 23:14:14" (dd/mm/yyyy, 24-hour, NO am/pm, NO comma)
+// "20/05/2026, 23:14:12" (dd/mm/yyyy, 24-hour, with comma)
+// "27/05/2026, 04:50:03 pm" (dd/mm/yyyy, 12-hour with am/pm)
+// "Date(2026,4,27,16,50,3)" (Google Sheets serialized, months 0-based)
+// Date object instances (some gviz responses)
+// ISO strings (fallback)
 function parseSheetDate(input) {
   if (!input) return null;
   if (input instanceof Date) {
@@ -109,7 +108,7 @@ function parseSheetDate(input) {
     );
     if (m) {
       const day = parseInt(m[1], 10);
-      const month = parseInt(m[2], 10) - 1; // dd/mm/yyyy → 0-based for JS
+      const month = parseInt(m[2], 10) - 1; // dd/mm/yyyy 0-based for JS
       const year = parseInt(m[3], 10);
       let hours = m[4] ? parseInt(m[4], 10) : 0;
       const minutes = m[5] ? parseInt(m[5], 10) : 0;
@@ -240,7 +239,7 @@ function OrderTrackingTimeline({ order }) {
       <div className="tracking-header">
         <div className="tracking-header-icon">
           <CheckCircle size={20} className="tracking-check-icon" />
-          <div className="tracking-package-icon">📦</div>
+          <div className="tracking-package-icon"></div>
         </div>
         <div className="tracking-header-text">
           <span className="tracking-title">
@@ -433,7 +432,9 @@ export default function MyOrdersPage() {
             (x) => x.name.toLowerCase() === key.toLowerCase(),
           );
           byName.set(key, {
-            id: match?.id || `ordered_${key.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
+            id:
+              match?.id ||
+              `ordered_${key.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
             name: key,
             author: match?.author || "",
             image: match?.image || "/default-book.jpg",
@@ -500,7 +501,9 @@ export default function MyOrdersPage() {
       0,
     );
     const grand = parseFloat(order["Total Amount"]) || sub;
-    const isFree = (order["Delivery Type"] || "").toLowerCase().includes("free");
+    const isFree = (order["Delivery Type"] || "")
+      .toLowerCase()
+      .includes("free");
     let deliveryFee = parseFloat(order["Delivery Charge"]) || 0;
     const giftFee =
       order["Gift Wrap"] === "Yes"
@@ -530,8 +533,7 @@ export default function MyOrdersPage() {
       (giftFee > 0 ? 1 : 0) +
       (codFee > 0 ? 1 : 0) +
       (discount > 0 ? 1 : 0);
-    const H =
-      300 + items.length * rowH + summaryCount * 26 + 70 + 70;
+    const H = 300 + items.length * rowH + summaryCount * 26 + 70 + 70;
 
     const canvas = document.createElement("canvas");
     canvas.width = W * scale;
@@ -551,12 +553,12 @@ export default function MyOrdersPage() {
     y += 26;
     ctx.fillStyle = "#888888";
     ctx.font = "13px Arial";
-    ctx.fillText(`Invoice  ·  Order ${order["Order ID"] || ""}`, P, y);
+    ctx.fillText(`Invoice · Order ${order["Order ID"] || ""}`, P, y);
     y += 18;
     ctx.fillText(`${order["Timestamp"] || ""}`, P, y);
     y += 18;
     ctx.fillText(
-      `${customerName || ""}  ·  ${phoneNumber || order["Phone"] || ""}`,
+      `${customerName || ""} · ${phoneNumber || order["Phone"] || ""}`,
       P,
       y,
     );
@@ -646,7 +648,7 @@ export default function MyOrdersPage() {
     ctx.fillStyle = "#888888";
     ctx.font = "12px Arial";
     ctx.fillText(
-      `Payment: ${order["Payment Type"] || ""}  ·  Delivery: ${order["Delivery Type"] || ""}`,
+      `Payment: ${order["Payment Type"] || ""} · Delivery: ${order["Delivery Type"] || ""}`,
       P,
       y,
     );
@@ -938,19 +940,19 @@ export default function MyOrdersPage() {
     if (paymentType.includes("Cash on Delivery")) {
       if (advancePaid) {
         return {
-          message: "✓ Advance Paid (₹99)",
+          message: " Advance Paid (₹99)",
           type: "success",
           remaining: `₹${getRemainingAmount(order)} pending at delivery`,
         };
       }
       return {
-        message: "⚠️ Payment Pending",
+        message: " Payment Pending",
         type: "warning",
         remaining: `Pay ₹${getAmountToShow(order)} at delivery`,
       };
     }
     return {
-      message: "✓ Payment Completed",
+      message: " Payment Completed",
       type: "success",
       remaining: null,
     };
@@ -968,20 +970,20 @@ export default function MyOrdersPage() {
       .map((b, i) => `${i + 1}. ${b.name} × ${b.quantity}`)
       .join("\n");
 
-    const message = `Hi TheBookX 👋
+    const message = `Hi TheBookX
 
 I'd like to *cancel* my order. Here are the details:
 
-📋 *Order ID:* ${order["Order ID"]}
-👤 *Name:* ${order["Customer Name"] || ""}
-📞 *Phone:* ${order["Phone Number"] || ""}
-💰 *Total Amount:* ₹${order["Total Amount"] || ""}
-💳 *Payment:* ${order["Payment Type"] || ""}
+ *Order ID:* ${order["Order ID"]}
+ *Name:* ${order["Customer Name"] || ""}
+ *Phone:* ${order["Phone Number"] || ""}
+ *Total Amount:* ₹${order["Total Amount"] || ""}
+ *Payment:* ${order["Payment Type"] || ""}
 
-📦 *Items:*
+ *Items:*
 ${itemsList || ""}
 
-Please cancel this order. Thank you 🙏`;
+Please cancel this order. Thank you `;
 
     window.open(
       `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(message)}`,
@@ -1017,20 +1019,20 @@ Please cancel this order. Thank you 🙏`;
     }
     const order = addressEditOrder;
     const lines = [
-      "Hi TheBookX 👋",
+      "Hi TheBookX ",
       "",
       "I'd like to *update the delivery details* for my order.",
       "",
-      `📋 *Order ID:* ${order?.["Order ID"] || ""}`,
-      `👤 *Name:* ${addrEdit.name || ""}`,
-      `📞 *Phone:* ${addrEdit.phone || ""}`,
+      ` *Order ID:* ${order?.["Order ID"] || ""}`,
+      ` *Name:* ${addrEdit.name || ""}`,
+      ` *Phone:* ${addrEdit.phone || ""}`,
       "",
-      "*📍 Updated Address*",
-      `🏠 ${addrEdit.address || ""}`,
-      `🏙️ ${addrEdit.city || ""}${addrEdit.state ? `, ${addrEdit.state}` : ""}`,
-      `📮 Pincode: ${addrEdit.pincode || ""}`,
+      "* Updated Address*",
+      ` ${addrEdit.address || ""}`,
+      ` ${addrEdit.city || ""}${addrEdit.state ? `, ${addrEdit.state}` : ""}`,
+      ` Pincode: ${addrEdit.pincode || ""}`,
       "",
-      "Please update my order with these details. Thank you 🙏",
+      "Please update my order with these details. Thank you ",
     ];
     window.open(
       `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(lines.join("\n"))}`,
@@ -1056,23 +1058,23 @@ Please cancel this order. Thank you 🙏`;
     });
 
     const lines = [
-      "Hi TheBookX 👋",
+      "Hi TheBookX ",
       "",
       "I'd like to choose *when to ship* (dispatch) my order.",
       "",
-      `📋 *Order ID:* ${order["Order ID"]}`,
-      `👤 *Name:* ${order["Customer Name"] || ""}`,
-      `📞 *Phone:* ${order["Phone Number"] || ""}`,
+      ` *Order ID:* ${order["Order ID"]}`,
+      ` *Name:* ${order["Customer Name"] || ""}`,
+      ` *Phone:* ${order["Phone Number"] || ""}`,
       "",
-      `🗓 *Preferred Date:* ${formattedDate}`,
+      ` *Preferred Date:* ${formattedDate}`,
     ];
     if (rescheduleTime) {
       lines.push(`⏰ *Preferred Time:* ${rescheduleTime}`);
     }
     if (rescheduleNote.trim()) {
-      lines.push(`📝 *Note:* ${rescheduleNote.trim()}`);
+      lines.push(` *Note:* ${rescheduleNote.trim()}`);
     }
-    lines.push("", "Please dispatch my order accordingly. Thank you 🙏");
+    lines.push("", "Please dispatch my order accordingly. Thank you ");
 
     const message = lines.join("\n");
 
@@ -1121,7 +1123,7 @@ Please cancel this order. Thank you 🙏`;
     return `${formattedDay} ${month}, ${year} | ${formattedTime}`;
   };
 
-  // Days since the shopper's most recent order → prompt "what to read next"
+  // Days since the shopper's most recent order prompt "what to read next"
   const lastOrderDate = (orders || []).reduce((latest, o) => {
     const d = parseSheetDate(getOrderDateValue(o));
     return d && (!latest || d > latest) ? d : latest;
@@ -1137,7 +1139,7 @@ Please cancel this order. Thank you 🙏`;
       {/* Reading-tracker promo stripe */}
       <Link href="/reading-tracker" className="reading-stripe">
         <span className="reading-stripe-text">
-          📖 Track your reading progress from here
+          Track your reading progress from here
         </span>
         <span className="reading-stripe-btn">Click here</span>
       </Link>
@@ -1369,7 +1371,7 @@ Please cancel this order. Thank you 🙏`;
                         whiteSpace: "nowrap",
                       }}
                     >
-                      View wallet →
+                      View wallet
                     </Link>
                   </motion.div>
                 )}
@@ -1404,10 +1406,10 @@ Please cancel this order. Thank you 🙏`;
             onClick={() => setShowSuggest(true)}
           >
             <span className="read-next-main">
-              📚 It's been {daysSinceLastOrder} days since your last order
+              It's been {daysSinceLastOrder} days since your last order
               <em>Not sure what to read next?</em>
             </span>
-            <span className="read-next-go">Get suggestions →</span>
+            <span className="read-next-go">Get suggestions </span>
           </button>
         )}
 
@@ -1541,288 +1543,313 @@ Please cancel this order. Thank you 🙏`;
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+                        transition={{
+                          duration: 0.32,
+                          ease: [0.22, 1, 0.36, 1],
+                        }}
                         style={{ overflow: "hidden" }}
                       >
-                  <OrderTrackingTimeline order={order} />
+                        <OrderTrackingTimeline order={order} />
 
-                  {(() => {
-                    const items = order.parsedBooks || [];
-                    const sub = items.reduce(
-                      (s, b) => s + (b.total || b.price * b.quantity || 0),
-                      0,
-                    );
-                    const grand = parseFloat(order["Total Amount"]) || sub;
-                    const isFree = (order["Delivery Type"] || "")
-                      .toLowerCase()
-                      .includes("free");
-                    const diff = grand - sub;
-                    // Break the difference into delivery, gift wrap and COD fee
-                    // using the stored columns; the leftover is inferred.
-                    let deliveryFee = parseFloat(order["Delivery Charge"]) || 0;
-                    const giftFee =
-                      order["Gift Wrap"] === "Yes"
-                        ? parseFloat(order["Gift Wrap Charge"]) || 0
-                        : 0;
-                    const isCODOrder = (order["Payment Type"] || "").includes(
-                      "Cash on Delivery",
-                    );
-                    let codFee = 0;
-                    let discount = 0;
-                    const extra = grand - sub - deliveryFee - giftFee;
-                    if (extra > 0) {
-                      if (isCODOrder) codFee = extra;
-                      else deliveryFee += extra;
-                    } else if (extra < 0) {
-                      discount = -extra;
-                    }
-                    const freeDelivery = isFree || deliveryFee === 0;
-                    return (
-                      <div className="order-invoice">
-                        <div className="order-invoice-table">
-                          <div className="oit-head">
-                            <span>Item</span>
-                            <span>Qty</span>
-                            <span>Price</span>
-                          </div>
-                          {items.length > 0 ? (
-                            items.map((b, bidx) => {
-                              const cover = getBookImage(b.name);
-                              return (
-                                <div key={bidx} className="oit-row">
-                                  <span className="oit-name">
-                                    {cover ? (
-                                      <Image
-                                        src={cover}
-                                        alt={b.name}
-                                        width={30}
-                                        height={42}
-                                        className="oit-img"
-                                      />
-                                    ) : (
-                                      <span className="oit-img oit-img-ph" />
-                                    )}
-                                    <span className="oit-name-text">
-                                      {b.name}
-                                    </span>
-                                  </span>
-                                  <span className="oit-qty">×{b.quantity}</span>
-                                  <span className="oit-price">
-                                    ₹{b.total || b.price * b.quantity || 0}
-                                  </span>
+                        {(() => {
+                          const items = order.parsedBooks || [];
+                          const sub = items.reduce(
+                            (s, b) =>
+                              s + (b.total || b.price * b.quantity || 0),
+                            0,
+                          );
+                          const grand =
+                            parseFloat(order["Total Amount"]) || sub;
+                          const isFree = (order["Delivery Type"] || "")
+                            .toLowerCase()
+                            .includes("free");
+                          const diff = grand - sub;
+                          // Break the difference into delivery, gift wrap and COD fee
+                          // using the stored columns; the leftover is inferred.
+                          let deliveryFee =
+                            parseFloat(order["Delivery Charge"]) || 0;
+                          const giftFee =
+                            order["Gift Wrap"] === "Yes"
+                              ? parseFloat(order["Gift Wrap Charge"]) || 0
+                              : 0;
+                          const isCODOrder = (
+                            order["Payment Type"] || ""
+                          ).includes("Cash on Delivery");
+                          let codFee = 0;
+                          let discount = 0;
+                          const extra = grand - sub - deliveryFee - giftFee;
+                          if (extra > 0) {
+                            if (isCODOrder) codFee = extra;
+                            else deliveryFee += extra;
+                          } else if (extra < 0) {
+                            discount = -extra;
+                          }
+                          const freeDelivery = isFree || deliveryFee === 0;
+                          return (
+                            <div className="order-invoice">
+                              <div className="order-invoice-table">
+                                <div className="oit-head">
+                                  <span>Item</span>
+                                  <span>Qty</span>
+                                  <span>Price</span>
                                 </div>
-                              );
-                            })
-                          ) : (
-                            <div className="oit-row">
-                              <span className="oit-name">Books not listed</span>
-                              <span className="oit-qty" />
-                              <span className="oit-price" />
+                                {items.length > 0 ? (
+                                  items.map((b, bidx) => {
+                                    const cover = getBookImage(b.name);
+                                    return (
+                                      <div key={bidx} className="oit-row">
+                                        <span className="oit-name">
+                                          {cover ? (
+                                            <Image
+                                              src={cover}
+                                              alt={b.name}
+                                              width={30}
+                                              height={42}
+                                              className="oit-img"
+                                            />
+                                          ) : (
+                                            <span className="oit-img oit-img-ph" />
+                                          )}
+                                          <span className="oit-name-text">
+                                            {b.name}
+                                          </span>
+                                        </span>
+                                        <span className="oit-qty">
+                                          ×{b.quantity}
+                                        </span>
+                                        <span className="oit-price">
+                                          ₹
+                                          {b.total || b.price * b.quantity || 0}
+                                        </span>
+                                      </div>
+                                    );
+                                  })
+                                ) : (
+                                  <div className="oit-row">
+                                    <span className="oit-name">
+                                      Books not listed
+                                    </span>
+                                    <span className="oit-qty" />
+                                    <span className="oit-price" />
+                                  </div>
+                                )}
+                              </div>
+
+                              <div className="order-invoice-summary">
+                                {sub > 0 && (
+                                  <div className="ois-row">
+                                    <span>Subtotal ({items.length} items)</span>
+                                    <span>₹{sub}</span>
+                                  </div>
+                                )}
+                                <div className="ois-row">
+                                  <span>Delivery</span>
+                                  {freeDelivery ? (
+                                    <span className="ois-free">FREE</span>
+                                  ) : (
+                                    <span>+₹{deliveryFee}</span>
+                                  )}
+                                </div>
+                                {giftFee > 0 && (
+                                  <div className="ois-row">
+                                    <span>Gift wrapping</span>
+                                    <span>+₹{giftFee}</span>
+                                  </div>
+                                )}
+                                {codFee > 0 && (
+                                  <div className="ois-row">
+                                    <span>COD handling fee</span>
+                                    <span>+₹{codFee}</span>
+                                  </div>
+                                )}
+                                {discount > 0 && (
+                                  <div className="ois-row">
+                                    <span>Discount</span>
+                                    <span className="ois-free">
+                                      −₹{discount}
+                                    </span>
+                                  </div>
+                                )}
+                                <div className="ois-row ois-total">
+                                  <span>Total paid</span>
+                                  <span>₹{grand}</span>
+                                </div>
+                              </div>
+
+                              <button
+                                type="button"
+                                className="invoice-download-btn"
+                                onClick={() => downloadInvoice(order)}
+                              >
+                                <Download size={16} /> Download invoice
+                              </button>
+                            </div>
+                          );
+                        })()}
+
+                        <div className="order-details-grid">
+                          <div className="detail-item">
+                            <IndianRupee size={14} className="gray-500" />
+                            <div>
+                              <span className="detail-label">Total Amount</span>
+                              <span className="detail-value">
+                                ₹{order["Total Amount"]}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="detail-item">
+                            <Package size={14} className="gray-500" />
+                            <div>
+                              <span className="detail-label">
+                                Payment Method
+                              </span>
+                              <span className="detail-value">
+                                {order["Payment Type"]}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="detail-item">
+                            <Truck size={14} className="gray-500" />
+                            <div>
+                              <span className="detail-label">Delivery</span>
+                              <span className="detail-value">
+                                {order["Delivery Type"]}
+                              </span>
+                            </div>
+                          </div>
+                          {hasComment && (
+                            <div className="detail-item">
+                              <Notebook size={14} className="gray-500" />
+                              <div>
+                                <span className="detail-label">
+                                  Note from TheBookX
+                                </span>
+                                <span className="detail-value">
+                                  {order.comment}
+                                </span>
+                              </div>
                             </div>
                           )}
                         </div>
 
-                        <div className="order-invoice-summary">
-                          {sub > 0 && (
-                            <div className="ois-row">
-                              <span>Subtotal ({items.length} items)</span>
-                              <span>₹{sub}</span>
-                            </div>
-                          )}
-                          <div className="ois-row">
-                            <span>Delivery</span>
-                            {freeDelivery ? (
-                              <span className="ois-free">FREE</span>
-                            ) : (
-                              <span>+₹{deliveryFee}</span>
-                            )}
+                        {/* ===== NEW, Cancel + Reschedule actions for Pending orders ===== */}
+                        {isPending && (
+                          <div
+                            className="pending-actions-row"
+                            style={{
+                              display: "flex",
+                              gap: 10,
+                              marginTop: 12,
+                              paddingTop: 12,
+                              borderTop: "1px dashed var(--dark-10)",
+                            }}
+                          >
+                            <button
+                              type="button"
+                              onClick={() => handleCancelOrder(order)}
+                              style={{
+                                flex: 1,
+                                padding: "10px 14px",
+                                background: "transparent",
+                                border: "1.5px solid var(--danger, #ef4444)",
+                                color: "var(--danger, #ef4444)",
+                                borderRadius: 8,
+                                fontSize: 12,
+                                fontWeight: 600,
+                                cursor: "pointer",
+                                display: "inline-flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                gap: 6,
+                              }}
+                            >
+                              <XCircle size={14} />
+                              Cancel Order
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleRescheduleClick(order)}
+                              style={{
+                                flex: 1,
+                                padding: "10px 14px",
+                                background: "transparent",
+                                border: "1.5px solid var(--tertiary, #fb8500)",
+                                color: "var(--tertiary, #fb8500)",
+                                borderRadius: 8,
+                                fontSize: 12,
+                                fontWeight: 600,
+                                cursor: "pointer",
+                                display: "inline-flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                gap: 6,
+                              }}
+                            >
+                              <CalendarClock size={14} />
+                              When to ship
+                            </button>
                           </div>
-                          {giftFee > 0 && (
-                            <div className="ois-row">
-                              <span>Gift wrapping</span>
-                              <span>+₹{giftFee}</span>
-                            </div>
-                          )}
-                          {codFee > 0 && (
-                            <div className="ois-row">
-                              <span>COD handling fee</span>
-                              <span>+₹{codFee}</span>
-                            </div>
-                          )}
-                          {discount > 0 && (
-                            <div className="ois-row">
-                              <span>Discount</span>
-                              <span className="ois-free">−₹{discount}</span>
-                            </div>
-                          )}
-                          <div className="ois-row ois-total">
-                            <span>Total paid</span>
-                            <span>₹{grand}</span>
-                          </div>
-                        </div>
+                        )}
 
+                        {/* Edit address — available on every order */}
                         <button
                           type="button"
-                          className="invoice-download-btn"
-                          onClick={() => downloadInvoice(order)}
+                          className="edit-address-btn"
+                          onClick={() => handleEditAddressClick(order)}
                         >
-                          <Download size={16} /> Download invoice
+                          <MapPin size={13} />
+                          Edit delivery address
                         </button>
-                      </div>
-                    );
-                  })()}
 
-                  <div className="order-details-grid">
-                    <div className="detail-item">
-                      <IndianRupee size={14} className="gray-500" />
-                      <div>
-                        <span className="detail-label">Total Amount</span>
-                        <span className="detail-value">
-                          ₹{order["Total Amount"]}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="detail-item">
-                      <Package size={14} className="gray-500" />
-                      <div>
-                        <span className="detail-label">Payment Method</span>
-                        <span className="detail-value">
-                          {order["Payment Type"]}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="detail-item">
-                      <Truck size={14} className="gray-500" />
-                      <div>
-                        <span className="detail-label">Delivery</span>
-                        <span className="detail-value">
-                          {order["Delivery Type"]}
-                        </span>
-                      </div>
-                    </div>
-                    {hasComment && (
-                      <div className="detail-item">
-                        <Notebook size={14} className="gray-500" />
-                        <div>
-                          <span className="detail-label">
-                            Note from TheBookX
-                          </span>
-                          <span className="detail-value">{order.comment}</span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                        {order.shippingId && (
+                          <div className="tracking-info-row">
+                            <div className="tracking-id-display">
+                              <span className="tracking-label">
+                                Tracking ID:
+                              </span>
+                              <span className="tracking-id">
+                                {order.shippingId}
+                              </span>
+                            </div>
+                            <button
+                              className="track-btn-small"
+                              onClick={() =>
+                                handleTrackPackage(order.shippingId)
+                              }
+                            >
+                              Track Package
+                            </button>
+                          </div>
+                        )}
 
-                  {/* ===== NEW, Cancel + Reschedule actions for Pending orders ===== */}
-                  {isPending && (
-                    <div
-                      className="pending-actions-row"
-                      style={{
-                        display: "flex",
-                        gap: 10,
-                        marginTop: 12,
-                        paddingTop: 12,
-                        borderTop: "1px dashed var(--dark-10)",
-                      }}
-                    >
-                      <button
-                        type="button"
-                        onClick={() => handleCancelOrder(order)}
-                        style={{
-                          flex: 1,
-                          padding: "10px 14px",
-                          background: "transparent",
-                          border: "1.5px solid var(--danger, #ef4444)",
-                          color: "var(--danger, #ef4444)",
-                          borderRadius: 8,
-                          fontSize: 12,
-                          fontWeight: 600,
-                          cursor: "pointer",
-                          display: "inline-flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          gap: 6,
-                        }}
-                      >
-                        <XCircle size={14} />
-                        Cancel Order
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleRescheduleClick(order)}
-                        style={{
-                          flex: 1,
-                          padding: "10px 14px",
-                          background: "transparent",
-                          border: "1.5px solid var(--tertiary, #fb8500)",
-                          color: "var(--tertiary, #fb8500)",
-                          borderRadius: 8,
-                          fontSize: 12,
-                          fontWeight: 600,
-                          cursor: "pointer",
-                          display: "inline-flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          gap: 6,
-                        }}
-                      >
-                        <CalendarClock size={14} />
-                        When to ship
-                      </button>
-                    </div>
-                  )}
-
-                  {/* Edit address — available on every order */}
-                  <button
-                    type="button"
-                    className="edit-address-btn"
-                    onClick={() => handleEditAddressClick(order)}
-                  >
-                    <MapPin size={13} />
-                    Edit delivery address
-                  </button>
-
-                  {order.shippingId && (
-                    <div className="tracking-info-row">
-                      <div className="tracking-id-display">
-                        <span className="tracking-label">Tracking ID:</span>
-                        <span className="tracking-id">{order.shippingId}</span>
-                      </div>
-                      <button
-                        className="track-btn-small"
-                        onClick={() => handleTrackPackage(order.shippingId)}
-                      >
-                        Track Package
-                      </button>
-                    </div>
-                  )}
-
-                  {/* {order.advancePaid === "Yes" && (
+                        {/* {order.advancePaid === "Yes" && (
                     <div className="advance-paid-badge">
                       <BadgeCheck size={12} />
                       <span>Advance payment of ₹99 completed</span>
                     </div>
                   )} */}
 
-                  {order["Payment Type"]?.includes("Cash on Delivery") &&
-                    order.status !== "Delivered" &&
-                    order.advancePaid !== "Yes" && (
-                      <div className="cod-action-row">
-                        <div className="cod-amount-info">
-                          <span className="cod-label">
-                            Pay ₹{amountToShow} now
-                          </span>
-                          <span className="cod-hint">or pay at delivery</span>
-                        </div>
-                        <button
-                          className="pay-now-btn-small"
-                          onClick={() => handlePayNow(order)}
-                        >
-                          <CreditCard size={14} />
-                          Pay Now
-                        </button>
-                      </div>
-                    )}
+                        {order["Payment Type"]?.includes("Cash on Delivery") &&
+                          order.status !== "Delivered" &&
+                          order.advancePaid !== "Yes" && (
+                            <div className="cod-action-row">
+                              <div className="cod-amount-info">
+                                <span className="cod-label">
+                                  Pay ₹{amountToShow} now
+                                </span>
+                                <span className="cod-hint">
+                                  or pay at delivery
+                                </span>
+                              </div>
+                              <button
+                                className="pay-now-btn-small"
+                                onClick={() => handlePayNow(order)}
+                              >
+                                <CreditCard size={14} />
+                                Pay Now
+                              </button>
+                            </div>
+                          )}
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -1841,7 +1868,7 @@ Please cancel this order. Thank you 🙏`;
 
         {error && !showPhoneInput && (
           <div className="error-state">
-            <div className="error-icon">⚠️</div>
+            <div className="error-icon"></div>
             <p>{error}</p>
             <button className="retry-btn" onClick={handleNewSearch}>
               Try Another Number
@@ -1979,7 +2006,7 @@ Please cancel this order. Thank you 🙏`;
                         }}
                       >
                         {canVerify
-                          ? "✅ Verify Payment"
+                          ? " Verify Payment"
                           : `Wait ${verifyTimer}s to verify`}
                       </button>
                     </div>
@@ -2079,9 +2106,7 @@ Please cancel this order. Thank you 🙏`;
                     <option value="Afternoon (12pm-4pm)">
                       Afternoon (12pm-4pm)
                     </option>
-                    <option value="Evening (4pm-8pm)">
-                      Evening (4pm-8pm)
-                    </option>
+                    <option value="Evening (4pm-8pm)">Evening (4pm-8pm)</option>
                   </select>
                 </div>
 
@@ -2308,7 +2333,9 @@ Please cancel this order. Thank you 🙏`;
                   <button
                     type="button"
                     onClick={handleAddressEditSubmit}
-                    disabled={!addrEdit.address.trim() || !addrEdit.phone.trim()}
+                    disabled={
+                      !addrEdit.address.trim() || !addrEdit.phone.trim()
+                    }
                     className="pri-big-btn width100 flex flex-row items-center justify-center gap-8"
                     style={{
                       opacity:

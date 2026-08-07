@@ -188,7 +188,10 @@ export default function ListYourBooksPage() {
 
           {/* ===== Hero ===== */}
           <section className="lb-hero">
-            <span className="lb-hero-badge">📚 For authors, publishers & brands</span>
+            <span className="lb-hero-badge">
+              {" "}
+              For authors, publishers & brands
+            </span>
             <h1 className="lb-hero-title">
               List your books on <span className="lb-accent">TheBookX</span>
             </h1>
@@ -205,7 +208,9 @@ export default function ListYourBooksPage() {
 
           {/* ===== Why list with us ===== */}
           <section className="lb-section">
-            <h2 className="lb-section-title">Why authors & publishers list with us</h2>
+            <h2 className="lb-section-title">
+              Why authors & publishers list with us
+            </h2>
             <div className="lb-benefits">
               {benefits.map(({ icon: Icon, title, desc }) => (
                 <div className="lb-benefit" key={title}>

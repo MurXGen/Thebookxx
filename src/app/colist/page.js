@@ -378,7 +378,7 @@ export default function COListPage() {
       ? order.phone
       : `+91${order.phone}`;
     const message = encodeURIComponent(
-      `📚 *Order Update from TheBookX*\n\nDear ${order.name},\n\nYour order #${order.orderId} is confirmed and will be shipped within 1-2 business days.\n\nThank you for shopping with TheBookX!`,
+      ` *Order Update from TheBookX*\n\nDear ${order.name},\n\nYour order #${order.orderId} is confirmed and will be shipped within 1-2 business days.\n\nThank you for shopping with TheBookX!`,
     );
     window.open(`https://wa.me/${formattedNumber}?text=${message}`, "_blank");
   };
@@ -833,7 +833,7 @@ export default function COListPage() {
 
       {ordersWithPL.length === 0 ? (
         <div className="empty-state">
-          <div className="empty-icon">📭</div>
+          <div className="empty-icon"></div>
           <h3>No orders found</h3>
           <p>Try adjusting your filters or search criteria</p>
           {(searchQuery || getActiveFilterCount() > 0) && (

@@ -3179,14 +3179,12 @@ export default function ManageOrdersPage() {
       alert("All books are already picked — nothing to export.");
       return;
     }
-    // Aggregate repeated copies into ONE cover carrying a quantity badge.
-    const byName = new Map();
-    items.forEach((it) => {
-      const key = it.name || it.src || Math.random();
-      if (byName.has(key)) byName.get(key).count += 1;
-      else byName.set(key, { ...it, count: 1 });
-    });
-    const books = [...byName.values()];
+    // Show every copy as its own cover, grouped so identical books cluster
+    // together in a structured grid (no quantity badge).
+    const books = [...items].sort((a, b) =>
+      String(a.name || "").localeCompare(String(b.name || "")),
+    );
+    const uniqueTitles = new Set(items.map((it) => it.name || it.src)).size;
     const totalCopies = items.length;
 
     const SC = 2; // hi-dpi crisp render
@@ -3226,7 +3224,7 @@ export default function ManageOrdersPage() {
       year: "numeric",
     });
     ctx.fillText(
-      `${books.length} title${books.length === 1 ? "" : "s"} · ${totalCopies} cop${totalCopies === 1 ? "y" : "ies"} · ${dateStr}`,
+      `${uniqueTitles} title${uniqueTitles === 1 ? "" : "s"} · ${totalCopies} cop${totalCopies === 1 ? "y" : "ies"} · ${dateStr}`,
       PAD,
       70,
     );
@@ -3294,28 +3292,6 @@ export default function ManageOrdersPage() {
         ctx.fillText((books[idx].name || "").slice(0, 22), dx + 12, dy + CH / 2);
       }
       ctx.restore();
-
-      // Quantity badge (only when repeated)
-      if (books[idx].count > 1) {
-        const bx = dx + CW - 22;
-        const by = dy + 22;
-        ctx.save();
-        ctx.shadowColor = "rgba(0,0,0,0.3)";
-        ctx.shadowBlur = 8;
-        ctx.shadowOffsetY = 2;
-        ctx.beginPath();
-        ctx.arc(bx, by, 20, 0, Math.PI * 2);
-        ctx.fillStyle = "#fb8500";
-        ctx.fill();
-        ctx.restore();
-        ctx.fillStyle = "#fff";
-        ctx.font = "800 16px Poppins, system-ui, sans-serif";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText(`×${books[idx].count}`, bx, by + 1);
-        ctx.textAlign = "left";
-        ctx.textBaseline = "alphabetic";
-      }
 
       // Caption (book name, truncated)
       const nm = books[idx].name || "";

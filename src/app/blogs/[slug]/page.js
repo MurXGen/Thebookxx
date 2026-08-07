@@ -11,6 +11,7 @@ import {
 import BlogViews from "@/components/UI/BlogViews";
 import BlogCover from "@/components/UI/BlogCover";
 import TableOfContents from "@/components/blog/TableOfContents";
+import MobileTOC from "@/components/blog/MobileTOC";
 import RelatedBooks from "@/components/blog/RelatedBooks";
 import PopularPosts from "@/components/blog/PopularPosts";
 import BlogSubscribe from "@/components/blog/BlogSubscribe";
@@ -310,10 +311,8 @@ export default async function BlogPage({ params }) {
               <BlogShare title={blog.title} slug={blog.slug} />
             </header>
 
-            {/* Table of contents (shows on mobile; sidebar handles desktop) */}
-            <div className="blog-toc-mobile">
-              <TableOfContents items={headingsFor(blog)} />
-            </div>
+            {/* Fixed bottom "On this page" for mobile/tablet (desktop uses sidebar) */}
+            <MobileTOC items={headingsFor(blog)} />
 
             {/* Blog Content — with in-article book ads woven between sections */}
             <div className="blog-content" style={{ marginBottom: "40px" }}>

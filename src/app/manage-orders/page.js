@@ -2349,10 +2349,29 @@ export default function ManageOrdersPage() {
   // Users tab — sort order: recent | walletAsc | walletDesc.
   const [userSort, setUserSort] = useState("recent");
   const [showFilters, setShowFilters] = useState(false);
+  // Orders list lazy loading — render 10 at a time, grow on scroll.
+  const ORDERS_BATCH = 10;
+  const [ordersVisible, setOrdersVisible] = useState(ORDERS_BATCH);
+  const ordersSentinelRef = useRef(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
-  const [statusFilter, setStatusFilter] = useState("active"); // default: pending + processing
+  // Multi-select order-status filter (array). Special values: "active" (the
+  // default combined view), "all" (everything), and "intransit-notrack"
+  // (In Transit orders that have no tracking/Shipping ID). Otherwise an exact
+  // Order Status string.
+  const [statusFilter, setStatusFilter] = useState(["active"]);
+  const toggleStatusFilter = (val) => {
+    setStatusFilter((prev) => {
+      const arr = Array.isArray(prev) ? prev : [prev];
+      if (val === "all") return ["all"]; // "all" clears everything else
+      const withoutAll = arr.filter((v) => v !== "all");
+      const next = withoutAll.includes(val)
+        ? withoutAll.filter((v) => v !== val)
+        : [...withoutAll, val];
+      return next.length ? next : ["active"];
+    });
+  };
   const [paymentFilter, setPaymentFilter] = useState("all");
   const [copiedId, setCopiedId] = useState(null);
   const [sortOrder, setSortOrder] = useState("desc"); // "desc" = latest first
@@ -3160,18 +3179,69 @@ export default function ManageOrdersPage() {
       alert("All books are already picked — nothing to export.");
       return;
     }
-    const COLS = 6;
+    // Aggregate repeated copies into ONE cover carrying a quantity badge.
+    const byName = new Map();
+    items.forEach((it) => {
+      const key = it.name || it.src || Math.random();
+      if (byName.has(key)) byName.get(key).count += 1;
+      else byName.set(key, { ...it, count: 1 });
+    });
+    const books = [...byName.values()];
+    const totalCopies = items.length;
+
+    const SC = 2; // hi-dpi crisp render
+    const COLS = Math.min(5, Math.max(2, books.length));
     const CW = 200;
     const CH = 280;
-    const GAP = 12;
-    const PAD = 16;
-    const rows = Math.ceil(items.length / COLS);
+    const CAP = 30; // caption strip under each cover
+    const GAP = 22;
+    const PAD = 28;
+    const HEAD = 96;
+    const cellH = CH + CAP;
+    const rows = Math.ceil(books.length / COLS);
+    const W = PAD * 2 + COLS * CW + (COLS - 1) * GAP;
+    const H = HEAD + rows * cellH + (rows - 1) * GAP + PAD;
     const canvas = document.createElement("canvas");
-    canvas.width = PAD * 2 + COLS * CW + (COLS - 1) * GAP;
-    canvas.height = PAD * 2 + rows * CH + (rows - 1) * GAP;
+    canvas.width = W * SC;
+    canvas.height = H * SC;
     const ctx = canvas.getContext("2d");
-    ctx.fillStyle = "#fff";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.scale(SC, SC);
+
+    // Soft background
+    const bg = ctx.createLinearGradient(0, 0, 0, H);
+    bg.addColorStop(0, "#ffffff");
+    bg.addColorStop(1, "#f4f4f6");
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, W, H);
+
+    // Header
+    ctx.fillStyle = "#0a0a0a";
+    ctx.font = "800 26px Poppins, system-ui, sans-serif";
+    ctx.fillText("Books to pack", PAD, 46);
+    ctx.fillStyle = "#6b7280";
+    ctx.font = "500 14px Poppins, system-ui, sans-serif";
+    const dateStr = new Date().toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+    ctx.fillText(
+      `${books.length} title${books.length === 1 ? "" : "s"} · ${totalCopies} cop${totalCopies === 1 ? "y" : "ies"} · ${dateStr}`,
+      PAD,
+      70,
+    );
+    ctx.textAlign = "right";
+    ctx.fillStyle = "#fb8500";
+    ctx.font = "800 18px Poppins, system-ui, sans-serif";
+    ctx.fillText("TheBookX", W - PAD, 46);
+    ctx.textAlign = "left";
+    // Divider
+    ctx.strokeStyle = "rgba(0,0,0,0.08)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(PAD, HEAD - 14);
+    ctx.lineTo(W - PAD, HEAD - 14);
+    ctx.stroke();
 
     const load = (src) =>
       new Promise((res) => {
@@ -3183,21 +3253,78 @@ export default function ManageOrdersPage() {
         img.src = src;
       });
 
-    const imgs = await Promise.all(items.map((it) => load(it.src)));
+    const roundRect = (x, y, w, h, r) => {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + w, y, x + w, y + h, r);
+      ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r);
+      ctx.arcTo(x, y, x + w, y, r);
+      ctx.closePath();
+    };
+
+    const imgs = await Promise.all(books.map((it) => load(it.src)));
     imgs.forEach((img, idx) => {
       const r = Math.floor(idx / COLS);
       const c = idx % COLS;
       const dx = PAD + c * (CW + GAP);
-      const dy = PAD + r * (CH + GAP);
+      const dy = HEAD + r * (cellH + GAP);
+
+      // Drop shadow behind the cover
+      ctx.save();
+      ctx.shadowColor = "rgba(0,0,0,0.18)";
+      ctx.shadowBlur = 16;
+      ctx.shadowOffsetY = 7;
+      ctx.fillStyle = "#fff";
+      roundRect(dx, dy, CW, CH, 14);
+      ctx.fill();
+      ctx.restore();
+
+      // Cover image clipped to rounded rect
+      ctx.save();
+      roundRect(dx, dy, CW, CH, 14);
+      ctx.clip();
       if (img) {
         ctx.drawImage(img, dx, dy, CW, CH);
       } else {
-        ctx.strokeStyle = "#ccc";
-        ctx.strokeRect(dx, dy, CW, CH);
-        ctx.fillStyle = "#666";
-        ctx.font = "13px sans-serif";
-        ctx.fillText((items[idx].name || "").slice(0, 22), dx + 8, dy + CH / 2);
+        ctx.fillStyle = "#ececec";
+        ctx.fillRect(dx, dy, CW, CH);
+        ctx.fillStyle = "#888";
+        ctx.font = "600 13px Poppins, system-ui, sans-serif";
+        ctx.fillText((books[idx].name || "").slice(0, 22), dx + 12, dy + CH / 2);
       }
+      ctx.restore();
+
+      // Quantity badge (only when repeated)
+      if (books[idx].count > 1) {
+        const bx = dx + CW - 22;
+        const by = dy + 22;
+        ctx.save();
+        ctx.shadowColor = "rgba(0,0,0,0.3)";
+        ctx.shadowBlur = 8;
+        ctx.shadowOffsetY = 2;
+        ctx.beginPath();
+        ctx.arc(bx, by, 20, 0, Math.PI * 2);
+        ctx.fillStyle = "#fb8500";
+        ctx.fill();
+        ctx.restore();
+        ctx.fillStyle = "#fff";
+        ctx.font = "800 16px Poppins, system-ui, sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(`×${books[idx].count}`, bx, by + 1);
+        ctx.textAlign = "left";
+        ctx.textBaseline = "alphabetic";
+      }
+
+      // Caption (book name, truncated)
+      const nm = books[idx].name || "";
+      const label = nm.length > 26 ? nm.slice(0, 25) + "…" : nm;
+      ctx.fillStyle = "#374151";
+      ctx.font = "600 12px Poppins, system-ui, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(label, dx + CW / 2, dy + CH + 20);
+      ctx.textAlign = "left";
     });
     canvas.toBlob((blob) => {
       if (!blob) return;
@@ -3217,7 +3344,10 @@ export default function ManageOrdersPage() {
     try {
       const p = JSON.parse(localStorage.getItem("manage_orders_prefs") || "{}");
       if (p.searchQuery) setSearchQuery(p.searchQuery);
-      if (p.statusFilter) setStatusFilter(p.statusFilter);
+      if (p.statusFilter)
+        setStatusFilter(
+          Array.isArray(p.statusFilter) ? p.statusFilter : [p.statusFilter],
+        );
       if (p.paymentFilter) setPaymentFilter(p.paymentFilter);
       if (p.dateFrom) setDateFrom(p.dateFrom);
       if (p.dateTo) setDateTo(p.dateTo);
@@ -3272,21 +3402,30 @@ export default function ManageOrdersPage() {
       );
     }
 
-    if (statusFilter === "active") {
-      // Default view: only pending / processing (and un-set) orders.
+    const statusSel = Array.isArray(statusFilter)
+      ? statusFilter
+      : [statusFilter];
+    if (statusSel.length && !statusSel.includes("all")) {
+      // OR across every selected status filter.
       filtered = filtered.filter((order) => {
-        const s = (order["Order Status"] || "").toLowerCase();
-        return (
-          !s ||
-          s.includes("pending") ||
-          s.includes("processing") ||
-          s.includes("getting shipped")
-        );
+        const s = order["Order Status"] || "";
+        const sl = s.toLowerCase();
+        const hasTracking = String(order["Shipping ID"] || "").trim() !== "";
+        return statusSel.some((f) => {
+          if (f === "active") {
+            return (
+              !sl ||
+              sl.includes("pending") ||
+              sl.includes("processing") ||
+              sl.includes("getting shipped")
+            );
+          }
+          if (f === "intransit-notrack") {
+            return s === "In Transit" && !hasTracking;
+          }
+          return s === f;
+        });
       });
-    } else if (statusFilter !== "all") {
-      filtered = filtered.filter(
-        (order) => order["Order Status"] === statusFilter,
-      );
     }
 
     if (paymentFilter !== "all") {
@@ -4627,10 +4766,42 @@ export default function ManageOrdersPage() {
     if (orderPickFilter === "noted") return !!orderNotes[o["Order ID"]];
     return true;
   });
+  // Lazy-render the list in batches of 10 (infinite scroll).
+  const visibleOrders = listOrders.slice(0, ordersVisible);
+  const hasMoreOrders = ordersVisible < listOrders.length;
   const notedOrdersCount = filteredOrders.filter(
     (o) => !!orderNotes[o["Order ID"]],
   ).length;
   const pickedOrdersCount = filteredOrders.filter(isOrderFullyPicked).length;
+
+  // Reset the lazy window whenever the filtered set / pick-tab / sort changes.
+  useEffect(() => {
+    setOrdersVisible(ORDERS_BATCH);
+  }, [
+    searchQuery,
+    statusFilter,
+    paymentFilter,
+    dateFrom,
+    dateTo,
+    selectedDate,
+    orderPickFilter,
+    sortOrder,
+  ]);
+
+  // Grow the window by a batch when the sentinel scrolls into view.
+  useEffect(() => {
+    const el = ordersSentinelRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting)
+          setOrdersVisible((v) => v + ORDERS_BATCH);
+      },
+      { rootMargin: "320px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [ordersVisible, listOrders.length, activeTab, orderView]);
 
   if (loading) {
     return <OrdersLoader />;
@@ -5642,12 +5813,27 @@ export default function ManageOrdersPage() {
           <div className="admin-search">
             {(() => {
               const chips = [];
-              if (statusFilter !== "active")
-                chips.push({
-                  key: "status",
-                  label: `Status: ${statusFilter === "all" ? "All" : statusFilter}`,
-                  clear: () => setStatusFilter("active"),
-                });
+              const statusSel = Array.isArray(statusFilter)
+                ? statusFilter
+                : [statusFilter];
+              const statusLabel = (v) =>
+                v === "all"
+                  ? "All"
+                  : v === "active"
+                    ? "Active"
+                    : v === "intransit-notrack"
+                      ? "In Transit · no tracking"
+                      : v;
+              // A chip per selected status, unless it's just the default "active".
+              if (!(statusSel.length === 1 && statusSel[0] === "active")) {
+                statusSel.forEach((v) =>
+                  chips.push({
+                    key: `status-${v}`,
+                    label: `Status: ${statusLabel(v)}`,
+                    clear: () => toggleStatusFilter(v),
+                  }),
+                );
+              }
               if (paymentFilter !== "all")
                 chips.push({
                   key: "pay",
@@ -5673,12 +5859,32 @@ export default function ManageOrdersPage() {
                   clear: () => setSelectedDate(""),
                 });
               const clearAll = () => {
-                setStatusFilter("active");
+                setStatusFilter(["active"]);
                 setPaymentFilter("all");
                 setDateFrom("");
                 setDateTo("");
                 setSelectedDate("");
               };
+              // Compact stats for the currently-filtered orders (real orders
+              // only — rows with an Order ID).
+              const realOrders = filteredOrders.filter((o) => o["Order ID"]);
+              const fRevenue = realOrders.reduce(
+                (s, o) => s + (Number(o.revenue) || 0),
+                0,
+              );
+              const fCod = realOrders.filter((o) =>
+                /cod|cash/i.test(o["Payment Type"] || ""),
+              ).length;
+              const fUpi = realOrders.length - fCod;
+              const fBooks = realOrders.reduce(
+                (s, o) =>
+                  s +
+                  (o.parsedBooks || []).reduce(
+                    (a, b) => a + (Number(b.quantity) || 1),
+                    0,
+                  ),
+                0,
+              );
               return (
                 <>
                   <div className="admin-search-bar">
@@ -5718,19 +5924,21 @@ export default function ManageOrdersPage() {
                   </div>
 
                   {chips.length > 0 && (
-                    <div className="admin-chips">
-                      {chips.map((c) => (
-                        <span className="admin-chip" key={c.key}>
-                          {c.label}
-                          <button
-                            type="button"
-                            onClick={c.clear}
-                            aria-label={`Remove ${c.label}`}
-                          >
-                            <X size={12} />
-                          </button>
-                        </span>
-                      ))}
+                    <div className="admin-chips-row">
+                      <div className="admin-chips-scroll">
+                        {chips.map((c) => (
+                          <span className="admin-chip" key={c.key}>
+                            {c.label}
+                            <button
+                              type="button"
+                              onClick={c.clear}
+                              aria-label={`Remove ${c.label}`}
+                            >
+                              <X size={12} />
+                            </button>
+                          </span>
+                        ))}
+                      </div>
                       <button
                         type="button"
                         className="admin-chips-clear"
@@ -5741,17 +5949,83 @@ export default function ManageOrdersPage() {
                     </div>
                   )}
 
-                  {/* Filter dropdown panel */}
+                  {/* Compact stats for the filtered orders */}
+                  {realOrders.length > 0 && (
+                    <details className="admin-stats">
+                      <summary className="admin-stats-summary">
+                        <BarChart3 size={14} />
+                        Stats · {realOrders.length} order
+                        {realOrders.length === 1 ? "" : "s"}
+                        <ChevronDown size={15} className="admin-stats-caret" />
+                      </summary>
+                      <div className="admin-stats-grid">
+                        <div className="admin-stat s-orders">
+                          <div className="admin-stat-ic">
+                            <ShoppingBag size={16} />
+                          </div>
+                          <span className="admin-stat-val">
+                            {realOrders.length}
+                          </span>
+                          <span className="admin-stat-lbl">Orders</span>
+                          <span className="admin-stat-x">in this filter</span>
+                        </div>
+                        <div className="admin-stat s-rev">
+                          <div className="admin-stat-ic">
+                            <IndianRupee size={16} />
+                          </div>
+                          <span className="admin-stat-val">
+                            ₹{fRevenue.toLocaleString()}
+                          </span>
+                          <span className="admin-stat-lbl">Revenue</span>
+                          <span className="admin-stat-x">
+                            Avg ₹
+                            {realOrders.length
+                              ? Math.round(
+                                  fRevenue / realOrders.length,
+                                ).toLocaleString()
+                              : 0}
+                          </span>
+                        </div>
+                        <div className="admin-stat s-units">
+                          <div className="admin-stat-ic">
+                            <BarChart3 size={16} />
+                          </div>
+                          <span className="admin-stat-val">{fBooks}</span>
+                          <span className="admin-stat-lbl">Books sold</span>
+                          <span className="admin-stat-x">
+                            across {realOrders.length} orders
+                          </span>
+                        </div>
+                        <div className="admin-stat s-wallet">
+                          <div className="admin-stat-ic">
+                            <Wallet size={16} />
+                          </div>
+                          <span className="admin-stat-val">
+                            {fCod} / {fUpi}
+                          </span>
+                          <span className="admin-stat-lbl">COD / UPI</span>
+                          <span className="admin-stat-x">payment split</span>
+                        </div>
+                      </div>
+                    </details>
+                  )}
+
+                  {/* Filter dropdown panel — absolute overlay */}
                   <AnimatePresence>
                     {showFilters && (
-                      <motion.div
-                        className="admin-filter-panel"
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <div className="admin-filter-head">
+                      <>
+                        <div
+                          className="admin-filter-backdrop"
+                          onClick={() => setShowFilters(false)}
+                        />
+                        <motion.div
+                          className="admin-filter-panel"
+                          initial={{ opacity: 0, y: -8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -8 }}
+                          transition={{ duration: 0.18, ease: "easeOut" }}
+                        >
+                          <div className="admin-filter-head">
                           <span className="admin-filter-title">
                             <SlidersHorizontal size={15} /> Filters
                           </span>
@@ -5787,25 +6061,43 @@ export default function ManageOrdersPage() {
                             <label className="admin-field-label">
                               Order Status
                             </label>
-                            <div className="admin-select-wrap">
-                              <select
-                                className="admin-select"
-                                value={statusFilter}
-                                onChange={(e) =>
-                                  setStatusFilter(e.target.value)
-                                }
-                              >
-                                <option value="active">
-                                  Active (Pending + Processing + Getting
-                                  Shipped)
-                                </option>
-                                <option value="all">All Statuses</option>
-                                {distinctStatuses.map((s) => (
-                                  <option key={s} value={s}>
-                                    {s}
-                                  </option>
-                                ))}
-                              </select>
+                            <div className="admin-status-multi">
+                              {[
+                                {
+                                  value: "active",
+                                  label:
+                                    "Active (Pending + Processing + Getting Shipped)",
+                                },
+                                { value: "all", label: "All Statuses" },
+                                ...distinctStatuses.map((s) => ({
+                                  value: s,
+                                  label: s,
+                                })),
+                                {
+                                  value: "intransit-notrack",
+                                  label: "In Transit — without tracking ID",
+                                },
+                              ].map((opt) => {
+                                const sel = Array.isArray(statusFilter)
+                                  ? statusFilter
+                                  : [statusFilter];
+                                const checked = sel.includes(opt.value);
+                                return (
+                                  <label
+                                    key={opt.value}
+                                    className={`admin-status-opt${checked ? " checked" : ""}`}
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      checked={checked}
+                                      onChange={() =>
+                                        toggleStatusFilter(opt.value)
+                                      }
+                                    />
+                                    <span>{opt.label}</span>
+                                  </label>
+                                );
+                              })}
                             </div>
                           </div>
                           <div className="admin-field">
@@ -5868,7 +6160,8 @@ export default function ManageOrdersPage() {
                             Done
                           </button>
                         </div>
-                      </motion.div>
+                        </motion.div>
+                      </>
                     )}
                   </AnimatePresence>
                 </>
@@ -6545,7 +6838,7 @@ export default function ManageOrdersPage() {
 
                   {orderView === "cards" ? (
                     <div className="admin-orders-grid">
-                      {listOrders.map((order, idx) => {
+                      {visibleOrders.map((order, idx) => {
                         const orderId = order["Order ID"];
                         const books = order.parsedBooks || [];
                         const pnl = order.pnl;
@@ -6716,19 +7009,27 @@ export default function ManageOrdersPage() {
                             <div className="mo-amount-row">
                               {(() => {
                                 const rev = Number(order.revenue) || 0;
-                                const fee = Math.round(rev * 0.059);
+                                // 5.9% deduction applies to COD orders only.
+                                // UPI orders show the full amount, no fee line.
+                                const fee = isCOD ? Math.round(rev * 0.059) : 0;
                                 const net = Math.round(rev - fee);
                                 return (
                                   <button
                                     type="button"
                                     className="mo-amount"
                                     onClick={() => setDetailOrder(order)}
-                                    title={`Net after 5.9% deduction (₹${rev.toLocaleString()} − ₹${fee}) · tap for details`}
+                                    title={
+                                      isCOD
+                                        ? `Net after 5.9% deduction (₹${rev.toLocaleString()} − ₹${fee}) · tap for details`
+                                        : `₹${rev.toLocaleString()} · tap for details`
+                                    }
                                   >
                                     ₹{net.toLocaleString()}
-                                    <span className="mo-amount-fee">
-                                      −₹{fee.toLocaleString()} (5.9%)
-                                    </span>
+                                    {isCOD && (
+                                      <span className="mo-amount-fee">
+                                        −₹{fee.toLocaleString()} (5.9%)
+                                      </span>
+                                    )}
                                   </button>
                                 );
                               })()}
@@ -7169,7 +7470,7 @@ export default function ManageOrdersPage() {
                           </tr>
                         </thead>
                         <tbody>
-                          {listOrders.map((order, i) => {
+                          {visibleOrders.map((order, i) => {
                             const oid = order["Order ID"];
                             const sel = selectedIds.includes(oid);
                             return (
@@ -7225,6 +7526,24 @@ export default function ManageOrdersPage() {
                           })}
                         </tbody>
                       </table>
+                    </div>
+                  )}
+
+                  {hasMoreOrders && (
+                    <div
+                      ref={ordersSentinelRef}
+                      className="admin-orders-more"
+                    >
+                      <button
+                        type="button"
+                        className="admin-orders-more-btn"
+                        onClick={() =>
+                          setOrdersVisible((v) => v + ORDERS_BATCH)
+                        }
+                      >
+                        Load more · {listOrders.length - visibleOrders.length}{" "}
+                        remaining
+                      </button>
                     </div>
                   )}
                 </div>

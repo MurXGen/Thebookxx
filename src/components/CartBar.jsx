@@ -3,7 +3,7 @@
 import { books } from "@/utils/book";
 import { useStore } from "@/context/StoreContext";
 import { QUICKREAD_PRICE } from "@/data/quickreads";
-import { CART_OFFERS } from "@/utils/cartOffers";
+import { getCartOffers } from "@/utils/cartOffers";
 import { useRouter } from "next/navigation";
 import CartOfferStrip from "@/components/UI/CartOfferStrip";
 import LoadingButton from "./UI/LoadingButton";
@@ -30,7 +30,7 @@ import UnlockChip from "./UI/UnlockChip";
 import OneRupeeModal from "./OneRupeeModal";
 
 export default function CartBar({ tab = "books" }) {
-  const { cart, cartTotal, qrCart } = useStore();
+  const { cart, cartTotal, qrCart, hasOneRupeeItem } = useStore();
   const router = useRouter();
   const isQuickReads = tab === "quickreads";
   const qrCount = qrCart?.length || 0;
@@ -141,8 +141,12 @@ export default function CartBar({ tab = "books" }) {
 
   const discountedAmount = cartBooks.reduce((s, b) => s + b.discountedTotal, 0);
 
+  // Use the ₹1-aware offer set: carts containing a ₹1 book do NOT get the
+  // flat ₹50/₹100 discounts (they follow the ₹1 offer ladder instead), so the
+  // strip + total here stay consistent with the bag & bill modal.
+  const activeOffers = getCartOffers(hasOneRupeeItem);
   const appliedOffer =
-    [...CART_OFFERS].reverse().find((o) => discountedAmount >= o.target) ||
+    [...activeOffers].reverse().find((o) => discountedAmount >= o.target) ||
     null;
 
   let offerDiscount = 0;

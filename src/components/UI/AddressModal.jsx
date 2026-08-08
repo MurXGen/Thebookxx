@@ -31,6 +31,9 @@ import {
   Wallet,
   Check,
   ArrowRight,
+  ArrowLeft,
+  ChevronRight,
+  CreditCard,
   TrendingDown,
   Banknote,
 } from "lucide-react";
@@ -154,6 +157,12 @@ export default function AddressModal({
   const [showUPIPayment, setShowUPIPayment] = useState(false);
   const [showCODSuccess, setShowCODSuccess] = useState(false);
   const [successPayment, setSuccessPayment] = useState("COD");
+  // "Pay online" method chooser (UPI apps + Cards/gift-card for overseas users)
+  const [showPayMethod, setShowPayMethod] = useState(false);
+  const [payMethodStage, setPayMethodStage] = useState("choose"); // choose|giftcard
+  const [giftMethod, setGiftMethod] = useState(""); // selected card/voucher label
+  const [giftCode, setGiftCode] = useState("");
+  const [successPaymentLabel, setSuccessPaymentLabel] = useState("");
   const [showCODFeeModal, setShowCODFeeModal] = useState(false); // NEW
   const [qrUnlocked, setQrUnlocked] = useState(false);
   const [upiCopied, setUpiCopied] = useState(false);
@@ -612,6 +621,7 @@ export default function AddressModal({
     isFaster = fasterDelivery,
     confirmed = false,
     orderId = undefined,
+    paymentLabel = "",
   ) => {
     try {
       // Build the link SYNCHRONOUSLY (no await on the URL shortener). Awaiting
@@ -649,6 +659,7 @@ export default function AddressModal({
           address: fullAddress,
         },
         paymentType,
+        paymentLabel,
         fasterDeliveryChoice: isFaster,
         giftWrapSelected: giftWrapOn,
         shortLink,
@@ -881,12 +892,12 @@ export default function AddressModal({
   // comes from the add-on checkbox in the address form.
   const submitAndRoute = (method, isFaster) => {
     if (method === "UPI") {
-      const ref = `TBX${Date.now()}`;
-      setUpiOrderRef(ref);
-      setUpiPhase("await");
-      setQrUnlocked(false);
-      submitToGoogleForm("UPI", isFaster, false, ref);
-      setShowUPIPayment(true);
+      // "Pay online" → open the method chooser (UPI apps + Cards/gift-card).
+      // The order row is written only once the shopper picks a real method.
+      setPayMethodStage("choose");
+      setGiftMethod("");
+      setGiftCode("");
+      setShowPayMethod(true);
     } else if (method === "COD") {
       // The ₹29 fee is already disclosed on the Summary & Pay sheet, so place
       // the COD order directly (no second fee-confirmation modal).
@@ -899,6 +910,53 @@ export default function AddressModal({
       notifyCODToTelegram(isFaster);
       triggerCODSuccess(isFaster);
     }
+  };
+
+  // Chose a specific UPI app (Paytm / PhonePe / GPay / Other) → log the order
+  // with that app as the source, then show the existing UPI QR modal.
+  const chooseUpiApp = (app) => {
+    const ref = `TBX${Date.now()}`;
+    setUpiOrderRef(ref);
+    setUpiPhase("await");
+    setQrUnlocked(false);
+    const label = `${app} (UPI)`;
+    submitToGoogleForm("UPI", fasterDelivery, false, ref, label);
+    setSuccessPayment("UPI");
+    setSuccessPaymentLabel(label);
+    setShowPayMethod(false);
+    setShowUPIPayment(true);
+  };
+
+  // Chose a card / net-banking method → show the gift-card instruction step.
+  const chooseGiftMethod = (label) => {
+    setGiftMethod(label);
+    setGiftCode("");
+    setPayMethodStage("giftcard");
+  };
+
+  // Submit the pasted gift-card code → record the confirmed order with the
+  // method + code as the payment source, then show the success receipt.
+  const submitGiftCard = () => {
+    const code = giftCode.trim();
+    if (code.length < 4) {
+      showToast("Please paste a valid gift-card code.", "error");
+      return;
+    }
+    const label = `${giftMethod} · Gift card: ${code}`;
+    try {
+      trackPurchase({
+        cartItems: cartBooks,
+        totalAmount: netPayable,
+        paymentId: `GIFT-${Date.now()}`,
+      });
+    } catch (_) {}
+    submitToGoogleForm(giftMethod, fasterDelivery, true, undefined, label);
+    setShowPayMethod(false);
+    setFasterDelivery(fasterDelivery);
+    persistLogin();
+    setSuccessPayment("UPI");
+    setSuccessPaymentLabel(label);
+    setShowCODSuccess(true);
   };
 
   const beginPayment = (method) => {
@@ -1676,10 +1734,10 @@ export default function AddressModal({
                     <span className="cod-choice-ic">
                       <Sparkles size={18} />
                     </span>
-                    <span className="cod-choice-title">Pay now via UPI</span>
+                    <span className="cod-choice-title">Pay online</span>
                     <span className="cod-choice-amt">₹{upiTotalForFlow}</span>
                     <span className="cod-choice-sub">
-                      Instant · no extra charge
+                      UPI, cards &amp; more · no extra charge
                     </span>
                   </button>
 
@@ -1972,6 +2030,7 @@ export default function AddressModal({
             bookmarkCharge={bookmarkChargeAmount}
             codFee={successPayment === "UPI" ? 0 : codFeeAmount}
             paymentMode={successPayment}
+            paymentLabel={successPaymentLabel}
             quickReadCount={quickReadItems.length}
             quickReadTotal={qrAddOn}
             // ---- totals derived from above for convenience ----
@@ -1989,6 +2048,173 @@ export default function AddressModal({
             onClose={() => setShowCODSuccess(false)}
             onViewProfile={goToProfile}
           />
+        )}
+      </AnimatePresence>
+
+      {/* ========== Pay-online method chooser ========== */}
+      <AnimatePresence>
+        {showPayMethod && (
+          <motion.div
+            className="bill-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowPayMethod(false)}
+            style={{ maxWidth: "980px", margin: "0 auto" }}
+          >
+            <motion.div
+              className="bill-modal paymeth-modal"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="bill-header">
+                <span className="weight-600 font-16 flex items-center gap-8">
+                  {payMethodStage === "giftcard" ? (
+                    <>
+                      <button
+                        type="button"
+                        className="paymeth-back"
+                        onClick={() => setPayMethodStage("choose")}
+                        aria-label="Back"
+                      >
+                        <ArrowLeft size={16} />
+                      </button>
+                      {giftMethod}
+                    </>
+                  ) : (
+                    "Choose how to pay"
+                  )}
+                </span>
+                <span
+                  className="cursor-pointer"
+                  onClick={() => setShowPayMethod(false)}
+                >
+                  <X size={18} />
+                </span>
+              </div>
+
+              {payMethodStage === "choose" ? (
+                <div className="paymeth">
+                  {/* UPI apps */}
+                  <div className="paymeth-group">
+                    <span className="paymeth-group-title">Pay via UPI</span>
+                    <div className="paymeth-apps">
+                      {[
+                        { k: "Paytm", c: "#00baf2" },
+                        { k: "PhonePe", c: "#5f259f" },
+                        { k: "Google Pay", c: "#1a73e8" },
+                        { k: "Other UPI apps", c: "#fb8500" },
+                      ].map((app) => (
+                        <button
+                          key={app.k}
+                          type="button"
+                          className="paymeth-app"
+                          onClick={() => chooseUpiApp(app.k)}
+                        >
+                          <span
+                            className="paymeth-app-ic"
+                            style={{ background: app.c }}
+                          >
+                            {app.k === "Other UPI apps" ? (
+                              <Smartphone size={18} />
+                            ) : (
+                              app.k[0]
+                            )}
+                          </span>
+                          <span className="paymeth-app-nm">{app.k}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Cards & net banking → gift-card flow */}
+                  <div className="paymeth-group">
+                    <span className="paymeth-group-title">
+                      Cards &amp; net banking
+                    </span>
+                    <div className="paymeth-cards">
+                      {["Credit card", "Debit card", "Net banking"].map((m) => (
+                        <button
+                          key={m}
+                          type="button"
+                          className="paymeth-row"
+                          onClick={() => chooseGiftMethod(m)}
+                        >
+                          <CreditCard size={18} className="paymeth-row-ic" />
+                          <span className="paymeth-row-nm">{m}</span>
+                          <ChevronRight size={16} className="paymeth-row-chev" />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Amazon gift voucher */}
+                  <button
+                    type="button"
+                    className="paymeth-amazon"
+                    onClick={() => chooseGiftMethod("Amazon Gift Voucher")}
+                  >
+                    <span className="paymeth-amazon-ic">
+                      <Gift size={18} />
+                    </span>
+                    <span className="paymeth-amazon-txt">
+                      <strong>Amazon Gift Voucher</strong>
+                      <small>Already have an Amazon gift card? Redeem it.</small>
+                    </span>
+                    <ChevronRight size={16} className="paymeth-row-chev" />
+                  </button>
+                </div>
+              ) : (
+                <div className="paymeth-gift">
+                  <div className="paymeth-gift-note">
+                    <Info size={16} />
+                    <p>
+                      To pay with <strong>{giftMethod}</strong>, buy an{" "}
+                      <strong>
+                        Amazon gift card worth ₹
+                        {getTotalWithDelivery(fasterDelivery) + addOnsCharge}
+                      </strong>{" "}
+                      and paste the code below. We&apos;ll verify it and confirm
+                      your order on WhatsApp.
+                    </p>
+                  </div>
+                  <a
+                    href="https://www.amazon.in/dp/B08DXJP4KG"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="paymeth-gift-buy"
+                  >
+                    Buy an Amazon gift card
+                    <ArrowRight size={15} />
+                  </a>
+                  <label className="paymeth-gift-label">Gift card code</label>
+                  <input
+                    className="paymeth-gift-input"
+                    value={giftCode}
+                    onChange={(e) => setGiftCode(e.target.value)}
+                    placeholder="Paste your gift-card code here"
+                    autoComplete="off"
+                  />
+                  <button
+                    type="button"
+                    className="pri-big-btn paymeth-gift-submit"
+                    disabled={giftCode.trim().length < 4}
+                    onClick={submitGiftCard}
+                  >
+                    Submit &amp; place order · ₹
+                    {getTotalWithDelivery(fasterDelivery) + addOnsCharge}
+                  </button>
+                  <p className="paymeth-gift-fine">
+                    Your books are reserved. We confirm once the gift card is
+                    verified.
+                  </p>
+                </div>
+              )}
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
 
@@ -2267,6 +2493,7 @@ export function CODSuccessModal({
   quickReadTotal = 0,
   cartBooks,
   paymentMode = "COD",
+  paymentLabel = "",
   onContinue,
   onClose,
   onViewProfile,
@@ -2584,7 +2811,13 @@ export function CODSuccessModal({
                     </div>
                     <div className="rcpt-line">
                       <span>Payment</span>
-                      <span>{isUPI ? "UPI · Paid" : "Cash on Delivery"}</span>
+                      <span>
+                        {paymentLabel
+                          ? paymentLabel
+                          : isUPI
+                            ? "UPI · Paid"
+                            : "Cash on Delivery"}
+                      </span>
                     </div>
 
                     <div className="rcpt-dash" />

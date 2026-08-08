@@ -3,7 +3,7 @@
 import { saveOrder } from "@/utils/indexDB";
 import { books } from "@/utils/book";
 import {
-  CART_OFFERS,
+  getCartOffers,
   getDeliveryCharge,
   getDeliveryLabel,
   getOriginalCharge,
@@ -805,8 +805,13 @@ export default function ViewBagClient() {
     0,
   );
 
+  // ₹1-book carts follow the ₹1 offer ladder (no flat ₹50/₹100 discount).
+  const hasOneRupeeItem = cartBooks.some((b) => b.discountedPrice === 1);
+  const activeCartOffers = getCartOffers(hasOneRupeeItem);
   const getAppliedOffer = (amount) => {
-    return [...CART_OFFERS].reverse().find((o) => amount >= o.target) || null;
+    return (
+      [...activeCartOffers].reverse().find((o) => amount >= o.target) || null
+    );
   };
 
   const appliedOffer = getAppliedOffer(totalDiscountedValue);

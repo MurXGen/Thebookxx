@@ -213,6 +213,10 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
     bookmarkCharge: bookmarkChargeIn = 0,
     // Optional caller-supplied order id so the client can poll this exact row.
     orderId: orderIdIn,
+    // Optional exact payment-source label (e.g. "PhonePe", "Credit Card ·
+    // Gift card: XXXX", "Amazon Gift Voucher · XXXX"). Overrides the default
+    // COD/WhatsApp/UPI mapping so the sheet records the real method chosen.
+    paymentLabel = "",
   } = orderDetails;
 
   // Use the real charge the customer was shown; only fall back to the
@@ -247,11 +251,12 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
     booksList: formattedBooksList,
     totalAmount: totalWithDelivery || finalPayable,
     paymentType:
-      paymentType === "COD"
+      paymentLabel ||
+      (paymentType === "COD"
         ? "Cash on Delivery"
         : paymentType === "WhatsApp"
           ? "WhatsApp"
-          : "UPI Payment",
+          : "UPI Payment"),
     deliveryType: fasterDeliveryChoice
       ? `Faster Delivery (${deliveryLabel})`
       : `Standard Delivery (${deliveryLabel})`,

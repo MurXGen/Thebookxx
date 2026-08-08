@@ -25312,6 +25312,244 @@ img[data-loaded="true"] {
   overflow: hidden;
   padding: 0;
 }
+
+/* ===== Pay-online method chooser ===== */
+.paymeth-modal {
+  max-height: 92vh;
+  overflow-y: auto;
+}
+.paymeth-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--hairline, #ececec);
+  background: var(--background, #fff);
+  color: var(--foreground);
+  cursor: pointer;
+}
+.paymeth {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 4px 2px 8px;
+}
+.paymeth-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.paymeth-group-title {
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--dark-50, #6b7280);
+}
+.paymeth-apps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+.paymeth-app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 6px;
+  border-radius: 14px;
+  border: 1px solid var(--hairline, #ececec);
+  background: var(--background, #fff);
+  cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.1s ease;
+}
+.paymeth-app:hover {
+  border-color: var(--tertiary, #fb8500);
+}
+.paymeth-app:active {
+  transform: scale(0.97);
+}
+.paymeth-app-ic {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 800;
+}
+.paymeth-app-nm {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--foreground);
+  text-align: center;
+  line-height: 1.2;
+}
+.paymeth-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.paymeth-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--hairline, #ececec);
+  background: var(--background, #fff);
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+.paymeth-row:hover {
+  border-color: var(--tertiary, #fb8500);
+}
+.paymeth-row-ic {
+  color: var(--tertiary, #fb8500);
+  flex: 0 0 auto;
+}
+.paymeth-row-nm {
+  flex: 1;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--foreground);
+}
+.paymeth-row-chev {
+  color: var(--dark-50, #6b7280);
+  flex: 0 0 auto;
+}
+.paymeth-amazon {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 153, 0, 0.4);
+  background: rgba(255, 153, 0, 0.07);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.paymeth-amazon:hover {
+  background: rgba(255, 153, 0, 0.12);
+}
+.paymeth-amazon-ic {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: #ff9900;
+  color: #fff;
+  flex: 0 0 auto;
+}
+.paymeth-amazon-txt {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  text-align: left;
+}
+.paymeth-amazon-txt strong {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--foreground);
+}
+.paymeth-amazon-txt small {
+  font-size: 11.5px;
+  color: var(--dark-50, #6b7280);
+}
+/* Gift-card instruction */
+.paymeth-gift {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 4px 2px 8px;
+}
+.paymeth-gift-note {
+  display: flex;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(37, 99, 235, 0.07);
+  border: 1px solid rgba(37, 99, 235, 0.2);
+  color: #1e3a8a;
+}
+.paymeth-gift-note svg {
+  flex: 0 0 auto;
+  margin-top: 2px;
+  color: #2563eb;
+}
+.paymeth-gift-note p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--foreground);
+}
+.paymeth-gift-buy {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 16px;
+  border-radius: 12px;
+  border: 1px solid #ff9900;
+  background: #fff;
+  color: #b45309;
+  font-size: 13.5px;
+  font-weight: 800;
+  text-decoration: none;
+}
+.paymeth-gift-buy:hover {
+  background: rgba(255, 153, 0, 0.08);
+}
+.paymeth-gift-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--dark-50, #6b7280);
+  margin-top: 2px;
+}
+.paymeth-gift-input {
+  width: 100%;
+  padding: 13px 14px !important;
+  border-radius: 12px;
+  border: 1px solid var(--dark-50);
+  background: var(--background, #fff);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--foreground);
+  font-family: ui-monospace, monospace;
+  outline: none;
+}
+.paymeth-gift-input:focus {
+  border-color: var(--tertiary, #fb8500);
+  box-shadow: 0 0 0 3px rgba(251, 133, 0, 0.14);
+}
+.paymeth-gift-submit {
+  width: 100%;
+  margin-top: 4px;
+}
+.paymeth-gift-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.paymeth-gift-fine {
+  margin: 0;
+  font-size: 11.5px;
+  color: var(--dark-50, #6b7280);
+  text-align: center;
+}
+@media (max-width: 480px) {
+  .paymeth-apps {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
 .pay-sel-modal .bill-header {
   flex: 0 0 auto;
   padding: 4px 16px 12px;

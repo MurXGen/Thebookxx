@@ -349,7 +349,7 @@ export function drawDeclarationForm(c, startY, data) {
 
 // Draw a simple FROM/TO address label (small lined table).
 // Returns the y-coordinate after the label ends.
-export function drawAddressLabel(c, startY, data) {
+export function drawAddressLabel(c, startY, data, opts = {}) {
   const {
     orderId,
     customerName,
@@ -361,104 +361,156 @@ export function drawAddressLabel(c, startY, data) {
     codAmount,
   } = data;
 
+  // `big` (used by the standalone label-only download) scales up type and
+  // bolds the main details for readability, since it has a full page to fill.
+  const big = !!opts.big;
+  const F = {
+    title: big ? "bold 17px sans-serif" : "bold 13px sans-serif",
+    cod: big ? "bold 26px sans-serif" : "bold 20px sans-serif",
+    header: big ? "bold 14px sans-serif" : "bold 11px sans-serif",
+    caption: big ? "bold 12px sans-serif" : "bold 10px sans-serif",
+    name: big ? "bold 18px sans-serif" : "bold 13px sans-serif",
+    value: big ? "bold 15px sans-serif" : "12px sans-serif",
+    footer: big ? "bold 13px sans-serif" : "bold 11px sans-serif",
+    footerDate: big ? "13px sans-serif" : "11px sans-serif",
+  };
+  const lineH = big ? 20 : 15;
+  const titleH = big ? 42 : 35;
+  const codH = big ? 62 : 50;
+  const headerH = big ? 34 : 28;
+  const footerH = big ? 38 : 30;
+
+  const BRAND = "#fb8500";
   const X = 40;
   const W = c.W - 80;
   let y = startY;
 
-  // Title row
-  c.rect(X, y, W, 35);
-  c.text("SHIPPING LABEL, TheBookX", c.W / 2, y + 23, {
-    font: "bold 13px sans-serif",
-    align: "center",
-  });
-  y += 35;
+  // Title / brand header
+  if (big) {
+    const brandH = 78;
+    c.rect(X, y, W, brandH);
+    // orange accent bar across the top of the header
+    c.rect(X, y, W, 7, { fill: BRAND, stroke: false });
+    c.text("TheBookX", c.W / 2, y + 46, {
+      font: "bold 32px sans-serif",
+      align: "center",
+      color: BRAND,
+    });
+    // subtitle with a little letter-spacing feel via caps
+    c.text("S H I P P I N G   L A B E L", c.W / 2, y + 67, {
+      font: "bold 12px sans-serif",
+      align: "center",
+      color: "#666",
+    });
+    y += brandH;
+  } else {
+    c.rect(X, y, W, titleH);
+    c.text("SHIPPING LABEL, TheBookX", c.W / 2, y + titleH - 12, {
+      font: F.title,
+      align: "center",
+    });
+    y += titleH;
+  }
 
   // COD callout, large bold text, only when this is a COD order.
   // Sits between the title and the FROM/TO table so a courier sees the
   // cash-to-collect amount immediately on picking up the parcel.
   if (isCOD && codAmount) {
-    c.rect(X, y, W, 50);
-    c.text(`COLLECT CASH ON DELIVERY:  Rs. ${codAmount} /-`, c.W / 2, y + 32, {
-      font: "bold 20px sans-serif",
+    c.rect(X, y, W, codH, big ? { fill: "#fff3e6", stroke: "#000" } : {});
+    c.text(`COLLECT CASH ON DELIVERY:  Rs. ${codAmount} /-`, c.W / 2, y + codH - 20, {
+      font: F.cod,
       align: "center",
+      color: big ? "#c25e00" : "#000",
     });
-    y += 50;
+    y += codH;
   }
 
   // 2-column header
   const COL_HALF = W / 2;
-  c.rect(X, y, COL_HALF, 28, { fill: "#f5f5f5", stroke: "#000" });
-  c.rect(X + COL_HALF, y, COL_HALF, 28, { fill: "#f5f5f5", stroke: "#000" });
-  c.text("FROM (SENDER)", X + 10, y + 19, { font: "bold 11px sans-serif" });
-  c.text("TO (ADDRESSEE)", X + COL_HALF + 10, y + 19, {
-    font: "bold 11px sans-serif",
+  c.rect(X, y, COL_HALF, headerH, { fill: "#f5f5f5", stroke: "#000" });
+  c.rect(X + COL_HALF, y, COL_HALF, headerH, { fill: "#f5f5f5", stroke: "#000" });
+  c.text("FROM (SENDER)", X + 10, y + headerH - 9, { font: F.header });
+  c.text("TO (ADDRESSEE)", X + COL_HALF + 10, y + headerH - 9, {
+    font: F.header,
   });
-  y += 28;
+  y += headerH;
 
   // Body, 2 columns
-  const H_BODY = 280;
+  const H_BODY = big ? 340 : 280;
+  const nameGap = big ? 52 : 42;
+  const capGap = big ? 20 : 16;
+  const rowGap = big ? 24 : 18;
+  const cityValX = big ? 60 : 50;
+  const pinValX = big ? 74 : 60;
+  const mobValX = big ? 68 : 55;
   c.rect(X, y, COL_HALF, H_BODY);
   c.rect(X + COL_HALF, y, COL_HALF, H_BODY);
 
   // Sender (left)
   let sy = y + 18;
-  c.text("NAME:", X + 10, sy, { font: "bold 10px sans-serif", color: "#555" });
-  c.text(SENDER.name, X + 10, sy + 16, { font: "bold 13px sans-serif" });
-  sy += 42;
+  c.text("NAME:", X + 10, sy, { font: F.caption, color: "#555" });
+  c.text(SENDER.name, X + 10, sy + capGap, { font: F.name });
+  sy += nameGap;
   c.text("ADDRESS:", X + 10, sy, {
-    font: "bold 10px sans-serif",
+    font: F.caption,
     color: "#555",
   });
-  let addrY = sy + 16;
+  let addrY = sy + capGap;
   SENDER.addressLines.forEach((line) => {
-    c.text(line, X + 10, addrY, { font: "12px sans-serif" });
-    addrY += 15;
+    c.text(line, X + 10, addrY, { font: F.value });
+    addrY += lineH;
   });
   sy = addrY + 14;
   c.text("MOBILE:", X + 10, sy, {
-    font: "bold 10px sans-serif",
+    font: F.caption,
     color: "#555",
   });
-  c.text(SENDER.mobile, X + 10, sy + 16, { font: "12px sans-serif" });
+  c.text(SENDER.mobile, X + 10, sy + capGap, { font: F.value });
 
   // Addressee (right)
   const aX = X + COL_HALF + 10;
   let ay = y + 18;
-  c.text("NAME:", aX, ay, { font: "bold 10px sans-serif", color: "#555" });
-  c.text(customerName || "", aX, ay + 16, { font: "bold 13px sans-serif" });
-  ay += 42;
-  c.text("ADDRESS:", aX, ay, { font: "bold 10px sans-serif", color: "#555" });
+  c.text("NAME:", aX, ay, { font: F.caption, color: "#555" });
+  c.text(customerName || "", aX, ay + capGap, { font: F.name });
+  ay += nameGap;
+  c.text("ADDRESS:", aX, ay, { font: F.caption, color: "#555" });
+  // Strip any appended "Pinned location: <url>" — that map link belongs on the
+  // dashboard, not on a printed courier label.
+  const cleanAddress = (customerAddress || "")
+    .replace(/,?\s*Pinned location:\s*https?:\/\/\S+/gi, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
   const wrapEndY = c.wrap(
-    customerAddress || "",
+    cleanAddress,
     aX,
-    ay + 16,
+    ay + capGap,
     COL_HALF - 20,
-    15,
+    lineH,
     {
-      font: "12px sans-serif",
+      font: F.value,
     },
   );
-  ay = wrapEndY + 16;
-  c.text("CITY:", aX, ay, { font: "bold 10px sans-serif", color: "#555" });
-  c.text(customerCity || "", aX + 50, ay, { font: "12px sans-serif" });
-  ay += 18;
+  ay = wrapEndY + capGap;
+  c.text("CITY:", aX, ay, { font: F.caption, color: "#555" });
+  c.text(customerCity || "", aX + cityValX, ay, { font: F.value });
+  ay += rowGap;
   c.text("PINCODE:", aX, ay, {
-    font: "bold 10px sans-serif",
+    font: F.caption,
     color: "#555",
   });
-  c.text(customerPincode || "", aX + 60, ay, { font: "12px sans-serif" });
-  ay += 18;
-  c.text("MOBILE:", aX, ay, { font: "bold 10px sans-serif", color: "#555" });
-  c.text(`+91 ${customerPhone || ""}`, aX + 55, ay, {
-    font: "12px sans-serif",
+  c.text(customerPincode || "", aX + pinValX, ay, { font: F.value });
+  ay += rowGap;
+  c.text("MOBILE:", aX, ay, { font: F.caption, color: "#555" });
+  c.text(`+91 ${customerPhone || ""}`, aX + mobValX, ay, {
+    font: F.value,
   });
 
   y += H_BODY;
 
   // Footer with order ID + date
-  c.rect(X, y, W, 30);
-  c.text(`ORDER ID: ${orderId || ""}`, X + 10, y + 20, {
-    font: "bold 11px sans-serif",
+  c.rect(X, y, W, footerH);
+  c.text(`ORDER ID: ${orderId || ""}`, X + 10, y + footerH - 10, {
+    font: F.footer,
   });
   c.text(
     new Date().toLocaleDateString("en-IN", {
@@ -467,10 +519,15 @@ export function drawAddressLabel(c, startY, data) {
       year: "numeric",
     }),
     X + W - 10,
-    y + 20,
-    { font: "11px sans-serif", align: "right" },
+    y + footerH - 10,
+    { font: F.footerDate, align: "right" },
   );
-  y += 30;
+  y += footerH;
+
+  // Bold outer frame around the whole label for a crisp, finished look.
+  if (big) {
+    c.rect(X, startY, W, y - startY, { stroke: "#000", width: 2.2 });
+  }
 
   return y;
 }
@@ -635,10 +692,10 @@ function dataUrlToBytes(dataUrl) {
   return u8;
 }
 
-function jpegPagesToPdf(pages) {
+function jpegPagesToPdf(pages, marginPt) {
   const PAGE_W = 595.28; // A4 portrait, points
   const PAGE_H = 841.89;
-  const MARGIN = 22;
+  const MARGIN = typeof marginPt === "number" ? marginPt : 22;
 
   const chunks = [];
   let length = 0;
@@ -740,21 +797,28 @@ export function downloadCombinedFormsPDF(dataArray, filename) {
 // ── Address-label ONLY exports (bottom From/To section, no India Post CDF) ──
 export function buildAddressLabelCanvas(data) {
   const isCOD = !!data.isCOD;
-  const W = 800;
-  const SAFE_H = 700;
+  // Wider label so a 3-up stack matches A4 proportions and fills the page
+  // width instead of leaving big side margins.
+  const W = 1080;
+  const SAFE_H = 780;
   const topPad = 36;
   const botPad = 36;
   const c = buildCanvas(W, SAFE_H);
-  const endY = drawAddressLabel(c, topPad, {
-    orderId: data.orderId,
-    customerName: data.customerName,
-    customerAddress: data.customerAddress,
-    customerCity: data.customerCity,
-    customerPincode: data.customerPincode,
-    customerPhone: data.customerPhone,
-    isCOD,
-    codAmount: data.codAmount,
-  });
+  const endY = drawAddressLabel(
+    c,
+    topPad,
+    {
+      orderId: data.orderId,
+      customerName: data.customerName,
+      customerAddress: data.customerAddress,
+      customerCity: data.customerCity,
+      customerPincode: data.customerPincode,
+      customerPhone: data.customerPhone,
+      isCOD,
+      codAmount: data.codAmount,
+    },
+    { big: true },
+  );
   const finalH = Math.min(endY + botPad, SAFE_H);
   const out = document.createElement("canvas");
   out.width = W * 2;
@@ -779,14 +843,56 @@ export function downloadAddressLabelsPNGs(dataArray) {
   });
 }
 
-// Many address labels → ONE ordered PDF (one label per page, no CDF).
-export function downloadAddressLabelsPDF(dataArray, filename) {
-  const pages = dataArray.map((d) => {
-    const cv = buildAddressLabelCanvas(d);
-    const url = cv.toDataURL("image/jpeg", 0.92);
-    return { data: dataUrlToBytes(url), w: cv.width, h: cv.height };
+// Stack up to LABELS_PER_PAGE address labels onto a single sheet canvas so one
+// A4 page carries three labels, separated by dashed cut lines the packer can
+// trim along. Labels are centered horizontally and share the widest width.
+const LABELS_PER_PAGE = 3;
+
+export function buildAddressLabelSheetCanvas(group) {
+  const labels = group.map((d) => buildAddressLabelCanvas(d));
+  const GAP = 48; // vertical space between/around labels (2x px)
+  const width = Math.max(...labels.map((l) => l.width));
+  const totalH =
+    labels.reduce((s, l) => s + l.height, 0) + GAP * (labels.length + 1);
+
+  const out = document.createElement("canvas");
+  out.width = width;
+  out.height = totalH;
+  const ctx = out.getContext("2d");
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(0, 0, out.width, out.height);
+
+  let y = GAP;
+  labels.forEach((l, i) => {
+    const x = (width - l.width) / 2;
+    ctx.drawImage(l, x, y);
+    y += l.height;
+    if (i < labels.length - 1) {
+      // dashed cut line centered in the gap
+      ctx.strokeStyle = "#bbb";
+      ctx.setLineDash([14, 9]);
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(24, y + GAP / 2);
+      ctx.lineTo(width - 24, y + GAP / 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      y += GAP;
+    }
   });
-  const blob = jpegPagesToPdf(pages);
+  return out;
+}
+
+// Many address labels → ONE ordered PDF, three labels per page, no CDF.
+export function downloadAddressLabelsPDF(dataArray, filename) {
+  const pages = [];
+  for (let i = 0; i < dataArray.length; i += LABELS_PER_PAGE) {
+    const group = dataArray.slice(i, i + LABELS_PER_PAGE);
+    const cv = buildAddressLabelSheetCanvas(group);
+    const url = cv.toDataURL("image/jpeg", 0.92);
+    pages.push({ data: dataUrlToBytes(url), w: cv.width, h: cv.height });
+  }
+  const blob = jpegPagesToPdf(pages, 14);
   triggerDownload(
     blob,
     filename || `address_labels_${new Date().toISOString().slice(0, 10)}.pdf`,

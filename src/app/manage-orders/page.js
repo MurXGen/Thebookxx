@@ -141,6 +141,11 @@ const waMessages = (order) => {
       text: `*Shipped*\n\n${hi}, your order is on its way! Expected delivery in *5–9 days* (slight delays possible in bad weather — thanks for your patience).${linkBlock}`,
     },
     {
+      key: "transit",
+      label: "In Transit",
+      text: `*In transit*\n\n${hi}, your TheBookX order is in transit and will be reaching you within *4 to 9 working days*. Thank you for your patience!${linkBlock}`,
+    },
+    {
       key: "ofd",
       label: "Out for delivery",
       text: `*Out for delivery*\n\n${hi}, your TheBookX order is out for delivery today. Please keep your phone reachable so our delivery partner can reach you.${linkBlock}`,

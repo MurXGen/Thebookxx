@@ -3411,8 +3411,16 @@ export default function ManageOrdersPage() {
     const statusSel = Array.isArray(statusFilter)
       ? statusFilter
       : [statusFilter];
-    if (statusSel.length && !statusSel.includes("all")) {
-      // OR across every selected status filter.
+    // Confirmed/Unconfirmed act as an AND modifier ON TOP of the status
+    // selection (not a separate OR clause), so "In Transit no-tracking" +
+    // "Confirmed only" returns only confirmed in-transit-no-tracking orders.
+    const confSel = statusSel.filter(
+      (f) => f === "confirmed" || f === "unconfirmed",
+    );
+    const statusOnly = statusSel.filter(
+      (f) => f !== "confirmed" && f !== "unconfirmed",
+    );
+    if (statusSel.length) {
       filtered = filtered.filter((order) => {
         const s = order["Order Status"] || "";
         const sl = s.toLowerCase();
@@ -3420,22 +3428,31 @@ export default function ManageOrdersPage() {
         const isUnconfirmed = /unconfirmed/i.test(
           String(order["Customer Name"] || ""),
         );
-        return statusSel.some((f) => {
-          if (f === "active") {
-            return (
-              !sl ||
-              sl.includes("pending") ||
-              sl.includes("processing") ||
-              sl.includes("getting shipped")
+        // Status match (OR across the chosen statuses; "all"/none = any).
+        const statusPass =
+          !statusOnly.length || statusOnly.includes("all")
+            ? true
+            : statusOnly.some((f) => {
+                if (f === "active") {
+                  return (
+                    !sl ||
+                    sl.includes("pending") ||
+                    sl.includes("processing") ||
+                    sl.includes("getting shipped")
+                  );
+                }
+                if (f === "intransit-notrack") {
+                  return s === "In Transit" && !hasTracking;
+                }
+                return s === f;
+              });
+        // Confirmation match (AND): confirmed hides "(unconfirmed)" rows.
+        const confPass = !confSel.length
+          ? true
+          : confSel.some((f) =>
+              f === "confirmed" ? !isUnconfirmed : isUnconfirmed,
             );
-          }
-          if (f === "intransit-notrack") {
-            return s === "In Transit" && !hasTracking;
-          }
-          if (f === "confirmed") return !isUnconfirmed;
-          if (f === "unconfirmed") return isUnconfirmed;
-          return s === f;
-        });
+        return statusPass && confPass;
       });
     }
 

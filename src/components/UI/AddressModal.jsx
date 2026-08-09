@@ -1407,16 +1407,11 @@ export default function AddressModal({
                   <span className="deliv-addon-head">Add-ons</span>
                   <div className="deliv-addon-row">
                     <div className="deliv-addon-l">
-                      <Truck
-                        size={18}
-                        className={standardDeliveryCharge > 0 ? "" : "green"}
-                      />
+                      <Truck size={18} className="green" />
                       <div className="flex flex-col">
                         <span className="deliv-addon-t flex flex-row items-center gap-6">
-                          {standardDeliveryCharge > 0
-                            ? "Standard delivery"
-                            : "Free delivery"}
-                          {standardDeliveryCharge > 0 && (
+                          Standard delivery
+                          {standardDeliveryCharge === 0 && (
                             <span className="deliv-free-badge">
                               FREE above ₹199
                             </span>
@@ -1424,18 +1419,12 @@ export default function AddressModal({
                         </span>
                         <span className="deliv-addon-s">
                           {standardDeliveryCharge > 0
-                            ? "Reaches you in 3–9 days"
+                            ? "Reaches you in 3–9 days · handling & care in bill"
                             : "Reaches you in 3–9 days · included at no charge"}
                         </span>
                       </div>
                     </div>
-                    {standardDeliveryCharge > 0 ? (
-                      <span className="deliv-addon-price">
-                        +₹{standardDeliveryCharge}
-                      </span>
-                    ) : (
-                      <span className="deliv-addon-free">FREE</span>
-                    )}
+                    <span className="deliv-addon-free">FREE</span>
                   </div>
 
                   {fasterUnavailable ? (

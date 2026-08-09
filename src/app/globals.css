@@ -25263,11 +25263,16 @@ img[data-loaded="true"] {
   flex-shrink: 0;
 }
 .deliv-addon-link {
-  font-size: 11.5px;
-  font-weight: 700;
-  color: var(--tertiary, #fb8500);
-  text-decoration: none;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #b45309;
+  text-decoration: underline;
+  text-underline-offset: 3px;
   flex-shrink: 0;
+  cursor: pointer;
+}
+.deliv-addon-link:hover {
+  color: #92400e;
 }
 /* Info icon + hover tooltip (replaces the inline add-on descriptions) */
 .deliv-addon-info {

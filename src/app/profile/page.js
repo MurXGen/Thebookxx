@@ -521,6 +521,11 @@ export default function MyOrdersPage() {
       discount = -extra;
     }
     const freeDelivery = isFree || deliveryFee === 0;
+    // When a handling/care fee is charged, label the line "Handling & Care"
+    // rather than "Delivery" (delivery itself is free above ₹199).
+    const isHandlingFee = /handling/i.test(order["Delivery Type"] || "");
+    const deliveryLineLabel =
+      !freeDelivery && isHandlingFee ? "Handling & Care" : "Delivery";
 
     const W = 700;
     const P = 44;
@@ -617,7 +622,7 @@ export default function MyOrdersPage() {
     y += 8;
     if (sub > 0) sumLine(`Subtotal (${items.length} items)`, `₹${sub}`);
     sumLine(
-      "Delivery",
+      deliveryLineLabel,
       freeDelivery ? "FREE" : `+₹${deliveryFee}`,
       freeDelivery ? "#008f0c" : "#0a0a0a",
     );
@@ -1617,6 +1622,13 @@ Please cancel this order. Thank you `;
                             discount = -extra;
                           }
                           const freeDelivery = isFree || deliveryFee === 0;
+                          const isHandlingFee = /handling/i.test(
+                            order["Delivery Type"] || "",
+                          );
+                          const deliveryLineLabel =
+                            !freeDelivery && isHandlingFee
+                              ? "Handling & Care"
+                              : "Delivery";
                           return (
                             <div className="order-invoice">
                               <div className="order-invoice-table">
@@ -1675,7 +1687,7 @@ Please cancel this order. Thank you `;
                                   </div>
                                 )}
                                 <div className="ois-row">
-                                  <span>Delivery</span>
+                                  <span>{deliveryLineLabel}</span>
                                   {freeDelivery ? (
                                     <span className="ois-free">FREE</span>
                                   ) : (

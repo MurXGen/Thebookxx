@@ -736,3 +736,59 @@ export function downloadCombinedFormsPDF(dataArray, filename) {
     filename || `shipping_forms_${new Date().toISOString().slice(0, 10)}.pdf`,
   );
 }
+
+// ── Address-label ONLY exports (bottom From/To section, no India Post CDF) ──
+export function buildAddressLabelCanvas(data) {
+  const isCOD = !!data.isCOD;
+  const W = 800;
+  const SAFE_H = 700;
+  const topPad = 36;
+  const botPad = 36;
+  const c = buildCanvas(W, SAFE_H);
+  const endY = drawAddressLabel(c, topPad, {
+    orderId: data.orderId,
+    customerName: data.customerName,
+    customerAddress: data.customerAddress,
+    customerCity: data.customerCity,
+    customerPincode: data.customerPincode,
+    customerPhone: data.customerPhone,
+    isCOD,
+    codAmount: data.codAmount,
+  });
+  const finalH = Math.min(endY + botPad, SAFE_H);
+  const out = document.createElement("canvas");
+  out.width = W * 2;
+  out.height = finalH * 2;
+  out
+    .getContext("2d")
+    .drawImage(c.canvas, 0, 0, W * 2, finalH * 2, 0, 0, W * 2, finalH * 2);
+  return out;
+}
+
+export function downloadAddressLabelOnlyPNG(data) {
+  const cv = buildAddressLabelCanvas(data);
+  cv.toBlob((blob) => {
+    if (blob) triggerDownload(blob, `label_${data.orderId || Date.now()}.png`);
+  }, "image/png");
+}
+
+// Many address labels → individual PNG files (staggered).
+export function downloadAddressLabelsPNGs(dataArray) {
+  dataArray.forEach((d, i) => {
+    setTimeout(() => downloadAddressLabelOnlyPNG(d), i * 350);
+  });
+}
+
+// Many address labels → ONE ordered PDF (one label per page, no CDF).
+export function downloadAddressLabelsPDF(dataArray, filename) {
+  const pages = dataArray.map((d) => {
+    const cv = buildAddressLabelCanvas(d);
+    const url = cv.toDataURL("image/jpeg", 0.92);
+    return { data: dataUrlToBytes(url), w: cv.width, h: cv.height };
+  });
+  const blob = jpegPagesToPdf(pages);
+  triggerDownload(
+    blob,
+    filename || `address_labels_${new Date().toISOString().slice(0, 10)}.pdf`,
+  );
+}

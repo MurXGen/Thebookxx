@@ -6,6 +6,8 @@ import {
   downloadCombinedFormPNG,
   downloadCombinedFormsPNGs,
   downloadCombinedFormsPDF,
+  downloadAddressLabelsPNGs,
+  downloadAddressLabelsPDF,
 } from "@/utils/shippingForms";
 import {
   Search,
@@ -3136,9 +3138,16 @@ export default function ManageOrdersPage() {
   // Each order ONE combined frame (India Post CDF + From/To label together).
   // "format" is "pdf" (all frames in one ordered file, best for printing) or
   // "png" (one image per order).
-  const downloadFormsFor = (orders, format, filename) => {
+  // "format" is "pdf" or "png". "labelOnly" exports just the bottom From/To
+  // address label (no India Post CDF declaration section).
+  const downloadFormsFor = (orders, format, filename, labelOnly = false) => {
     if (!orders.length) return;
     const payloads = orders.map(orderFormData);
+    if (labelOnly) {
+      if (format === "pdf") downloadAddressLabelsPDF(payloads, filename);
+      else downloadAddressLabelsPNGs(payloads);
+      return;
+    }
     if (format === "pdf") {
       downloadCombinedFormsPDF(payloads, filename);
     } else {
@@ -3147,14 +3156,15 @@ export default function ManageOrdersPage() {
   };
 
   // Selected rows (table view) combined shipping form(s).
-  const downloadSelectedForms = (format) => {
+  const downloadSelectedForms = (format, labelOnly = false) => {
     const chosen = filteredOrders.filter((o) =>
       selectedIds.includes(o["Order ID"]),
     );
     downloadFormsFor(
       chosen,
       format,
-      `shipping_forms_selected_${new Date().toISOString().slice(0, 10)}.pdf`,
+      `${labelOnly ? "address_labels" : "shipping_forms"}_selected_${new Date().toISOString().slice(0, 10)}.pdf`,
+      labelOnly,
     );
   };
 
@@ -6842,6 +6852,36 @@ export default function ManageOrdersPage() {
                             className="mo-form-btn mo-dl-png"
                             onClick={() => downloadSelectedForms("png")}
                             title="One PNG image per selected order"
+                          >
+                            PNG
+                          </button>
+                        </div>
+
+                        {/* Address label only — the bottom From/To section,
+                            without the India Post declaration */}
+                        <div className="mo-dl-group">
+                          <span className="mo-dl-group-label">
+                            <span className="mo-dl-icon">
+                              <MapPin size={20} />
+                            </span>
+                            <span className="mo-dl-text">
+                              Address label only
+                              <em>From/To section, no India Post form</em>
+                            </span>
+                          </span>
+                          <button
+                            type="button"
+                            className="mo-form-btn mo-dl-pdf"
+                            onClick={() => downloadSelectedForms("pdf", true)}
+                            title="Selected orders' address labels in one PDF"
+                          >
+                            PDF
+                          </button>
+                          <button
+                            type="button"
+                            className="mo-form-btn mo-dl-png"
+                            onClick={() => downloadSelectedForms("png", true)}
+                            title="One address-label PNG per selected order"
                           >
                             PNG
                           </button>

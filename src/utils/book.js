@@ -10668,4 +10668,21 @@ export const books = [
     weight: 250,
     cost: 130,
   },
+  {
+    id: "bk-673",
+    name: "Always Remember",
+    image: bookImages["always-remember"],
+    description:
+      "Buy Always Remember: The Boy, the Mole, the Fox, the Horse and the Storm by Charlie Mackesy online at the lowest price on TheBookX.in. A tender, hand-lettered companion to the beloved bestseller — gentle wisdom on hope, kindness and weathering life's storms together. An authentic, high-quality copy delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted book partner.",
+    author: "Charlie Mackesy",
+    pages: "60-80",
+    language: "English",
+    size: "Hardcover",
+    stock: 25,
+    catalogue: ["fiction", "self-help", "bestseller", "trending", "gifting"],
+    originalPrice: calculateOriginalPrice(379),
+    discountedPrice: 379,
+    weight: 260,
+    cost: 240,
+  },
 ];

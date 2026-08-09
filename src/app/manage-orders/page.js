@@ -63,6 +63,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { books as ALL_BOOKS } from "@/utils/book";
 import { creditWalletReward } from "@/utils/googleFormOrder";
+import { showToast } from "@/context/ToastContext";
 
 // ---- Book cover lookup (order stores names; resolve to cover image) ----
 const BOOK_IMAGE_BY_NAME = (() => {
@@ -3179,67 +3180,25 @@ export default function ManageOrdersPage() {
       alert("All books are already picked — nothing to export.");
       return;
     }
-    // Show every copy as its own cover, grouped so identical books cluster
-    // together in a structured grid (no quantity badge).
-    const books = [...items].sort((a, b) =>
+    // Show every copy as its own cover, grouped so identical books cluster.
+    const allBooks = [...items].sort((a, b) =>
       String(a.name || "").localeCompare(String(b.name || "")),
     );
     const uniqueTitles = new Set(items.map((it) => it.name || it.src)).size;
     const totalCopies = items.length;
 
-    const SC = 2; // hi-dpi crisp render
-    const COLS = Math.min(5, Math.max(2, books.length));
-    const CW = 200;
-    const CH = 280;
-    const CAP = 30; // caption strip under each cover
-    const GAP = 22;
-    const PAD = 28;
-    const HEAD = 96;
-    const cellH = CH + CAP;
-    const rows = Math.ceil(books.length / COLS);
-    const W = PAD * 2 + COLS * CW + (COLS - 1) * GAP;
-    const H = HEAD + rows * cellH + (rows - 1) * GAP + PAD;
-    const canvas = document.createElement("canvas");
-    canvas.width = W * SC;
-    canvas.height = H * SC;
-    const ctx = canvas.getContext("2d");
-    ctx.scale(SC, SC);
+    // Each PNG holds at most 20 covers; split into multiple parts if needed.
+    const BATCH = 20;
+    const parts = [];
+    for (let i = 0; i < allBooks.length; i += BATCH)
+      parts.push(allBooks.slice(i, i + BATCH));
+    const totalParts = parts.length;
 
-    // Soft background
-    const bg = ctx.createLinearGradient(0, 0, 0, H);
-    bg.addColorStop(0, "#ffffff");
-    bg.addColorStop(1, "#f4f4f6");
-    ctx.fillStyle = bg;
-    ctx.fillRect(0, 0, W, H);
-
-    // Header
-    ctx.fillStyle = "#0a0a0a";
-    ctx.font = "800 26px Poppins, system-ui, sans-serif";
-    ctx.fillText("Books to pack", PAD, 46);
-    ctx.fillStyle = "#6b7280";
-    ctx.font = "500 14px Poppins, system-ui, sans-serif";
     const dateStr = new Date().toLocaleDateString("en-IN", {
       day: "numeric",
       month: "short",
       year: "numeric",
     });
-    ctx.fillText(
-      `${uniqueTitles} title${uniqueTitles === 1 ? "" : "s"} · ${totalCopies} cop${totalCopies === 1 ? "y" : "ies"} · ${dateStr}`,
-      PAD,
-      70,
-    );
-    ctx.textAlign = "right";
-    ctx.fillStyle = "#fb8500";
-    ctx.font = "800 18px Poppins, system-ui, sans-serif";
-    ctx.fillText("TheBookX", W - PAD, 46);
-    ctx.textAlign = "left";
-    // Divider
-    ctx.strokeStyle = "rgba(0,0,0,0.08)";
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(PAD, HEAD - 14);
-    ctx.lineTo(W - PAD, HEAD - 14);
-    ctx.stroke();
 
     const load = (src) =>
       new Promise((res) => {
@@ -3251,68 +3210,139 @@ export default function ManageOrdersPage() {
         img.src = src;
       });
 
-    const roundRect = (x, y, w, h, r) => {
+    // Render + download one PNG sheet for a batch of up to 20 covers.
+    const renderPart = async (books, part) => {
+      const SC = 2; // hi-dpi crisp render
+      const COLS = Math.min(5, Math.max(2, books.length));
+      const CW = 200;
+      const CH = 280;
+      const CAP = 30;
+      const GAP = 22;
+      const PAD = 28;
+      const HEAD = 96;
+      const cellH = CH + CAP;
+      const rows = Math.ceil(books.length / COLS);
+      const W = PAD * 2 + COLS * CW + (COLS - 1) * GAP;
+      const H = HEAD + rows * cellH + (rows - 1) * GAP + PAD;
+      const canvas = document.createElement("canvas");
+      canvas.width = W * SC;
+      canvas.height = H * SC;
+      const ctx = canvas.getContext("2d");
+      ctx.scale(SC, SC);
+
+      const bg = ctx.createLinearGradient(0, 0, 0, H);
+      bg.addColorStop(0, "#ffffff");
+      bg.addColorStop(1, "#f4f4f6");
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, W, H);
+
+      ctx.fillStyle = "#0a0a0a";
+      ctx.font = "800 26px Poppins, system-ui, sans-serif";
+      ctx.fillText("Books to pack", PAD, 46);
+      ctx.fillStyle = "#6b7280";
+      ctx.font = "500 14px Poppins, system-ui, sans-serif";
+      const partTxt = totalParts > 1 ? ` · Part ${part}/${totalParts}` : "";
+      ctx.fillText(
+        `${uniqueTitles} title${uniqueTitles === 1 ? "" : "s"} · ${totalCopies} cop${totalCopies === 1 ? "y" : "ies"} · ${dateStr}${partTxt}`,
+        PAD,
+        70,
+      );
+      ctx.textAlign = "right";
+      ctx.fillStyle = "#fb8500";
+      ctx.font = "800 18px Poppins, system-ui, sans-serif";
+      ctx.fillText("TheBookX", W - PAD, 46);
+      ctx.textAlign = "left";
+      ctx.strokeStyle = "rgba(0,0,0,0.08)";
+      ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.moveTo(x + r, y);
-      ctx.arcTo(x + w, y, x + w, y + h, r);
-      ctx.arcTo(x + w, y + h, x, y + h, r);
-      ctx.arcTo(x, y + h, x, y, r);
-      ctx.arcTo(x, y, x + w, y, r);
-      ctx.closePath();
+      ctx.moveTo(PAD, HEAD - 14);
+      ctx.lineTo(W - PAD, HEAD - 14);
+      ctx.stroke();
+
+      const roundRect = (x, y, w, h, r) => {
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.arcTo(x + w, y, x + w, y + h, r);
+        ctx.arcTo(x + w, y + h, x, y + h, r);
+        ctx.arcTo(x, y + h, x, y, r);
+        ctx.arcTo(x, y, x + w, y, r);
+        ctx.closePath();
+      };
+
+      const imgs = await Promise.all(books.map((it) => load(it.src)));
+      imgs.forEach((img, idx) => {
+        const r = Math.floor(idx / COLS);
+        const c = idx % COLS;
+        const dx = PAD + c * (CW + GAP);
+        const dy = HEAD + r * (cellH + GAP);
+
+        ctx.save();
+        ctx.shadowColor = "rgba(0,0,0,0.18)";
+        ctx.shadowBlur = 16;
+        ctx.shadowOffsetY = 7;
+        ctx.fillStyle = "#fff";
+        roundRect(dx, dy, CW, CH, 14);
+        ctx.fill();
+        ctx.restore();
+
+        ctx.save();
+        roundRect(dx, dy, CW, CH, 14);
+        ctx.clip();
+        if (img) {
+          ctx.drawImage(img, dx, dy, CW, CH);
+        } else {
+          ctx.fillStyle = "#ececec";
+          ctx.fillRect(dx, dy, CW, CH);
+          ctx.fillStyle = "#888";
+          ctx.font = "600 13px Poppins, system-ui, sans-serif";
+          ctx.fillText(
+            (books[idx].name || "").slice(0, 22),
+            dx + 12,
+            dy + CH / 2,
+          );
+        }
+        ctx.restore();
+
+        const nm = books[idx].name || "";
+        const label = nm.length > 26 ? nm.slice(0, 25) + "…" : nm;
+        ctx.fillStyle = "#374151";
+        ctx.font = "600 12px Poppins, system-ui, sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(label, dx + CW / 2, dy + CH + 20);
+        ctx.textAlign = "left";
+      });
+
+      await new Promise((resolve) => {
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download =
+              totalParts > 1
+                ? `unpicked-covers-part${part}of${totalParts}-${Date.now()}.png`
+                : `unpicked-covers-${Date.now()}.png`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+          }
+          resolve();
+        }, "image/png");
+      });
     };
 
-    const imgs = await Promise.all(books.map((it) => load(it.src)));
-    imgs.forEach((img, idx) => {
-      const r = Math.floor(idx / COLS);
-      const c = idx % COLS;
-      const dx = PAD + c * (CW + GAP);
-      const dy = HEAD + r * (cellH + GAP);
+    for (let p = 0; p < parts.length; p++) {
+      // eslint-disable-next-line no-await-in-loop
+      await renderPart(parts[p], p + 1);
+    }
 
-      // Drop shadow behind the cover
-      ctx.save();
-      ctx.shadowColor = "rgba(0,0,0,0.18)";
-      ctx.shadowBlur = 16;
-      ctx.shadowOffsetY = 7;
-      ctx.fillStyle = "#fff";
-      roundRect(dx, dy, CW, CH, 14);
-      ctx.fill();
-      ctx.restore();
-
-      // Cover image clipped to rounded rect
-      ctx.save();
-      roundRect(dx, dy, CW, CH, 14);
-      ctx.clip();
-      if (img) {
-        ctx.drawImage(img, dx, dy, CW, CH);
-      } else {
-        ctx.fillStyle = "#ececec";
-        ctx.fillRect(dx, dy, CW, CH);
-        ctx.fillStyle = "#888";
-        ctx.font = "600 13px Poppins, system-ui, sans-serif";
-        ctx.fillText((books[idx].name || "").slice(0, 22), dx + 12, dy + CH / 2);
-      }
-      ctx.restore();
-
-      // Caption (book name, truncated)
-      const nm = books[idx].name || "";
-      const label = nm.length > 26 ? nm.slice(0, 25) + "…" : nm;
-      ctx.fillStyle = "#374151";
-      ctx.font = "600 12px Poppins, system-ui, sans-serif";
-      ctx.textAlign = "center";
-      ctx.fillText(label, dx + CW / 2, dy + CH + 20);
-      ctx.textAlign = "left";
-    });
-    canvas.toBlob((blob) => {
-      if (!blob) return;
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `unpicked-covers-${Date.now()}.png`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }, "image/png");
+    showToast(
+      totalParts > 1
+        ? `Downloaded ${totalParts} cover sheets · ${totalCopies} books`
+        : `Downloaded ${totalCopies} book cover${totalCopies === 1 ? "" : "s"}`,
+      "success",
+    );
   };
 
   // Restore saved filter/search preferences on mount

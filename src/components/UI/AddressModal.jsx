@@ -125,7 +125,25 @@ export default function AddressModal({
   const [locationLink, setLocationLink] = useState("");
   const [locating, setLocating] = useState(false);
   const [locError, setLocError] = useState("");
-  const pinAutoRef = useRef(false); // auto-prompt location once per pincode entry
+  // True only after the shopper actually edits the address themselves — so
+  // auto-filled (localStorage / past-order) addresses don't trigger a location
+  // permission prompt on blur.
+  const addressEditedRef = useRef(false);
+
+  // Apply a saved/prefilled address: pull any "Pinned location: <url>" out into
+  // the pin state and keep the rest as the visible address (no re-prompt).
+  const applySavedAddress = (raw, overwrite) => {
+    const s = String(raw || "");
+    const m = s.match(/(?:[,\s·]*)Pinned location:\s*(https?:\/\/\S+)/i);
+    const link = m ? m[1] : "";
+    const clean = s
+      .replace(/(?:[,\s·]*)Pinned location:\s*https?:\/\/\S+/i, "")
+      .replace(/(\s*,\s*){2,}/g, ", ")
+      .replace(/^[\s,·]+|[\s,·]+$/g, "")
+      .trim();
+    if (link) setLocationLink((prev) => (overwrite ? link : prev || link));
+    if (clean) setAddress((prev) => (overwrite ? clean : prev || clean));
+  };
   // Structured address parts — combined into one address string on submit so
   // we capture strong, deliverable details instead of a vague single line.
   const [flatNo, setFlatNo] = useState("");
@@ -360,7 +378,7 @@ export default function AddressModal({
         setter((prev) => (overwrite ? val : prev || val));
       };
       put(setName, nm);
-      put(setAddress, addr);
+      applySavedAddress(addr, overwrite);
       if (cty) {
         put(setCity, cty);
         put(setDistrict, cty);
@@ -554,7 +572,7 @@ export default function AddressModal({
       setPhone(normalizePhone(saved.phone || ""));
       setCity(saved.city || "");
       setPincode(saved.pincode || "");
-      setAddress(saved.address || "");
+      applySavedAddress(saved.address || "", true);
       setDistrict(saved.district || "");
       setArea(saved.area || "");
       setFasterDelivery(saved.fasterDelivery || false);
@@ -1281,21 +1299,20 @@ export default function AddressModal({
     );
   };
 
-  // Once a valid pincode is entered, prompt to pin the current location (only
-  // once, and only if not already pinned) so the delivery partner gets a map
-  // reference alongside the typed address.
-  useEffect(() => {
+  // When the shopper finishes the full address (blur) we (a) strip repeated
+  // pincode/city tokens and (b) prompt once to pin their current location so
+  // the delivery partner gets a map reference. Re-pins if they clear + edit.
+  const handleAddressBlur = () => {
+    dedupeAddress();
     if (
-      isValidPincode &&
-      String(pincode).length === 6 &&
+      addressEditedRef.current &&
+      address.trim() &&
       !locationLink &&
-      !locating &&
-      !pinAutoRef.current
+      !locating
     ) {
-      pinAutoRef.current = true;
       useCurrentLocation();
     }
-  }, [pincode, isValidPincode, locationLink, locating]);
+  };
 
   // On blur, strip words from the address that are already captured in the
   // other fields (pincode, city, flat, building, landmark) to avoid repetition.
@@ -1405,27 +1422,47 @@ export default function AddressModal({
                   <label>
                     Full address <span className="red">*</span>
                   </label>
-                  <button
-                    type="button"
-                    className={`addr-pin-btn${locationLink ? " done" : ""}`}
-                    onClick={useCurrentLocation}
-                    disabled={locating}
-                  >
-                    <MapPin size={13} />
-                    {locationLink
-                      ? "Location pinned"
-                      : locating
-                        ? "Locating…"
-                        : "Pin my location"}
-                    {locationLink && <Check size={13} strokeWidth={3} />}
-                  </button>
+                  {locationLink ? (
+                    <span className="addr-pin-done">
+                      <MapPin size={13} /> Location pinned
+                      <Check size={12} strokeWidth={3} />
+                      <button
+                        type="button"
+                        className="addr-pin-mini"
+                        onClick={useCurrentLocation}
+                        disabled={locating}
+                      >
+                        Re-pin
+                      </button>
+                      <button
+                        type="button"
+                        className="addr-pin-mini danger"
+                        onClick={() => setLocationLink("")}
+                      >
+                        Remove
+                      </button>
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      className="addr-pin-btn"
+                      onClick={useCurrentLocation}
+                      disabled={locating}
+                    >
+                      <MapPin size={13} />
+                      {locating ? "Locating…" : "Pin my location"}
+                    </button>
+                  )}
                 </div>
                 <textarea
                   className="sec-mid-btn textarea"
                   placeholder="e.g. 12/A, Green Residency, 2nd floor, MG Road, near City Mall"
                   value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  onBlur={dedupeAddress}
+                  onChange={(e) => {
+                    addressEditedRef.current = true;
+                    setAddress(e.target.value);
+                  }}
+                  onBlur={handleAddressBlur}
                   rows={3}
                 />
                 {locError && <span className="loc-pick-err">{locError}</span>}

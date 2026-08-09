@@ -390,7 +390,34 @@ export default function MyOrdersPage() {
     city: "",
     state: "",
     pincode: "",
+    locationLink: "",
   });
+  const [addrLocating, setAddrLocating] = useState(false);
+
+  // Pin current location inside the Edit-address modal (manual only — never
+  // auto-prompts). Captures a Google Maps link into addrEdit.locationLink.
+  const pinEditLocation = () => {
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      alert("Location isn't supported on this device.");
+      return;
+    }
+    setAddrLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        setAddrEdit((p) => ({
+          ...p,
+          locationLink: `https://maps.google.com/?q=${latitude.toFixed(6)},${longitude.toFixed(6)}`,
+        }));
+        setAddrLocating(false);
+      },
+      () => {
+        setAddrLocating(false);
+        alert("Couldn't get your location. Please allow permission and retry.");
+      },
+      { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 },
+    );
+  };
 
   const UPI_ID = "7977960242-1@okbizaxis";
 
@@ -1038,13 +1065,24 @@ Please cancel this order. Thank you `;
 
   const handleEditAddressClick = (order) => {
     setAddressEditOrder(order);
+    // Split any existing "Pinned location: <url>" out of the saved address.
+    const rawAddr = String(order["Address"] || "");
+    const pinMatch = rawAddr.match(
+      /(?:[,\s·]*)Pinned location:\s*(https?:\/\/\S+)/i,
+    );
+    const cleanAddr = rawAddr
+      .replace(/(?:[,\s·]*)Pinned location:\s*https?:\/\/\S+/i, "")
+      .replace(/(\s*,\s*){2,}/g, ", ")
+      .replace(/^[\s,·]+|[\s,·]+$/g, "")
+      .trim();
     setAddrEdit({
       name: order["Customer Name"] || customerName || "",
       phone: String(order["Phone Number"] || phoneNumber || ""),
-      address: order["Address"] || "",
+      address: cleanAddr,
       city: order["City"] || "",
       state: order["State"] || "",
       pincode: String(order["Pincode"] || ""),
+      locationLink: pinMatch ? pinMatch[1] : "",
     });
     setShowAddressEditModal(true);
   };
@@ -1068,9 +1106,10 @@ Please cancel this order. Thank you `;
       ` ${addrEdit.address || ""}`,
       ` ${addrEdit.city || ""}${addrEdit.state ? `, ${addrEdit.state}` : ""}`,
       ` Pincode: ${addrEdit.pincode || ""}`,
+      addrEdit.locationLink ? ` Pinned location: ${addrEdit.locationLink}` : "",
       "",
       "Please update my order with these details. Thank you ",
-    ];
+    ].filter((l) => l !== "");
     window.open(
       `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(lines.join("\n"))}`,
       "_blank",
@@ -2415,9 +2454,45 @@ Please cancel this order. Thank you `;
                 </div>
 
                 <div className="input-group">
-                  <label className="flex flex-row gap-4 items-center">
-                    <MapPin size={14} /> Address <span className="red">*</span>
-                  </label>
+                  <div className="addr-label-row">
+                    <label className="flex flex-row gap-4 items-center">
+                      <MapPin size={14} /> Full address{" "}
+                      <span className="red">*</span>
+                    </label>
+                    {addrEdit.locationLink ? (
+                      <span className="addr-pin-done">
+                        <MapPin size={13} /> Location pinned
+                        <Check size={12} strokeWidth={3} />
+                        <button
+                          type="button"
+                          className="addr-pin-mini"
+                          onClick={pinEditLocation}
+                          disabled={addrLocating}
+                        >
+                          Re-pin
+                        </button>
+                        <button
+                          type="button"
+                          className="addr-pin-mini danger"
+                          onClick={() =>
+                            setAddrEdit((p) => ({ ...p, locationLink: "" }))
+                          }
+                        >
+                          Remove
+                        </button>
+                      </span>
+                    ) : (
+                      <button
+                        type="button"
+                        className="addr-pin-btn"
+                        onClick={pinEditLocation}
+                        disabled={addrLocating}
+                      >
+                        <MapPin size={13} />
+                        {addrLocating ? "Locating…" : "Pin my location"}
+                      </button>
+                    )}
+                  </div>
                   <textarea
                     className="sec-mid-btn textarea"
                     rows={2}
@@ -2425,7 +2500,7 @@ Please cancel this order. Thank you `;
                     onChange={(e) =>
                       setAddrEdit((p) => ({ ...p, address: e.target.value }))
                     }
-                    placeholder="House / flat, street, area, landmark"
+                    placeholder="e.g. 12/A, Green Residency, 2nd floor, MG Road, near City Mall"
                   />
                 </div>
 

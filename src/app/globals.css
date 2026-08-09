@@ -4553,6 +4553,33 @@ textarea.sec-mid-btn,
 .addr-pin-btn.done {
   color: #15803d;
 }
+.addr-pin-done {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #15803d;
+  white-space: nowrap;
+}
+.addr-pin-mini {
+  border: none;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--tertiary, #fb8500);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  padding: 0 0 0 6px;
+}
+.addr-pin-mini.danger {
+  color: #b91c1c;
+}
+.addr-pin-mini:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
 .loc-pick-err {
   display: block;
   margin-top: 6px;

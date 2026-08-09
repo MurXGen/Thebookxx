@@ -3417,6 +3417,9 @@ export default function ManageOrdersPage() {
         const s = order["Order Status"] || "";
         const sl = s.toLowerCase();
         const hasTracking = String(order["Shipping ID"] || "").trim() !== "";
+        const isUnconfirmed = /unconfirmed/i.test(
+          String(order["Customer Name"] || ""),
+        );
         return statusSel.some((f) => {
           if (f === "active") {
             return (
@@ -3429,6 +3432,8 @@ export default function ManageOrdersPage() {
           if (f === "intransit-notrack") {
             return s === "In Transit" && !hasTracking;
           }
+          if (f === "confirmed") return !isUnconfirmed;
+          if (f === "unconfirmed") return isUnconfirmed;
           return s === f;
         });
       });
@@ -5829,7 +5834,11 @@ export default function ManageOrdersPage() {
                     ? "Active"
                     : v === "intransit-notrack"
                       ? "In Transit · no tracking"
-                      : v;
+                      : v === "confirmed"
+                        ? "Confirmed only"
+                        : v === "unconfirmed"
+                          ? "Unconfirmed only"
+                          : v;
               // A chip per selected status, unless it's just the default "active".
               if (!(statusSel.length === 1 && statusSel[0] === "active")) {
                 statusSel.forEach((v) =>
@@ -6082,6 +6091,14 @@ export default function ManageOrdersPage() {
                                 {
                                   value: "intransit-notrack",
                                   label: "In Transit — without tracking ID",
+                                },
+                                {
+                                  value: "confirmed",
+                                  label: "Confirmed only",
+                                },
+                                {
+                                  value: "unconfirmed",
+                                  label: "Unconfirmed only",
                                 },
                               ].map((opt) => {
                                 const sel = Array.isArray(statusFilter)

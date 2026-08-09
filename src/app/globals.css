@@ -26089,32 +26089,38 @@ img[data-loaded="true"] {
 }
 /* UPI id + Save QR as link buttons pinned to both edges */
 .upiv3-footer .upiv3-id-row {
-  justify-content: space-between;
+  display: flex;
+  justify-content: center;
   align-items: center;
+  gap: 12px;
   margin: 0;
   max-width: none;
 }
-.upiv3-footer .upiv3-id,
-.upiv3-footer .upiv3-save {
+.upiv3-footer .upiv3-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   flex: 0 0 auto;
   background: none;
   border: none;
-  border-radius: 0;
-  padding: 4px 0;
-  color: var(--foreground);
-  font-size: 12px;
-  font-weight: 700;
-}
-.upiv3-footer .upiv3-id span,
-.upiv3-footer .upiv3-save {
-  color: var(--foreground);
-}
-.upiv3-footer .upiv3-id:hover,
-.upiv3-footer .upiv3-save:hover {
+  padding: 4px 2px;
   color: var(--tertiary, #fb8500);
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
 }
-.upiv3-footer .upiv3-save:disabled {
+.upiv3-footer .upiv3-link:hover {
+  filter: brightness(0.92);
+}
+.upiv3-footer .upiv3-link:disabled {
   opacity: 0.5;
+  cursor: not-allowed;
+}
+.upiv3-footer .upiv3-link-sep {
+  color: var(--dark-20, #d4d4d4);
+  font-weight: 400;
 }
 /* Verify actions stretch equally */
 .upiv3-actions-row > * {

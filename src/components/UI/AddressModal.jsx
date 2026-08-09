@@ -3129,17 +3129,18 @@ function UPIPaymentModal({
         {/* Fixed footer — UPI id / Save QR + verify actions + COD link */}
         <div className="upiv3-footer">
           <div className="upiv3-id-row">
-            <button type="button" className="upiv3-id" onClick={onCopyUpi}>
-              <Copy size={13} />
-              <span>{upiCopied ? "Copied!" : upiId}</span>
+            <button type="button" className="upiv3-link" onClick={onCopyUpi}>
+              {upiCopied ? <Check size={14} /> : <Copy size={14} />}
+              {upiCopied ? "Copied!" : "Copy UPI ID"}
             </button>
+            <span className="upiv3-link-sep">|</span>
             <button
               type="button"
-              className="upiv3-save"
+              className="upiv3-link"
               onClick={onDownloadQR}
               disabled={!qrUnlocked}
             >
-              <Download size={13} /> Save QR
+              <Download size={14} /> Save QR
             </button>
           </div>
 

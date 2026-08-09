@@ -1004,7 +1004,10 @@ export default function AddressModal({
     if (!isFormValid()) return;
     // WhatsApp-button orders are logged as unconfirmed (name keeps the
     // "(unconfirmed)" tag) until we confirm the chat/payment manually.
-    submitToGoogleForm("WhatsApp", fasterDelivery, false);
+    // Generate ONE order id and use it for both the sheet row and the WhatsApp
+    // message link (thebookx.in?orderID=…), so the link resolves to this order.
+    const orderId = `ORD${Date.now()}`;
+    submitToGoogleForm("WhatsApp", fasterDelivery, false, orderId);
     trackFunnelEvent(EVENTS.PAYMENT_METHOD_SELECTED, {
       method: "WhatsApp",
       cart_total: finalPayable,
@@ -1021,6 +1024,7 @@ export default function AddressModal({
           area,
           fasterDelivery,
           giftWrap,
+          orderId,
         },
         fasterDelivery,
         giftWrap,
@@ -2494,6 +2498,11 @@ export function CODSuccessModal({
   cartBooks,
   paymentMode = "COD",
   paymentLabel = "",
+  // Whether the online payment is actually settled. Live UPI checkout = paid;
+  // a shared invoice for an unconfirmed UPI order = unpaid.
+  paid = true,
+  // Optional "Pay here" action (shared invoice flow) — opens the pay chooser.
+  onPayNow,
   onContinue,
   onClose,
   onViewProfile,
@@ -2815,7 +2824,9 @@ export function CODSuccessModal({
                         {paymentLabel
                           ? paymentLabel
                           : isUPI
-                            ? "UPI · Paid"
+                            ? paid
+                              ? "UPI · Paid"
+                              : "UPI · Unpaid"
                             : "Cash on Delivery"}
                       </span>
                     </div>
@@ -2887,7 +2898,7 @@ export function CODSuccessModal({
 
                     <div className="rcpt-dash bold" />
                     <div className="rcpt-total">
-                      <span>{isUPI ? "PAID" : "TO PAY"}</span>
+                      <span>{isUPI && paid ? "PAID" : "TO PAY"}</span>
                       <span>₹{totalAmount}</span>
                     </div>
                     <div className="rcpt-dash" />
@@ -2956,6 +2967,18 @@ export function CODSuccessModal({
                     <span className="reward-teaser-cta">
                       {walletCredited ? "Done" : "Scratch"}
                     </span>
+                  </button>
+                )}
+
+                {/* Pay here — shown on a shared invoice for an unpaid order */}
+                {onPayNow && !(isUPI && paid) && (
+                  <button
+                    type="button"
+                    className="pri-big-btn cod-pay-here"
+                    onClick={onPayNow}
+                  >
+                    Pay here · ₹{totalAmount}
+                    <ArrowRight size={16} strokeWidth={2.5} />
                   </button>
                 )}
 

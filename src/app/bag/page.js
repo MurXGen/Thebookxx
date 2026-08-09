@@ -478,21 +478,60 @@ function BagContent() {
       deliveryInfo += ` (${qrItems.length} QuickRead${qrItems.length > 1 ? "s" : ""} +₹${bundledQrTotal})`;
     }
 
+    const itemsBlock = cartBooks
+      .map(
+        (book, idx) =>
+          `${idx + 1}. ${book.name} × ${book.qty} — ₹${book.discountedPrice * book.qty}`,
+      )
+      .join("\n");
+    const qrBlock =
+      bundledQrTotal > 0
+        ? "\n" +
+          qrItems
+            .map(
+              (b, idx) =>
+                `${cartBooks.length + idx + 1}. ${b.name} (QuickRead) — ₹${QUICKREAD_PRICE}`,
+            )
+            .join("\n")
+        : "";
+    const orderId = addressData.orderId || "";
+    const orderLink = orderId
+      ? `https://thebookx.in?orderID=${encodeURIComponent(orderId)}`
+      : "";
+    const profileLink = "https://www.thebookx.in/profile";
+    const fullAddr = [
+      addressData.address,
+      addressData.area,
+      addressData.city,
+      addressData.district,
+      addressData.pincode,
+    ]
+      .filter(Boolean)
+      .join(", ");
+
     return `
-*CONFIRM MY ORDER*
+*CONFIRM MY ORDER — TheBookX*
 
- Hey hi, I want to confirm my order!
+Hi, I'd like to confirm my order. Here are the full details:
 
- *Name:* ${addressData.name || "Customer"}
- *Phone:* ${addressData.phone || "Not provided"}
+*Customer*
+Name: ${addressData.name || "Customer"}
+Phone: ${addressData.phone || "Not provided"}
 
- *Delivery:* ${deliveryInfo}
+*Delivery address*
+${fullAddr || "Not provided"}
+${deliveryInfo}
 
- *Total Amount:* ₹${totalWithDelivery}${codFee > 0 ? ` (incl. ₹${codFee} COD fee)` : ""}
- *Payment:* ${paymentType === "COD" ? "Cash on Delivery" : "UPI Payment"}
+*Books ordered*
+${itemsBlock}${qrBlock}
 
- *View Full Order Details:*
-${shortLink}
+*Bill*
+Subtotal: ₹${totalDiscounted}${offerDiscount > 0 ? `\nOffer discount: -₹${offerDiscount}` : ""}
+Delivery: ${deliveryCharge > 0 ? `+₹${deliveryCharge}` : "FREE"}${giftWrapSelected ? `\nGift wrap: +₹${GIFT_WRAP_CHARGE}` : ""}${codFee > 0 ? `\nCOD handling fee: +₹${codFee}` : ""}
+*Total: ₹${totalWithDelivery}*
+Payment: ${paymentType === "COD" ? "Cash on Delivery" : paymentType === "WhatsApp" ? "Confirming on WhatsApp" : "UPI Payment"}
+${orderLink ? `\n*Order details:* ${orderLink}` : ""}
+*My orders & tracking:* ${profileLink}
 
 Thank you!
 `;

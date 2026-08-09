@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { CODSuccessModal } from "@/components/UI/AddressModal";
+import PayNowChooser from "@/components/PayNowChooser";
 import { fetchOrderById } from "@/utils/googleFormOrder";
 
 // Parse the sheet "Books List" string into receipt-ready items.
@@ -38,6 +39,7 @@ const num = (v) => {
 export default function InvoiceParamModal() {
   const [order, setOrder] = useState(null);
   const [open, setOpen] = useState(false);
+  const [showPay, setShowPay] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -76,6 +78,12 @@ export default function InvoiceParamModal() {
   const subtotal = books.reduce((s, b) => s + b.discountedPrice * b.qty, 0);
   const payType = String(order["Payment Type"] || "");
   const isCOD = /cod|cash/i.test(payType);
+  // Online (UPI) orders are only "paid" once confirmed — the "(unconfirmed)"
+  // tag on the name means payment hasn't been verified yet.
+  const isUnconfirmed = /unconfirmed/i.test(
+    String(order["Customer Name"] || ""),
+  );
+  const paid = !isCOD && !isUnconfirmed;
   const deliveryType = String(order["Delivery Type"] || "");
   const dateStr = String(order["Timestamp"] || "").split(" ")[0];
 
@@ -105,11 +113,26 @@ export default function InvoiceParamModal() {
         giftWrapCharge={num(order["Gift Wrap Charge"])}
         cartBooks={books}
         paymentMode={isCOD ? "COD" : "UPI"}
+        paid={paid}
+        onPayNow={() => setShowPay(true)}
         onClose={close}
         onViewProfile={() => {
           window.location.href = "/profile";
         }}
       />
+      {showPay && (
+        <PayNowChooser
+          key="paynow"
+          amount={num(order["Total Amount"])}
+          orderId={String(order["Order ID"] || "")}
+          name={String(order["Customer Name"] || "").replace(
+            /\s*\(unconfirmed\)\s*/i,
+            "",
+          )}
+          phone={String(order["Phone Number"] || "")}
+          onClose={() => setShowPay(false)}
+        />
+      )}
     </AnimatePresence>
   );
 }

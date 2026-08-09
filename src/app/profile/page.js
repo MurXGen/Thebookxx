@@ -378,6 +378,8 @@ export default function MyOrdersPage() {
   // ----- NEW state for cancel + reschedule -----
   const [showRescheduleModal, setShowRescheduleModal] = useState(false);
   const [rescheduleOrder, setRescheduleOrder] = useState(null);
+  // "Enquire about this order" — order whose enquiry chooser is open.
+  const [enquireOrder, setEnquireOrder] = useState(null);
   const [rescheduleDate, setRescheduleDate] = useState("");
   const [rescheduleTime, setRescheduleTime] = useState("");
   const [rescheduleNote, setRescheduleNote] = useState("");
@@ -991,6 +993,39 @@ Please cancel this order. Thank you `;
     );
   };
 
+  // Open WhatsApp with a pre-filled enquiry about a specific order. The message
+  // includes the order details + the order link (thebookx.in?orderID=…).
+  const sendOrderEnquiry = (order, question) => {
+    const oid = order["Order ID"] || "";
+    const itemsList = (order.parsedBooks || [])
+      .map((b, i) => `${i + 1}. ${b.name} × ${b.quantity || 1}`)
+      .join("\n");
+    const orderLink = oid
+      ? `https://thebookx.in?orderID=${encodeURIComponent(oid)}`
+      : "";
+    const message = [
+      "Hi TheBookX,",
+      "",
+      question,
+      "",
+      `*Order ID:* ${oid}`,
+      `*Name:* ${order["Customer Name"] || ""}`,
+      `*Phone:* ${order["Phone Number"] || ""}`,
+      `*Total:* ₹${order["Total Amount"] || ""}`,
+      itemsList ? `\n*Items:*\n${itemsList}` : "",
+      orderLink ? `\n*Order details:* ${orderLink}` : "",
+      "",
+      "Thank you!",
+    ]
+      .filter((l) => l !== null && l !== undefined)
+      .join("\n");
+    window.open(
+      `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(message)}`,
+      "_blank",
+    );
+    setEnquireOrder(null);
+  };
+
   const handleRescheduleClick = (order) => {
     setRescheduleOrder(order);
     setRescheduleDate("");
@@ -1525,14 +1560,24 @@ Please cancel this order. Thank you `;
                         <span>{order.status}</span>
                       </span>
                     </div>
-                    <button
-                      type="button"
-                      className="order-track-btn"
-                      onClick={() => handleTrackOrder(order, orderKey)}
-                    >
-                      <Truck size={14} />
-                      {order.shippingId ? "Track shipment" : "Track order"}
-                    </button>
+                    <div className="occ-actions">
+                      <button
+                        type="button"
+                        className="order-track-btn"
+                        onClick={() => handleTrackOrder(order, orderKey)}
+                      >
+                        <Truck size={14} />
+                        {order.shippingId ? "Track shipment" : "Track order"}
+                      </button>
+                      <button
+                        type="button"
+                        className="order-enquire-btn"
+                        onClick={() => setEnquireOrder(order)}
+                      >
+                        <MessageCircle size={14} />
+                        Ask about this order
+                      </button>
+                    </div>
                   </div>
 
                   <AnimatePresence initial={false}>
@@ -2012,6 +2057,96 @@ Please cancel this order. Thank you `;
                     </div>
                   )}
                 </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ========== Enquire-about-order chooser ========== */}
+      <AnimatePresence>
+        {enquireOrder && (
+          <motion.div
+            className="bill-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setEnquireOrder(null)}
+            style={{ maxWidth: "980px", margin: "0 auto" }}
+          >
+            <motion.div
+              className="bill-modal enquire-modal"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="bill-header">
+                <div className="flex flex-col">
+                  <span className="weight-600 font-16">
+                    Ask about this order
+                  </span>
+                  <span className="font-12 gray-500">
+                    Order {enquireOrder["Order ID"] || ""}
+                  </span>
+                </div>
+                <span
+                  className="cursor-pointer"
+                  onClick={() => setEnquireOrder(null)}
+                >
+                  <X size={18} />
+                </span>
+              </div>
+
+              <p className="enquire-sub">
+                What would you like to ask? Pick one — we&apos;ll open WhatsApp
+                with your order details filled in.
+              </p>
+
+              <div className="enquire-options">
+                {[
+                  {
+                    label: "Delivery estimate",
+                    q: "Could you please share the delivery estimate for this order?",
+                  },
+                  {
+                    label: "Where is my order?",
+                    q: "Could you please tell me where my order currently is?",
+                  },
+                  {
+                    label: "Change delivery details",
+                    q: "I'd like to update the delivery address / phone for this order.",
+                  },
+                  {
+                    label: "Payment help",
+                    q: "I need some help with the payment for this order.",
+                  },
+                  {
+                    label: "Wrong or damaged item",
+                    q: "There's an issue with an item in this order (wrong/damaged). Please help.",
+                  },
+                  {
+                    label: "Cancel this order",
+                    q: "I'd like to cancel this order. Please help me cancel it.",
+                    danger: true,
+                  },
+                  {
+                    label: "Something else",
+                    q: "I have a question about this order.",
+                    muted: true,
+                  },
+                ].map((opt) => (
+                  <button
+                    key={opt.label}
+                    type="button"
+                    className={`enquire-opt${opt.danger ? " danger" : ""}${opt.muted ? " muted" : ""}`}
+                    onClick={() => sendOrderEnquiry(enquireOrder, opt.q)}
+                  >
+                    <span>{opt.label}</span>
+                    <ChevronRight size={16} />
+                  </button>
+                ))}
               </div>
             </motion.div>
           </motion.div>

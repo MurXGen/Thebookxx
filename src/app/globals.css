@@ -8451,8 +8451,80 @@ textarea.sec-mid-btn,
 .order-track-btn:hover {
   opacity: 0.88;
 }
+/* Track + enquire buttons stack on the card CTA */
+.occ-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 0 0 auto;
+  align-items: flex-end;
+}
+.order-enquire-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--foreground);
+  background: transparent;
+  border: 1px solid var(--hairline, #e5e7eb);
+  border-radius: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+.order-enquire-btn:hover {
+  border-color: #25d366;
+  color: #1da851;
+}
 
-
+/* Enquire chooser sheet */
+.enquire-sub {
+  font-size: 13px;
+  color: var(--dark-50, #6b7280);
+  line-height: 1.5;
+  margin: 4px 0 14px;
+}
+.enquire-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.enquire-opt {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--hairline, #e5e7eb);
+  background: var(--background, #fff);
+  color: var(--foreground);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.enquire-opt:hover {
+  border-color: #25d366;
+}
+.enquire-opt svg {
+  color: var(--dark-50, #6b7280);
+  flex: 0 0 auto;
+}
+.enquire-opt.danger {
+  color: #b91c1c;
+  border-color: rgba(220, 38, 38, 0.3);
+}
+.enquire-opt.danger:hover {
+  background: rgba(220, 38, 38, 0.06);
+  border-color: rgba(220, 38, 38, 0.5);
+}
+.enquire-opt.muted {
+  color: var(--dark-50, #6b7280);
+  font-weight: 600;
+}
 
 .order-id-section {
   display: flex;
@@ -25549,6 +25621,53 @@ img[data-loaded="true"] {
   .paymeth-apps {
     grid-template-columns: repeat(2, 1fr);
   }
+}
+/* Pay-here CTA on the invoice receipt */
+.cod-pay-here {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 10px;
+}
+/* UPI QR pay view (standalone Pay-here chooser) */
+.paynow-upi {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 2px 8px;
+  text-align: center;
+}
+.paynow-upi-amt {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--foreground);
+}
+.paynow-qr {
+  width: 220px;
+  height: 220px;
+  object-fit: contain;
+  border-radius: 14px;
+  border: 1px solid var(--hairline, #ececec);
+  padding: 8px;
+  background: #fff;
+}
+.paynow-upi-id {
+  font-family: ui-monospace, monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--foreground);
+}
+.paynow-upi-open,
+.paynow-upi-done {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
 }
 .pay-sel-modal .bill-header {
   flex: 0 0 auto;

@@ -40,6 +40,25 @@ export default function PayNowChooser({
     ? `https://thebookx.in?orderID=${encodeURIComponent(orderId)}`
     : "";
 
+  // Merchant-only confirmation link: opens /{orderId}, where the merchant
+  // enters the password and marks the order confirmed (+ debits wallet). Same
+  // flow as the checkout UPI "Verify on WhatsApp" step.
+  const buildMerchantLink = async () => {
+    const origin =
+      typeof window !== "undefined"
+        ? window.location.origin
+        : "https://thebookx.in";
+    let link = `${origin}/${encodeURIComponent(orderId)}`;
+    try {
+      const res = await fetch(
+        `https://tinyurl.com/api-create.php?url=${encodeURIComponent(link)}`,
+      );
+      const short = await res.text();
+      if (short && short.startsWith("http")) link = short;
+    } catch (_) {}
+    return link;
+  };
+
   const [upiCopied, setUpiCopied] = useState(false);
   const copyUpi = () => {
     try {
@@ -76,16 +95,38 @@ export default function PayNowChooser({
     setStage("gift");
   };
 
-  const confirmUpi = () =>
+  const confirmUpi = async () => {
+    const merchantLink = await buildMerchantLink();
     waConfirm(
-      `Hi TheBookX, I've paid ₹${amount} for my order ${orderId} via ${method}. Please confirm my payment.\n\nOrder details: ${orderLink}`,
+      [
+        `Hi TheBookX, I've *paid ₹${amount}* for my order ${orderId} via ${method}. Please confirm my payment.`,
+        "",
+        `Order details: ${orderLink}`,
+        "",
+        "———",
+        "*Merchant only* — confirm this order:",
+        merchantLink,
+      ].join("\n"),
     );
+  };
 
-  const submitGift = () => {
+  const submitGift = async () => {
     const code = giftCode.trim();
     if (code.length < 4) return;
+    const merchantLink = await buildMerchantLink();
     waConfirm(
-      `Hi TheBookX, paying for order ${orderId} with ${giftMethod}.\n\nAmazon gift card code: ${code}\nAmount: ₹${amount}\n\nOrder details: ${orderLink}`,
+      [
+        `Hi TheBookX, paying for order ${orderId} with ${giftMethod}.`,
+        "",
+        `Amazon gift card code: ${code}`,
+        `Amount: ₹${amount}`,
+        "",
+        `Order details: ${orderLink}`,
+        "",
+        "———",
+        "*Merchant only* — confirm this order:",
+        merchantLink,
+      ].join("\n"),
     );
   };
 

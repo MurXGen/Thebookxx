@@ -120,6 +120,12 @@ export default function AddressModal({
   const [city, setCity] = useState("");
   const [pincode, setPincode] = useState("");
   const [address, setAddress] = useState("");
+  // Optional current-location pin (Google Maps link) — an alternative to
+  // typing the full address. Appended to the address that goes to the sheet.
+  const [locationLink, setLocationLink] = useState("");
+  const [locating, setLocating] = useState(false);
+  const [locError, setLocError] = useState("");
+  const pinAutoRef = useRef(false); // auto-prompt location once per pincode entry
   // Structured address parts — combined into one address string on submit so
   // we capture strong, deliverable details instead of a vague single line.
   const [flatNo, setFlatNo] = useState("");
@@ -1234,10 +1240,62 @@ export default function AddressModal({
   };
 
   // Combine the structured parts into one deliverable address string.
-  const fullAddress = [flatNo, building, landmark, address]
+  const fullAddress = [
+    flatNo,
+    building,
+    landmark,
+    address,
+    locationLink ? `Pinned location: ${locationLink}` : "",
+  ]
     .map((s) => (s || "").trim())
     .filter(Boolean)
     .join(", ");
+
+  // Capture the shopper's current GPS position as a Google Maps pin link. We
+  // only STORE the pin (added to the address that goes to the sheet) — the
+  // customer still types their full address themselves.
+  const useCurrentLocation = () => {
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      setLocError("Location isn't supported on this device — please type your address.");
+      return;
+    }
+    setLocating(true);
+    setLocError("");
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        setLocationLink(
+          `https://maps.google.com/?q=${latitude.toFixed(6)},${longitude.toFixed(6)}`,
+        );
+        setLocating(false);
+      },
+      (err) => {
+        setLocating(false);
+        setLocError(
+          err && err.code === 1
+            ? "Location permission denied — allow it or type your address."
+            : "Couldn't get your location — try again or type your address.",
+        );
+      },
+      { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 },
+    );
+  };
+
+  // Once a valid pincode is entered, prompt to pin the current location (only
+  // once, and only if not already pinned) so the delivery partner gets a map
+  // reference alongside the typed address.
+  useEffect(() => {
+    if (
+      isValidPincode &&
+      String(pincode).length === 6 &&
+      !locationLink &&
+      !locating &&
+      !pinAutoRef.current
+    ) {
+      pinAutoRef.current = true;
+      useCurrentLocation();
+    }
+  }, [pincode, isValidPincode, locationLink, locating]);
 
   // On blur, strip words from the address that are already captured in the
   // other fields (pincode, city, flat, building, landmark) to avoid repetition.
@@ -1343,16 +1401,34 @@ export default function AddressModal({
               </div>
 
               <div className="input-group">
-                <label>
-                  Flat · Street · Landmark <span className="red">*</span>
-                </label>
+                <div className="addr-label-row">
+                  <label>
+                    Full address <span className="red">*</span>
+                  </label>
+                  <button
+                    type="button"
+                    className={`addr-pin-btn${locationLink ? " done" : ""}`}
+                    onClick={useCurrentLocation}
+                    disabled={locating}
+                  >
+                    <MapPin size={13} />
+                    {locationLink
+                      ? "Location pinned"
+                      : locating
+                        ? "Locating…"
+                        : "Pin my location"}
+                    {locationLink && <Check size={13} strokeWidth={3} />}
+                  </button>
+                </div>
                 <textarea
                   className="sec-mid-btn textarea"
-                  placeholder="Flat / house no, street, area & a nearby landmark…"
+                  placeholder="e.g. 12/A, Green Residency, 2nd floor, MG Road, near City Mall"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
+                  onBlur={dedupeAddress}
                   rows={3}
                 />
+                {locError && <span className="loc-pick-err">{locError}</span>}
               </div>
 
               <AnimatePresence>

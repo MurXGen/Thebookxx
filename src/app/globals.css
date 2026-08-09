@@ -4520,6 +4520,47 @@ textarea.sec-mid-btn,
 }
 
 /* Address modal — highlighted accuracy reminder stripe */
+/* "Pin my location" inline with the Flat · Street · Landmark label */
+.addr-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+.addr-pin-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--tertiary, #fb8500);
+  font-size: 12.5px;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.addr-pin-btn:hover {
+  filter: brightness(0.9);
+}
+.addr-pin-btn:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+.addr-pin-btn.done {
+  color: #15803d;
+}
+.loc-pick-err {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #b91c1c;
+}
+
 .addr-notice {
   display: flex;
   align-items: flex-start;

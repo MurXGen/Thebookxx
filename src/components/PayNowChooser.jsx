@@ -11,6 +11,9 @@ import {
   Smartphone,
   Gift,
   Info,
+  Copy,
+  Check,
+  Download,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 
@@ -37,9 +40,22 @@ export default function PayNowChooser({
     ? `https://thebookx.in?orderID=${encodeURIComponent(orderId)}`
     : "";
 
-  const upiLink = `upi://pay?pa=${encodeURIComponent(UPI_ID)}&pn=TheBookX&am=${amount}&cu=INR&tn=${encodeURIComponent(
-    `Order ${orderId}`,
-  )}`;
+  const [upiCopied, setUpiCopied] = useState(false);
+  const copyUpi = () => {
+    try {
+      navigator.clipboard.writeText(UPI_ID);
+      setUpiCopied(true);
+      setTimeout(() => setUpiCopied(false), 1500);
+    } catch {}
+  };
+  const saveQR = () => {
+    const a = document.createElement("a");
+    a.href = "/books/uskillbook.png";
+    a.download = "thebookx-upi-qr.png";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
 
   const waConfirm = (msg) => {
     window.open(
@@ -189,21 +205,32 @@ export default function PayNowChooser({
               alt="UPI QR code"
               className="paynow-qr"
             />
-            <div className="paynow-upi-id">{UPI_ID}</div>
-            <a href={upiLink} className="pri-big-btn paynow-upi-open">
-              Open {method} <ArrowRight size={16} />
-            </a>
-            <button
-              type="button"
-              className="sec-big-btn paynow-upi-done"
-              onClick={confirmUpi}
-            >
-              <FaWhatsapp size={16} color="#25D366" />
-              I&apos;ve paid — confirm on WhatsApp
-            </button>
+            <div className="paynow-upi-id-row">
+              <span className="paynow-upi-id">{UPI_ID}</span>
+              <button type="button" className="paynow-upi-copy" onClick={copyUpi}>
+                {upiCopied ? <Check size={14} /> : <Copy size={14} />}
+                {upiCopied ? "Copied" : "Copy"}
+              </button>
+            </div>
+            <div className="paynow-upi-btns">
+              <button
+                type="button"
+                className="sec-big-btn paynow-upi-save"
+                onClick={saveQR}
+              >
+                <Download size={15} /> Save QR
+              </button>
+              <button
+                type="button"
+                className="pri-big-btn paynow-upi-done"
+                onClick={confirmUpi}
+              >
+                <FaWhatsapp size={16} /> I&apos;ve paid
+              </button>
+            </div>
             <p className="paymeth-gift-fine">
-              Scan the QR in any UPI app, or tap “Open {method}”. Then confirm so
-              we can dispatch your order.
+              Scan the QR in any UPI app to pay {method === "Other UPI apps" ? "" : `via ${method}`}. Then tap “I&apos;ve paid” so we can
+              dispatch your order.
             </p>
           </div>
         )}

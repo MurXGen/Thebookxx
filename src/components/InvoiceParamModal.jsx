@@ -84,6 +84,7 @@ export default function InvoiceParamModal() {
     String(order["Customer Name"] || ""),
   );
   const paid = !isCOD && !isUnconfirmed;
+  const delivered = /delivered/i.test(String(order["Order Status"] || ""));
   const deliveryType = String(order["Delivery Type"] || "");
   const dateStr = String(order["Timestamp"] || "").split(" ")[0];
 
@@ -114,7 +115,7 @@ export default function InvoiceParamModal() {
         cartBooks={books}
         paymentMode={isCOD ? "COD" : "UPI"}
         paid={paid}
-        onPayNow={() => setShowPay(true)}
+        onPayNow={paid || delivered ? undefined : () => setShowPay(true)}
         onClose={close}
         onViewProfile={() => {
           window.location.href = "/profile";

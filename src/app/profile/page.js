@@ -247,10 +247,7 @@ function OrderTrackingTimeline({ order }) {
           </span>
           <span className="tracking-subtitle">
             {activeStage === 3 ? (
-              <>
-                Delivered on{" "}
-                <strong className="tracking-eta">{longDate(new Date())}</strong>
-              </>
+              <>Your order has been delivered</>
             ) : (
               <>
                 Delivery expected{" "}
@@ -1560,24 +1557,14 @@ Please cancel this order. Thank you `;
                         <span>{order.status}</span>
                       </span>
                     </div>
-                    <div className="occ-actions">
-                      <button
-                        type="button"
-                        className="order-track-btn"
-                        onClick={() => handleTrackOrder(order, orderKey)}
-                      >
-                        <Truck size={14} />
-                        {order.shippingId ? "Track shipment" : "Track order"}
-                      </button>
-                      <button
-                        type="button"
-                        className="order-enquire-btn"
-                        onClick={() => setEnquireOrder(order)}
-                      >
-                        <MessageCircle size={14} />
-                        Ask about this order
-                      </button>
-                    </div>
+                    <button
+                      type="button"
+                      className="order-track-btn"
+                      onClick={() => handleTrackOrder(order, orderKey)}
+                    >
+                      <Truck size={14} />
+                      {order.shippingId ? "Track shipment" : "Track order"}
+                    </button>
                   </div>
 
                   <AnimatePresence initial={false}>
@@ -1846,6 +1833,16 @@ Please cancel this order. Thank you `;
                           Edit delivery address
                         </button>
 
+                        {/* Ask about this order — enquiry chooser */}
+                        <button
+                          type="button"
+                          className="edit-address-btn order-enquire-btn-full"
+                          onClick={() => setEnquireOrder(order)}
+                        >
+                          <MessageCircle size={13} />
+                          Ask about this order
+                        </button>
+
                         {order.shippingId && (
                           <div className="tracking-info-row">
                             <div className="tracking-id-display">
@@ -1875,7 +1872,7 @@ Please cancel this order. Thank you `;
                   )} */}
 
                         {order["Payment Type"]?.includes("Cash on Delivery") &&
-                          order.status !== "Delivered" &&
+                          !/delivered/i.test(String(order.status || "")) &&
                           order.advancePaid !== "Yes" && (
                             <div className="cod-action-row">
                               <div className="cod-amount-info">

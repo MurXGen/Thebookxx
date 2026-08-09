@@ -3114,18 +3114,24 @@ export default function ManageOrdersPage() {
   };
 
   // Shipping-form payload for one order (India Post + address label).
-  const orderFormData = (o) => ({
-    orderId: o["Order ID"],
-    customerName: o["Customer Name"],
-    customerAddress: o["Address"],
-    customerCity: o["City"],
-    customerState: o["State"],
-    customerPincode: o["Pincode"],
-    customerPhone: o["Phone Number"],
-    totalValueRs: o.revenue,
-    isCOD: /cash|cod/i.test(o["Payment Type"] || ""),
-    codAmount: o.revenue,
-  });
+  const orderFormData = (o) => {
+    const rev = Number(o.revenue) || 0;
+    const isCOD = /cash|cod/i.test(o["Payment Type"] || "");
+    // COD orders collect the NET amount (order value − 5.9%); non-COD unchanged.
+    const codAmount = isCOD ? Math.round(rev - Math.round(rev * 0.059)) : rev;
+    return {
+      orderId: o["Order ID"],
+      customerName: o["Customer Name"],
+      customerAddress: o["Address"],
+      customerCity: o["City"],
+      customerState: o["State"],
+      customerPincode: o["Pincode"],
+      customerPhone: o["Phone Number"],
+      totalValueRs: rev,
+      isCOD,
+      codAmount,
+    };
+  };
 
   // Each order ONE combined frame (India Post CDF + From/To label together).
   // "format" is "pdf" (all frames in one ordered file, best for printing) or

@@ -189,7 +189,7 @@ const FORM_SUBMIT_URL =
 // docs/sheet-edit-apps-script.gs and paste its /exec URL here. Leave empty to
 // keep the old append-on-edit behaviour.
 const SHEET_EDIT_API_URL =
-  "https://script.google.com/macros/s/AKfycbw_MWJJmtGxukgHqNcoSTP-RRQONykYHLqgBYs2K8GfkuqSDmRmP3gVNAthKDWgVY5-Pw/exec";
+  "https://script.google.com/macros/s/AKfycbzYyEYufYZBP4pV-sJvgTvTBrcIb3iNUH3BgDD31zCL9xiULoKWnATFfad2awNMgvyC/exec";
 
 // Field mappings for Google Form
 const FORM_FIELD_IDS = {
@@ -537,6 +537,7 @@ const SECTION_TABS = [
   { key: "users", label: "Users" },
   { key: "track", label: "Track orders" },
   { key: "orders", label: "Orders" },
+  { key: "tracking", label: "Tracking" },
 ];
 
 // Status options for the Track & notify quick status editor (includes the
@@ -1064,6 +1065,8 @@ function IndiaPostSheet({
   copiedId,
   search = "",
   bypassFilter = false,
+  hideNote = false,
+  hideHead = false,
 }) {
   const shippingAll = bypassFilter
     ? orders || []
@@ -1096,17 +1099,23 @@ function IndiaPostSheet({
     return <p className="ip-empty">No orders match “{search}”.</p>;
   return (
     <div className="ip-sheet">
-      <div className="ip-note">
-        <b>Same for every parcel:</b> Drop-off pincode <b>400017</b> pick{" "}
-        <b>Dharavi Road S.O</b> · after typing weight choose the lowest rate (
-        <b>India Post Parcel Retail</b>) · Mail Shape ={" "}
-        <b>Box Type (Non Roll Form)</b> · Delivery Type = <b>Normal Delivery</b>
-        .
-      </div>
+      {!hideNote && (
+        <div className="ip-note">
+          <b>Same for every parcel:</b> Drop-off pincode <b>400017</b> pick{" "}
+          <b>Dharavi Road S.O</b> · after typing weight choose the lowest rate (
+          <b>India Post Parcel Retail</b>) · Mail Shape ={" "}
+          <b>Box Type (Non Roll Form)</b> · Delivery Type = <b>Normal Delivery</b>
+          .
+        </div>
+      )}
       {shipping.map((o, i) => {
         const books = (o.parsedBooks || []).length || 1;
         const isCOD = /cash|cod/i.test(o["Payment Type"] || "");
         const amount = o["Total Amount"] || o.revenue || "";
+        // India Post collects the NET amount = order value − 5.9%.
+        const grossCod = Number(String(amount).replace(/[^\d.]/g, "")) || 0;
+        const codFee = Math.round(grossCod * 0.059);
+        const codNet = Math.max(0, grossCod - codFee);
         const chunks = ipChunks(o["Address"]);
         const name = ipSanitize(o["Customer Name"]).slice(0, 30);
         const line1 = chunks[0] || "";
@@ -1114,6 +1123,30 @@ function IndiaPostSheet({
         const landmark = chunks[2] || "";
         const extras = chunks.slice(3);
         const key = (k) => `ip-${i}-${k}`;
+        // Structured payload the India Post autofill userscript reads from the
+        // clipboard to populate the government booking form in one click.
+        const autofillPayload = JSON.stringify({
+          v: "tbx-ip-1",
+          orderId: o["Order ID"] || "",
+          isCOD,
+          dropPincode: "400017",
+          dropOffice: "Dharavi Road S.O",
+          mailShape: "Box Type (Non Roll Form)",
+          deliveryType: "Normal Delivery",
+          weight: "500",
+          length: "22",
+          width: "13",
+          height: String(books),
+          codAmount: isCOD ? String(codNet) : "",
+          name,
+          mobile: String(o["Phone Number"] || ""),
+          addr1: line1,
+          addr2: [line2, ...extras].filter(Boolean).join(", "),
+          landmark,
+          city: o["City"] || "",
+          state: o["State"] || "",
+          pincode: String(o["Pincode"] || ""),
+        });
         return (
           <div className="ip-order" key={o["Order ID"] || i}>
             <div className="ip-order-head">
@@ -1122,6 +1155,22 @@ function IndiaPostSheet({
               <span className={`ip-tag ${isCOD ? "cod" : "prepaid"}`}>
                 {isCOD ? `COD ₹${amount}` : "Prepaid — no COD"}
               </span>
+              <button
+                type="button"
+                className="ip-autofill-copy"
+                title="Copy this order's data for the India Post autofill userscript"
+                onClick={() => copyToClipboard(autofillPayload, key("all"))}
+              >
+                {copiedId === key("all") ? (
+                  <>
+                    <Check size={13} /> Copied
+                  </>
+                ) : (
+                  <>
+                    <Copy size={13} /> Copy for autofill
+                  </>
+                )}
+              </button>
             </div>
             <div className="ip-fields">
               <div className="ip-step">1 · Article details</div>
@@ -1163,13 +1212,19 @@ function IndiaPostSheet({
               />
               <div className="ip-step">3 · Payment</div>
               {isCOD ? (
-                <IpField
-                  label="COD Retail amount (₹)"
-                  value={String(amount)}
-                  id={key("cod")}
-                  copiedId={copiedId}
-                  onCopy={copyToClipboard}
-                />
+                <>
+                  <IpField
+                    label="Order value (₹)"
+                    hint={`₹${grossCod.toLocaleString()} − ₹${codFee.toLocaleString()} (5.9%)`}
+                  />
+                  <IpField
+                    label="COD Retail amount (₹) · net"
+                    value={String(codNet)}
+                    id={key("cod")}
+                    copiedId={copiedId}
+                    onCopy={copyToClipboard}
+                  />
+                </>
               ) : (
                 <IpField label="COD" hint="Prepaid — leave COD unchecked" />
               )}
@@ -2400,6 +2455,14 @@ export default function ManageOrdersPage() {
   const [pickHydrated, setPickHydrated] = useState(false);
   const [packedOrders, setPackedOrders] = useState({}); // { orderId: true }
   const [detailOrder, setDetailOrder] = useState(null); // order shown in detail modal
+  // Inline order-card accordions: which cards are expanded, plus per-order
+  // draft state for inline tracking-ID and address edits pushed to the sheet.
+  const [expandedCards, setExpandedCards] = useState({}); // { orderId: true }
+  const [trackDrafts, setTrackDrafts] = useState({}); // { orderId: "CX..." }
+  const [addrEdit, setAddrEdit] = useState({}); // { orderId: {address,city,state,pincode} }
+  const [rowSaving, setRowSaving] = useState({}); // { orderId: "tracking"|"address"|"status" }
+  const toggleExpand = (id) =>
+    setExpandedCards((p) => ({ ...p, [id]: !p[id] }));
   const [seenIds, setSeenIds] = useState(null); // order IDs seen on last visit
   const [showNewModal, setShowNewModal] = useState(false);
   const [showToolsMenu, setShowToolsMenu] = useState(false); // kebab menu
@@ -2672,6 +2735,138 @@ export default function ManageOrdersPage() {
     orders: true,
   });
   const toggleAcc = (id) => setAccOpen((p) => ({ ...p, [id]: !p[id] }));
+
+  // ── Tracking tab: bulk-paste JSON of tracking IDs → push to Tracking sheet.
+  const [trackingJsonInput, setTrackingJsonInput] = useState("");
+  const [trackingRows, setTrackingRows] = useState([]); // parsed + normalized
+  const [trackingParseError, setTrackingParseError] = useState("");
+  const [trackingBusy, setTrackingBusy] = useState(false);
+  const [trackingResult, setTrackingResult] = useState(null); // {pushed} | null
+
+  // Normalize one loose JSON entry into { orderId, name, phone, trackingId }.
+  // Accepts a variety of key spellings so the pasted JSON can come from any
+  // source (India Post export, a sheet copy, hand-written, etc.).
+  const normalizeTrackingEntry = (raw) => {
+    if (!raw || typeof raw !== "object") return null;
+    const keys = {};
+    Object.keys(raw).forEach((k) => {
+      keys[k.toLowerCase().replace(/[\s_]+/g, "")] = raw[k];
+    });
+    const g = (...names) => {
+      for (const n of names) {
+        if (keys[n] !== undefined && keys[n] !== null) {
+          const v = String(keys[n]).trim();
+          if (v !== "") return v;
+        }
+      }
+      return "";
+    };
+    const orderId = g("orderid", "order", "oid", "id");
+    const trackingId = g(
+      "trackingid",
+      "tracking",
+      "shippingid",
+      "awb",
+      "awbno",
+      "consignment",
+      "consignmentnumber",
+      "articlenumber",
+    );
+    const name = g("name", "customername", "customer");
+    const phone = g("phone", "phonenumber", "mobile", "number", "contact")
+      .replace(/\D/g, "")
+      .slice(-10);
+    if (!orderId && !phone) return null; // need at least one match key
+    if (!trackingId) return null; // no tracking = nothing to store
+    return { orderId, name, phone, trackingId };
+  };
+
+  // Pure parse: text → { rows, error }. No state writes, so both the preview
+  // button and the push use the exact same result from the current text.
+  const computeTrackingRows = (text) => {
+    const txt = (text || "").trim();
+    if (!txt) return { rows: [], error: "" };
+    let data;
+    try {
+      data = JSON.parse(txt);
+    } catch (e) {
+      // Be forgiving: allow a bare array without the outer brackets, or
+      // objects separated by newlines.
+      try {
+        data = JSON.parse(`[${txt.replace(/}\s*\n\s*{/g, "},{")}]`);
+      } catch (e2) {
+        return {
+          rows: [],
+          error:
+            'Could not parse JSON. Paste an array like: [{"orderId":"ORD123","name":"...","phone":"98...","trackingId":"CX...IN"}]',
+        };
+      }
+    }
+    const arr = Array.isArray(data) ? data : [data];
+    const rows = arr.map(normalizeTrackingEntry).filter(Boolean);
+    if (rows.length === 0) {
+      return {
+        rows: [],
+        error:
+          "No valid entries found. Each item needs a trackingId plus an orderId (or phone).",
+      };
+    }
+    return { rows, error: "" };
+  };
+
+  const parseTrackingJson = () => {
+    setTrackingResult(null);
+    const { rows, error } = computeTrackingRows(trackingJsonInput);
+    setTrackingRows(rows);
+    setTrackingParseError(error);
+  };
+
+  const pushTrackingRows = async () => {
+    // Always re-parse the current textarea so the pushed count matches exactly
+    // what's on screen (even if the preview was from an earlier edit).
+    const { rows, error } = computeTrackingRows(trackingJsonInput);
+    setTrackingRows(rows);
+    setTrackingParseError(error);
+    if (rows.length === 0) return;
+    if (!SHEET_EDIT_API_URL) {
+      alert(
+        "The Tracking push needs the Sheet edit endpoint. Deploy the updated Apps Script and set SHEET_EDIT_API_URL.",
+      );
+      return;
+    }
+    // Only Order ID + Tracking ID are written — the tracking number lands in
+    // the "Shipping ID" column of that order's row in Form responses.
+    const enriched = rows
+      .filter((r) => r.orderId && r.trackingId)
+      .map((r) => ({ orderId: r.orderId, trackingId: r.trackingId }));
+    if (enriched.length === 0) {
+      setTrackingParseError(
+        "Each entry needs both an orderId and a trackingId.",
+      );
+      return;
+    }
+    setTrackingBusy(true);
+    setTrackingResult(null);
+    try {
+      const body = new URLSearchParams({
+        action: "trackingBulk",
+        data: JSON.stringify(enriched),
+      });
+      await fetch(SHEET_EDIT_API_URL, {
+        method: "POST",
+        mode: "no-cors",
+        body,
+      });
+      setTrackingResult({ pushed: enriched.length });
+      setTrackingJsonInput("");
+      setTrackingRows([]);
+    } catch (e) {
+      console.error("Tracking push failed:", e);
+      alert("Failed to push tracking IDs. Check the console and try again.");
+    } finally {
+      setTrackingBusy(false);
+    }
+  };
 
   // Scrollable section tabs — jump to a section, remembered across sessions.
   const [activeTab, setActiveTab] = useState("analytics");
@@ -4368,6 +4563,80 @@ export default function ManageOrdersPage() {
       mode: "no-cors",
       body,
     });
+  };
+
+  // ── Inline row edits from the order card (all write in place via the Apps
+  // Script). Each does an optimistic local update so the card reflects the
+  // change immediately, then re-fetches to reconcile with the sheet.
+  const patchLocalOrder = (orderId, patch) => {
+    setOrders((prev) =>
+      prev.map((o) =>
+        String(o["Order ID"]) === String(orderId) ? { ...o, ...patch } : o,
+      ),
+    );
+  };
+
+  const saveTrackingId = async (order, value) => {
+    const orderId = order["Order ID"];
+    const tid = String(value || "").trim();
+    if (!tid) return;
+    setRowSaving((p) => ({ ...p, [orderId]: "tracking" }));
+    try {
+      await updateOrderRow(orderId, { "Shipping ID": tid });
+      patchLocalOrder(orderId, { "Shipping ID": tid, shippingId: tid });
+      setTrackDrafts((p) => {
+        const n = { ...p };
+        delete n[orderId];
+        return n;
+      });
+      setTimeout(fetchOrders, 1300);
+    } catch (e) {
+      console.error("Tracking save failed:", e);
+      alert("Couldn't save the tracking ID. Try again.");
+    } finally {
+      setRowSaving((p) => {
+        const n = { ...p };
+        delete n[orderId];
+        return n;
+      });
+    }
+  };
+
+  const saveAddress = async (order) => {
+    const orderId = order["Order ID"];
+    const draft = addrEdit[orderId];
+    if (!draft) return;
+    setRowSaving((p) => ({ ...p, [orderId]: "address" }));
+    try {
+      const fields = {
+        Address: draft.address || "",
+        City: draft.city || "",
+        State: draft.state || "",
+        Pincode: draft.pincode || "",
+      };
+      await updateOrderRow(orderId, fields);
+      patchLocalOrder(orderId, {
+        Address: fields.Address,
+        City: fields.City,
+        State: fields.State,
+        Pincode: fields.Pincode,
+      });
+      setAddrEdit((p) => {
+        const n = { ...p };
+        delete n[orderId];
+        return n;
+      });
+      setTimeout(fetchOrders, 1300);
+    } catch (e) {
+      console.error("Address save failed:", e);
+      alert("Couldn't save the address. Try again.");
+    } finally {
+      setRowSaving((p) => {
+        const n = { ...p };
+        delete n[orderId];
+        return n;
+      });
+    }
   };
 
   // Permanently remove a row (user-triggered, confirmed).
@@ -6669,6 +6938,100 @@ export default function ManageOrdersPage() {
           </div>
         )}
 
+        {/* ===== Tracking (bulk paste tracking IDs → Tracking sheet) ===== */}
+        {activeTab === "tracking" && (
+          <div className="mo-trackpush">
+            <div className="mo-trackpush-head">
+              <Truck size={18} />
+              <div>
+                <div className="mo-trackpush-title">Bulk tracking upload</div>
+                <div className="mo-trackpush-sub">
+                  Paste a JSON array of <strong>orderId</strong> +{" "}
+                  <strong>trackingId</strong>. Each tracking ID is written to
+                  the Shipping ID column of that order&apos;s row in Form
+                  responses, and shows on the customer&apos;s profile.
+                </div>
+              </div>
+            </div>
+
+            <textarea
+              className="admin-input mo-trackpush-textarea"
+              rows={9}
+              spellCheck={false}
+              placeholder={
+                '[\n  { "orderId": "ORD1786215470091", "trackingId": "CX042819326IN" },\n  { "orderId": "ORD1786256569477", "trackingId": "EY484883105IN" }\n]'
+              }
+              value={trackingJsonInput}
+              onChange={(e) => {
+                setTrackingJsonInput(e.target.value);
+                setTrackingResult(null);
+              }}
+              onBlur={parseTrackingJson}
+            />
+
+            <div className="mo-trackpush-actions">
+              <button
+                type="button"
+                className="mo-trackpush-parse"
+                onClick={parseTrackingJson}
+                disabled={!trackingJsonInput.trim()}
+              >
+                <Search size={15} /> Parse &amp; preview
+              </button>
+              <button
+                type="button"
+                className="mo-trackpush-submit"
+                onClick={pushTrackingRows}
+                disabled={trackingRows.length === 0 || trackingBusy}
+              >
+                {trackingBusy ? (
+                  "Pushing…"
+                ) : (
+                  <>
+                    <Package size={15} /> Write {trackingRows.length || ""} to
+                    Shipping ID
+                  </>
+                )}
+              </button>
+            </div>
+
+            {trackingParseError && (
+              <div className="mo-track-error">{trackingParseError}</div>
+            )}
+
+            {trackingResult && (
+              <div className="mo-track-summary">
+                <span className="mo-track-chip ok">
+                  <Check size={13} /> {trackingResult.pushed} tracking ID
+                  {trackingResult.pushed === 1 ? "" : "s"} written to Shipping
+                  ID. Give the sheet a moment, then check a customer profile.
+                </span>
+              </div>
+            )}
+
+            {trackingRows.length > 0 && (
+              <div className="mo-trackpush-preview">
+                <div className="mo-trackpush-preview-head">
+                  {trackingRows.length} entr
+                  {trackingRows.length === 1 ? "y" : "ies"} ready
+                </div>
+                <div className="mo-trackpush-table mo-trackpush-table-2col">
+                  <div className="mo-trackpush-trow mo-trackpush-thead">
+                    <span>Order ID</span>
+                    <span>Tracking ID</span>
+                  </div>
+                  {trackingRows.map((r, i) => (
+                    <div className="mo-trackpush-trow" key={`${r.orderId}-${i}`}>
+                      <span>{r.orderId || "—"}</span>
+                      <span className="mo-trackpush-tid">{r.trackingId}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* ===== Orders (accordion) ===== */}
         {activeTab === "orders" && (
           <>
@@ -6950,7 +7313,7 @@ export default function ManageOrdersPage() {
                           ? `${fullAddress} - ${order["Pincode"]}`
                           : fullAddress;
 
-                        const isExpanded = false; // details now open in a slide-up modal
+                        const isExpanded = !!expandedCards[orderId];
                         const isPacked = !!packedOrders[orderId];
                         const pickedCount = books.reduce(
                           (n, _b, i) =>
@@ -7006,9 +7369,17 @@ export default function ManageOrdersPage() {
                         return (
                           <div
                             key={orderId || idx}
-                            className={`admin-order-card mo-card${isPacked ? " packed" : ""}`}
+                            className={`admin-order-card mo-card ${
+                              isCOD ? "mo-card-cod" : "mo-card-online"
+                            }${isPacked ? " packed" : ""}${
+                              isExpanded ? " expanded" : ""
+                            }`}
                           >
-                            <div className="mo-card-top">
+                            <div
+                              className="mo-card-top mo-card-top-toggle"
+                              onClick={() => toggleExpand(orderId)}
+                              title={isExpanded ? "Collapse" : "Expand details"}
+                            >
                               <div className="mo-card-id">
                                 <div className="mo-name-row">
                                   <span className="mo-srno">{idx + 1}</span>
@@ -7092,6 +7463,10 @@ export default function ManageOrdersPage() {
                                 <span className="mo-status-pill">
                                   {order.status}
                                 </span>
+                                <ChevronDown
+                                  size={18}
+                                  className={`mo-card-caret${isExpanded ? " open" : ""}`}
+                                />
                               </div>
                             </div>
 
@@ -7108,7 +7483,7 @@ export default function ManageOrdersPage() {
                                   <button
                                     type="button"
                                     className="mo-amount"
-                                    onClick={() => setDetailOrder(order)}
+                                    onClick={() => toggleExpand(orderId)}
                                     title={
                                       isCOD
                                         ? `Net after 5.9% deduction (₹${rev.toLocaleString()} − ₹${fee}) · tap for details`
@@ -7139,7 +7514,8 @@ export default function ManageOrdersPage() {
                               </button>
                             </div>
 
-                            {/* Book covers — scrollable row, tap to mark picked */}
+                            {/* Book covers — scrollable row with name + price,
+                            tap the cover to mark it picked. */}
                             {books.length > 0 && (
                               <div
                                 className="mo-covers"
@@ -7149,32 +7525,53 @@ export default function ManageOrdersPage() {
                                   const img = getBookImage(b.name);
                                   const checked =
                                     !!pickChecked[bookKey(orderId, ci)];
+                                  const price =
+                                    b.total > 0
+                                      ? b.total
+                                      : b.price > 0
+                                        ? b.price
+                                        : 0;
                                   return (
-                                    <button
-                                      key={ci}
-                                      type="button"
-                                      className={`mo-cover${checked ? " checked" : ""}`}
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        toggleBook(orderId, ci);
-                                      }}
-                                      title={b.name}
-                                    >
-                                      {img ? (
-                                        <img
-                                          src={img}
-                                          alt={b.name}
-                                          loading="lazy"
-                                        />
-                                      ) : (
-                                        <div className="mo-cover-ph">
-                                          <Package size={18} />
-                                        </div>
-                                      )}
-                                      <span className="mo-cover-check">
-                                        <Check size={16} />
+                                    <div className="mo-cover-item" key={ci}>
+                                      <button
+                                        type="button"
+                                        className={`mo-cover${checked ? " checked" : ""}`}
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          toggleBook(orderId, ci);
+                                        }}
+                                        title={b.name}
+                                      >
+                                        {img ? (
+                                          <img
+                                            src={img}
+                                            alt={b.name}
+                                            loading="lazy"
+                                          />
+                                        ) : (
+                                          <div className="mo-cover-ph">
+                                            <Package size={18} />
+                                          </div>
+                                        )}
+                                        {b.quantity > 1 && (
+                                          <span className="mo-cover-qty">
+                                            ×{b.quantity}
+                                          </span>
+                                        )}
+                                        <span className="mo-cover-check">
+                                          <Check size={16} />
+                                        </span>
+                                      </button>
+                                      <span
+                                        className="mo-cover-name"
+                                        title={b.name}
+                                      >
+                                        {b.name}
                                       </span>
-                                    </button>
+                                      <span className="mo-cover-price">
+                                        {price > 0 ? `₹${price}` : "—"}
+                                      </span>
+                                    </div>
                                   );
                                 })}
                               </div>
@@ -7240,7 +7637,7 @@ export default function ManageOrdersPage() {
                               ) : (
                                 <button
                                   type="button"
-                                  className="mo-note-add"
+                                  className="sec-big-btn mo-note-add"
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     setNoteEditor({ orderId, draft: "" });
@@ -7254,7 +7651,7 @@ export default function ManageOrdersPage() {
                           booking sheet; shows a tick once marked done. */}
                               <button
                                 type="button"
-                                className={`mo-book-btn${bookedOrders[orderId] ? " done" : ""}`}
+                                className={`sec-big-btn mo-book-btn${bookedOrders[orderId] ? " done" : ""}`}
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   setBookOrder(order);
@@ -7291,70 +7688,316 @@ export default function ManageOrdersPage() {
                                   style={{ overflow: "hidden" }}
                                 >
                                   <div className="aoc-body">
-                                    <div className="aoc-section">
-                                      <div className="aoc-section-title">
-                                        <MapPin size={13} /> Shipping
-                                      </div>
-                                      {addressLine && (
-                                        <button
-                                          type="button"
-                                          className="aoc-rowline"
-                                          onClick={() =>
-                                            copyToClipboard(
-                                              addressLine,
-                                              `address-${idx}`,
-                                            )
-                                          }
-                                          title="Copy address"
-                                        >
-                                          <span className="aoc-rowline-text">
-                                            {addressLine}
-                                          </span>
-                                          {copiedId === `address-${idx}` ? (
-                                            <Check
-                                              size={13}
-                                              className="text-green"
-                                            />
+                                    {(() => {
+                                      // India Post autofill payload — identical
+                                      // shape to the "Book online" modal copy.
+                                      const bkCount = books.length || 1;
+                                      const amtRaw =
+                                        order["Total Amount"] ||
+                                        order.revenue ||
+                                        "";
+                                      const gross =
+                                        Number(
+                                          String(amtRaw).replace(/[^\d.]/g, ""),
+                                        ) || 0;
+                                      const codNet = Math.max(
+                                        0,
+                                        gross - Math.round(gross * 0.059),
+                                      );
+                                      const ch = ipChunks(order["Address"]);
+                                      const jsonPayload = JSON.stringify({
+                                        v: "tbx-ip-1",
+                                        orderId: orderId || "",
+                                        isCOD,
+                                        dropPincode: "400017",
+                                        dropOffice: "Dharavi Road S.O",
+                                        mailShape: "Box Type (Non Roll Form)",
+                                        deliveryType: "Normal Delivery",
+                                        weight: "500",
+                                        length: "22",
+                                        width: "13",
+                                        height: String(bkCount),
+                                        codAmount: isCOD ? String(codNet) : "",
+                                        name: ipSanitize(
+                                          order["Customer Name"],
+                                        ).slice(0, 30),
+                                        mobile: String(
+                                          order["Phone Number"] || "",
+                                        ),
+                                        addr1: ch[0] || "",
+                                        addr2: [ch[1], ...ch.slice(3)]
+                                          .filter(Boolean)
+                                          .join(", "),
+                                        landmark: ch[2] || "",
+                                        city: order["City"] || "",
+                                        state: order["State"] || "",
+                                        pincode: String(order["Pincode"] || ""),
+                                      });
+                                      const editing = !!addrEdit[orderId];
+                                      const draft = addrEdit[orderId] || {
+                                        address: order["Address"] || "",
+                                        city: order["City"] || "",
+                                        state: order["State"] || "",
+                                        pincode: order["Pincode"] || "",
+                                      };
+                                      const setDraft = (patch) =>
+                                        setAddrEdit((p) => ({
+                                          ...p,
+                                          [orderId]: { ...draft, ...patch },
+                                        }));
+                                      const savingRow = rowSaving[orderId];
+                                      return (
+                                        <div className="aoc-section">
+                                          <div className="aoc-section-title">
+                                            <MapPin size={13} /> Shipping address
+                                            <button
+                                              type="button"
+                                              className="aoc-json-btn"
+                                              title="Copy India Post autofill JSON"
+                                              onClick={() =>
+                                                copyToClipboard(
+                                                  jsonPayload,
+                                                  `json-${idx}`,
+                                                )
+                                              }
+                                            >
+                                              {copiedId === `json-${idx}` ? (
+                                                <>
+                                                  <Check size={12} /> Copied
+                                                </>
+                                              ) : (
+                                                <>
+                                                  <Copy size={12} /> Copy JSON
+                                                </>
+                                              )}
+                                            </button>
+                                          </div>
+
+                                          {!editing ? (
+                                            <div className="aoc-addr">
+                                              <div className="aoc-addr-line">
+                                                {order["Address"] || "—"}
+                                              </div>
+                                              <div className="aoc-addr-grid">
+                                                <span>
+                                                  <b>City</b>{" "}
+                                                  {order["City"] || "—"}
+                                                </span>
+                                                <span>
+                                                  <b>State</b>{" "}
+                                                  {order["State"] || "—"}
+                                                </span>
+                                                <span>
+                                                  <b>Pincode</b>{" "}
+                                                  {order["Pincode"] || "—"}
+                                                </span>
+                                              </div>
+                                              <div className="aoc-addr-actions">
+                                                <button
+                                                  type="button"
+                                                  className="aoc-mini-btn"
+                                                  onClick={() =>
+                                                    copyToClipboard(
+                                                      addressLine,
+                                                      `address-${idx}`,
+                                                    )
+                                                  }
+                                                >
+                                                  {copiedId ===
+                                                  `address-${idx}` ? (
+                                                    <>
+                                                      <Check size={12} /> Copied
+                                                    </>
+                                                  ) : (
+                                                    <>
+                                                      <Copy size={12} /> Copy
+                                                    </>
+                                                  )}
+                                                </button>
+                                                <button
+                                                  type="button"
+                                                  className="aoc-mini-btn"
+                                                  onClick={() =>
+                                                    setAddrEdit((p) => ({
+                                                      ...p,
+                                                      [orderId]: {
+                                                        address:
+                                                          order["Address"] || "",
+                                                        city:
+                                                          order["City"] || "",
+                                                        state:
+                                                          order["State"] || "",
+                                                        pincode:
+                                                          order["Pincode"] || "",
+                                                      },
+                                                    }))
+                                                  }
+                                                >
+                                                  <Edit size={12} /> Edit
+                                                </button>
+                                              </div>
+                                            </div>
                                           ) : (
-                                            <Copy
-                                              size={13}
-                                              className="gray-500"
-                                            />
+                                            <div className="aoc-addr-edit">
+                                              <textarea
+                                                className="admin-input aoc-addr-input"
+                                                rows={2}
+                                                value={draft.address}
+                                                placeholder="Address"
+                                                onChange={(e) =>
+                                                  setDraft({
+                                                    address: e.target.value,
+                                                  })
+                                                }
+                                              />
+                                              <div className="aoc-addr-edit-row">
+                                                <input
+                                                  className="admin-input"
+                                                  value={draft.city}
+                                                  placeholder="City"
+                                                  onChange={(e) =>
+                                                    setDraft({
+                                                      city: e.target.value,
+                                                    })
+                                                  }
+                                                />
+                                                <input
+                                                  className="admin-input"
+                                                  value={draft.state}
+                                                  placeholder="State"
+                                                  onChange={(e) =>
+                                                    setDraft({
+                                                      state: e.target.value,
+                                                    })
+                                                  }
+                                                />
+                                                <input
+                                                  className="admin-input"
+                                                  value={draft.pincode}
+                                                  placeholder="Pincode"
+                                                  onChange={(e) =>
+                                                    setDraft({
+                                                      pincode: e.target.value,
+                                                    })
+                                                  }
+                                                />
+                                              </div>
+                                              <div className="aoc-addr-actions">
+                                                <button
+                                                  type="button"
+                                                  className="aoc-mini-btn primary"
+                                                  disabled={
+                                                    savingRow === "address"
+                                                  }
+                                                  onClick={() =>
+                                                    saveAddress(order)
+                                                  }
+                                                >
+                                                  {savingRow === "address" ? (
+                                                    "Saving…"
+                                                  ) : (
+                                                    <>
+                                                      <Check size={12} /> Save to
+                                                      sheet
+                                                    </>
+                                                  )}
+                                                </button>
+                                                <button
+                                                  type="button"
+                                                  className="aoc-mini-btn"
+                                                  onClick={() =>
+                                                    setAddrEdit((p) => {
+                                                      const n = { ...p };
+                                                      delete n[orderId];
+                                                      return n;
+                                                    })
+                                                  }
+                                                >
+                                                  Cancel
+                                                </button>
+                                              </div>
+                                            </div>
                                           )}
-                                        </button>
-                                      )}
-                                      {(hasTracking || hasTinyUrl) && (
-                                        <div className="aoc-track">
-                                          {hasTracking ? (
-                                            <span className="aoc-track-id">
-                                              Tracking:{" "}
-                                              <strong>
-                                                {order.shippingId}
-                                              </strong>
-                                            </span>
-                                          ) : (
-                                            <span className="aoc-track-id">
-                                              Order link ready
-                                            </span>
-                                          )}
-                                          <div className="flex flex-row gap-8">
+
+                                          {/* Tracking ID — show if set, always
+                                          allow add/replace pushed to the sheet. */}
+                                          <div className="aoc-track-edit">
                                             {hasTracking && (
+                                              <div className="aoc-track-cur">
+                                                <span className="aoc-track-id">
+                                                  Tracking:{" "}
+                                                  <strong>
+                                                    {order.shippingId}
+                                                  </strong>
+                                                </span>
+                                                <button
+                                                  type="button"
+                                                  className="track-btn-small flex flex-row items-center gap-4"
+                                                  onClick={() =>
+                                                    handleTrackPackage(
+                                                      order.shippingId,
+                                                    )
+                                                  }
+                                                >
+                                                  <Truck size={12} /> Track
+                                                </button>
+                                              </div>
+                                            )}
+                                            <div className="aoc-track-add">
+                                              <input
+                                                className="admin-input"
+                                                placeholder={
+                                                  hasTracking
+                                                    ? "Replace tracking ID…"
+                                                    : "Add tracking ID (e.g. CX…IN)"
+                                                }
+                                                value={
+                                                  trackDrafts[orderId] ?? ""
+                                                }
+                                                onChange={(e) =>
+                                                  setTrackDrafts((p) => ({
+                                                    ...p,
+                                                    [orderId]: e.target.value,
+                                                  }))
+                                                }
+                                                onKeyDown={(e) => {
+                                                  if (e.key === "Enter")
+                                                    saveTrackingId(
+                                                      order,
+                                                      trackDrafts[orderId],
+                                                    );
+                                                }}
+                                              />
                                               <button
                                                 type="button"
-                                                className="track-btn-small flex flex-row items-center gap-4"
+                                                className="aoc-mini-btn primary"
+                                                disabled={
+                                                  !String(
+                                                    trackDrafts[orderId] || "",
+                                                  ).trim() ||
+                                                  savingRow === "tracking"
+                                                }
                                                 onClick={() =>
-                                                  handleTrackPackage(
-                                                    order.shippingId,
+                                                  saveTrackingId(
+                                                    order,
+                                                    trackDrafts[orderId],
                                                   )
                                                 }
                                               >
-                                                <Truck size={12} /> Track
+                                                {savingRow === "tracking" ? (
+                                                  "Saving…"
+                                                ) : (
+                                                  <>
+                                                    <Check size={12} /> Save
+                                                  </>
+                                                )}
                                               </button>
-                                            )}
+                                            </div>
                                             {hasTinyUrl && (
                                               <button
                                                 type="button"
-                                                className="track-btn-small flex flex-row items-center gap-4"
+                                                className="aoc-orderlink"
+                                                title="Open the customer's order link"
                                                 onClick={() =>
                                                   window.open(
                                                     tinyUrl,
@@ -7363,120 +8006,14 @@ export default function ManageOrdersPage() {
                                                   )
                                                 }
                                               >
-                                                <ShoppingBag size={12} /> User
-                                                bag <ExternalLink size={10} />
+                                                <ExternalLink size={12} /> Order{" "}
+                                                {oidStr} link
                                               </button>
                                             )}
                                           </div>
                                         </div>
-                                      )}
-                                    </div>
-
-                                    <div className="aoc-section">
-                                      <div className="aoc-section-title">
-                                        <MessageCircle size={13} /> WhatsApp the
-                                        customer
-                                      </div>
-                                      <div className="aoc-wa-grid">
-                                        {waMessages(order).map((m) => (
-                                          <button
-                                            key={m.key}
-                                            type="button"
-                                            className="aoc-wa-btn"
-                                            title={m.text}
-                                            onClick={(e) => {
-                                              e.stopPropagation();
-                                              openWhatsApp(
-                                                order["Phone Number"],
-                                                m.text,
-                                              );
-                                            }}
-                                          >
-                                            {m.label}
-                                          </button>
-                                        ))}
-                                      </div>
-                                    </div>
-
-                                    <div className="aoc-section">
-                                      <div className="aoc-section-title">
-                                        <Package size={13} /> Items (
-                                        {books.length})
-                                      </div>
-                                      <div className="aoc-books-row">
-                                        {books.length > 0 ? (
-                                          books.map((b, bi) => {
-                                            const img = getBookImage(b.name);
-                                            return (
-                                              <div
-                                                key={bi}
-                                                className="aoc-book"
-                                              >
-                                                <div className="aoc-book-thumb">
-                                                  {img ? (
-                                                    <img
-                                                      src={img}
-                                                      alt={b.name}
-                                                      className="aoc-book-img"
-                                                      loading="lazy"
-                                                    />
-                                                  ) : (
-                                                    <div className="aoc-book-ph">
-                                                      <Package size={20} />
-                                                    </div>
-                                                  )}
-                                                  {b.quantity > 1 && (
-                                                    <span className="aoc-book-qty">
-                                                      ×{b.quantity}
-                                                    </span>
-                                                  )}
-                                                </div>
-                                                <span
-                                                  className="aoc-book-name"
-                                                  title={b.name}
-                                                >
-                                                  {b.name}
-                                                </span>
-                                                <span className="aoc-book-price">
-                                                  {b.total > 0
-                                                    ? `₹${b.total}`
-                                                    : b.price > 0
-                                                      ? `₹${b.price}`
-                                                      : "—"}
-                                                </span>
-                                              </div>
-                                            );
-                                          })
-                                        ) : (
-                                          <div className="aoc-book aoc-book-empty">
-                                            Books not listed
-                                          </div>
-                                        )}
-                                      </div>
-                                      {(order["Delivery Charge"] > 0 ||
-                                        order["Gift Wrap"] === "Yes" ||
-                                        order["Offer Applied"]) && (
-                                        <div className="aoc-extras">
-                                          {order["Delivery Charge"] > 0 && (
-                                            <span className="aoc-extra">
-                                              Delivery +₹
-                                              {order["Delivery Charge"]}
-                                            </span>
-                                          )}
-                                          {order["Gift Wrap"] === "Yes" && (
-                                            <span className="aoc-extra">
-                                              <Gift size={11} /> Gift wrap +₹
-                                              {order["Gift Wrap Charge"] || 0}
-                                            </span>
-                                          )}
-                                          {order["Offer Applied"] && (
-                                            <span className="aoc-extra">
-                                              Offer: {order["Offer Applied"]}
-                                            </span>
-                                          )}
-                                        </div>
-                                      )}
-                                    </div>
+                                      );
+                                    })()}
 
                                     <div className="aoc-money">
                                       <div className="aoc-money-cell">
@@ -7500,6 +8037,47 @@ export default function ManageOrdersPage() {
                                           {Math.abs(pnl).toLocaleString()}
                                         </strong>
                                       </div>
+                                    </div>
+
+                                    <div className="aoc-status-row">
+                                      <select
+                                        className="bulk-wa-select aoc-status-select"
+                                        value={order.status || "Processing"}
+                                        title="Change & save order status"
+                                        onChange={(e) => {
+                                          const val = e.target.value;
+                                          patchLocalOrder(orderId, {
+                                            "Order Status": val,
+                                            status: val,
+                                          });
+                                          updateOrderRow(orderId, {
+                                            "Order Status": val,
+                                          }).then(() =>
+                                            setTimeout(fetchOrders, 1300),
+                                          );
+                                        }}
+                                      >
+                                        {TRACK_STATUS_OPTIONS.map((s) => (
+                                          <option key={s} value={s}>
+                                            {s}
+                                          </option>
+                                        ))}
+                                      </select>
+                                      <button
+                                        type="button"
+                                        className={`aoc-pack-btn${isPacked ? " done" : ""}`}
+                                        onClick={() => togglePacked(orderId)}
+                                      >
+                                        {isPacked ? (
+                                          <>
+                                            <CheckCircle size={14} /> Packed
+                                          </>
+                                        ) : (
+                                          <>
+                                            <Package size={14} /> Mark as packed
+                                          </>
+                                        )}
+                                      </button>
                                     </div>
 
                                     <div className="aoc-foot">
@@ -7731,85 +8309,197 @@ export default function ManageOrdersPage() {
         )}
       </AnimatePresence>
 
-      {/* ===== Book online with India Post (single order) ===== */}
+      {/* ===== Book online with India Post (paginated) ===== */}
       <AnimatePresence>
-        {bookOrder && (
-          <motion.div
-            className="bill-modal-overlay"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setBookOrder(null)}
-            style={{ maxWidth: "980px", margin: "0 auto" }}
-          >
-            <motion.div
-              className="bill-modal ip-modal"
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "100%" }}
-              transition={{ duration: 0.35, ease: "easeOut" }}
-              onClick={(e) => e.stopPropagation()}
-              style={{ maxHeight: "92vh", overflowY: "auto" }}
-            >
-              <div className="ip-modal-head">
-                <div className="flex flex-col gap-2">
-                  <span className="weight-700 font-16 flex items-center gap-6">
-                    <Truck size={17} /> Book online · India Post
-                  </span>
-                  <span className="font-11 dark-50">
-                    {bookOrder["Customer Name"] || "—"} · Order{" "}
-                    {bookOrder["Order ID"] || "—"} · tap any field to copy
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  className="ip-modal-x"
-                  onClick={() => setBookOrder(null)}
-                  aria-label="Close"
+        {bookOrder &&
+          (() => {
+            // Page through the same list the user is viewing so they can book
+            // one after another without closing the modal.
+            const bookList = listOrders;
+            const bookIdx = bookList.findIndex(
+              (o) =>
+                String(o["Order ID"]) === String(bookOrder["Order ID"]),
+            );
+            const total = bookList.length;
+            const hasPrev = bookIdx > 0;
+            const hasNext = bookIdx >= 0 && bookIdx < total - 1;
+            const goBook = (delta) => {
+              const t = bookList[bookIdx + delta];
+              if (t) setBookOrder(t);
+            };
+            const isBooked = !!bookedOrders[bookOrder["Order ID"]];
+            return (
+              <motion.div
+                className="bill-modal-overlay ip-book-overlay"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setBookOrder(null)}
+              >
+                <motion.div
+                  className="bill-modal ip-modal ip-modal-centered"
+                  initial={{ opacity: 0, scale: 0.96 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.96 }}
+                  transition={{ duration: 0.22, ease: "easeOut" }}
+                  onClick={(e) => e.stopPropagation()}
+                  style={{
+                    maxWidth: "1000px",
+                    width: "100%",
+                    maxHeight: "88vh",
+                    overflowY: "auto",
+                  }}
                 >
-                  <X size={18} />
-                </button>
-              </div>
-
-              <div className="ip-modal-body">
-                <IndiaPostSheet
-                  orders={[bookOrder]}
-                  copyToClipboard={copyToClipboard}
-                  copiedId={copiedId}
-                  bypassFilter
-                />
-              </div>
-
-              <div className="ip-book-foot">
-                {bookedOrders[bookOrder["Order ID"]] ? (
-                  <>
-                    <span className="ip-book-done">
-                      <CheckCircle size={16} /> Marked as booked
-                    </span>
+                  <div className="ip-modal-head">
+                    <div className="flex flex-col gap-2">
+                      <span className="weight-700 font-16 flex items-center gap-6">
+                        <Truck size={17} /> Book online · India Post
+                        {bookIdx >= 0 && (
+                          <span className="ip-page-count">
+                            {bookIdx + 1} / {total}
+                          </span>
+                        )}
+                        {isBooked && (
+                          <span className="ip-booked-chip">
+                            <CheckCircle size={12} /> Booked
+                          </span>
+                        )}
+                      </span>
+                      <span className="font-11 dark-50">
+                        {bookOrder["Customer Name"] || "—"} · Order{" "}
+                        {bookOrder["Order ID"] || "—"} · tap any field to copy
+                      </span>
+                    </div>
                     <button
                       type="button"
-                      className="ip-book-undo"
-                      onClick={() => unmarkOrderBooked(bookOrder["Order ID"])}
+                      className="ip-modal-x"
+                      onClick={() => setBookOrder(null)}
+                      aria-label="Close"
                     >
-                      Undo
+                      <X size={18} />
                     </button>
-                  </>
-                ) : (
-                  <button
-                    type="button"
-                    className="ip-book-done-btn"
-                    onClick={() => {
-                      markOrderBooked(bookOrder["Order ID"]);
-                      setBookOrder(null);
-                    }}
-                  >
-                    <CheckCircle size={16} /> Mark as done (booked)
-                  </button>
-                )}
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
+                  </div>
+
+                  <div className="ip-modal-body">
+                    <IndiaPostSheet
+                      orders={[bookOrder]}
+                      copyToClipboard={copyToClipboard}
+                      copiedId={copiedId}
+                      bypassFilter
+                      hideNote
+                    />
+
+                    {/* Tracking ID — view + set the article number without
+                    leaving the booking flow (writes to the sheet). */}
+                    {(() => {
+                      const bid = bookOrder["Order ID"];
+                      const cur = String(
+                        bookOrder["Shipping ID"] ||
+                          bookOrder.shippingId ||
+                          "",
+                      ).trim();
+                      const saving = rowSaving[bid] === "tracking";
+                      return (
+                        <div className="ip-track">
+                          <div className="ip-track-title">
+                            <Truck size={14} /> Tracking ID
+                            {cur && (
+                              <span className="ip-track-cur">{cur}</span>
+                            )}
+                          </div>
+                          <div className="ip-track-row">
+                            <input
+                              className="admin-input"
+                              placeholder={
+                                cur
+                                  ? "Replace tracking ID…"
+                                  : "Add tracking ID (e.g. CX…IN)"
+                              }
+                              value={trackDrafts[bid] ?? ""}
+                              onChange={(e) =>
+                                setTrackDrafts((p) => ({
+                                  ...p,
+                                  [bid]: e.target.value,
+                                }))
+                              }
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter")
+                                  saveTrackingId(bookOrder, trackDrafts[bid]);
+                              }}
+                            />
+                            <button
+                              type="button"
+                              className="aoc-mini-btn primary"
+                              disabled={
+                                !String(trackDrafts[bid] || "").trim() ||
+                                saving
+                              }
+                              onClick={() =>
+                                saveTrackingId(bookOrder, trackDrafts[bid])
+                              }
+                            >
+                              {saving ? (
+                                "Saving…"
+                              ) : (
+                                <>
+                                  <Check size={13} /> Save
+                                </>
+                              )}
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </div>
+
+                  <div className="ip-book-foot ip-book-foot-nav">
+                    <button
+                      type="button"
+                      className="ip-nav-btn"
+                      disabled={!hasPrev}
+                      onClick={() => goBook(-1)}
+                    >
+                      <ChevronLeft size={16} /> Prev
+                    </button>
+
+                    {isBooked ? (
+                      <button
+                        type="button"
+                        className="ip-book-undo"
+                        onClick={() =>
+                          unmarkOrderBooked(bookOrder["Order ID"])
+                        }
+                      >
+                        Undo booked
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className="ip-book-done-btn"
+                        onClick={() => {
+                          markOrderBooked(bookOrder["Order ID"]);
+                          // Auto-advance to the next order for a smooth run.
+                          if (hasNext) goBook(1);
+                        }}
+                      >
+                        <CheckCircle size={16} />
+                        {hasNext ? "Booked · Next" : "Mark as booked"}
+                      </button>
+                    )}
+
+                    <button
+                      type="button"
+                      className="ip-nav-btn"
+                      disabled={!hasNext}
+                      onClick={() => goBook(1)}
+                    >
+                      Next <ChevronRight size={16} />
+                    </button>
+                  </div>
+                </motion.div>
+              </motion.div>
+            );
+          })()}
       </AnimatePresence>
 
       {/* ===== WhatsApp message picker (per order) ===== */}

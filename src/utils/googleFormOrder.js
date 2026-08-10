@@ -303,6 +303,62 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
   return formData.orderId;
 };
 
+// ── Tracking tab ────────────────────────────────────────────────────────
+// A separate "Tracking" tab in the same spreadsheet holds courier tracking
+// (AWB / consignment) numbers, populated in bulk from the manage-orders
+// dashboard. The customer profile reads it to show a live tracking ID without
+// re-pushing the whole order row. Columns: Order ID | Customer Name |
+// Phone Number | Tracking ID | Timestamp.
+export const TRACKING_SHEET_NAME = "Tracking";
+
+// Read the Tracking tab and return a lookup keyed by BOTH Order ID and phone
+// (last 10 digits), each → { trackingId, name, phone, orderId }. Latest row
+// wins so re-pasting an updated tracking ID overrides the older value.
+export const fetchTrackingMap = async () => {
+  const out = { byOrderId: {}, byPhone: {} };
+  try {
+    const url = `https://docs.google.com/spreadsheets/d/${WALLET_SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(
+      TRACKING_SHEET_NAME,
+    )}`;
+    const res = await fetch(url, { cache: "no-store" });
+    const text = await res.text();
+    const data = JSON.parse(text.substring(47, text.length - 2));
+    if (!data.table || !data.table.rows) return out;
+    const headers = data.table.cols.map((c) => c.label);
+    const pick = (o, ...names) => {
+      for (const n of names) {
+        const hit = Object.keys(o).find(
+          (k) => k.toLowerCase().replace(/\s+/g, "") === n,
+        );
+        if (hit && String(o[hit] ?? "").trim() !== "") return String(o[hit]);
+      }
+      return "";
+    };
+    data.table.rows.forEach((row) => {
+      const o = {};
+      (row.c || []).forEach((cell, i) => {
+        let v = cell?.v;
+        if (v && typeof v === "object" && v.value !== undefined) v = v.value;
+        o[headers[i]] = v;
+      });
+      const orderId = pick(o, "orderid").trim();
+      const trackingId = pick(o, "trackingid", "shippingid", "awb").trim();
+      if (!trackingId) return;
+      const name = pick(o, "customername", "name").trim();
+      const phone = pick(o, "phonenumber", "phone", "mobile")
+        .replace(/\D/g, "")
+        .slice(-10);
+      const entry = { trackingId, name, phone, orderId };
+      if (orderId) out.byOrderId[orderId] = entry;
+      if (phone.length === 10) out.byPhone[phone] = entry;
+    });
+    return out;
+  } catch (e) {
+    console.error("Tracking map read failed:", e);
+    return out;
+  }
+};
+
 // Poll helper — reads the orders sheet and reports whether the row for this
 // Order ID has been CONFIRMED (i.e. the "(unconfirmed)" tag was removed from
 // the customer name by the admin after verifying the UPI payment).

@@ -11090,31 +11090,40 @@ textarea.sec-mid-btn,
 
 .tracking-header-icon {
   position: relative;
-  width: 40px;
-  height: 40px;
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
   background: var(--tertiary-10);
-  border-radius: var(--px-8);
+  border-radius: var(--px-12);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .tracking-package-icon {
-  font-size: 20px;
+  font-size: 26px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
+/* Green check as a small badge in the bottom-right corner of the icon */
 .tracking-check-icon {
   position: absolute;
-  top: -4px;
-  left: -4px;
+  bottom: -5px;
+  right: -5px;
   color: var(--success);
   background: var(--white-100);
   border-radius: 50%;
+  padding: 1px;
+  box-shadow: 0 0 0 2px var(--white-100);
 }
 
 .tracking-header-text {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 2px;
 }
 

@@ -64,6 +64,11 @@ function getBookImage(name) {
 
 const SHEET_ID = "1ovqFn50d0TKjV0nm4q1lb3N9XvimUgIsHCOlHh6QRdg";
 const SUPPORT_WHATSAPP = "917710892108";
+// Apps Script web app that edits order rows in place (same endpoint the
+// manage-orders dashboard uses). Lets a customer's address edit save straight
+// to their order row.
+const SHEET_EDIT_API_URL =
+  "https://script.google.com/macros/s/AKfycbzYyEYufYZBP4pV-sJvgTvTBrcIb3iNUH3BgDD31zCL9xiULoKWnATFfad2awNMgvyC/exec";
 
 // =====================================================================
 // Module-level date parser, handles every format the Google Sheet emits
@@ -238,8 +243,10 @@ function OrderTrackingTimeline({ order }) {
     <div className="tracking-timeline-card">
       <div className="tracking-header">
         <div className="tracking-header-icon">
-          <CheckCircle size={20} className="tracking-check-icon" />
-          <div className="tracking-package-icon"></div>
+          <span className="tracking-package-icon" aria-hidden="true">
+            🚚
+          </span>
+          <CheckCircle size={16} className="tracking-check-icon" />
         </div>
         <div className="tracking-header-text">
           <span className="tracking-title">
@@ -1087,28 +1094,77 @@ Please cancel this order. Thank you `;
     setShowAddressEditModal(true);
   };
 
-  const handleAddressEditSubmit = () => {
+  const handleAddressEditSubmit = async () => {
     if (!addrEdit.address.trim() || !addrEdit.phone.trim()) {
       alert("Please fill in at least the address and phone number.");
       return;
     }
     const order = addressEditOrder;
+    const orderId = order?.["Order ID"] || "";
+    // Store the pinned map link inside the Address field so it travels with the
+    // order (same convention used elsewhere).
+    const fullAddress = addrEdit.locationLink
+      ? `${addrEdit.address}, Pinned location: ${addrEdit.locationLink}`
+      : addrEdit.address;
+
+    // 1) Save the change to the customer's order row in the sheet.
+    if (orderId) {
+      const fields = {
+        "Customer Name": addrEdit.name || "",
+        "Phone Number": addrEdit.phone || "",
+        Address: fullAddress,
+        City: addrEdit.city || "",
+        State: addrEdit.state || "",
+        Pincode: addrEdit.pincode || "",
+      };
+      try {
+        await fetch(SHEET_EDIT_API_URL, {
+          method: "POST",
+          mode: "no-cors",
+          body: new URLSearchParams({
+            action: "update",
+            orderId,
+            data: JSON.stringify(fields),
+          }),
+        });
+        // Reflect it immediately in the profile list.
+        setOrders((prev) =>
+          prev.map((o) =>
+            o["Order ID"] === orderId
+              ? {
+                  ...o,
+                  "Customer Name": fields["Customer Name"],
+                  "Phone Number": fields["Phone Number"],
+                  Address: fields.Address,
+                  City: fields.City,
+                  State: fields.State,
+                  Pincode: fields.Pincode,
+                }
+              : o,
+          ),
+        );
+      } catch (e) {
+        console.error("Address update failed:", e);
+      }
+    }
+
+    // 2) Auto-redirect to WhatsApp so support knows the address changed.
     const lines = [
       "Hi TheBookX ",
       "",
-      "I'd like to *update the delivery details* for my order.",
+      "I have *changed my delivery address* for my order.",
       "",
-      ` *Order ID:* ${order?.["Order ID"] || ""}`,
+      ` *Order ID:* ${orderId}`,
       ` *Name:* ${addrEdit.name || ""}`,
       ` *Phone:* ${addrEdit.phone || ""}`,
       "",
-      "* Updated Address*",
+      "* New Address*",
       ` ${addrEdit.address || ""}`,
       ` ${addrEdit.city || ""}${addrEdit.state ? `, ${addrEdit.state}` : ""}`,
       ` Pincode: ${addrEdit.pincode || ""}`,
       addrEdit.locationLink ? ` Pinned location: ${addrEdit.locationLink}` : "",
       "",
-      "Please update my order with these details. Thank you ",
+      "I've already updated it here — please confirm. Thank you ",
     ].filter((l) => l !== "");
     window.open(
       `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(lines.join("\n"))}`,
@@ -1874,15 +1930,21 @@ Please cancel this order. Thank you `;
                           </div>
                         )}
 
-                        {/* Edit address — available on every order */}
-                        <button
-                          type="button"
-                          className="edit-address-btn"
-                          onClick={() => handleEditAddressClick(order)}
-                        >
-                          <MapPin size={13} />
-                          Edit delivery address
-                        </button>
+                        {/* Edit address — only before the parcel is on the
+                        move (hidden once in transit / out for delivery /
+                        delivered / cancelled). */}
+                        {!/in\s*transit|out\s*for\s*delivery|delivered|cancel/i.test(
+                          order["Order Status"] || order.status || "",
+                        ) && (
+                          <button
+                            type="button"
+                            className="edit-address-btn"
+                            onClick={() => handleEditAddressClick(order)}
+                          >
+                            <MapPin size={13} />
+                            Edit delivery address
+                          </button>
+                        )}
 
                         {/* Ask about this order — enquiry chooser */}
                         <button

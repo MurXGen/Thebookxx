@@ -3002,7 +3002,8 @@ export default function ManageOrdersPage() {
     });
     const oid = row?.["Order ID"];
     if (oid) {
-      updateOrderRow(oid, { "Order Status": val });
+      // Optimistically reflect the change on the order card, push it to the
+      // sheet (Order Status column, matched by Order ID), then reconcile.
       setOrders((prev) =>
         prev.map((o) =>
           o["Order ID"] === oid
@@ -3010,6 +3011,11 @@ export default function ManageOrdersPage() {
             : o,
         ),
       );
+      updateOrderRow(oid, { "Order Status": val })
+        .then(() => setTimeout(fetchOrders, 1300))
+        .catch((e) => console.error("Track status save failed:", e));
+    } else {
+      console.warn("No Order ID for shipping ID", sid, "- status not saved.");
     }
   };
 

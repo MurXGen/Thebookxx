@@ -1749,7 +1749,7 @@ Please cancel this order. Thank you `;
         )}
 
         {/* ── Rapido-style account menu ── */}
-        {!showPhoneInput && !verifying && orders.length > 0 && (
+        {!showPhoneInput && !verifying && !loading && (
           <div className="profile-menu">
         {/* Orders — collapsed behind an "Order status & history" toggle */}
         {searched && !loading && orders.length > 0 && (

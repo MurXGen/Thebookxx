@@ -8322,7 +8322,8 @@ textarea.sec-mid-btn,
   background: white;
   border-radius: 20px;
   padding: 16px 20px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #f0f0f0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .customer-info-content {
@@ -16605,6 +16606,119 @@ img[data-loaded="true"] {
   opacity: 1;
   box-shadow: none;
   cursor: not-allowed;
+}
+
+/* ── Orders history accordion ── */
+.orders-accordion {
+  display: flex;
+  flex-direction: column;
+}
+.orders-toggle {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 15px 16px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--hairline);
+  border-radius: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--foreground);
+  cursor: pointer;
+}
+.orders-toggle:hover {
+  background: #faf7f2;
+}
+.ot-ic {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  flex-shrink: 0;
+  color: var(--dark-50);
+}
+.ot-label {
+  flex: 1;
+  text-align: left;
+}
+.ot-count {
+  font-size: 12px;
+  font-weight: 800;
+  color: #fff;
+  background: var(--tertiary, #fb8500);
+  padding: 2px 9px;
+  border-radius: 999px;
+}
+.ot-chev {
+  color: var(--dark-50);
+  transition: transform 0.2s ease;
+}
+.ot-chev.open {
+  transform: rotate(180deg);
+}
+.orders-list-inner {
+  padding-top: 10px;
+}
+
+/* ── Profile header support button (Rapido "Help" style) ── */
+.profile-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+.profile-support-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  margin-top: 4px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--hairline);
+  background: #fff;
+  color: var(--foreground);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.profile-support-btn:hover {
+  border-color: var(--tertiary, #fb8500);
+  color: var(--tertiary, #fb8500);
+}
+
+/* Support templates */
+.support-templates {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 6px;
+}
+.support-template-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 14px;
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  background: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--foreground);
+  cursor: pointer;
+  text-align: left;
+}
+.support-template-row:hover {
+  background: #faf7f2;
+  border-color: var(--tertiary, #fb8500);
+}
+.support-template-row svg {
+  color: var(--dark-50);
+  flex-shrink: 0;
 }
 
 /* ── Edit-profile modal ── */

@@ -369,6 +369,8 @@ export default function MyOrdersPage() {
   const [verifyTimer, setVerifyTimer] = useState(30);
   const [showPhoneInput, setShowPhoneInput] = useState(true);
   const [verifying, setVerifying] = useState(false); // 3s "verifying number" screen
+  const [ordersOpen, setOrdersOpen] = useState(false); // orders history accordion
+  const [showSupport, setShowSupport] = useState(false); // support templates sheet
   // ── Edit-profile modal (name / number / addresses) ──
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [epName, setEpName] = useState("");
@@ -1446,11 +1448,22 @@ Please cancel this order. Thank you `;
       <InstallAppBar />
       <div className="section-680 flex flex-col gap-24">
         {/* Header */}
-        <div className="orders-header">
+        <div className="orders-header profile-header-row">
           <PageHeader
             title="Profile"
             subtitle="Manage your profile and orders history."
           />
+          {!showPhoneInput && (
+            <button
+              type="button"
+              className="profile-support-btn"
+              onClick={() => setShowSupport(true)}
+              aria-label="Support"
+            >
+              <MessageCircle size={16} />
+              Support
+            </button>
+          )}
         </div>
 
         <AnimatePresence mode="wait">
@@ -1718,15 +1731,56 @@ Please cancel this order. Thank you `;
         )}
 
 
-        {/* Orders List */}
+        {loading && (
+          <div className="loading-state flex flex-col items-center justify-center">
+            <div className="spinner"></div>
+            Getting your order details
+          </div>
+        )}
+
+        {error && !showPhoneInput && (
+          <div className="error-state">
+            <div className="error-icon"></div>
+            <p>{error}</p>
+            <button className="retry-btn" onClick={handleNewSearch}>
+              Try Another Number
+            </button>
+          </div>
+        )}
+
+        {/* ── Rapido-style account menu ── */}
+        {!showPhoneInput && !verifying && orders.length > 0 && (
+          <div className="profile-menu">
+        {/* Orders — collapsed behind an "Order status & history" toggle */}
         {searched && !loading && orders.length > 0 && (
-          <div className="flex flex-col gap-4">
-            <div className="orders-list-header">
-              <span className="orders-count">
-                {orders.length} {orders.length === 1 ? "Order" : "Orders"}
+          <div className="orders-accordion">
+            <button
+              type="button"
+              className="orders-toggle"
+              onClick={() => setOrdersOpen((v) => !v)}
+            >
+              <span className="ot-ic">
+                <Package size={18} />
               </span>
-            </div>
-            {orders.map((order, idx) => {
+              <span className="ot-label">Order status &amp; history</span>
+              <span className="ot-count">{orders.length}</span>
+              <ChevronDown
+                size={20}
+                className={`ot-chev${ordersOpen ? " open" : ""}`}
+              />
+            </button>
+            <AnimatePresence initial={false}>
+              {ordersOpen && (
+                <motion.div
+                  key="orders-body"
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
+                  style={{ overflow: "hidden" }}
+                >
+                  <div className="flex flex-col gap-4 orders-list-inner">
+                    {orders.map((order, idx) => {
               const amountToShow = getAmountToShow(order);
               const hasComment = order.comment && order.comment.trim() !== "";
               const isPending = (order.status || "")
@@ -1821,14 +1875,16 @@ Please cancel this order. Thank you `;
                         <span>{order.status}</span>
                       </span>
                     </div>
-                    <button
-                      type="button"
-                      className="order-track-btn"
-                      onClick={() => handleTrackOrder(order, orderKey)}
-                    >
-                      <Truck size={14} />
-                      {order.shippingId ? "Track shipment" : "Track order"}
-                    </button>
+                    {!/delivered/i.test(order.status || "") && (
+                      <button
+                        type="button"
+                        className="order-track-btn"
+                        onClick={() => handleTrackOrder(order, orderKey)}
+                      >
+                        <Truck size={14} />
+                        {order.shippingId ? "Track shipment" : "Track order"}
+                      </button>
+                    )}
                   </div>
 
                   <AnimatePresence initial={false}>
@@ -2174,66 +2230,14 @@ Please cancel this order. Thank you `;
                   </AnimatePresence>
                 </div>
               );
-            })}
+                    })}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         )}
 
-        {loading && (
-          <div className="loading-state flex flex-col items-center justify-center">
-            <div className="spinner"></div>
-            Getting your order details
-          </div>
-        )}
-
-        {error && !showPhoneInput && (
-          <div className="error-state">
-            <div className="error-icon"></div>
-            <p>{error}</p>
-            <button className="retry-btn" onClick={handleNewSearch}>
-              Try Another Number
-            </button>
-          </div>
-        )}
-
-        {orders.length > 0 && (
-          <div className="whatsapp-help-section">
-            <a
-              href={`https://wa.me/${SUPPORT_WHATSAPP}?text=Hi%2C%20I%20need%20help%20with%20my%20order%20from%20TheBookX`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="whatsapp-help-link"
-            >
-              <div className="whatsapp-help-content">
-                <div className="whatsapp-help-icon">
-                  <FaWhatsapp size={24} color="#25D366" />
-                </div>
-                <div className="whatsapp-help-text">
-                  <span className="whatsapp-help-title">Need any help?</span>
-                  <span className="whatsapp-help-desc">
-                    Chat with us on WhatsApp for quick support
-                  </span>
-                </div>
-                <div className="whatsapp-help-arrow">
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                    <polyline points="12 5 19 12 12 19" />
-                  </svg>
-                </div>
-              </div>
-            </a>
-          </div>
-        )}
-
-        {/* ── Rapido-style account menu ── */}
-        {!showPhoneInput && !verifying && orders.length > 0 && (
-          <div className="profile-menu">
             <Link href="/reading-tracker" className="pm-row">
               <span className="pm-ic">
                 <Notebook size={18} />
@@ -2535,6 +2539,102 @@ Please cancel this order. Thank you `;
                 >
                   Save
                 </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ========== Support templates sheet ========== */}
+      <AnimatePresence>
+        {showSupport && (
+          <motion.div
+            className="bill-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowSupport(false)}
+          >
+            <motion.div
+              className="bill-modal"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.32, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+              style={{ maxHeight: "85vh", overflowY: "auto" }}
+            >
+              <div className="bill-header">
+                <span className="weight-600 font-16 flex items-center gap-8">
+                  <FaWhatsapp size={16} color="#25D366" /> How can we help?
+                </span>
+                <span
+                  className="cursor-pointer"
+                  onClick={() => setShowSupport(false)}
+                >
+                  <X size={18} />
+                </span>
+              </div>
+              <p className="ep-hint" style={{ marginBottom: 6 }}>
+                Pick a topic and we&apos;ll open WhatsApp with a ready message.
+              </p>
+              <div className="support-templates">
+                {[
+                  {
+                    label: "Where is my order?",
+                    msg: "Hi TheBookX, I'd like an update on where my order is. My number is " +
+                      phoneNumber +
+                      ".",
+                  },
+                  {
+                    label: "Delivery estimate",
+                    msg: "Hi TheBookX, when can I expect my order to be delivered? My number is " +
+                      phoneNumber +
+                      ".",
+                  },
+                  {
+                    label: "Change delivery address",
+                    msg: "Hi TheBookX, I'd like to change the delivery address for my order. My number is " +
+                      phoneNumber +
+                      ".",
+                  },
+                  {
+                    label: "Payment help",
+                    msg: "Hi TheBookX, I need help with the payment for my order. My number is " +
+                      phoneNumber +
+                      ".",
+                  },
+                  {
+                    label: "Wrong or damaged item",
+                    msg: "Hi TheBookX, I received a wrong or damaged item and need help. My number is " +
+                      phoneNumber +
+                      ".",
+                  },
+                  {
+                    label: "Something else",
+                    msg: "Hi TheBookX, I need some help with my order. My number is " +
+                      phoneNumber +
+                      ".",
+                  },
+                ].map((t) => (
+                  <button
+                    key={t.label}
+                    type="button"
+                    className="support-template-row"
+                    onClick={() => {
+                      window.open(
+                        `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(
+                          t.msg,
+                        )}`,
+                        "_blank",
+                      );
+                      setShowSupport(false);
+                    }}
+                  >
+                    <span>{t.label}</span>
+                    <ChevronRight size={18} />
+                  </button>
+                ))}
               </div>
             </motion.div>
           </motion.div>

@@ -34,6 +34,13 @@ import {
   AlertTriangle,
   Wallet,
   ClipboardPaste,
+  Star,
+  Users,
+  Share2,
+  FileText,
+  ShieldCheck,
+  Pencil,
+  Home,
 } from "lucide-react";
 import Image from "next/image";
 import { FaWhatsapp } from "react-icons/fa";
@@ -64,6 +71,15 @@ function getBookImage(name) {
 
 const SHEET_ID = "1ovqFn50d0TKjV0nm4q1lb3N9XvimUgIsHCOlHh6QRdg";
 const SUPPORT_WHATSAPP = "917710892108";
+
+// Capitalise the first letter of every word in a name (e.g. "jnjnjn kumar" →
+// "Jnjnjn Kumar"), leaving the rest of each word untouched.
+const capName = (str) =>
+  String(str || "")
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
 // Apps Script web app that edits order rows in place (same endpoint the
 // manage-orders dashboard uses). Lets a customer's address edit save straight
 // to their order row.
@@ -352,6 +368,21 @@ export default function MyOrdersPage() {
   const [canVerify, setCanVerify] = useState(false);
   const [verifyTimer, setVerifyTimer] = useState(30);
   const [showPhoneInput, setShowPhoneInput] = useState(true);
+  const [verifying, setVerifying] = useState(false); // 3s "verifying number" screen
+  // ── Edit-profile modal (name / number / addresses) ──
+  const [showEditProfile, setShowEditProfile] = useState(false);
+  const [epName, setEpName] = useState("");
+  const [epPhone, setEpPhone] = useState("");
+  const [epAddrOpen, setEpAddrOpen] = useState(false); // show all addresses
+  const [epEditId, setEpEditId] = useState(null); // orderId whose address is editing
+  const [epDraft, setEpDraft] = useState({
+    address: "",
+    city: "",
+    state: "",
+    pincode: "",
+  });
+  const [epPrimaryId, setEpPrimaryId] = useState("");
+  const [epSaving, setEpSaving] = useState(false);
   const [customerName, setCustomerName] = useState("");
   const [walletBalance, setWalletBalance] = useState(0);
   const [savedPhones, setSavedPhones] = useState([]);
@@ -745,6 +776,7 @@ export default function MyOrdersPage() {
     // Remember every submitted number (chip), regardless of result.
     savePhoneNumber(phone);
     setLoading(true);
+    setVerifying(true); // show the verifying-number splash for the whole fetch
     setError("");
     setSearched(true);
     try {
@@ -880,6 +912,7 @@ export default function MyOrdersPage() {
       setError(`Unable to fetch orders. Please try again later.`);
     } finally {
       setLoading(false);
+      setVerifying(false);
     }
   };
 
@@ -1266,15 +1299,149 @@ Please cancel this order. Thank you `;
   const showReadNext =
     orders.length > 0 && daysSinceLastOrder !== null && daysSinceLastOrder > 10;
 
+  // Three hero books shown in the Rapido-style login header.
+  const heroBooks = [
+    ALL_BOOKS.find((b) => /too good to be true/i.test(b.name)),
+    ALL_BOOKS.find((b) => /art of clarity/i.test(b.name)),
+    ALL_BOOKS.find((b) => /atomic habits/i.test(b.name)),
+  ].filter((b) => b && b.image);
+
+  // ── Edit-profile helpers ──
+  const openEditProfile = () => {
+    setEpName(customerName || "");
+    setEpPhone(phoneNumber || "");
+    setEpAddrOpen(false);
+    setEpEditId(null);
+    try {
+      setEpPrimaryId(
+        localStorage.getItem(`primary_addr_${phoneNumber}`) || "",
+      );
+    } catch {}
+    setShowEditProfile(true);
+  };
+
+  // Unique delivery addresses from this shopper's orders (primary shown first).
+  const profileAddresses = (() => {
+    const seen = new Set();
+    const list = [];
+    (orders || []).forEach((o) => {
+      const addr = String(o["Address"] || "")
+        .replace(/,?\s*Pinned location:\s*https?:\/\/\S+/i, "")
+        .trim();
+      if (!addr) return;
+      const key = `${addr}|${o["Pincode"] || ""}`.toLowerCase();
+      if (seen.has(key)) return;
+      seen.add(key);
+      list.push({
+        orderId: o["Order ID"],
+        address: addr,
+        city: o["City"] || "",
+        state: o["State"] || "",
+        pincode: String(o["Pincode"] || ""),
+      });
+    });
+    if (epPrimaryId) {
+      const i = list.findIndex((a) => a.orderId === epPrimaryId);
+      if (i > 0) {
+        const [p] = list.splice(i, 1);
+        list.unshift(p);
+      }
+    }
+    return list;
+  })();
+
+  const saveProfileBasics = () => {
+    const nm = epName.trim();
+    if (nm) {
+      setCustomerName(nm);
+      try {
+        localStorage.setItem("track_orders_name", nm);
+      } catch {}
+    }
+    const digits = String(epPhone).replace(/\D/g, "").slice(-10);
+    setShowEditProfile(false);
+    if (digits.length === 10 && digits !== phoneNumber) {
+      setPhoneNumber(digits);
+      fetchOrders(digits);
+    }
+  };
+
+  const setPrimaryAddress = (orderId) => {
+    setEpPrimaryId(orderId);
+    try {
+      localStorage.setItem(`primary_addr_${phoneNumber}`, orderId);
+    } catch {}
+  };
+
+  const startEditAddress = (a) => {
+    setEpEditId(a.orderId);
+    setEpDraft({
+      address: a.address,
+      city: a.city,
+      state: a.state,
+      pincode: a.pincode,
+    });
+  };
+
+  const saveAddressEdit = async () => {
+    const orderId = epEditId;
+    if (!orderId) return;
+    setEpSaving(true);
+    try {
+      await fetch(SHEET_EDIT_API_URL, {
+        method: "POST",
+        mode: "no-cors",
+        body: new URLSearchParams({
+          action: "update",
+          orderId,
+          data: JSON.stringify({
+            Address: epDraft.address,
+            City: epDraft.city,
+            State: epDraft.state,
+            Pincode: epDraft.pincode,
+          }),
+        }),
+      });
+      setOrders((prev) =>
+        prev.map((o) =>
+          o["Order ID"] === orderId
+            ? {
+                ...o,
+                Address: epDraft.address,
+                City: epDraft.city,
+                State: epDraft.state,
+                Pincode: epDraft.pincode,
+              }
+            : o,
+        ),
+      );
+      setEpEditId(null);
+      setTimeout(() => fetchOrders(phoneNumber), 1300);
+    } catch (e) {
+      console.error("Address save failed:", e);
+    } finally {
+      setEpSaving(false);
+    }
+  };
+
   return (
     <div className="my-orders-page">
-      {/* Reading-tracker promo stripe */}
-      <Link href="/reading-tracker" className="reading-stripe">
-        <span className="reading-stripe-text">
-          Track your reading progress from here
-        </span>
-        <span className="reading-stripe-btn">Click here</span>
-      </Link>
+      {/* Verifying-number splash (3s) after a successful lookup */}
+      {verifying && (
+        <div className="verify-overlay">
+          <div className="verify-box">
+            <div className="verify-phone-ic">
+              <Phone size={26} />
+            </div>
+            <div className="verify-spinner" />
+            <h3 className="verify-title">Verifying your number</h3>
+            <p className="verify-num">+91 {phoneNumber}</p>
+            <span className="verify-sub">
+              Fetching your orders and wallet…
+            </span>
+          </div>
+        </div>
+      )}
 
       <InstallAppBar />
       <div className="section-680 flex flex-col gap-24">
@@ -1295,18 +1462,33 @@ Please cancel this order. Thank you `;
               exit={{ opacity: 0, y: -20 }}
               className="phone-search-section"
             >
-              <div className="phone-card">
-                <div className="phone-card-icon">
-                  <Phone size={22} />
+              <div className="phone-card rapido-card">
+                {/* Branded header — TheBookX + three 3D book covers */}
+                <div className="rapido-hero">
+                  <div className="rapido-brand">
+                    <span className="rapido-logo">TheBookX</span>
+                    <span className="rapido-brand-sub">
+                      Books starting at ₹1
+                    </span>
+                  </div>
+                  <div className="rapido-books" aria-hidden="true">
+                    {heroBooks.map((b, i) => (
+                      <div className={`rapido-book rb-${i}`} key={b.id || i}>
+                        <img src={b.image} alt="" loading="lazy" />
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <h2 className="phone-card-title">Track your orders</h2>
-                <p className="phone-card-sub">
-                  Enter the mobile number you used at checkout to see your
-                  orders and wallet.
-                </p>
 
-                <div className="phone-card-row">
-                  <div className="phone-input-wrap">
+                <div className="rapido-body">
+                  <h2 className="phone-card-title">What&apos;s your number?</h2>
+                  <p className="phone-card-sub">
+                    Enter the mobile number you used at checkout to see your
+                    orders and wallet.
+                  </p>
+
+                  <div className="phone-input-wrap rapido-input">
+                    <span className="rapido-cc">+91</span>
                     <input
                       type="tel"
                       inputMode="numeric"
@@ -1328,16 +1510,16 @@ Please cancel this order. Thank you `;
                       <ClipboardPaste size={16} />
                     </button>
                   </div>
+
                   <button
-                    className="phone-card-submit"
+                    className="pri-big-btn rapido-submit"
                     onClick={() => fetchOrders()}
                     disabled={loading || phoneNumber.length !== 10}
                   >
                     {loading ? "Searching..." : "Submit"}
                   </button>
-                </div>
 
-                {error && <p className="error-message">{error}</p>}
+                  {error && <p className="error-message">{error}</p>}
 
                 {/* Saved numbers (localStorage) */}
                 {savedPhones.length > 0 && (
@@ -1379,6 +1561,7 @@ Please cancel this order. Thank you `;
                   <FaWhatsapp size={16} color="#25D366" />
                   Facing an issue? Chat with us
                 </a>
+                </div>
               </div>
             </motion.div>
           ) : (
@@ -1397,7 +1580,7 @@ Please cancel this order. Thank you `;
                   <div className="customer-details">
                     <span className="customer-label">Welcome back,</span>
                     <span className="customer-name">
-                      {customerName || "Customer"}
+                      {capName(customerName) || "Customer"}
                     </span>
                     <span className="customer-phone">{phoneNumber}</span>
                   </div>
@@ -1414,9 +1597,13 @@ Please cancel this order. Thank you `;
                         className={loading ? "cr-spin" : ""}
                       />
                     </button>
-                    <button className="sec-mid-btn" onClick={handleNewSearch}>
-                      <LogOut size={14} />
-                      Logout
+                    <button
+                      className="profile-refresh-btn"
+                      onClick={openEditProfile}
+                      aria-label="Edit profile"
+                      title="Edit profile"
+                    >
+                      <Pencil size={15} />
                     </button>
                   </div>
                 </div>
@@ -1530,20 +1717,6 @@ Please cancel this order. Thank you `;
           />
         )}
 
-        {/* What to read next — nudge after 10+ days since last order */}
-        {searched && !loading && showReadNext && (
-          <button
-            type="button"
-            className="read-next-cta"
-            onClick={() => setShowSuggest(true)}
-          >
-            <span className="read-next-main">
-              It's been {daysSinceLastOrder} days since your last order
-              <em>Not sure what to read next?</em>
-            </span>
-            <span className="read-next-go">Get suggestions </span>
-          </button>
-        )}
 
         {/* Orders List */}
         {searched && !loading && orders.length > 0 && (
@@ -1598,15 +1771,6 @@ Please cancel this order. Thank you `;
                         <span className="time-full">
                           {formatDate(getOrderDateValue(order))}
                         </span>
-                      </div>
-                      <div className="flex flex-row gap-4 items-center">
-                        <span className="order-id-label">Delivery status:</span>
-                        <div
-                          className={`order-status-badge ${getStatusColor(order.status)}`}
-                        >
-                          {getStatusIcon(order.status)}
-                          <span>{order.status}</span>
-                        </div>
                       </div>
                     </div>
 
@@ -2066,7 +2230,316 @@ Please cancel this order. Thank you `;
             </a>
           </div>
         )}
+
+        {/* ── Rapido-style account menu ── */}
+        {!showPhoneInput && !verifying && orders.length > 0 && (
+          <div className="profile-menu">
+            <Link href="/reading-tracker" className="pm-row">
+              <span className="pm-ic">
+                <Notebook size={18} />
+              </span>
+              <span className="pm-label">My reading tracker</span>
+              <ChevronRight size={18} className="pm-arrow" />
+            </Link>
+
+            <a
+              href="https://chat.whatsapp.com/Lk3okPbq21s8kJeoM3UA4c?mode=gi_t"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="pm-row"
+            >
+              <span className="pm-ic">
+                <Users size={18} />
+              </span>
+              <span className="pm-label">Join community</span>
+              <ChevronRight size={18} className="pm-arrow" />
+            </a>
+
+            <button
+              type="button"
+              className="pm-row"
+              onClick={async () => {
+                const shareData = {
+                  title: "TheBookX",
+                  text: "Books starting at ₹1 on TheBookX! Check it out:",
+                  url: "https://thebookx.in",
+                };
+                try {
+                  if (navigator.share) await navigator.share(shareData);
+                  else
+                    window.open(
+                      `https://wa.me/?text=${encodeURIComponent(
+                        `${shareData.text} ${shareData.url}`,
+                      )}`,
+                      "_blank",
+                    );
+                } catch (_) {}
+              }}
+            >
+              <span className="pm-ic">
+                <Share2 size={18} />
+              </span>
+              <span className="pm-label">Refer a friend</span>
+              <ChevronRight size={18} className="pm-arrow" />
+            </button>
+
+            <Link href="/review" className="pm-row">
+              <span className="pm-ic">
+                <Star size={18} />
+              </span>
+              <span className="pm-label">Rate us</span>
+              <ChevronRight size={18} className="pm-arrow" />
+            </Link>
+
+            <Link href="/terms" className="pm-row">
+              <span className="pm-ic">
+                <FileText size={18} />
+              </span>
+              <span className="pm-label">Terms &amp; Conditions</span>
+              <ChevronRight size={18} className="pm-arrow" />
+            </Link>
+
+            <Link href="/privacy" className="pm-row">
+              <span className="pm-ic">
+                <ShieldCheck size={18} />
+              </span>
+              <span className="pm-label">Privacy Policy</span>
+              <ChevronRight size={18} className="pm-arrow" />
+            </Link>
+
+            <button
+              type="button"
+              className="pm-row pm-logout"
+              onClick={handleNewSearch}
+            >
+              <span className="pm-ic">
+                <LogOut size={18} />
+              </span>
+              <span className="pm-label">Log out</span>
+              <ChevronRight size={18} className="pm-arrow" />
+            </button>
+          </div>
+        )}
       </div>
+
+      {/* ========== Edit profile modal ========== */}
+      <AnimatePresence>
+        {showEditProfile && (
+          <motion.div
+            className="bill-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowEditProfile(false)}
+          >
+            <motion.div
+              className="bill-modal ep-modal"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.32, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+              style={{ maxHeight: "90vh", overflowY: "auto" }}
+            >
+              <div className="bill-header">
+                <span className="weight-600 font-16 flex items-center gap-8">
+                  <User size={17} /> Edit profile
+                </span>
+                <span
+                  className="cursor-pointer"
+                  onClick={() => setShowEditProfile(false)}
+                >
+                  <X size={18} />
+                </span>
+              </div>
+
+              <div className="ep-body">
+                <label className="ep-field">
+                  <span className="ep-label">Full name</span>
+                  <input
+                    className="admin-input"
+                    value={epName}
+                    onChange={(e) => setEpName(e.target.value)}
+                    placeholder="Your name"
+                  />
+                </label>
+                <label className="ep-field">
+                  <span className="ep-label">Mobile number</span>
+                  <input
+                    className="admin-input"
+                    inputMode="numeric"
+                    maxLength={10}
+                    value={epPhone}
+                    onChange={(e) =>
+                      setEpPhone(e.target.value.replace(/\D/g, "").slice(0, 10))
+                    }
+                    placeholder="10-digit number"
+                  />
+                  <span className="ep-hint">
+                    Changing your number will load that profile.
+                  </span>
+                </label>
+
+                {/* Addresses */}
+                <div className="ep-addr-section">
+                  <div className="ep-addr-head">
+                    <span className="ep-label">
+                      <Home size={13} /> Delivery address
+                    </span>
+                    {profileAddresses.length > 1 && (
+                      <button
+                        type="button"
+                        className="ep-change"
+                        onClick={() => setEpAddrOpen((v) => !v)}
+                      >
+                        {epAddrOpen ? "Done" : "Change"}
+                      </button>
+                    )}
+                  </div>
+
+                  {profileAddresses.length === 0 && (
+                    <p className="ep-hint">No saved address yet.</p>
+                  )}
+
+                  {(epAddrOpen
+                    ? profileAddresses
+                    : profileAddresses.slice(0, 1)
+                  ).map((a, i) => {
+                    const isPrimary =
+                      (epPrimaryId && a.orderId === epPrimaryId) ||
+                      (!epPrimaryId && i === 0 && !epAddrOpen) ||
+                      (!epPrimaryId &&
+                        epAddrOpen &&
+                        a.orderId === profileAddresses[0].orderId);
+                    const editing = epEditId === a.orderId;
+                    return (
+                      <div
+                        key={a.orderId || i}
+                        className={`ep-addr-card${isPrimary ? " primary" : ""}`}
+                      >
+                        {editing ? (
+                          <div className="ep-addr-edit">
+                            <textarea
+                              className="admin-input"
+                              rows={2}
+                              value={epDraft.address}
+                              placeholder="Address"
+                              onChange={(e) =>
+                                setEpDraft((d) => ({
+                                  ...d,
+                                  address: e.target.value,
+                                }))
+                              }
+                            />
+                            <div className="ep-addr-row3">
+                              <input
+                                className="admin-input"
+                                value={epDraft.city}
+                                placeholder="City"
+                                onChange={(e) =>
+                                  setEpDraft((d) => ({
+                                    ...d,
+                                    city: e.target.value,
+                                  }))
+                                }
+                              />
+                              <input
+                                className="admin-input"
+                                value={epDraft.state}
+                                placeholder="State"
+                                onChange={(e) =>
+                                  setEpDraft((d) => ({
+                                    ...d,
+                                    state: e.target.value,
+                                  }))
+                                }
+                              />
+                              <input
+                                className="admin-input"
+                                value={epDraft.pincode}
+                                placeholder="Pincode"
+                                onChange={(e) =>
+                                  setEpDraft((d) => ({
+                                    ...d,
+                                    pincode: e.target.value,
+                                  }))
+                                }
+                              />
+                            </div>
+                            <div className="ep-addr-actions">
+                              <button
+                                type="button"
+                                className="pri-mid-btn"
+                                disabled={epSaving}
+                                onClick={saveAddressEdit}
+                              >
+                                {epSaving ? "Saving…" : "Save address"}
+                              </button>
+                              <button
+                                type="button"
+                                className="sec-mid-btn"
+                                onClick={() => setEpEditId(null)}
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <>
+                            <div className="ep-addr-text">
+                              <span className="ep-addr-line">{a.address}</span>
+                              <span className="ep-addr-meta">
+                                {[a.city, a.state, a.pincode]
+                                  .filter(Boolean)
+                                  .join(", ")}
+                              </span>
+                            </div>
+                            <div className="ep-addr-tags">
+                              {isPrimary && (
+                                <span className="ep-primary-tag">Primary</span>
+                              )}
+                            </div>
+                            {epAddrOpen && (
+                              <div className="ep-addr-actions">
+                                {!isPrimary && (
+                                  <button
+                                    type="button"
+                                    className="sec-mid-btn"
+                                    onClick={() =>
+                                      setPrimaryAddress(a.orderId)
+                                    }
+                                  >
+                                    Make primary
+                                  </button>
+                                )}
+                                <button
+                                  type="button"
+                                  className="sec-mid-btn"
+                                  onClick={() => startEditAddress(a)}
+                                >
+                                  <Pencil size={13} /> Edit
+                                </button>
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <button
+                  type="button"
+                  className="pri-big-btn ep-save"
+                  onClick={saveProfileBasics}
+                >
+                  Save
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ========== Payment Modal, unchanged ========== */}
       <AnimatePresence>

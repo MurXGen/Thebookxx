@@ -25,6 +25,57 @@ import {
 const PINCODE_STORAGE_KEY = "pincode_modal_last_shown";
 const PINCODE_DATA_KEY = "user_pincode";
 
+// Event-aware theming for the scratch teaser, so the banner feels current for
+// whatever occasion is running. Extend this list for future events.
+function getActiveEvent() {
+  const now = new Date();
+  const m = now.getMonth(); // 0-based
+  const d = now.getDate();
+  // Independence Day window: 1–17 Aug
+  if (m === 7 && d >= 1 && d <= 17) {
+    return {
+      key: "independence",
+      emoji: "🇮🇳",
+      title: "Independence Day special!",
+      sub: "Scratch to reveal a freedom-sale wallet reward",
+      gradient: "linear-gradient(135deg,#FF9933,#ffffff,#138808)",
+    };
+  }
+  // Diwali-ish window (rough): late Oct – mid Nov
+  if ((m === 9 && d >= 20) || (m === 10 && d <= 15)) {
+    return {
+      key: "diwali",
+      emoji: "🪔",
+      title: "Diwali dhamaka!",
+      sub: "Scratch to light up your wallet with a reward",
+      gradient: "linear-gradient(135deg,#ff8a00,#ffd166)",
+    };
+  }
+  // Default festive
+  return {
+    key: "default",
+    emoji: "🎁",
+    title: "You've won a scratch card!",
+    sub: "Scratch to reveal a wallet reward",
+    gradient: "linear-gradient(135deg,#fb8500,#ffd166)",
+  };
+}
+
+// "Logged in" = we already know the shopper's phone from a profile lookup.
+function isLoggedIn() {
+  if (typeof window === "undefined") return false;
+  try {
+    return (
+      String(localStorage.getItem("track_orders_phone") || "").replace(
+        /\D/g,
+        "",
+      ).length >= 10
+    );
+  } catch {
+    return false;
+  }
+}
+
 export default function PincodeModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [pincode, setPincode] = useState("");
@@ -104,41 +155,17 @@ export default function PincodeModal() {
   // Decide whether the modal is *eligible* to show (once every 24h, and never
   // if the user already gave a pincode). We no longer pop it on first paint, // instead it triggers on the first engagement signal (scroll past the hero)
   // or after a generous delay, so visitors always see the store first.
+  // No longer auto-opens. The hero renders the scratch teaser card; when the
+  // shopper starts scratching it, it fires "tbx:open-scratch" and we open the
+  // number modal here (keeping the wallet/reward logic in one place).
   useEffect(() => {
-    const lastShown = localStorage.getItem(PINCODE_STORAGE_KEY);
-    const savedPincode = localStorage.getItem(PINCODE_DATA_KEY);
-
-    if (savedPincode) return; // already captured, never nag
-
-    if (lastShown) {
-      const hoursPassed =
-        (Date.now() - parseInt(lastShown, 10)) / (1000 * 60 * 60);
-      if (hoursPassed < 24) return; // shown recently, respect the cooldown
-    }
-
-    let done = false;
     const open = () => {
-      if (done) return;
-      done = true;
-      setStage("teaser");
+      setStage("form");
       setIsOpen(true);
       setStartTime(Date.now());
-      cleanup();
     };
-
-    // Trigger on engagement (scrolled past the hero) …
-    const onScroll = () => {
-      if (window.scrollY > 600) open();
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    // … or after a generous delay so it never blocks the first impression.
-    const timer = setTimeout(open, 8000);
-
-    function cleanup() {
-      window.removeEventListener("scroll", onScroll);
-      clearTimeout(timer);
-    }
-    return cleanup;
+    window.addEventListener("tbx:open-scratch", open);
+    return () => window.removeEventListener("tbx:open-scratch", open);
   }, []);
 
   // Fetch location details based on pincode
@@ -302,6 +329,8 @@ export default function PincodeModal() {
     }
   };
 
+  const event = getActiveEvent();
+
   return (
     <>
       <AnimatePresence>
@@ -326,7 +355,7 @@ export default function PincodeModal() {
                 <>
                   <div className="bill-header">
                     <span className="weight-600 font-16">
-                      You&apos;ve won a scratch card
+                      {event.emoji} {event.title}
                     </span>
                     <span className="cursor-pointer" onClick={handleSkip}>
                       <X size={16} />
@@ -339,18 +368,19 @@ export default function PincodeModal() {
                       className="pin-teaser-card"
                       onClick={() => setStage("form")}
                       aria-label="Scratch to reveal your reward"
+                      style={{ background: event.gradient }}
                     >
                       <span className="pin-teaser-shine" />
                       <span className="pin-teaser-inner">
-                        <Gift size={30} />
+                        <span style={{ fontSize: 30 }}>{event.emoji}</span>
                         <span className="pin-teaser-t">Scratch to reveal</span>
                         <span className="pin-teaser-hint">Tap to start</span>
                       </span>
                     </button>
 
                     <p className="pin-teaser-copy">
-                      A wallet reward is hiding under here. Add your{" "}
-                      <b>mobile number</b> to unlock and scratch it.
+                      {event.sub}. Just add your <b>mobile number</b> to unlock,
+                      scratch it, and see your orders &amp; wallet.
                     </p>
 
                     <button
@@ -374,7 +404,7 @@ export default function PincodeModal() {
                   {/* Header */}
                   <div className="bill-header">
                     <span className="weight-600 font-16">
-                      Enter details to unlock
+                      {event.emoji} Enter your number to unlock
                     </span>
                     <span className="cursor-pointer" onClick={handleSkip}>
                       <X size={16} />
@@ -383,19 +413,21 @@ export default function PincodeModal() {
 
                   <div className="address-form-content flex flex-col gap-12">
                     <div className="flex flex-col">
-                      {" "}
+                      {/* Phone Number (only field now — no pincode) */}
                       <div className="input-group">
                         <label className="flex flex-row gap-4 flex-center items-center">
-                          <MapPin size={14} />
-                          Enter Pincode{" "}
-                          <span className="gray-500">(Optional)</span>
+                          <Phone size={14} />
+                          Mobile Number <span className="red">*</span>
                         </label>
                         <input
                           className={`sec-mid-btn ${error ? "error-border" : ""}`}
-                          placeholder="Enter 6 digit pincode"
-                          value={pincode}
-                          maxLength={6}
-                          onChange={(e) => handlePincodeChange(e.target.value)}
+                          placeholder="Enter 10-digit mobile number"
+                          value={phoneNumber}
+                          maxLength={10}
+                          inputMode="numeric"
+                          onChange={(e) =>
+                            setPhoneNumber(e.target.value.replace(/\D/g, ""))
+                          }
                           onKeyPress={(e) =>
                             e.key === "Enter" && handleSubmit()
                           }
@@ -406,25 +438,6 @@ export default function PincodeModal() {
                             {error}
                           </span>
                         )}
-                      </div>
-                      {/* Phone Number (required) */}
-                      <div className="input-group">
-                        <label className="flex flex-row gap-4 flex-center items-center">
-                          <Phone size={14} />
-                          Phone Number <span className="red">*</span>
-                        </label>
-                        <input
-                          className="sec-mid-btn"
-                          placeholder="Enter 10-digit mobile number"
-                          value={phoneNumber}
-                          maxLength={10}
-                          onChange={(e) =>
-                            setPhoneNumber(e.target.value.replace(/\D/g, ""))
-                          }
-                          onKeyPress={(e) =>
-                            e.key === "Enter" && handleSubmit()
-                          }
-                        />
                         <span className="font-10 gray-500 mt-4">
                           Get notified about special offers and delivery updates
                         </span>

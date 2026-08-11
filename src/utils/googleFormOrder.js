@@ -240,8 +240,13 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
     second: "2-digit",
   });
 
+  const orderId = orderIdIn || `ORD${Date.now()}`;
+  // Store the customer's own order link (opens the printed invoice for this
+  // order) rather than a view-bag link. The manage-orders card reads this.
+  const orderLink = `https://thebookx.in?orderID=${encodeURIComponent(orderId)}`;
+
   const formData = {
-    orderId: orderIdIn || `ORD${Date.now()}`,
+    orderId,
     customerName: addressData.name || "",
     phone: addressData.phone || "",
     pincode: addressData.pincode || "",
@@ -276,7 +281,7 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
       (walletUsed > 0
         ? ` · Wallet used ₹${walletUsed}${walletPhone ? ` (${walletPhone})` : ""}`
         : ""),
-    tinyUrl: shortLink || "",
+    tinyUrl: orderLink,
     orderStatus: "Processing",
     // Record wallet spent on this order as a NEGATIVE ledger entry so the
     // shopper's balance nets down. Blank when no wallet was used.
@@ -439,8 +444,9 @@ export const submitConfirmedOrder = async (row, { walletUsed = 0 } = {}) => {
     const n = parseFloat(v);
     return isNaN(n) ? 0 : n;
   };
+  const confirmedId = String(row["Order ID"] || `ORD${Date.now()}`);
   const orderData = {
-    orderId: String(row["Order ID"] || `ORD${Date.now()}`),
+    orderId: confirmedId,
     customerName: cleanName,
     phone: String(row["Phone Number"] || ""),
     pincode: String(row["Pincode"] || ""),
@@ -457,6 +463,9 @@ export const submitConfirmedOrder = async (row, { walletUsed = 0 } = {}) => {
     offerApplied:
       String(row["Offer Applied"] || "") +
       (walletUsed > 0 ? ` · Wallet used ₹${walletUsed}` : ""),
+    tinyUrl:
+      String(row["TinyURL"] || "") ||
+      `https://thebookx.in?orderID=${encodeURIComponent(confirmedId)}`,
     orderStatus: "Processing",
     wallet: walletUsed > 0 ? -Math.round(walletUsed) : "",
     timestamp: fmtSheetTs(new Date()),

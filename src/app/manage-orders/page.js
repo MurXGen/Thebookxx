@@ -101,6 +101,29 @@ const openWhatsApp = (phone, text) => {
 const PROFILE_URL = "https://www.thebookx.in/profile";
 const INDIA_POST_URL = "https://www.indiapost.gov.in";
 
+// Polite "some books are out of stock" WhatsApp message listing the specific
+// unpicked titles, offering a swap or refund.
+const booksUnavailableMessage = (order, names) => {
+  const nm = String(order["Customer Name"] || "").trim() || "there";
+  const many = names.length > 1;
+  return [
+    `Hi ${nm} 👋`,
+    "",
+    "Thank you for your order with *TheBookX*! 📚",
+    "",
+    `Unfortunately, the following ${many ? "titles are" : "title is"} currently *out of stock*:`,
+    ...names.map((n) => `• ${n}`),
+    "",
+    `*Order ID:* ${order["Order ID"] || "-"}`,
+    "",
+    "We'd love to make it right — you can choose:",
+    "1️⃣  *Swap* with a similar book, or",
+    "2️⃣  A quick *refund* for that amount.",
+    "",
+    "Just reply here and we'll sort it out right away. So sorry for the inconvenience 🙏",
+  ].join("\n");
+};
+
 const waMessages = (order) => {
   const name = order?.["Customer Name"]
     ? String(order["Customer Name"]).trim()
@@ -109,68 +132,70 @@ const waMessages = (order) => {
   const tracking = String(
     order?.shippingId || order?.["Shipping ID"] || "",
   ).trim();
-  const hi = `Hi ${name}`;
+  const hi = `Hi ${name} 👋`;
 
-  // Link block appended below every message: the customer's order link, the
-  // tracking ID and the India Post tracking link (tracking lines only when a
-  // tracking ID exists). Kept short and consistent across all stages.
+  // Link block appended below every message: a divider, the customer's order
+  // link, the tracking ID and the India Post tracking link (tracking lines only
+  // when a tracking ID exists). Consistent across all stages.
   const orderLink = orderId
     ? `https://thebookx.in?orderID=${encodeURIComponent(orderId)}`
     : PROFILE_URL;
   const linkBlock =
-    `\n\nYour order details: ${orderLink}` +
+    `\n\n━━━━━━━━━━━━━━` +
+    (orderId ? `\n📦 *Order ID:* ${orderId}` : "") +
+    `\n🔗 *Your order:* ${orderLink}` +
     (tracking
-      ? `\nTracking ID: *${tracking}*\nTrack on India Post: ${INDIA_POST_URL}`
+      ? `\n🚚 *Tracking ID:* ${tracking}\n📍 Track: ${INDIA_POST_URL}`
       : "") +
-    `\n— Team TheBookX`;
+    `\n\n— Team *TheBookX* 📚`;
 
-  // Every message opens with the *stage headline*, then a short note, then the
+  // Every message opens with an emoji *stage headline*, a short note, then the
   // link block below.
   return [
     {
       key: "confirm",
       label: "Confirm order",
-      text: `*Confirm your order*\n\n${hi}, we've received your order. Please reply *YES* to confirm so we can pack and ship it right away.${linkBlock}`,
+      text: `✅ *Confirm your order*\n\n${hi}\n\nWe've received your order. Please reply *YES* to confirm so we can pack and ship it right away.${linkBlock}`,
     },
     {
       key: "about",
       label: "About to ship",
-      text: `*About to ship*\n\n${hi}, your TheBookX order is packed and about to ship. Tracking details will follow shortly.${linkBlock}`,
+      text: `📦 *About to ship*\n\n${hi}\n\nYour TheBookX order is packed and about to ship. Tracking details will follow shortly.${linkBlock}`,
     },
     {
       key: "shipped",
       label: "Shipped",
-      text: `*Shipped*\n\n${hi}, your order is on its way! Expected delivery in *5–9 days* (slight delays possible in bad weather — thanks for your patience).${linkBlock}`,
+      text: `🚚 *Shipped*\n\n${hi}\n\nYour order is on its way! Expected delivery in *5–9 days* (slight delays possible in bad weather — thanks for your patience).${linkBlock}`,
     },
     {
       key: "transit",
       label: "In Transit",
-      text: `*In transit*\n\n${hi}, your TheBookX order is in transit and will be reaching you within *4 to 9 working days*. Thank you for your patience!${linkBlock}`,
+      text: `🛣️ *In transit*\n\n${hi}\n\nYour TheBookX order is in transit and will be reaching you within *4 to 9 working days*. Thank you for your patience!${linkBlock}`,
     },
     {
       key: "ofd",
       label: "Out for delivery",
-      text: `*Out for delivery*\n\n${hi}, your TheBookX order is out for delivery today. Please keep your phone reachable so our delivery partner can reach you.${linkBlock}`,
+      text: `🛵 *Out for delivery*\n\n${hi}\n\nYour TheBookX order is out for delivery today. Please keep your phone reachable so our delivery partner can reach you.${linkBlock}`,
     },
     {
       key: "delivered",
       label: "Delivered",
-      text: `*Delivered*\n\n${hi}, your order has been delivered! We hope you love your books — a quick review would mean a lot to us.${linkBlock}`,
+      text: `🎉 *Delivered*\n\n${hi}\n\nYour order has been delivered! We hope you love your books — a quick *review* would mean a lot to us. ⭐${linkBlock}`,
     },
     {
       key: "received",
       label: "Received order",
-      text: `*Order received*\n\n${hi}, we've received your order. It will be *shipped within 1–2 days* and your tracking ID will be shared here as soon as it's dispatched.${linkBlock}`,
+      text: `🙏 *Order received*\n\n${hi}\n\nWe've received your order. It will be *shipped within 1–2 days* and your tracking ID will be shared here as soon as it's dispatched.${linkBlock}`,
     },
     {
       key: "unable",
       label: "Unable to ship",
-      text: `*Unable to ship*\n\n${hi}, we couldn't ship your order due to a mismatch in the *address or phone number*. Please share your *correct full address (with pincode) and a reachable phone number* so we can dispatch it right away.${linkBlock}`,
+      text: `⚠️ *Unable to ship*\n\n${hi}\n\nWe couldn't ship your order due to a mismatch in the *address or phone number*. Please share your *correct full address (with pincode) and a reachable phone number* so we can dispatch it right away.${linkBlock}`,
     },
     {
       key: "verify",
       label: "Ask details checkup",
-      text: `*Please re-check your details*\n\n${hi}, before we ship your order, kindly re-check your delivery details — the current address/number may not be enough for successful delivery. Reply with your *complete address, landmark, pincode and active phone number*.${linkBlock}`,
+      text: `🔎 *Please re-check your details*\n\n${hi}\n\nBefore we ship your order, kindly re-check your delivery details — the current address/number may not be enough for successful delivery.\n\nReply with your *complete address, landmark, pincode and active phone number*.${linkBlock}`,
     },
   ];
 };
@@ -7679,6 +7704,34 @@ export default function ManageOrdersPage() {
                                 )}
                               </button>
                             </div>
+
+                            {/* Books unavailable — shows when this order still
+                            has unpicked books; messages the customer the
+                            out-of-stock title(s) with swap/refund options. */}
+                            {books.length > 0 &&
+                              pickedCount < books.length && (
+                                <button
+                                  type="button"
+                                  className="mo-unavail-btn"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    const names = books
+                                      .filter(
+                                        (_b, i) =>
+                                          !pickChecked[bookKey(orderId, i)],
+                                      )
+                                      .map((b) => b.name);
+                                    openWhatsApp(
+                                      order["Phone Number"],
+                                      booksUnavailableMessage(order, names),
+                                    );
+                                  }}
+                                  title="Tell the customer these books are out of stock"
+                                >
+                                  <AlertCircle size={14} /> Books unavailable (
+                                  {books.length - pickedCount})
+                                </button>
+                              )}
 
                             <AnimatePresence initial={false}>
                               {isExpanded && (

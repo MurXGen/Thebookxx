@@ -16376,7 +16376,7 @@ img[data-loaded="true"] {
 .phone-search-section {
   display: flex;
   justify-content: center;
-  padding: clamp(24px, 6vh, 64px) 0;
+  padding: 0;
 }
 .phone-card {
   width: 100%;
@@ -16462,9 +16462,365 @@ img[data-loaded="true"] {
   cursor: pointer;
   transition: background 0.15s var(--ease), color 0.15s var(--ease);
 }
+/* Paste icon: stays perfectly centered, no hover movement/animation */
+.phone-paste {
+  transition: none;
+}
 .phone-paste:hover {
+  background: transparent;
+  color: var(--tertiary, #fb8500);
+  transform: translateY(-50%);
+}
+
+/* ── Rapido-style login card (branded header + 3D books) ── */
+.rapido-card {
+  padding: 0;
+  gap: 0;
+  max-width: 100%;
+  margin-top: 26px; /* room for books popping out of the top */
+  overflow: visible;
+  align-items: stretch;
+  text-align: left;
+}
+.rapido-hero {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 22px 20px 26px;
+  background: linear-gradient(135deg, #fb8500 0%, #e06f00 100%);
+  color: #fff;
+  border-radius: 18px 18px 0 0;
+  overflow: visible;
+}
+.rapido-brand {
+  display: flex;
+  flex-direction: column;
+  z-index: 1;
+}
+.rapido-logo {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.6px;
+  line-height: 1;
+}
+.rapido-brand-sub {
+  font-size: 12px;
+  opacity: 0.92;
+  margin-top: 4px;
+}
+.rapido-books {
+  position: absolute;
+  right: 16px;
+  top: -30px; /* lift the fan above the orange header */
+  width: 160px;
+  height: 110px;
+  flex-shrink: 0;
+}
+.rapido-book {
+  position: absolute;
+  width: 58px;
+  height: 88px;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 14px 22px rgba(0, 0, 0, 0.32);
+  background: #fff;
+  transition: transform 0.2s ease;
+}
+.rapido-book img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.rapido-book.rb-0 {
+  left: 0;
+  top: 20px;
+  transform: rotate(-15deg);
+  z-index: 1;
+}
+.rapido-book.rb-1 {
+  left: 50px;
+  top: 2px;
+  transform: rotate(-1deg);
+  z-index: 3;
+}
+.rapido-book.rb-2 {
+  left: 100px;
+  top: 20px;
+  transform: rotate(15deg);
+  z-index: 2;
+}
+.rapido-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.rapido-input {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  background: var(--surface-2, #faf9f7);
+  padding-left: 12px;
+}
+.rapido-input:focus-within {
+  border-color: var(--tertiary, #fb8500);
+  box-shadow: var(--ring, 0 0 0 3px rgba(251, 133, 0, 0.22));
+  background: #fff;
+}
+.rapido-cc {
+  font-weight: 700;
+  color: var(--foreground);
+  font-size: 15px;
+  margin-right: 4px;
+  flex-shrink: 0;
+}
+.rapido-input .phone-card-input {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding-left: 4px !important;
+}
+.rapido-submit {
+  width: 100%;
+  padding: 14px 20px;
+  background: var(--tertiary, #fb8500) !important;
+  color: #fff;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  box-shadow: 0 6px 16px rgba(251, 133, 0, 0.28);
+  transition: box-shadow 0.18s ease, transform 0.18s ease,
+    background 0.18s ease;
+}
+.rapido-submit:hover:not(:disabled) {
+  box-shadow: 0 8px 20px rgba(251, 133, 0, 0.36);
+  transform: translateY(-1px);
+}
+.rapido-submit:disabled {
+  background: #ffd6a6 !important;
+  color: #fff;
+  opacity: 1;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* ── Edit-profile modal ── */
+.ep-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 4px 2px 8px;
+}
+.ep-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ep-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--dark-50);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.ep-field .admin-input {
+  padding: 11px 12px !important;
+  font-size: 14px;
+}
+.ep-hint {
+  font-size: 11.5px;
+  color: var(--dark-50);
+}
+.ep-addr-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 6px;
+  border-top: 1px solid var(--hairline);
+}
+.ep-addr-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.ep-change {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--tertiary, #fb8500);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.ep-addr-card {
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ep-addr-card.primary {
+  border-color: rgba(251, 133, 0, 0.5);
+  background: rgba(251, 133, 0, 0.05);
+}
+.ep-addr-line {
+  font-size: 13.5px;
+  color: var(--foreground);
+  line-height: 1.45;
+}
+.ep-addr-meta {
+  display: block;
+  font-size: 12px;
+  color: var(--dark-50);
+  margin-top: 2px;
+}
+.ep-primary-tag {
+  display: inline-block;
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--tertiary, #fb8500);
+  background: rgba(251, 133, 0, 0.12);
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+.ep-addr-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.ep-addr-row3 {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr 0.9fr;
+  gap: 8px;
+}
+.ep-addr-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ep-save {
+  width: 100%;
+  margin-top: 4px;
+}
+
+/* ── Rapido-style account menu ── */
+.profile-menu {
+  margin: 16px 0 8px;
+  background: #fff;
+  border: 1px solid var(--hairline);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.pm-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 15px 16px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--hairline);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--foreground);
+  cursor: pointer;
+  text-align: left;
+  text-decoration: none;
+}
+.pm-row:last-child {
+  border-bottom: none;
+}
+.pm-row:hover {
+  background: #faf7f2;
+}
+.pm-ic {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  color: var(--dark-50);
+  flex-shrink: 0;
+}
+.pm-label {
+  flex: 1;
+  min-width: 0;
+}
+.pm-arrow {
+  color: var(--dark-50);
+  flex-shrink: 0;
+}
+.pm-logout {
+  color: #dc2626;
+}
+.pm-logout .pm-ic,
+.pm-logout .pm-arrow {
+  color: #dc2626;
+}
+
+/* ── Verifying-number splash (3s) ── */
+.verify-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.verify-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+  padding: 0 24px;
+}
+.verify-phone-ic {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
   background: var(--tertiary-light-10, #fff3e6);
   color: var(--tertiary, #fb8500);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.verify-spinner {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 3px solid rgba(251, 133, 0, 0.2);
+  border-top-color: var(--tertiary, #fb8500);
+  animation: verifySpin 0.8s linear infinite;
+  margin: 4px 0;
+}
+@keyframes verifySpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.verify-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--foreground);
+  margin: 0;
+}
+.verify-num {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--tertiary, #fb8500);
+  margin: 0;
+}
+.verify-sub {
+  font-size: 13px;
+  color: var(--dark-50);
 }
 .phone-card-submit {
   flex: 0 0 auto;
@@ -18431,6 +18787,156 @@ img[data-loaded="true"] {
 }
 .mo-card:hover {
   box-shadow: var(--shadow-xs);
+}
+/* ── Inline scratch-card banner (homepage, not-logged-in) ── */
+.scratch-banner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 12px 16px 0;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: #fff;
+  border: 1px solid var(--hairline, #ececec);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.06);
+}
+.scratch-banner-x {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(0, 0, 0, 0.05);
+  color: #666;
+  cursor: pointer;
+}
+.scratch-banner-foil {
+  position: relative;
+  flex-shrink: 0;
+  width: 124px;
+  height: 96px;
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  /* Brand-colour foil with white text */
+  background: linear-gradient(150deg, #ffb14d 0%, #fb8500 55%, #e06f00 100%);
+  /* 3D "popped out of the card" look */
+  transform: translateY(-8px) rotate(-2.5deg);
+  box-shadow: 0 12px 22px rgba(251, 133, 0, 0.4),
+    inset 0 0 0 2px rgba(255, 255, 255, 0.45);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.scratch-banner-foil:hover {
+  transform: translateY(-10px) rotate(-2.5deg) scale(1.02);
+  box-shadow: 0 16px 26px rgba(251, 133, 0, 0.48),
+    inset 0 0 0 2px rgba(255, 255, 255, 0.5);
+}
+.scratch-banner-foil:active {
+  transform: translateY(-4px) rotate(-2.5deg) scale(0.99);
+}
+.scratch-banner-foil::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(
+    rgba(255, 255, 255, 0.5) 1px,
+    transparent 1.4px
+  );
+  background-size: 7px 7px;
+  opacity: 0.5;
+}
+.scratch-banner-foil-inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.28);
+  z-index: 1;
+}
+.sb-emoji {
+  font-size: 20px;
+  line-height: 1;
+}
+.sb-scratch-t {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #fff;
+  text-align: center;
+  line-height: 1.25;
+  padding: 0 8px;
+}
+.sb-foil-shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.55) 45%,
+    transparent 62%
+  );
+  transform: translateX(-120%);
+  animation: sbShine 3s ease-in-out infinite;
+  z-index: 2;
+}
+@keyframes sbShine {
+  0%,
+  60% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(120%);
+  }
+}
+.scratch-banner-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+}
+.scratch-banner-text strong {
+  font-size: clamp(16px, 4vw, 19px);
+  font-weight: 800;
+  color: var(--foreground, #1a1a1a);
+  line-height: 1.25;
+}
+.sb-star {
+  color: var(--tertiary, #fb8500);
+  font-weight: 800;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sb-foil-shine {
+    animation: none;
+  }
+}
+/* "Books unavailable" action on the order card */
+.mo-unavail-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  margin-top: 8px;
+  padding: 9px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #b42318;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 10px;
+  cursor: pointer;
+}
+.mo-unavail-btn:hover {
+  background: rgba(239, 68, 68, 0.14);
 }
 /* Payment-type tint: light blue for COD, light green for online/UPI. */
 .mo-card-cod {

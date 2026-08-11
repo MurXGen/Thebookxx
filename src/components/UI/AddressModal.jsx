@@ -2352,7 +2352,7 @@ export default function AddressModal({
               setUpiPhase("await");
               setShowUPIPayment(false);
             }}
-            onWhatsAppFallback={handleWhatsAppOrderClick}
+            onWhatsAppFallback={handleUPIWhatsAppVerify}
             onSwitchToCOD={switchToCODFromUPI}
             onCheckStatus={handleCheckUPIStatus}
           />

@@ -16,6 +16,8 @@ import HomeHero from "@/components/HomeHero";
 import LiveOrdersStrip from "@/components/LiveOrdersStrip";
 import QuickReadsPromo from "@/components/QuickReadsPromo";
 import InvoiceParamModal from "@/components/InvoiceParamModal";
+import IndependenceDayDecor from "@/components/IndependenceDayDecor";
+import ScratchTeaserCard from "@/components/ScratchTeaserCard";
 import ReviewGallery from "@/components/ReviewGallery";
 import { BooksSkeleton } from "@/components/UI/BookCardSkeleton";
 
@@ -124,6 +126,9 @@ export default function HomePage() {
 
       <Navbar />
 
+      {/* Independence Day ambient decor (ribbon + confetti) at the top */}
+      <IndependenceDayDecor banner={false} />
+
       {/* Static hero, provides the visible H1 + value prop above the carousel */}
       <HomeHero />
 
@@ -133,6 +138,11 @@ export default function HomePage() {
 
       {/* Review-photo trust gallery — replaces the Bestseller carousel */}
       <ReviewGallery />
+
+      {/* Independence Day greeting + scratch-to-win, placed below the reviews */}
+      <IndependenceDayDecor ribbon={false} confetti={false} />
+      <ScratchTeaserCard />
+
       {/* Floating ₹1 gift box temporarily removed */}
       {/* <OneRupeeHero /> */}
 

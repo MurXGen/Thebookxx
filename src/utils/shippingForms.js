@@ -3,6 +3,41 @@
 // address labels. Extracted so both the customer bag page and the
 // manage-orders dashboard can export the same shipping documents.
 
+import QRCode from "qrcode";
+
+// Draw a QR code for `text` onto the 2D context as filled dark modules, fitting
+// inside an `size`×`size` box at (x, y). Includes a white quiet-zone backing so
+// it scans cleanly on the printed label. Returns true if it drew.
+function drawQrCode(ctx, text, x, y, size) {
+  if (!text) return false;
+  try {
+    const qr = QRCode.create(String(text), { errorCorrectionLevel: "M" });
+    const n = qr.modules.size;
+    const data = qr.modules.data;
+    const quiet = 4; // modules of white margin
+    const cell = size / (n + quiet * 2);
+    // white backing
+    ctx.fillStyle = "#fff";
+    ctx.fillRect(x, y, size, size);
+    ctx.fillStyle = "#000";
+    for (let r = 0; r < n; r++) {
+      for (let col = 0; col < n; col++) {
+        if (data[r * n + col]) {
+          ctx.fillRect(
+            x + (col + quiet) * cell,
+            y + (r + quiet) * cell,
+            Math.ceil(cell),
+            Math.ceil(cell),
+          );
+        }
+      }
+    }
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 export const SENDER = {
   name: "TheBookX",
   addressLines: [
@@ -474,8 +509,12 @@ export function drawAddressLabel(c, startY, data, opts = {}) {
   c.text(customerName || "", aX, ay + capGap, { font: F.name });
   ay += nameGap;
   c.text("ADDRESS:", aX, ay, { font: F.caption, color: "#555" });
-  // Strip any appended "Pinned location: <url>" — that map link belongs on the
-  // dashboard, not on a printed courier label.
+  // Pull the pinned map link out of the address: it becomes a scannable QR on
+  // the label, while the printed text stays clean.
+  const pinMatch = (customerAddress || "").match(
+    /Pinned location:\s*(https?:\/\/\S+)/i,
+  );
+  const mapLink = pinMatch ? pinMatch[1] : "";
   const cleanAddress = (customerAddress || "")
     .replace(/,?\s*Pinned location:\s*https?:\/\/\S+/gi, "")
     .replace(/\s{2,}/g, " ")
@@ -504,6 +543,22 @@ export function drawAddressLabel(c, startY, data, opts = {}) {
   c.text(`+91 ${customerPhone || ""}`, aX + mobValX, ay, {
     font: F.value,
   });
+
+  // Map QR — when the customer pinned their location, a courier can scan it to
+  // navigate straight to the drop point. Sits at the bottom-right of the TO box.
+  if (mapLink) {
+    const qSize = big ? 118 : 84;
+    const qx = X + W - qSize - 14;
+    const qy = y + H_BODY - qSize - 22;
+    const drew = drawQrCode(c.ctx, mapLink, qx, qy, qSize);
+    if (drew) {
+      c.text("Scan receiver location", qx + qSize / 2, qy + qSize + 14, {
+        font: big ? "bold 11px sans-serif" : "bold 9px sans-serif",
+        align: "center",
+        color: "#333",
+      });
+    }
+  }
 
   y += H_BODY;
 

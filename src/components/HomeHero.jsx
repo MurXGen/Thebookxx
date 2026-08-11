@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { FaWhatsapp, FaInstagram } from "react-icons/fa";
 import { books } from "@/utils/book";
+import HomeGreeting from "@/components/HomeGreeting";
 
 const INSTAGRAM_URL = "https://www.instagram.com/thebookx.in/";
 const WHATSAPP_GROUP_URL =
@@ -49,6 +50,8 @@ export default function HomeHero() {
         <span className="home-hero-eyebrow">
           India’s friendly online bookstore
         </span>
+
+        <HomeGreeting />
 
         <h1 className="home-hero-title">
           Buy Books Online in India,{" "}

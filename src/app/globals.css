@@ -3753,6 +3753,235 @@ input {
   flex-direction: column;
   max-height: 82vh;
 }
+
+/* ── Merge customer orders ── */
+.mo-merge-strip {
+  background: linear-gradient(135deg, #fff7ed 0%, #fffbeb 100%);
+  border: 1px solid #fed7aa;
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+.mo-merge-strip-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #b45309;
+  margin-bottom: 10px;
+}
+.mo-merge-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.mo-merge-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px 7px 12px;
+  background: #fff;
+  border: 1px solid #fed7aa;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #9a3412;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.mo-merge-chip:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.18);
+}
+.mo-merge-chip-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  background: #ea580c;
+  color: #fff;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+}
+.merge-modal {
+  display: flex;
+  flex-direction: column;
+  max-height: 85vh;
+}
+.merge-orders-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 4px 0 12px;
+}
+.merge-oc {
+  border: 1px solid #eef0f2;
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: #fafafa;
+}
+.merge-oc-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.merge-oc-id {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: #374151;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.merge-oc-pay {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  padding: 2px 7px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+.merge-oc-pay.cod {
+  background: #fef3c7;
+  color: #b45309;
+}
+.merge-oc-pay.upi {
+  background: #dcfce7;
+  color: #15803d;
+}
+.merge-oc-total {
+  font-size: 14px;
+  font-weight: 800;
+  color: #111827;
+  flex-shrink: 0;
+}
+.merge-oc-status-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.merge-oc-status-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  flex-shrink: 0;
+}
+.merge-oc-status {
+  flex: 1;
+  min-width: 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 6px 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+  color: #111827;
+  cursor: pointer;
+}
+.merge-oc-books {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.merge-oc-book {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13px;
+}
+.merge-oc-book img {
+  width: 26px;
+  height: 34px;
+  object-fit: cover;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.merge-oc-ph {
+  width: 26px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #eef0f2;
+  border-radius: 4px;
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+.merge-oc-bname {
+  flex: 1;
+  min-width: 0;
+  color: #111827;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.merge-oc-bqty {
+  color: #6b7280;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.merge-oc-btotal {
+  font-weight: 700;
+  color: #111827;
+  flex-shrink: 0;
+}
+.wa-unavail-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 11px 14px;
+  margin-bottom: 10px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #b45309;
+  cursor: pointer;
+}
+.wa-unavail-btn:hover {
+  background: #ffedd5;
+}
+.merge-totals {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.merge-total-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #374151;
+}
+.merge-total-row.merge-grand {
+  border-top: 1px dashed #e5e7eb;
+  margin-top: 4px;
+  padding-top: 8px;
+  font-size: 16px;
+  font-weight: 800;
+  color: #111827;
+}
+.merge-note {
+  font-size: 12px;
+  color: #9ca3af;
+  margin: 0 0 12px;
+  line-height: 1.4;
+}
 .bulk-wa-next {
   display: inline-flex;
   align-items: center;
@@ -18574,6 +18803,30 @@ img[data-loaded="true"] {
   color: #fff;
   box-shadow: 0 12px 34px -10px rgba(0, 0, 0, 0.55);
   backdrop-filter: saturate(140%) blur(6px);
+}
+/* Inline variant — sits in the page flow above the account menu. */
+.install-app-wrap.inline {
+  position: static;
+  left: auto;
+  right: auto;
+  bottom: auto;
+  margin: 0;
+  width: 100%;
+  z-index: auto;
+  pointer-events: auto;
+}
+.install-app-wrap.inline .install-app-bar {
+  background: #fff;
+  color: var(--foreground, #111);
+  border: 1px solid var(--hairline, #f0f0f0);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  backdrop-filter: none;
+}
+.install-app-wrap.inline .install-app-sub {
+  color: #6b7280;
+}
+.install-app-wrap.inline .install-app-close {
+  color: #9ca3af;
 }
 .install-app-icon {
   flex: 0 0 auto;

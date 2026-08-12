@@ -66,6 +66,7 @@ import Link from "next/link";
 import { books as ALL_BOOKS } from "@/utils/book";
 import { creditWalletReward } from "@/utils/googleFormOrder";
 import { showToast } from "@/context/ToastContext";
+import { getDeliveryCharge } from "@/utils/cartOffers";
 
 // ---- Book cover lookup (order stores names; resolve to cover image) ----
 const BOOK_IMAGE_BY_NAME = (() => {
@@ -2750,6 +2751,9 @@ export default function ManageOrdersPage() {
   const [selectedIds, setSelectedIds] = useState([]); // bulk-selected order IDs (table)
   const [bulkStage, setBulkStage] = useState(null); // WhatsApp stage key for bulk send
   const [bulkSent, setBulkSent] = useState([]); // order IDs already messaged
+  const [mergeGroup, setMergeGroup] = useState(null); // customer group under merge preview
+  const [merging, setMerging] = useState(false); // merge write in progress
+  const [mergeStatusDrafts, setMergeStatusDrafts] = useState({}); // per-order status edits in merge modal
   const [waPick, setWaPick] = useState(""); // dropdown-selected stage (not yet triggered)
 
   const [accOpen, setAccOpen] = useState({
@@ -5123,6 +5127,157 @@ export default function ManageOrdersPage() {
   ).length;
   const pickedOrdersCount = filteredOrders.filter(isOrderFullyPicked).length;
 
+  // ── Merge orders of the same customer into one ──────────────────────────
+  // Groups the current (filtered) order list by phone number. Any customer
+  // with 2+ live (non-cancelled) orders can be merged into a single order:
+  // book lines are combined, the subtotal is summed, and delivery + COD
+  // handling (₹29) are recomputed on the merged total via the same checkout
+  // tiers used on the bag page.
+  const MERGE_COD_HANDLING_FEE = 29;
+  const normMergePhone = (p) => String(p || "").replace(/\D/g, "").slice(-10);
+  const isMergeableOrder = (o) =>
+    !/cancel|merged/i.test(String(o["Order Status"] || ""));
+
+  const mergeGroups = (() => {
+    const byPhone = {};
+    // Group strictly within the current filtered result set so a customer only
+    // appears when 2+ of their orders actually match the active filters.
+    filteredOrders.forEach((o) => {
+      if (!isMergeableOrder(o)) return;
+      const key = normMergePhone(o["Phone Number"]);
+      if (!key || key.length < 10) return;
+      (byPhone[key] = byPhone[key] || []).push(o);
+    });
+    return Object.entries(byPhone)
+      .filter(([, arr]) => arr.length >= 2)
+      .map(([phone, arr]) => ({ phone, orders: arr }));
+  })();
+
+  const computeMergedOrder = (group) => {
+    const grpOrders = group.orders;
+    // Combine identical books (same name + unit price) across all orders.
+    const map = new Map();
+    grpOrders.forEach((o) => {
+      (o.parsedBooks || []).forEach((b) => {
+        const key = `${b.name}__${b.price}`;
+        const prev =
+          map.get(key) ||
+          { name: b.name, price: b.price, quantity: 0, total: 0 };
+        prev.quantity += b.quantity || 0;
+        prev.total += b.total || b.price * (b.quantity || 0) || 0;
+        map.set(key, prev);
+      });
+    });
+    const books = Array.from(map.values());
+    const subtotal = books.reduce((s, b) => s + (b.total || 0), 0);
+    const isCOD = grpOrders.some((o) =>
+      /cash|cod/i.test(o["Payment Type"] || ""),
+    );
+    const deliveryCharge = getDeliveryCharge(subtotal, false, false);
+    const codFee = isCOD ? MERGE_COD_HANDLING_FEE : 0;
+    const total = subtotal + deliveryCharge + codFee;
+    // Most-recent order supplies the address / name for the merged order.
+    const primary = grpOrders.reduce((a, b) => {
+      const ta = getOrderDate(a)?.getTime() || 0;
+      const tb = getOrderDate(b)?.getTime() || 0;
+      return tb > ta ? b : a;
+    }, grpOrders[0]);
+    const booksListStr = books
+      .map(
+        (b, i) =>
+          `${i + 1}. ${b.name} | Qty: ${b.quantity} | ₹${b.price} each | Total: ₹${b.total}`,
+      )
+      .join("\n");
+    return {
+      orders: grpOrders,
+      books,
+      subtotal,
+      isCOD,
+      deliveryCharge,
+      codFee,
+      total,
+      primary,
+      booksListStr,
+    };
+  };
+
+  const performMerge = async () => {
+    if (!mergeGroup) return;
+    if (!SHEET_EDIT_API_URL) {
+      alert(
+        "Merge needs the Sheet edit endpoint. Deploy docs/sheet-edit-apps-script.gs and set SHEET_EDIT_API_URL.",
+      );
+      return;
+    }
+    const m = computeMergedOrder(mergeGroup);
+    const primary = m.primary;
+    const newId = `MRG${Date.now()}`;
+    setMerging(true);
+    try {
+      // 1 — Append the new merged order.
+      const now = new Date();
+      const params = new URLSearchParams();
+      params.append(FORM_FIELD_IDS.timestamp, formatDateForSheet(now));
+      params.append(FORM_FIELD_IDS.orderId, newId);
+      params.append(FORM_FIELD_IDS.customerName, primary["Customer Name"] || "");
+      params.append(FORM_FIELD_IDS.phoneNumber, primary["Phone Number"] || "");
+      params.append(FORM_FIELD_IDS.pincode, primary["Pincode"] || "");
+      params.append(FORM_FIELD_IDS.city, primary["City"] || "");
+      params.append(FORM_FIELD_IDS.state, primary["State"] || "");
+      params.append(FORM_FIELD_IDS.address, primary["Address"] || "");
+      params.append(FORM_FIELD_IDS.booksList, m.booksListStr);
+      params.append(FORM_FIELD_IDS.totalAmount, String(m.total));
+      params.append(
+        FORM_FIELD_IDS.paymentType,
+        m.isCOD
+          ? "Cash on Delivery (COD)"
+          : primary["Payment Type"] || "Prepaid",
+      );
+      params.append(
+        FORM_FIELD_IDS.deliveryType,
+        primary["Delivery Type"] || "Standard",
+      );
+      params.append(FORM_FIELD_IDS.deliveryCharge, String(m.deliveryCharge));
+      params.append(FORM_FIELD_IDS.giftWrap, "No");
+      params.append(FORM_FIELD_IDS.giftWrapCharge, "0");
+      params.append(
+        FORM_FIELD_IDS.offerApplied,
+        `Merged from ${m.orders.length} orders: ${m.orders
+          .map((o) => o["Order ID"])
+          .join(", ")}`,
+      );
+      params.append(FORM_FIELD_IDS.tinyUrl, "");
+      params.append(FORM_FIELD_IDS.orderStatus, "Processing");
+      params.append(FORM_FIELD_IDS.userAgent, navigator.userAgent);
+      params.append(FORM_FIELD_IDS.shippingId, "");
+      await fetch(FORM_SUBMIT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        body: params,
+      });
+
+      // 2 — Cancel each original order, noting where it went.
+      for (const o of m.orders) {
+        await updateOrderRow(o["Order ID"], {
+          "Order Status": "Cancelled",
+          "Comment for this order": `Merged into ${newId}`,
+        });
+      }
+
+      showToast(
+        `Merged ${m.orders.length} orders into ${newId} · ₹${m.total}`,
+        "success",
+      );
+      setMergeGroup(null);
+      setTimeout(fetchOrders, 1500);
+    } catch (e) {
+      console.error("Merge failed:", e);
+      alert("Merge failed. Please try again.");
+    } finally {
+      setMerging(false);
+    }
+  };
+
   // Reset the lazy window whenever the filtered set / pick-tab / sort changes.
   useEffect(() => {
     setOrdersVisible(ORDERS_BATCH);
@@ -7321,6 +7476,36 @@ export default function ManageOrdersPage() {
                     </div>
                   )}
 
+                  {mergeGroups.length > 0 && (
+                    <div className="mo-merge-strip">
+                      <div className="mo-merge-strip-head">
+                        <Package size={15} />
+                        <span>
+                          {mergeGroups.length} customer
+                          {mergeGroups.length > 1 ? "s" : ""} with multiple
+                          orders — tap to merge into one
+                        </span>
+                      </div>
+                      <div className="mo-merge-chips">
+                        {mergeGroups.map((g) => (
+                          <button
+                            key={g.phone}
+                            type="button"
+                            className="mo-merge-chip"
+                            onClick={() => setMergeGroup(g)}
+                          >
+                            <span className="mo-merge-chip-name">
+                              {g.orders[0]["Customer Name"] || g.phone}
+                            </span>
+                            <span className="mo-merge-chip-count">
+                              {g.orders.length}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   {orderView === "cards" ? (
                     <div className="admin-orders-grid">
                       {visibleOrders.map((order, idx) => {
@@ -7704,34 +7889,6 @@ export default function ManageOrdersPage() {
                                 )}
                               </button>
                             </div>
-
-                            {/* Books unavailable — shows when this order still
-                            has unpicked books; messages the customer the
-                            out-of-stock title(s) with swap/refund options. */}
-                            {books.length > 0 &&
-                              pickedCount < books.length && (
-                                <button
-                                  type="button"
-                                  className="mo-unavail-btn"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    const names = books
-                                      .filter(
-                                        (_b, i) =>
-                                          !pickChecked[bookKey(orderId, i)],
-                                      )
-                                      .map((b) => b.name);
-                                    openWhatsApp(
-                                      order["Phone Number"],
-                                      booksUnavailableMessage(order, names),
-                                    );
-                                  }}
-                                  title="Tell the customer these books are out of stock"
-                                >
-                                  <AlertCircle size={14} /> Books unavailable (
-                                  {books.length - pickedCount})
-                                </button>
-                              )}
 
                             <AnimatePresence initial={false}>
                               {isExpanded && (
@@ -8614,6 +8771,36 @@ export default function ManageOrdersPage() {
                 ))}
               </div>
 
+              {/* Books unavailable — only when this order still has unpicked
+                  books; messages the customer the out-of-stock title(s). */}
+              {(() => {
+                const wpBooks = waPickerOrder.parsedBooks || [];
+                const oid = waPickerOrder["Order ID"];
+                const unpicked = wpBooks.filter(
+                  (_b, i) => !pickChecked[bookKey(oid, i)],
+                );
+                if (unpicked.length === 0) return null;
+                return (
+                  <button
+                    type="button"
+                    className="wa-unavail-btn"
+                    onClick={() => {
+                      openWhatsApp(
+                        waPickerOrder["Phone Number"],
+                        booksUnavailableMessage(
+                          waPickerOrder,
+                          unpicked.map((b) => b.name),
+                        ),
+                      );
+                      setWaPickerOrder(null);
+                    }}
+                    title="Tell the customer these books are out of stock"
+                  >
+                    <AlertCircle size={15} /> Books unavailable ({unpicked.length})
+                  </button>
+                );
+              })()}
+
               {/* Send the printed-receipt / invoice link (opens the receipt
                   modal for the customer via thebookx.in?orderID=…). */}
               <button
@@ -8829,6 +9016,201 @@ export default function ManageOrdersPage() {
                   <Send size={16} />
                 </button>
               </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ===== Merge customer orders (slide-up) ===== */}
+      <AnimatePresence>
+        {mergeGroup && (
+          <motion.div
+            className="bill-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => {
+              if (merging) return;
+              setMergeGroup(null);
+              setMergeStatusDrafts({});
+            }}
+          >
+            <motion.div
+              className="bill-modal merge-modal"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {(() => {
+                const m = computeMergedOrder(mergeGroup);
+                return (
+                  <>
+                    <div className="bill-header">
+                      <span className="weight-600 font-16 flex flex-col">
+                        <span className="flex flex-row gap-8 items-center">
+                          <Package size={18} /> Merge orders
+                        </span>
+                        <span className="font-12 dark-50">
+                          {m.primary["Customer Name"] || m.primary["Phone Number"]}{" "}
+                          · {m.orders.length} orders → 1
+                        </span>
+                      </span>
+                      <span
+                        className="cursor-pointer"
+                        onClick={() => {
+                          if (merging) return;
+                          setMergeGroup(null);
+                          setMergeStatusDrafts({});
+                        }}
+                      >
+                        <X size={16} />
+                      </span>
+                    </div>
+
+                    <div className="merge-orders-list">
+                      {m.orders.map((o) => {
+                        const oBooks = o.parsedBooks || [];
+                        const oTotal =
+                          parseFloat(o["Total Amount"]) ||
+                          o.revenue ||
+                          oBooks.reduce((s, b) => s + (b.total || 0), 0);
+                        const oCOD = /cash|cod/i.test(
+                          o["Payment Type"] || "",
+                        );
+                        return (
+                          <div className="merge-oc" key={o["Order ID"]}>
+                            <div className="merge-oc-head">
+                              <span className="merge-oc-id">
+                                {o["Order ID"]}
+                              </span>
+                              <span
+                                className={`merge-oc-pay ${oCOD ? "cod" : "upi"}`}
+                              >
+                                {oCOD ? "COD" : "Prepaid"}
+                              </span>
+                              <span className="merge-oc-total">₹{oTotal}</span>
+                            </div>
+                            <div className="merge-oc-status-row">
+                              <span className="merge-oc-status-label">
+                                Status
+                              </span>
+                              <select
+                                className="bulk-wa-select merge-oc-status"
+                                value={
+                                  mergeStatusDrafts[o["Order ID"]] ??
+                                  o.status ??
+                                  o["Order Status"] ??
+                                  "Processing"
+                                }
+                                title="Change & save this order's status"
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  const oid = o["Order ID"];
+                                  setMergeStatusDrafts((p) => ({
+                                    ...p,
+                                    [oid]: val,
+                                  }));
+                                  patchLocalOrder(oid, {
+                                    "Order Status": val,
+                                    status: val,
+                                  });
+                                  updateOrderRow(oid, {
+                                    "Order Status": val,
+                                  }).then(() => setTimeout(fetchOrders, 1300));
+                                }}
+                              >
+                                {TRACK_STATUS_OPTIONS.map((s) => (
+                                  <option key={s} value={s}>
+                                    {s}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                            <div className="merge-oc-books">
+                              {oBooks.map((b, i) => {
+                                const img = getBookImage(b.name);
+                                return (
+                                  <div className="merge-oc-book" key={i}>
+                                    {img ? (
+                                      <img src={img} alt="" loading="lazy" />
+                                    ) : (
+                                      <span className="merge-oc-ph">
+                                        <Package size={12} />
+                                      </span>
+                                    )}
+                                    <span className="merge-oc-bname">
+                                      {b.name}
+                                    </span>
+                                    <span className="merge-oc-bqty">
+                                      ×{b.quantity}
+                                    </span>
+                                    <span className="merge-oc-btotal">
+                                      ₹{b.total}
+                                    </span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    <div className="merge-totals">
+                      <div className="merge-total-row">
+                        <span>Combined subtotal ({m.books.length} titles)</span>
+                        <span>₹{m.subtotal}</span>
+                      </div>
+                      <div className="merge-total-row">
+                        <span>Delivery / handling</span>
+                        <span>
+                          {m.deliveryCharge === 0
+                            ? "FREE"
+                            : `₹${m.deliveryCharge}`}
+                        </span>
+                      </div>
+                      {m.isCOD && (
+                        <div className="merge-total-row">
+                          <span>COD handling</span>
+                          <span>₹{m.codFee}</span>
+                        </div>
+                      )}
+                      <div className="merge-total-row merge-grand">
+                        <span>
+                          Total {m.isCOD ? "(COD)" : "(Prepaid)"}
+                        </span>
+                        <span>₹{m.total}</span>
+                      </div>
+                    </div>
+
+                    <p className="merge-note">
+                      A new merged order will be created and the{" "}
+                      {m.orders.length} original orders will be marked
+                      Cancelled.
+                    </p>
+
+                    <button
+                      type="button"
+                      className="pri-big-btn width100"
+                      disabled={merging}
+                      onClick={performMerge}
+                    >
+                      {merging ? (
+                        <>
+                          <RefreshCw size={15} className="cr-spin" /> Merging…
+                        </>
+                      ) : (
+                        <>
+                          <Package size={15} /> Merge into one order · ₹
+                          {m.total}
+                        </>
+                      )}
+                    </button>
+                  </>
+                );
+              })()}
             </motion.div>
           </motion.div>
         )}

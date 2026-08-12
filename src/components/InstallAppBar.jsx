@@ -11,7 +11,7 @@ import { trackEvent } from "@/lib/ga";
  * - iOS Safari (no beforeinstallprompt): reveals a short "Add to Home Screen" hint.
  * Hidden when the app is already installed / running standalone, or dismissed.
  */
-export default function InstallAppBar() {
+export default function InstallAppBar({ inline = false }) {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [visible, setVisible] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
@@ -80,10 +80,10 @@ export default function InstallAppBar() {
   return (
     <AnimatePresence>
       <motion.div
-        className="install-app-wrap"
-        initial={{ opacity: 0, y: 24 }}
+        className={`install-app-wrap${inline ? " inline" : ""}`}
+        initial={{ opacity: 0, y: inline ? 8 : 24 }}
         animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 24 }}
+        exit={{ opacity: 0, y: inline ? 8 : 24 }}
         transition={{ duration: 0.35, ease: [0.32, 0.72, 0, 1] }}
       >
         <div className="install-app-bar">
@@ -91,7 +91,9 @@ export default function InstallAppBar() {
             <Download size={18} />
           </span>
           <div className="install-app-text">
-            <span className="install-app-title">Install the TheBookX app</span>
+            <span className="install-app-title">
+              {inline ? "Install app" : "Install the TheBookX app"}
+            </span>
             <span className="install-app-sub">
               Faster shopping, order tracking &amp; offers
             </span>

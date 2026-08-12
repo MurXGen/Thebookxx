@@ -1445,14 +1445,10 @@ Please cancel this order. Thank you `;
         </div>
       )}
 
-      <InstallAppBar />
       <div className="section-680 flex flex-col gap-24">
         {/* Header */}
         <div className="orders-header profile-header-row">
-          <PageHeader
-            title="Profile"
-            subtitle="Manage your profile and orders history."
-          />
+          <PageHeader title="Profile" />
           {!showPhoneInput && (
             <button
               type="button"
@@ -1747,6 +1743,9 @@ Please cancel this order. Thank you `;
             </button>
           </div>
         )}
+
+        {/* Install app — inline card just above the account menu */}
+        {!showPhoneInput && !verifying && !loading && <InstallAppBar inline />}
 
         {/* ── Rapido-style account menu ── */}
         {!showPhoneInput && !verifying && !loading && (

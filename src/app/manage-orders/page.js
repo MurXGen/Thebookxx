@@ -215,7 +215,7 @@ const FORM_SUBMIT_URL =
 // docs/sheet-edit-apps-script.gs and paste its /exec URL here. Leave empty to
 // keep the old append-on-edit behaviour.
 const SHEET_EDIT_API_URL =
-  "https://script.google.com/macros/s/AKfycbzYyEYufYZBP4pV-sJvgTvTBrcIb3iNUH3BgDD31zCL9xiULoKWnATFfad2awNMgvyC/exec";
+  "https://script.google.com/macros/s/AKfycbzHQ2gs25qh7stuSdWWV_g4r3Im_6HUgUxxcbahkyWsY6d-VjO0ppwgiezokxHd5fqzKA/exec";
 
 // Field mappings for Google Form
 const FORM_FIELD_IDS = {
@@ -4545,41 +4545,36 @@ export default function ManageOrdersPage() {
     }
 
     const now = new Date();
-    const params = new URLSearchParams();
-    params.append(FORM_FIELD_IDS.timestamp, formatDateForSheet(now));
-    params.append(
-      FORM_FIELD_IDS.orderId,
-      formData.orderId || `ORD${Date.now()}`,
-    );
-    params.append(FORM_FIELD_IDS.customerName, formData.customerName);
-    params.append(FORM_FIELD_IDS.phoneNumber, formData.phoneNumber);
-    params.append(FORM_FIELD_IDS.pincode, formData.pincode);
-    params.append(FORM_FIELD_IDS.city, formData.city);
-    params.append(FORM_FIELD_IDS.state, formData.state);
-    params.append(FORM_FIELD_IDS.address, formData.address);
-    params.append(FORM_FIELD_IDS.booksList, formData.booksList);
-    params.append(FORM_FIELD_IDS.totalAmount, formData.totalAmount);
-    params.append(FORM_FIELD_IDS.paymentType, formData.paymentType);
-    params.append(FORM_FIELD_IDS.deliveryType, formData.deliveryType);
-    params.append(FORM_FIELD_IDS.deliveryCharge, formData.deliveryCharge);
-    params.append(FORM_FIELD_IDS.giftWrap, formData.giftWrap);
-    params.append(FORM_FIELD_IDS.giftWrapCharge, formData.giftWrapCharge);
-    params.append(FORM_FIELD_IDS.offerApplied, formData.offerApplied);
-    params.append(FORM_FIELD_IDS.tinyUrl, formData.tinyUrl);
-    params.append(FORM_FIELD_IDS.orderStatus, formData.orderStatus);
-    params.append(FORM_FIELD_IDS.userAgent, navigator.userAgent);
-    params.append(FORM_FIELD_IDS.shippingId, formData.shippingId);
+    // Append directly to the sheet (header-keyed) via the Apps Script.
+    const fields = {
+      Timestamp: formatDateForSheet(now),
+      "Order ID": formData.orderId || `ORD${Date.now()}`,
+      "Customer Name": formData.customerName,
+      "Phone Number": formData.phoneNumber,
+      Pincode: formData.pincode,
+      City: formData.city,
+      State: formData.state,
+      Address: formData.address,
+      "Books List": formData.booksList,
+      "Total Amount": formData.totalAmount,
+      "Payment Type": formData.paymentType,
+      "Delivery Type": formData.deliveryType,
+      "Delivery Charge": formData.deliveryCharge,
+      "Gift Wrap": formData.giftWrap,
+      "Gift Wrap Charge": formData.giftWrapCharge,
+      "Offer Applied": formData.offerApplied,
+      TinyURL: formData.tinyUrl,
+      "Order Status": formData.orderStatus,
+      "User Agent": navigator.userAgent,
+      "Shipping ID": formData.shippingId,
+    };
 
     try {
-      await fetch(FORM_SUBMIT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        body: params,
-      });
+      await appendOrderRow(fields);
       alert("Order added successfully!");
       setShowAddModal(false);
       resetForm();
-      fetchOrders();
+      setTimeout(fetchOrders, 1300);
     } catch (error) {
       console.error("Error adding order:", error);
       alert("Failed to add order");
@@ -4591,6 +4586,21 @@ export default function ManageOrdersPage() {
     const body = new URLSearchParams({
       action: "update",
       orderId,
+      data: JSON.stringify(fields),
+    });
+    await fetch(SHEET_EDIT_API_URL, {
+      method: "POST",
+      mode: "no-cors",
+      body,
+    });
+  };
+
+  // Append a NEW order row via the Apps Script (action=append). `fields` is
+  // keyed by sheet-column header (e.g. { "Order ID": "...", ... }). Used instead
+  // of the Google Form, which rejects submissions when a question is Required.
+  const appendOrderRow = async (fields) => {
+    const body = new URLSearchParams({
+      action: "append",
       data: JSON.stringify(fields),
     });
     await fetch(SHEET_EDIT_API_URL, {
@@ -5214,46 +5224,33 @@ export default function ManageOrdersPage() {
     const newId = `MRG${Date.now()}`;
     setMerging(true);
     try {
-      // 1 — Append the new merged order.
+      // 1 — Append the new merged order (header-keyed, via Apps Script).
       const now = new Date();
-      const params = new URLSearchParams();
-      params.append(FORM_FIELD_IDS.timestamp, formatDateForSheet(now));
-      params.append(FORM_FIELD_IDS.orderId, newId);
-      params.append(FORM_FIELD_IDS.customerName, primary["Customer Name"] || "");
-      params.append(FORM_FIELD_IDS.phoneNumber, primary["Phone Number"] || "");
-      params.append(FORM_FIELD_IDS.pincode, primary["Pincode"] || "");
-      params.append(FORM_FIELD_IDS.city, primary["City"] || "");
-      params.append(FORM_FIELD_IDS.state, primary["State"] || "");
-      params.append(FORM_FIELD_IDS.address, primary["Address"] || "");
-      params.append(FORM_FIELD_IDS.booksList, m.booksListStr);
-      params.append(FORM_FIELD_IDS.totalAmount, String(m.total));
-      params.append(
-        FORM_FIELD_IDS.paymentType,
-        m.isCOD
+      await appendOrderRow({
+        Timestamp: formatDateForSheet(now),
+        "Order ID": newId,
+        "Customer Name": primary["Customer Name"] || "",
+        "Phone Number": primary["Phone Number"] || "",
+        Pincode: primary["Pincode"] || "",
+        City: primary["City"] || "",
+        State: primary["State"] || "",
+        Address: primary["Address"] || "",
+        "Books List": m.booksListStr,
+        "Total Amount": String(m.total),
+        "Payment Type": m.isCOD
           ? "Cash on Delivery (COD)"
           : primary["Payment Type"] || "Prepaid",
-      );
-      params.append(
-        FORM_FIELD_IDS.deliveryType,
-        primary["Delivery Type"] || "Standard",
-      );
-      params.append(FORM_FIELD_IDS.deliveryCharge, String(m.deliveryCharge));
-      params.append(FORM_FIELD_IDS.giftWrap, "No");
-      params.append(FORM_FIELD_IDS.giftWrapCharge, "0");
-      params.append(
-        FORM_FIELD_IDS.offerApplied,
-        `Merged from ${m.orders.length} orders: ${m.orders
+        "Delivery Type": primary["Delivery Type"] || "Standard",
+        "Delivery Charge": String(m.deliveryCharge),
+        "Gift Wrap": "No",
+        "Gift Wrap Charge": "0",
+        "Offer Applied": `Merged from ${m.orders.length} orders: ${m.orders
           .map((o) => o["Order ID"])
           .join(", ")}`,
-      );
-      params.append(FORM_FIELD_IDS.tinyUrl, "");
-      params.append(FORM_FIELD_IDS.orderStatus, "Processing");
-      params.append(FORM_FIELD_IDS.userAgent, navigator.userAgent);
-      params.append(FORM_FIELD_IDS.shippingId, "");
-      await fetch(FORM_SUBMIT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        body: params,
+        TinyURL: "",
+        "Order Status": "Processing",
+        "User Agent": navigator.userAgent,
+        "Shipping ID": "",
       });
 
       // 2 — Cancel each original order, noting where it went.

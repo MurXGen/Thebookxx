@@ -3,6 +3,41 @@
 const GOOGLE_FORM_ORDER_URL =
   "https://docs.google.com/forms/d/e/1FAIpQLSc3dUHr_S01ODuvQpok_8n0tG0ezfUPD5NLK0M_tyms25I-eQ/formResponse";
 
+// Google Apps Script web-app (/exec) that writes directly to the orders sheet.
+// New orders are appended through this (action=append) instead of the Google
+// Form, because the Form silently rejects the whole submission whenever a
+// question is toggled Required — which was dropping live orders. Must match the
+// SHEET_EDIT_API_URL deployed for the manage-orders dashboard.
+const SHEET_EDIT_API_URL =
+  "https://script.google.com/macros/s/AKfycbzHQ2gs25qh7stuSdWWV_g4r3Im_6HUgUxxcbahkyWsY6d-VjO0ppwgiezokxHd5fqzKA/exec";
+
+// Internal orderData keys → the sheet's actual column headers. The Apps Script
+// append maps each value into the matching header column.
+const SHEET_HEADERS = {
+  orderId: "Order ID",
+  customerName: "Customer Name",
+  phone: "Phone Number",
+  pincode: "Pincode",
+  city: "City",
+  state: "State",
+  address: "Address",
+  booksList: "Books List",
+  totalAmount: "Total Amount",
+  wallet: "Wallet",
+  paymentType: "Payment Type",
+  deliveryType: "Delivery Type",
+  deliveryCharge: "Delivery Charge",
+  giftWrap: "Gift Wrap",
+  giftWrapCharge: "Gift Wrap Charge",
+  offerApplied: "Offer Applied",
+  tinyUrl: "TinyURL",
+  orderStatus: "Order Status",
+  advancePaid: "Advance Paid",
+  timestamp: "Timestamp",
+  userAgent: "User Agent",
+  shippingId: "Shipping ID",
+};
+
 // Field IDs from your Google Form URL
 const FORM_FIELD_IDS = {
   orderId: "entry.1840449230",
@@ -53,11 +88,45 @@ const getDeliveryLabelValue = (totalDiscounted, isFasterDelivery) => {
   return "Standard Delivery";
 };
 
-// Submit order data to Google Form
+// Submit a new order by APPENDING a row via the Apps Script web app. This
+// replaces the Google Form POST, which rejects the whole submission whenever a
+// form question is toggled Required (State, Wallet, etc.) and was silently
+// dropping live COD/UPI orders. Falls back to the Google Form if the Apps
+// Script endpoint isn't configured.
 export const submitOrderToGoogleForm = async (orderData) => {
+  // Build a payload keyed by the sheet's real column headers.
+  const data = {};
+  Object.keys(orderData).forEach((key) => {
+    const header = SHEET_HEADERS[key];
+    if (!header) return;
+    const val = orderData[key];
+    if (val === undefined || val === null) return;
+    data[header] = String(val);
+  });
+
+  // Preferred path: append straight to the sheet via Apps Script.
+  if (SHEET_EDIT_API_URL) {
+    try {
+      const body = new URLSearchParams({
+        action: "append",
+        data: JSON.stringify(data),
+      });
+      await fetch(SHEET_EDIT_API_URL, {
+        method: "POST",
+        mode: "no-cors",
+        body,
+      });
+      console.log("Appended order to sheet via Apps Script:", orderData);
+      return { success: true };
+    } catch (error) {
+      console.error("Apps Script append failed, trying Google Form:", error);
+      // fall through to the Form as a last resort
+    }
+  }
+
+  // Fallback: original Google Form submission.
   try {
     const params = new URLSearchParams();
-
     Object.keys(orderData).forEach((key) => {
       if (
         FORM_FIELD_IDS[key] &&
@@ -68,20 +137,16 @@ export const submitOrderToGoogleForm = async (orderData) => {
         params.append(FORM_FIELD_IDS[key], String(orderData[key]));
       }
     });
-
-    const response = await fetch(GOOGLE_FORM_ORDER_URL, {
+    await fetch(GOOGLE_FORM_ORDER_URL, {
       method: "POST",
       mode: "no-cors",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: params.toString(),
     });
-
-    console.log("Submitted order to Google Form:", orderData);
+    console.log("Submitted order to Google Form (fallback):", orderData);
     return { success: true };
   } catch (error) {
-    console.error("Error submitting order to Google Form:", error);
+    console.error("Error submitting order:", error);
     return { success: false, error };
   }
 };

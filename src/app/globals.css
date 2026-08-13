@@ -2595,12 +2595,6 @@ input {
   height: 18px;
 }
 
-.viewbag-bill {
-  padding: var(--px-24);
-  border: 1px solid var(--dark-20);
-  font-size: var(--px-16);
-}
-
 /* Mask container */
 
 .confetti-mask {
@@ -8346,20 +8340,6 @@ textarea.sec-mid-btn,
 
   .gift-wrap-amount {
     font-size: var(--px-12);
-  }
-
-  .colist-title {
-    font-size: 22px;
-  }
-
-  .colist-icon {
-    width: 56px;
-    height: 56px;
-    font-size: var(--px-32);
-  }
-
-  .colist-stats {
-    grid-template-columns: 1fr;
   }
 
   .order-header {

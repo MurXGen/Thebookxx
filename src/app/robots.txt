@@ -6,8 +6,6 @@ Disallow: /_next/
 Disallow: /admin/
 Disallow: /manage-orders
 Disallow: /manage-orders/
-Disallow: /colist
-Disallow: /colist/
 
 # Sitemap location
 Sitemap: https://thebookx.in/sitemap.xml
@@ -23,8 +21,6 @@ User-agent: Googlebot
 Allow: /
 Disallow: /manage-orders
 Disallow: /manage-orders/
-Disallow: /colist
-Disallow: /colist/
 Crawl-delay: 1
 
 # Image bots - allow all image folders with wildcards

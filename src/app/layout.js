@@ -6,6 +6,7 @@ import AnalyticsTracker from "@/components/AnalyticsTracker";
 import { ToastProvider } from "@/context/ToastContext";
 import RegisterSW from "@/components/RegisterSW";
 import GlobalHaptics from "@/components/UI/GlobalHaptics";
+import ExitGuard from "@/components/UI/ExitGuard";
 import RainEffect from "@/components/UI/RainEffect";
 import { PLProvider } from "@/context/PLContext";
 
@@ -20,7 +21,7 @@ const poppins = Poppins({
 });
 
 // Paths that are admin-only, analytics, pixels, and indexing all disabled here
-const ADMIN_PATHS = ["/manage-orders", "/colist"];
+const ADMIN_PATHS = ["/manage-orders"];
 
 /* SEO Metadata - Essential Only */
 export const metadata = {
@@ -52,8 +53,8 @@ export const metadata = {
   creator: "TheBookX",
   publisher: "TheBookX",
 
-  // Default to indexable, the page-level layouts for /manage-orders and /colist
-  // override this with their own robots: { index: false } metadata.
+  // Default to indexable, the page-level layout for /manage-orders overrides
+  // this with its own robots: { index: false } metadata.
   robots: {
     index: true,
     follow: true,
@@ -237,6 +238,7 @@ export default function RootLayout({ children }) {
             <PLProvider>
               <RegisterSW />
               <GlobalHaptics />
+              <ExitGuard />
               <AnalyticsTracker />
               {/* Monsoon rain effect — temporarily disabled. Re-enable by
                   uncommenting the line below. */}

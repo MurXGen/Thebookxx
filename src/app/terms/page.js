@@ -437,11 +437,8 @@ export default function TermsAndConditions() {
             <dt>Udyam Registration</dt>
             <dd>UDYAM-MH-19-0386866</dd>
 
-            <dt>Registered Address</dt>
-            <dd>
-              Room No 107, A Wing, Thevar Suryoodaya CHS, UM Thevar Marg, Sion
-              Mahim Link Road, Dharavi, Mumbai, Maharashtra 400017, India
-            </dd>
+            <dt>Registered Location</dt>
+            <dd>Mumbai, Maharashtra, India</dd>
 
             <dt>Email</dt>
             <dd>

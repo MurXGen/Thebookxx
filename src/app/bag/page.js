@@ -652,53 +652,13 @@ _Thank you for shopping with TheBookX! _
     }
   };
 
-  const generateViewBagLinkWithDetails = (
-    addressData,
-    paymentType,
-    fasterDeliveryChoice,
-    giftWrapSelected,
-  ) => {
-    if (!siteOrigin) return "";
-
-    const items = cart.map((item) => `${item.id}:${item.qty}`).join(",");
-    const orderId = `ORD${Date.now()}`;
-
-    const deliveryCharge = getDeliveryChargeByChoice(fasterDeliveryChoice);
-    const giftWrapAmount = giftWrapSelected ? GIFT_WRAP_CHARGE : 0;
-    const codFee = getCodFeeForPayment(paymentType);
-    const totalWithDelivery =
-      finalPayable + deliveryCharge + giftWrapAmount + codFee;
-
-    const orderDetails = {
-      orderId,
-      name: addressData.name || "",
-      phone: addressData.phone || "",
-      address: addressData.address || "",
-      area: addressData.area || "",
-      city: addressData.city || "",
-      district: addressData.district || "",
-      state: addressData.state || "",
-      pincode: addressData.pincode || "",
-      paymentMethod: paymentType,
-      fasterDelivery: fasterDeliveryChoice,
-      deliveryCharge,
-      deliveryLabel: getDeliveryLabel(
-        totalDiscounted,
-        fasterDeliveryChoice,
-        hasOneRupeeItem,
-      ),
-      giftWrap: giftWrapSelected,
-      giftWrapCharge: giftWrapAmount,
-      codHandlingFee: codFee,
-      orderDate: new Date().toISOString(),
-      totalAmount: totalWithDelivery,
-    };
-
-    const encodedDetails = encodeURIComponent(JSON.stringify(orderDetails));
-    return `${siteOrigin}/view-bag?items=${encodeURIComponent(items)}&order=${encodedDetails}`;
-  };
+  // The /view-bag order-preview page was removed. This now returns an empty
+  // string so no order link is generated or shared (kept as a no-op so the
+  // existing call sites in the checkout flow stay intact).
+  const generateViewBagLinkWithDetails = () => "";
 
   const shortenUrl = async (longUrl) => {
+    if (!longUrl) return ""; // nothing to shorten (order link removed)
     try {
       const response = await fetch(
         `https://tinyurl.com/api-create.php?url=${encodeURIComponent(longUrl)}`,

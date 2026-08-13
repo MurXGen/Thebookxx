@@ -9,14 +9,14 @@ export const getCartOffers = (hasOneRupeeItem = false) => {
     return [
       {
         min: 0,
-        target: 499,
+        target: 399,
         type: "free_shipping",
         reward: "Free delivery",
         message: "Add ₹{remaining} more to unlock Free delivery",
         icon: "gift",
       },
       {
-        min: 499,
+        min: 399,
         target: 650,
         type: "flat",
         value: 100,
@@ -109,20 +109,29 @@ export const getDeliveryCharge = (
   let standard;
 
   if (hasOneRupeeItem) {
-    // ₹1-book carts always carry a handling & care fee.
-    // Below ₹499 → flat ₹99; ₹499 and above → 20% of the order.
-    standard = amt < 499 ? 99 : round(amt * 0.2);
-  } else {
-    // Normal carts: delivery is FREE above ₹200; the amounts above ₹200 are
-    // handling & care fees.
-    if (amt < 200) {
-      standard = 79; // ₹79 delivery below ₹200
-    } else if (amt <= 500) {
-      standard = 134; // ₹200–500 → ₹134 handling & care
-    } else if (amt <= 1000) {
-      standard = round(amt * 0.2); // ₹500–1000 → 20%
+    // ₹1-book carts:
+    //   below ₹399 → flat ₹100 delivery
+    //   ₹399–499  → FREE delivery
+    //   above ₹499 → handling & care fee = 20% of the order, capped at ₹159
+    //                (mirrors the weight bands: ~₹100 around ₹500, ₹159 by ~₹800+)
+    if (amt < 399) {
+      standard = 100;
+    } else if (amt <= 499) {
+      standard = 0;
     } else {
-      standard = round(amt * 0.3); // above ₹1000 → 30%
+      standard = Math.min(round(amt * 0.2), 159);
+    }
+  } else {
+    // Normal carts:
+    //   below ₹199 → ₹69 delivery
+    //   ₹199–499  → FREE delivery
+    //   above ₹499 → handling & care fee = 20% of the order
+    if (amt < 199) {
+      standard = 69;
+    } else if (amt <= 499) {
+      standard = 0;
+    } else {
+      standard = round(amt * 0.2);
     }
   }
 
@@ -146,14 +155,15 @@ export const getDeliveryLabel = (
   const express = isFasterDelivery ? " · Express" : "";
 
   if (hasOneRupeeItem) {
-    // ₹1-book carts always show a handling & care fee.
-    return "Handling & Care" + express;
+    if (amt < 399) return "Delivery" + express; // ₹100 flat
+    if (amt <= 499) return "Free Delivery" + express;
+    return "Handling & Care" + express; // 20% capped ₹159
   }
 
-  // Normal carts: below ₹200 it's a delivery charge; ₹200+ delivery is free
-  // and any amount is a handling & care fee.
-  if (amt < 200) return "Delivery" + express;
-  return "Handling & Care" + express;
+  // Normal carts
+  if (amt < 199) return "Delivery" + express; // ₹69
+  if (amt <= 499) return "Free Delivery" + express;
+  return "Handling & Care" + express; // 20%
 };
 
 // Get delivery description
@@ -168,13 +178,15 @@ export const getDeliveryDescription = (
     : "";
 
   if (hasOneRupeeItem) {
-    if (amt < 499)
-      return "Handling & care fee for the ₹1 book offer." + fast;
-    return "Handling & care — 20% of the order value." + fast;
+    if (amt < 399)
+      return "₹100 delivery — free on orders above ₹399." + fast;
+    if (amt <= 499) return "Free delivery on this order." + fast;
+    return "Handling & care fee — 20% of the order (max ₹159)." + fast;
   }
 
-  if (amt < 200) return "₹79 delivery — free on orders above ₹200." + fast;
-  return "Delivery is free above ₹200; a handling & care fee applies." + fast;
+  if (amt < 199) return "₹69 delivery — free on orders above ₹199." + fast;
+  if (amt <= 499) return "Free delivery on this order." + fast;
+  return "Handling & care fee — 20% of the order value." + fast;
 };
 
 // Get original charge before discount

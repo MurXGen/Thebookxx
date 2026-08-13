@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         TheBookX · India Post Autofill
 // @namespace    thebookx.in
-// @version      2.8.0
+// @version      2.11.0
 // @description  Fill the India Post "Domestic Mail Booking" wizard from a TheBookX order. Copy an order's data in the Book-online modal, then click "Fill this step" on each stage of the government form.
 // @match        https://app.indiapost.gov.in/*
 // @run-at       document-idle
@@ -179,9 +179,10 @@
   const SENDER = {
     senderFirstName: "TheBookX",
     senderMobileNumber: "7977960242",
-    senderAddressLine1: "Uskillbook, TheBookX",
-    senderAddressLine2: "Near Shilpa Sarees, Opp Apollo Pharmacy",
-    senderAddressLine3: "Maheshwari Udyan Circle, Matunga", // landmark
+    // India Post caps each address line at 30 characters, so keep them short.
+    senderAddressLine1: "Near Shilpa Sarees",
+    senderAddressLine2: "Opp Apollo Pharmacy",
+    senderAddressLine3: "Maheshwari Udyan Circle", // landmark
     senderPincode: "400019",
     senderCity: "Mumbai",
     senderState: "Maharashtra",
@@ -258,24 +259,18 @@
     // Names must stay within 30 characters.
     const cap30 = (s) => String(s || "").slice(0, 30);
 
-    // 2 — Sender (TheBookX) WITHOUT pincode (you enter it; city/state
-    // auto-fill from it). Company name mirrors the first name.
-    byId("senderFirstName", cap30(SENDER.senderFirstName), log);
-    byId("senderCompanyName", cap30(SENDER.senderFirstName), log);
-    byId("senderMobileNumber", SENDER.senderMobileNumber, log);
-    byId("senderAddressLine1", SENDER.senderAddressLine1, log);
-    byId("senderAddressLine2", SENDER.senderAddressLine2, log);
-    byId("senderAddressLine3", SENDER.senderAddressLine3, log); // landmark
+    // Sender is managed on India Post's side ("save address"), so we don't
+    // touch it — only the recipient is filled.
 
-    // 3 — Recipient (the customer) fully, including pincode
+    // 2 — Recipient (the customer) fully, including pincode
     const nm = splitName(d.name);
     byId("recepientFirstName", cap30(nm.first), log);
     if (nm.last) byId("recepientLastName", cap30(nm.last), log);
     byId("recepientCompanyName", cap30(nm.first), log);
     byId("recepientMobileNumber", d.mobile, log);
-    byId("recepientAddressLine1", d.addr1, log);
-    byId("recepientAddressLine2", d.addr2, log);
-    byId("recepientAddressLine3", d.landmark, log); // landmark
+    byId("recepientAddressLine1", cap30(d.addr1), log);
+    byId("recepientAddressLine2", cap30(d.addr2), log);
+    byId("recepientAddressLine3", cap30(d.landmark), log); // landmark
     // Pincode fields open the "Pincode Search" popup — left for you to complete
     // manually (city/state auto-fill from them).
 

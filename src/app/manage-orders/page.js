@@ -1166,8 +1166,9 @@ function IndiaPostSheet({
           codAmount: isCOD ? String(codNet) : "",
           name,
           mobile: String(o["Phone Number"] || ""),
+          // Recipient address — each line already ≤30 chars via ipChunks.
           addr1: line1,
-          addr2: [line2, ...extras].filter(Boolean).join(", "),
+          addr2: line2,
           landmark,
           city: o["City"] || "",
           state: o["State"] || "",
@@ -8647,6 +8648,23 @@ export default function ManageOrdersPage() {
                       bypassFilter
                       hideNote
                     />
+
+                    {/* Order comment — shown so the packer sees any note left on
+                    this order (e.g. "call before dispatch"). */}
+                    {(() => {
+                      const cmt =
+                        orderNotes[bookOrder["Order ID"]] ??
+                        (bookOrder["Comment"] || "");
+                      if (!cmt) return null;
+                      return (
+                        <div className="ip-comment">
+                          <span className="ip-comment-title">
+                            <MessageCircle size={14} /> Comment
+                          </span>
+                          <span className="ip-comment-text">{cmt}</span>
+                        </div>
+                      );
+                    })()}
 
                     {/* Tracking ID — view + set the article number without
                     leaving the booking flow (writes to the sheet). */}

@@ -455,6 +455,14 @@ export default function AddressModal({
   const codFeeAmount = Math.max(0, Math.round(upiTotalForFlow * 0.059));
   const codTotalWithFee = upiTotalForFlow + codFeeAmount;
 
+  // Only ONE ₹1 book is allowed per order. Count the total quantity of
+  // ₹1-priced books; if it's more than one, checkout is blocked.
+  const oneRupeeQty = (cartBooks || []).reduce(
+    (sum, b) => sum + (Number(b.discountedPrice) === 1 ? b.qty || 1 : 0),
+    0,
+  );
+  const tooManyOneRupee = oneRupeeQty > 1;
+
   const fetchLocationByPincode = async (pincodeValue) => {
     if (!pincodeValue || pincodeValue.length !== 6) return;
     setIsFetchingLocation(true);
@@ -1866,26 +1874,39 @@ export default function AddressModal({
 
               {/* Fixed footer — pay button (full width) + WhatsApp order */}
               <div className="pay-sel-footer">
+                {tooManyOneRupee && (
+                  <div className="onerupee-limit-note">
+                    Only 1 book at ₹1 is allowed per order. Please remove the
+                    extra ₹1 book{oneRupeeQty > 2 ? "s" : ""} to continue.
+                  </div>
+                )}
                 <div className="pay-sel-footer-row">
                   <button
                     type="button"
                     className="pri-big-btn pay-confirm-btn"
-                    disabled={!paySel}
-                    onClick={() => paySel && beginPayment(paySel)}
+                    disabled={!paySel || tooManyOneRupee}
+                    onClick={() =>
+                      paySel && !tooManyOneRupee && beginPayment(paySel)
+                    }
                   >
                     <span className="flex flex-row items-center justify-center gap-6">
-                      {paySel === "UPI"
-                        ? `Pay & save ₹${codFeeAmount}`
-                        : paySel === "COD"
-                          ? "Cash on Delivery"
-                          : "Select a payment method"}
-                      {paySel && <ArrowRight size={18} strokeWidth={2.5} />}
+                      {tooManyOneRupee
+                        ? "Remove extra ₹1 book to continue"
+                        : paySel === "UPI"
+                          ? `Pay & save ₹${codFeeAmount}`
+                          : paySel === "COD"
+                            ? "Cash on Delivery"
+                            : "Select a payment method"}
+                      {paySel && !tooManyOneRupee && (
+                        <ArrowRight size={18} strokeWidth={2.5} />
+                      )}
                     </span>
                   </button>
                   <button
                     type="button"
                     className="sec-big-btn pay-sel-wa"
-                    onClick={() => beginPayment("WhatsApp")}
+                    disabled={tooManyOneRupee}
+                    onClick={() => !tooManyOneRupee && beginPayment("WhatsApp")}
                     aria-label="Order on WhatsApp"
                   >
                     <FaWhatsapp size={18} color="#25D366" />

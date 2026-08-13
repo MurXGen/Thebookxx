@@ -2562,13 +2562,19 @@ export default function ManageOrdersPage() {
     });
   };
   const saveOrderNote = (orderId, text) => {
+    const t = (text || "").trim();
     setOrderNotes((m) => {
       const next = { ...m };
-      const t = (text || "").trim();
       if (t) next[orderId] = t;
       else delete next[orderId];
       return next;
     });
+    // Persist to the order's "Comment" column in the sheet (optimistic local
+    // patch first, then reconcile via a re-fetch).
+    patchLocalOrder(orderId, { Comment: t, comment: t });
+    updateOrderRow(orderId, { Comment: t })
+      .then(() => setTimeout(fetchOrders, 1300))
+      .catch((e) => console.error("Comment save failed:", e));
     setNoteEditor(null);
   };
 
@@ -2984,6 +2990,7 @@ export default function ManageOrdersPage() {
           booksList: String(match["Books List"] || ""),
           city: String(match["City"] || ""),
           amount: match.revenue || 0,
+          "Payment Type": String(match["Payment Type"] || ""),
           dateT: d ? d.getTime() : 0,
           dateLabel: d
             ? d.toLocaleDateString("en-IN", {
@@ -5126,14 +5133,15 @@ export default function ManageOrdersPage() {
   const listOrders = filteredOrders.filter((o) => {
     if (orderPickFilter === "picked") return isOrderFullyPicked(o);
     if (orderPickFilter === "pending") return !isOrderFullyPicked(o);
-    if (orderPickFilter === "noted") return !!orderNotes[o["Order ID"]];
+    if (orderPickFilter === "noted")
+      return !!(orderNotes[o["Order ID"]] || o["Comment"]);
     return true;
   });
   // Lazy-render the list in batches of 10 (infinite scroll).
   const visibleOrders = listOrders.slice(0, ordersVisible);
   const hasMoreOrders = ordersVisible < listOrders.length;
   const notedOrdersCount = filteredOrders.filter(
-    (o) => !!orderNotes[o["Order ID"]],
+    (o) => !!(orderNotes[o["Order ID"]] || o["Comment"]),
   ).length;
   const pickedOrdersCount = filteredOrders.filter(isOrderFullyPicked).length;
 
@@ -5257,7 +5265,7 @@ export default function ManageOrdersPage() {
       for (const o of m.orders) {
         await updateOrderRow(o["Order ID"], {
           "Order Status": "Cancelled",
-          "Comment for this order": `Merged into ${newId}`,
+          Comment: `Merged into ${newId}`,
         });
       }
 
@@ -7014,6 +7022,18 @@ export default function ManageOrdersPage() {
                                       <div className="mo-track-card-who">
                                         <span className="mo-track-card-name">
                                           {r["Customer Name"] || "Unknown"}
+                                          {(() => {
+                                            const isCOD = /cash|cod/i.test(
+                                              r["Payment Type"] || "",
+                                            );
+                                            return (
+                                              <span
+                                                className={`mo-track-pay ${isCOD ? "cod" : "upi"}`}
+                                              >
+                                                {isCOD ? "COD" : "Prepaid"}
+                                              </span>
+                                            );
+                                          })()}
                                         </span>
                                         <span className="mo-track-card-meta">
                                           {r["Order ID"] || "—"}
@@ -7673,9 +7693,31 @@ export default function ManageOrdersPage() {
                                 >
                                   {isCOD ? "COD" : "UPI"}
                                 </span>
-                                <span className="mo-status-pill">
-                                  {order.status}
-                                </span>
+                                {/* Editable status right on the collapsed card —
+                                    change & save without opening the accordion. */}
+                                <select
+                                  className="mo-status-quick"
+                                  value={order.status || "Processing"}
+                                  title="Change & save order status"
+                                  onClick={(e) => e.stopPropagation()}
+                                  onChange={(e) => {
+                                    e.stopPropagation();
+                                    const val = e.target.value;
+                                    patchLocalOrder(orderId, {
+                                      "Order Status": val,
+                                      status: val,
+                                    });
+                                    updateOrderRow(orderId, {
+                                      "Order Status": val,
+                                    }).then(() => setTimeout(fetchOrders, 1300));
+                                  }}
+                                >
+                                  {TRACK_STATUS_OPTIONS.map((s) => (
+                                    <option key={s} value={s}>
+                                      {s}
+                                    </option>
+                                  ))}
+                                </select>
                                 <ChevronDown
                                   size={18}
                                   className={`mo-card-caret${isExpanded ? " open" : ""}`}
@@ -7821,44 +7863,48 @@ export default function ManageOrdersPage() {
                               )}
                             </div>
 
-                            {/* Note + Book online — one row, secondary buttons */}
+                            {/* Comment + Book online — one row, secondary buttons.
+                                The comment is saved to the order's "Comment"
+                                column in the sheet. */}
                             <div className="mo-card-actions">
-                              {orderNotes[orderId] ? (
-                                <button
-                                  type="button"
-                                  className="mo-note-flag"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setNoteEditor({
-                                      orderId,
-                                      draft: orderNotes[orderId],
-                                    });
-                                  }}
-                                  title="Edit note"
-                                >
-                                  <span className="mo-note-flag-ic">
-                                    <AlertCircle size={15} />
-                                  </span>
-                                  <span className="mo-note-flag-txt">
-                                    {orderNotes[orderId]}
-                                  </span>
-                                  <Pencil
-                                    size={13}
-                                    className="mo-note-flag-edit"
-                                  />
-                                </button>
-                              ) : (
-                                <button
-                                  type="button"
-                                  className="sec-big-btn mo-note-add"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setNoteEditor({ orderId, draft: "" });
-                                  }}
-                                >
-                                  <StickyNote size={14} /> Add note
-                                </button>
-                              )}
+                              {(() => {
+                                const cmt =
+                                  orderNotes[orderId] ??
+                                  (order["Comment"] || "");
+                                return cmt ? (
+                                  <button
+                                    type="button"
+                                    className="mo-note-flag"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setNoteEditor({ orderId, draft: cmt });
+                                    }}
+                                    title="Edit comment"
+                                  >
+                                    <span className="mo-note-flag-ic">
+                                      <MessageCircle size={15} />
+                                    </span>
+                                    <span className="mo-note-flag-txt">
+                                      {cmt}
+                                    </span>
+                                    <Pencil
+                                      size={13}
+                                      className="mo-note-flag-edit"
+                                    />
+                                  </button>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    className="sec-big-btn mo-note-add"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setNoteEditor({ orderId, draft: "" });
+                                    }}
+                                  >
+                                    <MessageCircle size={14} /> Comment
+                                  </button>
+                                );
+                              })()}
 
                               {/* Book online with India Post — opens this order's
                           booking sheet; shows a tick once marked done. */}
@@ -8872,7 +8918,7 @@ export default function ManageOrdersPage() {
             >
               <div className="bill-header">
                 <span className="weight-600 font-16 flex items-center gap-8">
-                  <StickyNote size={16} /> Order note
+                  <MessageCircle size={16} /> Order comment
                 </span>
                 <span
                   className="cursor-pointer"
@@ -8908,7 +8954,7 @@ export default function ManageOrdersPage() {
                     saveOrderNote(noteEditor.orderId, noteEditor.draft)
                   }
                 >
-                  <Send size={15} /> Save note
+                  <Send size={15} /> Save comment
                 </button>
               </div>
             </motion.div>

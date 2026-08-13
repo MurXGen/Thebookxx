@@ -15343,6 +15343,29 @@ img[data-loaded="true"] {
   font-size: 14px;
   font-weight: 800;
   color: var(--foreground);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+/* Payment badge on a matched tracking card (COD vs Prepaid). */
+.mo-track-pay {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+.mo-track-pay.cod {
+  background: rgba(37, 99, 235, 0.12);
+  color: #1d4ed8;
+  border-color: rgba(37, 99, 235, 0.28);
+}
+.mo-track-pay.upi {
+  background: rgba(22, 163, 74, 0.12);
+  color: #15803d;
+  border-color: rgba(22, 163, 74, 0.28);
 }
 .mo-track-card-meta {
   font-size: 11.5px;
@@ -21565,6 +21588,23 @@ img[data-loaded="true"] {
 .mo-status-pill.sm {
   font-size: 10.5px;
   padding: 3px 8px;
+}
+/* Editable status dropdown on the collapsed card — looks like the pill but
+   lets the admin change & save the status without expanding. */
+.mo-status-quick {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(251, 133, 0, 0.14);
+  color: var(--tertiary);
+  border: 1px solid rgba(251, 133, 0, 0.28);
+  white-space: nowrap;
+  cursor: pointer;
+  max-width: 120px;
+}
+.mo-status-quick:hover {
+  background: rgba(251, 133, 0, 0.22);
 }
 /* Payment-method pill beside the status pill (COD vs UPI). */
 .mo-pay-pill {

@@ -59,11 +59,6 @@ import {
   Delete,
   Moon,
   Sun,
-  Users,
-  LayoutDashboard,
-  Radar,
-  PanelLeft,
-  PanelLeftClose,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
@@ -564,28 +559,12 @@ function WalletModal({ user, busy, onClose, onApply }) {
 // Toggleable analytics sections (Customize panel).
 // Top-level page sections for the scrollable navigation tabs.
 const SECTION_TABS = [
-  { key: "analytics", label: "Analytics", short: "Stats", Icon: LayoutDashboard },
-  { key: "orders", label: "Orders", short: "Orders", Icon: ShoppingBag },
-  { key: "users", label: "Users", short: "Users", Icon: Users },
-  { key: "track", label: "Track orders", short: "Track", Icon: Radar },
-  { key: "tracking", label: "Tracking", short: "IDs", Icon: MapPin },
+  { key: "analytics", label: "Analytics" },
+  { key: "users", label: "Users" },
+  { key: "track", label: "Track orders" },
+  { key: "orders", label: "Orders" },
+  { key: "tracking", label: "Tracking" },
 ];
-
-/* Motion presets — one place to tune the whole dashboard's feel. */
-const EASE_OUT = [0.22, 1, 0.36, 1];
-
-/* Deliberately no `filter`/blur and no exit state here: the section subtree is
-   huge, and an exit animation under AnimatePresence `mode="wait"` could leave
-   the incoming tab stuck behind a never-finishing outgoing one. Changing the
-   key remounts the subtree, so a plain enter animation is both safer and
-   snappier. */
-const SECTION_MOTION = {
-  initial: { opacity: 0, y: 12 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.28, ease: EASE_OUT },
-};
-
-const PILL_SPRING = { type: "spring", stiffness: 420, damping: 34, mass: 0.7 };
 
 // Status options for the Track & notify quick status editor (includes the
 // extra "Money received" state on top of the usual delivery stages).
@@ -2540,22 +2519,6 @@ export default function ManageOrdersPage() {
       return next;
     });
 
-  // ── Left navigation rail: expanded by default, collapse state remembered.
-  const [railCollapsed, setRailCollapsed] = useState(false);
-  useEffect(() => {
-    try {
-      setRailCollapsed(localStorage.getItem("mo_rail_collapsed") === "1");
-    } catch {}
-  }, []);
-  const toggleRail = () =>
-    setRailCollapsed((c) => {
-      const next = !c;
-      try {
-        localStorage.setItem("mo_rail_collapsed", next ? "1" : "0");
-      } catch {}
-      return next;
-    });
-
   // ── Per-order notes (localStorage: { "<orderId>": "note text" }) ──
   const [orderNotes, setOrderNotes] = useState({});
   const [noteEditor, setNoteEditor] = useState(null); // { orderId, draft }
@@ -2935,26 +2898,6 @@ export default function ManageOrdersPage() {
         mode: "no-cors",
         body,
       });
-
-      // Also move each of these orders to "In Transit" — a tracking ID means
-      // the parcel has shipped. Written to the "Order Status" column per order.
-      await Promise.all(
-        enriched.map((r) =>
-          updateOrderRow(r.orderId, { "Order Status": "In Transit" }).catch(
-            (err) => console.error("Status update failed:", r.orderId, err),
-          ),
-        ),
-      );
-      enriched.forEach((r) =>
-        patchLocalOrder(r.orderId, {
-          "Order Status": "In Transit",
-          status: "In Transit",
-          "Shipping ID": r.trackingId,
-          shippingId: r.trackingId,
-        }),
-      );
-      setTimeout(fetchOrders, 1600);
-
       setTrackingResult({ pushed: enriched.length });
       setTrackingJsonInput("");
       setTrackingRows([]);
@@ -4954,8 +4897,8 @@ export default function ManageOrdersPage() {
     URL.revokeObjectURL(url);
   };
 
-  // Full CSV of every order currently IN VIEW (respects the active filters &
-  // search) — all columns incl. address + pincode — for shipping/booking.
+  // Full CSV of every "Getting Shipped" order (all columns incl. address +
+  // pincode) — for shipping/booking workflows.
   const exportGettingShippedCSV = () => {
     const headers = [
       "Sr",
@@ -4972,7 +4915,9 @@ export default function ManageOrdersPage() {
       "Book Titles",
       "Order Date",
     ];
-    const shipping = filteredOrders;
+    const shipping = orders.filter((o) =>
+      /getting shipped/i.test(o["Order Status"] || ""),
+    );
     const rows = shipping.map((o, i) => [
       i + 1,
       o["Order ID"] || "",
@@ -4998,7 +4943,7 @@ export default function ManageOrdersPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `orders-in-view_${new Date().toISOString().split("T")[0]}.csv`;
+    a.download = `getting-shipped_${new Date().toISOString().split("T")[0]}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -5378,99 +5323,22 @@ export default function ManageOrdersPage() {
   }
 
   return (
-    <div className={`my-orders-page mo-glass${darkMode ? " mo-dark" : ""}`}>
+    <div className={`my-orders-page${darkMode ? " mo-dark" : ""}`}>
       {/* New-order chime (drop the audio file at /public/sounds/new-order.mp3) */}
       <audio
         ref={newOrderAudioRef}
         src="/sounds/new-order.mp3"
         preload="auto"
       />
-
-      {/* Ambient gradient wash behind the glass surfaces */}
-      <div className="mo-aurora" aria-hidden="true">
-        <span />
-        <span />
-        <span />
-      </div>
-
-      <div className={`mo-shell${railCollapsed ? " is-collapsed" : ""}`}>
-        {/* ===== Left navigation rail (desktop) ===== */}
-        <aside className="mo-rail" aria-label="Dashboard sections">
-          <Link href="/" className="mo-rail-brand" title="Back to store">
-            <span className="mo-rail-logo">
-              <ArrowLeft size={18} />
-            </span>
-            <span className="mo-rail-brand-text">
-              <span className="mo-rail-title">Manage Orders</span>
-              <span className="mo-rail-sub">TheBookX console</span>
-            </span>
-          </Link>
-
-          <div className="mo-rail-scroll">
-            <div className="mo-rail-label">Workspace</div>
-            {SECTION_TABS.map((t) => {
-              const Icon = t.Icon;
-              const isActive = activeTab === t.key;
-              return (
-                <button
-                  key={t.key}
-                  type="button"
-                  data-tip={t.label}
-                  className={`mo-nav-item${isActive ? " active" : ""}`}
-                  onClick={() => goToTab(t.key)}
-                  aria-current={isActive ? "page" : undefined}
-                >
-                  {isActive && (
-                    <motion.span
-                      layoutId="mo-nav-pill"
-                      className="mo-nav-pill"
-                      transition={PILL_SPRING}
-                    />
-                  )}
-                  <Icon size={18} />
-                  <span>{t.label}</span>
-                  {t.key === "orders" && filteredOrders.length > 0 && (
-                    <span className="mo-nav-count">
-                      {filteredOrders.length > 99 ? "99+" : filteredOrders.length}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="mo-rail-foot">
-            <button
-              type="button"
-              className="mo-rail-collapse"
-              onClick={toggleRail}
-              aria-label={railCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-              title={railCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-            >
-              {railCollapsed ? (
-                <PanelLeft size={16} />
-              ) : (
-                <PanelLeftClose size={16} />
-              )}
-              <span>Collapse</span>
-            </button>
-          </div>
-        </aside>
-
-        {/* ===== Main column ===== */}
-        <div className="mo-main">
-          {/* Sticky glass topbar */}
-          <header className="mo-topbar">
-            <div className="mo-topbar-heading">
-              <h1>
-                {SECTION_TABS.find((t) => t.key === activeTab)?.label ||
-                  "Manage Orders"}
-              </h1>
-              <span className="mo-topbar-sub">
-                {filteredOrders.length}{" "}
-                {filteredOrders.length === 1 ? "order" : "orders"} in view
-              </span>
+      <div className="section-1200 flex flex-col gap-24">
+        {/* Header, same shape as my-orders */}
+        <div className="orders-header orders-header-row">
+          <Link href="/" className="flex flex-row gap-8 items-center">
+            <ArrowLeft size={18} />
+            <div className="flex flex-col">
+              <h1 className="font-24">Manage Orders</h1>
             </div>
+          </Link>
 
           <div className="mo-head-actions">
             <button
@@ -5583,8 +5451,24 @@ export default function ManageOrdersPage() {
               </AnimatePresence>
             </div>
           </div>
+        </div>
 
-          {/* Period/timeline nav + calendar, now inline in the glass topbar */}
+        {/* Section navigation tabs — switch which section is shown */}
+        <div className="mo-tabs-row">
+          <div className="mo-tabs">
+            {SECTION_TABS.map((t) => (
+              <button
+                key={t.key}
+                type="button"
+                className={`mo-tab${activeTab === t.key ? " active" : ""}`}
+                onClick={() => goToTab(t.key)}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Right side of the tab row — period/timeline nav + calendar modal */}
           <div className="mo-tabs-right">
             {activeTab === "analytics" && analyticsPeriod !== "all" && (
               <div className="an-nav an-nav-inline">
@@ -5620,16 +5504,7 @@ export default function ManageOrdersPage() {
               </button>
             )}
           </div>
-        </header>
-
-        {/* Section content — re-enters whenever the active tab changes */}
-        <motion.div
-          key={activeTab}
-          className="mo-section"
-          initial={SECTION_MOTION.initial}
-          animate={SECTION_MOTION.animate}
-          transition={SECTION_MOTION.transition}
-        >
+        </div>
 
         {/* ===== Analytics (accordion) ===== */}
         {/* ===== Analytics (curated dashboard) ===== */}
@@ -7283,8 +7158,7 @@ export default function ManageOrdersPage() {
                   Paste a JSON array of <strong>orderId</strong> +{" "}
                   <strong>trackingId</strong>. Each tracking ID is written to
                   the Shipping ID column of that order&apos;s row in Form
-                  responses and shows on the customer&apos;s profile, and the
-                  order&apos;s status is set to <strong>In Transit</strong>.
+                  responses, and shows on the customer&apos;s profile.
                 </div>
               </div>
             </div>
@@ -7468,7 +7342,7 @@ export default function ManageOrdersPage() {
                                   setShowListMenu(false);
                                 }}
                               >
-                                <Download size={16} /> Orders CSV (in view)
+                                <Download size={16} /> Shipped CSV
                               </button>
                               <button
                                 type="button"
@@ -7732,15 +7606,8 @@ export default function ManageOrdersPage() {
                         };
 
                         return (
-                          <motion.div
+                          <div
                             key={orderId || idx}
-                            initial={{ opacity: 0, y: 18, scale: 0.985 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            transition={{
-                              duration: 0.36,
-                              ease: EASE_OUT,
-                              delay: Math.min((idx % ORDERS_BATCH) * 0.035, 0.32),
-                            }}
                             className={`admin-order-card mo-card ${
                               isCOD ? "mo-card-cod" : "mo-card-online"
                             }${isPacked ? " packed" : ""}${
@@ -8500,7 +8367,7 @@ export default function ManageOrdersPage() {
                                 </motion.div>
                               )}
                             </AnimatePresence>
-                          </motion.div>
+                          </div>
                         );
                       })}
                     </div>
@@ -8626,43 +8493,7 @@ export default function ManageOrdersPage() {
             </Accordion>
           </>
         )}
-        </motion.div>
-        </div>
-        {/* ===== /mo-main ===== */}
-
-        {/* ===== Mobile bottom navigation ===== */}
-        <nav className="mo-bottomnav" aria-label="Dashboard sections">
-          {SECTION_TABS.map((t) => {
-            const Icon = t.Icon;
-            const isActive = activeTab === t.key;
-            return (
-              <button
-                key={t.key}
-                type="button"
-                className={`mo-nav-item${isActive ? " active" : ""}`}
-                onClick={() => goToTab(t.key)}
-                aria-current={isActive ? "page" : undefined}
-              >
-                {isActive && (
-                  <motion.span
-                    layoutId="mo-bottomnav-pill"
-                    className="mo-nav-pill"
-                    transition={PILL_SPRING}
-                  />
-                )}
-                <Icon size={18} />
-                <span>{t.short}</span>
-                {t.key === "orders" && filteredOrders.length > 0 && (
-                  <span className="mo-nav-count">
-                    {filteredOrders.length > 99 ? "99+" : filteredOrders.length}
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </nav>
       </div>
-      {/* ===== /mo-shell ===== */}
 
       {/* ===== Calculator ===== */}
       <AnimatePresence>

@@ -31888,6 +31888,26 @@ img[data-loaded="true"] {
 .ip-modal-body {
   padding: 8px 18px 18px;
 }
+/* Book-online modal rebuilt on the standard slide-up bill-modal shell:
+   fixed header, scrolling body, sticky footer. */
+.ip-book-modal {
+  display: flex;
+  flex-direction: column;
+  max-height: 88vh;
+  padding: 16px 0 0;
+}
+.ip-book-modal .bill-header {
+  padding: 0 18px 12px;
+  margin-bottom: 0;
+}
+.ip-book-modal .ip-modal-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+.ip-book-modal .ip-book-foot-nav {
+  border-top: 1px solid var(--hairline, #ececec);
+}
 .mo-dark .ip-modal-head {
   background: #1c1e22;
 }
@@ -31936,7 +31956,7 @@ img[data-loaded="true"] {
 }
 /* Tracking-ID editor inside the book-online modal — flush, no boxy padding */
 .ip-comment {
-  margin: 12px 0 0;
+  margin: 0 0 12px;
   padding: 10px 12px;
   border: 1px solid #fed7aa;
   border-radius: 12px;

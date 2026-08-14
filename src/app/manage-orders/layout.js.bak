@@ -1,8 +1,5 @@
 // app/manage-orders/layout.js
 import AdminLock from "@/components/AdminLock";
-// Glassmorphic + gradient design layer. Scoped to `.my-orders-page.mo-glass`,
-// so it only ever applies inside this route — the storefront is untouched.
-import "./manage-orders-ui.css";
 
 export const metadata = {
   title: "Manage Orders",

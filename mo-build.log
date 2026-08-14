@@ -1,0 +1,10 @@
+
+> Build error occurred
+Error: EPERM: operation not permitted, unlink '/sessions/rcw-01brhxxjdguqo7p5gsr2qwz9/mnt/Thebookxx/.next/.fuse_hidden0000032500000001'
+    at ignore-listed frames {
+  errno: -1,
+  code: 'EPERM',
+  syscall: 'unlink',
+  path: '/sessions/rcw-01brhxxjdguqo7p5gsr2qwz9/mnt/Thebookxx/.next/.fuse_hidden0000032500000001'
+}
+EXIT:1

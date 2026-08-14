@@ -1,0 +1,1839 @@
+/* =========================================================================
+   manage-orders-ui.css
+   ------------------------------------------------------------------------
+   Glassmorphic + gradient design layer for /manage-orders ONLY.
+
+   Scoped entirely under `.my-orders-page.mo-glass`, so nothing in this file
+   can leak into the storefront. Loaded from app/manage-orders/layout.js.
+
+   Palette follows the existing brand tokens:
+     --tertiary        #fb8500   (orange)
+     --tertiary-light  #ffb703   (gold)
+   mixed with white for a soft, soothing light theme, plus a matching
+   amber-on-charcoal dark theme under `.mo-dark`.
+   ========================================================================= */
+
+/* The storefront wraps every page in `.app-shell { max-width: 1200px }`.
+   The admin console wants the full viewport, so opt this one route out. */
+.app-shell:has(.my-orders-page.mo-glass) {
+  max-width: none;
+  width: 100%;
+}
+
+.my-orders-page.mo-glass {
+  /* ---- Local design tokens (light) ----
+     White-dominant. Orange is an accent only: active state, focus ring,
+     key figures and chart fills — never large fields of colour. */
+  --g-orange: #f07800;
+  --g-gold: #ffb703;
+  --g-orange-soft: #ffa43d;
+  --g-ink: #17151300;
+  --g-ink: #191715;
+  --g-ink-2: #5c5751;
+  --g-ink-3: #938d86;
+
+  --g-canvas-1: #ffffff;
+  --g-canvas-2: #fdfcfa;
+  --g-canvas-3: #faf7f2;
+
+  /* Glass surfaces — three elevations, all essentially white */
+  --g-surface: rgba(255, 255, 255, 0.72);
+  --g-surface-2: rgba(255, 255, 255, 0.84);
+  --g-surface-3: rgba(255, 255, 255, 0.94);
+  --g-surface-solid: #ffffff;
+
+  --g-hairline: rgba(226, 221, 214, 0.9);
+  --g-hairline-2: rgba(240, 120, 0, 0.28);
+  --g-edge: rgba(25, 23, 21, 0.07);
+
+  --g-blur: 20px;
+  --g-blur-lg: 34px;
+
+  --g-shadow-sm: 0 1px 2px rgba(28, 25, 23, 0.05),
+    0 4px 12px -6px rgba(28, 25, 23, 0.06);
+  --g-shadow: 0 8px 24px -12px rgba(28, 25, 23, 0.16),
+    0 2px 6px rgba(28, 25, 23, 0.05);
+  --g-shadow-lg: 0 30px 70px -30px rgba(28, 25, 23, 0.28),
+    0 8px 24px -14px rgba(28, 25, 23, 0.12);
+  --g-inner: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+
+  --g-r-sm: 12px;
+  --g-r: 18px;
+  --g-r-lg: 24px;
+  --g-r-xl: 30px;
+
+  /* ---- Spacing rhythm ----
+     The page inherited four different card paddings (11/12, 14/16, 16/16/14,
+     14/16) and four different grid gaps (8, 12, 16, 22). Everything below is
+     normalised onto this one scale so blocks line up on a shared grid. */
+  --g-gap: 16px; /* between sibling blocks and grid cells */
+  --g-gap-sm: 10px; /* tight clusters: chips, icon buttons */
+  --g-pad: 18px; /* inside cards, panels, accordion rows */
+  --g-pad-sm: 14px; /* inside compact tiles */
+
+  --g-rail-w: 246px;
+  --g-rail-w-collapsed: 82px;
+  --g-bottombar-h: 68px;
+
+  --g-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  color: var(--g-ink);
+  background: linear-gradient(
+    168deg,
+    var(--g-canvas-1) 0%,
+    var(--g-canvas-2) 55%,
+    var(--g-canvas-3) 100%
+  );
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- Dark theme tokens ---- */
+.my-orders-page.mo-glass.mo-dark {
+  --g-ink: #f5f1ec;
+  --g-ink-2: #c4bcb4;
+  --g-ink-3: #8f867e;
+
+  --g-canvas-1: #14110e;
+  --g-canvas-2: #1a1612;
+  --g-canvas-3: #120f0d;
+
+  --g-surface: rgba(42, 36, 31, 0.55);
+  --g-surface-2: rgba(48, 41, 35, 0.68);
+  --g-surface-3: rgba(54, 46, 39, 0.82);
+  --g-surface-solid: #201b17;
+
+  --g-hairline: rgba(255, 255, 255, 0.09);
+  --g-hairline-2: rgba(255, 183, 3, 0.18);
+  --g-edge: rgba(255, 255, 255, 0.07);
+
+  --g-shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.35);
+  --g-shadow: 0 12px 34px -14px rgba(0, 0, 0, 0.7), 0 2px 8px rgba(0, 0, 0, 0.3);
+  --g-shadow-lg: 0 30px 80px -30px rgba(0, 0, 0, 0.85),
+    0 10px 28px -14px rgba(0, 0, 0, 0.5);
+  --g-inner: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+
+  color: var(--g-ink);
+  background: radial-gradient(
+      1100px 620px at 12% -8%,
+      rgba(251, 133, 0, 0.14),
+      transparent 62%
+    ),
+    linear-gradient(168deg, var(--g-canvas-1), var(--g-canvas-2) 55%, var(--g-canvas-3));
+}
+
+/* =========================================================================
+   1. Ambient aurora background
+   ========================================================================= */
+
+.mo-glass .mo-aurora {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  contain: strict;
+}
+
+.mo-glass .mo-aurora span {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  filter: blur(110px);
+  /* Deliberately faint — a hint of warmth on white, not a colour wash. */
+  opacity: 0.2;
+  will-change: transform;
+}
+
+.mo-glass .mo-aurora span:nth-child(1) {
+  width: 46vw;
+  height: 46vw;
+  min-width: 340px;
+  min-height: 340px;
+  top: -14vw;
+  left: -10vw;
+  background: radial-gradient(circle, rgba(255, 183, 3, 0.5), transparent 68%);
+  animation: mo-drift-a 26s var(--g-ease) infinite alternate;
+}
+
+.mo-glass .mo-aurora span:nth-child(2) {
+  width: 40vw;
+  height: 40vw;
+  min-width: 300px;
+  min-height: 300px;
+  top: 18%;
+  right: -12vw;
+  background: radial-gradient(circle, rgba(251, 133, 0, 0.34), transparent 68%);
+  animation: mo-drift-b 32s var(--g-ease) infinite alternate;
+}
+
+.mo-glass .mo-aurora span:nth-child(3) {
+  width: 52vw;
+  height: 52vw;
+  min-width: 360px;
+  min-height: 360px;
+  bottom: -20vw;
+  left: 26%;
+  background: radial-gradient(circle, rgba(255, 214, 148, 0.42), transparent 70%);
+  animation: mo-drift-c 38s var(--g-ease) infinite alternate;
+}
+
+.mo-glass.mo-dark .mo-aurora span {
+  opacity: 0.3;
+}
+
+@keyframes mo-drift-a {
+  to {
+    transform: translate3d(8vw, 6vh, 0) scale(1.16);
+  }
+}
+@keyframes mo-drift-b {
+  to {
+    transform: translate3d(-7vw, 10vh, 0) scale(1.1);
+  }
+}
+@keyframes mo-drift-c {
+  to {
+    transform: translate3d(6vw, -8vh, 0) scale(1.2);
+  }
+}
+
+/* =========================================================================
+   2. Shell — left rail + main column
+   ========================================================================= */
+
+.mo-glass .mo-shell {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* ---- The rail ---- */
+.mo-glass .mo-rail {
+  position: sticky;
+  top: 0;
+  flex: 0 0 auto;
+  width: var(--g-rail-w);
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px 14px 16px;
+  background: rgba(255, 255, 255, 0.78);
+  -webkit-backdrop-filter: blur(var(--g-blur-lg)) saturate(150%);
+  backdrop-filter: blur(var(--g-blur-lg)) saturate(150%);
+  border-right: 1px solid var(--g-edge);
+  box-shadow: none;
+  z-index: 40;
+  transition: width 0.42s var(--g-ease), padding 0.42s var(--g-ease);
+  overflow: hidden;
+}
+
+.mo-glass .mo-shell.is-collapsed .mo-rail {
+  width: var(--g-rail-w-collapsed);
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+/* Brand block */
+.mo-glass .mo-rail-brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 8px 8px 14px;
+  color: inherit;
+  text-decoration: none;
+  min-height: 56px;
+}
+
+.mo-glass .mo-rail-logo {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  color: var(--g-ink-2);
+  background: #fff;
+  border: 1px solid var(--g-hairline);
+  box-shadow: var(--g-shadow-sm);
+  transition: color 0.2s var(--g-ease), border-color 0.2s var(--g-ease);
+}
+
+.mo-glass .mo-rail-brand:hover .mo-rail-logo {
+  color: var(--g-orange);
+  border-color: var(--g-hairline-2);
+}
+
+.mo-glass .mo-rail-brand-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.mo-glass .mo-rail-title {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  color: var(--g-ink);
+}
+
+.mo-glass .mo-rail-sub {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--g-ink-3);
+  line-height: 1.3;
+}
+
+.mo-glass .mo-shell.is-collapsed .mo-rail-brand-text {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.mo-glass .mo-rail-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(251, 133, 0, 0.25) transparent;
+}
+
+.mo-glass .mo-rail-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+.mo-glass .mo-rail-scroll::-webkit-scrollbar-thumb {
+  background: rgba(251, 133, 0, 0.22);
+  border-radius: 99px;
+}
+
+.mo-glass .mo-rail-label {
+  padding: 12px 12px 6px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--g-ink-3);
+  white-space: nowrap;
+}
+
+.mo-glass .mo-shell.is-collapsed .mo-rail-label {
+  opacity: 0;
+  height: 12px;
+  padding-top: 6px;
+  padding-bottom: 0;
+}
+
+/* Nav item */
+.mo-glass .mo-nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 11px 13px;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  color: var(--g-ink-2);
+  font-size: 13.5px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  white-space: nowrap;
+  isolation: isolate;
+  transition: color 0.2s var(--g-ease), background 0.2s var(--g-ease);
+}
+
+.mo-glass .mo-nav-item svg {
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+/* Must exclude the indicator and the badge: they are spans too, and a bare
+   `.mo-nav-item span` rule outranks `.mo-nav-pill`, silently forcing the
+   indicator back to position:relative so it collapsed to zero width. */
+.mo-glass .mo-nav-item > span:not(.mo-nav-pill):not(.mo-nav-count) {
+  position: relative;
+  z-index: 2;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mo-glass .mo-nav-item:hover {
+  color: var(--g-ink);
+  background: rgba(25, 23, 21, 0.045);
+}
+
+/* Active = a clean white card with orange text. Readable in every state,
+   and it keeps the rail predominantly white. */
+.mo-glass .mo-nav-item.active {
+  color: var(--g-orange);
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(28, 25, 23, 0.06),
+    0 6px 16px -8px rgba(28, 25, 23, 0.16);
+}
+
+.mo-glass.mo-dark .mo-nav-item.active {
+  color: var(--g-gold);
+  background: rgba(255, 255, 255, 0.09);
+  box-shadow: none;
+}
+
+/* The sliding indicator (framer-motion layoutId target) — a slim accent
+   bar on the leading edge rather than a full colour fill. */
+.mo-glass .mo-nav-item .mo-nav-pill {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  z-index: 2;
+  width: 3px;
+  height: 22px;
+  margin-top: -11px;
+  border-radius: 0 3px 3px 0;
+  background: linear-gradient(180deg, var(--g-gold), var(--g-orange));
+}
+
+.mo-glass .mo-nav-count {
+  position: relative;
+  z-index: 2;
+  margin-left: auto;
+  min-width: 22px;
+  height: 20px;
+  padding: 0 6px;
+  display: grid;
+  place-items: center;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 700;
+  background: rgba(25, 23, 21, 0.06);
+  color: var(--g-ink-2);
+}
+
+.mo-glass .mo-nav-item.active .mo-nav-count {
+  background: rgba(240, 120, 0, 0.12);
+  color: var(--g-orange);
+}
+
+.mo-glass.mo-dark .mo-nav-count {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--g-ink-2);
+}
+
+.mo-glass.mo-dark .mo-nav-item.active .mo-nav-count {
+  background: rgba(255, 183, 3, 0.16);
+  color: var(--g-gold);
+}
+
+.mo-glass .mo-shell.is-collapsed .mo-nav-item {
+  justify-content: center;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.mo-glass .mo-shell.is-collapsed .mo-nav-item span,
+.mo-glass .mo-shell.is-collapsed .mo-nav-count {
+  display: none;
+}
+
+/* Tooltip when collapsed */
+.mo-glass .mo-shell.is-collapsed .mo-nav-item::after {
+  content: attr(data-tip);
+  position: absolute;
+  left: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%) translateX(-6px);
+  padding: 7px 11px;
+  border-radius: 10px;
+  background: var(--g-ink);
+  color: var(--g-canvas-1);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s var(--g-ease), transform 0.18s var(--g-ease);
+  z-index: 60;
+}
+
+.mo-glass .mo-shell.is-collapsed .mo-nav-item:hover::after {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+/* Rail footer */
+.mo-glass .mo-rail-foot {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--g-edge);
+}
+
+.mo-glass .mo-rail-collapse {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--g-edge);
+  border-radius: 13px;
+  background: var(--g-surface);
+  color: var(--g-ink-2);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s var(--g-ease), color 0.2s var(--g-ease),
+    border-color 0.2s var(--g-ease);
+}
+
+.mo-glass .mo-rail-collapse:hover {
+  color: var(--g-orange);
+  border-color: var(--g-hairline-2);
+  background: rgba(251, 133, 0, 0.08);
+}
+
+.mo-glass .mo-shell.is-collapsed .mo-rail-collapse span {
+  display: none;
+}
+
+/* ---- Main column ---- */
+.mo-glass .mo-main {
+  flex: 1 1 auto;
+  min-width: 0;
+  /* Without this a single wide grid child (a long stat label, a table) pushes
+     the column past the viewport and the last card gets clipped. */
+  max-width: 100%;
+  overflow-x: clip;
+  display: flex;
+  flex-direction: column;
+  gap: var(--g-gap);
+  padding: var(--g-gap) clamp(14px, 1.4vw, 24px) 64px;
+}
+
+/* Neutralise the legacy fixed-width container anywhere it appears inside the
+   shell. Scoped with :not(.mo-main) so it can never win over the main
+   column's own padding — that mistake collapsed the page gutters to zero. */
+.mo-glass .mo-shell .section-1200:not(.mo-main) {
+  max-width: none;
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+}
+
+/* =========================================================================
+   3. Glass topbar
+   ========================================================================= */
+
+.mo-glass .mo-topbar {
+  position: sticky;
+  top: 12px;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 12px 16px;
+  border-radius: var(--g-r-lg);
+  background: var(--g-surface-2);
+  -webkit-backdrop-filter: blur(var(--g-blur-lg)) saturate(180%);
+  backdrop-filter: blur(var(--g-blur-lg)) saturate(180%);
+  border: 1px solid var(--g-hairline);
+  box-shadow: var(--g-shadow), var(--g-inner);
+}
+
+.mo-glass.mo-dark .mo-topbar,
+.mo-glass.mo-dark .mo-rail {
+  border-color: var(--g-edge);
+}
+
+/* Dark: the rail and its chrome are hardcoded white in the light theme,
+   so they need explicit overrides or the nav labels vanish. */
+.mo-glass.mo-dark .mo-rail {
+  background: rgba(26, 22, 19, 0.72);
+}
+
+.mo-glass.mo-dark .mo-rail-logo {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: var(--g-edge);
+  color: var(--g-ink-2);
+}
+
+.mo-glass.mo-dark .mo-rail-collapse {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--g-edge);
+}
+
+.mo-glass.mo-dark .mo-rail-collapse:hover {
+  background: rgba(255, 183, 3, 0.1);
+  color: var(--g-gold);
+}
+
+.mo-glass.mo-dark .mo-nav-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.mo-glass.mo-dark .mo-bottomnav {
+  background: rgba(26, 22, 19, 0.86);
+}
+
+.mo-glass.mo-dark .mo-bottomnav .mo-nav-item.active,
+.mo-glass.mo-dark .mo-view-toggle,
+.mo-glass.mo-dark .mo-track-pay,
+.mo-glass.mo-dark .an-nav-inline {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+/* Topbar order: title (left) · period nav (pushed right) · icon actions (far
+   right). Keeps the eye moving left→right instead of clustering controls in
+   the middle. */
+.mo-glass .mo-topbar-heading {
+  order: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  margin-right: 20px;
+}
+
+.mo-glass .mo-topbar .mo-tabs-right {
+  order: 2;
+  margin-left: auto;
+}
+
+.mo-glass .mo-topbar .mo-head-actions {
+  order: 3;
+  margin-left: 10px;
+  padding-left: 12px;
+  border-left: 1px solid var(--g-edge);
+}
+
+.mo-glass .mo-topbar-heading h1,
+.mo-glass .mo-topbar-heading .mo-h1 {
+  margin: 0;
+  font-size: clamp(18px, 1.7vw, 22px);
+  font-weight: 700;
+  letter-spacing: -0.022em;
+  line-height: 1.15;
+  color: var(--g-ink);
+}
+
+.mo-glass .mo-topbar-sub {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--g-ink-3);
+  margin-top: 2px;
+}
+
+.mo-glass .mo-head-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Icon buttons in the topbar */
+.mo-glass .mo-bell,
+.mo-glass .mo-cal-icon-btn,
+.mo-glass .mo-rail-burger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+  border-radius: 14px;
+  border: 1px solid var(--g-hairline);
+  background: var(--g-surface-3);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: var(--g-ink-2);
+  cursor: pointer;
+  box-shadow: var(--g-shadow-sm), var(--g-inner);
+  transition: transform 0.22s var(--g-ease), color 0.2s var(--g-ease),
+    border-color 0.2s var(--g-ease), box-shadow 0.22s var(--g-ease);
+}
+
+.mo-glass .mo-bell:hover,
+.mo-glass .mo-cal-icon-btn:hover,
+.mo-glass .mo-rail-burger:hover {
+  color: var(--g-orange);
+  border-color: var(--g-hairline-2);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px -12px rgba(251, 133, 0, 0.5), var(--g-inner);
+}
+
+.mo-glass .mo-bell:active,
+.mo-glass .mo-cal-icon-btn:active {
+  transform: translateY(0) scale(0.96);
+}
+
+.mo-glass .mo-bell.has-new::before {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 17px;
+  border: 2px solid rgba(251, 133, 0, 0.55);
+  animation: mo-ping 1.9s var(--g-ease) infinite;
+}
+
+@keyframes mo-ping {
+  0% {
+    opacity: 0.9;
+    transform: scale(0.94);
+  }
+  70%,
+  100% {
+    opacity: 0;
+    transform: scale(1.25);
+  }
+}
+
+.mo-glass .mo-bell-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 19px;
+  height: 19px;
+  padding: 0 5px;
+  display: grid;
+  place-items: center;
+  border-radius: 99px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #ff6b35, var(--g-orange));
+  box-shadow: 0 4px 10px -3px rgba(251, 133, 0, 0.8);
+}
+
+.mo-glass .mo-bell-badge.notes {
+  background: linear-gradient(135deg, #7c5cff, #5b8def);
+  box-shadow: 0 4px 10px -3px rgba(91, 141, 239, 0.8);
+}
+
+/* Kebab dropdown */
+.mo-glass .mo-menu {
+  border-radius: var(--g-r);
+  background: var(--g-surface-3);
+  -webkit-backdrop-filter: blur(var(--g-blur-lg)) saturate(180%);
+  backdrop-filter: blur(var(--g-blur-lg)) saturate(180%);
+  border: 1px solid var(--g-hairline);
+  box-shadow: var(--g-shadow-lg), var(--g-inner);
+  padding: 6px;
+}
+
+.mo-glass .mo-menu-item {
+  border-radius: 12px;
+  color: var(--g-ink-2);
+  font-weight: 600;
+  transition: background 0.18s var(--g-ease), color 0.18s var(--g-ease);
+}
+
+.mo-glass .mo-menu-item:hover {
+  background: rgba(251, 133, 0, 0.1);
+  color: var(--g-orange);
+}
+
+/* Period nav in the topbar */
+.mo-glass .mo-tabs-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mo-glass .an-nav-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 14px;
+  background: var(--g-surface);
+  border: 1px solid var(--g-hairline);
+  box-shadow: var(--g-inner);
+}
+
+.mo-glass .an-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--g-ink-2);
+  cursor: pointer;
+  transition: background 0.18s var(--g-ease), color 0.18s var(--g-ease);
+}
+
+.mo-glass .an-nav-btn:hover:not(:disabled) {
+  background: rgba(251, 133, 0, 0.12);
+  color: var(--g-orange);
+}
+
+.mo-glass .an-nav-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.mo-glass .an-nav-label {
+  padding: 0 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--g-ink);
+  white-space: nowrap;
+}
+
+/* =========================================================================
+   4. Mobile bottom navigation
+   ========================================================================= */
+
+.mo-glass .mo-bottomnav {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .mo-glass .mo-rail {
+    display: none;
+  }
+
+  .mo-glass .mo-main {
+    padding: 14px 14px calc(var(--g-bottombar-h) + 34px);
+  }
+
+  .mo-glass .mo-topbar {
+    top: 8px;
+    padding: 11px 13px;
+    border-radius: var(--g-r);
+  }
+
+  .mo-glass .mo-bottomnav {
+    position: fixed;
+    left: 10px;
+    right: 10px;
+    bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    z-index: 900;
+    display: flex;
+    align-items: stretch;
+    gap: 2px;
+    padding: 7px;
+    border-radius: 22px;
+    background: var(--g-surface-3);
+    -webkit-backdrop-filter: blur(var(--g-blur-lg)) saturate(180%);
+    backdrop-filter: blur(var(--g-blur-lg)) saturate(180%);
+    border: 1px solid var(--g-hairline);
+    box-shadow: var(--g-shadow-lg), var(--g-inner);
+  }
+
+  .mo-glass .mo-bottomnav .mo-nav-item {
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px 2px;
+    border-radius: 16px;
+    font-size: 10.5px;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .mo-glass .mo-bottomnav .mo-nav-item span {
+    max-width: 100%;
+  }
+
+  /* Indicator flips to a short bar above the icon on mobile */
+  /* left/right instead of left+negative-margin: centring can't drift */
+  .mo-glass .mo-bottomnav .mo-nav-item .mo-nav-pill {
+    left: 36%;
+    right: 36%;
+    top: 5px;
+    bottom: auto;
+    width: auto;
+    height: 3px;
+    margin: 0;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--g-gold), var(--g-orange));
+  }
+
+  .mo-glass .mo-bottomnav .mo-nav-count {
+    position: absolute;
+    top: 3px;
+    right: 6px;
+    left: auto;
+    margin: 0;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    font-size: 9.5px;
+    line-height: 1;
+  }
+
+  /* Topbar on small screens: title + icon actions ALWAYS share the first row.
+     Only the period nav is allowed to drop to a second row. */
+  .mo-glass .mo-topbar {
+    row-gap: 10px;
+  }
+
+  .mo-glass .mo-topbar-heading {
+    flex: 1 1 0;
+    min-width: 0;
+    margin-right: 8px;
+  }
+
+  /* Truncate rather than wrap — a long section name must never be able to
+     push the icon buttons onto their own line. */
+  .mo-glass .mo-topbar-heading h1,
+  .mo-glass .mo-topbar-sub {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .mo-glass .mo-topbar .mo-head-actions {
+    order: 2;
+    margin-left: auto;
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  /* Period nav still shares the row here; it only drops below 640px. */
+  .mo-glass .mo-topbar .mo-tabs-right {
+    order: 3;
+    flex: 0 1 auto;
+    min-width: 0;
+    margin-left: 8px;
+  }
+
+  /* Search + filter button must never clip on narrow screens */
+  .mo-glass .admin-search-bar {
+    flex-wrap: wrap;
+    row-gap: 8px;
+    border-radius: var(--g-r);
+    padding: 10px 12px;
+  }
+
+  .mo-glass .admin-search-input {
+    flex: 1 1 140px;
+    min-width: 0;
+  }
+}
+
+/* =========================================================================
+   5. Surfaces — cards, panels, accordions
+   ========================================================================= */
+
+.mo-glass .an2-card,
+.mo-glass .admin-chart-card,
+.mo-glass .an2-acc,
+.mo-glass .acc,
+.mo-glass .admin-order-card,
+.mo-glass .mo-card,
+.mo-glass .an2-stat,
+.mo-glass .admin-stat,
+.mo-glass .mo-trow,
+.mo-glass .an2-proj-tile,
+.mo-glass .rr-metric,
+.mo-glass .aoc-section {
+  background: var(--g-surface);
+  -webkit-backdrop-filter: blur(var(--g-blur)) saturate(165%);
+  backdrop-filter: blur(var(--g-blur)) saturate(165%);
+  border: 1px solid var(--g-hairline);
+  border-radius: var(--g-r);
+  box-shadow: var(--g-shadow-sm), var(--g-inner);
+  transition: transform 0.3s var(--g-ease), box-shadow 0.3s var(--g-ease),
+    border-color 0.3s var(--g-ease);
+}
+
+.mo-glass .an2-card,
+.mo-glass .admin-chart-card,
+.mo-glass .an2-acc,
+.mo-glass .acc {
+  border-radius: var(--g-r-lg);
+}
+
+.mo-glass .an2-card:hover,
+.mo-glass .admin-chart-card:hover,
+.mo-glass .admin-order-card:hover,
+.mo-glass .mo-card:hover {
+  border-color: var(--g-hairline-2);
+  box-shadow: var(--g-shadow), var(--g-inner);
+  transform: translateY(-2px);
+}
+
+/* Stat tiles get a soft gradient wash + top light seam */
+.mo-glass .an2-stat,
+.mo-glass .admin-stat,
+.mo-glass .an2-proj-tile,
+.mo-glass .rr-metric {
+  position: relative;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.86);
+}
+
+.mo-glass.mo-dark .an2-stat,
+.mo-glass.mo-dark .admin-stat,
+.mo-glass.mo-dark .an2-proj-tile,
+.mo-glass.mo-dark .rr-metric {
+  background: linear-gradient(
+    150deg,
+    rgba(60, 51, 43, 0.62),
+    rgba(38, 32, 27, 0.5)
+  );
+}
+
+.mo-glass .an2-stat::after,
+.mo-glass .admin-stat::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 14%;
+  right: 14%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.95),
+    transparent
+  );
+}
+
+.mo-glass .an2-stat:hover,
+.mo-glass .admin-stat:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--g-shadow), var(--g-inner);
+}
+
+.mo-glass .an2-stat-ic,
+.mo-glass .admin-stat-ic {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  color: var(--g-orange);
+  background: rgba(240, 120, 0, 0.09);
+  border: 1px solid rgba(240, 120, 0, 0.14);
+}
+
+.mo-glass .an2-stat-val,
+.mo-glass .admin-stat-val {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--g-ink);
+}
+
+.mo-glass .an2-stat-lbl,
+.mo-glass .admin-stat-lbl {
+  color: var(--g-ink-2);
+}
+
+.mo-glass .an2-stat-x,
+.mo-glass .admin-stat-x {
+  color: var(--g-ink-3);
+}
+
+/* Accordion heads */
+.mo-glass .acc-head,
+.mo-glass .an2-acc-head {
+  border-radius: var(--g-r-lg) var(--g-r-lg) 0 0;
+  background: transparent;
+  color: var(--g-ink);
+  transition: background 0.22s var(--g-ease);
+}
+
+.mo-glass .acc-head:hover,
+.mo-glass .an2-acc-head:hover {
+  background: rgba(251, 133, 0, 0.055);
+}
+
+.mo-glass .acc-title,
+.mo-glass .an2-card-title,
+.mo-glass .chart-title {
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--g-ink);
+}
+
+.mo-glass .an2-card-sub,
+.mo-glass .vol-sub {
+  color: var(--g-ink-3);
+}
+
+.mo-glass .acc-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 26px;
+  height: 24px;
+  padding: 0 8px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--g-orange);
+  background: rgba(251, 133, 0, 0.12);
+  border: 1px solid rgba(251, 133, 0, 0.16);
+}
+
+/* =========================================================================
+   6. Order cards
+   ========================================================================= */
+
+.mo-glass .admin-orders-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 720px) {
+  .mo-glass .admin-orders-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+.mo-glass .admin-order-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--g-r-lg);
+}
+
+/* Warm accent seam down the left edge */
+.mo-glass .admin-order-card::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  left: 0;
+  width: 3px;
+  border-radius: 0 4px 4px 0;
+  background: linear-gradient(180deg, var(--g-gold), var(--g-orange));
+  opacity: 0;
+  transition: opacity 0.28s var(--g-ease);
+}
+
+.mo-glass .admin-order-card:hover::before {
+  opacity: 1;
+}
+
+.mo-glass .mo-cover {
+  border-radius: 10px;
+  box-shadow: 0 6px 16px -8px rgba(80, 45, 5, 0.5);
+  transition: transform 0.3s var(--g-ease);
+}
+
+.mo-glass .mo-cover:hover {
+  transform: translateY(-3px) scale(1.04);
+}
+
+.mo-glass .mo-pay-pill,
+.mo-glass .mo-pick-badge,
+.mo-glass .mo-track-chip,
+.mo-glass .um-badge {
+  border-radius: 99px;
+  font-weight: 600;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+.mo-glass .orders-count,
+.mo-glass .orders-picked-stat {
+  color: var(--g-ink-2);
+}
+
+/* =========================================================================
+   7. Search, chips, filters, form controls
+   ========================================================================= */
+
+.mo-glass .admin-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 6px 4px 14px;
+  border-radius: 999px;
+  background: var(--g-surface-2);
+  -webkit-backdrop-filter: blur(var(--g-blur)) saturate(170%);
+  backdrop-filter: blur(var(--g-blur)) saturate(170%);
+  border: 1px solid var(--g-hairline);
+  box-shadow: var(--g-shadow-sm), var(--g-inner);
+  transition: border-color 0.24s var(--g-ease), box-shadow 0.24s var(--g-ease);
+}
+
+.mo-glass .admin-search-bar:focus-within {
+  border-color: rgba(251, 133, 0, 0.4);
+  box-shadow: 0 0 0 4px rgba(251, 133, 0, 0.12), var(--g-shadow-sm);
+}
+
+.mo-glass .admin-search-input,
+.mo-glass .admin-input,
+.mo-glass .admin-select,
+.mo-glass .textarea,
+.mo-glass input[type="text"],
+.mo-glass input[type="tel"],
+.mo-glass input[type="number"],
+.mo-glass input[type="date"],
+.mo-glass input[type="search"],
+.mo-glass textarea,
+.mo-glass select {
+  color: var(--g-ink);
+  font-family: inherit;
+}
+
+.mo-glass .admin-search-input,
+.mo-glass .admin-search-input:focus {
+  background: transparent;
+  border: 0;
+  outline: none;
+  box-shadow: none;
+}
+
+.mo-glass .admin-input,
+.mo-glass .admin-select,
+.mo-glass .textarea,
+.mo-glass textarea {
+  border-radius: 14px;
+  background: var(--g-surface-2);
+  border: 1px solid var(--g-hairline);
+  box-shadow: var(--g-inner);
+  transition: border-color 0.22s var(--g-ease), box-shadow 0.22s var(--g-ease),
+    background 0.22s var(--g-ease);
+}
+
+.mo-glass .admin-input:focus,
+.mo-glass .admin-select:focus,
+.mo-glass .textarea:focus,
+.mo-glass textarea:focus {
+  outline: none;
+  border-color: rgba(251, 133, 0, 0.45);
+  box-shadow: 0 0 0 4px rgba(251, 133, 0, 0.12);
+  background: var(--g-surface-3);
+}
+
+.mo-glass .admin-field-label {
+  color: var(--g-ink-2);
+  font-weight: 600;
+}
+
+/* Filter button + chips */
+.mo-glass .admin-filter-btn {
+  border-radius: 999px;
+  background: var(--g-surface-2);
+  -webkit-backdrop-filter: blur(var(--g-blur));
+  backdrop-filter: blur(var(--g-blur));
+  border: 1px solid var(--g-hairline);
+  color: var(--g-ink-2);
+  font-weight: 600;
+  box-shadow: var(--g-shadow-sm), var(--g-inner);
+  transition: transform 0.22s var(--g-ease), color 0.2s var(--g-ease),
+    border-color 0.2s var(--g-ease);
+}
+
+.mo-glass .admin-filter-btn:hover {
+  transform: translateY(-1px);
+  color: var(--g-orange);
+  border-color: var(--g-hairline-2);
+}
+
+.mo-glass .admin-filter-count {
+  background: linear-gradient(135deg, var(--g-gold), var(--g-orange));
+  color: #fff;
+  border-radius: 99px;
+  font-weight: 700;
+}
+
+.mo-glass .admin-chip,
+.mo-glass .admin-status-opt {
+  border-radius: 999px;
+  background: var(--g-surface-2);
+  border: 1px solid var(--g-hairline);
+  color: var(--g-ink-2);
+  font-weight: 600;
+  box-shadow: var(--g-inner);
+  transition: transform 0.2s var(--g-ease), background 0.2s var(--g-ease),
+    color 0.2s var(--g-ease), border-color 0.2s var(--g-ease);
+}
+
+.mo-glass .admin-chip:hover,
+.mo-glass .admin-status-opt:hover {
+  transform: translateY(-1px);
+  border-color: var(--g-hairline-2);
+  color: var(--g-orange);
+}
+
+.mo-glass .admin-chip.active,
+.mo-glass .admin-status-opt.active,
+.mo-glass .admin-status-opt[aria-pressed="true"] {
+  color: var(--g-orange);
+  border-color: rgba(240, 120, 0, 0.32);
+  background: rgba(240, 120, 0, 0.08);
+  box-shadow: none;
+}
+
+.mo-glass.mo-dark .admin-chip.active,
+.mo-glass.mo-dark .admin-status-opt.active {
+  color: var(--g-gold);
+  border-color: rgba(255, 183, 3, 0.34);
+  background: rgba(255, 183, 3, 0.1);
+}
+
+.mo-glass .admin-chips-clear,
+.mo-glass .admin-filter-reset {
+  color: #e5484d;
+  font-weight: 600;
+}
+
+/* Filter panel */
+.mo-glass .admin-filter-panel {
+  border-radius: var(--g-r-lg);
+  background: var(--g-surface-3);
+  -webkit-backdrop-filter: blur(var(--g-blur-lg)) saturate(180%);
+  backdrop-filter: blur(var(--g-blur-lg)) saturate(180%);
+  border: 1px solid var(--g-hairline);
+  box-shadow: var(--g-shadow-lg), var(--g-inner);
+}
+
+.mo-glass .admin-filter-backdrop,
+.mo-glass .mo-menu-backdrop {
+  background: rgba(28, 25, 23, 0.28);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+}
+
+/* Segmented view toggles */
+.mo-glass .mo-view-toggle,
+.mo-glass .mo-track-pay {
+  padding: 4px;
+  border-radius: 14px;
+  background: var(--g-surface);
+  border: 1px solid var(--g-hairline);
+  box-shadow: var(--g-inner);
+}
+
+.mo-glass .mo-view-btn {
+  border-radius: 10px;
+  border: 0;
+  background: transparent;
+  color: var(--g-ink-2);
+  transition: background 0.2s var(--g-ease), color 0.2s var(--g-ease);
+}
+
+.mo-glass .mo-view-btn.active {
+  color: var(--g-orange);
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(28, 25, 23, 0.07),
+    0 4px 10px -6px rgba(28, 25, 23, 0.16);
+}
+
+.mo-glass.mo-dark .mo-view-btn.active {
+  color: var(--g-gold);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: none;
+}
+
+/* =========================================================================
+   8. Buttons
+   ========================================================================= */
+
+.mo-glass .pri-big-btn,
+.mo-glass .mo-form-btn,
+.mo-glass .track-btn-small,
+.mo-glass .admin-orders-more-btn,
+.mo-glass .sec-mid-btn {
+  border-radius: 14px;
+  font-weight: 600;
+  transition: transform 0.22s var(--g-ease), box-shadow 0.22s var(--g-ease),
+    background 0.22s var(--g-ease), border-color 0.22s var(--g-ease);
+}
+
+.mo-glass .pri-big-btn {
+  color: #fff;
+  border: 0;
+  background: linear-gradient(135deg, var(--g-gold), var(--g-orange));
+  box-shadow: 0 12px 26px -12px rgba(251, 133, 0, 0.85),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.mo-glass .pri-big-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 34px -14px rgba(251, 133, 0, 0.95),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.mo-glass .pri-big-btn:active {
+  transform: translateY(0) scale(0.985);
+}
+
+.mo-glass .sec-mid-btn,
+.mo-glass .mo-form-btn,
+.mo-glass .admin-orders-more-btn {
+  background: var(--g-surface-2);
+  -webkit-backdrop-filter: blur(var(--g-blur));
+  backdrop-filter: blur(var(--g-blur));
+  border: 1px solid var(--g-hairline);
+  color: var(--g-ink-2);
+  box-shadow: var(--g-shadow-sm), var(--g-inner);
+}
+
+.mo-glass .sec-mid-btn:hover,
+.mo-glass .mo-form-btn:hover,
+.mo-glass .admin-orders-more-btn:hover {
+  transform: translateY(-2px);
+  color: var(--g-orange);
+  border-color: var(--g-hairline-2);
+  box-shadow: 0 12px 24px -12px rgba(251, 133, 0, 0.45), var(--g-inner);
+}
+
+/* =========================================================================
+   9. Modals
+   ========================================================================= */
+
+.mo-glass .bill-modal-overlay,
+.mo-glass .mo-cal-modal-overlay {
+  background: rgba(28, 25, 23, 0.42);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
+  backdrop-filter: blur(10px) saturate(140%);
+}
+
+.mo-glass .bill-modal,
+.mo-glass .mo-cal-modal {
+  border-radius: var(--g-r-xl);
+  background: var(--g-surface-3);
+  -webkit-backdrop-filter: blur(var(--g-blur-lg)) saturate(185%);
+  backdrop-filter: blur(var(--g-blur-lg)) saturate(185%);
+  border: 1px solid var(--g-hairline);
+  box-shadow: var(--g-shadow-lg), var(--g-inner);
+}
+
+.mo-glass .bill-header {
+  border-bottom: 1px solid var(--g-edge);
+  color: var(--g-ink);
+  font-weight: 700;
+}
+
+/* =========================================================================
+   10. Charts & data-viz accents
+   ========================================================================= */
+
+/* Chart fills keep the app's own per-series palette — recolouring every bar
+   orange would flatten the analytics and add exactly the colour load we're
+   trying to reduce. Only the geometry and the empty track are restyled. */
+.mo-glass .an2-bar-grad,
+.mo-glass .an2-bar-col,
+.mo-glass .an2-slab-fill,
+.mo-glass .an2-proj-fill,
+.mo-glass .an2-quad-bar {
+  border-radius: 8px;
+}
+
+.mo-glass .an2-bar-track,
+.mo-glass .an2-slab-track,
+.mo-glass .an2-quad-track,
+.mo-glass .an2-proj-bar {
+  border-radius: 8px;
+  background: rgba(25, 23, 21, 0.055);
+}
+
+.mo-glass .an2-tip,
+.mo-glass .an2-mrr-tip,
+.mo-glass .pc-tip-r {
+  border-radius: 12px;
+  background: var(--g-surface-3);
+  -webkit-backdrop-filter: blur(var(--g-blur)) saturate(180%);
+  backdrop-filter: blur(var(--g-blur)) saturate(180%);
+  border: 1px solid var(--g-hairline);
+  box-shadow: var(--g-shadow), var(--g-inner);
+  color: var(--g-ink);
+}
+
+.mo-glass .an2-dot,
+.mo-glass .an2-status-dot,
+.mo-glass .aoc-dot {
+  box-shadow: 0 0 0 3px rgba(251, 133, 0, 0.1);
+}
+
+/* =========================================================================
+   11. Motion helpers
+   ========================================================================= */
+
+.mo-glass .mo-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--g-gap);
+  will-change: opacity, transform;
+}
+
+/* Staggered rise for grid children — cheap, GPU-friendly, no per-item JS.
+   Framer-motion handles the section crossfade + order-card stagger; these
+   cover the dense analytics grids where a motion node per tile would be
+   wasteful. */
+@keyframes mo-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.mo-glass .an2-stats > *,
+.mo-glass .admin-stats-grid > *,
+.mo-glass .an2-quads > *,
+.mo-glass .an2-proj-tiles > *,
+.mo-glass .an2-grid2 > * {
+  animation: mo-rise 0.5s var(--g-ease) both;
+}
+
+.mo-glass .an2-stats > *:nth-child(1),
+.mo-glass .admin-stats-grid > *:nth-child(1),
+.mo-glass .an2-quads > *:nth-child(1),
+.mo-glass .an2-proj-tiles > *:nth-child(1),
+.mo-glass .an2-grid2 > *:nth-child(1) {
+  animation-delay: 0.03s;
+}
+.mo-glass .an2-stats > *:nth-child(2),
+.mo-glass .admin-stats-grid > *:nth-child(2),
+.mo-glass .an2-quads > *:nth-child(2),
+.mo-glass .an2-proj-tiles > *:nth-child(2),
+.mo-glass .an2-grid2 > *:nth-child(2) {
+  animation-delay: 0.08s;
+}
+.mo-glass .an2-stats > *:nth-child(3),
+.mo-glass .admin-stats-grid > *:nth-child(3),
+.mo-glass .an2-quads > *:nth-child(3),
+.mo-glass .an2-proj-tiles > *:nth-child(3) {
+  animation-delay: 0.13s;
+}
+.mo-glass .an2-stats > *:nth-child(4),
+.mo-glass .admin-stats-grid > *:nth-child(4),
+.mo-glass .an2-quads > *:nth-child(4),
+.mo-glass .an2-proj-tiles > *:nth-child(4) {
+  animation-delay: 0.18s;
+}
+.mo-glass .an2-stats > *:nth-child(5),
+.mo-glass .admin-stats-grid > *:nth-child(5) {
+  animation-delay: 0.23s;
+}
+.mo-glass .an2-stats > *:nth-child(n + 6),
+.mo-glass .admin-stats-grid > *:nth-child(n + 6) {
+  animation-delay: 0.28s;
+}
+
+/* Skeleton shimmer while orders load */
+.mo-glass .an2-skel-card,
+.mo-glass .an2-skel-line,
+.mo-glass .an2-skel-chart,
+.mo-glass .an2-skel-head {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--g-r);
+  background: rgba(251, 133, 0, 0.07);
+}
+
+.mo-glass .an2-skel-card::after,
+.mo-glass .an2-skel-line::after,
+.mo-glass .an2-skel-chart::after,
+.mo-glass .an2-skel-head::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.6),
+    transparent
+  );
+  animation: mo-shimmer 1.5s infinite;
+}
+
+@keyframes mo-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* =========================================================================
+   12. Scrollbars & selection
+   ========================================================================= */
+
+.mo-glass ::selection {
+  background: rgba(251, 133, 0, 0.22);
+  color: var(--g-ink);
+}
+
+.mo-glass .mo-main ::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+.mo-glass .mo-main ::-webkit-scrollbar-thumb {
+  border-radius: 99px;
+  background: rgba(251, 133, 0, 0.24);
+}
+
+.mo-glass .mo-main ::-webkit-scrollbar-thumb:hover {
+  background: rgba(251, 133, 0, 0.4);
+}
+
+.mo-glass .mo-main ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* =========================================================================
+   13. Responsive fine-tuning
+   ========================================================================= */
+
+/* Gutters stay within a narrow band (14–24px) at every width so the page
+   never feels like it changes margins as you resize. */
+
+/* Tablet */
+@media (max-width: 1200px) and (min-width: 1024px) {
+  .mo-glass {
+    --g-rail-w: 210px;
+  }
+}
+
+@media (max-width: 640px) {
+  /* NOTE: the topbar layout for this breakpoint lives in the max-width:1023px
+     block above. An earlier `flex: 1 1 100%` on the heading here forced the
+     title to claim a whole row, which pushed the icon buttons down into a
+     band of their own — that is the empty strip that used to appear. */
+
+  .mo-glass .an2-card,
+  .mo-glass .admin-chart-card,
+  .mo-glass .acc,
+  .mo-glass .an2-acc {
+    border-radius: var(--g-r);
+  }
+
+  .mo-glass .bill-modal {
+    border-radius: 22px;
+  }
+}
+
+/* Touch targets never below 44px on coarse pointers */
+@media (pointer: coarse) {
+  .mo-glass .mo-bell,
+  .mo-glass .mo-cal-icon-btn,
+  .mo-glass .an-nav-btn {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* =========================================================================
+   14. Spacing normalisation
+   ------------------------------------------------------------------------
+   The original page grew organically, so sibling blocks sat on different
+   paddings and gaps and never lined up. These rules put every container on
+   the single scale declared at the top of this file.
+   ========================================================================= */
+
+/* ---- Block-level gaps ---- */
+.mo-glass .an2 {
+  display: flex;
+  flex-direction: column;
+  gap: var(--g-gap);
+  padding: 0;
+}
+
+.mo-glass .an2-stats,
+.mo-glass .an2-grid2,
+.mo-glass .admin-stats-grid,
+.mo-glass .an2-quads,
+.mo-glass .an2-proj-tiles,
+.mo-glass .admin-orders-grid {
+  gap: var(--g-gap);
+}
+
+.mo-glass .admin-stats-grid {
+  padding: 0;
+}
+
+/* Grid children default to `min-width: auto`, so one long unbreakable label
+   (e.g. "119 customers hold balance") stretches its column and pushes the
+   last card off-screen. This is the fix for the clipped stat row. */
+.mo-glass .an2-stats > *,
+.mo-glass .an2-grid2 > *,
+.mo-glass .admin-stats-grid > *,
+.mo-glass .an2-quads > *,
+.mo-glass .an2-proj-tiles > *,
+.mo-glass .admin-orders-grid > * {
+  min-width: 0;
+}
+
+/* Let stat tiles reflow instead of overflowing on mid-size screens */
+.mo-glass .an2-stats,
+.mo-glass .admin-stats-grid {
+  grid-template-columns: repeat(auto-fit, minmax(178px, 1fr));
+}
+
+/* ---- Card padding ---- */
+.mo-glass .an2-card,
+.mo-glass .admin-chart-card,
+.mo-glass .aoc-section {
+  padding: var(--g-pad);
+}
+
+.mo-glass .an2-stat,
+.mo-glass .admin-stat,
+.mo-glass .an2-proj-tile,
+.mo-glass .rr-metric {
+  padding: var(--g-pad-sm) var(--g-pad);
+}
+
+.mo-glass .admin-order-card {
+  padding: var(--g-pad);
+}
+
+/* Accordion head and body share the card's horizontal padding so titles
+   align with the content beneath them. */
+.mo-glass .acc-head,
+.mo-glass .an2-acc-head {
+  padding: var(--g-pad-sm) var(--g-pad);
+}
+
+.mo-glass .acc-body,
+.mo-glass .an2-acc-body {
+  padding: 0 var(--g-pad) var(--g-pad);
+}
+
+.mo-glass .an2-card-head {
+  margin-bottom: var(--g-gap-sm);
+}
+
+/* ---- Topbar / rail on the same rhythm ---- */
+.mo-glass .mo-topbar {
+  padding: var(--g-pad-sm) var(--g-pad);
+  gap: var(--g-gap-sm);
+}
+
+.mo-glass .mo-rail {
+  padding: var(--g-pad-sm) 12px var(--g-pad-sm);
+}
+
+.mo-glass .mo-rail-brand {
+  padding: 4px 8px var(--g-pad-sm);
+}
+
+.mo-glass .mo-nav-item {
+  padding: 11px 12px;
+}
+
+.mo-glass .mo-rail-foot {
+  padding-top: var(--g-gap-sm);
+}
+
+/* ---- Chip and filter rows ---- */
+.mo-glass .admin-chips-row,
+.mo-glass .admin-chips-scroll {
+  gap: var(--g-gap-sm);
+}
+
+.mo-glass .admin-chip,
+.mo-glass .admin-status-opt {
+  padding: 8px 14px;
+}
+
+.mo-glass .admin-search-bar {
+  padding: 6px 6px 6px var(--g-pad);
+}
+
+/* Equal-height tiles in every stat row */
+.mo-glass .an2-stats,
+.mo-glass .admin-stats-grid,
+.mo-glass .an2-proj-tiles {
+  align-items: stretch;
+}
+
+/* ---- Tighter, still consistent, on small screens ---- */
+@media (max-width: 640px) {
+  .mo-glass {
+    --g-gap: 12px;
+    --g-gap-sm: 8px;
+    --g-pad: 14px;
+    --g-pad-sm: 12px;
+  }
+
+  .mo-glass .an2-stats,
+  .mo-glass .admin-stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+  }
+
+  /* Phone widths: the period nav finally takes its own full-width row —
+     but the title and the icon buttons stay together on the row above. */
+  .mo-glass .mo-topbar .mo-tabs-right {
+    flex: 1 1 100%;
+    margin-left: 0;
+    justify-content: space-between;
+  }
+
+  .mo-glass .mo-topbar .an-nav-inline {
+    flex: 1 1 auto;
+    justify-content: space-between;
+  }
+}
+
+/* =========================================================================
+   15. Accessibility
+   ========================================================================= */
+
+.mo-glass :focus-visible {
+  outline: 2px solid rgba(240, 120, 0, 0.55);
+  outline-offset: 2px;
+}
+
+/* Nav items own their own rounding — a rectangular outline looked broken */
+.mo-glass .mo-nav-item:focus-visible {
+  outline-offset: -2px;
+}
+
+.mo-glass .mo-nav-item:focus:not(:focus-visible) {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mo-glass .mo-aurora span {
+    animation: none !important;
+  }
+
+  .mo-glass *,
+  .mo-glass *::before,
+  .mo-glass *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* Graceful degradation where backdrop-filter is unsupported */
+@supports not (backdrop-filter: blur(1px)) {
+  @supports not (-webkit-backdrop-filter: blur(1px)) {
+    .mo-glass .mo-rail,
+    .mo-glass .mo-topbar,
+    .mo-glass .mo-bottomnav,
+    .mo-glass .an2-card,
+    .mo-glass .admin-order-card,
+    .mo-glass .bill-modal,
+    .mo-glass .admin-filter-panel {
+      background: var(--g-surface-solid);
+    }
+  }
+}

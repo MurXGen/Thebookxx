@@ -29428,6 +29428,36 @@ img[data-loaded="true"] {
   border-radius: 5px;
   padding: 1px 5px;
 }
+/* Inline session-only cost editor for uncatalogued books. */
+.an2-bp-costwrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  color: #b45309;
+  font-weight: 600;
+}
+.an2-bp-costin {
+  width: 56px;
+  padding: 3px 6px;
+  border: 1px solid #fdba74;
+  border-radius: 7px;
+  background: #fff7ed;
+  font-size: 12px;
+  font-weight: 700;
+  color: #7c2d12;
+  text-align: right;
+  outline: none;
+  -moz-appearance: textfield;
+}
+.an2-bp-costin::-webkit-outer-spin-button,
+.an2-bp-costin::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.an2-bp-costin:focus {
+  border-color: #fb8500;
+  background: #fff;
+}
 .an2-bp-p.v-pos {
   color: #16a34a;
   font-weight: 700;

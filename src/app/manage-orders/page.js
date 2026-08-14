@@ -4303,14 +4303,26 @@ export default function ManageOrdersPage() {
         const b = lookupBook(name);
         const qty = Number(line.quantity) || 1;
         const revenue = Number(line.total) || (Number(line.price) || 0) * qty;
-        if (!map[name])
+        if (!map[name]) {
+          const key = name.toLowerCase();
+          const ov = bookCostOverrides[key];
+          const hasOverride = ov !== undefined && ov !== "";
+          // Catalogue cost wins; otherwise a session-only manual override.
+          const unitCost = b
+            ? Number(b.cost) || 0
+            : hasOverride
+              ? Number(ov) || 0
+              : 0;
           map[name] = {
             name,
+            key,
             qty: 0,
             revenue: 0,
-            unitCost: b ? Number(b.cost) || 0 : 0,
+            unitCost,
             matched: !!b,
+            hasOverride,
           };
+        }
         map[name].qty += qty;
         map[name].revenue += revenue;
       });
@@ -4331,7 +4343,7 @@ export default function ManageOrdersPage() {
       { qty: 0, revenue: 0, cost: 0, profit: 0 },
     );
     return { rows, totals };
-  }, [anOrders]);
+  }, [anOrders, bookCostOverrides]);
 
   // 9 — Time-of-day quadrants (6-hour buckets) for the selected period.
   const quadrantData = useMemo(() => {
@@ -6379,10 +6391,10 @@ export default function ManageOrdersPage() {
                       <tr key={r.name}>
                         <td>
                           <span className="an2-bp-name">{r.name}</span>
-                          {!r.matched && (
+                          {!r.matched && !r.hasOverride && (
                             <span
                               className="an2-bp-warn"
-                              title="No catalogue cost — profit assumes ₹0 cost"
+                              title="No catalogue cost — enter a cost/book to include it (this session)"
                             >
                               cost?
                             </span>
@@ -6393,7 +6405,30 @@ export default function ManageOrdersPage() {
                           ₹{Math.round(r.revenue).toLocaleString()}
                         </td>
                         <td className="ta-r">
-                          ₹{Math.round(r.unitCost || 0).toLocaleString()}
+                          {r.matched ? (
+                            <>₹{Math.round(r.unitCost || 0).toLocaleString()}</>
+                          ) : (
+                            <span className="an2-bp-costwrap">
+                              ₹
+                              <input
+                                type="number"
+                                min="0"
+                                className="an2-bp-costin"
+                                placeholder="cost"
+                                value={bookCostOverrides[r.key] ?? ""}
+                                onChange={(e) => {
+                                  const v = e.target.value;
+                                  setBookCostOverrides((p) => {
+                                    const n = { ...p };
+                                    if (v === "") delete n[r.key];
+                                    else n[r.key] = v;
+                                    return n;
+                                  });
+                                }}
+                                title="Set this book's cost for this session"
+                              />
+                            </span>
+                          )}
                         </td>
                         <td className="ta-r">
                           ₹{Math.round(r.cost).toLocaleString()}

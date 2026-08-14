@@ -562,6 +562,60 @@ export function drawAddressLabel(c, startY, data, opts = {}) {
 
   y += H_BODY;
 
+  // Fulfilment indicators strip — only drawn when at least one applies:
+  //   • Faster delivery → bold "FASTER DELIVERY" tag
+  //   • Gift wrap       → dotted circle (~1cm)
+  //   • Bookmark        → rectangle (~1cm)
+  // Lets the packer see special handling at a glance before sealing the parcel.
+  if (data.isFaster || data.hasGiftWrap || data.hasBookmark) {
+    const stripH = big ? 56 : 48;
+    c.rect(X, y, W, stripH);
+    const cm = big ? 40 : 34; // ≈ 1 cm mark
+    const midY = y + stripH / 2;
+    let ix = X + 14;
+    if (data.isFaster) {
+      c.text("⚡ FASTER DELIVERY", ix, midY, {
+        font: big ? "bold 15px sans-serif" : "bold 12px sans-serif",
+        color: "#c25e00",
+        baseline: "middle",
+      });
+      ix += big ? 210 : 172;
+    }
+    if (data.hasGiftWrap) {
+      const r = cm / 2;
+      const cxx = ix + r;
+      c.ctx.save();
+      c.ctx.strokeStyle = "#000";
+      c.ctx.lineWidth = 1.8;
+      c.ctx.setLineDash([3, 3]);
+      c.ctx.beginPath();
+      c.ctx.arc(cxx, midY, r, 0, Math.PI * 2);
+      c.ctx.stroke();
+      c.ctx.restore();
+      c.text("GIFT WRAP", cxx + r + 8, midY, {
+        font: big ? "bold 12px sans-serif" : "bold 10px sans-serif",
+        baseline: "middle",
+      });
+      ix = cxx + r + 8 + (big ? 108 : 92);
+    }
+    if (data.hasBookmark) {
+      const rw = cm;
+      const rh = cm * 0.66;
+      const ry = midY - rh / 2;
+      c.ctx.save();
+      c.ctx.setLineDash([]);
+      c.ctx.strokeStyle = "#000";
+      c.ctx.lineWidth = 1.8;
+      c.ctx.strokeRect(ix, ry, rw, rh);
+      c.ctx.restore();
+      c.text("BOOKMARK", ix + rw + 8, midY, {
+        font: big ? "bold 12px sans-serif" : "bold 10px sans-serif",
+        baseline: "middle",
+      });
+    }
+    y += stripH;
+  }
+
   // Footer with order ID + date
   c.rect(X, y, W, footerH);
   c.text(`ORDER ID: ${orderId || ""}`, X + 10, y + footerH - 10, {
@@ -686,6 +740,9 @@ export function buildCombinedForm(data) {
     customerPhone: data.customerPhone,
     isCOD,
     codAmount: data.codAmount,
+    isFaster: data.isFaster,
+    hasGiftWrap: data.hasGiftWrap,
+    hasBookmark: data.hasBookmark,
   });
 
   const finalH = Math.min(endY + botPad, SAFE_H);
@@ -871,6 +928,9 @@ export function buildAddressLabelCanvas(data) {
       customerPhone: data.customerPhone,
       isCOD,
       codAmount: data.codAmount,
+      isFaster: data.isFaster,
+      hasGiftWrap: data.hasGiftWrap,
+      hasBookmark: data.hasBookmark,
     },
     { big: true },
   );

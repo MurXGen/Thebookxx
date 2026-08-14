@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { createPortal } from "react-dom";
 import {
   downloadCombinedFormPNG,
   downloadCombinedFormsPNGs,
@@ -413,18 +414,40 @@ const parseBooksList = (booksStr) => {
 
 // Fast name book lookup (for genre/category attribution of order items).
 const BOOK_BY_NAME = {};
+// Second, looser index: strips edition suffixes like "(Hard Cover)" and all
+// punctuation so an order line such as "The Boy… (Hard Cover)" still matches
+// the catalogue entry "The Boy…". Prevents false "cost?" flags in analytics.
+const BOOK_BY_NORM = {};
+const normalizeBookName = (s) =>
+  String(s || "")
+    .toLowerCase()
+    .replace(
+      /\(\s*(?:hard\s*cover|hardcover|hardback|hard back|paperback|soft\s*cover|hb|pb)\s*\)/g,
+      "",
+    )
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
 ALL_BOOKS.forEach((b) => {
-  if (b?.name) BOOK_BY_NAME[b.name.toLowerCase().trim()] = b;
+  if (b?.name) {
+    BOOK_BY_NAME[b.name.toLowerCase().trim()] = b;
+    const nk = normalizeBookName(b.name);
+    if (nk && !BOOK_BY_NORM[nk]) BOOK_BY_NORM[nk] = b;
+  }
 });
+// Tolerant lookup: exact (case-insensitive) first, then normalized fallback.
+const lookupBook = (name) => {
+  const raw = String(name || "").toLowerCase().trim();
+  return BOOK_BY_NAME[raw] || BOOK_BY_NORM[normalizeBookName(name)] || null;
+};
 
 // India Post weight-slab delivery charge (grams ₹). Extend the top slab
 // as needed for parcels heavier than 4kg.
 const indiaPostDeliveryCost = (grams) => {
   const g = Number(grams) || 0;
-  if (g <= 500) return 42;
-  if (g <= 1000) return 62;
-  if (g <= 1500) return 100;
-  if (g <= 2000) return 150;
+  if (g <= 500) return 84;
+  if (g <= 1000) return 124;
+  if (g <= 1500) return 200;
+  if (g <= 2000) return 240;
   if (g <= 4000) return 200;
   return 200; // >4kg — adjust if you add heavier slabs
 };
@@ -439,12 +462,7 @@ const orderEconomics = (parsedBooks = []) => {
   let unmatched = 0;
   parsedBooks.forEach((line) => {
     const qty = Number(line.quantity) || 1;
-    const b =
-      BOOK_BY_NAME[
-        String(line.name || "")
-          .toLowerCase()
-          .trim()
-      ];
+    const b = lookupBook(line.name);
     if (b) {
       matched += 1;
       booksCost += (Number(b.cost) || 0) * qty;
@@ -2716,21 +2734,64 @@ export default function ManageOrdersPage() {
 
   // Minimal hover tooltip for analytics charts (event-delegated so it never
   // gets clipped inside scrollable chart containers).
-  const [chartTip, setChartTip] = useState(null); // { x, y, text }
-  const onChartMove = (e) => {
+  const [chartTip, setChartTip] = useState(null); // { x, y, text, below, sticky }
+  const chartTipTimer = useRef(null);
+
+  const clearChartTipTimer = () => {
+    if (chartTipTimer.current) {
+      clearTimeout(chartTipTimer.current);
+      chartTipTimer.current = null;
+    }
+  };
+
+  // Place the tooltip at the pointer, clamped into the viewport. If there is
+  // no room above the point (near the top of the screen, or inside a tall
+  // chart scrolled to the top) it flips to sit below instead.
+  const placeChartTip = (e, sticky) => {
     const el =
       e.target && e.target.closest ? e.target.closest("[data-tip]") : null;
     if (!el) {
+      if (!sticky) return false;
+      clearChartTipTimer();
       setChartTip((t) => (t ? null : t));
-      return;
+      return false;
     }
+    const pad = 78;
+    const vw = typeof window !== "undefined" ? window.innerWidth : 0;
     setChartTip({
-      x: e.clientX,
+      x: Math.min(Math.max(e.clientX, pad), Math.max(pad, vw - pad)),
       y: e.clientY,
       text: el.getAttribute("data-tip"),
+      below: e.clientY < 72,
+      sticky,
     });
+    return true;
   };
-  const onChartLeave = () => setChartTip((t) => (t ? null : t));
+
+  // Mouse hover — unchanged behaviour on desktop.
+  const onChartMove = (e) => {
+    if (chartTipTimer.current) return; // a tapped tooltip owns the display
+    placeChartTip(e, false);
+  };
+
+  // Tap / click — show the tooltip right where the finger or cursor landed and
+  // hold it there briefly. Touch devices never fire a usable mousemove, which
+  // is why tapping a bar used to do nothing at all.
+  const onChartTap = (e) => {
+    if (!placeChartTip(e, true)) return;
+    clearChartTipTimer();
+    chartTipTimer.current = setTimeout(() => {
+      chartTipTimer.current = null;
+      setChartTip(null);
+    }, 2800);
+  };
+
+  const onChartLeave = () => {
+    if (chartTipTimer.current) return; // don't yank a tapped tooltip away
+    setChartTip((t) => (t ? null : t));
+  };
+
+  useEffect(() => () => clearChartTipTimer(), []);
 
   // Monthly run-rate: map cursor X to a day-of-month (1…31) for the tooltip.
   const onMrrMove = (e) => {
@@ -2803,6 +2864,7 @@ export default function ManageOrdersPage() {
   const [mergeGroup, setMergeGroup] = useState(null); // customer group under merge preview
   const [merging, setMerging] = useState(false); // merge write in progress
   const [mergeStatusDrafts, setMergeStatusDrafts] = useState({}); // per-order status edits in merge modal
+  const [bookCostOverrides, setBookCostOverrides] = useState({}); // { nameLower: cost } — session-only cost for uncatalogued books
   const [waPick, setWaPick] = useState(""); // dropdown-selected stage (not yet triggered)
 
   const [accOpen, setAccOpen] = useState({
@@ -2935,26 +2997,6 @@ export default function ManageOrdersPage() {
         mode: "no-cors",
         body,
       });
-
-      // Also move each of these orders to "In Transit" — a tracking ID means
-      // the parcel has shipped. Written to the "Order Status" column per order.
-      await Promise.all(
-        enriched.map((r) =>
-          updateOrderRow(r.orderId, { "Order Status": "In Transit" }).catch(
-            (err) => console.error("Status update failed:", r.orderId, err),
-          ),
-        ),
-      );
-      enriched.forEach((r) =>
-        patchLocalOrder(r.orderId, {
-          "Order Status": "In Transit",
-          status: "In Transit",
-          "Shipping ID": r.trackingId,
-          shippingId: r.trackingId,
-        }),
-      );
-      setTimeout(fetchOrders, 1600);
-
       setTrackingResult({ pushed: enriched.length });
       setTrackingJsonInput("");
       setTrackingRows([]);
@@ -3421,6 +3463,13 @@ export default function ManageOrdersPage() {
     const isCOD = /cash|cod/i.test(o["Payment Type"] || "");
     // COD orders collect the NET amount (order value − 5.9%); non-COD unchanged.
     const codAmount = isCOD ? Math.round(rev - Math.round(rev * 0.059)) : rev;
+    // Fulfilment flags surfaced on the shipping label.
+    const isFaster = /faster|express|priority/i.test(
+      o["Delivery Type"] || "",
+    );
+    const giftWrapRaw = String(o["Gift Wrap"] || "");
+    const hasGiftWrap = /^\s*yes/i.test(giftWrapRaw);
+    const hasBookmark = /bookmark/i.test(giftWrapRaw);
     return {
       orderId: o["Order ID"],
       customerName: o["Customer Name"],
@@ -3432,6 +3481,9 @@ export default function ManageOrdersPage() {
       totalValueRs: rev,
       isCOD,
       codAmount,
+      isFaster,
+      hasGiftWrap,
+      hasBookmark,
     };
   };
 
@@ -3969,7 +4021,7 @@ export default function ManageOrdersPage() {
         if (!bookMap[key]) bookMap[key] = { units: 0, revenue: 0 };
         bookMap[key].units += b.quantity || 1;
         bookMap[key].revenue += b.total || 0;
-        const bk = BOOK_BY_NAME[key.toLowerCase().trim()];
+        const bk = lookupBook(key);
         const cat = (bk?.catalogue && bk.catalogue[0]) || "other";
         catMap[cat] = (catMap[cat] || 0) + (b.total || 0);
       });
@@ -4248,7 +4300,7 @@ export default function ManageOrdersPage() {
       (o.parsedBooks || []).forEach((line) => {
         const name = String(line.name || "").trim();
         if (!name) return;
-        const b = BOOK_BY_NAME[name.toLowerCase()];
+        const b = lookupBook(name);
         const qty = Number(line.quantity) || 1;
         const revenue = Number(line.total) || (Number(line.price) || 0) * qty;
         if (!map[name])
@@ -4954,8 +5006,8 @@ export default function ManageOrdersPage() {
     URL.revokeObjectURL(url);
   };
 
-  // Full CSV of every order currently IN VIEW (respects the active filters &
-  // search) — all columns incl. address + pincode — for shipping/booking.
+  // Full CSV of every "Getting Shipped" order (all columns incl. address +
+  // pincode) — for shipping/booking workflows.
   const exportGettingShippedCSV = () => {
     const headers = [
       "Sr",
@@ -4972,7 +5024,9 @@ export default function ManageOrdersPage() {
       "Book Titles",
       "Order Date",
     ];
-    const shipping = filteredOrders;
+    const shipping = orders.filter((o) =>
+      /getting shipped/i.test(o["Order Status"] || ""),
+    );
     const rows = shipping.map((o, i) => [
       i + 1,
       o["Order ID"] || "",
@@ -4998,7 +5052,7 @@ export default function ManageOrdersPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `orders-in-view_${new Date().toISOString().split("T")[0]}.csv`;
+    a.download = `getting-shipped_${new Date().toISOString().split("T")[0]}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -5048,7 +5102,7 @@ export default function ManageOrdersPage() {
       (o.parsedBooks || []).forEach((line) => {
         const name = String(line.name || "").trim();
         if (!name) return;
-        const b = BOOK_BY_NAME[name.toLowerCase()];
+        const b = lookupBook(name);
         const qty = Number(line.quantity) || 1;
         const revenue = Number(line.total) || (Number(line.price) || 0) * qty;
         if (!map[name]) {
@@ -5090,10 +5144,10 @@ export default function ManageOrdersPage() {
 
   // Weight-slab distribution for the delivery-cost card
   const deliverySlabs = [
-    { label: "0–500g", rate: 42, max: 500 },
-    { label: "500g–1kg", rate: 62, max: 1000 },
-    { label: "1–1.5kg", rate: 100, max: 1500 },
-    { label: "1.5–2kg", rate: 150, max: 2000 },
+    { label: "0–500g", rate: 84, max: 500 },
+    { label: "500g–1kg", rate: 124, max: 1000 },
+    { label: "1–1.5kg", rate: 200, max: 1500 },
+    { label: "1.5–2kg", rate: 240, max: 2000 },
     { label: "2–4kg", rate: 200, max: 4000 },
   ].map((s) => ({ ...s, count: 0, amount: 0 }));
   analyticsOrders.forEach((o) => {
@@ -5638,15 +5692,19 @@ export default function ManageOrdersPage() {
             className="an2"
             onMouseMove={onChartMove}
             onMouseLeave={onChartLeave}
+            onPointerDown={onChartTap}
           >
-            {chartTip && (
-              <div
-                className="an2-tip"
-                style={{ left: chartTip.x, top: chartTip.y }}
-              >
-                {chartTip.text}
-              </div>
-            )}
+            {chartTip &&
+              typeof document !== "undefined" &&
+              createPortal(
+                <div
+                  className={`an2-tip${chartTip.below ? " below" : ""}`}
+                  style={{ left: chartTip.x, top: chartTip.y }}
+                >
+                  {chartTip.text}
+                </div>,
+                document.body,
+              )}
 
             {/* Overview stats */}
             <div className="an2-stats">
@@ -6304,6 +6362,7 @@ export default function ManageOrdersPage() {
                       <th>Book</th>
                       <th className="ta-r">Qty</th>
                       <th className="ta-r">Revenue</th>
+                      <th className="ta-r">Cost/book</th>
                       <th className="ta-r">Cost</th>
                       <th className="ta-r">Profit / loss</th>
                     </tr>
@@ -6311,7 +6370,7 @@ export default function ManageOrdersPage() {
                   <tbody>
                     {bookStats.rows.length === 0 && (
                       <tr>
-                        <td colSpan={5} className="an2-bp-empty">
+                        <td colSpan={6} className="an2-bp-empty">
                           No book sales in this period.
                         </td>
                       </tr>
@@ -6332,6 +6391,9 @@ export default function ManageOrdersPage() {
                         <td className="ta-r">{r.qty}</td>
                         <td className="ta-r">
                           ₹{Math.round(r.revenue).toLocaleString()}
+                        </td>
+                        <td className="ta-r">
+                          ₹{Math.round(r.unitCost || 0).toLocaleString()}
                         </td>
                         <td className="ta-r">
                           ₹{Math.round(r.cost).toLocaleString()}
@@ -7283,8 +7345,7 @@ export default function ManageOrdersPage() {
                   Paste a JSON array of <strong>orderId</strong> +{" "}
                   <strong>trackingId</strong>. Each tracking ID is written to
                   the Shipping ID column of that order&apos;s row in Form
-                  responses and shows on the customer&apos;s profile, and the
-                  order&apos;s status is set to <strong>In Transit</strong>.
+                  responses, and shows on the customer&apos;s profile.
                 </div>
               </div>
             </div>
@@ -7468,7 +7529,7 @@ export default function ManageOrdersPage() {
                                   setShowListMenu(false);
                                 }}
                               >
-                                <Download size={16} /> Orders CSV (in view)
+                                <Download size={16} /> Shipped CSV
                               </button>
                               <button
                                 type="button"

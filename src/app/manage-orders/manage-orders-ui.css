@@ -1448,6 +1448,30 @@
   background: rgba(25, 23, 21, 0.055);
 }
 
+/* Tapped tooltips near the top of the screen flip below the touch point so
+   they are never drawn off-canvas (and never sit under the finger). */
+.mo-glass .an2-tip.below {
+  transform: translate(-50%, 32%);
+}
+
+.mo-glass .an2-tip.below::after {
+  top: auto;
+  bottom: 100%;
+  border-top-color: transparent;
+  border-bottom-color: #111827;
+}
+
+.mo-glass.mo-dark .an2-tip.below::after {
+  border-bottom-color: #f3f4f6;
+}
+
+/* Bars and segments need a comfortable tap target on touch screens */
+@media (pointer: coarse) {
+  .mo-glass .an2 [data-tip] {
+    touch-action: manipulation;
+  }
+}
+
 .mo-glass .an2-tip,
 .mo-glass .an2-mrr-tip,
 .mo-glass .pc-tip-r {
@@ -1703,16 +1727,72 @@
   padding: var(--g-pad);
 }
 
-/* Accordion head and body share the card's horizontal padding so titles
-   align with the content beneath them. */
+/* ---- Accordion sections ----
+   `.an2-acc` carries `.an2-card` too, so the card padding above was stacking
+   on top of the header's own padding and pushing the title ~30px inward.
+   The shell keeps zero padding; the head and body own the inset. */
+.mo-glass .an2-card.an2-acc,
+.mo-glass .acc {
+  padding: 0;
+}
+
 .mo-glass .acc-head,
 .mo-glass .an2-acc-head {
-  padding: var(--g-pad-sm) var(--g-pad);
+  /* flex-start, not center: with a two-line title the chevron used to float
+     to the vertical middle of the block. */
+  align-items: flex-start;
+  gap: 12px;
+  padding: var(--g-pad) var(--g-pad) var(--g-gap-sm);
+}
+
+.mo-glass .an2-acc-titles,
+.mo-glass .acc-title {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Never let the pill + chevron wrap onto a second line */
+.mo-glass .an2-acc-right,
+.mo-glass .acc-actions {
+  flex: 0 0 auto;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: var(--g-gap-sm);
+}
+
+.mo-glass .an2-acc-titles .an2-card-title {
+  margin: 0;
+}
+
+.mo-glass .an2-acc-titles .an2-card-sub {
+  margin: 2px 0 0;
+  line-height: 1.4;
 }
 
 .mo-glass .acc-body,
 .mo-glass .an2-acc-body {
   padding: 0 var(--g-pad) var(--g-pad);
+}
+
+/* ---- Content inside accordions ---- */
+.mo-glass .an2-proj-tiles {
+  gap: var(--g-gap-sm);
+}
+
+.mo-glass .an2-proj-prog {
+  margin-top: var(--g-gap);
+}
+
+.mo-glass .an2-status-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--g-gap-sm);
+}
+
+.mo-glass .an2-status-row {
+  gap: 12px;
+  padding: var(--g-pad-sm) var(--g-pad);
+  border-radius: var(--g-r-sm);
 }
 
 .mo-glass .an2-card-head {
@@ -1775,6 +1855,16 @@
   .mo-glass .an2-stats,
   .mo-glass .admin-stats-grid {
     grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+  }
+
+  /* Projection tiles fall to two columns here, which left a hole when the
+     count is odd. Let the final tile span the row instead. */
+  .mo-glass .an2-proj-tiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .mo-glass .an2-proj-tiles > .an2-proj-tile:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
   }
 
   /* Phone widths: the period nav finally takes its own full-width row —

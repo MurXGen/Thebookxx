@@ -88,6 +88,29 @@ const getDeliveryLabelValue = (totalDiscounted, isFasterDelivery) => {
   return "Standard Delivery";
 };
 
+// Update an existing order row in place, keyed by Order ID, via the Apps Script
+// web app (action=update). `fields` is keyed by the sheet's column headers,
+// e.g. { "Order Comment": "leave at door", "Delivery Type": "Faster" }.
+export const updateOrderRow = async (orderId, fields) => {
+  if (!SHEET_EDIT_API_URL || !orderId) return { success: false };
+  try {
+    const body = new URLSearchParams({
+      action: "update",
+      orderId: String(orderId),
+      data: JSON.stringify(fields || {}),
+    });
+    await fetch(SHEET_EDIT_API_URL, {
+      method: "POST",
+      mode: "no-cors",
+      body,
+    });
+    return { success: true };
+  } catch (error) {
+    console.error("updateOrderRow failed:", error);
+    return { success: false, error };
+  }
+};
+
 // Submit a new order by APPENDING a row via the Apps Script web app. This
 // replaces the Google Form POST, which rejects the whole submission whenever a
 // form question is toggled Required (State, Wallet, etc.) and was silently

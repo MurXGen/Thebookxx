@@ -1751,6 +1751,21 @@ Please cancel this order. Thank you `;
         {!showPhoneInput && !verifying && !loading && (
           <div className="profile-menu">
         {/* Orders — collapsed behind an "Order status & history" toggle */}
+        {searched && !loading && !error && orders.length === 0 && (
+          <div className="orders-accordion">
+            <div className="orders-empty">
+              <span className="orders-empty-ic">
+                <Package size={26} />
+              </span>
+              <strong>No orders yet</strong>
+              <span className="orders-empty-sub">
+                When you place an order it will show up here with live status,
+                delivery estimate and tracking.
+              </span>
+            </div>
+          </div>
+        )}
+
         {searched && !loading && orders.length > 0 && (
           <div className="orders-accordion">
             <button

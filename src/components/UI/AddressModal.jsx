@@ -30,6 +30,7 @@ import {
   Loader2,
   Wallet,
   Check,
+  MessageSquare,
   ArrowRight,
   ArrowLeft,
   ChevronRight,
@@ -48,6 +49,7 @@ import {
   creditWalletReward,
   orderWalletReward,
   fetchOrderStatusById,
+  updateOrderRow,
 } from "@/utils/googleFormOrder";
 import ScratchRewardSheet from "./ScratchRewardSheet";
 import { showToast } from "@/context/ToastContext";
@@ -180,6 +182,9 @@ export default function AddressModal({
 
   const [showUPIPayment, setShowUPIPayment] = useState(false);
   const [showCODSuccess, setShowCODSuccess] = useState(false);
+  // Real order id of the just-placed confirmed order (for the success modal's
+  // note + faster-delivery upgrade writes).
+  const [placedOrderId, setPlacedOrderId] = useState("");
   const [successPayment, setSuccessPayment] = useState("COD");
   // "Pay online" method chooser (UPI apps + Cards/gift-card for overseas users)
   const [showPayMethod, setShowPayMethod] = useState(false);
@@ -655,6 +660,14 @@ export default function AddressModal({
     orderId = undefined,
     paymentLabel = "",
   ) => {
+    // For a CONFIRMED order without an explicit id, mint one and remember it so
+    // the success modal can edit this exact row (note / faster-delivery upgrade).
+    if (confirmed && !orderId) {
+      orderId = `ORD${Date.now()}`;
+      setPlacedOrderId(orderId);
+    } else if (confirmed && orderId) {
+      setPlacedOrderId(orderId);
+    }
     try {
       // Build the link SYNCHRONOUSLY (no await on the URL shortener). Awaiting
       // a slow shortener here used to delay the sheet POST — if the shopper
@@ -1883,6 +1896,16 @@ export default function AddressModal({
                 <div className="pay-sel-footer-row">
                   <button
                     type="button"
+                    className="sec-big-btn pay-sel-wa"
+                    disabled={tooManyOneRupee}
+                    onClick={() => !tooManyOneRupee && beginPayment("WhatsApp")}
+                    aria-label="Order on WhatsApp"
+                  >
+                    <FaWhatsapp size={18} color="#25D366" />
+                    <span>Order</span>
+                  </button>
+                  <button
+                    type="button"
                     className="pri-big-btn pay-confirm-btn"
                     disabled={!paySel || tooManyOneRupee}
                     onClick={() =>
@@ -1901,16 +1924,6 @@ export default function AddressModal({
                         <ArrowRight size={18} strokeWidth={2.5} />
                       )}
                     </span>
-                  </button>
-                  <button
-                    type="button"
-                    className="sec-big-btn pay-sel-wa"
-                    disabled={tooManyOneRupee}
-                    onClick={() => !tooManyOneRupee && beginPayment("WhatsApp")}
-                    aria-label="Order on WhatsApp"
-                  >
-                    <FaWhatsapp size={18} color="#25D366" />
-                    <span>Order</span>
                   </button>
                 </div>
               </div>
@@ -2151,6 +2164,9 @@ export default function AddressModal({
             offerLabel={offerLabel}
             walletApplied={walletApplied}
             deliveryCharge={getDeliveryCharge(fasterDelivery)}
+            fasterDeliveryCharge={getDeliveryCharge(true)}
+            standardDeliveryCharge={getDeliveryCharge(false)}
+            orderRefIn={placedOrderId}
             giftWrap={giftWrap || giftWrapSelected}
             giftWrapCharge={giftWrapCharge}
             bookmark={bookmark}
@@ -2614,6 +2630,8 @@ export function CODSuccessModal({
   offerLabel = "",
   walletApplied = 0,
   deliveryCharge = 0,
+  fasterDeliveryCharge = 0,
+  standardDeliveryCharge = 0,
   giftWrap = false,
   giftWrapCharge = 0,
   quickReadCount = 0,
@@ -2697,14 +2715,30 @@ export function CODSuccessModal({
     if (res?.success) setWalletCredited(true);
   };
 
-  const deliveryWindow = fasterDelivery
-    ? "2-5 business days"
-    : "3-9 business days";
+  // ── Redesigned success view state ──
+  // localFaster reflects an in-modal upgrade to faster delivery.
+  const [localFaster, setLocalFaster] = useState(fasterDelivery);
+  const [localDeliveryCharge, setLocalDeliveryCharge] = useState(deliveryCharge);
+  const [localTotal, setLocalTotal] = useState(totalAmount);
+  const [showInvoice, setShowInvoice] = useState(false);
+  const [note, setNote] = useState("");
+  const [noteSaving, setNoteSaving] = useState(false);
+  const [noteSaved, setNoteSaved] = useState(false);
+  const [showFasterConfirm, setShowFasterConfirm] = useState(false);
+  const [upgrading, setUpgrading] = useState(false);
+  const [upgraded, setUpgraded] = useState(false);
+  const [downloading, setDownloading] = useState(false);
+  const rcptRef = useRef(null);
 
-  // Estimated arrival date (end of the delivery window), e.g. "Sat, 2 Aug".
+  // Delivery windows: Faster = 1–5 days, Standard = 4–12 days.
+  const winStart = localFaster ? 1 : 4;
+  const winEnd = localFaster ? 5 : 12;
+  const deliveryWindow = `${winStart}-${winEnd} business days`;
+
+  // Estimated arrival date (end of the delivery window).
   const deliveryByDate = (() => {
     const d = new Date();
-    d.setDate(d.getDate() + (fasterDelivery ? 5 : 9));
+    d.setDate(d.getDate() + winEnd);
     return d.toLocaleDateString("en-IN", {
       weekday: "short",
       day: "numeric",
@@ -2715,9 +2749,9 @@ export function CODSuccessModal({
   // Estimated delivery RANGE, e.g. "10 – 12 Aug" (or across months).
   const deliveryRange = (() => {
     const start = new Date();
-    start.setDate(start.getDate() + (fasterDelivery ? 2 : 3));
+    start.setDate(start.getDate() + winStart);
     const end = new Date();
-    end.setDate(end.getDate() + (fasterDelivery ? 5 : 9));
+    end.setDate(end.getDate() + winEnd);
     const sameMonth = start.getMonth() === end.getMonth();
     const startStr = start.toLocaleDateString("en-IN", {
       day: "numeric",
@@ -2734,6 +2768,8 @@ export function CODSuccessModal({
   // a shared invoice link we print the real order id/date instead.
   const generatedRef = useRef("TBX" + String(Date.now()).slice(-8)).current;
   const orderRef = orderRefIn || generatedRef;
+  // Note/upgrade writes need the REAL sheet order id (passed as orderRefIn).
+  const canEditOrder = !!orderRefIn;
   const todayStr =
     dateIn ||
     new Date().toLocaleDateString("en-IN", {
@@ -2741,6 +2777,85 @@ export function CODSuccessModal({
       month: "short",
       year: "numeric",
     });
+
+  const firstName = String(name || "").trim().split(/\s+/)[0] || "there";
+  const itemCount = (cartBooks || []).reduce((s, b) => s + (b.qty || 1), 0);
+  const fasterDelta = Math.max(
+    0,
+    (fasterDeliveryCharge || 0) - (standardDeliveryCharge || 0),
+  );
+  const upgradedTotal = totalAmount + fasterDelta;
+
+  // Save the optional customer note to the order's "Order Comment" column.
+  const saveNote = async () => {
+    const t = note.trim();
+    if (!t || !canEditOrder) return;
+    setNoteSaving(true);
+    try {
+      await updateOrderRow(orderRef, { "Order Comment": t });
+      setNoteSaved(true);
+    } catch (e) {
+      console.error("Note save failed:", e);
+    } finally {
+      setNoteSaving(false);
+    }
+  };
+
+  // Confirm the faster-delivery upgrade: flip Delivery Type + charge on the row.
+  const confirmFasterUpgrade = async () => {
+    if (!canEditOrder) return;
+    setUpgrading(true);
+    try {
+      await updateOrderRow(orderRef, {
+        "Delivery Type": "Faster",
+        "Delivery Charge": String(fasterDeliveryCharge || 0),
+        "Total Amount": String(upgradedTotal),
+      });
+      setLocalFaster(true);
+      setLocalDeliveryCharge(fasterDeliveryCharge || 0);
+      setLocalTotal(upgradedTotal);
+      setUpgraded(true);
+      setShowFasterConfirm(false);
+    } catch (e) {
+      console.error("Faster upgrade failed:", e);
+    } finally {
+      setUpgrading(false);
+    }
+  };
+
+  // Download the invoice as a PNG (lazy-loads html2canvas from CDN on demand).
+  const downloadInvoice = async () => {
+    const el = rcptRef.current;
+    if (!el || downloading) return;
+    setDownloading(true);
+    try {
+      if (typeof window !== "undefined" && !window.html2canvas) {
+        await new Promise((res, rej) => {
+          const s = document.createElement("script");
+          s.src =
+            "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
+          s.onload = res;
+          s.onerror = rej;
+          document.body.appendChild(s);
+        });
+      }
+      const canvas = await window.html2canvas(el, {
+        backgroundColor: "#ffffff",
+        scale: 2,
+      });
+      const url = canvas.toDataURL("image/png");
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `TheBookX_invoice_${orderRef}.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } catch (e) {
+      console.error("Invoice download failed:", e);
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   const handleShareOrder = () => {
     const itemsList = (cartBooks || [])
@@ -2909,17 +3024,215 @@ export function CODSuccessModal({
               transition={{ duration: 0.35 }}
             >
               <div className="cod-success-scroll">
-                {/* Printed receipt — slides out of the printer slot */}
-                <div className="rcpt-stage">
-                  <div className="rcpt-printer" aria-hidden="true">
-                    <span className="rcpt-lip" />
+                {/* ── Thank-you + summary (shown first) ── */}
+                <div className="ok-summary">
+                  <div className="ok-thanks">
+                    <span className="ok-thanks-ic">
+                      <CheckCircle2 size={26} strokeWidth={2.4} />
+                    </span>
+                    <strong>Thank you, {firstName}!</strong>
+                    <span className="ok-thanks-sub">
+                      {isUPI && paid
+                        ? "Your payment is received and your order is confirmed."
+                        : "Your order is confirmed."}
+                    </span>
                   </div>
-                  <motion.div
-                    className="rcpt"
-                    initial={{ y: "-109%" }}
-                    animate={{ y: 0 }}
-                    transition={{ duration: 3.4, ease: "linear", delay: 0.2 }}
-                  >
+
+                  <div className="ok-eta">
+                    <span className="ok-eta-ic">
+                      {localFaster ? <Zap size={16} /> : <Truck size={16} />}
+                    </span>
+                    <div className="ok-eta-txt">
+                      <strong>Arriving {deliveryRange}</strong>
+                      <span>
+                        to {city} · {deliveryWindow}
+                      </span>
+                    </div>
+                    <span
+                      className={`ok-badge${localFaster ? " fast" : ""}`}
+                    >
+                      {localFaster ? "Faster" : "Standard"}
+                    </span>
+                  </div>
+
+                  <div className="ok-books">
+                    <div className="ok-covers">
+                      {(cartBooks || []).slice(0, 4).map((b, i) => (
+                        <span className="ok-cover" key={i}>
+                          {b.image ? (
+                            <Image
+                              src={b.image}
+                              alt={b.name || "book"}
+                              width={34}
+                              height={46}
+                            />
+                          ) : (
+                            <Package size={16} />
+                          )}
+                        </span>
+                      ))}
+                    </div>
+                    <span className="ok-books-count">
+                      {itemCount} {itemCount === 1 ? "item" : "items"}
+                    </span>
+                    <span className="ok-total">
+                      <span className="ok-total-lbl">
+                        {isUPI && paid ? "Paid" : "Total"}
+                      </span>
+                      <b>₹{localTotal}</b>
+                    </span>
+                  </div>
+                </div>
+
+                {/* ── Faster-delivery upsell ── */}
+                {!localFaster && canEditOrder && fasterDelta > 0 && (
+                  <div className="ok-faster">
+                    {!showFasterConfirm ? (
+                      <>
+                        <div className="ok-faster-head">
+                          <Zap size={15} /> Want it sooner?
+                        </div>
+                        <div className="ok-faster-cmp">
+                          <div className="ok-faster-opt">
+                            <span className="ok-faster-opt-t">Standard</span>
+                            <span className="ok-faster-opt-d">4–12 days</span>
+                          </div>
+                          <ArrowRight size={16} className="dark-50" />
+                          <div className="ok-faster-opt fast">
+                            <span className="ok-faster-opt-t">Faster</span>
+                            <span className="ok-faster-opt-d">1–5 days</span>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          className="pri-big-btn ok-faster-btn"
+                          onClick={() => setShowFasterConfirm(true)}
+                        >
+                          Upgrade to Faster · +₹{fasterDelta}
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <div className="ok-faster-head">
+                          <Zap size={15} /> Confirm faster delivery
+                        </div>
+                        <div className="ok-faster-bill">
+                          <div className="rcpt-line">
+                            <span>Current total</span>
+                            <span>₹{totalAmount}</span>
+                          </div>
+                          <div className="rcpt-line">
+                            <span>Faster delivery upgrade</span>
+                            <span>+₹{fasterDelta}</span>
+                          </div>
+                          <div className="rcpt-line bold">
+                            <span>New total</span>
+                            <b>₹{upgradedTotal}</b>
+                          </div>
+                        </div>
+                        <div className="ok-faster-actions">
+                          <button
+                            type="button"
+                            className="sec-mid-btn width100"
+                            onClick={() => setShowFasterConfirm(false)}
+                            disabled={upgrading}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="button"
+                            className="pri-big-btn width100"
+                            onClick={confirmFasterUpgrade}
+                            disabled={upgrading}
+                          >
+                            {upgrading ? "Updating…" : "Confirm upgrade"}
+                          </button>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                )}
+                {upgraded && (
+                  <div className="ok-upgraded">
+                    <CheckCircle2 size={15} /> Upgraded to Faster delivery (1–5
+                    days).
+                  </div>
+                )}
+
+                {/* ── Order note ── */}
+                {canEditOrder && (
+                  <div className="ok-note">
+                    <label className="ok-note-lbl">
+                      <MessageSquare size={14} /> Add a note for this order
+                      <span className="ok-note-opt"> (optional)</span>
+                    </label>
+                    {noteSaved ? (
+                      <div className="ok-note-saved">
+                        <Check size={14} /> Note added to your order.
+                      </div>
+                    ) : (
+                      <>
+                        <textarea
+                          className="sec-mid-btn textarea ok-note-input"
+                          placeholder="e.g. Please call before delivery, leave at the gate…"
+                          rows={2}
+                          maxLength={160}
+                          value={note}
+                          onChange={(e) => setNote(e.target.value)}
+                        />
+                        <button
+                          type="button"
+                          className="sec-mid-btn ok-note-save"
+                          onClick={saveNote}
+                          disabled={!note.trim() || noteSaving}
+                        >
+                          {noteSaving ? "Saving…" : "Save note"}
+                        </button>
+                      </>
+                    )}
+                  </div>
+                )}
+
+                {/* ── Check invoice (reveals the printed receipt) ── */}
+                <button
+                  type="button"
+                  className="ok-invoice-toggle"
+                  onClick={() => setShowInvoice((v) => !v)}
+                >
+                  <span className="flex flex-row items-center gap-6">
+                    <Info size={15} /> Check invoice
+                  </span>
+                  <ChevronRight
+                    size={18}
+                    className={`ok-inv-chev${showInvoice ? " open" : ""}`}
+                  />
+                </button>
+
+                {showInvoice && (
+                  <>
+                    <div className="ok-invoice-dl">
+                      <button
+                        type="button"
+                        className="sec-mid-btn"
+                        onClick={downloadInvoice}
+                        disabled={downloading}
+                      >
+                        <Download size={15} />{" "}
+                        {downloading ? "Preparing…" : "Download invoice"}
+                      </button>
+                    </div>
+                    {/* Printed receipt — slides out of the printer slot */}
+                    <div className="rcpt-stage">
+                      <div className="rcpt-printer" aria-hidden="true">
+                        <span className="rcpt-lip" />
+                      </div>
+                      <motion.div
+                        ref={rcptRef}
+                        className="rcpt"
+                        initial={{ y: "-109%" }}
+                        animate={{ y: 0 }}
+                        transition={{ duration: 3.4, ease: "linear", delay: 0.2 }}
+                      >
                     <div className="rcpt-head">
                       <span className="rcpt-brand">TheBookX</span>
                       <span className="rcpt-status">
@@ -3048,6 +3361,8 @@ export function CODSuccessModal({
                     </Link>
                   </motion.div>
                 </div>
+                  </>
+                )}
 
                 {showReward && (
                   <ScratchRewardSheet
@@ -3112,7 +3427,7 @@ export function CODSuccessModal({
                       onClick={onViewProfile}
                     >
                       <User size={15} />
-                      View profile
+                      Go to profile
                     </button>
                   )}
                   <button

@@ -1663,6 +1663,486 @@
 }
 
 /* =========================================================================
+   13b. India Post booking sheet
+   ------------------------------------------------------------------------
+   A long, repetitive data-entry run. The layout is optimised for that: a
+   scroll-linked delivery rail for orientation, clear booked/unbooked states,
+   and a tracking-ID capture per parcel.
+   ========================================================================= */
+
+.mo-glass .ip-modal {
+  border-radius: var(--g-r-xl);
+  background: var(--g-surface-3);
+  -webkit-backdrop-filter: blur(var(--g-blur-lg)) saturate(185%);
+  backdrop-filter: blur(var(--g-blur-lg)) saturate(185%);
+  border: 1px solid var(--g-hairline);
+  box-shadow: var(--g-shadow-lg), var(--g-inner);
+  scroll-behavior: smooth;
+}
+
+/* ---- Sticky header with run progress ---- */
+.mo-glass .ip-modal-head {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--g-gap);
+  padding: var(--g-pad);
+  background: rgba(255, 255, 255, 0.9);
+  -webkit-backdrop-filter: blur(var(--g-blur-lg)) saturate(180%);
+  backdrop-filter: blur(var(--g-blur-lg)) saturate(180%);
+  border-bottom: 1px solid var(--g-edge);
+}
+
+.mo-glass.mo-dark .ip-modal-head {
+  background: rgba(26, 22, 19, 0.9);
+}
+
+.mo-glass .ip-modal-head-main {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mo-glass .ip-modal-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--g-ink);
+}
+
+.mo-glass .ip-modal-sub {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--g-ink-3);
+}
+
+.mo-glass .ip-progress {
+  margin-top: 4px;
+  height: 5px;
+  border-radius: 99px;
+  background: rgba(25, 23, 21, 0.08);
+  overflow: hidden;
+}
+
+.mo-glass .ip-progress-fill {
+  display: block;
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--g-gold), var(--g-orange));
+}
+
+.mo-glass .ip-modal-head-actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: var(--g-gap-sm);
+}
+
+.mo-glass .ip-export-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--g-hairline);
+  background: #fff;
+  color: var(--g-ink-2);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: var(--g-shadow-sm);
+  transition: transform 0.2s var(--g-ease), color 0.2s var(--g-ease),
+    border-color 0.2s var(--g-ease);
+}
+
+.mo-glass .ip-export-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  color: var(--g-orange);
+  border-color: var(--g-hairline-2);
+}
+
+.mo-glass .ip-export-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.mo-glass .ip-export-count {
+  display: grid;
+  place-items: center;
+  min-width: 19px;
+  height: 19px;
+  padding: 0 5px;
+  border-radius: 99px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, var(--g-gold), var(--g-orange));
+}
+
+.mo-glass.mo-dark .ip-export-btn {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: var(--g-edge);
+}
+
+/* ---- Scroll-linked delivery rail ---- */
+.mo-glass .ip-sheet {
+  position: relative;
+}
+
+.mo-glass .ip-sheet.has-rail {
+  padding-left: 46px;
+}
+
+.mo-glass .ip-rail {
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  left: 15px;
+  width: 2px;
+  pointer-events: none;
+}
+
+/* Route ahead — dashed */
+.mo-glass .ip-rail-track {
+  position: absolute;
+  inset: 0;
+  border-radius: 2px;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(25, 23, 21, 0.22) 0 6px,
+    transparent 6px 12px
+  );
+}
+
+/* Route already covered — solid, grows behind the truck */
+.mo-glass .ip-rail-fill {
+  position: absolute;
+  inset: 0;
+  transform-origin: top center;
+  border-radius: 2px;
+  background: linear-gradient(180deg, var(--g-gold), var(--g-orange));
+}
+
+.mo-glass.mo-dark .ip-rail-track {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.2) 0 6px,
+    transparent 6px 12px
+  );
+}
+
+.mo-glass .ip-rail-truck {
+  position: absolute;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  transform: translate(-50%, -50%);
+  will-change: top;
+}
+
+.mo-glass .ip-rail-truck-badge {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: #fff;
+  background: linear-gradient(135deg, var(--g-gold), var(--g-orange));
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.95),
+    0 6px 14px -6px rgba(240, 120, 0, 0.8);
+}
+
+.mo-glass.mo-dark .ip-rail-truck-badge {
+  color: #1a1410;
+  box-shadow: 0 0 0 4px rgba(26, 22, 19, 0.95),
+    0 6px 14px -6px rgba(0, 0, 0, 0.8);
+}
+
+.mo-glass .ip-rail-truck-count {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: var(--g-ink-3);
+  background: var(--g-surface-3);
+  padding: 1px 5px;
+  border-radius: 99px;
+  white-space: nowrap;
+}
+
+/* ---- Order card ---- */
+.mo-glass .ip-order {
+  position: relative;
+  border-radius: var(--g-r);
+  border: 1px solid var(--g-hairline);
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: var(--g-shadow-sm);
+  overflow: hidden;
+  transition: border-color 0.25s var(--g-ease), opacity 0.25s var(--g-ease);
+}
+
+.mo-glass.mo-dark .ip-order {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* Booked parcels recede so the eye lands on what's left to do */
+.mo-glass .ip-order.is-booked {
+  opacity: 0.62;
+  border-color: rgba(22, 163, 74, 0.4);
+}
+
+.mo-glass .ip-order.is-booked:hover {
+  opacity: 1;
+}
+
+.mo-glass .ip-order-head {
+  display: flex;
+  align-items: center;
+  gap: var(--g-gap-sm);
+  flex-wrap: wrap;
+  padding: var(--g-pad-sm) var(--g-pad);
+  border-bottom: 1px solid var(--g-edge);
+}
+
+.mo-glass .ip-order-sr {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #34d399, #16a34a);
+}
+
+.mo-glass .ip-order-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--g-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---- Order comment ---- */
+.mo-glass .ip-comment {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: var(--g-gap-sm) var(--g-pad) 0;
+  padding: 10px 12px;
+  border-radius: var(--g-r-sm);
+  background: rgba(255, 183, 3, 0.1);
+  border: 1px solid rgba(240, 120, 0, 0.22);
+}
+
+.mo-glass .ip-comment-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--g-orange);
+}
+
+.mo-glass .ip-comment-text {
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--g-ink);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* ---- Booking footer ---- */
+.mo-glass .ip-book {
+  padding: var(--g-gap-sm) var(--g-pad) var(--g-pad);
+  border-top: 1px dashed var(--g-edge);
+  margin-top: var(--g-gap-sm);
+}
+
+.mo-glass .ip-book-form {
+  display: flex;
+  align-items: center;
+  gap: var(--g-gap-sm);
+  flex-wrap: wrap;
+}
+
+.mo-glass .ip-book-lbl {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--g-ink-3);
+}
+
+.mo-glass .ip-book-input {
+  flex: 1 1 170px;
+  min-width: 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--g-hairline);
+  background: var(--g-surface-2);
+  color: var(--g-ink);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  letter-spacing: 0.03em;
+  transition: border-color 0.2s var(--g-ease), box-shadow 0.2s var(--g-ease);
+}
+
+.mo-glass .ip-book-input:focus {
+  outline: none;
+  border-color: rgba(240, 120, 0, 0.45);
+  box-shadow: 0 0 0 4px rgba(240, 120, 0, 0.12);
+}
+
+.mo-glass .ip-book-save {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  background: linear-gradient(135deg, #34d399, #16a34a);
+  box-shadow: 0 10px 22px -12px rgba(22, 163, 74, 0.9);
+  transition: transform 0.2s var(--g-ease), box-shadow 0.2s var(--g-ease);
+}
+
+.mo-glass .ip-book-save:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.mo-glass .ip-book-save:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.mo-glass .ip-book-done {
+  display: flex;
+  align-items: center;
+  gap: var(--g-gap-sm);
+  flex-wrap: wrap;
+}
+
+.mo-glass .ip-book-done-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #15803d;
+  background: rgba(22, 163, 74, 0.12);
+  border: 1px solid rgba(22, 163, 74, 0.28);
+}
+
+.mo-glass .ip-book-track {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 11px;
+  border-radius: 99px;
+  border: 1px solid var(--g-hairline);
+  background: var(--g-surface-2);
+  color: var(--g-ink);
+  font-size: 12px;
+  font-weight: 700;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  cursor: pointer;
+  transition: border-color 0.2s var(--g-ease), color 0.2s var(--g-ease);
+}
+
+.mo-glass .ip-book-track:hover {
+  color: var(--g-orange);
+  border-color: var(--g-hairline-2);
+}
+
+.mo-glass .ip-book-track.empty {
+  color: var(--g-ink-3);
+  font-style: italic;
+  font-family: inherit;
+  font-weight: 500;
+  cursor: default;
+}
+
+.mo-glass .ip-book-undo {
+  margin-left: auto;
+  padding: 6px 12px;
+  border-radius: 99px;
+  border: 1px solid var(--g-edge);
+  background: transparent;
+  color: var(--g-ink-3);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s var(--g-ease), border-color 0.2s var(--g-ease);
+}
+
+.mo-glass .ip-book-undo:hover {
+  color: #e5484d;
+  border-color: rgba(229, 72, 77, 0.4);
+}
+
+/* ---- Narrow screens ---- */
+@media (max-width: 640px) {
+  .mo-glass .ip-sheet.has-rail {
+    padding-left: 34px;
+  }
+
+  .mo-glass .ip-rail {
+    left: 11px;
+  }
+
+  .mo-glass .ip-rail-truck-count {
+    display: none;
+  }
+
+  .mo-glass .ip-modal-head {
+    flex-wrap: wrap;
+  }
+
+  .mo-glass .ip-book-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  /* In a column flex container `flex: 1 1 170px` grows on the VERTICAL axis,
+     which stretched the input into a giant box. Pin it to its own height. */
+  .mo-glass .ip-book-input {
+    flex: 0 0 auto;
+  }
+
+  .mo-glass .ip-book-save {
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mo-glass .ip-modal {
+    scroll-behavior: auto;
+  }
+}
+
+/* =========================================================================
    14. Spacing normalisation
    ------------------------------------------------------------------------
    The original page grew organically, so sibling blocks sat on different

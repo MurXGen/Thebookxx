@@ -7112,7 +7112,7 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 990,
+    cost: 90,
   },
   {
     id: "bk-457",

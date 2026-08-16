@@ -31,14 +31,14 @@ function getActiveEvent() {
   const now = new Date();
   const m = now.getMonth(); // 0-based
   const d = now.getDate();
-  // Independence Day window: 1–17 Aug
-  if (m === 7 && d >= 1 && d <= 17) {
+  // Raksha Bandhan window: 15–30 Aug (Rakhi 2026 = 28 Aug)
+  if (m === 7 && d >= 15 && d <= 30) {
     return {
-      key: "independence",
-      emoji: "🇮🇳",
-      title: "Independence Day special!",
-      sub: "Scratch to reveal a freedom-sale wallet reward",
-      gradient: "linear-gradient(135deg,#FF9933,#ffffff,#138808)",
+      key: "rakhi",
+      emoji: "🎀",
+      title: "Raksha Bandhan special!",
+      sub: "Scratch to unwrap a rakhi-gift wallet reward",
+      gradient: "linear-gradient(135deg,#c0223b,#e6a83c,#8a1c34)",
     };
   }
   // Diwali-ish window (rough): late Oct – mid Nov
@@ -94,11 +94,24 @@ export default function PincodeModal() {
   const [scratchReward, setScratchReward] = useState(0);
   const [scratchDone, setScratchDone] = useState(false);
 
+  // Optional "where did you come from?" source (not required to submit).
+  const SOURCE_CHIPS = ["Google", "Instagram", "Facebook", "YouTube"];
+  const [source, setSource] = useState("");
+  const [otherSource, setOtherSource] = useState("");
+  const [showOtherSource, setShowOtherSource] = useState(false);
+  const resolvedSource = () =>
+    source === "Others" ? otherSource.trim() : source;
+
   const handleScratchComplete = async () => {
     if (scratchDone) return;
     setScratchDone(true);
     if (scratchEligible && scratchReward > 0) {
       await creditWalletReward(phoneNumber, scratchReward);
+      // Mark the one-time scratch perk as claimed so a repeat scratch shows
+      // "Better luck next time" instead of crediting again.
+      try {
+        localStorage.setItem("tbx_scratch_claimed", "1");
+      } catch (_) {}
     }
   };
   const closeScratch = () => setShowScratch(false);
@@ -225,12 +238,14 @@ export default function PincodeModal() {
       is_manual_entry: !hasAutoFilled,
     });
 
-    // Submit to Google Form ONLY on manual submit
+    // Submit to Google Form ONLY on manual submit. The optional "where did you
+    // find us?" answer goes into its own Source column.
     await trackPincodeToGoogleForm({
       pincode: pincode,
       city: location?.city,
       state: location?.state,
       phone: phoneNumber,
+      source: resolvedSource(),
       type: "submit",
     });
 
@@ -255,10 +270,22 @@ export default function PincodeModal() {
     // The total wallet balance is capped at ₹16 for pincode rewards.
     if (phoneNumber && phoneNumber.length === 10) {
       const balance = await fetchWalletBalance(phoneNumber);
-      // Eligible only if there's room below ₹16. Reward is ₹11–16, and still
-      // capped so the balance never crosses ₹16 (e.g. balance ₹10 max ₹6).
+      // The scratch reward is a FIRST-TIME welcome perk. A shopper who is
+      // already logged in (has a saved phone) or who has already claimed a
+      // scratch reward gets "Better luck next time" and is NOT credited again.
+      let alreadyLoggedIn = false;
+      let alreadyClaimed = false;
+      try {
+        alreadyLoggedIn =
+          String(localStorage.getItem("track_orders_phone") || "").replace(
+            /\D/g,
+            "",
+          ).length >= 10;
+        alreadyClaimed = localStorage.getItem("tbx_scratch_claimed") === "1";
+      } catch (_) {}
+      // Eligible only if there's room below ₹16 AND this is a first-time scratch.
       const room = 16 - balance;
-      const eligible = room > 0;
+      const eligible = room > 0 && !alreadyLoggedIn && !alreadyClaimed;
       let rew = 0;
       if (eligible) {
         rew = 11 + Math.floor(Math.random() * 6); // ₹11–16
@@ -492,6 +519,48 @@ export default function PincodeModal() {
                           </span>
                         </div>
                       </div>
+                    </div>
+
+                    {/* Optional: where did you hear about us? (chip badges) */}
+                    <div className="pin-source">
+                      <span className="pin-source-label">
+                        Where did you find us?{" "}
+                        <span className="pin-source-opt">(optional)</span>
+                      </span>
+                      <div className="pin-source-chips">
+                        {SOURCE_CHIPS.map((c) => (
+                          <button
+                            type="button"
+                            key={c}
+                            className={`pin-source-chip${source === c ? " active" : ""}`}
+                            onClick={() => {
+                              setSource(c);
+                              setShowOtherSource(false);
+                            }}
+                          >
+                            {c}
+                          </button>
+                        ))}
+                        <button
+                          type="button"
+                          className={`pin-source-chip${source === "Others" ? " active" : ""}`}
+                          onClick={() => {
+                            setSource("Others");
+                            setShowOtherSource(true);
+                          }}
+                        >
+                          Others
+                        </button>
+                      </div>
+                      {showOtherSource && (
+                        <input
+                          className="sec-mid-btn pin-source-other"
+                          placeholder="Tell us where (e.g. friend, WhatsApp)"
+                          value={otherSource}
+                          maxLength={40}
+                          onChange={(e) => setOtherSource(e.target.value)}
+                        />
+                      )}
                     </div>
 
                     {/* Benefits — scrolling marquee, items split by a dot */}

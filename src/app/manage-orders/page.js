@@ -2,7 +2,6 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
-import { createPortal } from "react-dom";
 import {
   downloadCombinedFormPNG,
   downloadCombinedFormsPNGs,
@@ -67,7 +66,13 @@ import {
   PanelLeftClose,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
-import { motion, AnimatePresence } from "framer-motion";
+import {
+  motion,
+  AnimatePresence,
+  useScroll,
+  useSpring,
+  useTransform,
+} from "framer-motion";
 import Link from "next/link";
 import { books as ALL_BOOKS } from "@/utils/book";
 import { creditWalletReward } from "@/utils/googleFormOrder";
@@ -105,6 +110,30 @@ const openWhatsApp = (phone, text) => {
 // Prefilled, nicely-formatted WhatsApp messages for each order stage.
 // Includes the tracking ID + India Post link (when a tracking ID exists)
 // and the customer's order-tracking profile link.
+/* ---- CSV export ----------------------------------------------------------
+   Builds a spreadsheet-safe CSV and triggers a browser download. Values are
+   always quoted and inner quotes doubled, so commas, newlines and quotes in
+   addresses survive the round-trip into Excel / Sheets. */
+const csvCell = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+
+const downloadCsv = (filename, headers, rows) => {
+  const body = [headers, ...rows]
+    .map((r) => r.map(csvCell).join(","))
+    .join("\r\n");
+  // BOM keeps Excel happy with the ₹ sign and any non-ASCII address text.
+  const blob = new Blob(["﻿" + body], {
+    type: "text/csv;charset=utf-8;",
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+};
+
 const PROFILE_URL = "https://www.thebookx.in/profile";
 const INDIA_POST_URL = "https://www.indiapost.gov.in";
 
@@ -414,40 +443,18 @@ const parseBooksList = (booksStr) => {
 
 // Fast name book lookup (for genre/category attribution of order items).
 const BOOK_BY_NAME = {};
-// Second, looser index: strips edition suffixes like "(Hard Cover)" and all
-// punctuation so an order line such as "The Boy… (Hard Cover)" still matches
-// the catalogue entry "The Boy…". Prevents false "cost?" flags in analytics.
-const BOOK_BY_NORM = {};
-const normalizeBookName = (s) =>
-  String(s || "")
-    .toLowerCase()
-    .replace(
-      /\(\s*(?:hard\s*cover|hardcover|hardback|hard back|paperback|soft\s*cover|hb|pb)\s*\)/g,
-      "",
-    )
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim();
 ALL_BOOKS.forEach((b) => {
-  if (b?.name) {
-    BOOK_BY_NAME[b.name.toLowerCase().trim()] = b;
-    const nk = normalizeBookName(b.name);
-    if (nk && !BOOK_BY_NORM[nk]) BOOK_BY_NORM[nk] = b;
-  }
+  if (b?.name) BOOK_BY_NAME[b.name.toLowerCase().trim()] = b;
 });
-// Tolerant lookup: exact (case-insensitive) first, then normalized fallback.
-const lookupBook = (name) => {
-  const raw = String(name || "").toLowerCase().trim();
-  return BOOK_BY_NAME[raw] || BOOK_BY_NORM[normalizeBookName(name)] || null;
-};
 
 // India Post weight-slab delivery charge (grams ₹). Extend the top slab
 // as needed for parcels heavier than 4kg.
 const indiaPostDeliveryCost = (grams) => {
   const g = Number(grams) || 0;
-  if (g <= 500) return 84;
-  if (g <= 1000) return 124;
-  if (g <= 1500) return 200;
-  if (g <= 2000) return 240;
+  if (g <= 500) return 42;
+  if (g <= 1000) return 62;
+  if (g <= 1500) return 100;
+  if (g <= 2000) return 150;
   if (g <= 4000) return 200;
   return 200; // >4kg — adjust if you add heavier slabs
 };
@@ -462,7 +469,12 @@ const orderEconomics = (parsedBooks = []) => {
   let unmatched = 0;
   parsedBooks.forEach((line) => {
     const qty = Number(line.quantity) || 1;
-    const b = lookupBook(line.name);
+    const b =
+      BOOK_BY_NAME[
+        String(line.name || "")
+          .toLowerCase()
+          .trim()
+      ];
     if (b) {
       matched += 1;
       booksCost += (Number(b.cost) || 0) * qty;
@@ -1124,15 +1136,56 @@ function IpField({ label, value, hint, id, copiedId, onCopy }) {
 }
 
 // Per-order copy-paste block, ordered exactly like the India Post form flow.
+/* Scroll-linked delivery rail shown down the left edge of the booking sheet.
+   The full route is drawn as a dashed line; the portion already covered is
+   painted solid behind a truck that rides the line as you scroll. Progress is
+   spring-smoothed so the truck glides instead of snapping frame to frame. */
+function IpTruckRail({ scrollRef, total = 0, booked = 0 }) {
+  const { scrollYProgress } = useScroll({ container: scrollRef });
+  const progress = useSpring(scrollYProgress, {
+    stiffness: 120,
+    damping: 26,
+    restDelta: 0.001,
+  });
+  const top = useTransform(progress, [0, 1], ["0%", "100%"]);
+  const scaleY = useTransform(progress, [0, 1], [0, 1]);
+
+  return (
+    <div className="ip-rail" aria-hidden="true">
+      {/* Dashed line = route still ahead */}
+      <div className="ip-rail-track" />
+      {/* Solid line = distance already covered */}
+      <motion.div className="ip-rail-fill" style={{ scaleY }} />
+      <motion.div className="ip-rail-truck" style={{ top }}>
+        <span className="ip-rail-truck-badge">
+          <Truck size={14} />
+        </span>
+        {total > 0 && (
+          <span className="ip-rail-truck-count">
+            {booked}/{total}
+          </span>
+        )}
+      </motion.div>
+    </div>
+  );
+}
+
 function IndiaPostSheet({
   orders,
   copyToClipboard,
   copiedId,
   search = "",
   bypassFilter = false,
-  hideNote = false,
   hideHead = false,
+  orderNotes = {},
+  bookedOrders = {},
+  onBook,
+  onUnbook,
+  scrollRef = null,
+  showBooking = false,
 }) {
+  // Per-order tracking-ID drafts, keyed by order id.
+  const [trackDraft, setTrackDraft] = useState({});
   const shippingAll = bypassFilter
     ? orders || []
     : (orders || []).filter((o) =>
@@ -1162,16 +1215,18 @@ function IndiaPostSheet({
     return <p className="ip-empty">No “Getting Shipped” orders right now.</p>;
   if (!shipping.length)
     return <p className="ip-empty">No orders match “{search}”.</p>;
+  const bookedCount = shipping.filter(
+    (o) => !!bookedOrders[o["Order ID"]],
+  ).length;
+
   return (
-    <div className="ip-sheet">
-      {!hideNote && (
-        <div className="ip-note">
-          <b>Same for every parcel:</b> Drop-off pincode <b>400017</b> pick{" "}
-          <b>Dharavi Road S.O</b> · after typing weight choose the lowest rate (
-          <b>India Post Parcel Retail</b>) · Mail Shape ={" "}
-          <b>Box Type (Non Roll Form)</b> · Delivery Type = <b>Normal Delivery</b>
-          .
-        </div>
+    <div className={`ip-sheet${scrollRef ? " has-rail" : ""}`}>
+      {scrollRef && (
+        <IpTruckRail
+          scrollRef={scrollRef}
+          total={shipping.length}
+          booked={bookedCount}
+        />
       )}
       {shipping.map((o, i) => {
         const books = (o.parsedBooks || []).length || 1;
@@ -1218,10 +1273,23 @@ function IndiaPostSheet({
           city: cap30(o["City"]),
           state: cap30(o["State"]),
         });
+        const oid = o["Order ID"];
+        const rawBooked = bookedOrders[oid];
+        const booked = rawBooked
+          ? rawBooked === true
+            ? { tracking: "", at: "" }
+            : { tracking: rawBooked.tracking || "", at: rawBooked.at || "" }
+          : null;
+        const comment = orderNotes[oid] ?? (o["Comment"] || "");
+        const draft = trackDraft[oid] ?? "";
+
         return (
-          <div className="ip-order" key={o["Order ID"] || i}>
+          <div
+            className={`ip-order${booked ? " is-booked" : ""}`}
+            key={oid || i}
+          >
             <div className="ip-order-head">
-              <span className="ip-order-sr">{i + 1}</span>
+              <span className="ip-order-sr">{booked ? "✓" : i + 1}</span>
               <span className="ip-order-name">{o["Customer Name"] || "—"}</span>
               <span className={`ip-tag ${isCOD ? "cod" : "prepaid"}`}>
                 {isCOD ? `COD ₹${amount}` : "Prepaid — no COD"}
@@ -1243,6 +1311,29 @@ function IndiaPostSheet({
                 )}
               </button>
             </div>
+
+            {/* Anything the packer noted on this order — surfaced before the
+                fields so instructions like "call before dispatch" aren't
+                missed while copying values into the portal. */}
+            {comment && (
+              <div className="ip-comment">
+                <span className="ip-comment-title">
+                  <MessageCircle size={14} /> Comment
+                </span>
+                <span className="ip-comment-text">{comment}</span>
+              </div>
+            )}
+
+            {/* Customer's own note left at checkout (Order Comment column). */}
+            {o["Order Comment"] && (
+              <div className="ip-comment ip-comment-cust">
+                <span className="ip-comment-title">
+                  <MessageCircle size={14} /> Customer note
+                </span>
+                <span className="ip-comment-text">{o["Order Comment"]}</span>
+              </div>
+            )}
+
             <div className="ip-fields">
               <div className="ip-step">1 · Article details</div>
               <IpField
@@ -1367,6 +1458,88 @@ function IndiaPostSheet({
                 onCopy={copyToClipboard}
               />
             </div>
+
+            {/* Booking footer — capture the India Post article number, then
+                stamp the order as booked. Saved to localStorage so a refresh
+                mid-session doesn't lose the run. */}
+            {showBooking && (
+              <div className="ip-book">
+                {booked ? (
+                  <div className="ip-book-done">
+                    <span className="ip-book-done-badge">
+                      <Check size={14} /> Booked
+                    </span>
+                    {booked.tracking ? (
+                      <button
+                        type="button"
+                        className="ip-book-track"
+                        title="Copy tracking ID"
+                        onClick={() =>
+                          copyToClipboard(booked.tracking, key("bt"))
+                        }
+                      >
+                        {copiedId === key("bt") ? (
+                          <Check size={13} />
+                        ) : (
+                          <Copy size={13} />
+                        )}
+                        {booked.tracking}
+                      </button>
+                    ) : (
+                      <span className="ip-book-track empty">
+                        No tracking ID
+                      </span>
+                    )}
+                    <button
+                      type="button"
+                      className="ip-book-undo"
+                      onClick={() => onUnbook && onUnbook(oid)}
+                    >
+                      Undo
+                    </button>
+                  </div>
+                ) : (
+                  <form
+                    className="ip-book-form"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      if (!draft.trim()) return;
+                      onBook && onBook(oid, draft.trim());
+                      setTrackDraft((d) => {
+                        const n = { ...d };
+                        delete n[oid];
+                        return n;
+                      });
+                    }}
+                  >
+                    <label className="ip-book-lbl" htmlFor={key("tid")}>
+                      Tracking ID
+                    </label>
+                    <input
+                      id={key("tid")}
+                      className="ip-book-input"
+                      placeholder="e.g. CS123456789IN"
+                      value={draft}
+                      autoComplete="off"
+                      spellCheck="false"
+                      onChange={(e) =>
+                        setTrackDraft((d) => ({
+                          ...d,
+                          [oid]: e.target.value.toUpperCase(),
+                        }))
+                      }
+                    />
+                    <button
+                      type="submit"
+                      className="ip-book-save"
+                      disabled={!draft.trim()}
+                    >
+                      <Check size={14} /> Save as booked
+                    </button>
+                  </form>
+                )}
+              </div>
+            )}
           </div>
         );
       })}
@@ -2541,6 +2714,17 @@ export default function ManageOrdersPage() {
   const [showCalc, setShowCalc] = useState(false); // calculator modal
   const [showIndiaPost, setShowIndiaPost] = useState(false); // India Post modal
   const [ipSearch, setIpSearch] = useState(""); // India Post modal search
+  // Scroll container that drives the truck rail. A plain ref isn't enough:
+  // child layout effects run before the parent's ref is attached, so
+  // useScroll() inside the rail would see null and silently fall back to
+  // tracking the window. A callback ref flips state once the node exists, and
+  // the rail is only mounted after that.
+  const ipScrollRef = useRef(null);
+  const [ipScrollReady, setIpScrollReady] = useState(false);
+  const setIpScrollNode = useCallback((node) => {
+    ipScrollRef.current = node;
+    setIpScrollReady(!!node);
+  }, []);
   const [waPickerOrder, setWaPickerOrder] = useState(null); // WhatsApp picker
   const [waCustomText, setWaCustomText] = useState(""); // custom WA message
   const [darkMode, setDarkMode] = useState(false); // page dark theme
@@ -2611,9 +2795,94 @@ export default function ManageOrdersPage() {
       localStorage.setItem("mo_booked_orders", JSON.stringify(bookedOrders));
     } catch {}
   }, [bookedOrders]);
-  const markOrderBooked = (orderId) => {
+  // A booking record is { tracking, at }. Older saves stored a bare `true`,
+  // so every read goes through bookedInfo() to normalise the shape.
+  const markOrderBooked = (orderId, tracking = "") => {
     if (!orderId) return;
-    setBookedOrders((p) => ({ ...p, [orderId]: true }));
+    setBookedOrders((p) => ({
+      ...p,
+      [orderId]: {
+        tracking: String(tracking || "").trim(),
+        at: new Date().toISOString(),
+      },
+    }));
+  };
+  const bookedInfo = (orderId) => {
+    const rec = bookedOrders[orderId];
+    if (!rec) return null;
+    if (rec === true) return { tracking: "", at: "" };
+    return { tracking: rec.tracking || "", at: rec.at || "" };
+  };
+
+  // Export every booked "Getting Shipped" order as a CSV — one row per parcel,
+  // ready to hand to India Post or paste back into the tracking sheet.
+  const exportBookedCsv = () => {
+    const rows = (orders || [])
+      .filter(
+        (o) =>
+          /getting shipped/i.test(o["Order Status"] || "") &&
+          !!bookedOrders[o["Order ID"]],
+      )
+      .map((o, i) => {
+        const info = bookedInfo(o["Order ID"]) || { tracking: "", at: "" };
+        const gross =
+          Number(
+            String(o["Total Amount"] || o.revenue || "").replace(/[^\d.]/g, ""),
+          ) || 0;
+        const isCOD = /cash|cod/i.test(o["Payment Type"] || "");
+        const codNet = isCOD ? Math.max(0, gross - Math.round(gross * 0.059)) : 0;
+        return [
+          i + 1,
+          o["Order ID"] || "",
+          info.tracking,
+          o["Customer Name"] || "",
+          o["Phone Number"] || "",
+          o["Address"] || "",
+          o["City"] || "",
+          o["State"] || "",
+          o["Pincode"] || "",
+          isCOD ? "COD" : "Prepaid",
+          gross ? gross.toFixed(2) : "",
+          isCOD ? codNet.toFixed(2) : "0.00",
+          (o.parsedBooks || []).length || 1,
+          "500",
+          info.at ? new Date(info.at).toLocaleString("en-IN") : "",
+          orderNotes[o["Order ID"]] ?? (o["Comment"] || ""),
+        ];
+      });
+
+    if (!rows.length) {
+      showToast("Nothing booked yet — save a tracking ID first.", "error");
+      return;
+    }
+
+    const stamp = new Date().toISOString().slice(0, 10);
+    downloadCsv(
+      `india-post-booked-${stamp}.csv`,
+      [
+        "S.No",
+        "Order ID",
+        "Tracking ID",
+        "Customer Name",
+        "Phone",
+        "Address",
+        "City",
+        "State",
+        "Pincode",
+        "Payment",
+        "Order Value",
+        "COD Net",
+        "Books",
+        "Weight (g)",
+        "Booked At",
+        "Comment",
+      ],
+      rows,
+    );
+    showToast(
+      `Exported ${rows.length} booked order${rows.length === 1 ? "" : "s"}.`,
+      "success",
+    );
   };
   const unmarkOrderBooked = (orderId) => {
     setBookedOrders((p) => {
@@ -2864,7 +3133,6 @@ export default function ManageOrdersPage() {
   const [mergeGroup, setMergeGroup] = useState(null); // customer group under merge preview
   const [merging, setMerging] = useState(false); // merge write in progress
   const [mergeStatusDrafts, setMergeStatusDrafts] = useState({}); // per-order status edits in merge modal
-  const [bookCostOverrides, setBookCostOverrides] = useState({}); // { nameLower: cost } — session-only cost for uncatalogued books
   const [waPick, setWaPick] = useState(""); // dropdown-selected stage (not yet triggered)
 
   const [accOpen, setAccOpen] = useState({
@@ -3463,13 +3731,6 @@ export default function ManageOrdersPage() {
     const isCOD = /cash|cod/i.test(o["Payment Type"] || "");
     // COD orders collect the NET amount (order value − 5.9%); non-COD unchanged.
     const codAmount = isCOD ? Math.round(rev - Math.round(rev * 0.059)) : rev;
-    // Fulfilment flags surfaced on the shipping label.
-    const isFaster = /faster|express|priority/i.test(
-      o["Delivery Type"] || "",
-    );
-    const giftWrapRaw = String(o["Gift Wrap"] || "");
-    const hasGiftWrap = /^\s*yes/i.test(giftWrapRaw);
-    const hasBookmark = /bookmark/i.test(giftWrapRaw);
     return {
       orderId: o["Order ID"],
       customerName: o["Customer Name"],
@@ -3481,9 +3742,6 @@ export default function ManageOrdersPage() {
       totalValueRs: rev,
       isCOD,
       codAmount,
-      isFaster,
-      hasGiftWrap,
-      hasBookmark,
     };
   };
 
@@ -4021,7 +4279,7 @@ export default function ManageOrdersPage() {
         if (!bookMap[key]) bookMap[key] = { units: 0, revenue: 0 };
         bookMap[key].units += b.quantity || 1;
         bookMap[key].revenue += b.total || 0;
-        const bk = lookupBook(key);
+        const bk = BOOK_BY_NAME[key.toLowerCase().trim()];
         const cat = (bk?.catalogue && bk.catalogue[0]) || "other";
         catMap[cat] = (catMap[cat] || 0) + (b.total || 0);
       });
@@ -4300,29 +4558,17 @@ export default function ManageOrdersPage() {
       (o.parsedBooks || []).forEach((line) => {
         const name = String(line.name || "").trim();
         if (!name) return;
-        const b = lookupBook(name);
+        const b = BOOK_BY_NAME[name.toLowerCase()];
         const qty = Number(line.quantity) || 1;
         const revenue = Number(line.total) || (Number(line.price) || 0) * qty;
-        if (!map[name]) {
-          const key = name.toLowerCase();
-          const ov = bookCostOverrides[key];
-          const hasOverride = ov !== undefined && ov !== "";
-          // Catalogue cost wins; otherwise a session-only manual override.
-          const unitCost = b
-            ? Number(b.cost) || 0
-            : hasOverride
-              ? Number(ov) || 0
-              : 0;
+        if (!map[name])
           map[name] = {
             name,
-            key,
             qty: 0,
             revenue: 0,
-            unitCost,
+            unitCost: b ? Number(b.cost) || 0 : 0,
             matched: !!b,
-            hasOverride,
           };
-        }
         map[name].qty += qty;
         map[name].revenue += revenue;
       });
@@ -4343,7 +4589,7 @@ export default function ManageOrdersPage() {
       { qty: 0, revenue: 0, cost: 0, profit: 0 },
     );
     return { rows, totals };
-  }, [anOrders, bookCostOverrides]);
+  }, [anOrders]);
 
   // 9 — Time-of-day quadrants (6-hour buckets) for the selected period.
   const quadrantData = useMemo(() => {
@@ -5114,7 +5360,7 @@ export default function ManageOrdersPage() {
       (o.parsedBooks || []).forEach((line) => {
         const name = String(line.name || "").trim();
         if (!name) return;
-        const b = lookupBook(name);
+        const b = BOOK_BY_NAME[name.toLowerCase()];
         const qty = Number(line.quantity) || 1;
         const revenue = Number(line.total) || (Number(line.price) || 0) * qty;
         if (!map[name]) {
@@ -5156,10 +5402,10 @@ export default function ManageOrdersPage() {
 
   // Weight-slab distribution for the delivery-cost card
   const deliverySlabs = [
-    { label: "0–500g", rate: 84, max: 500 },
-    { label: "500g–1kg", rate: 124, max: 1000 },
-    { label: "1–1.5kg", rate: 200, max: 1500 },
-    { label: "1.5–2kg", rate: 240, max: 2000 },
+    { label: "0–500g", rate: 42, max: 500 },
+    { label: "500g–1kg", rate: 62, max: 1000 },
+    { label: "1–1.5kg", rate: 100, max: 1500 },
+    { label: "1.5–2kg", rate: 150, max: 2000 },
     { label: "2–4kg", rate: 200, max: 4000 },
   ].map((s) => ({ ...s, count: 0, amount: 0 }));
   analyticsOrders.forEach((o) => {
@@ -5706,17 +5952,14 @@ export default function ManageOrdersPage() {
             onMouseLeave={onChartLeave}
             onPointerDown={onChartTap}
           >
-            {chartTip &&
-              typeof document !== "undefined" &&
-              createPortal(
-                <div
-                  className={`an2-tip${chartTip.below ? " below" : ""}`}
-                  style={{ left: chartTip.x, top: chartTip.y }}
-                >
-                  {chartTip.text}
-                </div>,
-                document.body,
-              )}
+            {chartTip && (
+              <div
+                className={`an2-tip${chartTip.below ? " below" : ""}`}
+                style={{ left: chartTip.x, top: chartTip.y }}
+              >
+                {chartTip.text}
+              </div>
+            )}
 
             {/* Overview stats */}
             <div className="an2-stats">
@@ -6374,7 +6617,6 @@ export default function ManageOrdersPage() {
                       <th>Book</th>
                       <th className="ta-r">Qty</th>
                       <th className="ta-r">Revenue</th>
-                      <th className="ta-r">Cost/book</th>
                       <th className="ta-r">Cost</th>
                       <th className="ta-r">Profit / loss</th>
                     </tr>
@@ -6382,7 +6624,7 @@ export default function ManageOrdersPage() {
                   <tbody>
                     {bookStats.rows.length === 0 && (
                       <tr>
-                        <td colSpan={6} className="an2-bp-empty">
+                        <td colSpan={5} className="an2-bp-empty">
                           No book sales in this period.
                         </td>
                       </tr>
@@ -6391,10 +6633,10 @@ export default function ManageOrdersPage() {
                       <tr key={r.name}>
                         <td>
                           <span className="an2-bp-name">{r.name}</span>
-                          {!r.matched && !r.hasOverride && (
+                          {!r.matched && (
                             <span
                               className="an2-bp-warn"
-                              title="No catalogue cost — enter a cost/book to include it (this session)"
+                              title="No catalogue cost — profit assumes ₹0 cost"
                             >
                               cost?
                             </span>
@@ -6403,32 +6645,6 @@ export default function ManageOrdersPage() {
                         <td className="ta-r">{r.qty}</td>
                         <td className="ta-r">
                           ₹{Math.round(r.revenue).toLocaleString()}
-                        </td>
-                        <td className="ta-r">
-                          {r.matched ? (
-                            <>₹{Math.round(r.unitCost || 0).toLocaleString()}</>
-                          ) : (
-                            <span className="an2-bp-costwrap">
-                              ₹
-                              <input
-                                type="number"
-                                min="0"
-                                className="an2-bp-costin"
-                                placeholder="cost"
-                                value={bookCostOverrides[r.key] ?? ""}
-                                onChange={(e) => {
-                                  const v = e.target.value;
-                                  setBookCostOverrides((p) => {
-                                    const n = { ...p };
-                                    if (v === "") delete n[r.key];
-                                    else n[r.key] = v;
-                                    return n;
-                                  });
-                                }}
-                                title="Set this book's cost for this session"
-                              />
-                            </span>
-                          )}
                         </td>
                         <td className="ta-r">
                           ₹{Math.round(r.cost).toLocaleString()}
@@ -8098,6 +8314,14 @@ export default function ManageOrdersPage() {
                               )}
                             </div>
 
+                            {/* Customer's own note left at checkout. */}
+                            {order["Order Comment"] && (
+                              <div className="mo-cust-note">
+                                <MessageCircle size={12} />
+                                <span>{order["Order Comment"]}</span>
+                              </div>
+                            )}
+
                             {/* Comment + Book online — one row, secondary buttons.
                                 The comment is saved to the order's "Comment"
                                 column in the sheet. */}
@@ -8783,28 +9007,71 @@ export default function ManageOrdersPage() {
               exit={{ y: "100%" }}
               transition={{ duration: 0.35, ease: "easeOut" }}
               onClick={(e) => e.stopPropagation()}
+              ref={setIpScrollNode}
               style={{ maxHeight: "92vh", overflowY: "auto" }}
             >
-              <div className="ip-modal-head">
-                <div className="flex flex-col gap-2">
-                  <span className="weight-700 font-16 flex items-center gap-6">
-                    <Truck size={17} /> India Post booking
-                  </span>
-                  <span className="font-11 dark-50">
-                    {gettingShippedCount} “Getting Shipped” order
-                    {gettingShippedCount === 1 ? "" : "s"} · tap any field to
-                    copy into the portal
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  className="ip-modal-x"
-                  onClick={() => setShowIndiaPost(false)}
-                  aria-label="Close"
-                >
-                  <X size={18} />
-                </button>
-              </div>
+              {(() => {
+                const shippingList = (orders || []).filter((o) =>
+                  /getting shipped/i.test(o["Order Status"] || ""),
+                );
+                const doneCount = shippingList.filter(
+                  (o) => !!bookedOrders[o["Order ID"]],
+                ).length;
+                const pct = shippingList.length
+                  ? Math.round((doneCount / shippingList.length) * 100)
+                  : 0;
+                return (
+                  <div className="ip-modal-head">
+                    <div className="ip-modal-head-main">
+                      <span className="ip-modal-title">
+                        <Truck size={17} /> India Post booking
+                      </span>
+                      <span className="ip-modal-sub">
+                        {doneCount} of {shippingList.length} booked · tap any
+                        field to copy into the portal
+                      </span>
+                      <div className="ip-progress" aria-hidden="true">
+                        <motion.span
+                          className="ip-progress-fill"
+                          initial={false}
+                          animate={{ width: `${pct}%` }}
+                          transition={{
+                            type: "spring",
+                            stiffness: 180,
+                            damping: 28,
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div className="ip-modal-head-actions">
+                      <button
+                        type="button"
+                        className="ip-export-btn"
+                        onClick={exportBookedCsv}
+                        disabled={!doneCount}
+                        title={
+                          doneCount
+                            ? `Download ${doneCount} booked order${doneCount === 1 ? "" : "s"} as CSV`
+                            : "Save a tracking ID first"
+                        }
+                      >
+                        <Download size={14} /> Export CSV
+                        {doneCount > 0 && (
+                          <span className="ip-export-count">{doneCount}</span>
+                        )}
+                      </button>
+                      <button
+                        type="button"
+                        className="ip-modal-x"
+                        onClick={() => setShowIndiaPost(false)}
+                        aria-label="Close"
+                      >
+                        <X size={18} />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })()}
 
               <div className="ip-modal-search">
                 <Search size={15} />
@@ -8832,6 +9099,12 @@ export default function ManageOrdersPage() {
                   copyToClipboard={copyToClipboard}
                   copiedId={copiedId}
                   search={ipSearch}
+                  orderNotes={orderNotes}
+                  bookedOrders={bookedOrders}
+                  onBook={markOrderBooked}
+                  onUnbook={unmarkOrderBooked}
+                  scrollRef={ipScrollReady ? ipScrollRef : null}
+                  showBooking
                 />
               </div>
             </motion.div>
@@ -8925,7 +9198,6 @@ export default function ManageOrdersPage() {
                       copyToClipboard={copyToClipboard}
                       copiedId={copiedId}
                       bypassFilter
-                      hideNote
                     />
 
                     {/* Tracking ID — view + set the article number without
@@ -9016,7 +9288,16 @@ export default function ManageOrdersPage() {
                         type="button"
                         className="ip-book-done-btn"
                         onClick={() => {
-                          markOrderBooked(bookOrder["Order ID"]);
+                          // Carry whatever article number is already on the
+                          // order so the CSV export isn't missing it.
+                          markOrderBooked(
+                            bookOrder["Order ID"],
+                            String(
+                              bookOrder["Shipping ID"] ||
+                                bookOrder.shippingId ||
+                                "",
+                            ).trim(),
+                          );
                           // Auto-advance to the next order for a smooth run.
                           if (hasNext) goBook(1);
                         }}

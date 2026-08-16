@@ -13,6 +13,7 @@ const FORM_FIELD_IDS = {
   timestamp: "entry.537496086",
   userAgent: "entry.1678458421",
   referrer: "entry.1681053085",
+  source: "entry.1893075648", // "Where did you find us?" answer
 };
 
 // Submit data to Google Form
@@ -66,6 +67,7 @@ export const trackPincodeToGoogleForm = async (data) => {
     city: data.city || "",
     state: data.state || "",
     phone: data.phone || "",
+    source: data.source || "",
     submissionType: data.type || "submit", // submit, skip, auto_filled, outside_click
     timestamp: formattedTime,
     userAgent:

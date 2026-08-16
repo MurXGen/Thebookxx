@@ -2764,6 +2764,24 @@ export function CODSuccessModal({
     return `${startStr} – ${endStr}`;
   })();
 
+  // Faster (1–5 day) arrival range, used in the upgrade-confirm modal.
+  const fasterRangeStr = (() => {
+    const start = new Date();
+    start.setDate(start.getDate() + 1);
+    const end = new Date();
+    end.setDate(end.getDate() + 5);
+    const sameMonth = start.getMonth() === end.getMonth();
+    const s = start.toLocaleDateString("en-IN", {
+      day: "numeric",
+      ...(sameMonth ? {} : { month: "short" }),
+    });
+    const e = end.toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "short",
+    });
+    return `${s} – ${e}`;
+  })();
+
   // Stable display order ref + date for the printed receipt. When opened from
   // a shared invoice link we print the real order id/date instead.
   const generatedRef = useRef("TBX" + String(Date.now()).slice(-8)).current;
@@ -3038,22 +3056,50 @@ export function CODSuccessModal({
                     </span>
                   </div>
 
+                  <div className="ok-hr" />
+
+                  {/* Arrival + optional faster upgrade — one combined block */}
                   <div className="ok-eta">
                     <span className="ok-eta-ic">
-                      {localFaster ? <Zap size={16} /> : <Truck size={16} />}
+                      {localFaster ? <Zap size={18} /> : <Truck size={18} />}
                     </span>
-                    <div className="ok-eta-txt">
-                      <strong>Arriving {deliveryRange}</strong>
-                      <span>
-                        to {city} · {deliveryWindow}
-                      </span>
-                    </div>
-                    <span
-                      className={`ok-badge${localFaster ? " fast" : ""}`}
-                    >
-                      {localFaster ? "Faster" : "Standard"}
+                    <strong className="ok-eta-title">
+                      Arriving {deliveryRange}
+                    </strong>
+                    <span className="ok-eta-sub">
+                      to {city} · {deliveryWindow}
                     </span>
+                    <span className={`ok-badge${localFaster ? " fast" : ""}`}>
+                      {localFaster ? "Faster delivery" : "Standard delivery"}
+                    </span>
+
+                    {!localFaster && canEditOrder && fasterDelta > 0 && (
+                      <div className="ok-upgrade">
+                        <div className="ok-upgrade-txt">
+                          <Zap size={14} /> Want it sooner? Get it by{" "}
+                          <b>{fasterRangeStr}</b> with Faster delivery (1–5
+                          days).
+                        </div>
+                        <button
+                          type="button"
+                          className="pri-big-btn width100 ok-upgrade-btn"
+                          onClick={confirmFasterUpgrade}
+                          disabled={upgrading}
+                        >
+                          {upgrading
+                            ? "Upgrading…"
+                            : `Upgrade to Faster · +₹${fasterDelta}`}
+                        </button>
+                      </div>
+                    )}
+                    {upgraded && (
+                      <div className="ok-upgraded">
+                        <CheckCircle2 size={14} /> Upgraded to Faster delivery.
+                      </div>
+                    )}
                   </div>
+
+                  <div className="ok-hr" />
 
                   <div className="ok-books">
                     <div className="ok-covers">
@@ -3084,81 +3130,6 @@ export function CODSuccessModal({
                   </div>
                 </div>
 
-                {/* ── Faster-delivery upsell ── */}
-                {!localFaster && canEditOrder && fasterDelta > 0 && (
-                  <div className="ok-faster">
-                    {!showFasterConfirm ? (
-                      <>
-                        <div className="ok-faster-head">
-                          <Zap size={15} /> Want it sooner?
-                        </div>
-                        <div className="ok-faster-cmp">
-                          <div className="ok-faster-opt">
-                            <span className="ok-faster-opt-t">Standard</span>
-                            <span className="ok-faster-opt-d">4–12 days</span>
-                          </div>
-                          <ArrowRight size={16} className="dark-50" />
-                          <div className="ok-faster-opt fast">
-                            <span className="ok-faster-opt-t">Faster</span>
-                            <span className="ok-faster-opt-d">1–5 days</span>
-                          </div>
-                        </div>
-                        <button
-                          type="button"
-                          className="pri-big-btn ok-faster-btn"
-                          onClick={() => setShowFasterConfirm(true)}
-                        >
-                          Upgrade to Faster · +₹{fasterDelta}
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <div className="ok-faster-head">
-                          <Zap size={15} /> Confirm faster delivery
-                        </div>
-                        <div className="ok-faster-bill">
-                          <div className="rcpt-line">
-                            <span>Current total</span>
-                            <span>₹{totalAmount}</span>
-                          </div>
-                          <div className="rcpt-line">
-                            <span>Faster delivery upgrade</span>
-                            <span>+₹{fasterDelta}</span>
-                          </div>
-                          <div className="rcpt-line bold">
-                            <span>New total</span>
-                            <b>₹{upgradedTotal}</b>
-                          </div>
-                        </div>
-                        <div className="ok-faster-actions">
-                          <button
-                            type="button"
-                            className="sec-mid-btn width100"
-                            onClick={() => setShowFasterConfirm(false)}
-                            disabled={upgrading}
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            type="button"
-                            className="pri-big-btn width100"
-                            onClick={confirmFasterUpgrade}
-                            disabled={upgrading}
-                          >
-                            {upgrading ? "Updating…" : "Confirm upgrade"}
-                          </button>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                )}
-                {upgraded && (
-                  <div className="ok-upgraded">
-                    <CheckCircle2 size={15} /> Upgraded to Faster delivery (1–5
-                    days).
-                  </div>
-                )}
-
                 {/* ── Order note ── */}
                 {canEditOrder && (
                   <div className="ok-note">
@@ -3182,11 +3153,11 @@ export function CODSuccessModal({
                         />
                         <button
                           type="button"
-                          className="sec-mid-btn ok-note-save"
+                          className="pri-big-btn width100 ok-note-save"
                           onClick={saveNote}
                           disabled={!note.trim() || noteSaving}
                         >
-                          {noteSaving ? "Saving…" : "Save note"}
+                          {noteSaving ? "Saving…" : "Add note to this order"}
                         </button>
                       </>
                     )}
@@ -3199,8 +3170,9 @@ export function CODSuccessModal({
                   className="ok-invoice-toggle"
                   onClick={() => setShowInvoice((v) => !v)}
                 >
-                  <span className="flex flex-row items-center gap-6">
-                    <Info size={15} /> Check invoice
+                  <span className="ok-inv-lbl">
+                    <Info size={16} />
+                    Check invoice
                   </span>
                   <ChevronRight
                     size={18}
@@ -3209,23 +3181,32 @@ export function CODSuccessModal({
                 </button>
 
                 {showInvoice && (
-                  <>
-                    <div className="ok-invoice-dl">
-                      <button
-                        type="button"
-                        className="sec-mid-btn"
-                        onClick={downloadInvoice}
-                        disabled={downloading}
-                      >
-                        <Download size={15} />{" "}
-                        {downloading ? "Preparing…" : "Download invoice"}
-                      </button>
-                    </div>
-                    {/* Printed receipt — slides out of the printer slot */}
-                    <div className="rcpt-stage">
-                      <div className="rcpt-printer" aria-hidden="true">
-                        <span className="rcpt-lip" />
+                  <div
+                    className="ok-sheet-overlay"
+                    onClick={() => setShowInvoice(false)}
+                  >
+                    <div
+                      className="ok-sheet"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className="ok-sheet-hd">
+                        <span className="ok-sheet-title">
+                          <Info size={16} /> Your invoice
+                        </span>
+                        <button
+                          type="button"
+                          className="ok-sheet-x"
+                          onClick={() => setShowInvoice(false)}
+                        >
+                          <X size={18} />
+                        </button>
                       </div>
+                      <div className="ok-sheet-body">
+                        {/* Printed receipt — slides out of the printer slot */}
+                        <div className="rcpt-stage">
+                          <div className="rcpt-printer" aria-hidden="true">
+                            <span className="rcpt-lip" />
+                          </div>
                       <motion.div
                         ref={rcptRef}
                         className="rcpt"
@@ -3359,9 +3340,20 @@ export function CODSuccessModal({
                     <Link href="/profile" className="rcpt-track">
                       Track &amp; manage order
                     </Link>
-                  </motion.div>
-                </div>
-                  </>
+                        </motion.div>
+                        </div>
+                        <button
+                          type="button"
+                          className="pri-big-btn width100 ok-sheet-dl"
+                          onClick={downloadInvoice}
+                          disabled={downloading}
+                        >
+                          <Download size={15} />{" "}
+                          {downloading ? "Preparing…" : "Download invoice"}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 )}
 
                 {showReward && (

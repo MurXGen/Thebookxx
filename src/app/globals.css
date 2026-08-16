@@ -31907,7 +31907,7 @@ img[data-loaded="true"] {
 .ok-cover:first-child {
   margin-left: 0;
 }
-.ok-cover :global(img) {
+.ok-cover img {
   width: 100%;
   height: 100%;
   object-fit: cover;

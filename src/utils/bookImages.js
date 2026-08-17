@@ -655,4 +655,6 @@ export const bookImages = {
   "think-straight": `${BOOK_IMAGE_BASE_PATH}/think-straight.jpeg`,
   "we-are-there-for-each-other": `${BOOK_IMAGE_BASE_PATH}/we-are-there-for-each-other.jpeg`,
   "always-remember": `${BOOK_IMAGE_BASE_PATH}/always-remember.jpeg`,
+  "nothing-like-the-movies": `${BOOK_IMAGE_BASE_PATH}/nothing-like-the-movies.jpeg`,
+  "the-maidens": `${BOOK_IMAGE_BASE_PATH}/the-maidens.jpeg`,
 };

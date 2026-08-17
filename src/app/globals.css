@@ -15202,6 +15202,43 @@ img[data-loaded="true"] {
   font-weight: 700;
   color: var(--tertiary);
 }
+/* Enriched preview row — order id + customer/value/payment */
+.mo-tp-left {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.mo-tp-oid {
+  font-weight: 600;
+  color: var(--foreground, #1a1a1a);
+}
+.mo-tp-meta {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: var(--px-12);
+  color: var(--gray-500, #6b7280);
+}
+.mo-tp-missing {
+  font-style: italic;
+  color: #b45309;
+}
+.mo-tp-pay {
+  font-size: var(--px-10);
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 999px;
+}
+.mo-tp-pay.cod {
+  background: #dcfce7;
+  color: #166534;
+}
+.mo-tp-pay.prepaid {
+  background: #e0e7ff;
+  color: #3730a3;
+}
 /* Failed / unmatched IDs */
 .mo-track-failed {
   display: flex;

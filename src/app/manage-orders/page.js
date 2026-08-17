@@ -7695,15 +7695,49 @@ export default function ManageOrdersPage() {
                 </div>
                 <div className="mo-trackpush-table mo-trackpush-table-2col">
                   <div className="mo-trackpush-trow mo-trackpush-thead">
-                    <span>Order ID</span>
+                    <span>Order &amp; customer</span>
                     <span>Tracking ID</span>
                   </div>
-                  {trackingRows.map((r, i) => (
-                    <div className="mo-trackpush-trow" key={`${r.orderId}-${i}`}>
-                      <span>{r.orderId || "—"}</span>
-                      <span className="mo-trackpush-tid">{r.trackingId}</span>
-                    </div>
-                  ))}
+                  {trackingRows.map((r, i) => {
+                    const o = orders.find(
+                      (x) =>
+                        String(x["Order ID"] || "").trim() ===
+                        String(r.orderId || "").trim(),
+                    );
+                    const cName = o
+                      ? String(o["Customer Name"] || "")
+                          .replace(/\s*\(unconfirmed\)\s*/i, "")
+                          .trim()
+                      : "";
+                    const cVal = o ? o["Total Amount"] || o.revenue || "" : "";
+                    const isCOD = /cash|cod/i.test(o?.["Payment Type"] || "");
+                    return (
+                      <div
+                        className="mo-trackpush-trow"
+                        key={`${r.orderId}-${i}`}
+                      >
+                        <div className="mo-tp-left">
+                          <span className="mo-tp-oid">{r.orderId || "—"}</span>
+                          {o ? (
+                            <span className="mo-tp-meta">
+                              {cName || "—"}
+                              {cVal ? ` · ₹${cVal}` : ""}
+                              <span
+                                className={`mo-tp-pay ${isCOD ? "cod" : "prepaid"}`}
+                              >
+                                {isCOD ? "COD" : "Prepaid"}
+                              </span>
+                            </span>
+                          ) : (
+                            <span className="mo-tp-meta mo-tp-missing">
+                              order not in view
+                            </span>
+                          )}
+                        </div>
+                        <span className="mo-trackpush-tid">{r.trackingId}</span>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}

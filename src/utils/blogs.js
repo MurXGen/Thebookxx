@@ -75,7 +75,32 @@ export const blogsData = {
         items: [
           "<a href=\"/books/the-alchemist\" style=\"color:#fb8500;font-weight:600\">The Alchemist</a> by Paulo Coelho — a magical fable about following your dreams.",
           "<a href=\"/books/ugly-love\" style=\"color:#fb8500;font-weight:600\">Ugly Love</a> by Colleen Hoover — an emotional, unputdownable romance.",
+          "<a href=\"/books/twisted-love\" style=\"color:#fb8500;font-weight:600\">Twisted Love</a> by Ana Huang — the addictive slow-burn everyone's reading.",
           "<a href=\"/books/pride-and-prejudice\" style=\"color:#fb8500;font-weight:600\">Pride and Prejudice</a> by Jane Austen — the timeless love story that never gets old.",
+          "<a href=\"/books/red-white-royal-blue\" style=\"color:#fb8500;font-weight:600\">Red, White &amp; Royal Blue</a> by Casey McQuiston — warm, funny enemies-to-lovers joy.",
+          "<a href=\"/books/the-palace-of-illusions\" style=\"color:#fb8500;font-weight:600\">The Palace of Illusions</a> by Chitra Banerjee Divakaruni — the Mahabharata retold through Draupadi's eyes.",
+          "<a href=\"/books/when-haru-was-here\" style=\"color:#fb8500;font-weight:600\">When Haru Was Here</a> — a tender, moving story about love and loss.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "For the Non-Fiction & Self-Growth Reader",
+      },
+      {
+        type: "paragraph",
+        content:
+          "For the sibling who loves learning about people, power, and the mind, gift a book with real staying power:",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<a href=\"/books/the-laws-of-human-nature\" style=\"color:#fb8500;font-weight:600\">The Laws of Human Nature</a> by Robert Greene — a gripping study of what drives people.",
+          "<a href=\"/books/the-48-laws-of-power\" style=\"color:#fb8500;font-weight:600\">The 48 Laws of Power</a> by Robert Greene — the modern classic on influence and strategy.",
+          "<a href=\"/books/how-to-win-friends-and-influence-people\" style=\"color:#fb8500;font-weight:600\">How to Win Friends and Influence People</a> by Dale Carnegie — timeless people skills.",
+          "<a href=\"/books/deep-work\" style=\"color:#fb8500;font-weight:600\">Deep Work</a> by Cal Newport — for the sibling who wants to focus and achieve more.",
+          "<a href=\"/books/surrounded-by-idiots\" style=\"color:#fb8500;font-weight:600\">Surrounded by Idiots</a> by Thomas Erikson — a fun, sharp guide to understanding people.",
         ],
       },
       {
@@ -105,12 +130,17 @@ export const blogsData = {
       {
         type: "paragraph",
         content:
-          "Not sure of their taste? These universally loved reads are safe, brilliant bets for any brother or sister: <a href=\"/books/the-subtle-art-of-not-giving-a-f-ck\" style=\"color:#fb8500;font-weight:600\">The Subtle Art of Not Giving a F*ck</a> for a laugh-and-learn read, or <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> — the one book almost everyone is glad to own.",
+          "Not sure of their taste? These universally loved reads are safe, brilliant bets for any brother or sister: <a href=\"/books/the-subtle-art-of-not-giving-a-f-ck\" style=\"color:#fb8500;font-weight:600\">The Subtle Art of Not Giving a F*ck</a> for a laugh-and-learn read, <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> for the one book almost everyone is glad to own, or <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar — a homegrown favourite for anyone who wants to think more clearly.",
       },
       {
         type: "paragraph",
         content:
           "Pair any book with a short, heartfelt note and you have a Raksha Bandhan gift that's thoughtful, personal, and genuinely useful — no last-minute panic required.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>",
       },
       {
         type: "callout",

@@ -4,6 +4,176 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "raksha-bandhan-2026-books-to-gift": {
+    id: "blog-025",
+    title:
+      "Raksha Bandhan 2026: The Best Books to Gift Your Brother or Sister",
+    slug: "raksha-bandhan-2026-books-to-gift",
+    author: "TheBookX Editorial",
+    authorSlug: "murthy-thevar",
+    publishDate: "2026-08-05",
+    lastModified: "2026-08-05",
+    excerpt:
+      "Raksha Bandhan falls on 28 August 2026. Skip the usual chocolates — a great book is a gift your sibling will remember all year. Here are hand-picked books to gift your brother or sister, all on TheBookX with gift wrapping, free delivery and COD.",
+
+    content: [
+      {
+        type: "paragraph",
+        content:
+          "This year, <strong>Raksha Bandhan falls on Friday, 28 August 2026</strong> — and if you're tired of gifting the same box of sweets or another wallet, here's a warmer idea: give a book. A well-chosen book says <em>I know you</em> in a way few gifts can, and it keeps giving long after the rakhi thread fades. Whether your sibling is chasing big goals, lost in love stories, or quietly figuring life out, this guide has the perfect pick — all available on TheBookX with gift wrapping, free delivery and Cash on Delivery across India.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Why a Book Is the Perfect Rakhi Gift",
+      },
+      {
+        type: "paragraph",
+        content:
+          "A book is personal, affordable, and lasting. It fits any budget, needs no size or colour, and shows real thought — you picked <em>this</em> story for <em>this</em> person. Add a handwritten note on the first page and you've turned a paperback into a keepsake your brother or sister will remember every time they open it.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "Order in time",
+        content:
+          "Raksha Bandhan is on 28 August 2026 — place your order a few days early so it arrives before you tie the rakhi. Add gift wrapping at checkout (+₹25) and we'll make it ready to give.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "For the Brother Chasing His Goals",
+      },
+      {
+        type: "paragraph",
+        content:
+          "For the ambitious, always-hustling brother, gift a book that fuels the fire:",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear — the ultimate guide to building better habits.",
+          "<a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> by Morgan Housel — timeless lessons on wealth and behaviour.",
+          "<a href=\"/books/rich-dad-poor-dad\" style=\"color:#fb8500;font-weight:600\">Rich Dad Poor Dad</a> by Robert Kiyosaki — the money mindset classic every young earner should read.",
+          "<a href=\"/books/the-5-am-club\" style=\"color:#fb8500;font-weight:600\">The 5 AM Club</a> by Robin Sharma — for the brother who loves a good morning routine.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "For the Sister Who Loves a Good Story",
+      },
+      {
+        type: "paragraph",
+        content:
+          "For the sister who disappears into novels, gift her a world to get lost in:",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<a href=\"/books/the-alchemist\" style=\"color:#fb8500;font-weight:600\">The Alchemist</a> by Paulo Coelho — a magical fable about following your dreams.",
+          "<a href=\"/books/ugly-love\" style=\"color:#fb8500;font-weight:600\">Ugly Love</a> by Colleen Hoover — an emotional, unputdownable romance.",
+          "<a href=\"/books/pride-and-prejudice\" style=\"color:#fb8500;font-weight:600\">Pride and Prejudice</a> by Jane Austen — the timeless love story that never gets old.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "For the Thoughtful, Calm Sibling",
+      },
+      {
+        type: "paragraph",
+        content:
+          "For the reflective one who values peace and perspective, gift wisdom:",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<a href=\"/books/ikigai\" style=\"color:#fb8500;font-weight:600\">Ikigai</a> — the Japanese secret to a long, happy, purposeful life.",
+          "<a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar — a calm, practical guide to thinking clearly.",
+          "<a href=\"/books/meditations\" style=\"color:#fb8500;font-weight:600\">Meditations</a> by Marcus Aurelius — timeless Stoic wisdom for a steady mind.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Crowd-Pleasers That Suit Anyone",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Not sure of their taste? These universally loved reads are safe, brilliant bets for any brother or sister: <a href=\"/books/the-subtle-art-of-not-giving-a-f-ck\" style=\"color:#fb8500;font-weight:600\">The Subtle Art of Not Giving a F*ck</a> for a laugh-and-learn read, or <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> — the one book almost everyone is glad to own.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Pair any book with a short, heartfelt note and you have a Raksha Bandhan gift that's thoughtful, personal, and genuinely useful — no last-minute panic required.",
+      },
+      {
+        type: "callout",
+        style: "success",
+        title: "Gift a book this Raksha Bandhan",
+        content:
+          "Browse the full collection — bestsellers from ₹1, gift wrapping (+₹25), free delivery, and Cash on Delivery across India — and order before 28 August at https://www.thebookx.in/books",
+      },
+      {
+        type: "paragraph",
+        content:
+          "This Raksha Bandhan, give your sibling something that lasts longer than sweets and means more than another gadget. Give them a story, an idea, a little push toward their dreams — give them a book.",
+      },
+    ],
+
+    coverImage: "/blogs/raksha-bandhan-2026-books-to-gift.jpeg",
+
+    images: [
+      {
+        url: "/blogs/raksha-bandhan-2026-books-to-gift.jpeg",
+        alt: "A gift-wrapped book with a rakhi thread on top, celebrating Raksha Bandhan",
+        caption: "This Raksha Bandhan, gift a story your sibling will remember",
+        category: "Gifting",
+      },
+    ],
+
+    keywords: [
+      "raksha bandhan gift ideas",
+      "books to gift on raksha bandhan",
+      "rakhi gift for brother",
+      "rakhi gift for sister",
+      "raksha bandhan 2026",
+      "book gifts india",
+      "best books to gift",
+      "TheBookX",
+    ],
+
+    categories: ["Gifting", "Festivals", "Reading Lists"],
+
+    faqs: [
+      {
+        question: "When is Raksha Bandhan in 2026?",
+        answer:
+          "Raksha Bandhan 2026 falls on Friday, 28 August 2026. Order your book gift a few days early so it arrives in time to tie the rakhi.",
+      },
+      {
+        question: "Are books a good Raksha Bandhan gift?",
+        answer:
+          "Absolutely. A book is personal, affordable, and lasting — a thoughtful gift that shows you know your sibling's taste. Add a handwritten note to make it a keepsake.",
+      },
+      {
+        question: "Do you offer gift wrapping and Cash on Delivery?",
+        answer:
+          "Yes. You can add gift wrapping at checkout (+₹25), and TheBookX offers free delivery and Cash on Delivery across India, with books starting from ₹1.",
+      },
+      {
+        question: "What's a good book to gift a brother or sister who doesn't read much?",
+        answer:
+          "Start with something short and engaging like Ikigai, The Alchemist, or Atomic Habits — easy, rewarding reads that can turn a non-reader into a reader.",
+      },
+    ],
+  },
+
   "2026-booker-prize-longlist-what-to-read": {
     id: "blog-024",
     title:

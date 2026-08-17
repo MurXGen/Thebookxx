@@ -1183,6 +1183,8 @@ function IndiaPostSheet({
   onUnbook,
   scrollRef = null,
   showBooking = false,
+  pickChecked = {},
+  bookKey = (id, idx) => `${id}::${idx}`,
 }) {
   // Per-order tracking-ID drafts, keyed by order id.
   const [trackDraft, setTrackDraft] = useState({});
@@ -1458,6 +1460,35 @@ function IndiaPostSheet({
                 onCopy={copyToClipboard}
               />
             </div>
+
+            {/* Books in this order + whether each has been picked. */}
+            {(o.parsedBooks || []).length > 0 && (
+              <div className="ip-books">
+                <span className="ip-books-title">Books · pick check</span>
+                {(o.parsedBooks || []).map((b, bi) => {
+                  const picked = !!pickChecked[bookKey(o["Order ID"], bi)];
+                  return (
+                    <div className="ip-book-row" key={bi}>
+                      <span className="ip-book-nm">
+                        {b.name}
+                        {b.quantity > 1 ? ` ×${b.quantity}` : ""}
+                      </span>
+                      <span
+                        className={`ip-book-pick${picked ? " picked" : ""}`}
+                      >
+                        {picked ? (
+                          <>
+                            <Check size={12} /> Picked
+                          </>
+                        ) : (
+                          "Not picked"
+                        )}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
 
             {/* Booking footer — capture the India Post article number, then
                 stamp the order as booked. Saved to localStorage so a refresh
@@ -9105,6 +9136,8 @@ export default function ManageOrdersPage() {
                   onUnbook={unmarkOrderBooked}
                   scrollRef={ipScrollReady ? ipScrollRef : null}
                   showBooking
+                  pickChecked={pickChecked}
+                  bookKey={bookKey}
                 />
               </div>
             </motion.div>
@@ -9198,6 +9231,8 @@ export default function ManageOrdersPage() {
                       copyToClipboard={copyToClipboard}
                       copiedId={copiedId}
                       bypassFilter
+                      pickChecked={pickChecked}
+                      bookKey={bookKey}
                     />
 
                     {/* Tracking ID — view + set the article number without

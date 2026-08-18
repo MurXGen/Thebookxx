@@ -3132,22 +3132,11 @@ export function CODSuccessModal({
                       </span>
                     </div>
 
-                    {/* Arrival, then name + address — one section */}
+                    {/* Arrival → name + address → delivery window/badge */}
                     <div className="ok-deliver">
                       <strong className="ok-eta-title">
                         Arriving {deliveryRange}
                       </strong>
-                      <div className="ok-eta-meta">
-                        <span className="ok-eta-sub">{deliveryWindow}</span>
-                        <span className="ok-eta-mdot">·</span>
-                        <span
-                          className={`ok-badge${localFaster ? " fast" : ""}`}
-                        >
-                          {localFaster
-                            ? "Faster delivery"
-                            : "Standard delivery"}
-                        </span>
-                      </div>
 
                       <strong className="ok-deliver-name">{name}</strong>
                       <span className="ok-deliver-addr">
@@ -3162,6 +3151,18 @@ export function CODSuccessModal({
                         {" · +91 "}
                         {phone}
                       </span>
+
+                      <div className="ok-eta-meta">
+                        <span className="ok-eta-sub">{deliveryWindow}</span>
+                        <span className="ok-eta-mdot">·</span>
+                        <span
+                          className={`ok-badge${localFaster ? " fast" : ""}`}
+                        >
+                          {localFaster
+                            ? "Faster delivery"
+                            : "Standard delivery"}
+                        </span>
+                      </div>
                     </div>
 
                     {!localFaster && canEditOrder && fasterDelta > 0 && (

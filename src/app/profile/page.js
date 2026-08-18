@@ -3267,12 +3267,29 @@ Please cancel this order. Thank you `;
 function TrackSheet({ trackOrder, onClose, trackCopied, setTrackCopied }) {
   const s = String(trackOrder.status || "").toLowerCase();
   const delivered = /delivered/.test(s);
-  const inTransit = /in\s*transit|out\s*for\s*delivery/.test(s);
-  const shipped = !!trackOrder.shippingId || inTransit || delivered;
+  const outForDelivery = /out\s*for\s*delivery/.test(s);
+  const inTransit = /in\s*transit/.test(s);
+  const shipped =
+    !!trackOrder.shippingId || inTransit || outForDelivery || delivered;
   const isFaster = /faster|express|flight|air/i.test(
     trackOrder["Delivery Type"] || trackOrder.deliveryType || "",
   );
   const vehicle = isFaster ? "✈️" : "🚆";
+
+  // Estimated delivery window from the order date + speed of service.
+  const DAY_MS = 24 * 60 * 60 * 1000;
+  const orderDate = parseSheetDate(getOrderDateValue(trackOrder));
+  const [minDays, maxDays] = isFaster ? [1, 5] : [4, 12];
+  const estFrom = orderDate
+    ? new Date(orderDate.getTime() + minDays * DAY_MS)
+    : null;
+  const estTo = orderDate
+    ? new Date(orderDate.getTime() + maxDays * DAY_MS)
+    : null;
+  const fmtDate = (d) =>
+    d
+      ? d.toLocaleDateString("en-IN", { day: "2-digit", month: "short" })
+      : null;
 
   const stages = [
     {
@@ -3287,12 +3304,22 @@ function TrackSheet({ trackOrder, onClose, trackCopied, setTrackCopied }) {
     },
     {
       label: "In transit",
+      sub:
+        delivered || outForDelivery
+          ? "Reached your city"
+          : inTransit
+            ? "Your parcel is on its way"
+            : "We'll update this once it ships",
+      state: delivered || outForDelivery ? "done" : inTransit ? "active" : "todo",
+    },
+    {
+      label: "Out for delivery",
       sub: delivered
-        ? "On the way to you"
-        : inTransit
-          ? "Your parcel is on its way"
-          : "We'll update this once it ships",
-      state: delivered ? "done" : inTransit ? "active" : "todo",
+        ? "Handed to your local courier"
+        : outForDelivery
+          ? "Arriving today — keep your phone handy"
+          : "Almost there",
+      state: delivered ? "done" : outForDelivery ? "active" : "todo",
     },
     {
       label: "Delivered",
@@ -3532,6 +3559,26 @@ function TrackSheet({ trackOrder, onClose, trackCopied, setTrackCopied }) {
               ))}
             </motion.div>
           </div>
+
+          {estFrom && estTo && (
+            <div className="track-eta-note">
+              <CalendarClock size={15} />
+              <span>
+                {delivered ? (
+                  <>Delivered within the estimated window — as promised.</>
+                ) : (
+                  <>
+                    Estimated delivery{" "}
+                    <strong>
+                      {fmtDate(estFrom)} – {fmtDate(estTo)}
+                    </strong>
+                    . {isFaster ? "Express" : "Standard"} orders usually arrive
+                    within {minDays}–{maxDays} days as estimated.
+                  </>
+                )}
+              </span>
+            </div>
+          )}
 
           {trackOrder.shippingId && (
             <div className="track-tid">

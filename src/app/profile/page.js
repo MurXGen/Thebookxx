@@ -3325,6 +3325,71 @@ Please cancel this order. Thank you `;
                   </div>
 
                   <div className="track-body">
+                    {(() => {
+                      const isFaster = /faster|express|flight|air/i.test(
+                        trackOrder["Delivery Type"] ||
+                          trackOrder.deliveryType ||
+                          "",
+                      );
+                      const vehicle = isFaster ? "✈️" : "🚆";
+                      const progress = delivered
+                        ? 1
+                        : inTransit
+                          ? 0.72
+                          : shipped
+                            ? 0.4
+                            : 0.08;
+                      return (
+                        <div className="track-journey">
+                          <div className="track-journey-head">
+                            <span className="track-journey-mode">
+                              {vehicle}{" "}
+                              {isFaster ? "Air express" : "Surface transport"}
+                            </span>
+                            <span className="track-journey-status">
+                              {delivered
+                                ? "Delivered"
+                                : inTransit
+                                  ? "On the way"
+                                  : "Preparing"}
+                            </span>
+                          </div>
+                          <div className="track-journey-rail">
+                            <span className="track-journey-pin src">📍</span>
+                            <div className="track-journey-line">
+                              <motion.div
+                                className="track-journey-fill"
+                                initial={{ width: 0 }}
+                                animate={{ width: `${progress * 100}%` }}
+                                transition={{
+                                  delay: 0.35,
+                                  duration: 1.2,
+                                  ease: "easeInOut",
+                                }}
+                              />
+                              <motion.span
+                                className="track-journey-vehicle"
+                                initial={{ left: "0%" }}
+                                animate={{ left: `${progress * 100}%` }}
+                                transition={{
+                                  delay: 0.35,
+                                  duration: 1.2,
+                                  ease: "easeInOut",
+                                }}
+                              >
+                                {vehicle}
+                              </motion.span>
+                            </div>
+                            <span className="track-journey-pin dst">🏠</span>
+                          </div>
+                          <div className="track-journey-labels">
+                            <span>Mumbai</span>
+                            <span>You</span>
+                          </div>
+                        </div>
+                      );
+                    })()}
+
                     <motion.div
                       className="track-steps"
                       initial="hidden"

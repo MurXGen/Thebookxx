@@ -45,6 +45,7 @@ import {
 import Image from "next/image";
 import { FaWhatsapp } from "react-icons/fa";
 import Link from "next/link";
+import { showToast } from "@/context/ToastContext";
 import PageHeader from "@/components/UI/PageHeader";
 import InstallAppBar from "@/components/InstallAppBar";
 import RecommendationModal from "@/components/RecommendationModal";
@@ -357,8 +358,6 @@ function OrderTrackingTimeline({ order }) {
 export default function MyOrdersPage() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [orders, setOrders] = useState([]);
-  const [toast, setToast] = useState(null); // transient toast message
-  const toastTimerRef = useRef(null);
   const shippedCancelRef = useRef({}); // orderId -> cancel-tap count
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
@@ -1039,12 +1038,6 @@ export default function MyOrdersPage() {
 
   // ===== NEW, Cancel & Reschedule handlers =====
 
-  const showToast = (msg) => {
-    setToast(msg);
-    clearTimeout(toastTimerRef.current);
-    toastTimerRef.current = setTimeout(() => setToast(null), 2800);
-  };
-
   // Cancel tapped on an already-shipped order: it can't be cancelled, so we
   // show a toast. If the customer keeps tapping (more than 5 times), we assume
   // they really need help and open WhatsApp with our team.
@@ -1075,10 +1068,13 @@ Thank you!`;
         `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(message)}`,
         "_blank",
       );
-      showToast("Connecting you to our team on WhatsApp…");
+      showToast("Connecting you to our team on WhatsApp…", "info");
       return;
     }
-    showToast("Once shipped, your order can't be cancelled.");
+    showToast(
+      "This order has already shipped, so it can't be cancelled anymore.",
+      "warning",
+    );
   };
 
   const handleCancelOrder = (order) => {
@@ -1849,18 +1845,6 @@ Please cancel this order. Thank you `;
                 .toLowerCase()
                 .includes("pending");
 
-              // "Shipped and on the move" — cancel is no longer possible here.
-              const statusStr = (
-                order["Order Status"] ||
-                order.status ||
-                ""
-              ).toLowerCase();
-              const isShippedOrder =
-                !isPending &&
-                !/cancel|delivered/.test(statusStr) &&
-                (!!order.shippingId ||
-                  /shipped|in\s*transit|out\s*for\s*delivery/.test(statusStr));
-
               // Collapsed summary bits (thumbnails + item count + total)
               const summaryItems = order.parsedBooks || [];
               const summaryTotal =
@@ -2168,7 +2152,8 @@ Please cancel this order. Thank you `;
                           )}
                         </div>
 
-                        {/* ===== NEW, Cancel + Reschedule actions for Pending orders ===== */}
+                        {/* Reschedule action for Pending orders. Cancellation
+                        now lives inside the "Ask about this order" sheet. */}
                         {isPending && (
                           <div
                             className="pending-actions-row"
@@ -2180,28 +2165,6 @@ Please cancel this order. Thank you `;
                               borderTop: "1px dashed var(--dark-10)",
                             }}
                           >
-                            <button
-                              type="button"
-                              onClick={() => handleCancelOrder(order)}
-                              style={{
-                                flex: 1,
-                                padding: "10px 14px",
-                                background: "transparent",
-                                border: "1.5px solid var(--danger, #ef4444)",
-                                color: "var(--danger, #ef4444)",
-                                borderRadius: 8,
-                                fontSize: 12,
-                                fontWeight: 600,
-                                cursor: "pointer",
-                                display: "inline-flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                gap: 6,
-                              }}
-                            >
-                              <XCircle size={14} />
-                              Cancel Order
-                            </button>
                             <button
                               type="button"
                               onClick={() => handleRescheduleClick(order)}
@@ -2227,43 +2190,6 @@ Please cancel this order. Thank you `;
                           </div>
                         )}
 
-                        {/* Cancel stays clickable once shipped, but only
-                        surfaces a toast (order can't be cancelled anymore). */}
-                        {isShippedOrder && (
-                          <div
-                            className="pending-actions-row"
-                            style={{
-                              display: "flex",
-                              gap: 10,
-                              marginTop: 12,
-                              paddingTop: 12,
-                              borderTop: "1px dashed var(--dark-10)",
-                            }}
-                          >
-                            <button
-                              type="button"
-                              onClick={() => handleShippedCancel(order)}
-                              style={{
-                                flex: 1,
-                                padding: "10px 14px",
-                                background: "transparent",
-                                border: "1.5px solid var(--danger, #ef4444)",
-                                color: "var(--danger, #ef4444)",
-                                borderRadius: 8,
-                                fontSize: 12,
-                                fontWeight: 600,
-                                cursor: "pointer",
-                                display: "inline-flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                gap: 6,
-                              }}
-                            >
-                              <XCircle size={14} />
-                              Cancel Order
-                            </button>
-                          </div>
-                        )}
 
                         {/* Edit address — only before the parcel is on the
                         move (hidden once in transit / out for delivery /
@@ -2928,6 +2854,7 @@ Please cancel this order. Thank you `;
                     label: "Cancel this order",
                     q: "I'd like to cancel this order. Please help me cancel it.",
                     danger: true,
+                    cancel: true,
                   },
                   {
                     label: "Something else",
@@ -2939,7 +2866,25 @@ Please cancel this order. Thank you `;
                     key={opt.label}
                     type="button"
                     className={`enquire-opt${opt.danger ? " danger" : ""}${opt.muted ? " muted" : ""}`}
-                    onClick={() => sendOrderEnquiry(enquireOrder, opt.q)}
+                    onClick={() => {
+                      // For an order that's already shipped, cancelling isn't
+                      // possible — surface a toast (and escalate to WhatsApp if
+                      // the customer keeps insisting), keeping the sheet open.
+                      const st = (
+                        enquireOrder["Order Status"] ||
+                        enquireOrder.status ||
+                        ""
+                      ).toLowerCase();
+                      const shippedNow =
+                        !/cancel|delivered/.test(st) &&
+                        (!!enquireOrder.shippingId ||
+                          /shipped|in\s*transit|out\s*for\s*delivery/.test(st));
+                      if (opt.cancel && shippedNow) {
+                        handleShippedCancel(enquireOrder);
+                      } else {
+                        sendOrderEnquiry(enquireOrder, opt.q);
+                      }
+                    }}
                   >
                     <span>{opt.label}</span>
                     <ChevronRight size={16} />
@@ -3339,21 +3284,6 @@ Please cancel this order. Thank you `;
         isOpen={showSuggest}
         onClose={() => setShowSuggest(false)}
       />
-
-      {/* ── Transient toast ── */}
-      <AnimatePresence>
-        {toast && (
-          <motion.div
-            className="tbx-toast"
-            initial={{ opacity: 0, y: 24, x: "-50%" }}
-            animate={{ opacity: 1, y: 0, x: "-50%" }}
-            exit={{ opacity: 0, y: 24, x: "-50%" }}
-            transition={{ duration: 0.25, ease: "easeOut" }}
-          >
-            {toast}
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* ── Track shipment slide-up ── */}
       <AnimatePresence>

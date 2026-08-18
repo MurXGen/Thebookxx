@@ -110,6 +110,26 @@ export function ToastProvider({ children }) {
       const duration =
         typeof options.duration === "number" ? options.duration : 3000;
 
+      // Haptic feedback when a toast appears (Android/Chrome; no-op elsewhere).
+      // Pattern intensity scales with severity.
+      try {
+        if (
+          typeof navigator !== "undefined" &&
+          navigator.vibrate &&
+          options.haptic !== false
+        ) {
+          const pattern =
+            type === "error"
+              ? [45, 40, 45]
+              : type === "warning"
+                ? [30, 35, 30]
+                : type === "success"
+                  ? [25]
+                  : [18];
+          navigator.vibrate(pattern);
+        }
+      } catch {}
+
       setToasts((curr) => [...curr, { id, message, type, duration }]);
 
       if (duration > 0) {

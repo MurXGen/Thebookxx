@@ -3580,34 +3580,6 @@ function TrackSheet({ trackOrder, onClose, trackCopied, setTrackCopied }) {
             </div>
           )}
 
-          {trackOrder.shippingId && (
-            <div className="track-tid">
-              <div className="track-tid-info">
-                <span className="track-tid-lbl">Tracking ID</span>
-                <span className="track-tid-v">{trackOrder.shippingId}</span>
-              </div>
-              <button
-                type="button"
-                className="track-tid-copy"
-                onClick={() => {
-                  try {
-                    navigator.clipboard.writeText(trackOrder.shippingId || "");
-                    setTrackCopied(true);
-                  } catch {}
-                }}
-              >
-                {trackCopied ? (
-                  <>
-                    <Check size={14} strokeWidth={3} /> Copied
-                  </>
-                ) : (
-                  <>
-                    <Copy size={14} /> Copy
-                  </>
-                )}
-              </button>
-            </div>
-          )}
           {delivered && (
             <div className="track-delivered">
               <Check size={14} strokeWidth={3} /> Delivered

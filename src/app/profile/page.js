@@ -3273,7 +3273,6 @@ function TrackSheet({ trackOrder, onClose, trackCopied, setTrackCopied }) {
     trackOrder["Delivery Type"] || trackOrder.deliveryType || "",
   );
   const vehicle = isFaster ? "✈️" : "🚆";
-  const vehicleRot = isFaster ? 132 : 90; // point the nose down the track
 
   const stages = [
     {
@@ -3314,28 +3313,53 @@ function TrackSheet({ trackOrder, onClose, trackCopied, setTrackCopied }) {
   const dotRefs = useRef([]);
   const trainControls = useAnimationControls();
   const fillControls = useAnimationControls();
-  const [geo, setGeo] = useState(null); // { x, startY, endY }
+  const [geo, setGeo] = useState(null); // { x, startY, targetY, endY }
   const [moving, setMoving] = useState(false);
 
+  // Pass 1 — measure the real dot positions once the sheet has mounted.
   useEffect(() => {
-    const parent = railRef.current;
-    const dots = dotRefs.current;
-    if (!parent || !dots[0] || !dots[activeIndex] || !dots[stages.length - 1])
-      return;
-    const cy = (el) => el.offsetTop + el.offsetHeight / 2;
-    const cx = (el) => el.offsetLeft + el.offsetWidth / 2;
-    const startY = cy(dots[0]);
-    const targetY = cy(dots[activeIndex]);
-    const endY = cy(dots[stages.length - 1]);
-    setGeo({ x: cx(dots[0]), startY, endY });
+    const measure = () => {
+      const dots = dotRefs.current;
+      if (!dots[0] || !dots[activeIndex] || !dots[stages.length - 1]) return;
+      const cy = (el) => el.offsetTop + el.offsetHeight / 2;
+      const cx = (el) => el.offsetLeft + el.offsetWidth / 2;
+      const next = {
+        x: cx(dots[0]),
+        startY: cy(dots[0]),
+        targetY: cy(dots[activeIndex]),
+        endY: cy(dots[stages.length - 1]),
+      };
+      setGeo((prev) =>
+        prev &&
+        prev.x === next.x &&
+        prev.startY === next.startY &&
+        prev.targetY === next.targetY &&
+        prev.endY === next.endY
+          ? prev
+          : next,
+      );
+    };
+    // Measure after paint (and again shortly after, once fonts settle).
+    const id1 = requestAnimationFrame(measure);
+    const id2 = setTimeout(measure, 250);
+    return () => {
+      cancelAnimationFrame(id1);
+      clearTimeout(id2);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [trackOrder]);
 
+  // Pass 2 — once positions are known (train is mounted), run the journey.
+  useEffect(() => {
+    if (!geo) return;
     let cancelled = false;
+    const { startY, targetY } = geo;
     trainControls.set({ y: startY, opacity: 0, scale: 0.85 });
     fillControls.set({ height: 0 });
 
     (async () => {
-      // Wait for the sheet to finish sliding up before departing.
-      await new Promise((r) => setTimeout(r, 480));
+      // Let the sheet finish sliding up before the vehicle departs.
+      await new Promise((r) => setTimeout(r, 500));
       if (cancelled) return;
       await trainControls.start({
         opacity: 1,
@@ -3356,7 +3380,7 @@ function TrackSheet({ trackOrder, onClose, trackCopied, setTrackCopied }) {
       });
       if (cancelled) return;
       setMoving(false);
-      // Idle: settle with a soft, breathing bob at the current stop.
+      // Settle with a soft, breathing bob at the current stop.
       trainControls.start({
         y: [targetY, targetY - 3, targetY],
         transition: { duration: 1.9, repeat: Infinity, ease: "easeInOut" },
@@ -3367,7 +3391,7 @@ function TrackSheet({ trackOrder, onClose, trackCopied, setTrackCopied }) {
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [trackOrder]);
+  }, [geo]);
 
   const openIndiaPost = () => {
     try {
@@ -3424,17 +3448,14 @@ function TrackSheet({ trackOrder, onClose, trackCopied, setTrackCopied }) {
             {/* The travelling vehicle */}
             {geo && (
               <div className="track-train-wrap" style={{ left: geo.x }}>
-                <motion.div className="track-train" animate={trainControls}>
-                  <span
-                    className={`track-train-tail${moving ? " on" : ""}`}
-                  />
+                <motion.div
+                  className="track-train"
+                  initial={{ opacity: 0 }}
+                  animate={trainControls}
+                >
+                  <span className={`track-train-tail${moving ? " on" : ""}`} />
                   <span className="track-train-glow" />
-                  <span
-                    className="track-train-emoji"
-                    style={{ transform: `rotate(${vehicleRot}deg)` }}
-                  >
-                    {vehicle}
-                  </span>
+                  <span className="track-train-emoji">{vehicle}</span>
                 </motion.div>
               </div>
             )}

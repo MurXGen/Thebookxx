@@ -76,6 +76,7 @@ import {
 } from "framer-motion";
 import Link from "next/link";
 import { books as ALL_BOOKS } from "@/utils/book";
+import { getBookCost } from "@/data/bookCosts";
 import { creditWalletReward } from "@/utils/googleFormOrder";
 import { showToast } from "@/context/ToastContext";
 import { getDeliveryCharge } from "@/utils/cartOffers";
@@ -477,7 +478,7 @@ const orderEconomics = (parsedBooks = []) => {
       ];
     if (b) {
       matched += 1;
-      booksCost += (Number(b.cost) || 0) * qty;
+      booksCost += (Number(getBookCost(b.id)) || 0) * qty;
       weight += (Number(b.weight) || 0) * qty;
     } else {
       unmatched += 1;

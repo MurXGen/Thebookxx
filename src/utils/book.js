@@ -150,7 +150,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-002",
@@ -162,7 +161,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 50,
     size: "Paperback",
     author: "Murthy Thevar",
     authorSlug: "murthy-thevar", // Add this
@@ -211,7 +209,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(159),
     discountedPrice: 159,
     weight: 250,
-    cost: 80,
   },
   {
     id: "bk-004",
@@ -228,7 +225,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 80,
   },
   {
     id: "bk-005",
@@ -245,7 +241,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 80,
   },
   {
     id: "bk-006",
@@ -262,7 +257,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 80,
   },
   {
     id: "bk-007",
@@ -279,7 +273,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 80,
   },
   {
     id: "bk-008",
@@ -296,7 +289,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-009",
@@ -313,7 +305,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-010",
@@ -330,7 +321,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(159),
     discountedPrice: 159,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-011",
@@ -347,7 +337,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 80,
   },
   {
     id: "bk-012",
@@ -364,7 +353,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(719),
     discountedPrice: 399,
     weight: 600,
-    cost: 130,
   },
   {
     id: "bk-013",
@@ -381,7 +369,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(299),
     discountedPrice: 379,
     weight: 600,
-    cost: 140,
   },
   {
     id: "bk-014",
@@ -398,7 +385,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(219),
     discountedPrice: 219,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-015",
@@ -415,7 +401,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-016",
@@ -432,7 +417,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-017",
@@ -449,7 +433,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 80,
   },
   {
     id: "bk-018",
@@ -466,7 +449,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 80,
   },
   {
     id: "bk-019",
@@ -483,7 +465,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 80,
   },
   {
     id: "bk-020",
@@ -500,7 +481,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 80,
   },
   {
     id: "bk-021",
@@ -517,7 +497,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-022",
@@ -534,7 +513,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-023",
@@ -551,7 +529,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 80,
   },
   {
     id: "bk-024",
@@ -568,7 +545,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(289),
     discountedPrice: 289,
     weight: 500,
-    cost: 120,
   },
   {
     id: "bk-025",
@@ -585,7 +561,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-027",
@@ -602,7 +577,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 80,
   },
   {
     id: "bk-028",
@@ -619,7 +593,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(159),
     discountedPrice: 159,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-029",
@@ -636,7 +609,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-030",
@@ -653,7 +625,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(129),
     discountedPrice: 129,
     weight: 250,
-    cost: 50,
   },
   {
     id: "bk-031",
@@ -670,7 +641,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(129),
     discountedPrice: 129,
     weight: 250,
-    cost: 60,
   },
   {
     id: "bk-032",
@@ -687,7 +657,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(129),
     discountedPrice: 129,
     weight: 250,
-    cost: 60,
   },
   {
     id: "bk-033",
@@ -704,7 +673,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-034",
@@ -721,7 +689,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-035",
@@ -738,7 +705,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 80,
   },
   {
     id: "bk-036",
@@ -755,7 +721,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-037",
@@ -772,7 +737,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 100,
   },
   {
     id: "bk-038",
@@ -789,7 +753,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 100,
   },
   {
     id: "bk-039",
@@ -806,7 +769,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-040",
@@ -823,7 +785,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-041",
@@ -840,7 +801,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(199),
     discountedPrice: 199,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-042",
@@ -857,7 +817,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(199),
     discountedPrice: 199,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-043",
@@ -874,7 +833,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-044",
@@ -891,7 +849,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-045",
@@ -908,7 +865,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-046",
@@ -925,7 +881,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 80,
   },
   {
     id: "bk-047",
@@ -942,7 +897,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-048",
@@ -959,7 +913,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-049",
@@ -976,7 +929,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-050",
@@ -993,7 +945,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-051",
@@ -1010,7 +961,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(219),
     discountedPrice: 219,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-052",
@@ -1027,7 +977,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(219),
     discountedPrice: 219,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-053",
@@ -1044,7 +993,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(219),
     discountedPrice: 219,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-054",
@@ -1061,7 +1009,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(219),
     discountedPrice: 219,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-055",
@@ -1078,7 +1025,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(219),
     discountedPrice: 219,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-056",
@@ -1095,7 +1041,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(199),
     discountedPrice: 199,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-057",
@@ -1112,7 +1057,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(199),
     discountedPrice: 199,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-058",
@@ -1129,7 +1073,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-059",
@@ -1146,7 +1089,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 100,
   },
   {
     id: "bk-060",
@@ -1163,7 +1105,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 100,
   },
   {
     id: "bk-061",
@@ -1180,7 +1121,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-062",
@@ -1197,7 +1137,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(409),
     discountedPrice: 409,
     weight: 600,
-    cost: 140,
   },
   {
     id: "bk-063",
@@ -1214,7 +1153,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(219),
     discountedPrice: 219,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-064",
@@ -1231,7 +1169,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-065",
@@ -1248,7 +1185,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 80,
   },
   {
     id: "bk-066",
@@ -1265,7 +1201,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 80,
   },
   {
     id: "bk-067",
@@ -1282,7 +1217,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-068",
@@ -1299,7 +1233,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-069",
@@ -1316,7 +1249,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-070",
@@ -1333,7 +1265,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(609),
     discountedPrice: 609,
     weight: 900,
-    cost: 260,
   },
   {
     id: "bk-071",
@@ -1350,7 +1281,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-072",
@@ -1367,7 +1297,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-073",
@@ -1384,7 +1313,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-074",
@@ -1401,7 +1329,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(609),
     discountedPrice: 609,
     weight: 900,
-    cost: 300,
   },
   {
     id: "bk-075",
@@ -1418,7 +1345,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-076",
@@ -1435,7 +1361,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-077",
@@ -1452,7 +1377,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(289),
     discountedPrice: 289,
     weight: 500,
-    cost: 120,
   },
   {
     id: "bk-078",
@@ -1469,7 +1393,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-079",
@@ -1486,7 +1409,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(199),
     discountedPrice: 199,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-080",
@@ -1503,7 +1425,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-081",
@@ -1520,7 +1441,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-082",
@@ -1537,7 +1457,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(349),
     discountedPrice: 349,
     weight: 500,
-    cost: 200,
   },
   {
     id: "bk-083",
@@ -1554,7 +1473,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(539),
     discountedPrice: 539,
     weight: 700,
-    cost: 240,
   },
   {
     id: "bk-084",
@@ -1571,7 +1489,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-085",
@@ -1588,7 +1505,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-086",
@@ -1605,7 +1521,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(129),
     discountedPrice: 129,
     weight: 250,
-    cost: 60,
   },
   {
     id: "bk-087",
@@ -1622,7 +1537,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(159),
     discountedPrice: 159,
     weight: 250,
-    cost: 80,
   },
   {
     id: "bk-088",
@@ -1639,7 +1553,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(129),
     discountedPrice: 129,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-089",
@@ -1656,7 +1569,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 120,
   },
   {
     id: "bk-090",
@@ -1673,7 +1585,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(129),
     discountedPrice: 129,
     weight: 250,
-    cost: 60,
   },
   {
     id: "bk-091",
@@ -1690,7 +1601,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(129),
     discountedPrice: 129,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-092",
@@ -1707,7 +1617,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 120,
   },
   {
     id: "bk-093",
@@ -1724,7 +1633,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 130,
   },
   {
     id: "bk-094",
@@ -1741,7 +1649,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-095",
@@ -1758,7 +1665,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-096",
@@ -1775,7 +1681,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-097",
@@ -1792,7 +1697,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-098",
@@ -1809,7 +1713,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-099",
@@ -1826,7 +1729,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 100,
   },
   {
     id: "bk-101",
@@ -1843,7 +1745,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-102",
@@ -1860,7 +1761,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 100,
   },
   {
     id: "bk-103",
@@ -1877,7 +1777,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 100,
   },
   {
     id: "bk-104",
@@ -1894,7 +1793,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-105",
@@ -1911,7 +1809,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(199),
     discountedPrice: 199,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-106",
@@ -1928,7 +1825,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 70,
   },
   {
     id: "bk-107",
@@ -1945,7 +1841,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(729),
     discountedPrice: 729,
     weight: 900,
-    cost: 350,
   },
   {
     id: "bk-108",
@@ -1962,7 +1857,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(2689),
     discountedPrice: 2689,
     weight: 1500,
-    cost: 1400,
   },
   {
     id: "bk-109",
@@ -1979,7 +1873,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(1689),
     discountedPrice: 1689,
     weight: 1500,
-    cost: 900,
   },
   {
     id: "bk-110",
@@ -1996,7 +1889,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(849),
     discountedPrice: 849,
     weight: 1200,
-    cost: 450,
   },
   {
     id: "bk-111",
@@ -2013,7 +1905,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(959),
     discountedPrice: 959,
     weight: 900,
-    cost: 350,
   },
   {
     id: "bk-112",
@@ -2030,7 +1921,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(719),
     discountedPrice: 719,
     weight: 700,
-    cost: 350,
   },
   {
     id: "bk-113",
@@ -2047,7 +1937,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(789),
     discountedPrice: 789,
     weight: 900,
-    cost: 360,
   },
   {
     id: "bk-114",
@@ -2064,7 +1953,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(789),
     discountedPrice: 789,
     weight: 900,
-    cost: 400,
   },
   {
     id: "bk-115",
@@ -2081,7 +1969,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(609),
     discountedPrice: 609,
     weight: 900,
-    cost: 380,
   },
   {
     id: "bk-116",
@@ -2098,7 +1985,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(3009),
     discountedPrice: 3009,
     weight: 1500,
-    cost: 1800,
   },
   {
     id: "bk-117",
@@ -2115,7 +2001,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(2169),
     discountedPrice: 2169,
     weight: 1500,
-    cost: 1200,
   },
   {
     id: "bk-118",
@@ -2132,7 +2017,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(839),
     discountedPrice: 839,
     weight: 700,
-    cost: 380,
   },
   {
     id: "bk-119",
@@ -2155,7 +2039,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(789),
     discountedPrice: 789,
     weight: 900,
-    cost: 500,
   },
   {
     id: "bk-120",
@@ -2172,7 +2055,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 100,
   },
   {
     id: "bk-121",
@@ -2189,7 +2071,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 110,
   },
   {
     id: "bk-122",
@@ -2206,7 +2087,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 110,
   },
   {
     id: "bk-123",
@@ -2223,7 +2103,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 100,
   },
   {
     id: "bk-124",
@@ -2240,7 +2119,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-125",
@@ -2257,7 +2135,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 70,
   },
   {
     id: "bk-126",
@@ -2274,7 +2151,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-127",
@@ -2291,7 +2167,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 70,
   },
   {
     id: "bk-128",
@@ -2308,7 +2183,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-129",
@@ -2325,7 +2199,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 70,
   },
   {
     id: "bk-130",
@@ -2342,7 +2215,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-131",
@@ -2359,7 +2231,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-132",
@@ -2376,7 +2247,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 110,
   },
   {
     id: "bk-133",
@@ -2393,7 +2263,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(219),
     discountedPrice: 219,
     weight: 400,
-    cost: 100,
   },
   {
     id: "bk-134",
@@ -2410,7 +2279,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 120,
   },
   {
     id: "bk-135",
@@ -2427,7 +2295,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 100,
   },
   {
     id: "bk-517",
@@ -2444,7 +2311,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 120,
   },
   {
     id: "bk-137",
@@ -2461,7 +2327,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-138",
@@ -2478,7 +2343,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-139",
@@ -2495,7 +2359,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-140",
@@ -2512,7 +2375,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-141",
@@ -2529,7 +2391,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-142",
@@ -2546,7 +2407,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-143",
@@ -2563,7 +2423,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(219),
     discountedPrice: 219,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-144",
@@ -2580,7 +2439,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 100,
   },
   {
     id: "bk-145",
@@ -2597,7 +2455,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-146",
@@ -2614,7 +2471,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-147",
@@ -2631,7 +2487,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-148",
@@ -2648,7 +2503,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 70,
   },
   {
     id: "bk-150",
@@ -2665,7 +2519,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-151",
@@ -2682,7 +2535,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 80,
   },
   {
     id: "bk-152",
@@ -2699,7 +2551,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 110,
   },
   {
     id: "bk-153",
@@ -2716,7 +2567,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(199),
     discountedPrice: 199,
     weight: 400,
-    cost: 100,
   },
   {
     id: "bk-154",
@@ -2733,7 +2583,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-155",
@@ -2750,7 +2599,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-156",
@@ -2767,7 +2615,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 100,
   },
   {
     id: "bk-157",
@@ -2784,7 +2631,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(219),
     discountedPrice: 219,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-158",
@@ -2801,7 +2647,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 100,
   },
   {
     id: "bk-159",
@@ -2818,7 +2663,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(219),
     discountedPrice: 219,
     weight: 400,
-    cost: 110,
   },
   {
     id: "bk-160",
@@ -2835,7 +2679,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-161",
@@ -2852,7 +2695,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-162",
@@ -2869,7 +2711,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 120,
   },
   {
     id: "bk-163",
@@ -2886,7 +2727,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 70,
   },
   {
     id: "bk-164",
@@ -2903,7 +2743,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-165",
@@ -2920,7 +2759,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 110,
   },
   {
     id: "bk-166",
@@ -2937,7 +2775,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(219),
     discountedPrice: 219,
     weight: 400,
-    cost: 120,
   },
   {
     id: "bk-167",
@@ -2954,7 +2791,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 70,
   },
   {
     id: "bk-168",
@@ -2971,7 +2807,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 120,
   },
   {
     id: "bk-169",
@@ -2988,7 +2823,6 @@ export const books = [
     originalPrice: 129,
     discountedPrice: 1,
     weight: 250,
-    cost: 60,
   },
   {
     id: "bk-170",
@@ -3005,7 +2839,6 @@ export const books = [
     originalPrice: 129,
     discountedPrice: 1,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-171",
@@ -3022,7 +2855,6 @@ export const books = [
     originalPrice: 119,
     discountedPrice: 1,
     weight: 250,
-    cost: 80,
   },
   // {
   //   id: "bk-172",
@@ -3054,7 +2886,6 @@ export const books = [
     originalPrice: 139,
     discountedPrice: 1,
     weight: 250,
-    cost: 60,
   },
   {
     id: "bk-174",
@@ -3071,7 +2902,6 @@ export const books = [
     originalPrice: 99,
     discountedPrice: 1,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-175",
@@ -3088,7 +2918,6 @@ export const books = [
     originalPrice: 99,
     discountedPrice: 1,
     weight: 250,
-    cost: 60,
   },
   {
     id: "bk-176",
@@ -3105,7 +2934,6 @@ export const books = [
     originalPrice: 99,
     discountedPrice: 1,
     weight: 250,
-    cost: 50,
   },
   {
     id: "bk-177",
@@ -3122,7 +2950,6 @@ export const books = [
     originalPrice: 99,
     discountedPrice: 1,
     weight: 250,
-    cost: 50,
   },
   {
     id: "bk-178",
@@ -3139,7 +2966,6 @@ export const books = [
     originalPrice: 99,
     discountedPrice: 1,
     weight: 250,
-    cost: 50,
   },
   {
     id: "bk-179",
@@ -3156,7 +2982,6 @@ export const books = [
     originalPrice: 99,
     discountedPrice: 1,
     weight: 250,
-    cost: 50,
   },
   {
     id: "bk-180",
@@ -3173,7 +2998,6 @@ export const books = [
     originalPrice: 99,
     discountedPrice: 1,
     weight: 250,
-    cost: 50,
   },
   {
     id: "bk-181",
@@ -3190,7 +3014,6 @@ export const books = [
     originalPrice: 119,
     discountedPrice: 1,
     weight: 250,
-    cost: 50,
   },
   {
     id: "bk-182",
@@ -3207,7 +3030,6 @@ export const books = [
     originalPrice: 119,
     discountedPrice: 1,
     weight: 250,
-    cost: 60,
   },
   {
     id: "bk-183",
@@ -3224,7 +3046,6 @@ export const books = [
     originalPrice: 119,
     discountedPrice: 1,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-184",
@@ -3241,7 +3062,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 60,
   },
   {
     id: "bk-185",
@@ -3258,7 +3078,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 60,
   },
   {
     id: "bk-186",
@@ -3275,7 +3094,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-187",
@@ -3292,7 +3110,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 60,
   },
   {
     id: "bk-188",
@@ -3309,7 +3126,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 60,
   },
   {
     id: "bk-189",
@@ -3326,7 +3142,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 60,
   },
   {
     id: "bk-190",
@@ -3343,7 +3158,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 60,
   },
   {
     id: "bk-191",
@@ -3360,7 +3174,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-192",
@@ -3377,7 +3190,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-193",
@@ -3394,7 +3206,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-194",
@@ -3411,7 +3222,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-195",
@@ -3428,7 +3238,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-196",
@@ -3445,7 +3254,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-197",
@@ -3462,7 +3270,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-198",
@@ -3479,7 +3286,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-199",
@@ -3496,7 +3302,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-200",
@@ -3513,7 +3318,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-201",
@@ -3530,7 +3334,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-202",
@@ -3547,7 +3350,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-203",
@@ -3564,7 +3366,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-204",
@@ -3581,7 +3382,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-205",
@@ -3598,7 +3398,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-206",
@@ -3615,7 +3414,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-207",
@@ -3632,7 +3430,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-208",
@@ -3649,7 +3446,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-209",
@@ -3666,7 +3462,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-210",
@@ -3683,7 +3478,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-211",
@@ -3700,7 +3494,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-212",
@@ -3717,7 +3510,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-213",
@@ -3734,7 +3526,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 80,
   },
   {
     id: "bk-214",
@@ -3751,7 +3542,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 80,
   },
   {
     id: "bk-215",
@@ -3768,7 +3558,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 110,
   },
   {
     id: "bk-216",
@@ -3785,7 +3574,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(289),
     discountedPrice: 289,
     weight: 500,
-    cost: 120,
   },
   {
     id: "bk-217",
@@ -3802,7 +3590,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-218",
@@ -3819,7 +3606,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 80,
   },
   {
     id: "bk-219",
@@ -3836,7 +3622,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 110,
   },
   {
     id: "bk-220",
@@ -3853,7 +3638,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(289),
     discountedPrice: 419,
     weight: 500,
-    cost: 150,
   },
   {
     id: "bk-221",
@@ -3870,7 +3654,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(289),
     discountedPrice: 409,
     weight: 500,
-    cost: 100,
   },
   {
     id: "bk-222",
@@ -3887,7 +3670,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 110,
   },
   {
     id: "bk-223",
@@ -3904,7 +3686,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 80,
   },
   {
     id: "bk-224",
@@ -3921,7 +3702,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-227",
@@ -3938,7 +3718,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 70,
   },
   {
     id: "bk-228",
@@ -3955,7 +3734,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-229",
@@ -3972,7 +3750,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 70,
   },
   {
     id: "bk-230",
@@ -3989,7 +3766,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 110,
   },
   {
     id: "bk-231",
@@ -4006,7 +3782,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-232",
@@ -4023,7 +3798,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 80,
   },
   {
     id: "bk-233",
@@ -4040,7 +3814,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 80,
   },
   {
     id: "bk-234",
@@ -4063,7 +3836,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(279),
     discountedPrice: 279,
     weight: 500,
-    cost: 130,
   },
   {
     id: "bk-235",
@@ -4086,7 +3858,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(289),
     discountedPrice: 289,
     weight: 500,
-    cost: 120,
   },
   {
     id: "bk-236",
@@ -4103,7 +3874,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(299),
     discountedPrice: 299,
     weight: 500,
-    cost: 120,
   },
   {
     id: "bk-237",
@@ -4120,7 +3890,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 100,
   },
   {
     id: "bk-238",
@@ -4137,7 +3906,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 110,
   },
   {
     id: "bk-239",
@@ -4154,7 +3922,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(289),
     discountedPrice: 289,
     weight: 500,
-    cost: 120,
   },
   {
     id: "bk-240",
@@ -4171,7 +3938,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(669),
     discountedPrice: 669,
     weight: 900,
-    cost: 290,
   },
   {
     id: "bk-241",
@@ -4188,7 +3954,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 100,
   },
   {
     id: "bk-242",
@@ -4205,7 +3970,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 100,
   },
   {
     id: "bk-244",
@@ -4222,7 +3986,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(129),
     discountedPrice: 129,
     weight: 250,
-    cost: 50,
   },
   {
     id: "bk-245",
@@ -4239,7 +4002,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 60,
   },
   {
     id: "bk-246",
@@ -4256,7 +4018,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-247",
@@ -4273,7 +4034,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(159),
     discountedPrice: 159,
     weight: 250,
-    cost: 60,
   },
   {
     id: "bk-248",
@@ -4290,7 +4050,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-249",
@@ -4307,7 +4066,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(139),
     discountedPrice: 139,
     weight: 250,
-    cost: 80,
   },
   {
     id: "bk-250",
@@ -4324,7 +4082,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 80,
   },
   {
     id: "bk-251",
@@ -4341,7 +4098,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(219),
     discountedPrice: 219,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-252",
@@ -4358,7 +4114,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(159),
     discountedPrice: 159,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-253",
@@ -4375,7 +4130,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 60,
   },
   {
     id: "bk-254",
@@ -4392,7 +4146,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-255",
@@ -4409,7 +4162,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 90,
   },
   {
     id: "bk-257",
@@ -4426,7 +4178,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-258",
@@ -4443,7 +4194,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 80,
   },
   {
     id: "bk-259",
@@ -4460,7 +4210,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-260",
@@ -4477,7 +4226,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 70,
   },
   {
     id: "bk-261",
@@ -4494,7 +4242,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-262",
@@ -4511,7 +4258,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-263",
@@ -4528,7 +4274,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-264",
@@ -4545,7 +4290,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-265",
@@ -4562,7 +4306,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 90,
   },
   {
     id: "bk-266",
@@ -4579,7 +4322,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(199),
     discountedPrice: 199,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-267",
@@ -4596,7 +4338,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 120,
   },
   {
     id: "bk-268",
@@ -4613,7 +4354,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 120,
   },
   {
     id: "bk-269",
@@ -4630,7 +4370,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-270",
@@ -4647,7 +4386,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 110,
   },
   {
     id: "bk-271",
@@ -4664,7 +4402,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-272",
@@ -4681,7 +4418,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-273",
@@ -4698,7 +4434,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-274",
@@ -4715,7 +4450,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 60,
   },
   {
     id: "bk-275",
@@ -4732,7 +4466,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(289),
     discountedPrice: 289,
     weight: 500,
-    cost: 120,
   },
   {
     id: "bk-276",
@@ -4749,7 +4482,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-277",
@@ -4766,7 +4498,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-278",
@@ -4783,7 +4514,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-279",
@@ -4800,7 +4530,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-280",
@@ -4817,7 +4546,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-281",
@@ -4834,7 +4562,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-282",
@@ -4851,7 +4578,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-283",
@@ -4868,7 +4594,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-284",
@@ -4885,7 +4610,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-285",
@@ -4902,7 +4626,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-286",
@@ -4919,7 +4642,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-287",
@@ -4936,7 +4658,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-288",
@@ -4953,7 +4674,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-289",
@@ -4970,7 +4690,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-290",
@@ -4987,7 +4706,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-291",
@@ -5004,7 +4722,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-292",
@@ -5021,7 +4738,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-293",
@@ -5038,7 +4754,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-294",
@@ -5055,7 +4770,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-295",
@@ -5072,7 +4786,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-296",
@@ -5089,7 +4802,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-297",
@@ -5106,7 +4818,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(219),
     discountedPrice: 219,
     weight: 400,
-    cost: 70,
   },
   {
     id: "bk-298",
@@ -5123,7 +4834,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 60,
   },
   {
     id: "bk-299",
@@ -5140,7 +4850,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-300",
@@ -5157,7 +4866,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 100,
   },
   {
     id: "bk-301",
@@ -5174,7 +4882,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 70,
   },
   {
     id: "bk-302",
@@ -5191,7 +4898,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 199,
     weight: 400,
-    cost: 70,
   },
   {
     id: "bk-303",
@@ -5208,7 +4914,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-304",
@@ -5225,7 +4930,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(279),
     discountedPrice: 279,
     weight: 500,
-    cost: 110,
   },
   {
     id: "bk-305",
@@ -5242,7 +4946,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(219),
     discountedPrice: 219,
     weight: 400,
-    cost: 110,
   },
   {
     id: "bk-306",
@@ -5259,7 +4962,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 80,
   },
   {
     id: "bk-307",
@@ -5276,7 +4978,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 70,
   },
   {
     id: "bk-308",
@@ -5293,7 +4994,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(259),
     discountedPrice: 259,
     weight: 500,
-    cost: 100,
   },
   {
     id: "bk-309",
@@ -5310,7 +5010,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(279),
     discountedPrice: 279,
     weight: 500,
-    cost: 120,
   },
   {
     id: "bk-311",
@@ -5327,7 +5026,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(309),
     discountedPrice: 309,
     weight: 500,
-    cost: 160,
   },
   {
     id: "bk-312",
@@ -5344,7 +5042,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(409),
     discountedPrice: 409,
     weight: 600,
-    cost: 260,
   },
   {
     id: "bk-313",
@@ -5361,7 +5058,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 80,
   },
   {
     id: "bk-314",
@@ -5378,7 +5074,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(369),
     discountedPrice: 369,
     weight: 600,
-    cost: 180,
   },
   {
     id: "bk-315",
@@ -5395,7 +5090,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 120,
   },
   {
     id: "bk-316",
@@ -5412,7 +5106,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 120,
   },
   {
     id: "bk-318",
@@ -5429,7 +5122,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(369),
     discountedPrice: 369,
     weight: 600,
-    cost: 120,
   },
   {
     id: "bk-320",
@@ -5446,7 +5138,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-322",
@@ -5463,7 +5154,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 110,
   },
   {
     id: "bk-323",
@@ -5480,7 +5170,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(369),
     discountedPrice: 369,
     weight: 600,
-    cost: 110,
   },
   {
     id: "bk-325",
@@ -5497,7 +5186,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 80,
   },
   {
     id: "bk-326",
@@ -5514,7 +5202,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 120,
   },
   {
     id: "bk-327",
@@ -5531,7 +5218,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 120,
   },
   {
     id: "bk-328",
@@ -5548,7 +5234,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-329",
@@ -5565,7 +5250,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-331",
@@ -5582,7 +5266,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(369),
     discountedPrice: 369,
     weight: 600,
-    cost: 110,
   },
   {
     id: "bk-333",
@@ -5599,7 +5282,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 110,
   },
   {
     id: "bk-334",
@@ -5616,7 +5298,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-336",
@@ -5633,7 +5314,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(369),
     discountedPrice: 369,
     weight: 600,
-    cost: 130,
   },
   {
     id: "bk-337",
@@ -5650,7 +5330,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 120,
   },
   {
     id: "bk-338",
@@ -5667,7 +5346,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(309),
     discountedPrice: 309,
     weight: 500,
-    cost: 120,
   },
   {
     id: "bk-339",
@@ -5684,7 +5362,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(369),
     discountedPrice: 369,
     weight: 600,
-    cost: 200,
   },
   {
     id: "bk-341",
@@ -5701,7 +5378,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(369),
     discountedPrice: 369,
     weight: 600,
-    cost: 200,
   },
   {
     id: "bk-342",
@@ -5718,7 +5394,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(369),
     discountedPrice: 369,
     weight: 600,
-    cost: 200,
   },
   {
     id: "bk-343",
@@ -5735,7 +5410,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 200,
   },
   {
     id: "bk-344",
@@ -5752,7 +5426,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(369),
     discountedPrice: 369,
     weight: 600,
-    cost: 200,
   },
   {
     id: "bk-345",
@@ -5769,7 +5442,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 120,
   },
   {
     id: "bk-346",
@@ -5786,7 +5458,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-347",
@@ -5803,7 +5474,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 110,
   },
   {
     id: "bk-348",
@@ -5820,7 +5490,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 70,
   },
   {
     id: "bk-349",
@@ -5837,7 +5506,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 110,
   },
   {
     id: "bk-350",
@@ -5854,7 +5522,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-351",
@@ -5871,7 +5538,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(1209),
     discountedPrice: 1209,
     weight: 1500,
-    cost: 600,
   },
   {
     id: "bk-352",
@@ -5888,7 +5554,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 110,
   },
   {
     id: "bk-353",
@@ -5905,7 +5570,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 110,
   },
   {
     id: "bk-354",
@@ -5922,7 +5586,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-355",
@@ -5939,7 +5602,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-357",
@@ -5956,7 +5618,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(369),
     discountedPrice: 369,
     weight: 600,
-    cost: 200,
   },
   {
     id: "bk-362",
@@ -5973,7 +5634,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 120,
   },
   {
     id: "bk-365",
@@ -5990,7 +5650,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 100,
   },
   {
     id: "bk-366",
@@ -6007,7 +5666,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-367",
@@ -6024,7 +5682,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 120,
   },
   {
     id: "bk-368",
@@ -6041,7 +5698,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-369",
@@ -6058,7 +5714,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 90,
   },
   {
     id: "bk-370",
@@ -6075,7 +5730,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 100,
   },
   {
     id: "bk-372",
@@ -6092,7 +5746,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(269),
     discountedPrice: 269,
     weight: 500,
-    cost: 100,
   },
   {
     id: "bk-375",
@@ -6109,7 +5762,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 100,
   },
   {
     id: "bk-376",
@@ -6126,7 +5778,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 100,
   },
   {
     id: "bk-378",
@@ -6143,7 +5794,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 120,
   },
   {
     id: "bk-379",
@@ -6160,7 +5810,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 120,
   },
   {
     id: "bk-380",
@@ -6177,7 +5826,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(369),
     discountedPrice: 369,
     weight: 600,
-    cost: 90,
   },
   {
     id: "bk-382",
@@ -6194,7 +5842,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-383",
@@ -6211,7 +5858,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(369),
     discountedPrice: 369,
     weight: 600,
-    cost: 80,
   },
   {
     id: "bk-384",
@@ -6228,7 +5874,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(369),
     discountedPrice: 369,
     weight: 600,
-    cost: 120,
   },
   {
     id: "bk-385",
@@ -6245,7 +5890,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(1689),
     discountedPrice: 1689,
     weight: 1500,
-    cost: 900,
   },
   {
     id: "bk-386",
@@ -6262,7 +5906,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(199),
     discountedPrice: 199,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-387",
@@ -6279,7 +5922,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 80,
   },
   {
     id: "bk-388",
@@ -6296,7 +5938,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 60,
   },
   {
     id: "bk-389",
@@ -6313,7 +5954,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 110,
   },
   {
     id: "bk-390",
@@ -6330,7 +5970,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 110,
   },
   {
     id: "bk-391",
@@ -6347,7 +5986,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 80,
   },
   {
     id: "bk-392",
@@ -6364,7 +6002,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 80,
   },
   {
     id: "bk-393",
@@ -6381,7 +6018,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 110,
   },
   {
     id: "bk-394",
@@ -6398,7 +6034,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(369),
     discountedPrice: 369,
     weight: 600,
-    cost: 110,
   },
   {
     id: "bk-396",
@@ -6415,7 +6050,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-397",
@@ -6432,7 +6066,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(279),
     discountedPrice: 279,
     weight: 500,
-    cost: 110,
   },
   {
     id: "bk-398",
@@ -6449,7 +6082,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(279),
     discountedPrice: 279,
     weight: 500,
-    cost: 110,
   },
   {
     id: "bk-399",
@@ -6466,7 +6098,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(369),
     discountedPrice: 369,
     weight: 600,
-    cost: 210,
   },
   {
     id: "bk-400",
@@ -6483,7 +6114,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-402",
@@ -6500,7 +6130,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 100,
   },
   {
     id: "bk-403",
@@ -6517,7 +6146,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(219),
     discountedPrice: 219,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-404",
@@ -6534,7 +6162,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 11,
   },
   {
     id: "bk-405",
@@ -6551,7 +6178,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 100,
   },
   {
     id: "bk-407",
@@ -6568,7 +6194,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 110,
   },
   {
     id: "bk-408",
@@ -6585,7 +6210,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(839),
     discountedPrice: 839,
     weight: 900,
-    cost: 360,
   },
   {
     id: "bk-410",
@@ -6602,7 +6226,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 90,
   },
   {
     id: "bk-411",
@@ -6619,7 +6242,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 90,
   },
   {
     id: "bk-412",
@@ -6636,7 +6258,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 130,
   },
   {
     id: "bk-413",
@@ -6653,7 +6274,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(299),
     discountedPrice: 299,
     weight: 500,
-    cost: 130,
   },
   {
     id: "bk-414",
@@ -6670,7 +6290,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(409),
     discountedPrice: 409,
     weight: 600,
-    cost: 180,
   },
   {
     id: "bk-415",
@@ -6687,7 +6306,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(399),
     discountedPrice: 399,
     weight: 600,
-    cost: 190,
   },
   {
     id: "bk-417",
@@ -6704,7 +6322,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-420",
@@ -6721,7 +6338,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 110,
   },
   {
     id: "bk-421",
@@ -6738,7 +6354,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(489),
     discountedPrice: 489,
     weight: 700,
-    cost: 110,
   },
   {
     id: "bk-422",
@@ -6755,7 +6370,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-426",
@@ -6772,7 +6386,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 110,
   },
   {
     id: "bk-428",
@@ -6789,7 +6402,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 120,
   },
   {
     id: "bk-429",
@@ -6806,7 +6418,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(369),
     discountedPrice: 369,
     weight: 600,
-    cost: 210,
   },
   {
     id: "bk-430",
@@ -6823,7 +6434,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(1079),
     discountedPrice: 1079,
     weight: 600,
-    cost: 200,
   },
   {
     id: "bk-431",
@@ -6840,7 +6450,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(279),
     discountedPrice: 279,
     weight: 500,
-    cost: 200,
   },
   {
     id: "bk-434",
@@ -6857,7 +6466,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(369),
     discountedPrice: 369,
     weight: 600,
-    cost: 100,
   },
   {
     id: "bk-435",
@@ -6874,7 +6482,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(369),
     discountedPrice: 369,
     weight: 600,
-    cost: 190,
   },
   {
     id: "bk-436",
@@ -6891,7 +6498,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-437",
@@ -6908,7 +6514,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(219),
     discountedPrice: 219,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-438",
@@ -6925,7 +6530,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 70,
   },
   {
     id: "bk-440",
@@ -6942,7 +6546,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-442",
@@ -6959,7 +6562,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(1569),
     discountedPrice: 1569,
     weight: 1500,
-    cost: 600,
   },
   {
     id: "bk-444",
@@ -6976,7 +6578,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 100,
   },
   {
     id: "bk-445",
@@ -6993,7 +6594,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 120,
   },
   {
     id: "bk-447",
@@ -7010,7 +6610,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(369),
     discountedPrice: 369,
     weight: 600,
-    cost: 150,
   },
   {
     id: "bk-450",
@@ -7027,7 +6626,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 110,
   },
   {
     id: "bk-451",
@@ -7044,7 +6642,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-452",
@@ -7061,7 +6658,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(309),
     discountedPrice: 309,
     weight: 500,
-    cost: 150,
   },
   {
     id: "bk-453",
@@ -7078,7 +6674,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 120,
   },
   {
     id: "bk-454",
@@ -7095,7 +6690,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(409),
     discountedPrice: 409,
     weight: 600,
-    cost: 160,
   },
   {
     id: "bk-456",
@@ -7112,7 +6706,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 90,
   },
   {
     id: "bk-457",
@@ -7129,7 +6722,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(219),
     discountedPrice: 219,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-458",
@@ -7146,7 +6738,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(309),
     discountedPrice: 309,
     weight: 500,
-    cost: 110,
   },
   {
     id: "bk-459",
@@ -7163,7 +6754,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(349),
     discountedPrice: 349,
     weight: 500,
-    cost: 110,
   },
   {
     id: "bk-460",
@@ -7180,7 +6770,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(369),
     discountedPrice: 369,
     weight: 600,
-    cost: 200,
   },
   {
     id: "bk-461",
@@ -7197,7 +6786,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(199),
     discountedPrice: 199,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-463",
@@ -7214,7 +6802,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(289),
     discountedPrice: 289,
     weight: 500,
-    cost: 110,
   },
   {
     id: "bk-464",
@@ -7231,7 +6818,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(369),
     discountedPrice: 369,
     weight: 600,
-    cost: 110,
   },
   {
     id: "bk-466",
@@ -7248,7 +6834,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(369),
     discountedPrice: 369,
     weight: 600,
-    cost: 150,
   },
   {
     id: "bk-467",
@@ -7265,7 +6850,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(309),
     discountedPrice: 309,
     weight: 500,
-    cost: 150,
   },
   {
     id: "bk-468",
@@ -7282,7 +6866,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(369),
     discountedPrice: 369,
     weight: 600,
-    cost: 150,
   },
   {
     id: "bk-470",
@@ -7299,7 +6882,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(1199),
     discountedPrice: 1199,
     weight: 1200,
-    cost: 500,
   },
   {
     id: "bk-471",
@@ -7316,7 +6898,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(369),
     discountedPrice: 369,
     weight: 600,
-    cost: 300,
   },
   {
     id: "bk-472",
@@ -7333,7 +6914,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(369),
     discountedPrice: 369,
     weight: 600,
-    cost: 190,
   },
   {
     id: "bk-474",
@@ -7350,7 +6930,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 110,
   },
   {
     id: "bk-475",
@@ -7367,7 +6946,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(279),
     discountedPrice: 279,
     weight: 500,
-    cost: 100,
   },
   {
     id: "bk-477",
@@ -7384,7 +6962,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(279),
     discountedPrice: 279,
     weight: 500,
-    cost: 190,
   },
   {
     id: "bk-478",
@@ -7401,7 +6978,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 110,
   },
   {
     id: "bk-479",
@@ -7418,7 +6994,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 110,
   },
   {
     id: "bk-480",
@@ -7435,7 +7010,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(369),
     discountedPrice: 369,
     weight: 600,
-    cost: 120,
   },
   {
     id: "bk-481",
@@ -7452,7 +7026,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(289),
     discountedPrice: 289,
     weight: 500,
-    cost: 120,
   },
   {
     id: "bk-482",
@@ -7469,7 +7042,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(5889),
     discountedPrice: 5889,
     weight: 1500,
-    cost: 3000,
   },
   {
     id: "bk-483",
@@ -7486,7 +7058,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(369),
     discountedPrice: 369,
     weight: 600,
-    cost: 200,
   },
   {
     id: "bk-484",
@@ -7503,7 +7074,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(369),
     discountedPrice: 369,
     weight: 600,
-    cost: 190,
   },
   {
     id: "bk-485",
@@ -7520,7 +7090,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 100,
   },
   {
     id: "bk-487",
@@ -7537,7 +7106,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 90,
   },
   {
     id: "bk-488",
@@ -7554,7 +7122,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 100,
   },
   {
     id: "bk-489",
@@ -7571,7 +7138,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(409),
     discountedPrice: 409,
     weight: 600,
-    cost: 150,
   },
   {
     id: "bk-490",
@@ -7588,7 +7154,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(369),
     discountedPrice: 369,
     weight: 600,
-    cost: 90,
   },
   {
     id: "bk-492",
@@ -7605,7 +7170,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 60,
   },
   {
     id: "bk-493",
@@ -7622,7 +7186,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(369),
     discountedPrice: 369,
     weight: 600,
-    cost: 120,
   },
   {
     id: "bk-494",
@@ -7639,7 +7202,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 100,
   },
   {
     id: "bk-496",
@@ -7656,7 +7218,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(369),
     discountedPrice: 369,
     weight: 600,
-    cost: 200,
   },
   {
     id: "bk-498",
@@ -7673,7 +7234,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 80,
   },
   {
     id: "bk-499",
@@ -7690,7 +7250,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(409),
     discountedPrice: 409,
     weight: 600,
-    cost: 140,
   },
   {
     id: "bk-500",
@@ -7707,7 +7266,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(369),
     discountedPrice: 369,
     weight: 600,
-    cost: 90,
   },
   {
     id: "bk-501",
@@ -7724,7 +7282,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(369),
     discountedPrice: 369,
     weight: 600,
-    cost: 90,
   },
   {
     id: "bk-502",
@@ -7741,7 +7298,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 100,
   },
 
   {
@@ -7759,7 +7315,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(249),
     discountedPrice: 249,
     weight: 500,
-    cost: 120,
   },
   {
     id: "bk-507",
@@ -7776,7 +7331,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 70,
   },
   {
     id: "bk-508",
@@ -7793,7 +7347,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 110,
   },
   {
     id: "bk-509",
@@ -7810,7 +7363,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(479),
     discountedPrice: 229,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-511",
@@ -7827,7 +7379,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(479),
     discountedPrice: 229,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-512",
@@ -7844,7 +7395,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(199),
     discountedPrice: 199,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-513",
@@ -7861,7 +7411,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(359),
     discountedPrice: 199,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-514",
@@ -7878,7 +7427,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 199,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-515",
@@ -7895,7 +7443,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(289),
     discountedPrice: 289,
     weight: 500,
-    cost: 110,
   },
   {
     id: "bk-516",
@@ -7912,7 +7459,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(289),
     discountedPrice: 289,
     weight: 500,
-    cost: 110,
   },
   {
     id: "bk-518",
@@ -7930,7 +7476,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(199),
     discountedPrice: 199,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-519",
@@ -7948,7 +7493,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 80,
   },
 
   {
@@ -7967,7 +7511,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(159),
     discountedPrice: 159,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-522",
@@ -7985,7 +7528,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-523",
@@ -8003,7 +7545,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(159),
     discountedPrice: 159,
     weight: 250,
-    cost: 90,
   },
   {
     id: "bk-524",
@@ -8021,7 +7562,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 80,
   },
   {
     id: "bk-525",
@@ -8039,7 +7579,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(159),
     discountedPrice: 159,
     weight: 250,
-    cost: 80,
   },
   {
     id: "bk-526",
@@ -8057,7 +7596,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(199),
     discountedPrice: 199,
     weight: 400,
-    cost: 70,
   },
   {
     id: "bk-527",
@@ -8075,7 +7613,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-528",
@@ -8093,7 +7630,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 110,
   },
   {
     id: "bk-529",
@@ -8111,7 +7647,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-530",
@@ -8129,7 +7664,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-531",
@@ -8147,7 +7681,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-532",
@@ -8165,7 +7698,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-533",
@@ -8183,7 +7715,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-534",
@@ -8201,7 +7732,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(119),
     discountedPrice: 119,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-535",
@@ -8219,7 +7749,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(159),
     discountedPrice: 159,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-536",
@@ -8237,7 +7766,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(159),
     discountedPrice: 159,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-537",
@@ -8255,7 +7783,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-538",
@@ -8273,7 +7800,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 80,
   },
   {
     id: "bk-539",
@@ -8291,7 +7817,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(199),
     discountedPrice: 199,
     weight: 400,
-    cost: 70,
   },
   {
     id: "bk-540",
@@ -8309,7 +7834,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(219),
     discountedPrice: 219,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-541",
@@ -8327,7 +7851,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-542",
@@ -8345,7 +7868,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(359),
     discountedPrice: 359,
     weight: 500,
-    cost: 140,
   },
   {
     id: "bk-543",
@@ -8363,7 +7885,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(359),
     discountedPrice: 359,
     weight: 500,
-    cost: 140,
   },
   {
     id: "bk-544",
@@ -8381,7 +7902,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(169),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-545",
@@ -8399,7 +7919,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(199),
     discountedPrice: 199,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-546",
@@ -8417,7 +7936,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(199),
     discountedPrice: 199,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-547",
@@ -8435,7 +7953,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(199),
     discountedPrice: 199,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-548",
@@ -8453,7 +7970,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(199),
     discountedPrice: 199,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-549",
@@ -8471,7 +7987,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(199),
     discountedPrice: 199,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-550",
@@ -8489,7 +8004,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(219),
     discountedPrice: 219,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-551",
@@ -8507,7 +8021,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(219),
     discountedPrice: 219,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-552",
@@ -8525,7 +8038,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(219),
     discountedPrice: 219,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-553",
@@ -8543,7 +8055,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(219),
     discountedPrice: 219,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-554",
@@ -8561,7 +8072,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-555",
@@ -8579,7 +8089,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-556",
@@ -8597,7 +8106,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-557",
@@ -8615,7 +8123,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 100,
   },
   {
     id: "bk-558",
@@ -8633,7 +8140,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 100,
   },
   {
     id: "bk-559",
@@ -8651,7 +8157,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 100,
   },
   {
     id: "bk-560",
@@ -8669,7 +8174,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-561",
@@ -8687,7 +8191,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 100,
   },
   {
     id: "bk-562",
@@ -8705,7 +8208,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 100,
   },
   {
     id: "bk-563",
@@ -8723,7 +8225,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(419),
     discountedPrice: 419,
     weight: 600,
-    cost: 90,
   },
   {
     id: "bk-564",
@@ -8741,7 +8242,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(359),
     discountedPrice: 359,
     weight: 500,
-    cost: 100,
   },
   {
     id: "bk-565",
@@ -8759,7 +8259,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(339),
     discountedPrice: 339,
     weight: 500,
-    cost: 120,
   },
   {
     id: "bk-566",
@@ -8777,7 +8276,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(479),
     discountedPrice: 479,
     weight: 600,
-    cost: 120,
   },
   {
     id: "bk-567",
@@ -8795,7 +8293,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(599),
     discountedPrice: 599,
     weight: 700,
-    cost: 200,
   },
   {
     id: "bk-568",
@@ -8813,7 +8310,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(359),
     discountedPrice: 359,
     weight: 500,
-    cost: 110,
   },
   {
     id: "bk-569",
@@ -8831,7 +8327,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(419),
     discountedPrice: 419,
     weight: 600,
-    cost: 90,
   },
   {
     id: "bk-570",
@@ -8849,7 +8344,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(299),
     discountedPrice: 299,
     weight: 500,
-    cost: 120,
   },
   {
     id: "bk-571",
@@ -8867,7 +8361,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 100,
   },
   {
     id: "bk-572",
@@ -8885,7 +8378,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 100,
   },
   {
     id: "bk-573",
@@ -8903,7 +8395,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-574",
@@ -8921,7 +8412,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-575",
@@ -8939,7 +8429,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-576",
@@ -8957,7 +8446,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(279),
     discountedPrice: 279,
     weight: 500,
-    cost: 110,
   },
   {
     id: "bk-577",
@@ -8975,7 +8463,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-578",
@@ -8993,7 +8480,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(289),
     discountedPrice: 289,
     weight: 500,
-    cost: 110,
   },
   {
     id: "bk-579",
@@ -9011,7 +8497,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(299),
     discountedPrice: 299,
     weight: 500,
-    cost: 110,
   },
   {
     id: "bk-580",
@@ -9029,7 +8514,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(289),
     discountedPrice: 289,
     weight: 500,
-    cost: 80,
   },
   {
     id: "bk-581",
@@ -9047,7 +8531,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(419),
     discountedPrice: 419,
     weight: 600,
-    cost: 200,
   },
   {
     id: "bk-582",
@@ -9065,7 +8548,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(279),
     discountedPrice: 279,
     weight: 500,
-    cost: 110,
   },
   {
     id: "bk-583",
@@ -9083,7 +8565,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-584",
@@ -9101,7 +8582,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 80,
   },
   {
     id: "bk-585",
@@ -9119,7 +8599,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 90,
   },
   {
     id: "bk-586",
@@ -9137,7 +8616,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 90,
   },
   {
     id: "bk-587",
@@ -9155,7 +8633,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 90,
   },
   {
     id: "bk-588",
@@ -9173,7 +8650,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 80,
   },
   {
     id: "bk-589",
@@ -9191,7 +8667,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(159),
     discountedPrice: 159,
     weight: 250,
-    cost: 80,
   },
   {
     id: "bk-590",
@@ -9209,7 +8684,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-591",
@@ -9227,7 +8701,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(359),
     discountedPrice: 359,
     weight: 500,
-    cost: 90,
   },
   {
     id: "bk-592",
@@ -9245,7 +8718,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-593",
@@ -9263,7 +8735,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-594",
@@ -9281,7 +8752,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-595",
@@ -9299,7 +8769,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-596",
@@ -9317,7 +8786,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(299),
     discountedPrice: 299,
     weight: 500,
-    cost: 110,
   },
   {
     id: "bk-597",
@@ -9335,7 +8803,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-598",
@@ -9353,7 +8820,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-599",
@@ -9371,7 +8837,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 90,
   },
   {
     id: "bk-600",
@@ -9389,7 +8854,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(159),
     discountedPrice: 159,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-601",
@@ -9407,7 +8871,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(279),
     discountedPrice: 279,
     weight: 500,
-    cost: 60,
   },
   {
     id: "bk-602",
@@ -9425,7 +8888,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-603",
@@ -9443,7 +8905,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-604",
@@ -9461,7 +8922,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-605",
@@ -9479,7 +8939,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-606",
@@ -9497,7 +8956,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-607",
@@ -9515,7 +8973,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(479),
     discountedPrice: 479,
     weight: 600,
-    cost: 80,
   },
   {
     id: "bk-608",
@@ -9533,7 +8990,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-609",
@@ -9551,7 +9007,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(359),
     discountedPrice: 359,
     weight: 500,
-    cost: 110,
   },
   {
     id: "bk-610",
@@ -9567,7 +9022,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(199),
     discountedPrice: 199,
     weight: 400,
-    cost: 50,
   },
   {
     id: "bk-611",
@@ -9585,7 +9039,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-612",
@@ -9603,7 +9056,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(219),
     discountedPrice: 219,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-613",
@@ -9621,7 +9073,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(379),
     discountedPrice: 379,
     weight: 600,
-    cost: 80,
   },
   {
     id: "bk-614",
@@ -9639,7 +9090,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(1079),
     discountedPrice: 1079,
     weight: 1200,
-    cost: 500,
   },
   {
     id: "bk-615",
@@ -9657,7 +9107,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 80,
   },
   {
     id: "bk-616",
@@ -9675,7 +9124,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(199),
     discountedPrice: 199,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-617",
@@ -9693,7 +9141,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(189),
     discountedPrice: 189,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-618",
@@ -9711,7 +9158,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 100,
   },
   {
     id: "bk-619",
@@ -9729,7 +9175,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 100,
   },
   {
     id: "bk-620",
@@ -9747,7 +9192,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 100,
   },
   {
     id: "bk-621",
@@ -9765,7 +9209,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 100,
   },
   {
     id: "bk-622",
@@ -9783,7 +9226,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 100,
   },
   {
     id: "bk-623",
@@ -9801,7 +9243,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(379),
     discountedPrice: 379,
     weight: 600,
-    cost: 250,
   },
   {
     id: "bk-624",
@@ -9819,7 +9260,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(379),
     discountedPrice: 379,
     weight: 600,
-    cost: 250,
   },
   {
     id: "bk-625",
@@ -9837,7 +9277,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(379),
     discountedPrice: 379,
     weight: 600,
-    cost: 250,
   },
   {
     id: "bk-626",
@@ -9855,7 +9294,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(219),
     discountedPrice: 219,
     weight: 400,
-    cost: 120,
   },
   {
     id: "bk-627",
@@ -9873,7 +9311,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(419),
     discountedPrice: 419,
     weight: 500,
-    cost: 130,
   },
   {
     id: "bk-628",
@@ -9891,7 +9328,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(419),
     discountedPrice: 419,
     weight: 500,
-    cost: 130,
   },
   {
     id: "bk-629",
@@ -9909,7 +9345,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(289),
     discountedPrice: 419,
     weight: 500,
-    cost: 130,
   },
   {
     id: "bk-630",
@@ -9927,7 +9362,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(289),
     discountedPrice: 419,
     weight: 500,
-    cost: 130,
   },
   {
     id: "bk-631",
@@ -9945,7 +9379,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(1439),
     discountedPrice: 1439,
     weight: 1500,
-    cost: 600,
   },
   {
     id: "bk-632",
@@ -9963,7 +9396,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 259,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-633",
@@ -9981,7 +9413,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-634",
@@ -9999,7 +9430,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 100,
   },
   {
     id: "bk-635",
@@ -10017,7 +9447,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(719),
     discountedPrice: 719,
     weight: 900,
-    cost: 340,
   },
   {
     id: "bk-636",
@@ -10035,7 +9464,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-637",
@@ -10053,7 +9481,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-638",
@@ -10071,7 +9498,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-639",
@@ -10089,7 +9515,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(669),
     discountedPrice: 669,
     weight: 900,
-    cost: 350,
   },
   {
     id: "bk-640",
@@ -10107,7 +9532,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(259),
     discountedPrice: 259,
     weight: 500,
-    cost: 120,
   },
   {
     id: "bk-641",
@@ -10125,7 +9549,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(299),
     discountedPrice: 299,
     weight: 500,
-    cost: 120,
   },
   {
     id: "bk-642",
@@ -10143,7 +9566,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(359),
     discountedPrice: 359,
     weight: 500,
-    cost: 120,
   },
   {
     id: "bk-643",
@@ -10161,7 +9583,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-644",
@@ -10179,7 +9600,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 100,
   },
   {
     id: "bk-645",
@@ -10197,7 +9617,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 110,
   },
   {
     id: "bk-646",
@@ -10215,7 +9634,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(289),
     discountedPrice: 289,
     weight: 500,
-    cost: 120,
   },
   {
     id: "bk-647",
@@ -10233,7 +9651,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 120,
   },
   {
     id: "bk-648",
@@ -10251,7 +9668,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 90,
   },
   {
     id: "bk-649",
@@ -10269,7 +9685,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(279),
     discountedPrice: 279,
     weight: 500,
-    cost: 110,
   },
   {
     id: "bk-650",
@@ -10287,7 +9702,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(279),
     discountedPrice: 279,
     weight: 500,
-    cost: 120,
   },
   {
     id: "bk-651",
@@ -10305,7 +9719,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 100,
   },
   {
     id: "bk-652",
@@ -10323,7 +9736,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,
     weight: 250,
-    cost: 80,
   },
   {
     id: "bk-653",
@@ -10341,7 +9753,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 400,
-    cost: 80,
   },
   {
     id: "bk-654",
@@ -10359,7 +9770,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 100,
   },
   {
     id: "bk-655",
@@ -10377,7 +9787,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 400,
-    cost: 90,
   },
   {
     id: "bk-656",
@@ -10394,7 +9803,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(359),
     discountedPrice: 399,
     weight: 600,
-    cost: 140,
   },
   {
     id: "bk-657",
@@ -10411,7 +9819,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(359),
     discountedPrice: 379,
     weight: 500,
-    cost: 135,
   },
   {
     id: "bk-658",
@@ -10428,7 +9835,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 179,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-659",
@@ -10445,7 +9851,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 189,
     weight: 250,
-    cost: 75,
   },
   {
     id: "bk-660",
@@ -10462,7 +9867,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(359),
     discountedPrice: 359,
     weight: 500,
-    cost: 130,
   },
   {
     id: "bk-661",
@@ -10479,7 +9883,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 159,
     weight: 250,
-    cost: 65,
   },
   {
     id: "bk-662",
@@ -10496,7 +9899,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 169,
     weight: 250,
-    cost: 70,
   },
   {
     id: "bk-663",
@@ -10513,7 +9915,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(359),
     discountedPrice: 359,
     weight: 500,
-    cost: 130,
   },
   {
     id: "bk-664",
@@ -10530,7 +9931,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(259),
     discountedPrice: 239,
     weight: 300,
-    cost: 150,
   },
   {
     id: "bk-665",
@@ -10553,7 +9953,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(219),
     discountedPrice: 189,
     weight: 140,
-    cost: 110,
   },
   {
     id: "bk-666",
@@ -10576,7 +9975,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 219,
     weight: 250,
-    cost: 130,
   },
   {
     id: "bk-667",
@@ -10593,7 +9991,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 219,
     weight: 150,
-    cost: 130,
   },
   {
     id: "bk-668",
@@ -10610,7 +10007,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 219,
     weight: 120,
-    cost: 130,
   },
   {
     id: "bk-669",
@@ -10633,7 +10029,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(199),
     discountedPrice: 199,
     weight: 180,
-    cost: 120,
   },
   {
     id: "bk-670",
@@ -10656,7 +10051,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(149),
     discountedPrice: 149,
     weight: 130,
-    cost: 100,
   },
   {
     id: "bk-671",
@@ -10679,7 +10073,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(149),
     discountedPrice: 149,
     weight: 120,
-    cost: 100,
   },
   {
     id: "bk-672",
@@ -10696,7 +10089,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(199),
     discountedPrice: 199,
     weight: 250,
-    cost: 130,
   },
   {
     id: "bk-673",
@@ -10713,7 +10105,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(379),
     discountedPrice: 379,
     weight: 260,
-    cost: 240,
   },
   {
     id: "bk-674",
@@ -10730,7 +10121,6 @@ export const books = [
     originalPrice: calculateOriginalPrice(239),
     discountedPrice: 239,
     weight: 250,
-    cost: 150,
   },
   {
     id: "bk-675",
@@ -10747,6 +10137,5 @@ export const books = [
     originalPrice: calculateOriginalPrice(229),
     discountedPrice: 229,
     weight: 220,
-    cost: 140,
   },
 ];

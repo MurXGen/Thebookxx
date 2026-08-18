@@ -3399,6 +3399,16 @@ function TrackSheet({ trackOrder, onClose, trackCopied, setTrackCopied }) {
     trainControls.set({ y: startY, opacity: 0, scale: 0.85 });
     fillControls.set({ height: 0 });
 
+    // Haptic feedback on supported devices (Android/Chrome). Silent no-op
+    // elsewhere. Train = rhythmic chug, flight = engine spool-up rumble.
+    const haptic = (pattern) => {
+      try {
+        if (typeof navigator !== "undefined" && navigator.vibrate) {
+          navigator.vibrate(pattern);
+        }
+      } catch {}
+    };
+
     (async () => {
       // Let the sheet finish sliding up before the vehicle departs.
       await new Promise((r) => setTimeout(r, 500));
@@ -3410,6 +3420,14 @@ function TrackSheet({ trackOrder, onClose, trackCopied, setTrackCopied }) {
       });
       if (cancelled) return;
       setMoving(true);
+      // Buzz that lasts roughly the length of the trip.
+      if (isFaster) {
+        haptic([220, 40, 340, 40, 520, 40, 260]);
+      } else {
+        const chug = [];
+        for (let i = 0; i < 11; i++) chug.push(45, 95);
+        haptic(chug);
+      }
       const dur = delivered ? 2.8 : 2.15;
       const ease = [0.45, 0.02, 0.25, 1]; // pull away, cruise, ease to a stop
       fillControls.start({
@@ -3422,6 +3440,7 @@ function TrackSheet({ trackOrder, onClose, trackCopied, setTrackCopied }) {
       });
       if (cancelled) return;
       setMoving(false);
+      haptic(55); // gentle "arrived" tap
       // Settle with a soft, breathing bob at the current stop.
       trainControls.start({
         y: [targetY, targetY - 3, targetY],
@@ -3431,6 +3450,12 @@ function TrackSheet({ trackOrder, onClose, trackCopied, setTrackCopied }) {
 
     return () => {
       cancelled = true;
+      // Stop any ongoing vibration if the sheet closes mid-journey.
+      try {
+        if (typeof navigator !== "undefined" && navigator.vibrate) {
+          navigator.vibrate(0);
+        }
+      } catch {}
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [geo]);

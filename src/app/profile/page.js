@@ -3320,9 +3320,24 @@ function TrackSheet({ trackOrder, onClose, trackCopied, setTrackCopied }) {
   useEffect(() => {
     const measure = () => {
       const dots = dotRefs.current;
-      if (!dots[0] || !dots[activeIndex] || !dots[stages.length - 1]) return;
-      const cy = (el) => el.offsetTop + el.offsetHeight / 2;
-      const cx = (el) => el.offsetLeft + el.offsetWidth / 2;
+      const container = railRef.current;
+      if (!container || !dots[0] || !dots[activeIndex] || !dots[stages.length - 1])
+        return;
+      // Cumulative offset up to the timeline container — robust even though
+      // each step-rail is its own positioning context.
+      const offsetWithin = (el) => {
+        let x = 0;
+        let y = 0;
+        let node = el;
+        while (node && node !== container) {
+          y += node.offsetTop;
+          x += node.offsetLeft;
+          node = node.offsetParent;
+        }
+        return { x, y };
+      };
+      const cy = (el) => offsetWithin(el).y + el.offsetHeight / 2;
+      const cx = (el) => offsetWithin(el).x + el.offsetWidth / 2;
       const next = {
         x: cx(dots[0]),
         startY: cy(dots[0]),

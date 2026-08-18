@@ -3287,7 +3287,7 @@ Please cancel this order. Thank you `;
                 setTrackCopied(true);
               } catch {}
               window.open(
-                "https://www.indiapost.gov.in/_layouts/15/DOP.Portal.Tracking/TrackConsignment.aspx",
+                "https://www.indiapost.gov.in",
                 "_blank",
                 "noopener,noreferrer",
               );
@@ -3325,17 +3325,67 @@ Please cancel this order. Thank you `;
                   </div>
 
                   <div className="track-body">
-                    <div className="track-steps">
+                    <motion.div
+                      className="track-steps"
+                      initial="hidden"
+                      animate="show"
+                      variants={{
+                        hidden: {},
+                        show: {
+                          transition: {
+                            staggerChildren: 0.16,
+                            delayChildren: 0.2,
+                          },
+                        },
+                      }}
+                    >
                       {stages.map((st, i) => (
-                        <div className={`track-step ${st.state}`} key={i}>
+                        <motion.div
+                          className={`track-step ${st.state}`}
+                          key={i}
+                          variants={{
+                            hidden: { opacity: 0, y: 10 },
+                            show: {
+                              opacity: 1,
+                              y: 0,
+                              transition: { duration: 0.32, ease: "easeOut" },
+                            },
+                          }}
+                        >
                           <div className="track-step-rail">
-                            <span className="track-step-dot">
+                            <motion.span
+                              className="track-step-dot"
+                              variants={{
+                                hidden: { scale: 0.3 },
+                                show: {
+                                  scale: 1,
+                                  transition: {
+                                    type: "spring",
+                                    stiffness: 420,
+                                    damping: 18,
+                                  },
+                                },
+                              }}
+                            >
                               {st.state === "done" && (
                                 <Check size={13} strokeWidth={3} />
                               )}
-                            </span>
+                            </motion.span>
                             {i < stages.length - 1 && (
-                              <span className="track-step-line" />
+                              <span className="track-step-line">
+                                <motion.span
+                                  className="track-step-line-fill"
+                                  initial={{ scaleY: 0 }}
+                                  animate={{
+                                    scaleY: st.state === "done" ? 1 : 0,
+                                  }}
+                                  transition={{
+                                    delay: 0.35 + i * 0.16,
+                                    duration: 0.4,
+                                    ease: "easeOut",
+                                  }}
+                                />
+                              </span>
                             )}
                           </div>
                           <div className="track-step-txt">
@@ -3350,21 +3400,45 @@ Please cancel this order. Thank you `;
                                   onClick={openIndiaPost}
                                 >
                                   {trackCopied
-                                    ? "Tracking ID copied — track on India Post ↗"
-                                    : "Check here ↗"}
+                                    ? "ID copied — paste on India Post ↗"
+                                    : "Track on India Post ↗"}
                                 </button>
                               )}
                           </div>
-                        </div>
+                        </motion.div>
                       ))}
-                    </div>
+                    </motion.div>
 
                     {trackOrder.shippingId && (
                       <div className="track-tid">
-                        <span className="track-tid-lbl">Tracking ID</span>
-                        <span className="track-tid-v">
-                          {trackOrder.shippingId}
-                        </span>
+                        <div className="track-tid-info">
+                          <span className="track-tid-lbl">Tracking ID</span>
+                          <span className="track-tid-v">
+                            {trackOrder.shippingId}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          className="track-tid-copy"
+                          onClick={() => {
+                            try {
+                              navigator.clipboard.writeText(
+                                trackOrder.shippingId || "",
+                              );
+                              setTrackCopied(true);
+                            } catch {}
+                          }}
+                        >
+                          {trackCopied ? (
+                            <>
+                              <Check size={14} strokeWidth={3} /> Copied
+                            </>
+                          ) : (
+                            <>
+                              <Copy size={14} /> Copy
+                            </>
+                          )}
+                        </button>
                       </div>
                     )}
                     {delivered && (

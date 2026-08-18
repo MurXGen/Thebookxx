@@ -51,6 +51,7 @@ import {
   Send,
   LayoutGrid,
   List,
+  CheckSquare,
   Wallet,
   Pin,
   Pencil,
@@ -3158,6 +3159,9 @@ export default function ManageOrdersPage() {
   const [orderView, setOrderView] = useState("cards"); // cards | table
   const [orderPickFilter, setOrderPickFilter] = useState("all"); // all | picked | pending
   const [selectedIds, setSelectedIds] = useState([]); // bulk-selected order IDs (table)
+  const [cardSelectMode, setCardSelectMode] = useState(false); // card-view multi-select
+  const [cardBulkStatus, setCardBulkStatus] = useState("Getting Shipped");
+  const [cardBulkBusy, setCardBulkBusy] = useState(false);
   const [bulkStage, setBulkStage] = useState(null); // WhatsApp stage key for bulk send
   const [bulkSent, setBulkSent] = useState([]); // order IDs already messaged
   const [mergeGroup, setMergeGroup] = useState(null); // customer group under merge preview
@@ -3180,6 +3184,10 @@ export default function ManageOrdersPage() {
   const [trackingParseError, setTrackingParseError] = useState("");
   const [trackingBusy, setTrackingBusy] = useState(false);
   const [trackingResult, setTrackingResult] = useState(null); // {pushed} | null
+  // Optional bulk/per-row status change alongside the tracking-ID write.
+  const [trackChangeStatus, setTrackChangeStatus] = useState(false);
+  const [trackBulkStatus, setTrackBulkStatus] = useState("In Transit");
+  const [trackRowStatus, setTrackRowStatus] = useState({}); // { orderId: status }
 
   // Normalize one loose JSON entry into { orderId, name, phone, trackingId }.
   // Accepts a variety of key spellings so the pasted JSON can come from any
@@ -3259,6 +3267,32 @@ export default function ManageOrdersPage() {
     setTrackingParseError(error);
   };
 
+  // Bulk-change the Order Status for every currently selected card, writing
+  // each change back to the sheet (same path as the per-order dropdown).
+  const applyCardBulkStatus = async () => {
+    const ids = [...selectedIds];
+    const st = cardBulkStatus;
+    if (ids.length === 0 || !st) return;
+    setCardBulkBusy(true);
+    for (const id of ids) {
+      patchLocalOrder(id, { "Order Status": st, status: st });
+    }
+    try {
+      await Promise.all(
+        ids.map((id) =>
+          updateOrderRow(id, { "Order Status": st }).catch((e) =>
+            console.error("Bulk status save failed for", id, e),
+          ),
+        ),
+      );
+    } finally {
+      setCardBulkBusy(false);
+      setSelectedIds([]);
+      setCardSelectMode(false);
+      setTimeout(fetchOrders, 1300);
+    }
+  };
+
   const pushTrackingRows = async () => {
     // Always re-parse the current textarea so the pushed count matches exactly
     // what's on screen (even if the preview was from an earlier edit).
@@ -3295,9 +3329,25 @@ export default function ManageOrdersPage() {
         mode: "no-cors",
         body,
       });
-      setTrackingResult({ pushed: enriched.length });
+
+      // Optionally also change each order's status (per-row override, else bulk).
+      let statusChanged = 0;
+      if (trackChangeStatus) {
+        for (const r of enriched) {
+          const st = trackRowStatus[r.orderId] || trackBulkStatus;
+          if (!st) continue;
+          patchLocalOrder(r.orderId, { "Order Status": st, status: st });
+          try {
+            await updateOrderRow(r.orderId, { "Order Status": st });
+            statusChanged++;
+          } catch (_) {}
+        }
+      }
+
+      setTrackingResult({ pushed: enriched.length, statusChanged });
       setTrackingJsonInput("");
       setTrackingRows([]);
+      setTrackRowStatus({});
     } catch (e) {
       console.error("Tracking push failed:", e);
       alert("Failed to push tracking IDs. Check the console and try again.");
@@ -7666,6 +7716,7 @@ export default function ManageOrdersPage() {
                   <>
                     <Package size={15} /> Write {trackingRows.length || ""} to
                     Shipping ID
+                    {trackChangeStatus ? " + status" : ""}
                   </>
                 )}
               </button>
@@ -7680,7 +7731,11 @@ export default function ManageOrdersPage() {
                 <span className="mo-track-chip ok">
                   <Check size={13} /> {trackingResult.pushed} tracking ID
                   {trackingResult.pushed === 1 ? "" : "s"} written to Shipping
-                  ID. Give the sheet a moment, then check a customer profile.
+                  ID
+                  {trackingResult.statusChanged
+                    ? ` · ${trackingResult.statusChanged} status${trackingResult.statusChanged === 1 ? "" : "es"} updated`
+                    : ""}
+                  . Give the sheet a moment, then check a customer profile.
                 </span>
               </div>
             )}
@@ -7688,13 +7743,52 @@ export default function ManageOrdersPage() {
             {trackingRows.length > 0 && (
               <div className="mo-trackpush-preview">
                 <div className="mo-trackpush-preview-head">
-                  {trackingRows.length} entr
-                  {trackingRows.length === 1 ? "y" : "ies"} ready
+                  <span>
+                    {trackingRows.length} entr
+                    {trackingRows.length === 1 ? "y" : "ies"} ready
+                  </span>
+                  <label className="mo-tp-statustoggle">
+                    <input
+                      type="checkbox"
+                      checked={trackChangeStatus}
+                      onChange={(e) => setTrackChangeStatus(e.target.checked)}
+                    />
+                    Also change status
+                  </label>
                 </div>
-                <div className="mo-trackpush-table mo-trackpush-table-2col">
+
+                {trackChangeStatus && (
+                  <div className="mo-tp-bulkbar">
+                    <span className="mo-tp-bulkbar-lbl">
+                      Set all {trackingRows.length} to
+                    </span>
+                    <select
+                      className="mo-tp-status-select"
+                      value={trackBulkStatus}
+                      onChange={(e) => {
+                        setTrackBulkStatus(e.target.value);
+                        setTrackRowStatus({}); // all rows follow the bulk value
+                      }}
+                    >
+                      {TRACK_STATUS_OPTIONS.map((s) => (
+                        <option key={s} value={s}>
+                          {s}
+                        </option>
+                      ))}
+                    </select>
+                    <span className="mo-tp-bulkbar-hint">
+                      or override a row below
+                    </span>
+                  </div>
+                )}
+
+                <div
+                  className={`mo-trackpush-table ${trackChangeStatus ? "mo-trackpush-table-3col" : "mo-trackpush-table-2col"}`}
+                >
                   <div className="mo-trackpush-trow mo-trackpush-thead">
                     <span>Order &amp; customer</span>
                     <span>Tracking ID</span>
+                    {trackChangeStatus && <span>New status</span>}
                   </div>
                   {trackingRows.map((r, i) => {
                     const o = orders.find(
@@ -7733,6 +7827,24 @@ export default function ManageOrdersPage() {
                           )}
                         </div>
                         <span className="mo-trackpush-tid">{r.trackingId}</span>
+                        {trackChangeStatus && (
+                          <select
+                            className="mo-tp-status-select mo-tp-status-row"
+                            value={trackRowStatus[r.orderId] || trackBulkStatus}
+                            onChange={(e) =>
+                              setTrackRowStatus((prev) => ({
+                                ...prev,
+                                [r.orderId]: e.target.value,
+                              }))
+                            }
+                          >
+                            {TRACK_STATUS_OPTIONS.map((s) => (
+                              <option key={s} value={s}>
+                                {s}
+                              </option>
+                            ))}
+                          </select>
+                        )}
                       </div>
                     );
                   })}
@@ -7808,6 +7920,29 @@ export default function ManageOrdersPage() {
                         >
                           <List size={16} />
                         </button>
+                        {orderView === "cards" && (
+                          <>
+                            <span className="mo-view-div" />
+                            <button
+                              type="button"
+                              className={`mo-view-btn mo-select-btn${cardSelectMode ? " active" : ""}`}
+                              onClick={() => {
+                                setCardSelectMode((v) => {
+                                  if (v) setSelectedIds([]);
+                                  return !v;
+                                });
+                              }}
+                              title={
+                                cardSelectMode ? "Exit select mode" : "Select orders"
+                              }
+                            >
+                              <CheckSquare size={16} />
+                              <span className="mo-select-btn-lbl">
+                                {cardSelectMode ? "Done" : "Select"}
+                              </span>
+                            </button>
+                          </>
+                        )}
                         <span className="mo-view-div" />
                         <button
                           type="button"
@@ -7884,6 +8019,63 @@ export default function ManageOrdersPage() {
                       ))}
                     </div>
                   </div>
+
+                  {orderView === "cards" && cardSelectMode && (
+                    <div className="mo-cardbulk-bar">
+                      <div className="mo-cardbulk-left">
+                        <CheckSquare size={16} />
+                        <span className="mo-cardbulk-count">
+                          {selectedIds.length} selected
+                        </span>
+                        {selectedIds.length > 0 && (
+                          <button
+                            type="button"
+                            className="mo-cardbulk-clear"
+                            onClick={() => setSelectedIds([])}
+                          >
+                            Clear
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          className="mo-cardbulk-clear"
+                          onClick={() =>
+                            setSelectedIds(
+                              visibleOrders
+                                .map((o) => o["Order ID"])
+                                .filter(Boolean),
+                            )
+                          }
+                        >
+                          Select all
+                        </button>
+                      </div>
+                      <div className="mo-cardbulk-right">
+                        <span className="mo-cardbulk-lbl">Set status</span>
+                        <select
+                          className="mo-tp-status-select"
+                          value={cardBulkStatus}
+                          onChange={(e) => setCardBulkStatus(e.target.value)}
+                        >
+                          {TRACK_STATUS_OPTIONS.map((s) => (
+                            <option key={s} value={s}>
+                              {s}
+                            </option>
+                          ))}
+                        </select>
+                        <button
+                          type="button"
+                          className="mo-cardbulk-apply"
+                          disabled={selectedIds.length === 0 || cardBulkBusy}
+                          onClick={applyCardBulkStatus}
+                        >
+                          {cardBulkBusy
+                            ? "Applying…"
+                            : `Apply to ${selectedIds.length || ""}`}
+                        </button>
+                      </div>
+                    </div>
+                  )}
 
                   {orderView === "table" && selectedIds.length > 0 && (
                     <div className="orders-bulk-bar">
@@ -8106,6 +8298,15 @@ export default function ManageOrdersPage() {
                           codAmount: order.revenue,
                         };
 
+                        const isSelected =
+                          cardSelectMode && selectedIds.includes(orderId);
+                        const toggleCardSelect = () =>
+                          setSelectedIds((prev) =>
+                            prev.includes(orderId)
+                              ? prev.filter((x) => x !== orderId)
+                              : [...prev, orderId],
+                          );
+
                         return (
                           <motion.div
                             key={orderId || idx}
@@ -8120,12 +8321,40 @@ export default function ManageOrdersPage() {
                               isCOD ? "mo-card-cod" : "mo-card-online"
                             }${isPacked ? " packed" : ""}${
                               isExpanded ? " expanded" : ""
+                            }${cardSelectMode ? " selectable" : ""}${
+                              isSelected ? " selected" : ""
                             }`}
                           >
+                            {cardSelectMode && (
+                              <button
+                                type="button"
+                                className={`mo-card-checkbox${isSelected ? " on" : ""}`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleCardSelect();
+                                }}
+                                aria-pressed={isSelected}
+                                title={isSelected ? "Deselect" : "Select"}
+                              >
+                                {isSelected && <Check size={14} />}
+                              </button>
+                            )}
                             <div
                               className="mo-card-top mo-card-top-toggle"
-                              onClick={() => toggleExpand(orderId)}
-                              title={isExpanded ? "Collapse" : "Expand details"}
+                              onClick={() =>
+                                cardSelectMode
+                                  ? toggleCardSelect()
+                                  : toggleExpand(orderId)
+                              }
+                              title={
+                                cardSelectMode
+                                  ? isSelected
+                                    ? "Deselect"
+                                    : "Select"
+                                  : isExpanded
+                                    ? "Collapse"
+                                    : "Expand details"
+                              }
                             >
                               <div className="mo-card-id">
                                 <div className="mo-name-row">

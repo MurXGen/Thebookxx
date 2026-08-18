@@ -17133,78 +17133,6 @@ img[data-loaded="true"] {
 .track-body {
   padding: 18px 18px calc(20px + env(safe-area-inset-bottom, 0px));
 }
-.track-journey {
-  margin-bottom: 20px;
-  padding: 14px 16px;
-  border-radius: 16px;
-  background: linear-gradient(135deg, #fff7ec 0%, #fef2f2 100%);
-  border: 1px solid #ffe0b8;
-}
-.track-journey-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
-}
-.track-journey-mode {
-  font-size: var(--px-14);
-  font-weight: 700;
-  color: var(--foreground, #1a1a1a);
-}
-.track-journey-status {
-  font-size: var(--px-11);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--tertiary, #fb8500);
-}
-.track-journey-rail {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.track-journey-pin {
-  font-size: 18px;
-  flex-shrink: 0;
-  line-height: 1;
-}
-.track-journey-line {
-  position: relative;
-  flex: 1;
-  height: 4px;
-  border-radius: 4px;
-  background: repeating-linear-gradient(
-    90deg,
-    #e5c9a6 0 7px,
-    transparent 7px 14px
-  );
-}
-.track-journey-fill {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  border-radius: 4px;
-  background: var(--tertiary, #fb8500);
-}
-.track-journey-vehicle {
-  position: absolute;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 22px;
-  line-height: 1;
-  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.15));
-}
-.track-journey-labels {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 8px;
-  font-size: var(--px-11);
-  font-weight: 600;
-  color: var(--gray-500, #6b7280);
-}
-
 .track-steps {
   display: flex;
   flex-direction: column;
@@ -17240,6 +17168,17 @@ img[data-loaded="true"] {
 .track-step.active .track-step-dot {
   background: #fff;
   border: 3px solid var(--tertiary, #fb8500);
+}
+.track-step-dot.has-vehicle {
+  width: 34px;
+  height: 34px;
+  background: #fff7ec;
+  box-shadow: 0 0 0 4px rgba(251, 133, 0, 0.14);
+}
+.track-step-vehicle {
+  font-size: 17px;
+  line-height: 1;
+  display: inline-flex;
 }
 .track-step-line {
   position: relative;

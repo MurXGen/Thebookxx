@@ -787,13 +787,41 @@ export default function MyOrdersPage() {
     setError("");
     setSearched(true);
     try {
-      const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
-      const response = await fetch(url);
-      if (!response.ok)
-        throw new Error(`HTTP error! status: ${response.status}`);
-      const text = await response.text();
-      const jsonString = text.substring(47, text.length - 2);
-      const data = JSON.parse(jsonString);
+      const base = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq`;
+      const cleanPhone = String(phone).trim();
+      const parseGviz = (t) =>
+        JSON.parse(t.substring(t.indexOf("{"), t.lastIndexOf("}") + 1));
+
+      // Step 1 — read ONLY the column metadata (zero data rows, so no customer
+      // PII comes down). This tells us which column holds the phone number.
+      const metaRes = await fetch(
+        `${base}?tqx=out:json&tq=${encodeURIComponent("select * limit 0")}`,
+      );
+      if (!metaRes.ok)
+        throw new Error(`HTTP error! status: ${metaRes.status}`);
+      const meta = parseGviz(await metaRes.text());
+      const cols = (meta.table && meta.table.cols) || [];
+      const phoneCol = cols.find((c) => c.label === "Phone Number");
+
+      // Step 2 — ask Google to return ONLY the rows for THIS phone number.
+      // The filter runs on Google's side, so other customers' rows never leave
+      // the sheet. Match numeric or text storage so we don't depend on cell
+      // formatting. If the column can't be resolved, fall back to a full read
+      // and filter locally (keeps the page working, still same visible result).
+      const serverFiltered = !!phoneCol;
+      let where = "";
+      if (phoneCol) {
+        where =
+          phoneCol.type === "number"
+            ? `where ${phoneCol.id} = ${cleanPhone}`
+            : `where ${phoneCol.id} = '${cleanPhone}'`;
+      }
+      const dataRes = await fetch(
+        `${base}?tqx=out:json&tq=${encodeURIComponent(`select * ${where}`.trim())}`,
+      );
+      if (!dataRes.ok)
+        throw new Error(`HTTP error! status: ${dataRes.status}`);
+      const data = parseGviz(await dataRes.text());
       if (!data.table || !data.table.rows) {
         setError("No data found in sheet.");
         setLoading(false);
@@ -827,7 +855,6 @@ export default function MyOrdersPage() {
       });
 
       const userOrders = allOrders.filter((order) => {
-        const orderPhone = order["Phone Number"];
         // Hide "(unconfirmed)" drop-off rows from the customer's history —
         // only orders the customer actually confirmed should appear.
         const isUnconfirmed = /\(unconfirmed\)/i.test(
@@ -836,11 +863,11 @@ export default function MyOrdersPage() {
         // Only UPI and COD orders belong in the profile — WhatsApp-button
         // orders are handled over chat and must not show here.
         const isWhatsApp = /whatsapp/i.test(order["Payment Type"] || "");
-        return (
-          !isUnconfirmed &&
-          !isWhatsApp &&
-          String(orderPhone).trim() === String(phone).trim()
-        );
+        if (isUnconfirmed || isWhatsApp) return false;
+        // Server already scoped to this phone; only re-check locally when we
+        // had to fall back to a full read.
+        if (serverFiltered) return true;
+        return String(order["Phone Number"]).trim() === cleanPhone;
       });
 
       // Sort newest-first using the proper sheet date parser

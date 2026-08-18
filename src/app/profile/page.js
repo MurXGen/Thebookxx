@@ -390,6 +390,9 @@ export default function MyOrdersPage() {
   const [savedPhones, setSavedPhones] = useState([]);
   // Which order cards are expanded (Amazon/Flipkart-style collapsed by default)
   const [expandedOrders, setExpandedOrders] = useState({});
+  // Track-shipment slide-up modal — holds the order being tracked (or null).
+  const [trackOrder, setTrackOrder] = useState(null);
+  const [trackCopied, setTrackCopied] = useState(false);
   const toggleOrder = (key) =>
     setExpandedOrders((p) => ({ ...p, [key]: !p[key] }));
 
@@ -1893,7 +1896,10 @@ Please cancel this order. Thank you `;
                       <button
                         type="button"
                         className="order-track-btn"
-                        onClick={() => handleTrackOrder(order, orderKey)}
+                        onClick={() => {
+                          setTrackCopied(false);
+                          setTrackOrder(order);
+                        }}
                       >
                         <Truck size={14} />
                         {order.shippingId ? "Track shipment" : "Track order"}
@@ -3238,6 +3244,140 @@ Please cancel this order. Thank you `;
         isOpen={showSuggest}
         onClose={() => setShowSuggest(false)}
       />
+
+      {/* ── Track shipment slide-up ── */}
+      <AnimatePresence>
+        {trackOrder &&
+          (() => {
+            const s = String(trackOrder.status || "").toLowerCase();
+            const delivered = /delivered/.test(s);
+            const inTransit = /in\s*transit|out\s*for\s*delivery/.test(s);
+            const shipped = !!trackOrder.shippingId || inTransit || delivered;
+            const stages = [
+              {
+                label: "Order confirmed",
+                sub: "We've received your order",
+                state: "done",
+              },
+              {
+                label: "Getting shipped from Mumbai",
+                sub: "Packed & handed to the courier",
+                state: shipped ? "done" : "active",
+              },
+              {
+                label: "In transit",
+                sub: delivered
+                  ? "On the way to you"
+                  : inTransit
+                    ? "Your parcel is on its way"
+                    : "We'll update this once it ships",
+                state: delivered ? "done" : inTransit ? "active" : "todo",
+              },
+              {
+                label: "Delivered",
+                sub: delivered
+                  ? "Your books have arrived — happy reading!"
+                  : "Arriving soon",
+                state: delivered ? "done" : "todo",
+              },
+            ];
+            const openIndiaPost = () => {
+              try {
+                navigator.clipboard.writeText(trackOrder.shippingId || "");
+                setTrackCopied(true);
+              } catch {}
+              window.open(
+                "https://www.indiapost.gov.in/_layouts/15/DOP.Portal.Tracking/TrackConsignment.aspx",
+                "_blank",
+                "noopener,noreferrer",
+              );
+            };
+            return (
+              <motion.div
+                className="bill-modal-overlay"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setTrackOrder(null)}
+              >
+                <motion.div
+                  className="bill-modal track-sheet"
+                  initial={{ y: "100%" }}
+                  animate={{ y: 0 }}
+                  exit={{ y: "100%" }}
+                  transition={{ duration: 0.38, ease: "easeOut" }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="bill-header">
+                    <div className="flex flex-col">
+                      <span className="weight-700 font-16">Track shipment</span>
+                      <span className="font-12 gray-500">
+                        Order{" "}
+                        {trackOrder.orderId || trackOrder["Order ID"] || ""}
+                      </span>
+                    </div>
+                    <span
+                      className="cursor-pointer"
+                      onClick={() => setTrackOrder(null)}
+                    >
+                      <X size={18} />
+                    </span>
+                  </div>
+
+                  <div className="track-body">
+                    <div className="track-steps">
+                      {stages.map((st, i) => (
+                        <div className={`track-step ${st.state}`} key={i}>
+                          <div className="track-step-rail">
+                            <span className="track-step-dot">
+                              {st.state === "done" && (
+                                <Check size={13} strokeWidth={3} />
+                              )}
+                            </span>
+                            {i < stages.length - 1 && (
+                              <span className="track-step-line" />
+                            )}
+                          </div>
+                          <div className="track-step-txt">
+                            <strong>{st.label}</strong>
+                            <span>{st.sub}</span>
+                            {st.label === "In transit" &&
+                              inTransit &&
+                              trackOrder.shippingId && (
+                                <button
+                                  type="button"
+                                  className="track-check-link"
+                                  onClick={openIndiaPost}
+                                >
+                                  {trackCopied
+                                    ? "Tracking ID copied — track on India Post ↗"
+                                    : "Check here ↗"}
+                                </button>
+                              )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {trackOrder.shippingId && (
+                      <div className="track-tid">
+                        <span className="track-tid-lbl">Tracking ID</span>
+                        <span className="track-tid-v">
+                          {trackOrder.shippingId}
+                        </span>
+                      </div>
+                    )}
+                    {delivered && (
+                      <div className="track-delivered">
+                        <Check size={14} strokeWidth={3} /> Delivered
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              </motion.div>
+            );
+          })()}
+      </AnimatePresence>
     </div>
   );
 }

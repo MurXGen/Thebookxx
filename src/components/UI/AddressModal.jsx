@@ -1092,6 +1092,7 @@ export default function AddressModal({
   // hasn't already added "The Art of Clarity", show the upsell first.
   // Specific reason the checkout can't proceed, shown as a toast on click.
   const validationMessage = () => {
+    if (pincode.length !== 6) return "Please enter a valid 6-digit pincode";
     if (!flatNo.trim()) return "Please add your flat / house number";
     if (!address.trim()) return "Please add your area / locality address";
     if (!city.trim()) return "Please enter your city";
@@ -1356,8 +1357,14 @@ export default function AddressModal({
     if (a !== address) setAddress(a);
   };
   const isAddressValid = () => Boolean(city && address.trim());
+  // Progressive reveal: pincode first → address+contact → add-ons + CTA.
+  const pincodeReady = pincode.length === 6 && isValidPincode;
+  const contactReady = name.trim().length > 0 && phone.length === 10;
+
   const isFormValid = () =>
-    Boolean(name && phone.length === 10 && isAddressValid());
+    Boolean(
+      pincode.length === 6 && name && phone.length === 10 && isAddressValid(),
+    );
 
   const phoneError =
     phone.length > 0 && phone.length < 10
@@ -1417,6 +1424,7 @@ export default function AddressModal({
                 )}
               </div>
 
+              {pincodeReady && (
               <div className="input-group">
                 <label>City / District</label>
                 <input
@@ -1437,7 +1445,9 @@ export default function AddressModal({
                   </span>
                 )}
               </div>
+              )}
 
+              {pincodeReady && (
               <div className="input-group">
                 <div className="addr-label-row">
                   <label>
@@ -1488,9 +1498,10 @@ export default function AddressModal({
                 />
                 {locError && <span className="loc-pick-err">{locError}</span>}
               </div>
+              )}
 
               <AnimatePresence>
-                {showContactFields && (
+                {pincodeReady && (
                   <motion.div
                     className="contact-fields-container"
                     initial={{ opacity: 0, height: 0, y: -20 }}
@@ -1535,8 +1546,8 @@ export default function AddressModal({
                 )}
               </AnimatePresence>
 
-              {/* ===== Add-ons: shown only once the name is filled ===== */}
-              {name.trim() && (
+              {/* ===== Add-ons: shown once name + phone are filled ===== */}
+              {contactReady && (
                 <div className="deliv-addon">
                   <span className="deliv-addon-head">Add-ons</span>
                   <div className="deliv-addon-row">
@@ -1669,14 +1680,21 @@ export default function AddressModal({
 
             {/* Fixed footer — total + proceed stay pinned, form scrolls above */}
             <div className="addr-footer">
-              {!isAddressValid() && (
+              {!pincodeReady && (
+                <div className="addr-warn addr-warn-orange">
+                  <AlertCircle size={13} />
+                  <span>Enter your 6-digit pincode to continue</span>
+                </div>
+              )}
+
+              {pincodeReady && !isAddressValid() && (
                 <div className="addr-warn addr-warn-orange">
                   <AlertCircle size={13} />
                   <span>Fill your city and full address to proceed</span>
                 </div>
               )}
 
-              {showContactFields && (!name.trim() || phone.length !== 10) && (
+              {pincodeReady && isAddressValid() && !contactReady && (
                 <div className="addr-warn addr-warn-red">
                   <AlertCircle size={13} />
                   <span>Enter your name and a valid 10-digit phone</span>
@@ -1690,7 +1708,7 @@ export default function AddressModal({
                 </span>
               </div>
 
-              {showContactFields && (
+              {contactReady && (
                 <LoadingButton
                   className="pri-big-btn width100"
                   onClick={() => {
@@ -3042,6 +3060,27 @@ export function CODSuccessModal({
               transition={{ duration: 0.35 }}
             >
               <div className="cod-success-scroll">
+                {/* Celebration confetti burst */}
+                <div className="ok-confetti" aria-hidden="true">
+                  {Array.from({ length: 22 }).map((_, i) => (
+                    <span
+                      key={i}
+                      className="ok-confetti-p"
+                      style={{
+                        left: `${(i * 4.6) % 100}%`,
+                        background: [
+                          "#fb8500",
+                          "#16a34a",
+                          "#e5638a",
+                          "#e6a83c",
+                          "#c0223b",
+                        ][i % 5],
+                        animationDelay: `${(i % 7) * 0.12}s`,
+                      }}
+                    />
+                  ))}
+                </div>
+
                 {/* ── Thank-you + summary (shown first) ── */}
                 <div className="ok-summary">
                   <div className="ok-thanks">
@@ -3056,39 +3095,88 @@ export function CODSuccessModal({
                     </span>
                   </div>
 
-                  <div className="ok-hr" />
+                  {/* Scratch reward — 3 fanned pop-up cards, right below thanks */}
+                  {showReward && (
+                    <button
+                      type="button"
+                      className={`ok-scratch3${walletCredited ? " done" : ""}`}
+                      onClick={() => setScratchOpen(true)}
+                    >
+                      <span className="ok-sc3-stage">
+                        <span className="ok-sc3 a">
+                          <Gift size={15} />
+                        </span>
+                        <span className="ok-sc3 b">₹</span>
+                        <span className="ok-sc3 c">
+                          <Sparkles size={15} />
+                        </span>
+                      </span>
+                      <span className="ok-sc3-cap">
+                        {walletCredited
+                          ? `₹${reward} added to your wallet`
+                          : "You've won a scratch card! Tap to scratch"}
+                      </span>
+                    </button>
+                  )}
 
-                  {/* Arrival + optional faster upgrade — one combined block */}
+                  {/* Timeline — truck moving on a dashed line + arrival + upgrade */}
                   <div className="ok-eta">
-                    <span className="ok-eta-ic">
-                      {localFaster ? <Zap size={18} /> : <Truck size={18} />}
-                    </span>
-                    <strong className="ok-eta-title">
-                      Arriving {deliveryRange}
-                    </strong>
-                    <span className="ok-eta-sub">
-                      to {city} · {deliveryWindow}
-                    </span>
-                    <span className={`ok-badge${localFaster ? " fast" : ""}`}>
-                      {localFaster ? "Faster delivery" : "Standard delivery"}
-                    </span>
+                    <div className="ok-tl" aria-hidden="true">
+                      <span className="ok-tl-dot" />
+                      <span className="ok-tl-track" />
+                      <span className="ok-tl-truck">
+                        {localFaster ? <Zap size={15} /> : <Truck size={15} />}
+                      </span>
+                      <span className="ok-tl-dot end">
+                        <MapPin size={13} />
+                      </span>
+                    </div>
+
+                    {/* Arrival, then name + address — one section */}
+                    <div className="ok-deliver">
+                      <strong className="ok-eta-title">
+                        Arriving {deliveryRange}
+                      </strong>
+                      <div className="ok-eta-meta">
+                        <span className="ok-eta-sub">{deliveryWindow}</span>
+                        <span className="ok-eta-mdot">·</span>
+                        <span
+                          className={`ok-badge${localFaster ? " fast" : ""}`}
+                        >
+                          {localFaster
+                            ? "Faster delivery"
+                            : "Standard delivery"}
+                        </span>
+                      </div>
+
+                      <strong className="ok-deliver-name">{name}</strong>
+                      <span className="ok-deliver-addr">
+                        {String(address || "")
+                          .replace(
+                            /,?\s*Pinned location:\s*https?:\/\/\S+/i,
+                            "",
+                          )
+                          .trim()}
+                        {city ? `, ${city}` : ""}
+                        {pincode ? ` - ${pincode}` : ""}
+                        {" · +91 "}
+                        {phone}
+                      </span>
+                    </div>
 
                     {!localFaster && canEditOrder && fasterDelta > 0 && (
                       <div className="ok-upgrade">
-                        <div className="ok-upgrade-txt">
-                          <Zap size={14} /> Want it sooner? Get it by{" "}
-                          <b>{fasterRangeStr}</b> with Faster delivery (1–5
-                          days).
-                        </div>
+                        <span className="ok-upgrade-txt">
+                          <Zap size={13} /> Faster by <b>{fasterRangeStr}</b> ·
+                          1–5 days
+                        </span>
                         <button
                           type="button"
-                          className="pri-big-btn width100 ok-upgrade-btn"
+                          className="ok-upgrade-btn"
                           onClick={confirmFasterUpgrade}
                           disabled={upgrading}
                         >
-                          {upgrading
-                            ? "Upgrading…"
-                            : `Upgrade to Faster · +₹${fasterDelta}`}
+                          {upgrading ? "…" : `Upgrade · +₹${fasterDelta}`}
                         </button>
                       </div>
                     )}
@@ -3131,10 +3219,11 @@ export function CODSuccessModal({
                 </div>
 
                 {/* ── Order note ── */}
+                {canEditOrder && <div className="ok-hr" />}
                 {canEditOrder && (
                   <div className="ok-note">
                     <label className="ok-note-lbl">
-                      <MessageSquare size={14} /> Add a note for this order
+                      Add a note for this order
                       <span className="ok-note-opt"> (optional)</span>
                     </label>
                     {noteSaved ? (
@@ -3142,42 +3231,38 @@ export function CODSuccessModal({
                         <Check size={14} /> Note added to your order.
                       </div>
                     ) : (
-                      <>
-                        <textarea
-                          className="sec-mid-btn textarea ok-note-input"
-                          placeholder="e.g. Please call before delivery, leave at the gate…"
-                          rows={2}
+                      <div className="ok-note-row">
+                        <input
+                          className="ok-note-input"
+                          placeholder="e.g. Call before delivery…"
                           maxLength={160}
                           value={note}
                           onChange={(e) => setNote(e.target.value)}
+                          onKeyDown={(e) =>
+                            e.key === "Enter" && note.trim() && saveNote()
+                          }
                         />
                         <button
                           type="button"
-                          className="pri-big-btn width100 ok-note-save"
+                          className="ok-note-add"
                           onClick={saveNote}
                           disabled={!note.trim() || noteSaving}
                         >
-                          {noteSaving ? "Saving…" : "Add note to this order"}
+                          {noteSaving ? "…" : "Add"}
                         </button>
-                      </>
+                      </div>
                     )}
                   </div>
                 )}
 
-                {/* ── Check invoice (reveals the printed receipt) ── */}
+                {/* ── Download invoice — secondary outlined; opens the printer
+                    modal where the receipt prints and can be saved ── */}
                 <button
                   type="button"
-                  className="ok-invoice-toggle"
-                  onClick={() => setShowInvoice((v) => !v)}
+                  className="sec-big-btn width100 ok-invoice-dlbtn"
+                  onClick={() => setShowInvoice(true)}
                 >
-                  <span className="ok-inv-lbl">
-                    <Info size={16} />
-                    Check invoice
-                  </span>
-                  <ChevronRight
-                    size={18}
-                    className={`ok-inv-chev${showInvoice ? " open" : ""}`}
-                  />
+                  <Download size={16} /> Download invoice
                 </button>
 
                 {showInvoice && (
@@ -3378,28 +3463,8 @@ export function CODSuccessModal({
                   />
                 )}
               </div>
-              {/* Fixed footer — compact reward + two actions in one row */}
+              {/* Fixed footer — two actions in one row (scratch is up top now) */}
               <div className="cod-success-footer">
-                {showReward && (
-                  <button
-                    type="button"
-                    className={`reward-teaser compact${walletCredited ? " done" : ""}`}
-                    onClick={() => setScratchOpen(true)}
-                  >
-                    <span className="reward-teaser-ic">
-                      <Gift size={16} />
-                    </span>
-                    <span className="reward-teaser-tt">
-                      {walletCredited
-                        ? `₹${reward} added to your wallet`
-                        : "You've won a scratch card!"}
-                    </span>
-                    <span className="reward-teaser-cta">
-                      {walletCredited ? "Done" : "Scratch"}
-                    </span>
-                  </button>
-                )}
-
                 {/* Pay here — shown on a shared invoice for an unpaid order */}
                 {onPayNow && !(isUPI && paid) && (
                   <button

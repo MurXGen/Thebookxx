@@ -16887,32 +16887,35 @@ img[data-loaded="true"] {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 8px;
-  padding: 28px 20px;
-  border: 1.5px dashed var(--hairline, #e5e7eb);
-  border-radius: 14px;
-  background: var(--dark-50, #fafafa);
+  gap: 6px;
+  padding: 34px 22px;
+  border: 1px solid #eef0f2;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 2px 12px rgba(17, 24, 39, 0.04);
 }
 .orders-empty-ic {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 52px;
-  height: 52px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
-  background: #fff;
+  background: #fff7ed;
   color: var(--tertiary, #fb8500);
-  border: 1px solid var(--hairline, #e5e7eb);
+  border: 1px solid #fde4c8;
+  margin-bottom: 6px;
 }
 .orders-empty strong {
   font-size: var(--px-16);
   font-weight: 700;
-  color: var(--foreground, #1a1a1a);
+  color: #111827;
 }
 .orders-empty-sub {
   font-size: var(--px-13);
-  color: var(--gray-500, #6b7280);
-  max-width: 300px;
+  line-height: 1.5;
+  color: #6b7280;
+  max-width: 280px;
 }
 .orders-toggle {
   display: flex;
@@ -16960,7 +16963,126 @@ img[data-loaded="true"] {
   transform: rotate(180deg);
 }
 .orders-list-inner {
-  padding-top: 10px;
+  padding: 10px 4px 4px;
+}
+
+/* ── Track-shipment slide-up ── */
+.track-sheet {
+  border-radius: 22px 22px 0 0;
+}
+.track-body {
+  padding: 18px 18px calc(20px + env(safe-area-inset-bottom, 0px));
+}
+.track-steps {
+  display: flex;
+  flex-direction: column;
+}
+.track-step {
+  display: flex;
+  gap: 14px;
+  min-height: 62px;
+}
+.track-step-rail {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 26px;
+  flex-shrink: 0;
+}
+.track-step-dot {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background: #d1d5db;
+  z-index: 1;
+  flex-shrink: 0;
+}
+.track-step.done .track-step-dot {
+  background: #16a34a;
+}
+.track-step.active .track-step-dot {
+  background: #fff;
+  border: 3px solid var(--tertiary, #fb8500);
+}
+.track-step-line {
+  flex: 1;
+  width: 3px;
+  background: #e5e7eb;
+  margin: 2px 0;
+}
+.track-step.done .track-step-line {
+  background: #16a34a;
+}
+.track-step-txt {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: 14px;
+}
+.track-step-txt strong {
+  font-size: var(--px-15);
+  font-weight: 700;
+  color: var(--foreground, #1a1a1a);
+}
+.track-step.todo .track-step-txt strong {
+  color: var(--gray-500, #6b7280);
+  font-weight: 600;
+}
+.track-step-txt span {
+  font-size: var(--px-12);
+  color: var(--gray-500, #6b7280);
+}
+.track-check-link {
+  align-self: flex-start;
+  margin-top: 6px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  font-size: var(--px-13);
+  font-weight: 700;
+  color: var(--tertiary, #fb8500);
+  text-decoration: underline;
+}
+.track-tid {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 6px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px dashed var(--hairline, #e5e7eb);
+  background: var(--dark-50, #fafafa);
+}
+.track-tid-lbl {
+  font-size: var(--px-12);
+  color: var(--gray-500, #6b7280);
+  font-weight: 600;
+}
+.track-tid-v {
+  font-family: ui-monospace, monospace;
+  font-weight: 700;
+  color: var(--foreground, #1a1a1a);
+}
+.track-delivered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 14px;
+  padding: 11px;
+  border-radius: 12px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+  font-weight: 700;
+  font-size: var(--px-14);
 }
 
 /* ── Profile header support button (Rapido "Help" style) ── */
@@ -31859,6 +31981,198 @@ img[data-loaded="true"] {
   padding: 6px 2px 2px;
   margin-top: 6px;
 }
+/* Confetti burst */
+.ok-confetti {
+  position: relative;
+  height: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+.ok-confetti-p {
+  position: absolute;
+  top: -6px;
+  width: 8px;
+  height: 12px;
+  border-radius: 2px;
+  opacity: 0;
+  animation: okConfetti 1.8s ease-in forwards;
+}
+@keyframes okConfetti {
+  0% {
+    transform: translateY(-10px) rotate(0deg);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(220px) rotate(420deg);
+    opacity: 0;
+  }
+}
+/* Scratch reward — 3 fanned pop-up cards below the thank-you */
+.ok-scratch3 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin: 2px auto 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+}
+.ok-sc3-stage {
+  position: relative;
+  width: 108px;
+  height: 58px;
+}
+.ok-sc3 {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 44px;
+  height: 54px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 800;
+  box-shadow: 0 8px 14px rgba(251, 133, 0, 0.28),
+    inset 0 0 0 2px rgba(255, 255, 255, 0.4);
+  transition: transform 0.22s ease;
+}
+.ok-sc3.a {
+  background: linear-gradient(150deg, #ffb14d, #fb8500);
+  transform: translateX(-95%) rotate(-16deg);
+  z-index: 1;
+}
+.ok-sc3.b {
+  background: linear-gradient(150deg, #fb8500, #e06f00);
+  transform: translateX(-50%) rotate(0deg);
+  z-index: 3;
+}
+.ok-sc3.c {
+  background: linear-gradient(150deg, #ffb14d, #fb8500);
+  transform: translateX(5%) rotate(16deg);
+  z-index: 2;
+}
+.ok-scratch3:hover .ok-sc3.a {
+  transform: translateX(-102%) rotate(-19deg) translateY(-3px);
+}
+.ok-scratch3:hover .ok-sc3.c {
+  transform: translateX(12%) rotate(19deg) translateY(-3px);
+}
+.ok-sc3-cap {
+  font-size: var(--px-12);
+  font-weight: 700;
+  color: var(--tertiary, #fb8500);
+}
+.ok-scratch3.done .ok-sc3-cap {
+  color: #16a34a;
+}
+/* Truck-on-dashed timeline */
+.ok-tl {
+  position: relative;
+  width: 100%;
+  max-width: 260px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 2px;
+}
+.ok-tl-track {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  top: 50%;
+  border-top: 2px dashed var(--hairline, #e5e7eb);
+}
+.ok-tl-dot {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--tertiary, #fb8500);
+}
+.ok-tl-dot.end {
+  left: auto;
+  right: 0;
+  width: auto;
+  height: auto;
+  background: transparent;
+  color: #c0223b;
+}
+.ok-tl-truck {
+  position: absolute;
+  top: 50%;
+  color: var(--tertiary, #fb8500);
+  display: inline-flex;
+  animation: okDrive 3.2s ease-in-out infinite;
+}
+@keyframes okDrive {
+  0% {
+    left: 8px;
+    transform: translateY(-50%);
+  }
+  100% {
+    left: calc(100% - 30px);
+    transform: translateY(-50%);
+  }
+}
+/* Delivery details — name, address, arrival — one merged section */
+.ok-deliver {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  text-align: center;
+  margin-top: 6px;
+}
+.ok-addr-lbl {
+  font-size: var(--px-11);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--gray-500, #6b7280);
+}
+.ok-deliver-name {
+  font-size: var(--px-15);
+  font-weight: 700;
+  margin-top: 10px;
+}
+.ok-deliver .ok-eta-title {
+  font-size: var(--px-16);
+  font-weight: 800;
+}
+.ok-deliver-addr {
+  font-size: var(--px-12);
+  color: var(--gray-500, #6b7280);
+}
+.ok-deliver-eta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+}
+.ok-deliver-eta .ok-eta-title {
+  font-size: var(--px-16);
+  font-weight: 800;
+}
+.ok-invoice-dlbtn {
+  margin-top: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
 /* Dashed section divider (matches the receipt dashes) */
 .ok-hr {
   height: 0;
@@ -31904,8 +32218,16 @@ img[data-loaded="true"] {
   font-size: var(--px-12);
   color: var(--gray-500, #6b7280);
 }
+/* Window + badge in one row, near each other */
+.ok-eta-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.ok-eta-mdot {
+  color: #9ca3af;
+}
 .ok-badge {
-  margin-top: 4px;
   font-size: var(--px-11);
   font-weight: 700;
   padding: 4px 12px;
@@ -31920,23 +32242,31 @@ img[data-loaded="true"] {
   color: #c25e00;
   border-color: #fed7aa;
 }
-/* Combined faster-upgrade offer inside the arrival block */
+/* Combined faster-upgrade offer — compact single row, space-between */
 .ok-upgrade {
   width: 100%;
   margin-top: 12px;
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 8px 8px 12px;
+  border: 1px solid #fed7aa;
+  background: #fff7ed;
+  border-radius: 999px;
 }
 .ok-upgrade-txt {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
   gap: 5px;
+  min-width: 0;
   font-size: var(--px-12);
-  color: var(--gray-500, #6b7280);
-  line-height: 1.4;
+  color: #7c3a12;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .ok-upgrade-txt svg {
   color: var(--tertiary, #fb8500);
@@ -31944,6 +32274,22 @@ img[data-loaded="true"] {
 }
 .ok-upgrade-txt b {
   color: #c25e00;
+}
+.ok-upgrade-btn {
+  flex-shrink: 0;
+  border: none;
+  border-radius: 999px;
+  background: #111827;
+  color: #fff;
+  font-size: var(--px-12);
+  font-weight: 700;
+  padding: 8px 14px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.ok-upgrade-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
 }
 .ok-upgraded {
   margin-top: 8px;
@@ -32084,15 +32430,12 @@ img[data-loaded="true"] {
 
 /* Order note */
 .ok-note {
-  margin-top: 12px;
+  margin-top: 14px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
 }
 .ok-note-lbl {
-  display: flex;
-  align-items: center;
-  gap: 6px;
   font-size: var(--px-13);
   font-weight: 600;
 }
@@ -32100,13 +32443,44 @@ img[data-loaded="true"] {
   font-weight: 500;
   color: var(--gray-500, #6b7280);
 }
-.ok-note-input {
-  width: 100%;
-  resize: vertical;
+.ok-note-row {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
 }
-.ok-note-save {
-  align-self: stretch;
-  margin-top: 4px;
+.ok-note-input {
+  flex: 1;
+  min-width: 0;
+  height: 46px;
+  border: 1px solid var(--hairline, #e5e7eb);
+  border-radius: 12px;
+  padding: 0 14px;
+  font-size: var(--px-14);
+  background: #fff;
+  color: var(--foreground, #1a1a1a);
+  outline: none;
+}
+.ok-note-input:focus {
+  border-color: var(--tertiary, #fb8500);
+}
+.ok-note-input::placeholder {
+  color: #9ca3af;
+}
+.ok-note-add {
+  flex-shrink: 0;
+  min-width: 74px;
+  border: none;
+  border-radius: 12px;
+  background: #111827;
+  color: #fff;
+  font-size: var(--px-14);
+  font-weight: 700;
+  padding: 0 18px;
+  cursor: pointer;
+}
+.ok-note-add:disabled {
+  opacity: 0.45;
+  cursor: default;
 }
 .ok-faster-opt-date {
   font-size: var(--px-11);

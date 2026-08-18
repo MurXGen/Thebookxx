@@ -357,6 +357,9 @@ function OrderTrackingTimeline({ order }) {
 export default function MyOrdersPage() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [orders, setOrders] = useState([]);
+  const [toast, setToast] = useState(null); // transient toast message
+  const toastTimerRef = useRef(null);
+  const shippedCancelRef = useRef({}); // orderId -> cancel-tap count
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [error, setError] = useState("");
@@ -1035,6 +1038,48 @@ export default function MyOrdersPage() {
   };
 
   // ===== NEW, Cancel & Reschedule handlers =====
+
+  const showToast = (msg) => {
+    setToast(msg);
+    clearTimeout(toastTimerRef.current);
+    toastTimerRef.current = setTimeout(() => setToast(null), 2800);
+  };
+
+  // Cancel tapped on an already-shipped order: it can't be cancelled, so we
+  // show a toast. If the customer keeps tapping (more than 5 times), we assume
+  // they really need help and open WhatsApp with our team.
+  const handleShippedCancel = (order) => {
+    const id = order["Order ID"] || "";
+    const n = (shippedCancelRef.current[id] || 0) + 1;
+    shippedCancelRef.current[id] = n;
+
+    if (n > 5) {
+      shippedCancelRef.current[id] = 0;
+      const itemsList = (order.parsedBooks || [])
+        .map((b, i) => `${i + 1}. ${b.name} × ${b.quantity || 1}`)
+        .join("\n");
+      const message = `Hi TheBookX
+
+My order has already shipped but I really need to *cancel* it. Can you help?
+
+ *Order ID:* ${order["Order ID"] || ""}
+ *Name:* ${order["Customer Name"] || ""}
+ *Phone:* ${order["Phone Number"] || ""}
+ *Total Amount:* ₹${order["Total Amount"] || ""}
+
+ *Items:*
+${itemsList || ""}
+
+Thank you!`;
+      window.open(
+        `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(message)}`,
+        "_blank",
+      );
+      showToast("Connecting you to our team on WhatsApp…");
+      return;
+    }
+    showToast("Once shipped, your order can't be cancelled.");
+  };
 
   const handleCancelOrder = (order) => {
     const ok = window.confirm(
@@ -1804,6 +1849,18 @@ Please cancel this order. Thank you `;
                 .toLowerCase()
                 .includes("pending");
 
+              // "Shipped and on the move" — cancel is no longer possible here.
+              const statusStr = (
+                order["Order Status"] ||
+                order.status ||
+                ""
+              ).toLowerCase();
+              const isShippedOrder =
+                !isPending &&
+                !/cancel|delivered/.test(statusStr) &&
+                (!!order.shippingId ||
+                  /shipped|in\s*transit|out\s*for\s*delivery/.test(statusStr));
+
               // Collapsed summary bits (thumbnails + item count + total)
               const summaryItems = order.parsedBooks || [];
               const summaryTotal =
@@ -2166,6 +2223,44 @@ Please cancel this order. Thank you `;
                             >
                               <CalendarClock size={14} />
                               When to ship
+                            </button>
+                          </div>
+                        )}
+
+                        {/* Cancel stays clickable once shipped, but only
+                        surfaces a toast (order can't be cancelled anymore). */}
+                        {isShippedOrder && (
+                          <div
+                            className="pending-actions-row"
+                            style={{
+                              display: "flex",
+                              gap: 10,
+                              marginTop: 12,
+                              paddingTop: 12,
+                              borderTop: "1px dashed var(--dark-10)",
+                            }}
+                          >
+                            <button
+                              type="button"
+                              onClick={() => handleShippedCancel(order)}
+                              style={{
+                                flex: 1,
+                                padding: "10px 14px",
+                                background: "transparent",
+                                border: "1.5px solid var(--danger, #ef4444)",
+                                color: "var(--danger, #ef4444)",
+                                borderRadius: 8,
+                                fontSize: 12,
+                                fontWeight: 600,
+                                cursor: "pointer",
+                                display: "inline-flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                gap: 6,
+                              }}
+                            >
+                              <XCircle size={14} />
+                              Cancel Order
                             </button>
                           </div>
                         )}
@@ -3244,6 +3339,21 @@ Please cancel this order. Thank you `;
         isOpen={showSuggest}
         onClose={() => setShowSuggest(false)}
       />
+
+      {/* ── Transient toast ── */}
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            className="tbx-toast"
+            initial={{ opacity: 0, y: 24, x: "-50%" }}
+            animate={{ opacity: 1, y: 0, x: "-50%" }}
+            exit={{ opacity: 0, y: 24, x: "-50%" }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+          >
+            {toast}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ── Track shipment slide-up ── */}
       <AnimatePresence>

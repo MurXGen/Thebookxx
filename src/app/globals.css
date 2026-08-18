@@ -17346,6 +17346,22 @@ img[data-loaded="true"] {
 .track-tid-copy:hover {
   opacity: 0.9;
 }
+.tbx-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  z-index: 9999;
+  max-width: min(88vw, 420px);
+  padding: 12px 18px;
+  border-radius: 12px;
+  background: rgba(24, 24, 27, 0.96);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
+}
 .track-eta-note {
   display: flex;
   align-items: flex-start;

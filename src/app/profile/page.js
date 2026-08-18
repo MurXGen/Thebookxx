@@ -70,7 +70,6 @@ function getBookImage(name) {
   return key ? BOOK_IMAGE_BY_NAME[key] : null;
 }
 
-const SHEET_ID = "1ovqFn50d0TKjV0nm4q1lb3N9XvimUgIsHCOlHh6QRdg";
 const SUPPORT_WHATSAPP = "917710892108";
 
 // Capitalise the first letter of every word in a name (e.g. "jnjnjn kumar" →
@@ -787,72 +786,17 @@ export default function MyOrdersPage() {
     setError("");
     setSearched(true);
     try {
-      const base = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq`;
       const cleanPhone = String(phone).trim();
-      const parseGviz = (t) =>
-        JSON.parse(t.substring(t.indexOf("{"), t.lastIndexOf("}") + 1));
 
-      // Step 1 — read ONLY the column metadata (zero data rows, so no customer
-      // PII comes down). This tells us which column holds the phone number.
-      const metaRes = await fetch(
-        `${base}?tqx=out:json&tq=${encodeURIComponent("select * limit 0")}`,
+      // Call our own server route — the Google Sheet ID / URL never touches the
+      // browser, and the server returns ONLY this customer's rows.
+      const response = await fetch(
+        `/api/orders?phone=${encodeURIComponent(cleanPhone)}`,
       );
-      if (!metaRes.ok)
-        throw new Error(`HTTP error! status: ${metaRes.status}`);
-      const meta = parseGviz(await metaRes.text());
-      const cols = (meta.table && meta.table.cols) || [];
-      const phoneCol = cols.find((c) => c.label === "Phone Number");
-
-      // Step 2 — ask Google to return ONLY the rows for THIS phone number.
-      // The filter runs on Google's side, so other customers' rows never leave
-      // the sheet. Match numeric or text storage so we don't depend on cell
-      // formatting. If the column can't be resolved, fall back to a full read
-      // and filter locally (keeps the page working, still same visible result).
-      const serverFiltered = !!phoneCol;
-      let where = "";
-      if (phoneCol) {
-        where =
-          phoneCol.type === "number"
-            ? `where ${phoneCol.id} = ${cleanPhone}`
-            : `where ${phoneCol.id} = '${cleanPhone}'`;
-      }
-      const dataRes = await fetch(
-        `${base}?tqx=out:json&tq=${encodeURIComponent(`select * ${where}`.trim())}`,
-      );
-      if (!dataRes.ok)
-        throw new Error(`HTTP error! status: ${dataRes.status}`);
-      const data = parseGviz(await dataRes.text());
-      if (!data.table || !data.table.rows) {
-        setError("No data found in sheet.");
-        setLoading(false);
-        return;
-      }
-      const rows = data.table.rows;
-      const headers = data.table.cols.map((col) => col.label);
-      const allOrders = rows.map((row) => {
-        const order = {};
-        row.c.forEach((cell, idx) => {
-          const header = headers[idx];
-          let value = cell?.v;
-          const formatted = cell?.f;
-          if (
-            value &&
-            typeof value === "object" &&
-            value.hasOwnProperty("value")
-          ) {
-            value = value.value;
-          }
-          if (
-            formatted &&
-            typeof value === "string" &&
-            value.startsWith("Date(")
-          ) {
-            value = formatted;
-          }
-          order[header] = value;
-        });
-        return order;
-      });
+      if (!response.ok)
+        throw new Error(`HTTP error! status: ${response.status}`);
+      const data = await response.json();
+      const allOrders = Array.isArray(data.orders) ? data.orders : [];
 
       const userOrders = allOrders.filter((order) => {
         // Hide "(unconfirmed)" drop-off rows from the customer's history —
@@ -863,11 +807,7 @@ export default function MyOrdersPage() {
         // Only UPI and COD orders belong in the profile — WhatsApp-button
         // orders are handled over chat and must not show here.
         const isWhatsApp = /whatsapp/i.test(order["Payment Type"] || "");
-        if (isUnconfirmed || isWhatsApp) return false;
-        // Server already scoped to this phone; only re-check locally when we
-        // had to fall back to a full read.
-        if (serverFiltered) return true;
-        return String(order["Phone Number"]).trim() === cleanPhone;
+        return !isUnconfirmed && !isWhatsApp;
       });
 
       // Sort newest-first using the proper sheet date parser

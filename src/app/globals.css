@@ -17133,21 +17133,27 @@ img[data-loaded="true"] {
 .track-body {
   padding: 18px 18px calc(20px + env(safe-area-inset-bottom, 0px));
 }
+/* Timeline is a positioning context for the continuous track + train */
+.track-timeline {
+  position: relative;
+}
 .track-steps {
   display: flex;
   flex-direction: column;
+  position: relative;
+  z-index: 1;
 }
 .track-step {
   display: flex;
   gap: 14px;
-  min-height: 62px;
+  min-height: 64px;
 }
 .track-step-rail {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 26px;
+  width: 30px;
   flex-shrink: 0;
 }
 .track-step-dot {
@@ -17158,43 +17164,105 @@ img[data-loaded="true"] {
   align-items: center;
   justify-content: center;
   color: #fff;
-  background: #d1d5db;
-  z-index: 1;
+  background: #e5e7eb;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  z-index: 2;
   flex-shrink: 0;
 }
 .track-step.done .track-step-dot {
   background: #16a34a;
+  box-shadow:
+    0 2px 6px rgba(22, 163, 74, 0.35),
+    inset 0 1px 1px rgba(255, 255, 255, 0.4);
 }
 .track-step.active .track-step-dot {
   background: #fff;
   border: 3px solid var(--tertiary, #fb8500);
+  box-shadow: 0 0 0 5px rgba(251, 133, 0, 0.14);
 }
-.track-step-dot.has-vehicle {
-  width: 34px;
-  height: 34px;
-  background: #fff7ec;
-  box-shadow: 0 0 0 4px rgba(251, 133, 0, 0.14);
-}
-.track-step-vehicle {
-  font-size: 17px;
-  line-height: 1;
-  display: inline-flex;
-}
-.track-step-line {
-  position: relative;
-  flex: 1;
-  width: 3px;
-  background: #e5e7eb;
-  margin: 2px 0;
-  border-radius: 3px;
-  overflow: hidden;
-}
-.track-step-line-fill {
+
+/* Continuous vertical track (rails) behind the dots */
+.track-vline {
   position: absolute;
-  inset: 0;
-  background: #16a34a;
-  transform-origin: top center;
-  border-radius: 3px;
+  width: 6px;
+  transform: translateX(-50%);
+  border-radius: 6px;
+  z-index: 0;
+  background:
+    linear-gradient(#e9edf2, #e9edf2) center/2px 100% no-repeat,
+    repeating-linear-gradient(
+      to bottom,
+      #d7dde4 0 3px,
+      transparent 3px 9px
+    );
+  background-blend-mode: normal;
+}
+.track-vline-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #16a34a, #22c55e);
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
+}
+
+/* The travelling vehicle */
+.track-train-wrap {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  z-index: 4;
+  pointer-events: none;
+}
+.track-train {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin-top: -20px;
+  will-change: transform;
+}
+.track-train-emoji {
+  font-size: 26px;
+  line-height: 1;
+  display: inline-block;
+  filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.28));
+}
+.track-train-glow {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(251, 133, 0, 0.4) 0%,
+    rgba(251, 133, 0, 0) 68%
+  );
+  z-index: -1;
+}
+/* Motion trail — appears above the vehicle while it's moving down */
+.track-train-tail {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  width: 7px;
+  height: 26px;
+  transform: translateX(-50%);
+  border-radius: 7px;
+  background: linear-gradient(
+    to top,
+    rgba(251, 133, 0, 0.55),
+    rgba(251, 133, 0, 0)
+  );
+  filter: blur(1.5px);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.track-train-tail.on {
+  opacity: 1;
 }
 .track-step-txt {
   display: flex;

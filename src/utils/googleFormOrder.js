@@ -179,7 +179,6 @@ export const submitOrderToGoogleForm = async (orderData) => {
 // balance as the MAX Wallet value across their rows (by phone). To credit a
 // scratch-card reward we read their current balance and write a fresh row with
 // only phone + new cumulative wallet + timestamp, so the profile reflects it.
-const WALLET_SHEET_ID = "1ovqFn50d0TKjV0nm4q1lb3N9XvimUgIsHCOlHh6QRdg";
 const WALLET_FIELD_ID = "entry.1030338596"; // "Wallet" column on the form
 const PHONE_FIELD_ID = "entry.1941153221";
 const TIMESTAMP_FIELD_ID = "entry.509242940";
@@ -198,25 +197,11 @@ export const fetchWalletBalance = async (phone) => {
   const digits = String(phone || "").replace(/\D/g, "").slice(-10);
   if (digits.length !== 10) return 0;
   try {
-    const url = `https://docs.google.com/spreadsheets/d/${WALLET_SHEET_ID}/gviz/tq?tqx=out:json`;
-    const res = await fetch(url);
-    const text = await res.text();
-    const data = JSON.parse(text.substring(47, text.length - 2));
-    const headers = data.table.cols.map((c) => c.label);
-    let bal = 0;
-    data.table.rows.forEach((row) => {
-      const o = {};
-      row.c.forEach((cell, i) => {
-        let v = cell?.v;
-        if (v && typeof v === "object" && v.value !== undefined) v = v.value;
-        o[headers[i]] = v;
-      });
-      const rowPhone = String(o["Phone Number"] ?? "").replace(/\D/g, "");
-      if (rowPhone.slice(-10) === digits) {
-        const w = parseFloat(o["Wallet"] ?? o["wallet"] ?? 0);
-        if (!isNaN(w)) bal += w;
-      }
-    });
+    // Server route reads the sheet + returns only this phone's ledger entries.
+    const res = await fetch(`/api/wallet?phone=${digits}`);
+    const json = await res.json();
+    const entries = Array.isArray(json.entries) ? json.entries : [];
+    const bal = entries.reduce((s, e) => s + (Number(e.amount) || 0), 0);
     return Math.max(0, Math.round(bal));
   } catch (e) {
     console.error("Wallet balance read failed:", e);
@@ -397,124 +382,35 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
 };
 
 // ── Tracking tab ────────────────────────────────────────────────────────
-// A separate "Tracking" tab in the same spreadsheet holds courier tracking
-// (AWB / consignment) numbers, populated in bulk from the manage-orders
-// dashboard. The customer profile reads it to show a live tracking ID without
-// re-pushing the whole order row. Columns: Order ID | Customer Name |
-// Phone Number | Tracking ID | Timestamp.
-export const TRACKING_SHEET_NAME = "Tracking";
-
-// Read the Tracking tab and return a lookup keyed by BOTH Order ID and phone
-// (last 10 digits), each → { trackingId, name, phone, orderId }. Latest row
-// wins so re-pasting an updated tracking ID overrides the older value.
-export const fetchTrackingMap = async () => {
-  const out = { byOrderId: {}, byPhone: {} };
-  try {
-    const url = `https://docs.google.com/spreadsheets/d/${WALLET_SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(
-      TRACKING_SHEET_NAME,
-    )}`;
-    const res = await fetch(url, { cache: "no-store" });
-    const text = await res.text();
-    const data = JSON.parse(text.substring(47, text.length - 2));
-    if (!data.table || !data.table.rows) return out;
-    const headers = data.table.cols.map((c) => c.label);
-    const pick = (o, ...names) => {
-      for (const n of names) {
-        const hit = Object.keys(o).find(
-          (k) => k.toLowerCase().replace(/\s+/g, "") === n,
-        );
-        if (hit && String(o[hit] ?? "").trim() !== "") return String(o[hit]);
-      }
-      return "";
-    };
-    data.table.rows.forEach((row) => {
-      const o = {};
-      (row.c || []).forEach((cell, i) => {
-        let v = cell?.v;
-        if (v && typeof v === "object" && v.value !== undefined) v = v.value;
-        o[headers[i]] = v;
-      });
-      const orderId = pick(o, "orderid").trim();
-      const trackingId = pick(o, "trackingid", "shippingid", "awb").trim();
-      if (!trackingId) return;
-      const name = pick(o, "customername", "name").trim();
-      const phone = pick(o, "phonenumber", "phone", "mobile")
-        .replace(/\D/g, "")
-        .slice(-10);
-      const entry = { trackingId, name, phone, orderId };
-      if (orderId) out.byOrderId[orderId] = entry;
-      if (phone.length === 10) out.byPhone[phone] = entry;
-    });
-    return out;
-  } catch (e) {
-    console.error("Tracking map read failed:", e);
-    return out;
-  }
-};
-
-// Poll helper — reads the orders sheet and reports whether the row for this
-// Order ID has been CONFIRMED (i.e. the "(unconfirmed)" tag was removed from
-// the customer name by the admin after verifying the UPI payment).
+// Poll helper — asks our server route whether the row for this Order ID has
+// been CONFIRMED (i.e. the "(unconfirmed)" tag was removed by the admin after
+// verifying the UPI payment). The sheet is read server-side.
 export const fetchOrderStatusById = async (orderId) => {
   const id = String(orderId || "").trim();
   if (!id) return { found: false, confirmed: false };
   try {
-    const url = `https://docs.google.com/spreadsheets/d/${WALLET_SHEET_ID}/gviz/tq?tqx=out:json`;
-    const res = await fetch(url, { cache: "no-store" });
-    const text = await res.text();
-    const data = JSON.parse(text.substring(47, text.length - 2));
-    const headers = data.table.cols.map((c) => c.label);
-    let found = false;
-    let confirmed = false;
-    data.table.rows.forEach((row) => {
-      const o = {};
-      row.c.forEach((cell, i) => {
-        let v = cell?.v;
-        if (v && typeof v === "object" && v.value !== undefined) v = v.value;
-        o[headers[i]] = v;
-      });
-      if (String(o["Order ID"] ?? "").trim() === id) {
-        found = true;
-        const nm = String(o["Customer Name"] ?? "");
-        const st = String(o["Order Status"] ?? "");
-        // Confirmed once the "(unconfirmed)" marker is gone from the name
-        // (or an explicit confirmed/received status is set by the admin).
-        if (
-          !/unconfirmed/i.test(nm) ||
-          /received|confirmed|paid/i.test(st)
-        ) {
-          confirmed = true;
-        }
-      }
+    const res = await fetch(`/api/order?orderId=${encodeURIComponent(id)}`, {
+      cache: "no-store",
     });
-    return { found, confirmed };
+    const json = await res.json();
+    return { found: !!json.found, confirmed: !!json.confirmed };
   } catch (e) {
     console.error("Order status read failed:", e);
     return { found: false, confirmed: false };
   }
 };
 
-// Fetch the full latest row for an Order ID (used by the merchant confirm page).
+// Fetch the full latest row for an Order ID (used by the merchant confirm page),
+// via our server route so the sheet URL stays off the client.
 export const fetchOrderById = async (orderId) => {
   const id = String(orderId || "").trim();
   if (!id) return null;
   try {
-    const url = `https://docs.google.com/spreadsheets/d/${WALLET_SHEET_ID}/gviz/tq?tqx=out:json`;
-    const res = await fetch(url, { cache: "no-store" });
-    const text = await res.text();
-    const data = JSON.parse(text.substring(47, text.length - 2));
-    const headers = data.table.cols.map((c) => c.label);
-    let match = null;
-    data.table.rows.forEach((row) => {
-      const o = {};
-      row.c.forEach((cell, i) => {
-        let v = cell?.v;
-        if (v && typeof v === "object" && v.value !== undefined) v = v.value;
-        o[headers[i]] = v;
-      });
-      if (String(o["Order ID"] ?? "").trim() === id) match = o; // keep last
+    const res = await fetch(`/api/order?orderId=${encodeURIComponent(id)}`, {
+      cache: "no-store",
     });
-    return match;
+    const json = await res.json();
+    return json.order || null;
   } catch (e) {
     console.error("Order fetch failed:", e);
     return null;

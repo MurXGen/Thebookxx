@@ -2,7 +2,6 @@
 // phone, and computes a balance with 60-DAY EXPIRY on credited coins (FIFO:
 // oldest coins are spent first; coins older than 60 days expire unused).
 
-const WALLET_SHEET_ID = "1ovqFn50d0TKjV0nm4q1lb3N9XvimUgIsHCOlHh6QRdg";
 export const WALLET_TTL_DAYS = 60;
 export const WALLET_EXPIRY_WARN_DAYS = 10;
 const DAY = 24 * 60 * 60 * 1000;
@@ -102,35 +101,21 @@ export function computeWalletLedger(entries, now = Date.now(), ttlDays = WALLET_
   };
 }
 
-// Read raw {date, amount} wallet entries for a phone from the sheet.
+// Read raw {date, amount} wallet entries for a phone via our server route
+// (/api/wallet). The sheet is read server-side and scoped to this phone, so
+// other customers' rows and the sheet URL never reach the browser.
 export async function fetchWalletEntries(phone) {
   const digits = String(phone || "").replace(/\D/g, "").slice(-10);
   if (digits.length !== 10) return [];
   try {
-    const url = `https://docs.google.com/spreadsheets/d/${WALLET_SHEET_ID}/gviz/tq?tqx=out:json`;
-    const res = await fetch(url);
-    const text = await res.text();
-    const data = JSON.parse(text.substring(47, text.length - 2));
-    const headers = data.table.cols.map((c) => c.label);
-    const rows = [];
-    data.table.rows.forEach((row) => {
-      const o = {};
-      row.c.forEach((cell, i) => {
-        let v = cell?.v;
-        if (v && typeof v === "object" && v.value !== undefined) v = v.value;
-        o[headers[i]] = v;
-      });
-      const rowPhone = String(o["Phone Number"] ?? "").replace(/\D/g, "");
-      if (rowPhone.slice(-10) !== digits) return;
-      const amt = parseFloat(o["Wallet"] ?? o["wallet"] ?? 0);
-      if (isNaN(amt) || amt === 0) return;
-      const date =
-        parseSheetDate(
-          o["Timestamp (D)"] || o["Timestamp"] || o["Timestamp(D)"],
-        ) || new Date();
-      rows.push({ date, amount: amt });
-    });
-    return rows;
+    const res = await fetch(`/api/wallet?phone=${digits}`);
+    const json = await res.json();
+    const entries = Array.isArray(json.entries) ? json.entries : [];
+    // API returns dates as epoch ms; rehydrate to Date for the ledger math.
+    return entries.map((e) => ({
+      date: new Date(e.date),
+      amount: e.amount,
+    }));
   } catch (e) {
     console.error("Wallet ledger fetch failed:", e);
     return [];

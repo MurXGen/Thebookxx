@@ -49,6 +49,7 @@ import {
   creditWalletReward,
   orderWalletReward,
   fetchOrderStatusById,
+  fetchWalletBalance,
   updateOrderRow,
 } from "@/utils/googleFormOrder";
 import ScratchRewardSheet from "./ScratchRewardSheet";
@@ -79,8 +80,7 @@ function normalizePhone(raw = "") {
 }
 
 // Wallet: customers can apply store-credit balance at checkout, capped per
-// order. Balance is read from the "Wallet" column of the orders sheet by phone.
-const WALLET_SHEET_ID = "1ovqFn50d0TKjV0nm4q1lb3N9XvimUgIsHCOlHh6QRdg";
+// order. Balance is read via the /api/wallet server route (by phone).
 const WALLET_MAX_PER_ORDER = 399;
 
 export default function AddressModal({
@@ -304,27 +304,8 @@ export default function AddressModal({
     setWalletChecking(true);
     setWalletError("");
     try {
-      const url = `https://docs.google.com/spreadsheets/d/${WALLET_SHEET_ID}/gviz/tq?tqx=out:json`;
-      const res = await fetch(url);
-      const text = await res.text();
-      const data = JSON.parse(text.substring(47, text.length - 2));
-      const headers = data.table.cols.map((c) => c.label);
-      let bal = 0;
-      data.table.rows.forEach((row) => {
-        const o = {};
-        row.c.forEach((cell, i) => {
-          let v = cell?.v;
-          if (v && typeof v === "object" && v.value !== undefined) v = v.value;
-          o[headers[i]] = v;
-        });
-        const rowPhone = String(o["Phone Number"] ?? "").replace(/\D/g, "");
-        if (rowPhone.slice(-10) === digits.slice(-10)) {
-          const w = parseFloat(o["Wallet"] ?? o["wallet"] ?? 0);
-          // Sum the ledger: rewards positive, wallet spent on orders negative.
-          if (!isNaN(w)) bal += w;
-        }
-      });
-      bal = Math.max(0, Math.round(bal));
+      // Reads the sheet server-side and returns only this phone's balance.
+      const bal = await fetchWalletBalance(digits);
       setWalletBalance(bal);
       setWalletChecked(true);
       setWalletCheckedPhone(digits);
@@ -353,22 +334,12 @@ export default function AddressModal({
   // otherwise we only fill blanks.
   const prefillFromOrders = async (digits, overwrite = false) => {
     try {
-      const url = `https://docs.google.com/spreadsheets/d/${WALLET_SHEET_ID}/gviz/tq?tqx=out:json`;
-      const res = await fetch(url);
-      const text = await res.text();
-      const data = JSON.parse(text.substring(47, text.length - 2));
-      const headers = data.table.cols.map((c) => c.label);
-      const matches = [];
-      data.table.rows.forEach((row) => {
-        const o = {};
-        row.c.forEach((cell, i) => {
-          let v = cell?.v;
-          if (v && typeof v === "object" && v.value !== undefined) v = v.value;
-          o[headers[i]] = v;
-        });
-        const rowPhone = String(o["Phone Number"] ?? "").replace(/\D/g, "");
-        if (rowPhone.slice(-10) === digits.slice(-10)) matches.push(o);
-      });
+      // Server route returns only this phone's own order rows.
+      const res = await fetch(
+        `/api/orders?phone=${encodeURIComponent(digits.slice(-10))}`,
+      );
+      const json = await res.json();
+      const matches = Array.isArray(json.orders) ? json.orders : [];
       if (!matches.length) return;
       const first = matches[0]; // their 1st address out of all past orders
       const nm = String(first["Customer Name"] ?? "").trim();

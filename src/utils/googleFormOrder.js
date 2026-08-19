@@ -407,7 +407,10 @@ export const fetchOrderById = async (orderId) => {
 
 // Push a CONFIRMED order (merchant-confirmed) from a fetched row: strips the
 // "(unconfirmed)" tag and records the wallet debit on the same row.
-export const submitConfirmedOrder = async (row, { walletUsed = 0 } = {}) => {
+export const submitConfirmedOrder = async (
+  row,
+  { walletUsed = 0, overrides = {} } = {},
+) => {
   if (!row) return { success: false };
   const cleanName = String(row["Customer Name"] || "")
     .replace(/\s*\(unconfirmed\)\s*/i, "")
@@ -442,6 +445,22 @@ export const submitConfirmedOrder = async (row, { walletUsed = 0 } = {}) => {
     wallet: walletUsed > 0 ? -Math.round(walletUsed) : "",
     timestamp: fmtSheetTs(new Date()),
   };
+
+  // Merchant conversion (e.g. a WhatsApp order turned into COD or Online):
+  // override the payment type + recomputed charges so the confirmed row bills
+  // exactly like a normal checkout of that type.
+  if (overrides.paymentType) orderData.paymentType = overrides.paymentType;
+  if (overrides.deliveryType) orderData.deliveryType = overrides.deliveryType;
+  if (overrides.deliveryCharge != null)
+    orderData.deliveryCharge = num(overrides.deliveryCharge);
+  if (overrides.totalAmount != null)
+    orderData.totalAmount = String(overrides.totalAmount);
+  if (overrides.offerApplied) {
+    orderData.offerApplied = orderData.offerApplied
+      ? `${orderData.offerApplied} · ${overrides.offerApplied}`
+      : overrides.offerApplied;
+  }
+
   const ok = await submitOrderToGoogleForm(orderData);
   return { success: !!ok, orderData };
 };

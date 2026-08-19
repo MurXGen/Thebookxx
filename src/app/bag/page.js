@@ -498,6 +498,11 @@ function BagContent() {
     const orderLink = orderId
       ? `https://thebookx.in?orderID=${encodeURIComponent(orderId)}`
       : "";
+    // Merchant confirmation page — the merchant opens this, enters the password
+    // and (for WhatsApp orders) picks COD or Online, which sets the final bill.
+    const merchantLink = orderId
+      ? `https://thebookx.in/${encodeURIComponent(orderId)}`
+      : "";
     const profileLink = "https://www.thebookx.in/profile";
     const fullAddr = [
       addressData.address,
@@ -531,7 +536,7 @@ Delivery: ${deliveryCharge > 0 ? `+₹${deliveryCharge}` : "FREE"}${giftWrapSele
 *Total: ₹${totalWithDelivery}*
 Payment: ${paymentType === "COD" ? "Cash on Delivery" : paymentType === "WhatsApp" ? "Confirming on WhatsApp" : "UPI Payment"}
 ${orderLink ? `\n*Order details:* ${orderLink}` : ""}
-*My orders & tracking:* ${profileLink}
+*My orders & tracking:* ${profileLink}${merchantLink ? `\n\n_(Merchant use) Confirm & set payment:_ ${merchantLink}` : ""}
 
 Thank you!
 `;

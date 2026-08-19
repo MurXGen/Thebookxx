@@ -2,10 +2,20 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
-import { Lock, CheckCircle2, Loader2, PackageCheck } from "lucide-react";
+import {
+  Lock,
+  CheckCircle2,
+  Loader2,
+  PackageCheck,
+  Banknote,
+  Smartphone,
+} from "lucide-react";
 import { fetchOrderById, submitConfirmedOrder } from "@/utils/googleFormOrder";
+import { getDeliveryCharge } from "@/utils/cartOffers";
 
 const MERCHANT_PASSWORD = "987321";
+// Matches the checkout flow: flat COD handling fee (see bag/page.js).
+const COD_HANDLING_FEE = 29;
 
 export default function MerchantConfirmPage() {
   const params = useParams();
@@ -19,6 +29,8 @@ export default function MerchantConfirmPage() {
   const [err, setErr] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
+  // For WhatsApp orders the merchant picks the final payment method here.
+  const [payMethod, setPayMethod] = useState("COD"); // "COD" | "UPI"
 
   useEffect(() => {
     (async () => {
@@ -50,11 +62,41 @@ export default function MerchantConfirmPage() {
   };
   const items = order ? parseBooks(order["Books List"]) : [];
   const subtotal = items.reduce((s, b) => s + num(b.total), 0);
-  const deliveryCharge = order ? num(order["Delivery Charge"]) : 0;
   const giftYes = order && String(order["Gift Wrap"] || "").toLowerCase() === "yes";
   const giftCharge = giftYes ? num(order["Gift Wrap Charge"]) : 0;
-  const totalAmount = order ? num(order["Total Amount"]) : 0;
-  const isCOD = order && /cash|cod/i.test(String(order["Payment Type"] || ""));
+
+  // A WhatsApp order has no final payment/charges yet — the merchant sets them.
+  const isWhatsAppOrder =
+    order && /whats\s*app/i.test(String(order["Payment Type"] || ""));
+  const isFaster =
+    order && /faster|express/i.test(String(order["Delivery Type"] || ""));
+  const hasOneRupee = items.some(
+    (b) => num(b.price) === 1 || num(b.total) === 1,
+  );
+
+  // When converting a WhatsApp order, recompute charges exactly like checkout.
+  const convDelivery = getDeliveryCharge(subtotal, isFaster, hasOneRupee);
+  const convCodFee = payMethod === "COD" ? COD_HANDLING_FEE : 0;
+  const convTotal = Math.max(
+    0,
+    subtotal + convDelivery + giftCharge + convCodFee - walletUsed,
+  );
+
+  // Effective bill: recomputed for WhatsApp conversions, else the sheet values.
+  const deliveryCharge = isWhatsAppOrder
+    ? convDelivery
+    : order
+      ? num(order["Delivery Charge"])
+      : 0;
+  const codFee = isWhatsAppOrder ? convCodFee : 0;
+  const totalAmount = isWhatsAppOrder
+    ? convTotal
+    : order
+      ? num(order["Total Amount"])
+      : 0;
+  const isCOD = isWhatsAppOrder
+    ? payMethod === "COD"
+    : order && /cash|cod/i.test(String(order["Payment Type"] || ""));
 
   const handleConfirm = async () => {
     if (pwd !== MERCHANT_PASSWORD) {
@@ -63,7 +105,21 @@ export default function MerchantConfirmPage() {
     }
     setErr("");
     setSubmitting(true);
-    const res = await submitConfirmedOrder(order, { walletUsed });
+    // For a WhatsApp order, override the payment type + recomputed charges so
+    // the confirmed row bills exactly like a normal COD / Online checkout.
+    const overrides = isWhatsAppOrder
+      ? {
+          paymentType: payMethod === "COD" ? "Cash on Delivery" : "UPI Payment",
+          deliveryType: order["Delivery Type"] || (isFaster ? "Faster" : "Standard"),
+          deliveryCharge: convDelivery,
+          totalAmount: convTotal,
+          offerApplied:
+            payMethod === "COD"
+              ? `Confirmed as COD${convCodFee > 0 ? ` (fee ₹${convCodFee})` : ""}`
+              : "Confirmed as Online",
+        }
+      : {};
+    const res = await submitConfirmedOrder(order, { walletUsed, overrides });
     setSubmitting(false);
     if (res.success) setDone(true);
     else setErr("Could not confirm the order. Please try again.");
@@ -117,7 +173,16 @@ export default function MerchantConfirmPage() {
                   order["State"] ? ", " + order["State"] : ""
                 } - ${order["Pincode"] || ""}`}
               />
-              <Row label="Payment" value={order["Payment Type"] || "—"} />
+              <Row
+                label="Payment"
+                value={
+                  isWhatsAppOrder
+                    ? payMethod === "COD"
+                      ? "Cash on Delivery (converting)"
+                      : "Online / UPI (converting)"
+                    : order["Payment Type"] || "—"
+                }
+              />
               <Row label="Delivery" value={order["Delivery Type"] || "—"} />
               <Row label="Placed on" value={order["Timestamp (D)"] || order["Timestamp"] || "—"} />
             </div>
@@ -157,6 +222,12 @@ export default function MerchantConfirmPage() {
                   <span>₹{giftCharge}</span>
                 </div>
               )}
+              {codFee > 0 && (
+                <div className="mc-bill-row">
+                  <span>COD handling fee</span>
+                  <span>₹{codFee}</span>
+                </div>
+              )}
               {walletUsed > 0 && (
                 <div className="mc-bill-row">
                   <span>Wallet {isCOD ? "to debit" : "used"}</span>
@@ -168,6 +239,35 @@ export default function MerchantConfirmPage() {
                 <span>₹{totalAmount || "—"}</span>
               </div>
             </div>
+
+            {isWhatsAppOrder && (
+              <div className="mc-block mc-paychoice">
+                <div className="mc-block-title">
+                  Set payment method (customer&apos;s choice)
+                </div>
+                <div className="mc-pay-toggle">
+                  <button
+                    type="button"
+                    className={`mc-pay-opt${payMethod === "COD" ? " on" : ""}`}
+                    onClick={() => setPayMethod("COD")}
+                  >
+                    <Banknote size={16} /> Cash on Delivery
+                  </button>
+                  <button
+                    type="button"
+                    className={`mc-pay-opt${payMethod === "UPI" ? " on" : ""}`}
+                    onClick={() => setPayMethod("UPI")}
+                  >
+                    <Smartphone size={16} /> Online / UPI
+                  </button>
+                </div>
+                <p className="mc-pay-hint">
+                  {payMethod === "COD"
+                    ? `COD handling fee ₹${convCodFee} is added — collect ₹${convTotal} on delivery.`
+                    : `No COD fee — customer pays ₹${convTotal} online.`}
+                </p>
+              </div>
+            )}
 
             {alreadyConfirmed && (
               <div className="mc-note">

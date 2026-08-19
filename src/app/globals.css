@@ -26448,6 +26448,47 @@ img[data-loaded="true"] {
   letter-spacing: 0.04em;
   color: var(--dark-50);
 }
+.mc-paychoice {
+  border: 1px solid #ffe0b8;
+  background: #fff7ec;
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+.mc-pay-toggle {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+.mc-pay-opt {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 11px 10px;
+  border-radius: 10px;
+  border: 1.5px solid #e5e7eb;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  color: #52525b;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    color 0.15s ease,
+    background 0.15s ease;
+}
+.mc-pay-opt.on {
+  border-color: var(--tertiary, #fb8500);
+  background: var(--tertiary, #fb8500);
+  color: #fff;
+}
+.mc-pay-hint {
+  margin: 10px 0 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--gray-500, #6b7280);
+}
 .mc-item {
   display: flex;
   align-items: center;

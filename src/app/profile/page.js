@@ -354,6 +354,7 @@ function OrderTrackingTimeline({ order }) {
 export default function MyOrdersPage() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [orders, setOrders] = useState([]);
+  const [pendingOrders, setPendingOrders] = useState([]); // awaiting confirmation
   const shippedCancelRef = useRef({}); // orderId -> cancel-tap count
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
@@ -795,6 +796,40 @@ export default function MyOrdersPage() {
       const data = await response.json();
       const allOrders = Array.isArray(data.orders) ? data.orders : [];
 
+      // Detect orders still awaiting confirmation (name tagged "(unconfirmed)"
+      // or a WhatsApp order the merchant hasn't confirmed yet). Match by Order
+      // ID against confirmed rows so the notice clears once a confirmed row
+      // exists for the same order.
+      const normId = (s) => String(s || "").trim();
+      const isRealRow = (o) =>
+        String(o["Books List"] || "").trim() !== "" ||
+        parseFloat(o["Total Amount"] ?? 0) > 0;
+      const confirmedIds = new Set(
+        allOrders
+          .filter(
+            (o) =>
+              !/\(unconfirmed\)/i.test(o["Customer Name"] || "") &&
+              !/whatsapp/i.test(o["Payment Type"] || "") &&
+              isRealRow(o),
+          )
+          .map((o) => normId(o["Order ID"]))
+          .filter(Boolean),
+      );
+      const pending = allOrders.filter((o) => {
+        const awaiting =
+          /\(unconfirmed\)/i.test(o["Customer Name"] || "") ||
+          /whatsapp/i.test(o["Payment Type"] || "");
+        const cancelled = /cancel/i.test(o["Order Status"] || "");
+        const oid = normId(o["Order ID"]);
+        return (
+          awaiting &&
+          !cancelled &&
+          isRealRow(o) &&
+          !(oid && confirmedIds.has(oid))
+        );
+      });
+      setPendingOrders(pending);
+
       const userOrders = allOrders.filter((order) => {
         // Hide "(unconfirmed)" drop-off rows from the customer's history —
         // only orders the customer actually confirmed should appear.
@@ -871,7 +906,12 @@ export default function MyOrdersPage() {
         qrCount = qrIds.length;
       } catch (_) {}
 
-      if (realOrders.length === 0 && qrCount === 0 && walletValue <= 0) {
+      if (
+        realOrders.length === 0 &&
+        qrCount === 0 &&
+        walletValue <= 0 &&
+        pending.length === 0
+      ) {
         setError(`No profile found for phone number ${phone}`);
       } else {
         setShowPhoneInput(false);
@@ -891,6 +931,7 @@ export default function MyOrdersPage() {
     setShowPhoneInput(true);
     setPhoneNumber("");
     setOrders([]);
+    setPendingOrders([]);
     setSearched(false);
     setError("");
     setCustomerName("");
@@ -1760,8 +1801,61 @@ Please cancel this order. Thank you `;
         {/* ── Rapido-style account menu ── */}
         {!showPhoneInput && !verifying && !loading && (
           <div className="profile-menu">
+        {/* Order(s) still being confirmed by the team. */}
+        {searched && !loading && !error && pendingOrders.length > 0 && (
+          <div className="order-pending-card">
+            <span className="order-pending-ic">
+              <Clock size={22} />
+            </span>
+            <div className="order-pending-body">
+              <strong>
+                {pendingOrders.length > 1
+                  ? `${pendingOrders.length} orders received`
+                  : "Your order has been received"}
+              </strong>
+              <span className="order-pending-sub">
+                It&apos;s in the confirmation stage — this usually takes a few
+                minutes. Please recheck shortly, or reach us if it&apos;s
+                urgent.
+              </span>
+              <div className="order-pending-actions">
+                <button
+                  type="button"
+                  className="order-pending-refresh"
+                  onClick={() => fetchOrders()}
+                >
+                  Recheck now
+                </button>
+                <button
+                  type="button"
+                  className="order-pending-contact"
+                  onClick={() => {
+                    const ids = pendingOrders
+                      .map((o) => o["Order ID"])
+                      .filter(Boolean)
+                      .join(", ");
+                    const msg = `Hi TheBookX, I placed an order that's still showing as "in confirmation". Could you please confirm it?${
+                      ids ? `\n\nOrder ID: ${ids}` : ""
+                    }\nPhone: ${phoneNumber || ""}`;
+                    window.open(
+                      `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(msg)}`,
+                      "_blank",
+                    );
+                  }}
+                >
+                  <FaWhatsapp size={15} /> Contact here
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Orders — collapsed behind an "Order status & history" toggle */}
-        {searched && !loading && !error && orders.length === 0 && (
+        {searched &&
+          !loading &&
+          !error &&
+          orders.length === 0 &&
+          pendingOrders.length === 0 && (
           <div className="orders-accordion">
             <div className="orders-empty">
               <span className="orders-empty-ic">

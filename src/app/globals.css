@@ -19903,6 +19903,26 @@ img[data-loaded="true"] {
 .mo-card-caret.open {
   transform: rotate(180deg);
 }
+.mo-card-delete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 1px solid #fecaca;
+  background: #fff;
+  color: var(--danger, #ef4444);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+.mo-card-delete:hover {
+  background: var(--danger, #ef4444);
+  color: #fff;
+}
 
 /* Copy-JSON pill in the shipping section title */
 .aoc-json-btn {

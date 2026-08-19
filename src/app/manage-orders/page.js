@@ -8462,6 +8462,17 @@ export default function ManageOrdersPage() {
                                     </option>
                                   ))}
                                 </select>
+                                <button
+                                  type="button"
+                                  className="mo-card-delete"
+                                  title="Delete order from sheet"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    deleteOrderRow(order);
+                                  }}
+                                >
+                                  <Trash2 size={15} />
+                                </button>
                                 <ChevronDown
                                   size={18}
                                   className={`mo-card-caret${isExpanded ? " open" : ""}`}

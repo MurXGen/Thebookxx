@@ -19903,6 +19903,47 @@ img[data-loaded="true"] {
 .mo-card-caret.open {
   transform: rotate(180deg);
 }
+/* Track-orders list: multi-select + bulk status */
+.mo-track-selrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.mo-track-selall {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--tertiary, #fb8500);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 6px;
+}
+.mo-track-bulkbar {
+  margin-bottom: 12px;
+}
+.mo-track-check {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  margin-right: 10px;
+  border-radius: 6px;
+  border: 2px solid var(--tertiary, #fb8500);
+  background: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  cursor: pointer;
+}
+.mo-track-check.on {
+  background: var(--tertiary, #fb8500);
+}
+.mo-track-card.selected {
+  border-color: var(--tertiary, #fb8500);
+  box-shadow: 0 0 0 2px rgba(251, 133, 0, 0.18) inset;
+}
+
 /* Sticky bar: queued per-card status edits waiting to be pushed together */
 .mo-status-pushbar {
   position: sticky;

@@ -3417,6 +3417,11 @@ export default function ManageOrdersPage() {
   const [trackFailed, setTrackFailed] = useState([]);
   const [trackSummary, setTrackSummary] = useState(null);
   const [trackDateOpen, setTrackDateOpen] = useState({});
+  // Multi-select + bulk status change for the matched-tracking list.
+  const [trackSelectMode, setTrackSelectMode] = useState(false);
+  const [trackSel, setTrackSel] = useState([]); // selected Shipping ID keys
+  const [trackBulkStat, setTrackBulkStat] = useState("Getting Shipped");
+  const [trackBulkBusy, setTrackBulkBusy] = useState(false);
   useEffect(() => {
     try {
       const raw = localStorage.getItem("mo_track_notify");
@@ -3537,6 +3542,50 @@ export default function ManageOrdersPage() {
         .catch((e) => console.error("Track status save failed:", e));
     } else {
       console.warn("No Order ID for shipping ID", sid, "- status not saved.");
+    }
+  };
+
+  // Bulk-change status for the selected matched-tracking rows, writing each to
+  // the sheet in one batch (matched by Order ID), then refetch once.
+  const applyTrackBulkStatus = async () => {
+    const keys = [...trackSel];
+    const val = trackBulkStat;
+    if (!keys.length || !val) return;
+    setTrackBulkBusy(true);
+    const isSel = (r) => keys.some((k) => sidUp(k) === sidUp(r["Shipping ID"]));
+    setTrackList((prev) => {
+      const next = prev.map((r) => (isSel(r) ? { ...r, status: val } : r));
+      persistTrackList(next);
+      return next;
+    });
+    const oids = keys
+      .map(
+        (k) =>
+          trackList.find((r) => sidUp(r["Shipping ID"]) === sidUp(k))?.[
+            "Order ID"
+          ],
+      )
+      .filter(Boolean);
+    setOrders((prev) =>
+      prev.map((o) =>
+        oids.includes(o["Order ID"])
+          ? { ...o, "Order Status": val, status: val }
+          : o,
+      ),
+    );
+    try {
+      await Promise.all(
+        oids.map((oid) =>
+          updateOrderRow(oid, { "Order Status": val }).catch((e) =>
+            console.error("Bulk track status save failed:", oid, e),
+          ),
+        ),
+      );
+    } finally {
+      setTrackBulkBusy(false);
+      setTrackSel([]);
+      setTrackSelectMode(false);
+      setTimeout(fetchOrders, 1300);
     }
   };
 
@@ -7541,6 +7590,81 @@ export default function ManageOrdersPage() {
                 })();
                 return (
                   <div className="mo-track-groups">
+                    <div className="mo-track-selrow">
+                      <button
+                        type="button"
+                        className={`mo-view-btn mo-select-btn${trackSelectMode ? " active" : ""}`}
+                        onClick={() =>
+                          setTrackSelectMode((v) => {
+                            if (v) setTrackSel([]);
+                            return !v;
+                          })
+                        }
+                      >
+                        <CheckSquare size={15} />
+                        <span className="mo-select-btn-lbl">
+                          {trackSelectMode ? "Done" : "Select"}
+                        </span>
+                      </button>
+                      {trackSelectMode && (
+                        <button
+                          type="button"
+                          className="mo-track-selall"
+                          onClick={() =>
+                            setTrackSel(
+                              trackList.map((r) => String(r["Shipping ID"])),
+                            )
+                          }
+                        >
+                          Select all ({trackList.length})
+                        </button>
+                      )}
+                    </div>
+
+                    {trackSelectMode && (
+                      <div className="mo-cardbulk-bar mo-track-bulkbar">
+                        <div className="mo-cardbulk-left">
+                          <CheckSquare size={16} />
+                          <span className="mo-cardbulk-count">
+                            {trackSel.length} selected
+                          </span>
+                          {trackSel.length > 0 && (
+                            <button
+                              type="button"
+                              className="mo-cardbulk-clear"
+                              onClick={() => setTrackSel([])}
+                            >
+                              Clear
+                            </button>
+                          )}
+                        </div>
+                        <div className="mo-cardbulk-right">
+                          <span className="mo-cardbulk-lbl">Set status</span>
+                          <select
+                            className="mo-tp-status-select"
+                            value={trackBulkStat}
+                            onChange={(e) => setTrackBulkStat(e.target.value)}
+                          >
+                            {TRACK_STATUS_OPTIONS.map((s) => (
+                              <option key={s} value={s}>
+                                {s}
+                              </option>
+                            ))}
+                          </select>
+                          <button
+                            type="button"
+                            className="mo-cardbulk-apply"
+                            disabled={trackSel.length === 0 || trackBulkBusy}
+                            onClick={applyTrackBulkStatus}
+                          >
+                            {trackBulkBusy
+                              ? "Applying…"
+                              : `Apply to ${trackSel.length || ""}`}
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
                     {groups.map((grp) => {
                       const open = trackDateOpen[grp.label] !== false;
                       return (
@@ -7571,9 +7695,37 @@ export default function ManageOrdersPage() {
                               {grp.rows.map((r) => {
                                 const key = String(r["Shipping ID"]);
                                 const stage = trackPicks[key] || "ofd";
+                                const tSel = trackSel.some(
+                                  (k) => sidUp(k) === sidUp(key),
+                                );
                                 return (
-                                  <div className="mo-track-card" key={key}>
+                                  <div
+                                    className={`mo-track-card${tSel ? " selected" : ""}`}
+                                    key={key}
+                                  >
                                     <div className="mo-track-card-top">
+                                      {trackSelectMode && (
+                                        <button
+                                          type="button"
+                                          className={`mo-track-check${tSel ? " on" : ""}`}
+                                          onClick={() =>
+                                            setTrackSel((prev) =>
+                                              prev.some(
+                                                (k) => sidUp(k) === sidUp(key),
+                                              )
+                                                ? prev.filter(
+                                                    (k) =>
+                                                      sidUp(k) !== sidUp(key),
+                                                  )
+                                                : [...prev, key],
+                                            )
+                                          }
+                                          aria-pressed={tSel}
+                                          title={tSel ? "Deselect" : "Select"}
+                                        >
+                                          {tSel && <Check size={13} />}
+                                        </button>
+                                      )}
                                       <div className="mo-track-card-who">
                                         <span className="mo-track-card-name">
                                           {r["Customer Name"] || "Unknown"}

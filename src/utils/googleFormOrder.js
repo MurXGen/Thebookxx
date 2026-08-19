@@ -167,10 +167,6 @@ export const submitOrderToGoogleForm = async (orderData) => {
 // balance as the MAX Wallet value across their rows (by phone). To credit a
 // scratch-card reward we read their current balance and write a fresh row with
 // only phone + new cumulative wallet + timestamp, so the profile reflects it.
-const WALLET_FIELD_ID = "entry.1030338596"; // "Wallet" column on the form
-const PHONE_FIELD_ID = "entry.1941153221";
-const TIMESTAMP_FIELD_ID = "entry.509242940";
-
 const fmtSheetTs = (date) => {
   const d = new Date(date);
   const p = (n) => String(n).padStart(2, "0");
@@ -197,21 +193,25 @@ export const fetchWalletBalance = async (phone) => {
   }
 };
 
-// Credit `reward` to the shopper's wallet as a POSITIVE ledger entry (phone +
-// wallet + timestamp only). The balance is the sum of all entries.
-export const creditWalletReward = async (phone, reward) => {
+// Credit `reward` to the shopper's wallet as a POSITIVE ledger entry. When the
+// reward is earned by scratching a specific order, pass that order's id so the
+// credit row is tagged with the Order ID — this lets us remove the reward
+// automatically if that order is later deleted. Written via the server route
+// (append) so no sheet/form URL is exposed to the browser.
+export const creditWalletReward = async (phone, reward, orderId = "") => {
   const digits = String(phone || "").replace(/\D/g, "").slice(-10);
   if (digits.length !== 10 || !reward) return { success: false };
   try {
-    const params = new URLSearchParams();
-    params.append(PHONE_FIELD_ID, digits);
-    params.append(WALLET_FIELD_ID, String(Math.round(reward)));
-    params.append(TIMESTAMP_FIELD_ID, fmtSheetTs(new Date()));
-    await fetch(GOOGLE_FORM_ORDER_URL, {
+    const data = {
+      "Phone Number": digits,
+      Wallet: String(Math.round(reward)),
+      Timestamp: fmtSheetTs(new Date()),
+    };
+    if (orderId) data["Order ID"] = String(orderId);
+    await fetch("/api/order-write", {
       method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: params.toString(),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "append", data }),
     });
     return { success: true, reward };
   } catch (e) {

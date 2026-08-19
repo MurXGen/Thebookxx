@@ -2700,7 +2700,9 @@ export function CODSuccessModal({
   const handleScratchComplete = async () => {
     if (scratched) return;
     setScratched(true);
-    const res = await creditWalletReward(phone, reward);
+    // Tag the wallet credit with this order's id so it can be reversed if the
+    // order is ever deleted from the dashboard.
+    const res = await creditWalletReward(phone, reward, orderRef);
     if (res?.success) setWalletCredited(true);
   };
 

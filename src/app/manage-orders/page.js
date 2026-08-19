@@ -5156,7 +5156,7 @@ export default function ManageOrdersPage() {
     }
     if (
       !window.confirm(
-        `Delete order ${orderId} permanently from the sheet? This cannot be undone.`,
+        `Delete order ${orderId} permanently from the sheet?\n\nThis also removes any wallet reward credited for this order. This cannot be undone.`,
       )
     )
       return;

@@ -80,11 +80,8 @@ const capName = (str) =>
     .filter(Boolean)
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join(" ");
-// Apps Script web app that edits order rows in place (same endpoint the
-// manage-orders dashboard uses). Lets a customer's address edit save straight
-// to their order row.
-const SHEET_EDIT_API_URL =
-  "https://script.google.com/macros/s/AKfycbzYyEYufYZBP4pV-sJvgTvTBrcIb3iNUH3BgDD31zCL9xiULoKWnATFfad2awNMgvyC/exec";
+// Address edits are saved through the /api/order-write server route (target
+// "edit"), which forwards to the Apps Script. The /exec URL stays server-side.
 
 // =====================================================================
 // Module-level date parser, handles every format the Google Sheet emits
@@ -1164,13 +1161,14 @@ Please cancel this order. Thank you `;
         Pincode: addrEdit.pincode || "",
       };
       try {
-        await fetch(SHEET_EDIT_API_URL, {
+        await fetch("/api/order-write", {
           method: "POST",
-          mode: "no-cors",
-          body: new URLSearchParams({
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
             action: "update",
             orderId,
-            data: JSON.stringify(fields),
+            data: fields,
+            target: "edit",
           }),
         });
         // Reflect it immediately in the profile list.
@@ -1401,18 +1399,19 @@ Please cancel this order. Thank you `;
     if (!orderId) return;
     setEpSaving(true);
     try {
-      await fetch(SHEET_EDIT_API_URL, {
+      await fetch("/api/order-write", {
         method: "POST",
-        mode: "no-cors",
-        body: new URLSearchParams({
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           action: "update",
           orderId,
-          data: JSON.stringify({
+          target: "edit",
+          data: {
             Address: epDraft.address,
             City: epDraft.city,
             State: epDraft.state,
             Pincode: epDraft.pincode,
-          }),
+          },
         }),
       });
       setOrders((prev) =>

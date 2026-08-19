@@ -3,13 +3,8 @@
 const GOOGLE_FORM_ORDER_URL =
   "https://docs.google.com/forms/d/e/1FAIpQLSc3dUHr_S01ODuvQpok_8n0tG0ezfUPD5NLK0M_tyms25I-eQ/formResponse";
 
-// Google Apps Script web-app (/exec) that writes directly to the orders sheet.
-// New orders are appended through this (action=append) instead of the Google
-// Form, because the Form silently rejects the whole submission whenever a
-// question is toggled Required — which was dropping live orders. Must match the
-// SHEET_EDIT_API_URL deployed for the manage-orders dashboard.
-const SHEET_EDIT_API_URL =
-  "https://script.google.com/macros/s/AKfycbzHQ2gs25qh7stuSdWWV_g4r3Im_6HUgUxxcbahkyWsY6d-VjO0ppwgiezokxHd5fqzKA/exec";
+// Order writes go through our server route (/api/order-write), which forwards
+// to the Apps Script web app. The /exec URL lives server-side only.
 
 // Internal orderData keys → the sheet's actual column headers. The Apps Script
 // append maps each value into the matching header column.
@@ -92,17 +87,13 @@ const getDeliveryLabelValue = (totalDiscounted, isFasterDelivery) => {
 // web app (action=update). `fields` is keyed by the sheet's column headers,
 // e.g. { "Order Comment": "leave at door", "Delivery Type": "Faster" }.
 export const updateOrderRow = async (orderId, fields) => {
-  if (!SHEET_EDIT_API_URL || !orderId) return { success: false };
+  if (!orderId) return { success: false };
   try {
-    const body = new URLSearchParams({
-      action: "update",
-      orderId: String(orderId),
-      data: JSON.stringify(fields || {}),
-    });
-    await fetch(SHEET_EDIT_API_URL, {
+    // Server route forwards to the Apps Script; the /exec URL stays off-client.
+    await fetch("/api/order-write", {
       method: "POST",
-      mode: "no-cors",
-      body,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "update", orderId, data: fields || {} }),
     });
     return { success: true };
   } catch (error) {
@@ -127,24 +118,21 @@ export const submitOrderToGoogleForm = async (orderData) => {
     data[header] = String(val);
   });
 
-  // Preferred path: append straight to the sheet via Apps Script.
-  if (SHEET_EDIT_API_URL) {
-    try {
-      const body = new URLSearchParams({
-        action: "append",
-        data: JSON.stringify(data),
-      });
-      await fetch(SHEET_EDIT_API_URL, {
-        method: "POST",
-        mode: "no-cors",
-        body,
-      });
-      console.log("Appended order to sheet via Apps Script:", orderData);
+  // Preferred path: append straight to the sheet via our server route (which
+  // forwards to the Apps Script; the /exec URL stays off the client).
+  try {
+    const res = await fetch("/api/order-write", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "append", data }),
+    });
+    if (res.ok) {
       return { success: true };
-    } catch (error) {
-      console.error("Apps Script append failed, trying Google Form:", error);
-      // fall through to the Form as a last resort
     }
+    // non-OK → fall through to the Form as a last resort
+  } catch (error) {
+    console.error("Append via server route failed, trying Google Form:", error);
+    // fall through to the Form as a last resort
   }
 
   // Fallback: original Google Form submission.

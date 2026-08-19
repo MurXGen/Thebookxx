@@ -3163,6 +3163,10 @@ export default function ManageOrdersPage() {
   const [cardSelectMode, setCardSelectMode] = useState(false); // card-view multi-select
   const [cardBulkStatus, setCardBulkStatus] = useState("Getting Shipped");
   const [cardBulkBusy, setCardBulkBusy] = useState(false);
+  // Queued per-card status edits waiting to be pushed to the sheet in one go
+  // (orderId -> new status), so changing many statuses doesn't reload each time.
+  const [pendingStatus, setPendingStatus] = useState({});
+  const [pushingStatus, setPushingStatus] = useState(false);
   const [bulkStage, setBulkStage] = useState(null); // WhatsApp stage key for bulk send
   const [bulkSent, setBulkSent] = useState([]); // order IDs already messaged
   const [mergeGroup, setMergeGroup] = useState(null); // customer group under merge preview
@@ -3292,6 +3296,33 @@ export default function ManageOrdersPage() {
       setCardSelectMode(false);
       setTimeout(fetchOrders, 1300);
     }
+  };
+
+  // Push every queued per-card status edit to the sheet in one batch, then
+  // refetch once (instead of a write + reload on every single dropdown change).
+  const pushPendingStatus = async () => {
+    const entries = Object.entries(pendingStatus);
+    if (entries.length === 0) return;
+    setPushingStatus(true);
+    try {
+      await Promise.all(
+        entries.map(([id, st]) =>
+          updateOrderRow(id, { "Order Status": st }).catch((e) =>
+            console.error("Status push failed for", id, e),
+          ),
+        ),
+      );
+    } finally {
+      setPushingStatus(false);
+      setPendingStatus({});
+      setTimeout(fetchOrders, 1300);
+    }
+  };
+
+  // Discard queued status edits and reload the true sheet values.
+  const discardPendingStatus = () => {
+    setPendingStatus({});
+    fetchOrders();
   };
 
   const pushTrackingRows = async () => {
@@ -7998,6 +8029,36 @@ export default function ManageOrdersPage() {
                     </div>
                   </div>
 
+                  {Object.keys(pendingStatus).length > 0 && (
+                    <div className="mo-status-pushbar">
+                      <span className="mo-status-pushbar-lbl">
+                        {Object.keys(pendingStatus).length} status change
+                        {Object.keys(pendingStatus).length === 1 ? "" : "s"}{" "}
+                        queued
+                      </span>
+                      <div className="mo-status-pushbar-actions">
+                        <button
+                          type="button"
+                          className="mo-status-discard"
+                          onClick={discardPendingStatus}
+                          disabled={pushingStatus}
+                        >
+                          Discard
+                        </button>
+                        <button
+                          type="button"
+                          className="mo-status-push"
+                          onClick={pushPendingStatus}
+                          disabled={pushingStatus}
+                        >
+                          {pushingStatus
+                            ? "Pushing…"
+                            : `Push ${Object.keys(pendingStatus).length} to sheet`}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="orders-toolbar">
                     <div className="mo-view-toggle">
                       {[
@@ -8440,20 +8501,23 @@ export default function ManageOrdersPage() {
                                 {/* Editable status right on the collapsed card —
                                     change & save without opening the accordion. */}
                                 <select
-                                  className="mo-status-quick"
+                                  className={`mo-status-quick${pendingStatus[orderId] ? " dirty" : ""}`}
                                   value={order.status || "Processing"}
-                                  title="Change & save order status"
+                                  title="Change status (queued — push to save)"
                                   onClick={(e) => e.stopPropagation()}
                                   onChange={(e) => {
                                     e.stopPropagation();
                                     const val = e.target.value;
+                                    // Reflect locally + queue the edit; the
+                                    // global "Push" button saves them together.
                                     patchLocalOrder(orderId, {
                                       "Order Status": val,
                                       status: val,
                                     });
-                                    updateOrderRow(orderId, {
-                                      "Order Status": val,
-                                    }).then(() => setTimeout(fetchOrders, 1300));
+                                    setPendingStatus((prev) => ({
+                                      ...prev,
+                                      [orderId]: val,
+                                    }));
                                   }}
                                 >
                                   {TRACK_STATUS_OPTIONS.map((s) => (

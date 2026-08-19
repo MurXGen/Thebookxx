@@ -19903,6 +19903,60 @@ img[data-loaded="true"] {
 .mo-card-caret.open {
   transform: rotate(180deg);
 }
+/* Sticky bar: queued per-card status edits waiting to be pushed together */
+.mo-status-pushbar {
+  position: sticky;
+  top: 8px;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+  border-radius: 12px;
+  border: 1px solid var(--tertiary, #fb8500);
+  background: #fff7ec;
+  box-shadow: 0 6px 18px rgba(251, 133, 0, 0.16);
+}
+.mo-status-pushbar-lbl {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--foreground);
+}
+.mo-status-pushbar-actions {
+  display: inline-flex;
+  gap: 8px;
+}
+.mo-status-discard {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--gray-500, #6b7280);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 10px;
+}
+.mo-status-push {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--tertiary, #fb8500);
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+.mo-status-push:disabled,
+.mo-status-discard:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.mo-status-quick.dirty {
+  border-color: var(--tertiary, #fb8500);
+  box-shadow: 0 0 0 2px rgba(251, 133, 0, 0.2);
+}
 .mo-card-delete {
   display: inline-flex;
   align-items: center;

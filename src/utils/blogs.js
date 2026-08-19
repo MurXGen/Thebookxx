@@ -4,6 +4,263 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "teachers-day-2026-books-to-gift-your-teacher": {
+    id: "blog-026",
+    title:
+      "Teachers' Day 2026: 15 Books to Gift Your Teacher (And Why a Book Beats a Bouquet)",
+    slug: "teachers-day-2026-books-to-gift-your-teacher",
+    author: "TheBookX Editorial",
+    authorSlug: "murthy-thevar",
+    publishDate: "2026-08-19",
+    lastModified: "2026-08-19",
+    excerpt:
+      "Teachers' Day 2026 falls on Saturday, 5 September. Flowers wilt in a week — a well-chosen book stays on a shelf for years. Here are 15 books to gift your teacher, plus how to pick the right one.",
+
+    content: [
+      {
+        type: "paragraph",
+        content:
+          "<strong>Teachers' Day 2026 falls on Saturday, 5 September.</strong> Every year the same scene plays out in schools and colleges across India: a rush of greeting cards, a pile of bouquets, and a box of sweets that's finished by evening. It's warm and well-meant — but a week later there's nothing left of it. A book is different. A book sits on a desk, gets read on a slow Sunday, gets lent to a colleague, and quietly says <em>you shaped how I think</em> in a way a bunch of roses never quite manages.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "This guide covers why Teachers' Day is celebrated on 5 September, how to pick a book your teacher will actually finish, and 15 specific recommendations sorted by the kind of teacher you're gifting — all available on TheBookX with gift wrapping, free delivery and Cash on Delivery across India.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Why Teachers' Day Is Celebrated on 5 September",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Teachers' Day in India marks the birth anniversary of <strong>Dr Sarvepalli Radhakrishnan</strong>, born on 5 September 1888 in Tiruttani, Tamil Nadu. He was a philosopher first and a politician second: he held the King George V Chair of Mental and Moral Science at the University of Calcutta from 1921 to 1932, and the Spalding Chair of Eastern Religion and Ethics at Oxford from 1936 to 1952. He went on to serve as India's first Vice President (1952–1962) and second President (1962–1967).",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The origin story is the part worth remembering. When Radhakrishnan became President in 1962, a group of his former students asked permission to celebrate his birthday. He declined the personal honour and suggested instead that the day be observed as Teachers' Day, in recognition of the profession as a whole. India has marked 5 September that way ever since.",
+      },
+      {
+        type: "blockquote",
+        content:
+          "Instead of celebrating my birthday, it would be my proud privilege if 5 September is observed as Teachers' Day. — Dr Sarvepalli Radhakrishnan",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "Order with time to spare",
+        content:
+          "Teachers' Day 2026 is on Saturday, 5 September. Place your order a few days early so it arrives before the celebration. Add gift wrapping at checkout (+₹25) and it comes ready to hand over.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "How to Choose a Book Your Teacher Will Actually Read",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The most common mistake is gifting a book about teaching. Your teacher already spends fifty hours a week on the subject — the last thing most of them want is homework. A few rules that hold up well:",
+      },
+      {
+        type: "list",
+        style: "ordered",
+        items: [
+          "<strong>Gift outside their subject, not inside it.</strong> A history teacher rarely wants another history book. Give them something that engages a different part of the mind.",
+          "<strong>Match their pace, not your ambition.</strong> Teachers are chronically short on time. A 200-page book that gets finished beats a 600-page book that gets shelved.",
+          "<strong>Write in it.</strong> A two-line note on the first page — what they taught you, one thing you still use — turns a paperback into something they keep forever.",
+          "<strong>Avoid the obvious motivational pile</strong> unless you know they like it. Fiction, biography and philosophy tend to land better with people who read for a living.",
+          "<strong>If you're gifting as a class, go bigger.</strong> Pooling money for two or three good books is far better than thirty separate cards.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The Classic Teachers' Day Gift: Books About Mentorship",
+      },
+      {
+        type: "paragraph",
+        content:
+          "If you want the gift to nod at the occasion without being on-the-nose, these are the two that work every time:",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<a href=\"/books/tuesdays-with-morrie\" style=\"color:#fb8500;font-weight:600\">Tuesdays with Morrie</a> by Mitch Albom — a former student returns to his dying professor for one last course, held every Tuesday. Short, moving, and about as fitting a Teachers' Day gift as exists.",
+          "<a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> by A.P.J. Abdul Kalam — the autobiography of the man who called himself a teacher above all else. Deeply resonant for any Indian educator.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "For the Teacher Who Thinks About How People Learn",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Some teachers genuinely enjoy the science of the mind. These four are the ones they'll quote back at you in class:",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<a href=\"/books/mindset-the-new-psychology-of-success\" style=\"color:#fb8500;font-weight:600\">Mindset: The New Psychology of Success</a> by Carol Dweck — the growth-mindset research that reshaped how schools talk about effort and ability.",
+          "<a href=\"/books/thinking-fast-and-slow\" style=\"color:#fb8500;font-weight:600\">Thinking, Fast and Slow</a> by Daniel Kahneman — Nobel-winning work on the two systems behind every judgement we make.",
+          "<a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear — practical, tiny-change systems that teachers often pass straight on to their students.",
+          "<a href=\"/books/deep-work\" style=\"color:#fb8500;font-weight:600\">Deep Work</a> by Cal Newport — written by a professor, about protecting focus in a job full of interruptions. Unusually well-suited to academic life.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "For the Teacher Who Needs a Calmer Mind",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Teaching is emotional labour. Marking, parents, staff meetings, and thirty different personalities before lunch. If your teacher seems perpetually stretched, gift them stillness rather than more strategy:",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar — a calm, practical guide to cutting through mental noise and thinking clearly under pressure. One of TheBookX's most-gifted homegrown titles.",
+          "<a href=\"/books/meditations\" style=\"color:#fb8500;font-weight:600\">Meditations</a> by Marcus Aurelius — an emperor's private notes on patience and perspective, still startlingly useful two thousand years on.",
+          "<a href=\"/books/ikigai\" style=\"color:#fb8500;font-weight:600\">Ikigai</a> — the Japanese idea of a reason to get up in the morning. Gentle, short, and a genuinely lovely gift.",
+          "<a href=\"/books/the-courage-to-be-disliked\" style=\"color:#fb8500;font-weight:600\">The Courage to Be Disliked</a> — a Socratic dialogue on freeing yourself from other people's approval. Quietly liberating for anyone who is always being evaluated.",
+          "<a href=\"/books/the-bhagavad-gita\" style=\"color:#fb8500;font-weight:600\">The Bhagavad Gita</a> — for the teacher who leans philosophical, a text about doing your duty without clinging to the result.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "For the Teacher Who Reads Fiction for Pleasure",
+      },
+      {
+        type: "paragraph",
+        content:
+          "If your teacher is a reader already, don't hand them self-help. Hand them a story. These four are safe bets that rarely disappoint:",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<a href=\"/books/to-kill-a-mockingbird\" style=\"color:#fb8500;font-weight:600\">To Kill a Mockingbird</a> by Harper Lee — the great novel about conscience, and about a parent teaching a child how to see.",
+          "<a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> by Arundhati Roy — the Booker-winning Kerala novel, still one of the most beautifully written books in Indian English.",
+          "<a href=\"/books/the-alchemist\" style=\"color:#fb8500;font-weight:600\">The Alchemist</a> by Paulo Coelho — a short fable about following what you're drawn to. Almost universally liked, and easy to finish in a weekend.",
+          "<a href=\"/books/the-palace-of-illusions\" style=\"color:#fb8500;font-weight:600\">The Palace of Illusions</a> by Chitra Banerjee Divakaruni — the Mahabharata retold in Draupadi's voice. A brilliant pick for literature and history teachers alike.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "For the Teacher Who Wants Something That Moves Them",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Memoir is the most under-rated gifting category. These two are the books people write to you about afterwards:",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<a href=\"/books/man-s-search-for-meaning\" style=\"color:#fb8500;font-weight:600\">Man's Search for Meaning</a> by Viktor Frankl — a psychiatrist's account of surviving the camps, and of why purpose is what keeps people going. Under 200 pages.",
+          "<a href=\"/books/when-breath-becomes-air\" style=\"color:#fb8500;font-weight:600\">When Breath Becomes Air</a> by Paul Kalanithi — a neurosurgeon writing about what makes a life worth living once time runs short. Devastating and clear-eyed.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "Two More, If You're Gifting as a Class",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Pooling contributions? Add <a href=\"/books/how-to-win-friends-and-influence-people\" style=\"color:#fb8500;font-weight:600\">How to Win Friends and Influence People</a> by Dale Carnegie — endlessly practical, and a favourite of teachers who mentor beyond the syllabus — and <a href=\"/books/sapiens-a-brief-history-of-humankind\" style=\"color:#fb8500;font-weight:600\">Sapiens: A Brief History of Humankind</a> by Yuval Noah Harari, which starts more staffroom arguments than any other book on this list.",
+      },
+      {
+        type: "callout",
+        style: "success",
+        title: "The whole class can afford this",
+        content:
+          "Books on TheBookX start from ₹1, with free delivery and Cash on Delivery across India. Add gift wrapping for ₹25 and even a single student's pocket money stretches to a proper Teachers' Day gift.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Make the Gift Personal in Sixty Seconds",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Whatever you pick, do this before you hand it over: open to the first page and write three things — your name and year, one specific thing they taught you that you still use, and the date. Not a generic thank-you. Something specific. Teachers keep those pages for decades; ask any of them and they'll show you one.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Dr Radhakrishnan's whole point, when he turned down a birthday celebration in 1962, was that the honour belonged to the work and not the person. A book is a fitting way to mark that: it hands a teacher back the one thing they spend their careers giving away — something new to learn.",
+      },
+    ],
+
+    coverImage: "/blogs/teachers-day-2026-books-to-gift-your-teacher.jpeg",
+
+    images: [
+      {
+        url: "/blogs/teachers-day-2026-books-to-gift-your-teacher.jpeg",
+        alt: "A student handing a gift-wrapped stack of books to a smiling teacher on Teachers' Day",
+        caption:
+          "Teachers' Day 2026 falls on 5 September — a book outlasts a bouquet",
+        category: "Gifting",
+      },
+    ],
+
+    keywords: [
+      "teachers day 2026",
+      "teachers day gift ideas",
+      "books to gift your teacher",
+      "teachers day 5 september",
+      "best books for teachers",
+      "teachers day gifts india",
+      "sarvepalli radhakrishnan teachers day",
+      "gift a book to teacher",
+      "TheBookX",
+    ],
+
+    categories: ["Gifting", "Education", "Reading Lists"],
+
+    faqs: [
+      {
+        question: "When is Teachers' Day 2026 in India?",
+        answer:
+          "Teachers' Day 2026 falls on Saturday, 5 September 2026. It is observed every year on 5 September and, while it is celebrated nationwide in schools and colleges, it is not a declared public holiday.",
+      },
+      {
+        question: "Why is Teachers' Day celebrated on 5 September in India?",
+        answer:
+          "It marks the birth anniversary of Dr Sarvepalli Radhakrishnan, born 5 September 1888, a philosopher who served as India's first Vice President and second President. When his students asked to celebrate his birthday in 1962, he asked that the day be observed as Teachers' Day instead.",
+      },
+      {
+        question: "What is the best book to gift a teacher?",
+        answer:
+          "Tuesdays with Morrie by Mitch Albom and Wings of Fire by A.P.J. Abdul Kalam are the two most fitting choices for the occasion. If your teacher already reads widely, gift outside their subject instead — fiction like The God of Small Things, or a calm read such as The Art of Clarity or Ikigai.",
+      },
+      {
+        question: "How much should a Teachers' Day book gift cost?",
+        answer:
+          "It does not need to be expensive. Books on TheBookX start from ₹1, with free delivery and Cash on Delivery across India. Gift wrapping is available for an extra ₹25, and a class pooling small amounts can easily gift two or three titles together.",
+      },
+    ],
+  },
+
   "raksha-bandhan-2026-books-to-gift": {
     id: "blog-025",
     title:

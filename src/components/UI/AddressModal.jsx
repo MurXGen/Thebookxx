@@ -3082,8 +3082,17 @@ export function CODSuccessModal({
                     <div className="ok-tl" aria-hidden="true">
                       <span className="ok-tl-dot" />
                       <span className="ok-tl-track" />
-                      <span className="ok-tl-truck">
-                        {localFaster ? <Zap size={15} /> : <Truck size={15} />}
+                      <span
+                        className={`ok-tl-truck${localFaster ? " air" : " rail"}`}
+                      >
+                        <span className="ok-tl-smoke" aria-hidden="true">
+                          <i />
+                          <i />
+                          <i />
+                        </span>
+                        <span className="ok-tl-veh">
+                          {localFaster ? "✈️" : "🚆"}
+                        </span>
                       </span>
                       <span className="ok-tl-dot end">
                         <MapPin size={13} />

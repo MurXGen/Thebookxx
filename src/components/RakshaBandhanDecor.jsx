@@ -112,26 +112,26 @@ export default function RakshaBandhanDecor({
             {/* Curvy rakhi thread tied across, drooping to both sides */}
             <svg
               className="rb-threads"
-              viewBox="0 0 220 46"
-              width="220"
-              height="46"
+              viewBox="0 0 240 100"
+              width="240"
+              height="100"
               preserveAspectRatio="none"
             >
               <path
                 className="rb-rope"
-                d="M110 14 C 86 4, 66 30, 44 20 S 14 6, 3 24"
+                d="M120 22 C 96 10, 84 46, 58 44 S 20 72, 8 94"
               />
               <path
                 className="rb-rope"
-                d="M110 14 C 134 4, 154 30, 176 20 S 206 6, 217 24"
+                d="M120 22 C 144 10, 156 46, 182 44 S 220 72, 232 94"
               />
               <path
                 className="rb-rope-tw"
-                d="M110 14 C 86 4, 66 30, 44 20 S 14 6, 3 24"
+                d="M120 22 C 96 10, 84 46, 58 44 S 20 72, 8 94"
               />
               <path
                 className="rb-rope-tw"
-                d="M110 14 C 134 4, 154 30, 176 20 S 206 6, 217 24"
+                d="M120 22 C 144 10, 156 46, 182 44 S 220 72, 232 94"
               />
             </svg>
             <svg className="rb-flower" viewBox="0 0 48 48" width="60" height="60">
@@ -402,15 +402,13 @@ export default function RakshaBandhanDecor({
         /* Curvy rakhi thread (real rope feel: gold cord + red twist) */
         .rb-threads {
           position: absolute;
-          top: 52%;
+          top: 22px; /* start at the flower and droop down onto the section */
           left: 50%;
-          transform: translate(-50%, -50%);
-          width: 220px;
-          height: 46px;
+          transform: translateX(-50%);
+          width: 240px;
+          height: 100px;
           overflow: visible;
           z-index: -1;
-          animation: rbSway 3.6s ease-in-out infinite;
-          transform-origin: 50% 30%;
         }
         .rb-rope {
           fill: none;
@@ -425,15 +423,6 @@ export default function RakshaBandhanDecor({
           stroke-width: 5;
           stroke-linecap: round;
           stroke-dasharray: 2.5 7;
-        }
-        @keyframes rbSway {
-          0%,
-          100% {
-            transform: translate(-50%, -50%) rotate(-1.5deg);
-          }
-          50% {
-            transform: translate(-50%, -50%) rotate(1.5deg);
-          }
         }
         .rb-flower {
           display: block;

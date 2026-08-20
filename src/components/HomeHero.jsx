@@ -41,7 +41,8 @@ export default function HomeHero() {
   // Tap-anywhere firecracker: spawn a short-lived sparkle burst at the pointer.
   const heroRef = useRef(null);
   const [bursts, setBursts] = useState([]);
-  const SPARK_COLORS = ["#fb8500", "#ff5d8f", "#ffd23f", "#c0223b", "#7c4dff"];
+  // Brand + festive palette (orange / saffron / gold / marigold / red).
+  const SPARK_COLORS = ["#fb8500", "#ff8c42", "#e6a83c", "#ffd23f", "#c0223b"];
   const spawnBurst = (e) => {
     const el = heroRef.current;
     if (!el) return;

@@ -109,8 +109,31 @@ export default function RakshaBandhanDecor({
         <div className="rb-banner">
           {/* Rakhi medallion (flower design), absolutely centred at the top */}
           <span className="rb-rakhi" aria-hidden="true">
-            <span className="rb-tail rb-tail-l" />
-            <span className="rb-tail rb-tail-r" />
+            {/* Curvy rakhi thread tied across, drooping to both sides */}
+            <svg
+              className="rb-threads"
+              viewBox="0 0 220 46"
+              width="220"
+              height="46"
+              preserveAspectRatio="none"
+            >
+              <path
+                className="rb-rope"
+                d="M110 14 C 86 4, 66 30, 44 20 S 14 6, 3 24"
+              />
+              <path
+                className="rb-rope"
+                d="M110 14 C 134 4, 154 30, 176 20 S 206 6, 217 24"
+              />
+              <path
+                className="rb-rope-tw"
+                d="M110 14 C 86 4, 66 30, 44 20 S 14 6, 3 24"
+              />
+              <path
+                className="rb-rope-tw"
+                d="M110 14 C 134 4, 154 30, 176 20 S 206 6, 217 24"
+              />
+            </svg>
             <svg className="rb-flower" viewBox="0 0 48 48" width="60" height="60">
               {/* Outer petal ring (marigold) */}
               {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map(
@@ -365,7 +388,7 @@ export default function RakshaBandhanDecor({
         /* Rakhi flower medallion pinned centre-top */
         .rb-rakhi {
           position: absolute;
-          top: -32px;
+          top: -50px;
           left: 50%;
           right: auto;
           transform: translateX(-50%);
@@ -375,6 +398,42 @@ export default function RakshaBandhanDecor({
           width: 92px;
           height: 60px;
           z-index: 12;
+        }
+        /* Curvy rakhi thread (real rope feel: gold cord + red twist) */
+        .rb-threads {
+          position: absolute;
+          top: 52%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 220px;
+          height: 46px;
+          overflow: visible;
+          z-index: -1;
+          animation: rbSway 3.6s ease-in-out infinite;
+          transform-origin: 50% 30%;
+        }
+        .rb-rope {
+          fill: none;
+          stroke: ${GOLD};
+          stroke-width: 5;
+          stroke-linecap: round;
+          filter: drop-shadow(0 1px 1px rgba(138, 28, 52, 0.25));
+        }
+        .rb-rope-tw {
+          fill: none;
+          stroke: ${RED};
+          stroke-width: 5;
+          stroke-linecap: round;
+          stroke-dasharray: 2.5 7;
+        }
+        @keyframes rbSway {
+          0%,
+          100% {
+            transform: translate(-50%, -50%) rotate(-1.5deg);
+          }
+          50% {
+            transform: translate(-50%, -50%) rotate(1.5deg);
+          }
         }
         .rb-flower {
           display: block;
@@ -386,48 +445,6 @@ export default function RakshaBandhanDecor({
             transform: rotate(360deg);
           }
         }
-        .rb-tail {
-          position: absolute;
-          top: 50%;
-          width: 40px;
-          height: 6px;
-          border-radius: 3px;
-          background: repeating-linear-gradient(
-            90deg,
-            ${RED} 0 4px,
-            ${GOLD} 4px 8px
-          );
-          z-index: -1;
-        }
-        .rb-tail-l {
-          left: -6px;
-          transform: translateY(-50%) rotate(-14deg);
-          animation: rbFlutterL 2.4s ease-in-out infinite;
-        }
-        .rb-tail-r {
-          right: -6px;
-          transform: translateY(-50%) rotate(14deg);
-          animation: rbFlutterR 2.4s ease-in-out infinite;
-        }
-        @keyframes rbFlutterL {
-          0%,
-          100% {
-            transform: translateY(-50%) rotate(-14deg);
-          }
-          50% {
-            transform: translateY(-62%) rotate(-22deg);
-          }
-        }
-        @keyframes rbFlutterR {
-          0%,
-          100% {
-            transform: translateY(-50%) rotate(14deg);
-          }
-          50% {
-            transform: translateY(-38%) rotate(22deg);
-          }
-        }
-
         .rb-title {
           font-size: 18px;
           font-weight: 800;
@@ -574,8 +591,7 @@ export default function RakshaBandhanDecor({
           .rb-thread,
           .rb-beads,
           .rb-flower,
-          .rb-tail-l,
-          .rb-tail-r,
+          .rb-threads,
           .rb-cards-inner {
             animation: none !important;
           }

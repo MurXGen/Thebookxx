@@ -551,6 +551,17 @@ Thank you!
             .join("\n")}`
         : "";
 
+    // Links: the customer invoice link + (for online payments) the merchant
+    // confirmation link so the team can confirm once the UPI payment lands.
+    const orderId = addressData.orderId || "";
+    const isOnline = paymentType === "UPI";
+    const orderLink = orderId
+      ? `https://thebookx.in?orderID=${encodeURIComponent(orderId)}`
+      : shortLink || "";
+    const merchantLink = orderId
+      ? `https://thebookx.in/${encodeURIComponent(orderId)}`
+      : "";
+
     const orderMessage = `
  *NEW ORDER - THEBOOKX*
 
@@ -592,9 +603,16 @@ ${cartBooks
 ━━━━━━━━━━━━━━━━━━━━
 * PAYMENT METHOD*
 ━━━━━━━━━━━━━━━━━━━━
-${paymentType === "COD" ? ` Cash on Delivery (incl. ₹${codFee} fee)` : " UPI Payment"}
+${paymentType === "COD" ? ` Cash on Delivery (incl. ₹${codFee} fee)` : paymentType === "WhatsApp" ? " Confirming on WhatsApp" : " Online Payment (UPI)"}
 
- *Order Link:* ${shortLink}
+━━━━━━━━━━━━━━━━━━━━
+* LINKS*
+━━━━━━━━━━━━━━━━━━━━
+${orderId ? ` *Order ID:* ${orderId}\n *Invoice:* ${orderLink}` : ` *Invoice:* ${orderLink || "—"}`}${
+      isOnline && merchantLink
+        ? `\n *Confirm payment (merchant):* ${merchantLink}`
+        : ""
+    }
 
 ━━━━━━━━━━━━━━━━━━━━
 _Thank you for shopping with TheBookX! _

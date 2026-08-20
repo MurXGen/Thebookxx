@@ -3086,11 +3086,6 @@ export function CODSuccessModal({
                       <span
                         className={`ok-tl-truck${localFaster ? " air" : " rail"}`}
                       >
-                        <span className="ok-tl-smoke" aria-hidden="true">
-                          <i />
-                          <i />
-                          <i />
-                        </span>
                         <span className="ok-tl-veh">
                           {localFaster ? "✈️" : "🚆"}
                         </span>

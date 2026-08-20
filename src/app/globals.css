@@ -30834,11 +30834,13 @@ img[data-loaded="true"] {
 .an2 [data-tip] {
   cursor: pointer;
 }
-.mo-dark .an2-tip {
+.mo-dark .an2-tip,
+.an2-tip.mo-dark {
   background: #f3f4f6;
   color: #111827;
 }
-.mo-dark .an2-tip::after {
+.mo-dark .an2-tip::after,
+.an2-tip.mo-dark::after {
   border-top-color: #f3f4f6;
 }
 

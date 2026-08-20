@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { createPortal } from "react-dom";
 import {
   downloadCombinedFormPNG,
   downloadCombinedFormsPNGs,
@@ -6188,14 +6189,17 @@ export default function ManageOrdersPage() {
             onMouseLeave={onChartLeave}
             onPointerDown={onChartTap}
           >
-            {chartTip && (
-              <div
-                className={`an2-tip${chartTip.below ? " below" : ""}`}
-                style={{ left: chartTip.x, top: chartTip.y }}
-              >
-                {chartTip.text}
-              </div>
-            )}
+            {chartTip &&
+              typeof document !== "undefined" &&
+              createPortal(
+                <div
+                  className={`an2-tip${chartTip.below ? " below" : ""}${darkMode ? " mo-dark" : ""}`}
+                  style={{ left: chartTip.x, top: chartTip.y }}
+                >
+                  {chartTip.text}
+                </div>,
+                document.body,
+              )}
 
             {/* Overview stats */}
             <div className="an2-stats">

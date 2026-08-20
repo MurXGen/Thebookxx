@@ -107,33 +107,35 @@ export default function RakshaBandhanDecor({
       {/* Centred banner: rakhi (absolute) → heading → scratch card */}
       {banner && (
         <div className="rb-banner">
+          {/* Rakhi thread — behind the section, only the flower sits in front */}
+          <svg
+            className="rb-threads"
+            viewBox="0 0 210 66"
+            width="210"
+            height="66"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+          >
+            <path
+              className="rb-rope"
+              d="M105 10 C 86 5, 76 32, 54 33 S 24 48, 12 56"
+            />
+            <path
+              className="rb-rope"
+              d="M105 10 C 124 5, 134 32, 156 33 S 186 48, 198 56"
+            />
+            <path
+              className="rb-rope-tw"
+              d="M105 10 C 86 5, 76 32, 54 33 S 24 48, 12 56"
+            />
+            <path
+              className="rb-rope-tw"
+              d="M105 10 C 124 5, 134 32, 156 33 S 186 48, 198 56"
+            />
+          </svg>
+
           {/* Rakhi medallion (flower design), absolutely centred at the top */}
           <span className="rb-rakhi" aria-hidden="true">
-            {/* Curvy rakhi thread tied across, drooping to both sides */}
-            <svg
-              className="rb-threads"
-              viewBox="0 0 240 100"
-              width="240"
-              height="100"
-              preserveAspectRatio="none"
-            >
-              <path
-                className="rb-rope"
-                d="M120 22 C 96 10, 84 46, 58 44 S 20 72, 8 94"
-              />
-              <path
-                className="rb-rope"
-                d="M120 22 C 144 10, 156 46, 182 44 S 220 72, 232 94"
-              />
-              <path
-                className="rb-rope-tw"
-                d="M120 22 C 96 10, 84 46, 58 44 S 20 72, 8 94"
-              />
-              <path
-                className="rb-rope-tw"
-                d="M120 22 C 144 10, 156 46, 182 44 S 220 72, 232 94"
-              />
-            </svg>
             <svg className="rb-flower" viewBox="0 0 48 48" width="60" height="60">
               {/* Outer petal ring (marigold) */}
               {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map(
@@ -378,6 +380,8 @@ export default function RakshaBandhanDecor({
           overflow: visible;
         }
         .rb-banner-content {
+          position: relative;
+          z-index: 1; /* above the rope threads */
           display: flex;
           flex-direction: column;
           align-items: flex-start;
@@ -402,27 +406,26 @@ export default function RakshaBandhanDecor({
         /* Curvy rakhi thread (real rope feel: gold cord + red twist) */
         .rb-threads {
           position: absolute;
-          top: 22px; /* start at the flower and droop down onto the section */
+          top: -30px; /* starts at the flower, droops onto the section top */
           left: 50%;
           transform: translateX(-50%);
-          width: 240px;
-          height: 100px;
+          width: 210px;
+          height: 66px;
           overflow: visible;
-          z-index: -1;
+          z-index: 0; /* behind the content + scratch card */
         }
         .rb-rope {
           fill: none;
           stroke: ${GOLD};
-          stroke-width: 5;
+          stroke-width: 3.5;
           stroke-linecap: round;
-          filter: drop-shadow(0 1px 1px rgba(138, 28, 52, 0.25));
         }
         .rb-rope-tw {
           fill: none;
           stroke: ${RED};
-          stroke-width: 5;
+          stroke-width: 3.5;
           stroke-linecap: round;
-          stroke-dasharray: 2.5 7;
+          stroke-dasharray: 2 6;
         }
         .rb-flower {
           display: block;
@@ -451,6 +454,7 @@ export default function RakshaBandhanDecor({
           right: -16px;
           top: 50%;
           transform: translateY(-50%);
+          z-index: 2; /* above the rope threads */
           display: flex;
           flex-direction: column;
           align-items: center;

@@ -32805,48 +32805,46 @@ img[data-loaded="true"] {
   font-weight: 700;
   align-self: center;
 }
-/* Be-present note + reschedule CTA */
+/* Be-present note — minimal, no background: icon + heading + description
+   with an inline reschedule link (matches the profile track ETA note). */
 .ok-present {
   width: 100%;
   margin-top: 12px;
-  padding: 12px 13px;
-  border-radius: 14px;
-  border: 1px solid #ffe0b8;
-  background: #fff7ec;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
   text-align: left;
 }
-.ok-present-txt {
-  margin: 0 0 10px;
-  display: flex;
-  gap: 7px;
-  align-items: flex-start;
-  font-size: var(--px-12);
-  line-height: 1.5;
-  color: #7a4a12;
-}
-.ok-present-txt svg {
+.ok-present > svg {
   flex-shrink: 0;
-  margin-top: 2px;
+  margin-top: 1px;
   color: var(--tertiary, #fb8500);
 }
-.ok-present-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  width: 100%;
-  justify-content: center;
-  padding: 9px 12px;
-  border-radius: 10px;
-  border: 1.5px solid var(--tertiary, #fb8500);
-  background: #fff;
-  color: var(--tertiary, #fb8500);
+.ok-present-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.ok-present-body strong {
   font-size: var(--px-13);
   font-weight: 700;
-  cursor: pointer;
+  color: var(--foreground, #1a1a1a);
 }
-.ok-present-cta:hover {
-  background: var(--tertiary, #fb8500);
-  color: #fff;
+.ok-present-desc {
+  font-size: var(--px-12);
+  line-height: 1.5;
+  color: var(--gray-500, #6b7280);
+}
+.ok-present-link {
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 700;
+  color: var(--tertiary, #fb8500);
+  text-decoration: underline;
+  cursor: pointer;
 }
 .ok-deliver-addr {
   font-size: var(--px-12);
@@ -32949,10 +32947,10 @@ img[data-loaded="true"] {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  padding: 8px 8px 8px 12px;
+  padding: 10px 10px 10px 14px;
   border: 1px solid #fed7aa;
   background: #fff7ed;
-  border-radius: 999px;
+  border-radius: 14px;
 }
 .ok-upgrade-txt {
   display: inline-flex;

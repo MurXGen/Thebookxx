@@ -3146,29 +3146,35 @@ export function CODSuccessModal({
                         </div>
                       </div>
 
-                      {/* Be-present note + reschedule CTA */}
+                      {/* Be-present note — minimal, no background: icon +
+                          heading + description with an inline reschedule link
+                          (same style as the profile track modal's ETA note). */}
                       <div className="ok-present">
-                        <p className="ok-present-txt">
-                          <Info size={13} /> Please be available at this address
-                          on <b>{deliveryRange}</b> to receive your order.
-                        </p>
-                        <button
-                          type="button"
-                          className="ok-present-cta"
-                          onClick={() => {
-                            const msg = `Hi TheBookX, I need a different delivery date for my order.${
-                              orderRef ? `\n\nOrder ID: ${orderRef}` : ""
-                            }\nName: ${name || ""}\nPhone: +91 ${phone || ""}\nCurrent window: ${deliveryRange}`;
-                            window.open(
-                              `https://wa.me/917710892108?text=${encodeURIComponent(msg)}`,
-                              "_blank",
-                              "noopener,noreferrer",
-                            );
-                          }}
-                        >
-                          <FaWhatsapp size={14} /> Not available then? Change the
-                          date
-                        </button>
+                        <Info size={15} />
+                        <span className="ok-present-body">
+                          <strong>Be available on {deliveryRange}</strong>
+                          <span className="ok-present-desc">
+                            Please be at this address to receive your order. Not
+                            available then?{" "}
+                            <button
+                              type="button"
+                              className="ok-present-link"
+                              onClick={() => {
+                                const msg = `Hi TheBookX, I need a different delivery date for my order.${
+                                  orderRef ? `\n\nOrder ID: ${orderRef}` : ""
+                                }\nName: ${name || ""}\nPhone: +91 ${phone || ""}\nCurrent window: ${deliveryRange}`;
+                                window.open(
+                                  `https://wa.me/917710892108?text=${encodeURIComponent(msg)}`,
+                                  "_blank",
+                                  "noopener,noreferrer",
+                                );
+                              }}
+                            >
+                              change the date
+                            </button>
+                            .
+                          </span>
+                        </span>
                       </div>
                     </div>
 

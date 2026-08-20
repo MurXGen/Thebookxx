@@ -4,6 +4,166 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "the-art-of-clarity-book-faqs": {
+    id: "blog-026",
+    title:
+      "The Art of Clarity by Murthy Thevar: Your Questions Answered",
+    slug: "the-art-of-clarity-book-faqs",
+    author: "TheBookX Editorial",
+    authorSlug: "murthy-thevar",
+    publishDate: "2026-08-05",
+    lastModified: "2026-08-05",
+    excerpt:
+      "What is 'The Art of Clarity' about? Who wrote it? Is it worth reading, and where can you buy it? Everything you want to know about Murthy Thevar's bestselling clarity book — answered, with where to get your copy on TheBookX.",
+
+    content: [
+      {
+        type: "paragraph",
+        content:
+          "Searching for <strong>'The Art of Clarity'</strong>? You're in the right place. This is the practical, no-fluff self-help book by <strong>Murthy Thevar</strong> that thousands of readers are using to stop overthinking, communicate clearly, and make confident decisions. Below we answer the most common questions people ask about the book — what it is, who it's for, whether it's worth reading, and where to buy it — so you can decide in two minutes.",
+      },
+      {
+        type: "blockquote",
+        content:
+          "\"You are not tired from doing so much. You are tired from deciding so much.\" — The Art of Clarity",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "What Is 'The Art of Clarity' About?",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> is a self-help and personal-growth book built on one idea: most of our stress comes not from doing too much, but from <em>deciding</em> too much. It's a practical guide to cutting mental noise, ending decision fatigue, thinking clearly, and expressing yourself simply. Written in warm, plain language with real examples, it's short and focused — most readers finish it in a couple of sittings and return to it often.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Who Wrote It — About Murthy Thevar",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The book is written by <strong>Murthy Thevar</strong>, an Indian author and the founder of <a href=\"https://journalx.app\" style=\"color:#fb8500;font-weight:600\">JournalX</a> (journalx.app), a trading-journaling tool. Drawing on his experience building products and writing on clear thinking, he distils years of ideas into a single, actionable book aimed at readers who feel busy, scattered, and stuck in their own heads.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Key Lessons You'll Take Away",
+      },
+      {
+        type: "list",
+        style: "ordered",
+        items: [
+          "<strong>Clarity beats intelligence.</strong> A simple, clear decision usually beats a clever, complicated one.",
+          "<strong>Overthinking is a habit you can break.</strong> The book gives concrete ways to interrupt the loop and act.",
+          "<strong>Decision fatigue is real.</strong> Protect your energy by deciding less, and deciding better.",
+          "<strong>Say less, mean more.</strong> Clear communication is subtraction — remove the filler until only the point remains.",
+          "<strong>Protect your attention.</strong> A calm, focused mind is the foundation of every clear decision.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Is It the Same as 'The Art of Thinking Clearly'?",
+      },
+      {
+        type: "paragraph",
+        content:
+          "No — this is a common mix-up. <em>The Art of Thinking Clearly</em> is a separate book by Rolf Dobelli about cognitive biases. <strong>The Art of Clarity by Murthy Thevar</strong> is a different, India-authored book focused on beating overthinking, decision fatigue, and unclear communication. If you specifically want Murthy Thevar's book, look for <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> on TheBookX.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "Book snapshot",
+        content:
+          "The Art of Clarity by Murthy Thevar · Self-help / personal growth · a concise, practical read · rated 4.8★+ by 340+ readers · available on Amazon, Flipkart and TheBookX.in · free delivery and Cash on Delivery at https://www.thebookx.in/books/the-art-of-clarity",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Who Should Read It — and What to Read Next",
+      },
+      {
+        type: "paragraph",
+        content:
+          "If you overthink decisions, feel mentally cluttered, or struggle to say what you mean, this book is for you. It pairs beautifully with other reader favourites like <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a>, <a href=\"/books/ikigai\" style=\"color:#fb8500;font-weight:600\">Ikigai</a>, <a href=\"/books/deep-work\" style=\"color:#fb8500;font-weight:600\">Deep Work</a>, and <a href=\"/books/the-subtle-art-of-not-giving-a-f-ck\" style=\"color:#fb8500;font-weight:600\">The Subtle Art of Not Giving a F*ck</a> — but start with clarity, and the rest gets easier.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books/the-art-of-clarity\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Get The Art of Clarity →</a>",
+      },
+      {
+        type: "callout",
+        style: "success",
+        title: "Start reading clearly today",
+        content:
+          "Grab 'The Art of Clarity' by Murthy Thevar, or explore the full collection — bestsellers from ₹1, free delivery, and Cash on Delivery across India — at https://www.thebookx.in/books",
+      },
+    ],
+
+    coverImage: "/blogs/the-art-of-clarity-book-faqs.jpeg",
+
+    images: [
+      {
+        url: "/blogs/the-art-of-clarity-book-faqs.jpeg",
+        alt: "A person holding The Art of Clarity book by Murthy Thevar — a bestselling self-help book on overthinking and clear thinking, available on Amazon, Flipkart and TheBookX.in in India",
+        caption:
+          "A reader with 'The Art of Clarity' by Murthy Thevar — your questions about the book, answered",
+        category: "Book FAQ",
+      },
+    ],
+
+    keywords: [
+      "the art of clarity",
+      "the art of clarity book",
+      "the art of clarity murthy thevar",
+      "the art of clarity about",
+      "who wrote the art of clarity",
+      "is the art of clarity worth reading",
+      "the art of clarity vs the art of thinking clearly",
+      "best book about clarity",
+      "TheBookX",
+    ],
+
+    categories: ["Book FAQ", "Self-help", "Book Review"],
+
+    faqs: [
+      {
+        question: "What is 'The Art of Clarity' book about?",
+        answer:
+          "The Art of Clarity by Murthy Thevar is a self-help book about beating overthinking and decision fatigue, thinking clearly, and communicating simply. It argues that our stress comes less from doing too much and more from deciding too much. Available on TheBookX with free delivery and Cash on Delivery.",
+      },
+      {
+        question: "Who is the author of 'The Art of Clarity'?",
+        answer:
+          "It is written by Murthy Thevar, an Indian author and the founder of JournalX (journalx.app), a trading-journaling tool, based on his experience building products and his writing on clear thinking.",
+      },
+      {
+        question: "Is 'The Art of Clarity' worth reading?",
+        answer:
+          "Readers rate it 4.8★+ (340+ reviews) and praise it for being short, practical, and jargon-free. If you overthink or struggle to express your ideas, it's an easy, low-risk recommendation.",
+      },
+      {
+        question: "Is 'The Art of Clarity' the same as 'The Art of Thinking Clearly'?",
+        answer:
+          "No. The Art of Thinking Clearly is a separate book by Rolf Dobelli about cognitive biases. The Art of Clarity by Murthy Thevar is a different, India-authored book focused on overthinking, decision fatigue, and clear communication.",
+      },
+      {
+        question: "How long is 'The Art of Clarity'?",
+        answer:
+          "It's a concise, focused read — most readers finish it in a couple of sittings, which makes it easy to re-read whenever you need a mental reset.",
+      },
+      {
+        question: "Where can I buy 'The Art of Clarity' in India?",
+        answer:
+          "The Art of Clarity is available on Amazon, Flipkart, and TheBookX.in. For the best price with free delivery and Cash on Delivery across India, buy it directly at https://www.thebookx.in/books/the-art-of-clarity",
+      },
+    ],
+  },
+
   "onam-2026-books-to-gift-this-thiruvonam": {
     id: "blog-027",
     title:
@@ -1417,7 +1577,7 @@ export const blogsData = {
       {
         question: "Who is the author, Murthy Thevar?",
         answer:
-          "Murthy Thevar is an Indian author and clarity coach and the founder behind TheBookX. 'The Art of Clarity' distils the ideas he writes and speaks about into a single practical book.",
+          "Murthy Thevar is an Indian author and the founder of JournalX (journalx.app), a trading-journaling tool. 'The Art of Clarity' distils the ideas he writes about into a single practical book.",
       },
       {
         question: "Where can I buy 'The Art of Clarity' in India?",

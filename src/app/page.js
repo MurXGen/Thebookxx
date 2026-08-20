@@ -13,6 +13,7 @@ import UnlockChip from "@/components/UI/UnlockChip";
 import StoreReviews from "@/components/StoreReviews";
 import OneRupeeHero from "@/components/OneRupeeHero";
 import HomeHero from "@/components/HomeHero";
+import RakshaBandhanDecor from "@/components/RakshaBandhanDecor";
 import LiveOrdersStrip from "@/components/LiveOrdersStrip";
 import QuickReadsPromo from "@/components/QuickReadsPromo";
 import InvoiceParamModal from "@/components/InvoiceParamModal";
@@ -124,9 +125,12 @@ export default function HomePage() {
 
       <Navbar />
 
-      {/* Static hero, provides the visible H1 + value prop above the carousel.
-          The Raksha Bandhan promo now renders inside the hero, just above the
+      {/* Raksha Bandhan ribbon (+ falling petals) directly below the navbar.
+          The greeting/scratch banner renders inside the hero, above the
           Join-community CTA. */}
+      <RakshaBandhanDecor banner={false} />
+
+      {/* Static hero, provides the visible H1 + value prop above the carousel. */}
       <HomeHero />
 
       <PincodeModal />

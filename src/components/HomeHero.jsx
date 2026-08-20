@@ -65,8 +65,11 @@ export default function HomeHero() {
           returns across India.
         </p>
 
-        {/* Raksha Bandhan promo — sits right above the community CTA */}
-        <RakshaBandhanDecor />
+        {/* Raksha Bandhan promo — banner only (ribbon lives below the navbar),
+            sits right above the community CTA */}
+        <RakshaBandhanDecor ribbon={false} confetti={false} banner />
+
+
 
         <div className="home-hero-cta">
           <button

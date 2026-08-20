@@ -168,12 +168,14 @@ export default function RakshaBandhanDecor({
             </svg>
           </span>
 
-          <strong className="rb-title">Happy Raksha Bandhan!</strong>
-          <span className="rb-sub">
-            Celebrate the bond, gift a book to someone you love 🎁
-          </span>
+          <div className="rb-banner-content">
+            <strong className="rb-title">Happy Raksha Bandhan!</strong>
+            <span className="rb-sub">
+              Celebrate the bond, gift a book to someone you love 🎁
+            </span>
+          </div>
 
-          {/* Scratch card popping out of the ground */}
+          {/* Scratch card popping out of the right edge of the section */}
           <button
             type="button"
             className="rb-scratch"
@@ -324,27 +326,36 @@ export default function RakshaBandhanDecor({
           }
         }
 
-        /* ── Banner (transparent, bordered) ── */
+        /* ── Banner (transparent, bordered) — content left, scratch right ── */
         .rb-banner {
           position: relative;
           display: flex;
-          flex-direction: column;
+          flex-direction: row;
           align-items: center;
-          text-align: center;
-          gap: 10px;
+          justify-content: space-between;
+          text-align: left;
+          gap: 16px;
           margin: 40px 16px 0;
-          padding: 44px 18px 22px;
+          padding: 30px 22px 24px;
           border-radius: 18px;
           background: transparent;
           border: 1.5px dashed ${GOLD};
+          overflow: visible; /* scratch card pops out of the right edge */
+        }
+        .rb-banner-content {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 8px;
+          min-width: 0;
         }
 
         /* Rakhi flower medallion pinned centre-top */
         .rb-rakhi {
           position: absolute;
           top: -32px;
-          left: 50%;
-          transform: translateX(-50%);
+          left: 34px;
+          transform: none;
           display: inline-flex;
           align-items: center;
           justify-content: center;
@@ -420,7 +431,10 @@ export default function RakshaBandhanDecor({
           flex-direction: column;
           align-items: center;
           gap: 4px;
-          margin-top: 4px;
+          /* Pop out of the top-right of the section */
+          margin: -34px -30px 0 0;
+          flex-shrink: 0;
+          align-self: flex-start;
           border: none;
           background: transparent;
           cursor: pointer;
@@ -513,6 +527,29 @@ export default function RakshaBandhanDecor({
         }
         .rb-scratch-cap b {
           color: ${RED};
+        }
+
+        /* Narrow screens — stack back to a centered column */
+        @media (max-width: 600px) {
+          .rb-banner {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding-top: 44px;
+            gap: 10px;
+          }
+          .rb-banner-content {
+            align-items: center;
+            text-align: center;
+          }
+          .rb-rakhi {
+            left: 50%;
+            transform: translateX(-50%);
+          }
+          .rb-scratch {
+            margin: 4px 0 0;
+            align-self: center;
+          }
         }
 
         @media (prefers-reduced-motion: reduce) {

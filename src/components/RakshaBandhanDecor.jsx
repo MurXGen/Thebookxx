@@ -242,8 +242,9 @@ export default function RakshaBandhanDecor({
         .rb-ribbon {
           position: relative;
           width: 100%;
-          height: 16px;
+          height: 10px;
           overflow: hidden;
+          box-shadow: 0 1px 3px rgba(138, 28, 52, 0.18);
         }
         .rb-thread,
         .rb-beads {
@@ -326,27 +327,24 @@ export default function RakshaBandhanDecor({
           }
         }
 
-        /* ── Banner (transparent, bordered) — content left, scratch right ── */
+        /* ── Banner (transparent, bordered) — content left, scratch absolute
+           on the right so the card hugs its content height ── */
         .rb-banner {
           position: relative;
-          display: flex;
-          flex-direction: row;
-          align-items: center;
-          justify-content: space-between;
           text-align: left;
-          gap: 16px;
-          margin: 40px 16px 0;
-          padding: 30px 22px 24px;
+          margin: 34px 8px 0;
+          /* right padding reserves room for the absolute scratch card */
+          padding: 20px 168px 20px 22px;
           border-radius: 18px;
           background: transparent;
           border: 1.5px dashed ${GOLD};
-          overflow: visible; /* scratch card pops out of the right edge */
+          overflow: visible;
         }
         .rb-banner-content {
           display: flex;
           flex-direction: column;
           align-items: flex-start;
-          gap: 8px;
+          gap: 6px;
           min-width: 0;
         }
 
@@ -427,14 +425,14 @@ export default function RakshaBandhanDecor({
 
         /* ── Scratch card popping out of the ground ── */
         .rb-scratch {
+          position: absolute;
+          right: -16px;
+          top: 50%;
+          transform: translateY(-50%);
           display: flex;
           flex-direction: column;
           align-items: center;
           gap: 4px;
-          /* Pop out of the top-right of the section */
-          margin: -34px -30px 0 0;
-          flex-shrink: 0;
-          align-self: flex-start;
           border: none;
           background: transparent;
           cursor: pointer;
@@ -532,11 +530,8 @@ export default function RakshaBandhanDecor({
         /* Narrow screens — stack back to a centered column */
         @media (max-width: 600px) {
           .rb-banner {
-            flex-direction: column;
-            align-items: center;
             text-align: center;
-            padding-top: 44px;
-            gap: 10px;
+            padding: 44px 16px 20px;
           }
           .rb-banner-content {
             align-items: center;
@@ -547,8 +542,9 @@ export default function RakshaBandhanDecor({
             transform: translateX(-50%);
           }
           .rb-scratch {
-            margin: 4px 0 0;
-            align-self: center;
+            position: static;
+            transform: none;
+            margin: 10px auto 0;
           }
         }
 

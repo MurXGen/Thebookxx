@@ -17,6 +17,7 @@ import {
   MapPin,
   AlertCircle,
   User,
+  Home,
   Zap,
   Clock,
   Package,
@@ -3099,25 +3100,11 @@ export function CODSuccessModal({
                       </span>
                     </div>
 
-                    {/* Arrival → name + address → delivery window/badge */}
+                    {/* Arrival → deliver-to card → be-present note + CTA */}
                     <div className="ok-deliver">
                       <strong className="ok-eta-title">
                         Arriving {deliveryRange}
                       </strong>
-
-                      <strong className="ok-deliver-name">{name}</strong>
-                      <span className="ok-deliver-addr">
-                        {String(address || "")
-                          .replace(
-                            /,?\s*Pinned location:\s*https?:\/\/\S+/i,
-                            "",
-                          )
-                          .trim()}
-                        {city ? `, ${city}` : ""}
-                        {pincode ? ` - ${pincode}` : ""}
-                        {" · +91 "}
-                        {phone}
-                      </span>
 
                       <div className="ok-eta-meta">
                         <span className="ok-eta-sub">{deliveryWindow}</span>
@@ -3129,6 +3116,59 @@ export function CODSuccessModal({
                             ? "Faster delivery"
                             : "Standard delivery"}
                         </span>
+                      </div>
+
+                      {/* Deliver-to — name + address with icons, in a rounded
+                          bordered card consistent with the rest of the sheet. */}
+                      <div className="ok-deliver-card">
+                        <div className="ok-deliver-row">
+                          <span className="ok-deliver-ic">
+                            <User size={15} />
+                          </span>
+                          <span className="ok-deliver-val">{name}</span>
+                        </div>
+                        <div className="ok-deliver-row">
+                          <span className="ok-deliver-ic">
+                            <Home size={15} />
+                          </span>
+                          <span className="ok-deliver-val">
+                            {String(address || "")
+                              .replace(
+                                /,?\s*Pinned location:\s*https?:\/\/\S+/i,
+                                "",
+                              )
+                              .trim()}
+                            {city ? `, ${city}` : ""}
+                            {pincode ? ` - ${pincode}` : ""}
+                            {" · +91 "}
+                            {phone}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Be-present note + reschedule CTA */}
+                      <div className="ok-present">
+                        <p className="ok-present-txt">
+                          <Info size={13} /> Please be available at this address
+                          on <b>{deliveryRange}</b> to receive your order.
+                        </p>
+                        <button
+                          type="button"
+                          className="ok-present-cta"
+                          onClick={() => {
+                            const msg = `Hi TheBookX, I need a different delivery date for my order.${
+                              orderRef ? `\n\nOrder ID: ${orderRef}` : ""
+                            }\nName: ${name || ""}\nPhone: +91 ${phone || ""}\nCurrent window: ${deliveryRange}`;
+                            window.open(
+                              `https://wa.me/917710892108?text=${encodeURIComponent(msg)}`,
+                              "_blank",
+                              "noopener,noreferrer",
+                            );
+                          }}
+                        >
+                          <FaWhatsapp size={14} /> Not available then? Change the
+                          date
+                        </button>
                       </div>
                     </div>
 

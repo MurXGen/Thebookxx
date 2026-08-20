@@ -199,31 +199,6 @@ export default function RakshaBandhanDecor({
                   </span>
                 </span>
               </span>
-              <svg
-                className="rb-ground"
-                viewBox="0 0 158 30"
-                preserveAspectRatio="none"
-                aria-hidden="true"
-              >
-                {/* soil mound */}
-                <ellipse cx="79" cy="21" rx="76" ry="9" fill="#cdb492" />
-                {/* jagged dark opening the card rises through */}
-                <path
-                  d="M38 7 L50 3 L59 7 L69 2 L79 7 L89 2 L99 7 L108 3 L120 7 L111 12 L96 8 L79 13 L62 8 L47 12 Z"
-                  fill="#3a2416"
-                />
-                {/* crack lines radiating from the opening */}
-                <path
-                  d="M38 9 L24 15 M120 9 L134 15 M50 11 L44 21 M108 11 L114 21"
-                  stroke="#8a6b4a"
-                  strokeWidth="1.4"
-                  strokeLinecap="round"
-                  fill="none"
-                />
-                {/* loose dirt clumps */}
-                <circle cx="32" cy="10" r="2.4" fill="#b89e78" />
-                <circle cx="126" cy="10" r="2.4" fill="#b89e78" />
-              </svg>
             </span>
           </button>
         </div>
@@ -349,15 +324,15 @@ export default function RakshaBandhanDecor({
         .rb-rakhi {
           position: absolute;
           top: -32px;
-          left: 22px;
+          left: 50%;
           right: auto;
-          transform: rotate(-14deg);
+          transform: translateX(-50%);
           display: inline-flex;
           align-items: center;
           justify-content: center;
           width: 92px;
           height: 60px;
-          z-index: 12; /* above the dashed border; clear of the scratch card */
+          z-index: 12;
         }
         .rb-flower {
           display: block;
@@ -440,9 +415,9 @@ export default function RakshaBandhanDecor({
         .rb-stage {
           position: relative;
           width: 158px;
-          height: 122px;
+          height: 104px;
           display: block;
-          overflow: hidden; /* card sinks INTO the ground */
+          overflow: visible;
         }
         .rb-cards {
           position: absolute;
@@ -504,17 +479,6 @@ export default function RakshaBandhanDecor({
         .rb-sc-coin {
           font-size: 36px;
           font-weight: 900;
-        }
-        /* Cracked ground: sits in front so the card bursts up through the slit */
-        .rb-ground {
-          position: absolute;
-          left: 50%;
-          bottom: 0;
-          width: 158px;
-          height: 30px;
-          transform: translateX(-50%);
-          filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.12));
-          z-index: 3;
         }
 
         /* Narrow screens — keep the same horizontal layout, scaled to fit */

@@ -3097,20 +3097,47 @@ export function CODSuccessModal({
 
                     {/* Arrival → deliver-to card → be-present note + CTA */}
                     <div className="ok-deliver">
-                      <strong className="ok-eta-title">
-                        Arriving {deliveryRange}
-                      </strong>
+                      {/* Arriving header + faster-delivery upgrade — grouped in
+                          one card for a single, consistent delivery block. */}
+                      <div className="ok-eta-group">
+                        <strong className="ok-eta-title">
+                          Arriving {deliveryRange}
+                        </strong>
 
-                      <div className="ok-eta-meta">
-                        <span className="ok-eta-sub">{deliveryWindow}</span>
-                        <span className="ok-eta-mdot">·</span>
-                        <span
-                          className={`ok-badge${localFaster ? " fast" : ""}`}
-                        >
-                          {localFaster
-                            ? "Faster delivery"
-                            : "Standard delivery"}
-                        </span>
+                        <div className="ok-eta-meta">
+                          <span className="ok-eta-sub">{deliveryWindow}</span>
+                          <span className="ok-eta-mdot">·</span>
+                          <span
+                            className={`ok-badge${localFaster ? " fast" : ""}`}
+                          >
+                            {localFaster
+                              ? "Faster delivery"
+                              : "Standard delivery"}
+                          </span>
+                        </div>
+
+                        {!localFaster && canEditOrder && fasterDelta > 0 && (
+                          <div className="ok-upgrade">
+                            <span className="ok-upgrade-txt">
+                              <Zap size={13} /> Faster by{" "}
+                              <b>{fasterRangeStr}</b> · 1–5 days
+                            </span>
+                            <button
+                              type="button"
+                              className="ok-upgrade-btn"
+                              onClick={confirmFasterUpgrade}
+                              disabled={upgrading}
+                            >
+                              {upgrading ? "…" : `Upgrade · +₹${fasterDelta}`}
+                            </button>
+                          </div>
+                        )}
+                        {upgraded && (
+                          <div className="ok-upgraded">
+                            <CheckCircle2 size={14} /> Upgraded to Faster
+                            delivery.
+                          </div>
+                        )}
                       </div>
 
                       {/* Deliver-to — name + address with icons, in a rounded
@@ -3172,28 +3199,6 @@ export function CODSuccessModal({
                         </span>
                       </div>
                     </div>
-
-                    {!localFaster && canEditOrder && fasterDelta > 0 && (
-                      <div className="ok-upgrade">
-                        <span className="ok-upgrade-txt">
-                          <Zap size={13} /> Faster by <b>{fasterRangeStr}</b> ·
-                          1–5 days
-                        </span>
-                        <button
-                          type="button"
-                          className="ok-upgrade-btn"
-                          onClick={confirmFasterUpgrade}
-                          disabled={upgrading}
-                        >
-                          {upgrading ? "…" : `Upgrade · +₹${fasterDelta}`}
-                        </button>
-                      </div>
-                    )}
-                    {upgraded && (
-                      <div className="ok-upgraded">
-                        <CheckCircle2 size={14} /> Upgraded to Faster delivery.
-                      </div>
-                    )}
                   </div>
 
                   <div className="ok-hr" />

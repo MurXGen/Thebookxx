@@ -555,6 +555,9 @@ Thank you!
     // confirmation link so the team can confirm once the UPI payment lands.
     const orderId = addressData.orderId || "";
     const isOnline = paymentType === "UPI";
+    // Merchant confirm link is useful for online payments AND WhatsApp orders
+    // (merchant sets the final payment method on that page).
+    const needsMerchantConfirm = isOnline || paymentType === "WhatsApp";
     const orderLink = orderId
       ? `https://thebookx.in?orderID=${encodeURIComponent(orderId)}`
       : shortLink || "";
@@ -562,16 +565,18 @@ Thank you!
       ? `https://thebookx.in/${encodeURIComponent(orderId)}`
       : "";
 
-    // Direct WhatsApp link to message THIS customer, greeting pre-filled.
+    // Direct WhatsApp link to message THIS customer — warm, conversational,
+    // sales-friendly opener pre-filled.
     const custDigits = String(addressData.phone || "")
       .replace(/\D/g, "")
       .slice(-10);
+    const firstName = String(addressData.name || "there").trim().split(/\s+/)[0];
     const waCustomerLink =
       custDigits.length === 10
         ? `https://wa.me/91${custDigits}?text=${encodeURIComponent(
-            `Hi ${addressData.name || "there"}, this is TheBookX about your order${
-              orderId ? ` ${orderId}` : ""
-            }. `,
+            `Hi ${firstName}! 📚✨ Thank you for ordering with TheBookX${
+              orderId ? ` (order ${orderId})` : ""
+            } 💛\n\nDo you need any help with this order? We'd love to make sure everything's just right for you! 😊`,
           )}`
         : "";
 
@@ -611,7 +616,9 @@ ${itemsBlock}${qrLines}
 🚚 ${deliveryLabel}
 
 ${orderId ? `🆔 ${orderId}\n` : ""}🧾 Invoice: ${orderLink || "—"}${
-      isOnline && merchantLink ? `\n✅ Confirm payment: ${merchantLink}` : ""
+      needsMerchantConfirm && merchantLink
+        ? `\n✅ Confirm & set payment: ${merchantLink}`
+        : ""
     }${waCustomerLink ? `\n💬 Message customer: ${waCustomerLink}` : ""}`;
 
     const url = "https://api.journalx.app/api/bookxTelegram/order";
@@ -747,17 +754,16 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🧾 Invoice: ${orderLink || "—"}${
     const shortLink = await shortenUrl(viewBagLinkWithDetails);
     setIsShortening(false);
 
-    // Telegram notify on COD orders only — the "Order on WhatsApp" button
-    // must NOT push to Telegram (the customer is messaging us directly).
-    if (!isWhatsApp) {
-      await sendOrderToTelegram(
-        addressData,
-        "COD",
-        fasterDeliveryChoice,
-        giftWrapSelected,
-        shortLink,
-      );
-    }
+    // Telegram notify for both COD and WhatsApp orders. For a WhatsApp order
+    // the notification carries the merchant confirm link (to set payment) and
+    // a link to message the customer.
+    await sendOrderToTelegram(
+      addressData,
+      isWhatsApp ? "WhatsApp" : "COD",
+      fasterDeliveryChoice,
+      giftWrapSelected,
+      shortLink,
+    );
 
     // Bundle any QuickReads onto this same order before redirecting.
     await submitBundledQuickReads(addressData, method);

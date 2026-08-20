@@ -111,6 +111,9 @@ export default function RakshaBandhanDecor({
           <span className="rb-rakhi" aria-hidden="true">
             <span className="rb-tail rb-tail-l" />
             <span className="rb-tail rb-tail-r" />
+            {/* soft sparkle glow where the threads meet the section */}
+            <span className="rb-spark rb-spark-l" />
+            <span className="rb-spark rb-spark-r" />
             <svg className="rb-flower" viewBox="0 0 48 48" width="60" height="60">
               {/* Outer petal ring (marigold) */}
               {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map(
@@ -367,7 +370,7 @@ export default function RakshaBandhanDecor({
         /* Rakhi flower medallion pinned centre-top */
         .rb-rakhi {
           position: absolute;
-          top: -32px;
+          top: -42px;
           left: 50%;
           right: auto;
           transform: translateX(-50%);
@@ -399,6 +402,41 @@ export default function RakshaBandhanDecor({
         .rb-tail-r {
           right: -6px;
           transform: translateY(-50%) rotate(14deg);
+        }
+        /* Soft twinkle where the threads touch the section */
+        .rb-spark {
+          position: absolute;
+          bottom: 2px;
+          width: 34px;
+          height: 34px;
+          border-radius: 50%;
+          background: radial-gradient(
+            circle,
+            rgba(255, 214, 107, 0.65) 0%,
+            rgba(255, 174, 90, 0.28) 42%,
+            rgba(255, 214, 107, 0) 72%
+          );
+          pointer-events: none;
+          z-index: -2;
+          animation: rbSpark 2.6s ease-in-out infinite;
+        }
+        .rb-spark-l {
+          left: -16px;
+        }
+        .rb-spark-r {
+          right: -16px;
+          animation-delay: 1.3s;
+        }
+        @keyframes rbSpark {
+          0%,
+          100% {
+            opacity: 0.25;
+            transform: scale(0.8);
+          }
+          50% {
+            opacity: 0.8;
+            transform: scale(1.12);
+          }
         }
         .rb-flower {
           display: block;
@@ -557,7 +595,8 @@ export default function RakshaBandhanDecor({
           .rb-thread,
           .rb-beads,
           .rb-flower,
-          .rb-cards-inner {
+          .rb-cards-inner,
+          .rb-spark {
             animation: none !important;
           }
           .rb-petals {

@@ -3138,6 +3138,36 @@ export function CODSuccessModal({
                             delivery.
                           </div>
                         )}
+
+                        {/* Be-present note — inside the arriving card, icon +
+                            heading + description with an inline reschedule link. */}
+                        <div className="ok-present">
+                          <Info size={15} />
+                          <span className="ok-present-body">
+                            <strong>Be available on {deliveryRange}</strong>
+                            <span className="ok-present-desc">
+                              Please be at this address to receive your order.
+                              Not available then?{" "}
+                              <button
+                                type="button"
+                                className="ok-present-link"
+                                onClick={() => {
+                                  const msg = `Hi TheBookX, I need a different delivery date for my order.${
+                                    orderRef ? `\n\nOrder ID: ${orderRef}` : ""
+                                  }\nName: ${name || ""}\nPhone: +91 ${phone || ""}\nCurrent window: ${deliveryRange}`;
+                                  window.open(
+                                    `https://wa.me/917710892108?text=${encodeURIComponent(msg)}`,
+                                    "_blank",
+                                    "noopener,noreferrer",
+                                  );
+                                }}
+                              >
+                                change the date
+                              </button>
+                              .
+                            </span>
+                          </span>
+                        </div>
                       </div>
 
                       {/* Deliver-to — name + address with icons, in a rounded
@@ -3168,36 +3198,6 @@ export function CODSuccessModal({
                         </div>
                       </div>
 
-                      {/* Be-present note — minimal, no background: icon +
-                          heading + description with an inline reschedule link
-                          (same style as the profile track modal's ETA note). */}
-                      <div className="ok-present">
-                        <Info size={15} />
-                        <span className="ok-present-body">
-                          <strong>Be available on {deliveryRange}</strong>
-                          <span className="ok-present-desc">
-                            Please be at this address to receive your order. Not
-                            available then?{" "}
-                            <button
-                              type="button"
-                              className="ok-present-link"
-                              onClick={() => {
-                                const msg = `Hi TheBookX, I need a different delivery date for my order.${
-                                  orderRef ? `\n\nOrder ID: ${orderRef}` : ""
-                                }\nName: ${name || ""}\nPhone: +91 ${phone || ""}\nCurrent window: ${deliveryRange}`;
-                                window.open(
-                                  `https://wa.me/917710892108?text=${encodeURIComponent(msg)}`,
-                                  "_blank",
-                                  "noopener,noreferrer",
-                                );
-                              }}
-                            >
-                              change the date
-                            </button>
-                            .
-                          </span>
-                        </span>
-                      </div>
                     </div>
                   </div>
 

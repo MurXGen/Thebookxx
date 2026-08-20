@@ -32744,6 +32744,12 @@ img[data-loaded="true"] {
 .ok-eta-group .ok-upgraded {
   margin-top: 8px;
 }
+.ok-eta-group .ok-present {
+  width: 100%;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #fde3c4;
+}
 /* Deliver-to card — name + address rows with icons, rounded bordered box */
 .ok-deliver-card {
   width: 100%;

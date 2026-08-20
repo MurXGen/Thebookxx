@@ -13,6 +13,7 @@ import {
 import { FaWhatsapp, FaInstagram } from "react-icons/fa";
 import { books } from "@/utils/book";
 import HomeGreeting from "@/components/HomeGreeting";
+import RakshaBandhanDecor from "@/components/RakshaBandhanDecor";
 
 const INSTAGRAM_URL = "https://www.instagram.com/thebookx.in/";
 const WHATSAPP_GROUP_URL =
@@ -63,6 +64,9 @@ export default function HomeHero() {
           starting at just ₹1. Cash on Delivery, free shipping and easy 7-day
           returns across India.
         </p>
+
+        {/* Raksha Bandhan promo — sits right above the community CTA */}
+        <RakshaBandhanDecor />
 
         <div className="home-hero-cta">
           <button

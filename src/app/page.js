@@ -16,7 +16,6 @@ import HomeHero from "@/components/HomeHero";
 import LiveOrdersStrip from "@/components/LiveOrdersStrip";
 import QuickReadsPromo from "@/components/QuickReadsPromo";
 import InvoiceParamModal from "@/components/InvoiceParamModal";
-import RakshaBandhanDecor from "@/components/RakshaBandhanDecor";
 import ReviewGallery from "@/components/ReviewGallery";
 import { BooksSkeleton } from "@/components/UI/BookCardSkeleton";
 
@@ -125,12 +124,9 @@ export default function HomePage() {
 
       <Navbar />
 
-      {/* Raksha Bandhan banner at the top: rakhi-thread ribbon with beads +
-          petals + left greeting + right 3D scratch card (opens the phone →
-          scratch → wallet-reward flow). */}
-      <RakshaBandhanDecor />
-
-      {/* Static hero, provides the visible H1 + value prop above the carousel */}
+      {/* Static hero, provides the visible H1 + value prop above the carousel.
+          The Raksha Bandhan promo now renders inside the hero, just above the
+          Join-community CTA. */}
       <HomeHero />
 
       <PincodeModal />

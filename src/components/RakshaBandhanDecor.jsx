@@ -348,15 +348,16 @@ export default function RakshaBandhanDecor({
         /* Rakhi flower medallion pinned centre-top */
         .rb-rakhi {
           position: absolute;
-          top: -30px;
+          top: -34px;
           left: auto;
-          right: -12px;
-          transform: rotate(18deg);
+          right: 6px;
+          transform: rotate(16deg);
           display: inline-flex;
           align-items: center;
           justify-content: center;
           width: 92px;
           height: 60px;
+          z-index: 12; /* medallion sits ABOVE the scratch card */
         }
         .rb-flower {
           display: block;
@@ -371,7 +372,7 @@ export default function RakshaBandhanDecor({
         .rb-tail {
           position: absolute;
           top: 50%;
-          width: 26px;
+          width: 40px;
           height: 6px;
           border-radius: 3px;
           background: repeating-linear-gradient(

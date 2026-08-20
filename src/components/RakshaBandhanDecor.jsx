@@ -74,7 +74,7 @@ export default function RakshaBandhanDecor({
   };
 
   return (
-    <div className="rb" aria-hidden="true">
+    <div className="rb">
       {/* Rakhi-thread ribbon with moving circular beads */}
       {ribbon && (
         <div className="rb-ribbon">
@@ -348,16 +348,16 @@ export default function RakshaBandhanDecor({
         /* Rakhi flower medallion pinned centre-top */
         .rb-rakhi {
           position: absolute;
-          top: -34px;
-          left: auto;
-          right: 6px;
-          transform: rotate(16deg);
+          top: -32px;
+          left: 22px;
+          right: auto;
+          transform: rotate(-14deg);
           display: inline-flex;
           align-items: center;
           justify-content: center;
           width: 92px;
           height: 60px;
-          z-index: 12; /* medallion sits ABOVE the scratch card */
+          z-index: 12; /* above the dashed border; clear of the scratch card */
         }
         .rb-flower {
           display: block;

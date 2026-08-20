@@ -2676,9 +2676,18 @@ export function CODSuccessModal({
   const handleScratchComplete = async () => {
     if (scratched) return;
     setScratched(true);
-    // Tag the wallet credit with this order's id so it can be reversed if the
-    // order is ever deleted from the dashboard.
-    const res = await creditWalletReward(phone, reward, orderRef);
+    // The order row already records the wallet DEDUCTION (−walletApplied). Fold
+    // the scratch reward into that SAME row so its Wallet column holds the net
+    // (deducted + reward). This keeps one ledger entry per order and means the
+    // reward is reversed automatically if the order is deleted. Falls back to a
+    // standalone credit only when we don't have the real order id.
+    let res;
+    if (orderRef && canEditOrder) {
+      const net = Math.round((reward || 0) - (walletApplied || 0));
+      res = await updateOrderRow(orderRef, { Wallet: String(net) });
+    } else {
+      res = await creditWalletReward(phone, reward, orderRef);
+    }
     if (res?.success) setWalletCredited(true);
   };
 

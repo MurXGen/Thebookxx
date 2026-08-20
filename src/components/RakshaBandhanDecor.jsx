@@ -199,6 +199,48 @@ export default function RakshaBandhanDecor({
                   </span>
                 </span>
               </span>
+              {/* Cracked ground the cards burst up through (in front) */}
+              <svg
+                className="rb-ground"
+                viewBox="0 0 158 36"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+              >
+                <defs>
+                  <linearGradient id="rbSoil" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stopColor="#e2c9a2" />
+                    <stop offset="1" stopColor="#a5855b" />
+                  </linearGradient>
+                </defs>
+                {/* soft cast shadow of the cards on the soil */}
+                <ellipse cx="79" cy="15" rx="46" ry="6" fill="rgba(0,0,0,0.16)" />
+                {/* soil mound with a lit top rim for depth */}
+                <ellipse cx="79" cy="24" rx="78" ry="11" fill="url(#rbSoil)" />
+                <ellipse cx="79" cy="20" rx="74" ry="6" fill="#efd9b6" opacity="0.9" />
+                {/* dark jagged slit the card rises out of */}
+                <path
+                  d="M40 10 L52 5 L61 10 L71 4 L79 10 L87 4 L97 10 L106 5 L118 10 L109 15 L94 11 L79 16 L64 11 L49 15 Z"
+                  fill="#2c1a0e"
+                />
+                {/* raised dirt lips catching light */}
+                <path
+                  d="M40 10 L52 5 L61 10 L71 4 L79 10 L87 4 L97 10 L106 5 L118 10"
+                  fill="none"
+                  stroke="#f0dcbb"
+                  strokeWidth="1.2"
+                  strokeLinejoin="round"
+                />
+                {/* crack lines + loose clumps */}
+                <path
+                  d="M40 12 L26 18 M118 12 L132 18 M52 14 L46 24 M106 14 L112 24"
+                  stroke="#7d6042"
+                  strokeWidth="1.4"
+                  strokeLinecap="round"
+                  fill="none"
+                />
+                <circle cx="30" cy="13" r="2.6" fill="#c2a87f" />
+                <circle cx="128" cy="13" r="2.6" fill="#c2a87f" />
+              </svg>
             </span>
           </button>
         </div>
@@ -415,9 +457,10 @@ export default function RakshaBandhanDecor({
         .rb-stage {
           position: relative;
           width: 158px;
-          height: 104px;
+          height: 120px;
           display: block;
-          overflow: visible;
+          overflow: hidden; /* card body is clipped below the soil line */
+          perspective: 480px; /* gives the emerging cards real depth */
         }
         .rb-cards {
           position: absolute;
@@ -431,7 +474,18 @@ export default function RakshaBandhanDecor({
         .rb-cards-inner {
           position: absolute;
           inset: 0;
-          animation: rbPop 0.7s cubic-bezier(0.2, 1.3, 0.4, 1) both;
+          transform-style: preserve-3d;
+          animation: rbPop 0.7s cubic-bezier(0.2, 1.3, 0.4, 1) both,
+            rbFloat 3.4s ease-in-out 0.7s infinite;
+        }
+        @keyframes rbFloat {
+          0%,
+          100% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-4px);
+          }
         }
         @keyframes rbPop {
           0% {
@@ -454,24 +508,28 @@ export default function RakshaBandhanDecor({
           align-items: center;
           justify-content: center;
           color: #fff;
-          box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.45);
+          box-shadow:
+            inset 0 0 0 2px rgba(255, 255, 255, 0.45),
+            0 12px 18px -6px rgba(90, 10, 25, 0.5);
           transition: transform 0.22s ease;
         }
         .rb-sc-l {
           background: ${RED};
-          transform: translateX(-78%) rotate(-11deg);
+          transform: translateX(-78%) rotate(-11deg) rotateX(10deg);
           z-index: 1;
         }
         .rb-sc-r {
           background: ${MAROON};
-          transform: translateX(-22%) rotate(11deg);
+          transform: translateX(-22%) rotate(11deg) rotateX(10deg);
           z-index: 2;
         }
         .rb-scratch:hover .rb-sc-l {
-          transform: translateX(-86%) rotate(-14deg) translateY(-4px);
+          transform: translateX(-86%) rotate(-14deg) rotateX(10deg)
+            translateY(-6px);
         }
         .rb-scratch:hover .rb-sc-r {
-          transform: translateX(-14%) rotate(14deg) translateY(-4px);
+          transform: translateX(-14%) rotate(14deg) rotateX(10deg)
+            translateY(-6px);
         }
         .rb-sc-emoji {
           font-size: 30px;
@@ -479,6 +537,17 @@ export default function RakshaBandhanDecor({
         .rb-sc-coin {
           font-size: 36px;
           font-weight: 900;
+        }
+        /* Cracked ground the cards rise through — sits in front (z-index) */
+        .rb-ground {
+          position: absolute;
+          left: 50%;
+          bottom: 0;
+          width: 158px;
+          height: 36px;
+          transform: translateX(-50%);
+          z-index: 3;
+          filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
         }
 
         /* Narrow screens — keep the same horizontal layout, scaled to fit */

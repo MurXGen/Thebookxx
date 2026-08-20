@@ -107,35 +107,10 @@ export default function RakshaBandhanDecor({
       {/* Centred banner: rakhi (absolute) → heading → scratch card */}
       {banner && (
         <div className="rb-banner">
-          {/* Rakhi thread — behind the section, only the flower sits in front */}
-          <svg
-            className="rb-threads"
-            viewBox="0 0 210 66"
-            width="210"
-            height="66"
-            preserveAspectRatio="none"
-            aria-hidden="true"
-          >
-            <path
-              className="rb-rope"
-              d="M105 10 C 86 5, 76 32, 54 33 S 24 48, 12 56"
-            />
-            <path
-              className="rb-rope"
-              d="M105 10 C 124 5, 134 32, 156 33 S 186 48, 198 56"
-            />
-            <path
-              className="rb-rope-tw"
-              d="M105 10 C 86 5, 76 32, 54 33 S 24 48, 12 56"
-            />
-            <path
-              className="rb-rope-tw"
-              d="M105 10 C 124 5, 134 32, 156 33 S 186 48, 198 56"
-            />
-          </svg>
-
           {/* Rakhi medallion (flower design), absolutely centred at the top */}
           <span className="rb-rakhi" aria-hidden="true">
+            <span className="rb-tail rb-tail-l" />
+            <span className="rb-tail rb-tail-r" />
             <svg className="rb-flower" viewBox="0 0 48 48" width="60" height="60">
               {/* Outer petal ring (marigold) */}
               {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map(
@@ -392,7 +367,7 @@ export default function RakshaBandhanDecor({
         /* Rakhi flower medallion pinned centre-top */
         .rb-rakhi {
           position: absolute;
-          top: -50px;
+          top: -32px;
           left: 50%;
           right: auto;
           transform: translateX(-50%);
@@ -403,29 +378,27 @@ export default function RakshaBandhanDecor({
           height: 60px;
           z-index: 12;
         }
-        /* Curvy rakhi thread (real rope feel: gold cord + red twist) */
-        .rb-threads {
+        /* Rakhi thread tails — straight bands flanking the flower */
+        .rb-tail {
           position: absolute;
-          top: -30px; /* starts at the flower, droops onto the section top */
-          left: 50%;
-          transform: translateX(-50%);
-          width: 210px;
-          height: 66px;
-          overflow: visible;
-          z-index: 0; /* behind the content + scratch card */
+          top: 50%;
+          width: 40px;
+          height: 6px;
+          border-radius: 3px;
+          background: repeating-linear-gradient(
+            90deg,
+            ${RED} 0 4px,
+            ${GOLD} 4px 8px
+          );
+          z-index: -1;
         }
-        .rb-rope {
-          fill: none;
-          stroke: ${GOLD};
-          stroke-width: 3.5;
-          stroke-linecap: round;
+        .rb-tail-l {
+          left: -6px;
+          transform: translateY(-50%) rotate(-14deg);
         }
-        .rb-rope-tw {
-          fill: none;
-          stroke: ${RED};
-          stroke-width: 3.5;
-          stroke-linecap: round;
-          stroke-dasharray: 2 6;
+        .rb-tail-r {
+          right: -6px;
+          transform: translateY(-50%) rotate(14deg);
         }
         .rb-flower {
           display: block;
@@ -584,7 +557,6 @@ export default function RakshaBandhanDecor({
           .rb-thread,
           .rb-beads,
           .rb-flower,
-          .rb-threads,
           .rb-cards-inner {
             animation: none !important;
           }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
@@ -38,6 +38,36 @@ export default function HomeHero() {
   const [avatarBroken, setAvatarBroken] = useState({});
   const avatars = COMMUNITY_AVATARS.filter((src) => !avatarBroken[src]);
 
+  // Tap-anywhere firecracker: spawn a short-lived sparkle burst at the pointer.
+  const heroRef = useRef(null);
+  const [bursts, setBursts] = useState([]);
+  const SPARK_COLORS = ["#fb8500", "#ff5d8f", "#ffd23f", "#c0223b", "#7c4dff"];
+  const spawnBurst = (e) => {
+    const el = heroRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const id = `${Date.now()}-${Math.random()}`;
+    const n = 10 + Math.floor(Math.random() * 4);
+    const parts = Array.from({ length: n }).map((_, i) => {
+      const angle = (i / n) * Math.PI * 2 + Math.random() * 0.5;
+      const dist = 28 + Math.random() * 46;
+      return {
+        i,
+        dx: Math.cos(angle) * dist,
+        dy: Math.sin(angle) * dist,
+        size: 4 + Math.random() * 5,
+        color: SPARK_COLORS[i % SPARK_COLORS.length],
+      };
+    });
+    setBursts((b) => [...b, { id, x, y, parts }]);
+    setTimeout(
+      () => setBursts((b) => b.filter((z) => z.id !== id)),
+      750,
+    );
+  };
+
   const stats = [
     { icon: BadgeCheck, label: `${titleCount}+ titles` },
     { icon: Star, label: "4.4 avg rating" },
@@ -46,7 +76,35 @@ export default function HomeHero() {
   ];
 
   return (
-    <section className="home-hero">
+    <section
+      className="home-hero"
+      ref={heroRef}
+      onPointerDown={spawnBurst}
+      style={{ position: "relative" }}
+    >
+      {/* Tap-anywhere firecracker sparkles */}
+      <div className="hero-spark-layer" aria-hidden="true">
+        {bursts.map((burst) =>
+          burst.parts.map((p) => (
+            <motion.span
+              key={`${burst.id}-${p.i}`}
+              className="hero-spark"
+              initial={{ opacity: 1, scale: 1, x: 0, y: 0 }}
+              animate={{ opacity: 0, scale: 0.3, x: p.dx, y: p.dy }}
+              transition={{ duration: 0.65, ease: "easeOut" }}
+              style={{
+                left: burst.x,
+                top: burst.y,
+                width: p.size,
+                height: p.size,
+                background: p.color,
+                boxShadow: `0 0 6px ${p.color}`,
+              }}
+            />
+          )),
+        )}
+      </div>
+
       <div className="home-hero-inner">
         <span className="home-hero-eyebrow">
           India’s friendly online bookstore

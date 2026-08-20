@@ -12637,6 +12637,20 @@ img[data-loaded="true"] {
   max-width: 1200px;
   margin: 0 auto;
 }
+/* Tap-anywhere firecracker sparkle layer */
+.hero-spark-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 30;
+}
+.hero-spark {
+  position: absolute;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  will-change: transform, opacity;
+}
 .home-hero-inner {
   max-width: 760px;
   margin: 0 auto;

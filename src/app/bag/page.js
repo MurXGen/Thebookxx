@@ -546,8 +546,8 @@ Thank you!
 
     const qrLines =
       bundledQrTotal > 0
-        ? `\n\n━━━━━━━━━━━━━━━━━━━━\n* QUICKREADS (billed together)*\n━━━━━━━━━━━━━━━━━━━━\n${qrItems
-            .map((b, idx) => `${idx + 1}. *${b.name}* = ₹${QUICKREAD_PRICE}`)
+        ? `\n📖 *QuickReads*\n${qrItems
+            .map((b, idx) => `${idx + 1}. ${b.name} — ₹${QUICKREAD_PRICE}`)
             .join("\n")}`
         : "";
 
@@ -562,61 +562,57 @@ Thank you!
       ? `https://thebookx.in/${encodeURIComponent(orderId)}`
       : "";
 
-    const orderMessage = `
- *NEW ORDER - THEBOOKX*
+    // Direct WhatsApp link to message THIS customer, greeting pre-filled.
+    const custDigits = String(addressData.phone || "")
+      .replace(/\D/g, "")
+      .slice(-10);
+    const waCustomerLink =
+      custDigits.length === 10
+        ? `https://wa.me/91${custDigits}?text=${encodeURIComponent(
+            `Hi ${addressData.name || "there"}, this is TheBookX about your order${
+              orderId ? ` ${orderId}` : ""
+            }. `,
+          )}`
+        : "";
 
-━━━━━━━━━━━━━━━━━━━━
-* CUSTOMER DETAILS*
-━━━━━━━━━━━━━━━━━━━━
- *Name:* ${addressData.name || "Customer"}
- *Phone:* ${addressData.phone || "Not provided"}
+    const payLine =
+      paymentType === "COD"
+        ? `💵 COD${codFee > 0 ? ` · +₹${codFee} fee` : ""}`
+        : paymentType === "WhatsApp"
+          ? "🟢 Confirm on WhatsApp"
+          : "💳 Online (UPI)";
 
-━━━━━━━━━━━━━━━━━━━━
-* DELIVERY ADDRESS*
-━━━━━━━━━━━━━━━━━━━━
- *Address:* ${addressData.address || "Not provided"}
- *City:* ${addressData.city || "Not specified"}
- *District:* ${addressData.district || "Not specified"}
- *State:* ${addressData.state || "Not specified"}
- *Pincode:* ${addressData.pincode || "Not specified"}
+    const itemsBlock = cartBooks
+      .map(
+        (book, idx) =>
+          `${idx + 1}. ${book.name} ×${book.qty} — ₹${book.discountedPrice * book.qty}`,
+      )
+      .join("\n");
 
-━━━━━━━━━━━━━━━━━━━━
-* ORDER SUMMARY*
-━━━━━━━━━━━━━━━━━━━━
-${cartBooks
-  .map(
-    (book, idx) =>
-      `${idx + 1}. *${book.name}* × ${book.qty} = ₹${book.discountedPrice * book.qty}`,
-  )
-  .join("\n")}${qrLines}
+    const addrLine = [
+      addressData.address,
+      addressData.city,
+      addressData.pincode,
+    ]
+      .filter(Boolean)
+      .join(", ");
 
-━━━━━━━━━━━━━━━━━━━━
-* BILL DETAILS*
-━━━━━━━━━━━━━━━━━━━━
- Subtotal: ₹${totalDiscounted}
- Offer Discount: -₹${offerDiscount}
- Delivery: ${deliveryLabel}
- Delivery Charge: +₹${deliveryCharge}${giftWrapSelected ? `\n Gift Wrap: +₹${GIFT_WRAP_CHARGE}` : ""}${codFee > 0 ? `\n COD Handling Fee: +₹${codFee}` : ""}${bundledQrTotal > 0 ? `\n QuickReads (${qrItems.length}): +₹${bundledQrTotal}` : ""}
-━━━━━━━━━━━━━━━━━━━━
-* TOTAL PAYABLE: ₹${totalWithDelivery}*${codFee > 0 ? `\n_(includes ₹${codFee} COD fee, collected at delivery)_` : ""}
+    const orderMessage = `🛒 *New order · TheBookX*
 
-━━━━━━━━━━━━━━━━━━━━
-* PAYMENT METHOD*
-━━━━━━━━━━━━━━━━━━━━
-${paymentType === "COD" ? ` Cash on Delivery (incl. ₹${codFee} fee)` : paymentType === "WhatsApp" ? " Confirming on WhatsApp" : " Online Payment (UPI)"}
+👤 *${addressData.name || "Customer"}*  ·  ${payLine}
+📞 ${addressData.phone || "—"}
+📍 ${addrLine || "—"}
 
-━━━━━━━━━━━━━━━━━━━━
-* LINKS*
-━━━━━━━━━━━━━━━━━━━━
-${orderId ? ` *Order ID:* ${orderId}\n *Invoice:* ${orderLink}` : ` *Invoice:* ${orderLink || "—"}`}${
-      isOnline && merchantLink
-        ? `\n *Confirm payment (merchant):* ${merchantLink}`
-        : ""
-    }
+📚 *Items (${cartBooks.length})*
+${itemsBlock}${qrLines}
 
-━━━━━━━━━━━━━━━━━━━━
-_Thank you for shopping with TheBookX! _
-    `;
+🧾 Subtotal ₹${totalDiscounted}${offerDiscount > 0 ? ` · Offer -₹${offerDiscount}` : ""} · Delivery ₹${deliveryCharge}${giftWrapSelected ? ` · Gift +₹${GIFT_WRAP_CHARGE}` : ""}${codFee > 0 ? ` · COD +₹${codFee}` : ""}${bundledQrTotal > 0 ? ` · QuickReads +₹${bundledQrTotal}` : ""}
+💰 *Total: ₹${totalWithDelivery}*${codFee > 0 ? ` _(₹${codFee} collected at door)_` : ""}
+🚚 ${deliveryLabel}
+
+${orderId ? `🆔 ${orderId}\n` : ""}🧾 Invoice: ${orderLink || "—"}${
+      isOnline && merchantLink ? `\n✅ Confirm payment: ${merchantLink}` : ""
+    }${waCustomerLink ? `\n💬 Message customer: ${waCustomerLink}` : ""}`;
 
     const url = "https://api.journalx.app/api/bookxTelegram/order";
     const payload = JSON.stringify({

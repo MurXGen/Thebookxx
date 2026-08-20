@@ -225,9 +225,6 @@ export default function RakshaBandhanDecor({
                 <circle cx="126" cy="10" r="2.4" fill="#b89e78" />
               </svg>
             </span>
-            <span className="rb-scratch-cap">
-              Scratch &amp; win up to <b>₹50</b>
-            </span>
           </button>
         </div>
       )}
@@ -517,34 +514,23 @@ export default function RakshaBandhanDecor({
           filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.12));
           z-index: 3;
         }
-        .rb-scratch-cap {
-          font-size: 12.5px;
-          font-weight: 700;
-          color: ${MAROON};
-          white-space: nowrap;
-        }
-        .rb-scratch-cap b {
-          color: ${RED};
-        }
 
-        /* Narrow screens — stack back to a centered column */
+        /* Narrow screens — keep the same horizontal layout, scaled to fit */
         @media (max-width: 600px) {
           .rb-banner {
-            text-align: center;
-            padding: 44px 16px 20px;
-          }
-          .rb-banner-content {
-            align-items: center;
-            text-align: center;
-          }
-          .rb-rakhi {
-            left: 50%;
-            transform: translateX(-50%);
+            margin: 30px 8px 0;
+            padding: 18px 116px 18px 16px;
           }
           .rb-scratch {
-            position: static;
-            transform: none;
-            margin: 10px auto 0;
+            right: -8px;
+            transform: translateY(-50%) scale(0.76);
+            transform-origin: right center;
+          }
+          .rb-title {
+            font-size: 16px;
+          }
+          .rb-sub {
+            font-size: 12px;
           }
         }
 

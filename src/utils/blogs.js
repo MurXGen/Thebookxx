@@ -4,6 +4,250 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "onam-2026-books-to-gift-this-thiruvonam": {
+    id: "blog-027",
+    title:
+      "Onam 2026: 15 Books to Gift This Thiruvonam (26 August) — A Gifting Guide for Readers",
+    slug: "onam-2026-books-to-gift-this-thiruvonam",
+    author: "TheBookX Editorial",
+    authorSlug: "murthy-thevar",
+    publishDate: "2026-08-20",
+    lastModified: "2026-08-20",
+    excerpt:
+      "Thiruvonam 2026 falls on Wednesday, 26 August. Sweets finish by evening and clothes get folded away — a book stays. Here are 15 books to gift this Onam, and how to pick right.",
+
+    content: [
+      {
+        type: "paragraph",
+        content:
+          "<strong>Thiruvonam 2026 falls on Wednesday, 26 August.</strong> The ten-day festival opens with Atham on 16 August, builds through the pookalam getting wider on the doorstep every morning, and peaks on Thiruvonam with the sadya on a plantain leaf. Kerala's Onam holidays run 25–28 August 2026, which means most Malayali households get a genuinely long, slow weekend — the rarest thing in a working year.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "That long weekend is the reason a book is an unusually good Onam gift. Onakodi gets folded into a cupboard, payasam is finished by evening, but a book handed over on Thiruvonam morning has three unhurried days waiting for it. This guide covers the Onam 2026 dates, why Kerala is a particularly good place to gift a book, and 15 specific titles sorted by who you are gifting — all on TheBookX with gift wrapping, free delivery and Cash on Delivery across India.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Onam 2026: The Dates That Matter",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<strong>Atham — Sunday, 16 August 2026.</strong> Day one. The first, smallest ring of the pookalam goes down at the entrance.",
+          "<strong>Uthradam — Tuesday, 25 August 2026.</strong> The eve of Onam, and traditionally the big shopping and preparation day. Also called First Onam.",
+          "<strong>Thiruvonam — Wednesday, 26 August 2026.</strong> The main day: new clothes, the Onasadya, and the homecoming of King Mahabali.",
+          "<strong>Kerala Onam holidays — 25 to 28 August 2026.</strong> Four days off, which is why Onam is the season for travel, family visits and long reading afternoons.",
+        ],
+      },
+      {
+        type: "paragraph",
+        content:
+          "The story underneath all of it is worth retelling, because it shapes what makes a thoughtful gift. Onam marks the annual return of Mahabali, the asura king whose reign is remembered in Kerala as a golden age — no poverty, no deceit, no one ranked above anyone else. Vishnu, in the Vamana avatar, asks for three paces of land and takes the whole world in two. Mahabali offers his own head for the third. He is granted one visit home each year, and Onam is that visit. It is a festival about an honest ruler and an equal society, not about conquest — which is why gifts at Onam tend towards the modest and the meaningful rather than the flashy.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "Order in time for Thiruvonam",
+        content:
+          "Thiruvonam 2026 is on Wednesday, 26 August. Order a few days ahead so it reaches you before Uthradam on 25 August. Add gift wrapping at checkout (+₹25) and it arrives ready to hand over on the day.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Why a Book Travels Well as an Onam Gift",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Kerala has ranked among India's most literate states for decades, with literacy above 95 per cent in recent national surveys, and it shows in ordinary life: village libraries with waiting lists, newspapers read cover to cover, and reading treated as an everyday habit rather than a hobby. Gifting a book into that culture is not a risk. A few practical notes before the list:",
+      },
+      {
+        type: "list",
+        style: "ordered",
+        items: [
+          "<strong>Books survive the journey.</strong> Onam gifts often travel — posted to a hostel, carried on a train, couriered to a relative abroad. A paperback handles that better than sweets or fabric.",
+          "<strong>Match the reader, not the occasion.</strong> A festival-themed book is not automatically the right one. The best Onam gift is simply the book that person would have bought for themselves.",
+          "<strong>One good book beats three random ones.</strong> Onam gifting tends to sprawl. A single well-chosen title with a note inside lands harder.",
+          "<strong>Write on the first page.</strong> Name, the year, and one line about why you picked this one for them. That is what turns a ₹200 paperback into something kept for twenty years.",
+          "<strong>Buy for the whole house, not one person.</strong> An illustrated mythology retelling or a children's title gets passed around a joint family all week.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Start With Kerala Itself",
+      },
+      {
+        type: "paragraph",
+        content:
+          "If you want one book that carries the place, it is <a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> by Arundhati Roy — Booker Prize winner in 1997, set in Ayemenem in Kerala, with the monsoon, the river and the pickle factory all working as characters. It is not a comfortable book, but it is the finest novel written about the state, and reading it during Onam gives it a different texture entirely.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "For Anyone Who Loves the Mahabali Kind of Story",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Onam is myth in daily practice, so retellings are a natural fit — and these four are the ones that get read rather than displayed:",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<a href=\"/books/jaya-an-illustrated-retelling-of-the-mahabharata\" style=\"color:#fb8500;font-weight:600\">Jaya: An Illustrated Retelling of the Mahabharata</a> by Devdutt Pattanaik — the best single-volume entry point to the epic, with line drawings and regional variations noted throughout. Ideal for a joint-family gift.",
+          "<a href=\"/books/sita-an-illustrated-retelling-of-the-ramayana\" style=\"color:#fb8500;font-weight:600\">Sita: An Illustrated Retelling of the Ramayana</a> by Devdutt Pattanaik — the Ramayana approached from Sita's side of the story, with the same generous footnotes on how the tale changes across India.",
+          "<a href=\"/books/the-palace-of-illusions\" style=\"color:#fb8500;font-weight:600\">The Palace of Illusions</a> by Chitra Banerjee Divakaruni — the Mahabharata narrated by Panchaali. If someone in the house has only ever heard the epic from the men's side, this is the one to hand them.",
+          "<a href=\"/books/the-immortals-of-meluha\" style=\"color:#fb8500;font-weight:600\">The Immortals of Meluha</a> by Amish Tripathi — mythology written like a thriller. The safest bet for a teenager or a reluctant reader in the family.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Indian Fiction for the Four-Day Onam Break",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Four days off is exactly the length of a good novel. These four suit different moods across the holiday:",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> by R.K. Narayan — short stories from a small South Indian town, each finishable in a chai break. The most re-giftable book on this list, and one that works for a 12-year-old and a 70-year-old equally.",
+          "<a href=\"/books/the-guide\" style=\"color:#fb8500;font-weight:600\">The Guide</a> by R.K. Narayan — a tourist guide who drifts into being mistaken for a holy man. Funny, then quietly devastating.",
+          "<a href=\"/books/five-point-someone\" style=\"color:#fb8500;font-weight:600\">Five Point Someone</a> by Chetan Bhagat — light, fast, and reliably the book that gets a non-reading cousin to actually finish something over a holiday.",
+          "<a href=\"/books/the-midnight-library\" style=\"color:#fb8500;font-weight:600\">The Midnight Library</a> by Matt Haig — a life-you-didn't-live premise that lands especially well with anyone at a crossroads. A common Onam gift for someone who has just moved cities or jobs.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Non-Fiction for the Onam Reset",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Onam sits at the start of the harvest year, and a lot of people use the break the way others use January — to reset something. These five are the ones worth gifting for that:",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar — on cutting through mental noise and deciding what actually deserves your attention. A short, practical read that suits the quiet end of a festival, when the guests have gone and the thinking starts.",
+          "<a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear — the tiny-changes system that has become the default gift for anyone starting something new. Still the most useful book on this list.",
+          "<a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> by Morgan Housel — nineteen short chapters on why sensible people do irrational things with savings. Excellent for a young earner in the family.",
+          "<a href=\"/books/ikigai\" style=\"color:#fb8500;font-weight:600\">Ikigai</a> by Héctor García and Francesc Miralles — the Okinawan idea of a reason to get up in the morning. Calm, slim, and hard to dislike as a gift.",
+          "<a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> by A.P.J. Abdul Kalam — the autobiography that still gets pressed into the hands of every South Indian student, and for good reason.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "For the Children in the House",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Onam is a children's festival as much as anyone's — the pookalam, the swings, the Onathallu, the new clothes. If you want a book that fits the week without being schoolwork, <a href=\"/books/the-gita-for-children\" style=\"color:#fb8500;font-weight:600\">The Gita for Children</a> by Roopa Pai is the one: it explains a difficult text in plain, funny, question-and-answer language, and adults tend to read it over the child's shoulder. Pair it with <a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> and you have covered a ten-year-old and a fifteen-year-old at once.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "A Quick Onam Gifting Shortlist by Person",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<strong>Parents or grandparents</strong> — Malgudi Days or The Guide. Familiar, gentle, endlessly re-readable.",
+          "<strong>A sibling in their twenties</strong> — The Psychology of Money or Atomic Habits.",
+          "<strong>Someone going through a hard year</strong> — The Art of Clarity or Ikigai.",
+          "<strong>A cousin who does not read</strong> — The Immortals of Meluha or Five Point Someone.",
+          "<strong>A serious reader</strong> — The God of Small Things or The Palace of Illusions.",
+          "<strong>The whole family</strong> — Jaya, Sita, or The Gita for Children.",
+        ],
+      },
+      {
+        type: "callout",
+        style: "success",
+        title: "Onam gifting on any budget",
+        content:
+          "Books on TheBookX start from ₹1, with free delivery and Cash on Delivery across India. Gift wrapping is ₹25 extra. Even a small Onam budget stretches to two or three properly chosen titles.",
+      },
+      {
+        type: "blockquote",
+        content:
+          "A gift at Onam is not meant to impress. It is meant to say the house is open and you are welcome in it. — a rough translation of the sentiment behind the Onakodi tradition",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Mahabali's legend is about a king who kept nothing back and was welcomed home for it. Handing over a book you have actually read, with a line written inside about why it made you think of that person, is a small version of the same gesture. Order by 23 or 24 August and it will be sitting on the plantain leaf side of the table by Thiruvonam morning.",
+      },
+    ],
+
+    coverImage: "/blogs/onam-2026-books-to-gift-this-thiruvonam.jpeg",
+
+    images: [
+      {
+        url: "/blogs/onam-2026-books-to-gift-this-thiruvonam.jpeg",
+        alt: "A gift-wrapped stack of books beside a flower pookalam and a plantain leaf on Thiruvonam morning in a Kerala home",
+        caption:
+          "Thiruvonam 2026 falls on Wednesday, 26 August — a book outlasts the sadya",
+        category: "Gifting",
+      },
+    ],
+
+    keywords: [
+      "onam 2026",
+      "onam 2026 date",
+      "thiruvonam 2026",
+      "onam gift ideas",
+      "books to gift for onam",
+      "onam gifts kerala",
+      "onam 2026 books",
+      "best books to gift india",
+      "malayalam festival gifting",
+      "TheBookX",
+    ],
+
+    categories: ["Gifting", "Festivals", "Reading Lists"],
+
+    faqs: [
+      {
+        question: "When is Onam 2026 and on what date is Thiruvonam?",
+        answer:
+          "Thiruvonam, the main day of Onam 2026, falls on Wednesday, 26 August 2026. The ten-day festival begins with Atham on 16 August, and Uthradam — the eve of Onam — falls on Tuesday, 25 August. Kerala's Onam public holidays run from 25 to 28 August 2026.",
+      },
+      {
+        question: "Are books a good Onam gift?",
+        answer:
+          "Yes, particularly in Kerala, where literacy has been above 95 per cent in recent national surveys and reading is an everyday habit. Onam gives most families a four-day break, so a book handed over on Thiruvonam actually gets read. Books also travel better than sweets or clothes when a gift has to be couriered to a relative.",
+      },
+      {
+        question: "Which book should I gift for Onam if I only pick one?",
+        answer:
+          "For a serious reader, The God of Small Things by Arundhati Roy — a Booker Prize winner set in Kerala. For a whole household, Jaya: An Illustrated Retelling of the Mahabharata. For someone starting fresh after the harvest break, The Art of Clarity or Atomic Habits. For children, The Gita for Children.",
+      },
+      {
+        question: "Can I get books gift-wrapped and delivered before Onam?",
+        answer:
+          "Yes. Add gift wrapping at checkout for ₹25 and the order arrives ready to hand over. Delivery is free across India and Cash on Delivery is available. Order by 23 or 24 August 2026 to be safe for a Thiruvonam handover on 26 August.",
+      },
+    ],
+  },
+
   "teachers-day-2026-books-to-gift-your-teacher": {
     id: "blog-026",
     title:

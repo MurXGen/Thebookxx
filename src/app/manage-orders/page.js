@@ -3446,59 +3446,135 @@ export default function ManageOrdersPage() {
       .trim()
       .toUpperCase();
   const addTrackingBatch = () => {
-    const ids = extractArticleNumbers(trackInput);
-    if (ids.length === 0) {
+    // Parse per line so a receiver name / order id on the SAME pasted line
+    // (e.g. rows copied from India Post "My Bookings") can link a brand-new
+    // tracking number to its order — not just numbers already saved on a row.
+    const lines = String(trackInput || "").split(/\r?\n/);
+    const idCtx = [];
+    const seen = new Set();
+    lines.forEach((ln) => {
+      (ln.toUpperCase().match(/[A-Z]{2}\d{9}IN/g) || []).forEach((id) => {
+        if (!seen.has(id)) {
+          seen.add(id);
+          idCtx.push({ id, ctx: ln });
+        }
+      });
+    });
+    if (idCtx.length === 0) {
       setTrackError(
-        "No tracking IDs found. Paste article numbers (e.g. CX042819326IN) or the SMS text.",
+        "No tracking IDs found. Paste article numbers (e.g. CX042819326IN), or the India Post booking rows (with the receiver name) to auto-link new numbers.",
       );
       setTrackSummary(null);
       return;
     }
+
+    const cleanName = (n) =>
+      String(n || "")
+        .replace(/\(unconfirmed\)/i, "")
+        .trim();
+
     let added = 0;
     let dup = 0;
+    let attached = 0;
     const failed = [];
-    setTrackList((prev) => {
-      const next = [...prev];
-      const have = new Set(prev.map((r) => sidUp(r["Shipping ID"])));
-      ids.forEach((id) => {
-        const match = orders.find((o) => sidUp(o["Shipping ID"]) === id);
-        if (!match) {
-          failed.push(id);
-          return;
-        }
-        if (have.has(id)) {
-          dup += 1;
-          return;
-        }
-        const d = getOrderDate(match);
-        next.push({
-          "Order ID": match["Order ID"] || "",
-          "Customer Name": match["Customer Name"] || "",
-          "Phone Number": match["Phone Number"] || "",
-          "Shipping ID": id,
-          shippingId: id,
-          booksList: String(match["Books List"] || ""),
-          city: String(match["City"] || ""),
-          amount: match.revenue || 0,
-          "Payment Type": String(match["Payment Type"] || ""),
-          dateT: d ? d.getTime() : 0,
-          dateLabel: d
-            ? d.toLocaleDateString("en-IN", {
-                day: "numeric",
-                month: "short",
-                year: "numeric",
-              })
-            : "Undated",
-          status: match["Order Status"] || "Processing",
+    const writes = []; // { orderId, id } — new numbers to save to the sheet
+    const newRows = [];
+    const have = new Set(trackList.map((r) => sidUp(r["Shipping ID"])));
+
+    idCtx.forEach(({ id, ctx }) => {
+      // 1) Already saved on an order (matched by its Shipping ID).
+      let match = orders.find((o) => sidUp(o["Shipping ID"]) === id);
+      let isNew = false;
+      if (!match) {
+        const ctxU = ctx.toUpperCase();
+        // 2) An Order ID appears on the same pasted line.
+        match = orders.find((o) => {
+          const oid = String(o["Order ID"] || "")
+            .toUpperCase()
+            .trim();
+          return oid && ctxU.includes(oid);
         });
-        have.add(id);
-        added += 1;
+        // 3) A receiver name on the line matches an order's Customer Name.
+        if (!match) {
+          const ctxL = ctx.toLowerCase();
+          const cands = orders.filter((o) => {
+            const nm = cleanName(o["Customer Name"]);
+            return nm.length >= 4 && ctxL.includes(nm.toLowerCase());
+          });
+          const noShip = cands.filter(
+            (o) => !String(o["Shipping ID"] || "").trim(),
+          );
+          match =
+            noShip.length === 1
+              ? noShip[0]
+              : cands.length === 1
+                ? cands[0]
+                : null;
+        }
+        if (match) isNew = true;
+      }
+      if (!match) {
+        failed.push(id);
+        return;
+      }
+      if (have.has(id)) {
+        dup += 1;
+        return;
+      }
+      if (isNew && match["Order ID"]) {
+        writes.push({ orderId: match["Order ID"], id });
+        attached += 1;
+      }
+      const d = getOrderDate(match);
+      newRows.push({
+        "Order ID": match["Order ID"] || "",
+        "Customer Name": match["Customer Name"] || "",
+        "Phone Number": match["Phone Number"] || "",
+        "Shipping ID": id,
+        shippingId: id,
+        booksList: String(match["Books List"] || ""),
+        city: String(match["City"] || ""),
+        amount: match.revenue || 0,
+        "Payment Type": String(match["Payment Type"] || ""),
+        dateT: d ? d.getTime() : 0,
+        dateLabel: d
+          ? d.toLocaleDateString("en-IN", {
+              day: "numeric",
+              month: "short",
+              year: "numeric",
+            })
+          : "Undated",
+        status: match["Order Status"] || "Processing",
       });
-      persistTrackList(next);
-      return next;
+      have.add(id);
+      added += 1;
     });
+
+    if (newRows.length) {
+      setTrackList((prev) => {
+        const next = [...prev, ...newRows];
+        persistTrackList(next);
+        return next;
+      });
+    }
+    // Save any newly-linked numbers to their order's Shipping ID column.
+    if (writes.length) {
+      writes.forEach(({ orderId, id }) => {
+        patchLocalOrder(orderId, { "Shipping ID": id, shippingId: id });
+        updateOrderRow(orderId, { "Shipping ID": id }).catch((e) =>
+          console.error("Attach tracking failed:", orderId, e),
+        );
+      });
+      setTimeout(fetchOrders, 1500);
+    }
     setTrackFailed(failed);
-    setTrackSummary({ added, dup, failed: failed.length, total: ids.length });
+    setTrackSummary({
+      added,
+      dup,
+      attached,
+      failed: failed.length,
+      total: idCtx.length,
+    });
     setTrackError("");
     if (added > 0) setTrackInput("");
   };
@@ -7521,7 +7597,7 @@ export default function ManageOrdersPage() {
                 className="admin-input mo-track-textarea"
                 rows={5}
                 placeholder={
-                  "Paste tracking IDs or the SMS text here…\ne.g. CX042819326IN EY484883105IN CM149478023IN"
+                  "Paste tracking IDs, the SMS text, or India Post booking rows (with receiver names to auto-link new numbers)…\ne.g. CX042819326IN EY484883105IN CM149478023IN"
                 }
                 value={trackInput}
                 onChange={(e) => setTrackInput(e.target.value)}
@@ -7550,6 +7626,12 @@ export default function ManageOrdersPage() {
                 <span className="mo-track-chip ok">
                   <Check size={13} /> {trackSummary.added} added
                 </span>
+                {trackSummary.attached > 0 && (
+                  <span className="mo-track-chip ok">
+                    <Check size={13} /> {trackSummary.attached} linked &amp;
+                    saved
+                  </span>
+                )}
                 {trackSummary.dup > 0 && (
                   <span className="mo-track-chip dup">
                     {trackSummary.dup} already listed

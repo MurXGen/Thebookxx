@@ -5,8 +5,13 @@
 // the sheet URL never ships to the browser.
 
 import { gvizQuery, tableToObjects, findColumn } from "@/lib/serverSheets";
+import { rateLimit, clientIp, tooMany } from "@/lib/rateLimit";
 
 export async function GET(request) {
+  const ip = clientIp(request);
+  const rl = rateLimit(`order:${ip}`, { limit: 40, windowMs: 60000 });
+  if (!rl.allowed) return tooMany(rl.retryAfter);
+
   const { searchParams } = new URL(request.url);
   const id = String(searchParams.get("orderId") || "").trim();
   if (!id) {

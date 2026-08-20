@@ -5,6 +5,7 @@
 // raw {date, amount} wallet rows. Balance/expiry math stays on the client.
 
 import { gvizQuery, tableToObjects, findColumn } from "@/lib/serverSheets";
+import { rateLimit, clientIp, tooMany } from "@/lib/rateLimit";
 
 const parseSheetDate = (input) => {
   if (!input) return null;
@@ -28,6 +29,10 @@ const parseSheetDate = (input) => {
 };
 
 export async function GET(request) {
+  const ip = clientIp(request);
+  const rl = rateLimit(`wallet:${ip}`, { limit: 30, windowMs: 60000 });
+  if (!rl.allowed) return tooMany(rl.retryAfter);
+
   const { searchParams } = new URL(request.url);
   const digits = String(searchParams.get("phone") || "")
     .replace(/\D/g, "")

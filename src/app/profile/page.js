@@ -356,6 +356,8 @@ export default function MyOrdersPage() {
   const [orders, setOrders] = useState([]);
   const [pendingOrders, setPendingOrders] = useState([]); // awaiting confirmation
   const shippedCancelRef = useRef({}); // orderId -> cancel-tap count
+  const lastLookupRef = useRef(0); // throttle rapid login attempts (anti-bot)
+  const honeypotRef = useRef(null); // bots fill this hidden field; humans don't
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [error, setError] = useState("");
@@ -777,6 +779,12 @@ export default function MyOrdersPage() {
       setError("Please enter a valid 10-digit phone number");
       return;
     }
+    // Honeypot: a hidden field only bots fill. Silently ignore if it's set.
+    if (honeypotRef.current && honeypotRef.current.value) return;
+    // Throttle rapid repeat attempts (anti-bot / accidental double taps).
+    const now = Date.now();
+    if (now - lastLookupRef.current < 1200) return;
+    lastLookupRef.current = now;
     // Remember every submitted number (chip), regardless of result.
     savePhoneNumber(phone);
     setLoading(true);
@@ -791,6 +799,12 @@ export default function MyOrdersPage() {
       const response = await fetch(
         `/api/orders?phone=${encodeURIComponent(cleanPhone)}`,
       );
+      if (response.status === 429) {
+        setError("Too many attempts. Please wait a minute and try again.");
+        setLoading(false);
+        setVerifying(false);
+        return;
+      }
       if (!response.ok)
         throw new Error(`HTTP error! status: ${response.status}`);
       const data = await response.json();
@@ -1546,6 +1560,24 @@ Please cancel this order. Thank you `;
                     Enter the mobile number you used at checkout to see your
                     orders and wallet.
                   </p>
+
+                  {/* Honeypot: hidden from humans; bots that auto-fill inputs
+                      trip it and the lookup is silently ignored. */}
+                  <input
+                    ref={honeypotRef}
+                    type="text"
+                    name="company"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    aria-hidden="true"
+                    style={{
+                      position: "absolute",
+                      left: "-9999px",
+                      width: 1,
+                      height: 1,
+                      opacity: 0,
+                    }}
+                  />
 
                   <div className="phone-input-wrap rapido-input">
                     <span className="rapido-cc">+91</span>

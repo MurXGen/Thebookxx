@@ -9,8 +9,13 @@ import {
   tableToObjects,
   findColumn,
 } from "@/lib/serverSheets";
+import { rateLimit, clientIp, tooMany } from "@/lib/rateLimit";
 
 export async function GET(request) {
+  const ip = clientIp(request);
+  const rl = rateLimit(`orders:${ip}`, { limit: 20, windowMs: 60000 });
+  if (!rl.allowed) return tooMany(rl.retryAfter);
+
   const { searchParams } = new URL(request.url);
   const phone = String(searchParams.get("phone") || "").trim();
 

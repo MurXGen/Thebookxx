@@ -6,6 +6,7 @@
 // leaves the server, and the sheet ID/URL is not in the client bundle.
 
 import { gvizQuery, tableToObjects, ORDERS_SHEET_NAME } from "@/lib/serverSheets";
+import { rateLimit, clientIp, tooMany } from "@/lib/rateLimit";
 
 const firstName = (full) =>
   String(full || "").trim().split(/\s+/)[0] || "Someone";
@@ -41,6 +42,10 @@ const relTime = (date) => {
 };
 
 export async function GET(request) {
+  const ip = clientIp(request);
+  const rl = rateLimit(`live-orders:${ip}`, { limit: 60, windowMs: 60000 });
+  if (!rl.allowed) return tooMany(rl.retryAfter);
+
   const { searchParams } = new URL(request.url);
   const limit = Math.min(50, Math.max(1, Number(searchParams.get("limit")) || 12));
 

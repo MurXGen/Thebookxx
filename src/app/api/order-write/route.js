@@ -7,8 +7,13 @@
 //           "edit"            -> APPSCRIPT_EDIT_URL   (profile address edits)
 
 import { APPSCRIPT_ORDER_URL, APPSCRIPT_EDIT_URL } from "@/lib/serverSheets";
+import { rateLimit, clientIp, tooMany } from "@/lib/rateLimit";
 
 export async function POST(request) {
+  const ip = clientIp(request);
+  const rl = rateLimit(`order-write:${ip}`, { limit: 20, windowMs: 60000 });
+  if (!rl.allowed) return tooMany(rl.retryAfter);
+
   let payload;
   try {
     payload = await request.json();

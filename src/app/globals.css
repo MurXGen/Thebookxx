@@ -17810,22 +17810,21 @@ img[data-loaded="true"] {
   color: var(--danger, #ef4444);
 }
 .phone-card-help {
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  margin-top: 10px;
-  padding: 10px 16px;
-  border-radius: 12px;
-  border: 1px solid var(--hairline);
-  background: #fff;
-  color: var(--foreground);
+  margin: 14px auto 2px;
+  padding: 6px 8px;
+  border: none;
+  background: none;
+  color: var(--tertiary, #fb8500);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
   text-decoration: none;
-  transition: background 0.15s var(--ease);
 }
 .phone-card-help:hover {
-  background: var(--surface-2, #faf9f7);
+  text-decoration: underline;
 }
 
 /* =====================================================================

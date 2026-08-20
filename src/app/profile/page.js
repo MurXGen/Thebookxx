@@ -1584,11 +1584,14 @@ Please cancel this order. Thank you `;
                     <input
                       type="tel"
                       inputMode="numeric"
+                      maxLength={10}
                       className="phone-card-input"
                       placeholder="10-digit mobile number"
                       value={phoneNumber}
                       onChange={(e) =>
-                        setPhoneNumber(normalizePhone(e.target.value))
+                        setPhoneNumber(
+                          e.target.value.replace(/\D/g, "").slice(0, 10),
+                        )
                       }
                       onKeyDown={(e) => e.key === "Enter" && fetchOrders()}
                     />

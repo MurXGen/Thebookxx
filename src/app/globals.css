@@ -33076,6 +33076,11 @@ img[data-loaded="true"] {
 }
 .ok-sheet-body {
   padding: 16px;
+  /* flex:1 + min-height:0 give the body a bounded height inside the 90vh
+     sheet so its own overflow-y actually scrolls (instead of the content
+     overflowing and being clipped by the sheet). */
+  flex: 1 1 auto;
+  min-height: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   display: flex;

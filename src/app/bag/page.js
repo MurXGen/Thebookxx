@@ -571,13 +571,17 @@ Thank you!
       .replace(/\D/g, "")
       .slice(-10);
     const firstName = String(addressData.name || "there").trim().split(/\s+/)[0];
+    const orderRef = orderId ? ` (order ${orderId})` : "";
+    // Message tailored to how the customer chose to pay/order.
+    const custMsg =
+      paymentType === "COD"
+        ? `Hi ${firstName}! 📚 Thank you for your order with TheBookX${orderRef} 💛\n\nIt's a Cash on Delivery order — please keep the amount handy at delivery. Do you need any help with this order? 😊`
+        : paymentType === "WhatsApp"
+          ? `Hi ${firstName}! 📚✨ Thanks for choosing TheBookX${orderRef} 💛\n\nWe're getting your order ready to confirm. Do you have any questions or need help picking your books? We're right here for you! 😊`
+          : `Hi ${firstName}! 📚✨ Thank you for your order with TheBookX${orderRef} 💛\n\nWe're confirming your payment now. Do you need any help with this order? We'd love to make it perfect for you! 😊`;
     const waCustomerLink =
       custDigits.length === 10
-        ? `https://wa.me/91${custDigits}?text=${encodeURIComponent(
-            `Hi ${firstName}! 📚✨ Thank you for ordering with TheBookX${
-              orderId ? ` (order ${orderId})` : ""
-            } 💛\n\nDo you need any help with this order? We'd love to make sure everything's just right for you! 😊`,
-          )}`
+        ? `https://wa.me/91${custDigits}?text=${encodeURIComponent(custMsg)}`
         : "";
 
     const payLine =

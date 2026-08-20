@@ -805,7 +805,7 @@ export default function AddressModal({
           area,
           fasterDelivery,
           giftWrap,
-          orderId: placedOrderId,
+          orderId: placedOrderId || upiOrderRef,
         },
         fasterDelivery,
         giftWrap,

@@ -1543,55 +1543,31 @@ export default function AddressModal({
                     <span className="deliv-addon-free">FREE</span>
                   </div>
 
-                  {fasterUnavailable ? (
-                    <div className="deliv-addon-row deliv-addon-opt">
-                      <div className="deliv-addon-l">
-                        <Truck size={18} className="dark-50" />
-                        <div className="flex flex-col">
-                          <span className="deliv-addon-t">Faster delivery</span>
-                          <span className="deliv-addon-s">
-                            Not available for this order weight
-                          </span>
-                        </div>
-                      </div>
-                      <a
-                        href="https://wa.me/917710892108?text=Hi%20TheBookX%2C%20I%27d%20like%20faster%20delivery%20for%20my%20heavy%20order"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="deliv-addon-link"
+                  <label className="deliv-addon-row deliv-addon-opt">
+                    <div className="deliv-addon-l">
+                      <span
+                        className={`deliv-check${fasterDelivery ? " on" : ""}`}
+                        aria-hidden="true"
                       >
-                        Contact support
-                      </a>
-                    </div>
-                  ) : (
-                    <label className="deliv-addon-row deliv-addon-opt">
-                      <div className="deliv-addon-l">
-                        <span
-                          className={`deliv-check${fasterDelivery ? " on" : ""}`}
-                          aria-hidden="true"
-                        >
-                          {fasterDelivery && (
-                            <Check size={12} strokeWidth={3} />
-                          )}
-                        </span>
-                        <div className="flex flex-col">
-                          <span className="deliv-addon-t">Faster delivery</span>
-                          <span className="deliv-addon-s">
-                            Priority dispatch · reaches within 2–5 days
-                          </span>
-                        </div>
-                      </div>
-                      <span className="deliv-addon-price">
-                        +₹{fasterDeliveryCharge}
+                        {fasterDelivery && <Check size={12} strokeWidth={3} />}
                       </span>
-                      <input
-                        type="checkbox"
-                        className="wc-switch-input"
-                        checked={fasterDelivery}
-                        onChange={(e) => setFasterDelivery(e.target.checked)}
-                      />
-                    </label>
-                  )}
+                      <div className="flex flex-col">
+                        <span className="deliv-addon-t">Faster delivery</span>
+                        <span className="deliv-addon-s">
+                          Priority dispatch · reaches within 2–5 days
+                        </span>
+                      </div>
+                    </div>
+                    <span className="deliv-addon-price">
+                      +₹{fasterDeliveryCharge}
+                    </span>
+                    <input
+                      type="checkbox"
+                      className="wc-switch-input"
+                      checked={fasterDelivery}
+                      onChange={(e) => setFasterDelivery(e.target.checked)}
+                    />
+                  </label>
 
                   {/* Gift wrap add-on with a 3D gift logo when opted */}
                   <label className="deliv-addon-row deliv-addon-opt">

@@ -376,33 +376,17 @@ function BagContent() {
     false,
     hasOneRupeeItem,
   );
-  // Faster-delivery pricing is by total cart WEIGHT (grams):
-  // <200 ₹40 · 200–400 ₹69 · 400–800 ₹99 · 800–1200 ₹150
-  // 1200–1500 ₹180 · 1500–2000 ₹220 · >2000 not available (contact us)
-  const cartWeight = cartBooks.reduce(
-    (s, b) => s + (Number(b.weight) || 0) * (b.qty || 1),
-    0,
-  );
-  const fasterUnavailable = cartWeight > 2000;
+  // Faster delivery is available for every order (no weight cap / contact
+  // support). Its price is the express tier of getDeliveryCharge — i.e.
+  // standard + 50% of standard.
+  const fasterUnavailable = false;
   // Gift wrap add-on price by order value: +₹15 up to ₹500, +₹35 above.
   const giftWrapChargeEff = totalDiscounted > 500 ? 35 : 15;
-  const fasterDeliveryChargeBase =
-    cartWeight < 200
-      ? 40
-      : cartWeight < 400
-        ? 69
-        : cartWeight < 800
-          ? 99
-          : cartWeight < 1200
-            ? 150
-            : cartWeight < 1500
-              ? 180
-              : 220;
-  // Faster delivery must always cost MORE than standard delivery (e.g. when a
-  // sub-₹199 order already has a ₹69 standard fee, faster becomes ₹100).
-  const fasterDeliveryCharge = fasterUnavailable
-    ? 0
-    : Math.max(fasterDeliveryChargeBase, standardDeliveryCharge + 31);
+  const fasterDeliveryCharge = getDeliveryCharge(
+    totalDiscounted,
+    true,
+    hasOneRupeeItem,
+  );
   const standardDeliveryLabel = getDeliveryLabel(
     totalDiscounted,
     false,

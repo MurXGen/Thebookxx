@@ -349,8 +349,8 @@ export default function RakshaBandhanDecor({
         .rb-rakhi {
           position: absolute;
           top: -32px;
-          left: 34px;
-          transform: none;
+          left: 50%;
+          transform: translateX(-50%);
           display: inline-flex;
           align-items: center;
           justify-content: center;

@@ -4,6 +4,474 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "ganesh-chaturthi-2026-books-to-gift": {
+    id: "blog-029",
+    title:
+      "Ganesh Chaturthi 2026: Books to Gift This Vinayaka Chaturthi — and Why Ganesha Is a Reader's God",
+    slug: "ganesh-chaturthi-2026-books-to-gift",
+    author: "TheBookX Editorial",
+    authorSlug: "murthy-thevar",
+    publishDate: "2026-08-22",
+    lastModified: "2026-08-22",
+    excerpt:
+      "Ganesh Chaturthi falls on 14 September 2026. Ganesha is the deity who wrote the Mahabharata down — which makes a book the most fitting gift of the season.",
+
+    content: [
+      {
+        type: "paragraph",
+        content:
+          "<strong>Ganesh Chaturthi 2026 falls on Monday, 14 September</strong>, with the ten-day festival closing on Anant Chaturdashi and the grand visarjan in the last week of September. Pandals go up, modaks get made in industrial quantities, and somewhere in the middle of it every family faces the same small annual problem: what do you actually give people?",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Here is the argument for a book, and it is not a sales pitch. Of all the deities in the Indian pantheon, Ganesha has the strongest and most literal claim to being the god of the written word. He is not merely invoked before a new venture. He is, in the tradition's own telling, a scribe — the one who physically wrote the longest poem ever composed.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The Deity Who Took Dictation",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The Adi Parva, the opening book of the Mahabharata, tells the story. Vyasa had composed the epic in his mind and needed someone capable of writing it down at the speed of thought. Brahma sent him to Ganesha. Ganesha agreed, but set a condition: Vyasa must recite without a single pause, or the writing would stop.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Vyasa accepted, and then set a counter-condition of his own — Ganesha must fully understand every verse before committing it to the page. This is the detail that makes the legend worth retelling. Vyasa periodically composed <em>kutashlokas</em>, deliberately knotted verses, which forced Ganesha to pause and unravel the meaning, buying the poet the seconds he needed to compose the next stretch. In several tellings, when Ganesha's pen broke mid-flow he snapped off his own tusk and kept writing rather than break the rhythm.",
+      },
+      {
+        type: "blockquote",
+        content:
+          "A god who would rather break a tusk than break a sentence is a reasonable patron for anyone who takes books seriously.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "Ganesh Chaturthi 2026: the dates",
+        content:
+          "Ganesh Chaturthi (Vinayaka Chaturthi) falls on Monday, 14 September 2026. The Madhyahna sthapana muhurat runs roughly 11:02 AM to 1:31 PM. Shorter visarjans follow on the 1.5th, third, fifth and seventh days, with the full ten-day Anant Chaturdashi visarjan on Friday, 25 September 2026. Panchang timings vary slightly by city, so confirm locally.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Mythology Books Worth Owning, Not Just Gifting",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Festival gifting collapses too easily into decorative books nobody opens. The titles below are the opposite: retellings and reference works that people actually finish and then argue about at dinner.",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<a href=\"/books/mahagatha-100-tales-from-the-puranas\" style=\"color:#fb8500;font-weight:600\">Mahagatha: 100 Tales from the Puranas</a> — Satyarth Nayak's hundred-story sweep through Puranic literature, arranged chronologically. The single best entry point if someone knows the characters but not the sources.",
+          "<a href=\"/books/myth-mythya\" style=\"color:#fb8500;font-weight:600\">Myth = Mythya</a> — Devdutt Pattanaik on why Hindu myth is structured the way it is. Less retelling, more decoding. Good for the relative who asks difficult questions.",
+          "<a href=\"/books/the-serpent-s-revenge\" style=\"color:#fb8500;font-weight:600\">The Serpent's Revenge</a> — Sudha Murty's Mahabharata sidestories, told plainly enough for a twelve-year-old and well enough for an adult.",
+          "<a href=\"/books/the-immortals-of-meluha\" style=\"color:#fb8500;font-weight:600\">The Immortals of Meluha</a> — Amish's Shiva Trilogy opener, the book that made mythological fiction a mass-market category in India.",
+          "<a href=\"/books/the-palace-of-illusions\" style=\"color:#fb8500;font-weight:600\">The Palace of Illusions</a> — Chitra Banerjee Divakaruni's Mahabharata from Draupadi's point of view, and still the most emotionally intelligent retelling in English.",
+          "<a href=\"/books/the-bhagavad-gita\" style=\"color:#fb8500;font-weight:600\">The Bhagavad Gita</a> — the source text. Gift it to someone who has quoted it for years without having read it, which is most of us.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "For the Children in the House",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Ganesh Chaturthi is one of the few festivals where children are genuinely part of the ritual — decorating, carrying the idol, singing the aarti. It is a good week to hand them a story rather than a screen.",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<a href=\"/books/grandma-s-bag-of-stories\" style=\"color:#fb8500;font-weight:600\">Grandma's Bag of Stories</a> — Sudha Murty's classic. One story per bedtime, ages seven and up.",
+          "<a href=\"/books/the-gita-for-children\" style=\"color:#fb8500;font-weight:600\">The Gita: For Children</a> — Roopa Pai's version, which explains rather than preaches, and does not talk down.",
+          "<a href=\"/books/diary-of-a-wimpy-kid-series-set\" style=\"color:#fb8500;font-weight:600\">Diary of a Wimpy Kid Series Set</a> — if the goal is simply to get a nine-year-old to finish something without being asked twice, this is the shortcut.",
+          "<a href=\"/books/harry-potter-series-set-books-1-7\" style=\"color:#fb8500;font-weight:600\">Harry Potter Series Set (Books 1-7)</a> — the once-in-a-childhood gift. Works as a joint present from several relatives.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "For Adults Who Say They Do Not Want Anything",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The trick with adult gifting is to match the book to the year the person is having, not to their stated genre preference. Three rough categories cover almost everyone.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "The one starting something new",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Ganesh Chaturthi is traditionally an auspicious time to begin ventures, so this is the natural slot. <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is built for exactly this moment — it is about cutting a crowded mind down to a decision you can actually act on, which is the real bottleneck for most new beginnings. Pair it with <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> for the execution half.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "The one thinking about money",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> remains the most giftable finance book in print because it is twenty short essays about behaviour rather than a spreadsheet manual. It is the rare money book you can hand to someone without implying anything about their finances.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "The one who just wants a good story",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> if they read seriously; <a href=\"/books/before-the-coffee-gets-cold\" style=\"color:#fb8500;font-weight:600\">Before the Coffee Gets Cold</a> if they want something quiet and finishable in a weekend; <a href=\"/books/the-housemaid\" style=\"color:#fb8500;font-weight:600\">The Housemaid</a> if they want to lose a night to a thriller; <a href=\"/books/the-forty-rules-of-love\" style=\"color:#fb8500;font-weight:600\">The Forty Rules of Love</a> if the festival has put them in a devotional mood. <a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> is the safe answer for an older relative and still the right one.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "How to Gift a Book Without It Going Unread",
+      },
+      {
+        type: "list",
+        style: "ordered",
+        items: [
+          "<strong>Gift one book, not three.</strong> A stack signals an assignment. A single book signals a specific thought about a specific person.",
+          "<strong>Say why you picked it, in one line, on the flyleaf.</strong> \"Chapter four made me think of you\" is worth more than the book's cover price.",
+          "<strong>Match the length to their life.</strong> A new parent gets a short-essay book. A retired uncle gets the eight-hundred-page one.",
+          "<strong>Do not gift a book you have not at least skimmed.</strong> The recommendation is the gift; the paper is packaging.",
+          "<strong>Order before the 10th.</strong> Festival-week logistics across India tighten sharply in the last few days before Chaturthi.",
+        ],
+      },
+      {
+        type: "callout",
+        style: "success",
+        title: "Gifting on TheBookX",
+        content:
+          "Books start from ₹1, with free delivery and Cash on Delivery available across India. Gift wrapping is available for ₹25 per book, so a festival gift can arrive ready to hand over without a second trip to the market.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Vighnaharta — remover of obstacles — is the epithet everyone uses on 14 September. The obstacle a book removes is a narrower one: not knowing something you would be better off knowing. That is a modest claim, but it is a real one, and it lasts considerably longer than the modaks.",
+      },
+    ],
+
+    coverImage: "/blogs/ganesh-chaturthi-2026-books-to-gift.jpeg",
+
+    images: [
+      {
+        url: "/blogs/ganesh-chaturthi-2026-books-to-gift.jpeg",
+        alt: "A stack of books wrapped in a simple ribbon beside marigold flowers and a brass diya on a wooden table during Ganesh Chaturthi",
+        caption:
+          "Ganesh Chaturthi 2026 falls on 14 September — and Ganesha, the scribe of the Mahabharata, makes a book an unusually fitting gift",
+        category: "Festivals & Gifting",
+      },
+    ],
+
+    keywords: [
+      "ganesh chaturthi 2026",
+      "ganesh chaturthi 2026 date",
+      "ganesh chaturthi gift ideas",
+      "books to gift on ganesh chaturthi",
+      "vinayaka chaturthi 2026",
+      "indian mythology books to gift",
+      "ganesha mahabharata scribe",
+      "festival gifting ideas india",
+      "best mythology books india",
+      "TheBookX",
+    ],
+
+    categories: ["Festivals & Gifting", "Indian Mythology", "Gift Guides"],
+
+    faqs: [
+      {
+        question: "When is Ganesh Chaturthi in 2026?",
+        answer:
+          "Ganesh Chaturthi, also called Vinayaka Chaturthi, falls on Monday, 14 September 2026. The Madhyahna sthapana muhurat is roughly 11:02 AM to 1:31 PM. The ten-day festival concludes with the Anant Chaturdashi visarjan on Friday, 25 September 2026, with shorter one-and-a-half, three, five and seven-day visarjans in between. Panchang timings differ slightly by city, so check a local calendar.",
+      },
+      {
+        question: "Why is a book considered an appropriate Ganesh Chaturthi gift?",
+        answer:
+          "Ganesha is directly associated with the written word. In the Adi Parva of the Mahabharata, Vyasa asks Ganesha to serve as his scribe for the epic. Ganesha agrees on the condition that Vyasa never pause in his recitation, and Vyasa counters that Ganesha must understand each verse before writing it. Books, learning and beginnings are therefore thematically tied to the festival, which is also traditionally an auspicious time to start something new.",
+      },
+      {
+        question: "Which mythology books are best for someone new to the subject?",
+        answer:
+          "Start with Mahagatha: 100 Tales from the Puranas by Satyarth Nayak for breadth, or The Serpent's Revenge by Sudha Murty for plain-spoken Mahabharata sidestories. Readers who prefer fiction usually get on well with The Immortals of Meluha or The Palace of Illusions. For a reader who wants interpretation rather than narrative, Myth = Mythya by Devdutt Pattanaik is the better choice.",
+      },
+      {
+        question: "Can I get books gift wrapped and delivered in time for Ganesh Chaturthi?",
+        answer:
+          "Yes. TheBookX offers gift wrapping at ₹25 per book, free delivery, and Cash on Delivery across India, with books starting from ₹1. For a 14 September festival, ordering by around 10 September is advisable, since delivery networks across the country get noticeably busier in the final days before Chaturthi.",
+      },
+    ],
+  },
+
+  "reading-habits-in-india-2026-decline": {
+    id: "blog-028",
+    title:
+      "Reading Habits in India 2026: Why Fewer Indians Read — and What the Ones Who Stayed Are Reading",
+    slug: "reading-habits-in-india-2026-decline",
+    author: "TheBookX Editorial",
+    authorSlug: "murthy-thevar",
+    publishDate: "2026-08-21",
+    lastModified: "2026-08-21",
+    excerpt:
+      "Only 4 per cent of Indians now read for leisure, down from 5.4 per cent in 2019. New Time Use Survey data says it is a crisis of time, not taste. Here is what it means and what to read.",
+
+    content: [
+      {
+        type: "paragraph",
+        content:
+          "<strong>Between 2019 and 2024, the share of Indians who reported reading for leisure fell from 5.4 per cent to 4 per cent.</strong> That is the headline finding from India's Time Use Survey, analysed by NCAER researchers Palash Baruah and DL Wankhar in February 2026. A 1.4 percentage-point drop sounds small until you scale it against 1.4 billion people: it means millions of Indians have stopped being readers entirely, in five years.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The more interesting half of the finding is the one that got less attention. Among the people who did keep reading, reading time went <em>up</em>. This piece walks through what the data actually says, why the diagnosis matters, and — because we sell books for a living and would rather be useful than alarmed — what to actually read if you want to stay in the shrinking group that still reads.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "What the Time Use Survey Actually Found",
+      },
+      {
+        type: "list",
+        style: "ordered",
+        items: [
+          "<strong>Participation fell across the board.</strong> Leisure reading dropped from 5.4 per cent of Indians in 2019 to 4 per cent in 2024. NCAER calls it a structural shift that cuts across age, gender and geography — not a fad.",
+          "<strong>The remaining readers read longer.</strong> Women average 69.1 minutes a day, children 77.1 minutes and adolescents 74.5 minutes — all higher than five years earlier. The habit did not weaken; the population holding it got smaller.",
+          "<strong>Working-age adults were hit hardest.</strong> The steepest erosion is among adults in their twenties to fifties, squeezed by long work hours, unstable employment and multi-hour urban commutes.",
+          "<strong>Women dropped out fastest.</strong> Female participation fell from 3.5 per cent in 2019 to 2.2 per cent in 2024 — even though women who read spend more time on it (about 69 minutes) than men (about 57 minutes).",
+          "<strong>Even the elderly slipped.</strong> Traditionally India's most committed readers, older adults showed both lower participation and less time spent between 2019 and 2024.",
+        ],
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "The one line worth remembering",
+        content:
+          "NCAER's conclusion: \"India's reading crisis is not a failure of character, but a failure of structure. We are not a nation losing its curiosity; we are a nation losing its time.\"",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "It Is a Time Crisis, Not a Taste Crisis",
+      },
+      {
+        type: "paragraph",
+        content:
+          "This distinction changes what you do about it. If Indians had simply stopped liking books, the answer would be better books, better marketing, more literary festivals. But the data points somewhere else: leisure itself has fragmented. Reading needs a sustained cognitive stretch, so it is the first activity to fall out of a day chopped into ten-minute gaps. What fills those gaps is passive screen consumption — Reels and Shorts engineered, as the NCAER piece puts it, to deliver dopamine in seconds-long intervals to an already exhausted mind.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The gender split makes the structural argument hard to dismiss. Women read for longer than men when they get the chance, and they are the group least likely to still be reading at all. Reading, in 2026 India, survives mainly among people who can protect uninterrupted personal time — and that is not distributed equally.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "So Why Are Book Sales Rising?",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Because buying books and having time to read them are different things. The 49th International Kolkata Book Fair, which ran from 22 January to 3 February 2026, drew around 32 lakh visitors and roughly ₹27 crore in book sales — up about 15 per cent on the previous year's 27 lakh visitors and ₹25 crore. Ukraine took part for the first time and China returned after a fifteen-year gap. Alongside that, Gen Z readers in India have made reading visible and social: Bookstagram, WhatsApp book clubs, silent reading meetups, collector's editions bought as objects.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Both things are true at once. A smaller, younger, more urban, more visible reading class is buying more books and reading them intensely, while the broad middle of the country quietly falls out of the habit. The market looks healthy. The base is thinning.",
+      },
+      {
+        type: "blockquote",
+        content:
+          "A society that stops reading tends to drift towards fragmented information and polarised, shallow engagement. When the book disappears, the public sphere becomes poorer. — Palash Baruah and DL Wankhar, NCAER, February 2026",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "How to Stay in the Reading Class When You Have No Time",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The policy answer is about work hours, commutes and the right to disconnect, and it is not in your hands this week. The personal answer is smaller and does work: stop trying to reclaim hours you do not have, and start designing for the fragments you do.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "1. Choose books built for fragmented time",
+      },
+      {
+        type: "paragraph",
+        content:
+          "If your day only offers ten-minute windows, pick books with ten-minute units. Short-story collections and slim books finish; 600-page doorstops become guilt. <a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> by R.K. Narayan is the best example in Indian writing — each story is complete in a chai break, and the whole book survives being read out of order. <a href=\"/books/who-moved-my-cheese\" style=\"color:#fb8500;font-weight:600\">Who Moved My Cheese?</a> takes under an hour end to end, which makes it a useful way to break a months-long reading drought. For a household with a child in it, <a href=\"/books/the-blue-umbrella\" style=\"color:#fb8500;font-weight:600\">The Blue Umbrella</a> by Ruskin Bond is short enough to finish in one sitting and good enough to be re-read.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "2. Make the book physically closer than the phone",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The survey's implicit point is that the phone wins by default because it is always in your hand. The counter is embarrassingly literal: put a paperback where your hand goes. Bag, bedside, kitchen counter, the seat pocket of the car. The book you read is almost always the book within arm's reach at the moment boredom arrives.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "3. Read something that can actually out-compete a Reel",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Literary ambition is not a strategy when you are exhausted. A plot-driven book with short chapters and a hook every few pages beats a worthy one you abandon on page 40:",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<a href=\"/books/the-housemaid\" style=\"color:#fb8500;font-weight:600\">The Housemaid</a> by Freida McFadden — chapters engineered to end mid-decision. The most reliable habit-restarter we sell.",
+          "<a href=\"/books/the-silent-patient\" style=\"color:#fb8500;font-weight:600\">The Silent Patient</a> by Alex Michaelides — a psychological thriller with a twist that people genuinely do not see coming.",
+          "<a href=\"/books/the-midnight-library\" style=\"color:#fb8500;font-weight:600\">The Midnight Library</a> by Matt Haig — short chapters, one clean idea, and the rare page-turner that leaves you calmer than it found you.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "4. Convert the commute the data blames for all this",
+      },
+      {
+        type: "paragraph",
+        content:
+          "NCAER singles out multi-hour commuting as one of the forces eating leisure. If you are on a metro, a bus or the passenger seat of a cab, that is dead time already lost — and it is roughly the 60-minute block the surviving readers are using. Non-fiction with self-contained chapters handles interruption well: <a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> by Morgan Housel is twenty short essays, each finishable in a single leg of a journey. <a href=\"/books/ikigai\" style=\"color:#fb8500;font-weight:600\">Ikigai</a> is light enough for a tired evening ride. <a href=\"/books/man-s-search-for-meaning\" style=\"color:#fb8500;font-weight:600\">Man's Search for Meaning</a> by Viktor Frankl is under 200 pages and is the book most likely to make you reconsider what you are doing with your hours.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "5. Repair the attention, not just the calendar",
+      },
+      {
+        type: "paragraph",
+        content:
+          "If you sit down with a book and cannot hold a page, the problem is upstream of your schedule. Four books that address it directly:",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<a href=\"/books/deep-work\" style=\"color:#fb8500;font-weight:600\">Deep Work</a> by Cal Newport — the clearest case for why fragmented attention is a professional liability, not just a private annoyance.",
+          "<a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear — the mechanics of making twenty minutes of reading automatic instead of aspirational.",
+          "<a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar — on cutting mental noise so that sustained thought becomes possible again. Written for exactly the overloaded working reader this data describes.",
+          "<a href=\"/books/the-let-them-theory\" style=\"color:#fb8500;font-weight:600\">The Let Them Theory</a> by Mel Robbins — a 2026 bestseller about reclaiming the attention you spend managing other people.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Protect the Readers Already in Your House",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The most actionable number in the whole survey is this: children read 77.1 minutes a day and adolescents 74.5 minutes — more than adults, and more than children did five years ago. Reading habits formed in school tend to hold for life, which makes the household the highest-leverage place to act. Keep the supply coming and stay out of the way. <a href=\"/books/grandma-s-bag-of-stories\" style=\"color:#fb8500;font-weight:600\">Grandma's Bag of Stories</a> by Sudha Murty works for readers around eight to twelve and reads aloud well. <a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> by A.P.J. Abdul Kalam remains the book most likely to convert an Indian teenager who thinks books are homework. Note the pattern in both: the child picks, the adult supplies.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "And One Novel That Rewards the Deep Dive",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Everything above is triage. But the reason any of this matters is the experience the survey is measuring the loss of — sustained, absorbed, uninterrupted reading. If you get one long weekend this year, spend it on <a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> by Arundhati Roy. It is a 1997 Booker Prize winner, it cannot be skimmed, and finishing it is the clearest proof available that your attention is still intact.",
+      },
+      {
+        type: "callout",
+        style: "success",
+        title: "Cost is not the barrier — time is",
+        content:
+          "Books on TheBookX start from ₹1, with free delivery and Cash on Delivery across India. Gift wrapping is available for ₹25 if you are restarting someone else's reading habit rather than your own.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Four per cent is a bleak number, but it is a number about participation, not about capacity. The readers who remain are reading more than ever, which means the habit has not become harder to hold — only harder to start. Twenty minutes and one book within arm's reach is the entire entry requirement.",
+      },
+    ],
+
+    coverImage: "/blogs/reading-habits-in-india-2026-decline.jpeg",
+
+    images: [
+      {
+        url: "/blogs/reading-habits-in-india-2026-decline.jpeg",
+        alt: "A young Indian woman reading a paperback near a window with her phone face down beside a cup of tea",
+        caption:
+          "Only 4 per cent of Indians now read for leisure — but those who do are reading longer than ever",
+        category: "Reading Culture",
+      },
+    ],
+
+    keywords: [
+      "reading habits in india",
+      "reading habits in india 2026",
+      "why indians read less",
+      "india reading decline",
+      "leisure reading india statistics",
+      "NCAER time use survey reading",
+      "how to read more with no time",
+      "best short books to read india",
+      "books for busy readers",
+      "TheBookX",
+    ],
+
+    categories: ["Reading Culture", "Reading Lists", "Book News"],
+
+    faqs: [
+      {
+        question: "How many Indians read for leisure in 2026?",
+        answer:
+          "According to India's Time Use Survey, analysed by NCAER in February 2026, the share of Indians reporting leisure reading fell from 5.4 per cent in 2019 to 4 per cent in 2024. The decline was recorded across age groups, genders and both rural and urban settings.",
+      },
+      {
+        question: "Are Indians reading less because they have lost interest in books?",
+        answer:
+          "The data suggests not. NCAER describes it as a crisis of time rather than taste: among people who still read, daily reading time has increased — women average 69.1 minutes, children 77.1 minutes and adolescents 74.5 minutes. The steepest fall in participation is among working-age adults facing long work hours and multi-hour commutes, which points to shrinking leisure rather than fading curiosity.",
+      },
+      {
+        question: "If book sales are growing, how can reading be declining?",
+        answer:
+          "They are separate measures. The 49th International Kolkata Book Fair in early 2026 drew around 32 lakh visitors and roughly ₹27 crore in sales, up about 15 per cent year on year, and Gen Z readers have made book buying highly visible through Bookstagram and book clubs. A smaller, younger, more urban reading class is buying and reading intensely while overall participation across the country falls.",
+      },
+      {
+        question: "What should I read if I only have twenty minutes a day?",
+        answer:
+          "Pick books with short, self-contained units. Malgudi Days by R.K. Narayan gives you one complete story per sitting, The Psychology of Money is twenty short essays, and Who Moved My Cheese? can be finished in about an hour. If your attention itself feels broken, Deep Work, Atomic Habits or The Art of Clarity address that directly.",
+      },
+    ],
+  },
+
   "the-art-of-clarity-book-faqs": {
     id: "blog-026",
     title:

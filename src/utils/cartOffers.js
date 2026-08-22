@@ -135,8 +135,15 @@ export const getDeliveryCharge = (
     }
   }
 
-  // Express = standard + 50% of standard.
-  return isFasterDelivery ? round(standard * 1.5) : standard;
+  // Express = standard + 50% of standard. When standard delivery is FREE
+  // (the ₹199–499 band), faster still has a real cost, so base it on the
+  // normal standard rate for that cart instead of 0 — otherwise faster shows
+  // +₹0. Base: ₹100 for ₹1-book carts, ₹69 otherwise.
+  if (isFasterDelivery) {
+    const base = standard > 0 ? standard : hasOneRupeeItem ? 100 : 69;
+    return round(base * 1.5);
+  }
+  return standard;
 };
 
 // COD fee charged to the customer: ₹29 up to ₹300, else 6% rounded (no paise).

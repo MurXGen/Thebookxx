@@ -740,6 +740,18 @@ export default function OrderDetailPage() {
                 </div>
               </div>
               <div className="od-tc-divider" />
+              <div className="od-tc-deliver">
+                <span className="od-tc-deliver-ic">
+                  <Home size={14} />
+                </span>
+                <span className="od-tc-deliver-txt">
+                  <strong>Deliver to {custName || "you"}</strong>
+                  <span>
+                    {addr}
+                    {order["Pincode"] ? ` - ${order["Pincode"]}` : ""}
+                  </span>
+                </span>
+              </div>
               <div className="od-tc-foot">
                 <span className="od-tc-courier">
                   {isFaster ? <Plane size={15} /> : <Train size={15} />}
@@ -957,27 +969,30 @@ export default function OrderDetailPage() {
         </section>
       )}
 
-      {/* Delivery details */}
-      <section className="od-block">
-        <div className="od-block-title">Delivery details</div>
-        <div className="od-deliver-row">
-          <span className="od-deliver-ic">
-            <User size={15} />
-          </span>
-          <span>
-            {custName || "—"} · +91 {order["Phone Number"] || number}
-          </span>
-        </div>
-        <div className="od-deliver-row">
-          <span className="od-deliver-ic">
-            <Home size={15} />
-          </span>
-          <span>
-            {addr}
-            {order["Pincode"] ? ` - ${order["Pincode"]}` : ""}
-          </span>
-        </div>
-      </section>
+      {/* Delivery details — only when the map card (which already shows it) is
+          not visible, to avoid duplication */}
+      {geoState !== "ok" && (
+        <section className="od-block">
+          <div className="od-block-title">Delivery details</div>
+          <div className="od-deliver-row">
+            <span className="od-deliver-ic">
+              <User size={15} />
+            </span>
+            <span>
+              {custName || "—"} · +91 {order["Phone Number"] || number}
+            </span>
+          </div>
+          <div className="od-deliver-row">
+            <span className="od-deliver-ic">
+              <Home size={15} />
+            </span>
+            <span>
+              {addr}
+              {order["Pincode"] ? ` - ${order["Pincode"]}` : ""}
+            </span>
+          </div>
+        </section>
+      )}
 
       {/* Actions */}
       <div className="od-actions">

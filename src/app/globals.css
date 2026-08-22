@@ -34430,6 +34430,41 @@ img[data-loaded="true"] {
   background: var(--hairline, #ececec);
   margin: 10px 0;
 }
+.od-tc-deliver {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin-bottom: 9px;
+}
+.od-tc-deliver-ic {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff3e6;
+  color: var(--tertiary, #fb8500);
+}
+.od-tc-deliver-txt {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.od-tc-deliver-txt strong {
+  font-size: var(--px-12);
+  color: #111827;
+}
+.od-tc-deliver-txt span {
+  font-size: var(--px-12);
+  color: var(--gray-500, #6b7280);
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
 .od-tc-foot {
   display: flex;
   align-items: center;

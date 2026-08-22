@@ -34292,11 +34292,13 @@ img[data-loaded="true"] {
   z-index: 2;
 }
 .ord-badge {
-  font-size: var(--px-11);
+  font-size: 11px;
+  line-height: 1.5;
   font-weight: 700;
-  padding: 2px 9px;
+  padding: 2px 8px;
   border-radius: 999px;
   flex-shrink: 0;
+  white-space: nowrap;
 }
 .ord-badge-green {
   background: #ecfdf5;
@@ -34449,16 +34451,15 @@ img[data-loaded="true"] {
   padding: 14px;
   border-radius: 14px;
   border: none;
-  background: var(--tertiary, #fb8500);
+  background: #0a0a0a;
   color: #fff;
   font-size: var(--px-15);
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 8px 20px -10px rgba(251, 133, 0, 0.7);
-  transition: filter 0.15s ease;
+  transition: opacity 0.15s ease;
 }
 .od-track-btn:hover {
-  filter: brightness(0.96);
+  opacity: 0.9;
 }
 
 /* ---- Order detail: Flipkart-style additions ---- */
@@ -34475,16 +34476,17 @@ img[data-loaded="true"] {
   gap: 7px;
   padding: 14px 16px;
   border-radius: 14px;
-  border: 1px solid var(--tertiary, #fb8500);
+  border: 1px solid #0a0a0a;
   background: #fff;
-  color: var(--tertiary, #fb8500);
+  color: #0a0a0a;
   font-size: var(--px-14);
   font-weight: 700;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: background 0.15s ease, color 0.15s ease;
 }
 .od-bill-btn:hover {
-  background: var(--tertiary-light-10, #fff3e6);
+  background: #0a0a0a;
+  color: #fff;
 }
 
 /* Promo banner */
@@ -34498,8 +34500,8 @@ img[data-loaded="true"] {
   margin-bottom: 14px;
   text-decoration: none;
   color: #fff;
-  background: linear-gradient(120deg, #fb8500, #ff5d8f 92%);
-  box-shadow: 0 10px 24px -14px rgba(251, 133, 0, 0.7);
+  background: linear-gradient(135deg, #111 0%, #2a2a2a 100%);
+  box-shadow: 0 10px 24px -16px rgba(0, 0, 0, 0.7);
 }
 .od-promo-txt {
   display: flex;
@@ -34518,6 +34520,7 @@ img[data-loaded="true"] {
   margin-top: 4px;
   font-size: var(--px-12);
   font-weight: 800;
+  color: var(--tertiary, #fb8500);
 }
 /* (.od-promo-emoji styled below as an icon chip) */
 

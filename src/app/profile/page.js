@@ -1913,20 +1913,19 @@ Please cancel this order. Thank you `;
             <button
               type="button"
               className="orders-toggle"
-              onClick={() => setOrdersOpen((v) => !v)}
+              onClick={() =>
+                router.push(`/profile/${phoneNumber}/orders`)
+              }
             >
               <span className="ot-ic">
                 <Package size={18} />
               </span>
               <span className="ot-label">Order status &amp; history</span>
               <span className="ot-count">{orders.length}</span>
-              <ChevronDown
-                size={20}
-                className={`ot-chev${ordersOpen ? " open" : ""}`}
-              />
+              <ChevronRight size={20} className="ot-chev" />
             </button>
             <AnimatePresence initial={false}>
-              {ordersOpen && (
+              {false && ordersOpen && (
                 <motion.div
                   key="orders-body"
                   initial={{ height: 0, opacity: 0 }}

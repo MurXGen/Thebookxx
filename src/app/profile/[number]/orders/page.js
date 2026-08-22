@@ -3,22 +3,54 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Package, ChevronRight, Clock } from "lucide-react";
+import Image from "next/image";
+import { ArrowLeft, Package, ChevronRight, Clock, MessageCircle } from "lucide-react";
+import { books as ALL_BOOKS } from "@/utils/book";
 
-// Parse "Books List" cell → [{ name, qty, total }]
+const SUPPORT_WHATSAPP = "917710892108";
+
+// name -> cover image (order items come from the sheet, names may vary slightly)
+const normName = (s) => (s || "").toLowerCase().replace(/[^a-z0-9]+/g, "");
+const BOOK_IMAGE_BY_NAME = {};
+ALL_BOOKS.forEach((b) => {
+  if (b.image) BOOK_IMAGE_BY_NAME[normName(b.name)] = b.image;
+});
+function getBookImage(name) {
+  const n = normName(name);
+  if (!n) return null;
+  if (BOOK_IMAGE_BY_NAME[n]) return BOOK_IMAGE_BY_NAME[n];
+  const key = Object.keys(BOOK_IMAGE_BY_NAME).find(
+    (k) => k.includes(n) || n.includes(k),
+  );
+  return key ? BOOK_IMAGE_BY_NAME[key] : null;
+}
+
+// Parse "Books List" cell → [{ name, qty, price, total }]
 function parseBooks(str) {
   return String(str || "")
     .split("\n")
     .map((line) => {
+      if (!line.trim()) return null;
+      const full = line.match(
+        /\d+\.\s([^|]+)\s*\|\s*Qty:\s*(\d+)\s*\|\s*₹(\d+)\s*each\s*\|\s*Total:\s*₹(\d+)/,
+      );
+      if (full) {
+        return {
+          name: full[1].trim(),
+          qty: parseInt(full[2], 10),
+          price: parseInt(full[3], 10),
+          total: parseInt(full[4], 10),
+        };
+      }
       const name = (line.split("|")[0] || "").replace(/^\d+\.\s*/, "").trim();
       const qty = parseInt((line.match(/Qty:\s*(\d+)/i) || [])[1] || "1", 10);
       const total = parseInt(
         (line.match(/Total:\s*₹?\s*(\d+)/i) || [])[1] || "0",
         10,
       );
-      return { name, qty, total };
+      return name ? { name, qty, price: 0, total } : null;
     })
-    .filter((b) => b.name);
+    .filter(Boolean);
 }
 
 function parseSheetDate(v) {
@@ -91,6 +123,15 @@ export default function OrdersListPage() {
     })();
   }, [number]);
 
+  const contactSupport = () => {
+    const msg = `Hi TheBookX, I need help with my orders (${number}).`;
+    window.open(
+      `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(msg)}`,
+      "_blank",
+      "noopener,noreferrer",
+    );
+  };
+
   // Group by date label
   const groups = [];
   const byKey = {};
@@ -118,12 +159,16 @@ export default function OrdersListPage() {
           onClick={() => router.push("/profile")}
           aria-label="Back"
         >
-          <ArrowLeft size={18} />
+          <ArrowLeft size={20} />
         </button>
-        <div>
+        <div className="ord-head-titles">
           <h1>My orders</h1>
           <span className="ord-sub">+91 {number}</span>
         </div>
+        <button type="button" className="ord-support-btn" onClick={contactSupport}>
+          <MessageCircle size={16} />
+          Support
+        </button>
       </header>
 
       {loading ? (
@@ -148,6 +193,11 @@ export default function OrdersListPage() {
                 const oid = String(o["Order ID"] || "");
                 const total = o["Total Amount"] || o.revenue || "";
                 const count = o._books.reduce((s, b) => s + (b.qty || 1), 0);
+                const covers = o._books
+                  .map((b) => getBookImage(b.name))
+                  .filter(Boolean)
+                  .slice(0, 4);
+                const extra = o._books.length - covers.length;
                 const names = o._books.map((b) => b.name).join(", ");
                 return (
                   <Link
@@ -155,6 +205,25 @@ export default function OrdersListPage() {
                     href={`/profile/${number}/orders/${encodeURIComponent(oid)}`}
                     className="ord-card"
                   >
+                    <div className="ord-card-covers">
+                      {covers.length > 0 ? (
+                        covers.map((src, ci) => (
+                          <Image
+                            key={ci}
+                            src={src}
+                            alt=""
+                            width={40}
+                            height={54}
+                            className="ord-cover"
+                          />
+                        ))
+                      ) : (
+                        <span className="ord-cover ord-cover-ph">
+                          <Package size={18} />
+                        </span>
+                      )}
+                      {extra > 0 && <span className="ord-cover-more">+{extra}</span>}
+                    </div>
                     <div className="ord-card-main">
                       <div className="ord-card-top">
                         <span className="ord-card-id">{oid || "Order"}</span>
@@ -164,9 +233,17 @@ export default function OrdersListPage() {
                       </div>
                       <div className="ord-card-names">{names || "—"}</div>
                       <div className="ord-card-meta">
-                        {count} item{count === 1 ? "" : "s"}
-                        {total ? ` · ₹${total}` : ""}
-                        {o["Payment Type"] ? ` · ${o["Payment Type"]}` : ""}
+                        <span className="ord-card-count">
+                          {count} item{count === 1 ? "" : "s"}
+                        </span>
+                        {total ? (
+                          <span className="ord-card-amt">₹{total}</span>
+                        ) : null}
+                        {o["Payment Type"] ? (
+                          <span className="ord-card-pay">
+                            {o["Payment Type"].replace("Payment", "").trim()}
+                          </span>
+                        ) : null}
                       </div>
                     </div>
                     <ChevronRight size={18} className="ord-card-caret" />

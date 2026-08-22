@@ -17329,16 +17329,7 @@ img[data-loaded="true"] {
   filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.28));
 }
 .track-train-glow {
-  position: absolute;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(251, 133, 0, 0.4) 0%,
-    rgba(251, 133, 0, 0) 68%
-  );
-  z-index: -1;
+  display: none;
 }
 /* Motion trail — appears above the vehicle while it's moving down */
 .track-train-tail {

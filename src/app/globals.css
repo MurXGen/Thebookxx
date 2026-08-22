@@ -34640,21 +34640,12 @@ img[data-loaded="true"] {
   background: #fff3e6;
   color: var(--tertiary, #fb8500);
 }
-.od-approx-note {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  margin-top: 10px;
-  font-size: var(--px-12);
-  line-height: 1.5;
+.od-approx-txt {
+  font-size: var(--px-13);
+  line-height: 1.45;
   color: var(--gray-500, #6b7280);
 }
-.od-approx-note svg {
-  flex-shrink: 0;
-  margin-top: 1px;
-  color: var(--tertiary, #fb8500);
-}
-.od-approx-note strong {
+.od-approx-txt strong {
   color: var(--foreground, #1a1a1a);
   font-weight: 700;
 }

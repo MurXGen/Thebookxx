@@ -787,9 +787,11 @@ export default function OrderDetailPage() {
           </span>
         </div>
         {receiver?.approx && (
-          <div className="od-approx-note">
-            <MapPin size={15} />
-            <span>
+          <div className="od-deliver-row od-approx-row">
+            <span className="od-deliver-ic">
+              <MapPin size={15} />
+            </span>
+            <span className="od-approx-txt">
               Map showing the approximate area for pincode{" "}
               <strong>{order["Pincode"]}</strong>
             </span>

@@ -911,19 +911,6 @@ export default function OrderDetailPage() {
         )}
       </section>
 
-      {/* Ad banner (BookX, mimics Flipkart's mid-page promo) */}
-      <Link href="/wallet" className="od-ad-banner">
-        <div className="od-ad-left">
-          <span className="od-ad-badge">TheBookX Wallet</span>
-          <span className="od-ad-title">Refer &amp; earn ₹50</span>
-          <span className="od-ad-sub">Credited instantly to your wallet</span>
-          <span className="od-ad-cta">View wallet →</span>
-        </div>
-        <span className="od-ad-emoji" aria-hidden="true">
-          <Gift size={28} />
-        </span>
-      </Link>
-
       {/* You might also be interested in */}
       {recos.length > 0 && (
         <section className="od-reco">

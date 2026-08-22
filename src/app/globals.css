@@ -17493,6 +17493,25 @@ img[data-loaded="true"] {
   border-color: var(--tertiary, #fb8500);
   color: var(--tertiary, #fb8500);
 }
+/* Login warning (wrong / unknown number) */
+.phone-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin-top: 12px;
+  padding: 11px 13px;
+  border-radius: 12px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #b45309;
+  font-size: 13px;
+  line-height: 1.45;
+  font-weight: 500;
+}
+.phone-warning svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
 
 /* Support templates */
 .support-templates {

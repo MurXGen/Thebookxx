@@ -11,6 +11,7 @@ import {
   Calendar,
   MapPin,
   Phone,
+  AlertCircle,
   IndianRupee,
   MessageCircle,
   Copy,
@@ -779,7 +780,9 @@ export default function MyOrdersPage() {
 
   const fetchOrders = async (phone = phoneNumber) => {
     if (!phone || phone.length !== 10) {
-      setError("Please enter a valid 10-digit phone number");
+      setError(
+        "That doesn't look like a valid number. Please enter the 10-digit mobile number you used while ordering.",
+      );
       return;
     }
     // Honeypot: a hidden field only bots fill. Silently ignore if it's set.
@@ -929,7 +932,9 @@ export default function MyOrdersPage() {
         walletValue <= 0 &&
         pending.length === 0
       ) {
-        setError(`No profile found for phone number ${phone}`);
+        setError(
+          `We couldn't find any orders for +91 ${phone}. Please enter the same mobile number you used while placing the order — a different number won't show your orders.`,
+        );
       } else {
         setShowPhoneInput(false);
         localStorage.setItem("track_orders_phone", phone);
@@ -937,7 +942,9 @@ export default function MyOrdersPage() {
       }
     } catch (err) {
       console.error("Error fetching orders:", err);
-      setError(`Unable to fetch orders. Please try again later.`);
+      setError(
+        `Something went wrong while fetching your orders. Please check your connection and try again.`,
+      );
     } finally {
       setLoading(false);
       setVerifying(false);
@@ -1617,35 +1624,10 @@ Please cancel this order. Thank you `;
                     {loading ? "Searching..." : "Submit"}
                   </button>
 
-                  {error && <p className="error-message">{error}</p>}
-
-                {/* Saved numbers (localStorage) */}
-                {savedPhones.length > 0 && (
-                  <div className="phone-saved">
-                    <span className="phone-saved-label">Saved numbers</span>
-                    <div className="phone-saved-chips">
-                      {savedPhones.map((num) => (
-                        <span key={num} className="phone-chip">
-                          <button
-                            type="button"
-                            className="phone-chip-use"
-                            onClick={() => useSavedPhone(num)}
-                            aria-label={`Use ${num}`}
-                          >
-                            <Phone size={12} />
-                            {num}
-                          </button>
-                          <button
-                            type="button"
-                            className="phone-chip-remove"
-                            onClick={() => removeSavedPhone(num)}
-                            aria-label={`Remove ${num}`}
-                          >
-                            <X size={13} />
-                          </button>
-                        </span>
-                      ))}
-                    </div>
+                  {error && (
+                  <div className="phone-warning" role="alert">
+                    <AlertCircle size={16} />
+                    <span>{error}</span>
                   </div>
                 )}
 

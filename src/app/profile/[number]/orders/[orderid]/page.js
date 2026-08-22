@@ -902,7 +902,12 @@ export default function OrderDetailPage() {
           <span>₹{bd.grand}</span>
         </div>
         <div className="od-paid-row">
-          <span>Paid by</span>
+          <span>
+            {/cash on delivery|cod/i.test(order["Payment Type"] || "") &&
+            !delivered
+              ? "Pay on delivery"
+              : "Paid by"}
+          </span>
           <span className="od-paid-mode">{order["Payment Type"] || "—"}</span>
         </div>
         {bd.savings > 0 && (

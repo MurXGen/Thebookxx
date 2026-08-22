@@ -34584,7 +34584,7 @@ img[data-loaded="true"] {
 }
 .od-deliver-row {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 10px;
   padding: 7px 0;
   font-size: var(--px-13);

@@ -651,23 +651,23 @@ export default function OrderDetailPage() {
     .join(", ");
   const stLabel = statusLabel(order);
   const isFaster = /faster|express/i.test(order["Delivery Type"] || "");
-
-  // ETA pill (days remaining until the far end of the delivery window).
-  const eta = (() => {
-    const od = parseSheetDate(
-      order["Timestamp (D)"] || order["Timestamp"] || order["Timestamp(D)"],
-    );
-    const maxDays = isFaster ? 5 : 12;
-    if (!od) return { num: "~", unit: isFaster ? "1–5 days" : "4–12 days" };
-    const arrive = new Date(od.getTime() + maxDays * 86400000);
-    const daysLeft = Math.ceil((arrive.getTime() - Date.now()) / 86400000);
-    if (daysLeft <= 0) return { num: "Soon", unit: "arriving" };
-    if (daysLeft === 1) return { num: "1", unit: "day left" };
-    return { num: String(daysLeft), unit: "days left" };
-  })();
   const inTransit = /in\s*transit/i.test(order["Order Status"] || "");
+  const outForDelivery = /out\s*for\s*delivery/i.test(order["Order Status"] || "");
   const delivered = /delivered|money received/i.test(order["Order Status"] || "");
   const shippingId = order["Shipping ID"] || "";
+
+  // ETA pill: the delivery-window range shows only once the parcel is moving
+  // (in transit / out for delivery). Before that we show the current stage.
+  const eta = (() => {
+    if (delivered) return { done: "Delivered" };
+    if (inTransit || outForDelivery)
+      return isFaster
+        ? { num: "1–5", unit: "days" }
+        : { num: "4–9", unit: "days" };
+    const st = String(order["Order Status"] || "").toLowerCase();
+    if (/shipped|getting shipped/.test(st)) return { done: "Packing" };
+    return { done: "Confirmed" };
+  })();
   const trackOrder = {
     ...order,
     orderId,
@@ -734,8 +734,8 @@ export default function OrderDetailPage() {
                   <span>{stLabel.sub}</span>
                 </div>
                 <div className="od-tc-eta">
-                  {delivered ? (
-                    <span className="od-tc-eta-done">Delivered</span>
+                  {eta.done ? (
+                    <span className="od-tc-eta-done">{eta.done}</span>
                   ) : (
                     <>
                       <span className="od-tc-eta-num">{eta.num}</span>

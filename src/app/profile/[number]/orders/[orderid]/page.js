@@ -795,19 +795,6 @@ export default function OrderDetailPage() {
             </span>
           </div>
         )}
-        {!delivered && estimate && (
-          <div className="od-approx-note">
-            <CalendarClock size={15} />
-            <span>
-              Estimated delivery{" "}
-              <strong>
-                {estimate.from} – {estimate.to}
-              </strong>
-              . {isFaster ? "Express" : "Standard"} orders usually arrive within{" "}
-              {estimate.mn}–{estimate.mx} days.
-            </span>
-          </div>
-        )}
       </section>
 
       {/* Items summary strip (Flipkart "Total N items" + thumbnails) */}

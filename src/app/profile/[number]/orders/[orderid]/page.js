@@ -24,6 +24,7 @@ import {
   Gift,
   Maximize2,
   Minimize2,
+  CalendarClock,
 } from "lucide-react";
 import TrackSheet from "@/components/profile/TrackSheet";
 import BookCard from "@/components/BookCard";
@@ -638,6 +639,23 @@ export default function OrderDetailPage() {
     if (/shipped|getting shipped/.test(st)) return { done: "Packing" };
     return { done: "Confirmed" };
   })();
+
+  // Delivery window (min/max days) + estimated date range.
+  const [etaMin, etaMax] = isFaster ? [1, 5] : [4, 9];
+  const estimate = (() => {
+    const od = parseSheetDate(
+      order["Timestamp (D)"] || order["Timestamp"] || order["Timestamp(D)"],
+    );
+    if (!od) return null;
+    const fmt = (d) =>
+      d.toLocaleDateString("en-IN", { day: "2-digit", month: "short" });
+    return {
+      from: fmt(new Date(od.getTime() + etaMin * 86400000)),
+      to: fmt(new Date(od.getTime() + etaMax * 86400000)),
+      mn: etaMin,
+      mx: etaMax,
+    };
+  })();
   const trackOrder = {
     ...order,
     orderId,
@@ -718,7 +736,8 @@ export default function OrderDetailPage() {
               <div className="od-tc-foot">
                 <span className="od-tc-courier">
                   {isFaster ? <Plane size={15} /> : <Train size={15} />}
-                  {isFaster ? "Express delivery" : "Standard delivery"}
+                  {isFaster ? "Express delivery" : "Standard delivery"} ·{" "}
+                  {etaMin}–{etaMax} days
                 </span>
                 {inTransit && shippingId && (
                   <button
@@ -769,8 +788,24 @@ export default function OrderDetailPage() {
         </div>
         {receiver?.approx && (
           <div className="od-approx-note">
-            <MapPin size={12} /> Map showing the approximate area for pincode{" "}
-            {order["Pincode"]}
+            <MapPin size={15} />
+            <span>
+              Map showing the approximate area for pincode{" "}
+              <strong>{order["Pincode"]}</strong>
+            </span>
+          </div>
+        )}
+        {!delivered && estimate && (
+          <div className="od-approx-note">
+            <CalendarClock size={15} />
+            <span>
+              Estimated delivery{" "}
+              <strong>
+                {estimate.from} – {estimate.to}
+              </strong>
+              . {isFaster ? "Express" : "Standard"} orders usually arrive within{" "}
+              {estimate.mn}–{estimate.mx} days.
+            </span>
           </div>
         )}
       </section>

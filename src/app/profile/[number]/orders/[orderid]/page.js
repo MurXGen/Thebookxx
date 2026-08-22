@@ -21,8 +21,9 @@ import {
   ShieldCheck,
   Train,
   Plane,
-  BookOpen,
   Gift,
+  Maximize2,
+  Minimize2,
 } from "lucide-react";
 import TrackSheet from "@/components/profile/TrackSheet";
 import { books as ALL_BOOKS } from "@/utils/book";
@@ -158,6 +159,7 @@ export default function OrderDetailPage() {
   const [showTrack, setShowTrack] = useState(false);
   const [trackCopied, setTrackCopied] = useState(false);
   const [itemsOpen, setItemsOpen] = useState(true);
+  const [mapFull, setMapFull] = useState(false);
 
   const mapRef = useRef(null);
   const mapObj = useRef(null);
@@ -374,6 +376,36 @@ export default function OrderDetailPage() {
     },
     [],
   );
+
+  // Resize the Leaflet map after a full-screen toggle (container changed size).
+  useEffect(() => {
+    if (!mapObj.current) return;
+    const t = setTimeout(() => {
+      try {
+        mapObj.current.invalidateSize();
+        if (receiver)
+          mapObj.current.fitBounds(
+            routeCoords && routeCoords.length > 1
+              ? routeCoords
+              : [
+                  [SENDER.lat, SENDER.lng],
+                  [receiver.lat, receiver.lng],
+                ],
+            { padding: [36, 36] },
+          );
+      } catch {}
+    }, 260);
+    return () => clearTimeout(t);
+  }, [mapFull, receiver, routeCoords]);
+
+  // Lock body scroll while the map is full-screen.
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    document.body.style.overflow = mapFull ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mapFull]);
 
   const contactSupport = () => {
     const msg = `Hi TheBookX, I need help with order ${orderId} (${number}).`;
@@ -618,6 +650,20 @@ export default function OrderDetailPage() {
     .join(", ");
   const stLabel = statusLabel(order);
   const isFaster = /faster|express/i.test(order["Delivery Type"] || "");
+
+  // ETA pill (days remaining until the far end of the delivery window).
+  const eta = (() => {
+    const od = parseSheetDate(
+      order["Timestamp (D)"] || order["Timestamp"] || order["Timestamp(D)"],
+    );
+    const maxDays = isFaster ? 5 : 12;
+    if (!od) return { num: "~", unit: isFaster ? "1–5 days" : "4–12 days" };
+    const arrive = new Date(od.getTime() + maxDays * 86400000);
+    const daysLeft = Math.ceil((arrive.getTime() - Date.now()) / 86400000);
+    if (daysLeft <= 0) return { num: "Soon", unit: "arriving" };
+    if (daysLeft === 1) return { num: "1", unit: "day left" };
+    return { num: String(daysLeft), unit: "days left" };
+  })();
   const inTransit = /in\s*transit/i.test(order["Order Status"] || "");
   const delivered = /delivered|money received/i.test(order["Order Status"] || "");
   const shippingId = order["Shipping ID"] || "";
@@ -656,24 +702,61 @@ export default function OrderDetailPage() {
         </button>
       </header>
 
-      {/* Promo banner (Flipkart-style, BookX) */}
-      <Link href="/1rupee" className="od-promo">
-        <div className="od-promo-txt">
-          <span className="od-promo-k">Books from ₹1</span>
-          <span className="od-promo-sub">
-            Grab bestsellers at throwaway prices · limited time
-          </span>
-          <span className="od-promo-cta">Shop the ₹1 store →</span>
-        </div>
-        <span className="od-promo-emoji" aria-hidden="true">
-          <BookOpen size={30} />
-        </span>
-      </Link>
-
-      {/* Map + status */}
-      <section className="od-map-card">
+      {/* Map + floating arrival card (Flipkart-style) */}
+      <section
+        className={`od-map-card${mapFull ? " od-map-full" : ""}`}
+      >
         {geoState === "ok" && receiver ? (
-          <div ref={mapRef} className="od-map" />
+          <>
+            <div ref={mapRef} className="od-map" />
+            <button
+              type="button"
+              className="od-map-expand"
+              onClick={() => setMapFull((v) => !v)}
+              aria-label={mapFull ? "Exit full screen" : "Full screen map"}
+            >
+              {mapFull ? <Minimize2 size={17} /> : <Maximize2 size={17} />}
+            </button>
+
+            {/* Arrival card overlapping the map bottom */}
+            <div className="od-track-card">
+              <div className="od-tc-main">
+                <span className="od-tc-ic">
+                  {delivered ? <Home size={18} /> : <Truck size={18} />}
+                </span>
+                <div className="od-tc-txt">
+                  <strong>{stLabel.title}</strong>
+                  <span>{stLabel.sub}</span>
+                </div>
+                <div className="od-tc-eta">
+                  {delivered ? (
+                    <span className="od-tc-eta-done">Delivered</span>
+                  ) : (
+                    <>
+                      <span className="od-tc-eta-num">{eta.num}</span>
+                      <span className="od-tc-eta-unit">{eta.unit}</span>
+                    </>
+                  )}
+                </div>
+              </div>
+              <div className="od-tc-divider" />
+              <div className="od-tc-foot">
+                <span className="od-tc-courier">
+                  {isFaster ? <Plane size={15} /> : <Train size={15} />}
+                  {isFaster ? "Express" : "Standard"} · Delivery by India Post
+                </span>
+                {inTransit && shippingId && (
+                  <button
+                    type="button"
+                    className="od-tc-track"
+                    onClick={() => setShowTrack(true)}
+                  >
+                    Track ↗
+                  </button>
+                )}
+              </div>
+            </div>
+          </>
         ) : geoState === "loading" ? (
           <div className="od-map-fallback">
             <Loader2 size={22} className="lb-spinner" /> Locating your parcel…
@@ -693,39 +776,6 @@ export default function OrderDetailPage() {
             >
               <Navigation size={15} /> Share my location
             </button>
-          </div>
-        )}
-
-        {geoState === "ok" && (
-          <div className="od-status-card">
-            <div className="od-status-left">
-              <span className="od-status-ic">
-                {delivered ? <Home size={18} /> : <Truck size={18} />}
-              </span>
-              <div className="od-status-txt">
-                <strong>{stLabel.title}</strong>
-                <span>{stLabel.sub}</span>
-              </div>
-            </div>
-            <div className="od-status-right">
-              <span className="od-status-vehicle">
-                {isFaster ? <Plane size={20} /> : <Train size={20} />}
-              </span>
-              <span className="od-status-mode">
-                {isFaster ? "Express" : "Standard"}
-              </span>
-            </div>
-          </div>
-        )}
-        {geoState === "ok" && (
-          <div className="od-route-row">
-            <span className="od-route-end">
-              <Store size={14} /> Mumbai
-            </span>
-            <span className="od-route-line" />
-            <span className="od-route-end">
-              <Home size={14} /> {order["City"] || "You"}
-            </span>
           </div>
         )}
       </section>

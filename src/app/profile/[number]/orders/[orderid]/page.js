@@ -119,7 +119,8 @@ function loadLeaflet() {
 function computeProgress(order) {
   const st = String(order["Order Status"] || order.status || "").toLowerCase();
   if (/delivered|money received/.test(st)) return 1;
-  if (/out for delivery/.test(st)) return 0.9;
+  // Out for delivery → the parcel has reached the destination pincode.
+  if (/out for delivery/.test(st)) return 1;
   const isFaster = /faster|express/.test(order["Delivery Type"] || "");
   const win = isFaster ? 5 : 12;
   const od = parseSheetDate(
@@ -293,13 +294,13 @@ export default function OrderDetailPage() {
       const remaining = path.slice(splitIdx);
       const parcelAt = path[splitIdx];
 
-      // remaining (dashed grey) then travelled (solid orange) on top
+      // remaining (dashed grey) then travelled (solid dark-brand) on top
       L.polyline(remaining, {
         color: "#cbd5e1",
         weight: 4,
         dashArray: "6 8",
       }).addTo(map);
-      L.polyline(travelled, { color: "#fb8500", weight: 5 }).addTo(map);
+      L.polyline(travelled, { color: "#111827", weight: 5 }).addTo(map);
 
       // Inline lucide-style SVGs (white stroke) so map pins use icons, not emoji.
       const svg = (inner) =>
@@ -308,8 +309,10 @@ export default function OrderDetailPage() {
         '<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>';
       const ICON_HOME =
         '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/>';
-      const ICON_PKG =
-        '<path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>';
+      const ICON_TRAIN =
+        '<rect width="16" height="16" x="4" y="3" rx="2"/><path d="M4 11h16"/><path d="M12 3v8"/><path d="m8 19-2 3"/><path d="m18 22-2-3"/><path d="M8 15h.01"/><path d="M16 15h.01"/>';
+      const ICON_PLANE =
+        '<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>';
       const dot = (color, inner, size = 30) =>
         L.divIcon({
           className: "od-pin",
@@ -319,8 +322,10 @@ export default function OrderDetailPage() {
         });
       L.marker(A, { icon: dot("#111827", ICON_BOOK) }).addTo(map);
       L.marker(B, { icon: dot("#c0223b", ICON_HOME) }).addTo(map);
+      // Vehicle travelling the route — train for standard, plane for express.
       L.marker(parcelAt, {
-        icon: dot("#fb8500", ICON_PKG, 34),
+        icon: dot("#111827", isFaster ? ICON_PLANE : ICON_TRAIN, 36),
+        zIndexOffset: 1000,
       }).addTo(map);
 
       map.fitBounds(path, { padding: [36, 36] });

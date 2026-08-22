@@ -118,18 +118,21 @@ function loadLeaflet() {
 // Journey progress 0..1 from status (primary) + days elapsed (secondary).
 function computeProgress(order) {
   const st = String(order["Order Status"] || order.status || "").toLowerCase();
+  // Delivered / out for delivery → route fulfilled (parcel at destination).
   if (/delivered|money received/.test(st)) return 1;
-  // Out for delivery → the parcel has reached the destination pincode.
   if (/out for delivery/.test(st)) return 1;
-  const isFaster = /faster|express/.test(order["Delivery Type"] || "");
-  const win = isFaster ? 5 : 12;
-  const od = parseSheetDate(
-    order["Timestamp (D)"] || order["Timestamp"] || order["Timestamp(D)"],
-  );
-  const days = od ? (Date.now() - od.getTime()) / 86400000 : 0;
-  let p = Math.min(0.85, Math.max(0.12, days / win));
-  if (/in\s*transit|shipped|getting shipped/.test(st)) p = Math.max(p, 0.45);
-  return p;
+  // Only once it's actually in transit do we move the vehicle along the route.
+  if (/in\s*transit/.test(st)) {
+    const isFaster = /faster|express/.test(order["Delivery Type"] || "");
+    const win = isFaster ? 5 : 12;
+    const od = parseSheetDate(
+      order["Timestamp (D)"] || order["Timestamp"] || order["Timestamp(D)"],
+    );
+    const days = od ? (Date.now() - od.getTime()) / 86400000 : 0;
+    return Math.min(0.85, Math.max(0.3, days / win));
+  }
+  // Confirmed / getting shipped / anything else → still at the source.
+  return 0;
 }
 
 function statusLabel(order) {
@@ -287,7 +290,7 @@ export default function OrderDetailPage() {
       // Choose the path: real route if available, else straight line.
       const path = routeCoords && routeCoords.length > 1 ? routeCoords : [A, B];
       const splitIdx = Math.max(
-        1,
+        0,
         Math.min(path.length - 1, Math.round(pct * (path.length - 1))),
       );
       const travelled = path.slice(0, splitIdx + 1);
@@ -715,7 +718,7 @@ export default function OrderDetailPage() {
               <div className="od-tc-foot">
                 <span className="od-tc-courier">
                   {isFaster ? <Plane size={15} /> : <Train size={15} />}
-                  {isFaster ? "Express" : "Standard"} · Delivery by India Post
+                  {isFaster ? "Express delivery" : "Standard delivery"}
                 </span>
                 {inTransit && shippingId && (
                   <button

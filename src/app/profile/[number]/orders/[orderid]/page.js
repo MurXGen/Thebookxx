@@ -26,6 +26,7 @@ import {
   Minimize2,
 } from "lucide-react";
 import TrackSheet from "@/components/profile/TrackSheet";
+import BookCard from "@/components/BookCard";
 import { books as ALL_BOOKS } from "@/utils/book";
 
 // TheBookX dispatch origin (Matunga, Mumbai).
@@ -946,24 +947,11 @@ export default function OrderDetailPage() {
       {recos.length > 0 && (
         <section className="od-reco">
           <div className="od-block-title">You might also be interested in</div>
-          <div className="od-reco-row">
+          <div className="od-reco-scroll">
             {recos.map((b) => (
-              <Link
-                href={`/books/${slugify(b.name)}`}
-                className="od-reco-card"
-                key={b.id}
-              >
-                <span className="od-reco-cover">
-                  <Image src={b.image} alt={b.name} width={92} height={124} />
-                </span>
-                <span className="od-reco-name">{b.name}</span>
-                <span className="od-reco-price">
-                  ₹{b.discountedPrice}
-                  {b.originalPrice ? (
-                    <span className="od-reco-mrp">₹{b.originalPrice}</span>
-                  ) : null}
-                </span>
-              </Link>
+              <div className="od-reco-item" key={b.id}>
+                <BookCard book={b} />
+              </div>
             ))}
           </div>
         </section>

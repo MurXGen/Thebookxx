@@ -35012,15 +35012,25 @@ img[data-loaded="true"] {
 .od-reco {
   margin-bottom: 14px;
 }
-.od-reco-row {
+.od-reco-scroll {
   display: flex;
   gap: 12px;
   overflow-x: auto;
-  padding: 4px 2px 6px;
+  padding: 6px 2px 8px;
   scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
 }
-.od-reco-row::-webkit-scrollbar {
+.od-reco-scroll::-webkit-scrollbar {
   display: none;
+}
+.od-reco-item {
+  flex: 0 0 auto;
+  width: 172px;
+}
+/* Shrink the shared BookCard so it fits a compact horizontal rail */
+.od-reco-item .trending-card {
+  min-width: 0;
+  width: 100%;
 }
 .od-reco-card {
   flex: 0 0 auto;

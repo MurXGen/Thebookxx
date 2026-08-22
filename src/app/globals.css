@@ -34449,11 +34449,16 @@ img[data-loaded="true"] {
   padding: 14px;
   border-radius: 14px;
   border: none;
-  background: #111827;
+  background: var(--tertiary, #fb8500);
   color: #fff;
   font-size: var(--px-15);
   font-weight: 700;
   cursor: pointer;
+  box-shadow: 0 8px 20px -10px rgba(251, 133, 0, 0.7);
+  transition: filter 0.15s ease;
+}
+.od-track-btn:hover {
+  filter: brightness(0.96);
 }
 
 /* ---- Order detail: Flipkart-style additions ---- */
@@ -34470,17 +34475,16 @@ img[data-loaded="true"] {
   gap: 7px;
   padding: 14px 16px;
   border-radius: 14px;
-  border: 1px solid var(--hairline, #e5e7eb);
+  border: 1px solid var(--tertiary, #fb8500);
   background: #fff;
-  color: #111827;
+  color: var(--tertiary, #fb8500);
   font-size: var(--px-14);
   font-weight: 700;
   cursor: pointer;
-  transition: border-color 0.15s ease, color 0.15s ease;
+  transition: background 0.15s ease;
 }
 .od-bill-btn:hover {
-  border-color: var(--tertiary, #fb8500);
-  color: var(--tertiary, #fb8500);
+  background: var(--tertiary-light-10, #fff3e6);
 }
 
 /* Promo banner */
@@ -34515,10 +34519,7 @@ img[data-loaded="true"] {
   font-size: var(--px-12);
   font-weight: 800;
 }
-.od-promo-emoji {
-  font-size: 40px;
-  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.25));
-}
+/* (.od-promo-emoji styled below as an icon chip) */
 
 /* Status card overlapping map bottom */
 .od-status-card {
@@ -34568,7 +34569,14 @@ img[data-loaded="true"] {
   gap: 1px;
 }
 .od-status-vehicle {
-  font-size: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: #fff3e6;
+  color: var(--tertiary, #fb8500);
   line-height: 1;
 }
 .od-status-mode {
@@ -34774,8 +34782,9 @@ img[data-loaded="true"] {
   border-radius: 16px;
   margin-bottom: 14px;
   text-decoration: none;
-  background: linear-gradient(120deg, #1e293b, #0f172a);
-  color: #fff;
+  background: #fff7ec;
+  border: 1px solid var(--tertiary-light-30, #ffe2bf);
+  color: var(--foreground, #111827);
 }
 .od-ad-left {
   display: flex;
@@ -34785,26 +34794,47 @@ img[data-loaded="true"] {
 .od-ad-badge {
   font-size: var(--px-11);
   font-weight: 700;
-  color: #fbbf77;
+  color: var(--tertiary, #fb8500);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
 .od-ad-title {
   font-size: var(--px-17);
   font-weight: 800;
+  color: #111827;
 }
 .od-ad-sub {
   font-size: var(--px-12);
-  opacity: 0.85;
+  color: var(--gray-500, #6b7280);
 }
 .od-ad-cta {
   margin-top: 4px;
   font-size: var(--px-12);
   font-weight: 800;
-  color: #fbbf77;
+  color: var(--tertiary, #fb8500);
 }
 .od-ad-emoji {
-  font-size: 38px;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  color: var(--tertiary, #fb8500);
+  box-shadow: 0 4px 12px -6px rgba(251, 133, 0, 0.5);
+}
+.od-promo-emoji {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
 }
 
 /* Recommendations */

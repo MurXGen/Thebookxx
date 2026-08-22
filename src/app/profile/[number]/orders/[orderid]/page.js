@@ -19,6 +19,10 @@ import {
   ChevronDown,
   Truck,
   ShieldCheck,
+  Train,
+  Plane,
+  BookOpen,
+  Gift,
 } from "lucide-react";
 import TrackSheet from "@/components/profile/TrackSheet";
 import { books as ALL_BOOKS } from "@/utils/book";
@@ -332,22 +336,26 @@ export default function OrderDetailPage() {
       }).addTo(map);
       L.polyline(travelled, { color: "#fb8500", weight: 5 }).addTo(map);
 
-      const dot = (color, emoji) =>
+      // Inline lucide-style SVGs (white stroke) so map pins use icons, not emoji.
+      const svg = (inner) =>
+        `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
+      const ICON_BOOK =
+        '<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>';
+      const ICON_HOME =
+        '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/>';
+      const ICON_PKG =
+        '<path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>';
+      const dot = (color, inner, size = 30) =>
         L.divIcon({
           className: "od-pin",
-          html: `<span style="display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:${color};color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.3);font-size:15px">${emoji}</span>`,
-          iconSize: [30, 30],
-          iconAnchor: [15, 15],
+          html: `<span style="display:flex;align-items:center;justify-content:center;width:${size}px;height:${size}px;border-radius:50%;background:${color};box-shadow:0 2px 6px rgba(0,0,0,.3)">${svg(inner)}</span>`,
+          iconSize: [size, size],
+          iconAnchor: [size / 2, size / 2],
         });
-      L.marker(A, { icon: dot("#111827", "🏬") }).addTo(map);
-      L.marker(B, { icon: dot("#c0223b", "🏠") }).addTo(map);
+      L.marker(A, { icon: dot("#111827", ICON_BOOK) }).addTo(map);
+      L.marker(B, { icon: dot("#c0223b", ICON_HOME) }).addTo(map);
       L.marker(parcelAt, {
-        icon: L.divIcon({
-          className: "od-pin",
-          html: `<span style="font-size:24px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))">📦</span>`,
-          iconSize: [26, 26],
-          iconAnchor: [13, 13],
-        }),
+        icon: dot("#fb8500", ICON_PKG, 34),
       }).addTo(map);
 
       map.fitBounds(path, { padding: [36, 36] });
@@ -657,9 +665,9 @@ export default function OrderDetailPage() {
           </span>
           <span className="od-promo-cta">Shop the ₹1 store →</span>
         </div>
-        <div className="od-promo-emoji" aria-hidden="true">
-          📚
-        </div>
+        <span className="od-promo-emoji" aria-hidden="true">
+          <BookOpen size={30} />
+        </span>
       </Link>
 
       {/* Map + status */}
@@ -700,7 +708,9 @@ export default function OrderDetailPage() {
               </div>
             </div>
             <div className="od-status-right">
-              <span className="od-status-vehicle">{isFaster ? "✈️" : "🚆"}</span>
+              <span className="od-status-vehicle">
+                {isFaster ? <Plane size={20} /> : <Train size={20} />}
+              </span>
               <span className="od-status-mode">
                 {isFaster ? "Express" : "Standard"}
               </span>
@@ -860,9 +870,9 @@ export default function OrderDetailPage() {
           <span className="od-ad-sub">Credited instantly to your wallet</span>
           <span className="od-ad-cta">View wallet →</span>
         </div>
-        <div className="od-ad-emoji" aria-hidden="true">
-          🎁
-        </div>
+        <span className="od-ad-emoji" aria-hidden="true">
+          <Gift size={28} />
+        </span>
       </Link>
 
       {/* You might also be interested in */}

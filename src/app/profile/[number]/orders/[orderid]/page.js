@@ -736,8 +736,8 @@ export default function OrderDetailPage() {
               <div className="od-tc-foot">
                 <span className="od-tc-courier">
                   {isFaster ? <Plane size={15} /> : <Train size={15} />}
-                  {isFaster ? "Express delivery" : "Standard delivery"} ·{" "}
-                  {etaMin}–{etaMax} days
+                  {isFaster ? "Express delivery" : "Standard delivery"}
+                  {!delivered ? ` · ${etaMin}–${etaMax} days` : ""}
                 </span>
                 {inTransit && shippingId && (
                   <button

@@ -159,7 +159,7 @@ export default function OrderDetailPage() {
   const [routeCoords, setRouteCoords] = useState(null);
   const [showTrack, setShowTrack] = useState(false);
   const [trackCopied, setTrackCopied] = useState(false);
-  const [itemsOpen, setItemsOpen] = useState(true);
+  const [itemsOpen, setItemsOpen] = useState(false);
   const [mapFull, setMapFull] = useState(false);
 
   const mapRef = useRef(null);
@@ -810,23 +810,25 @@ export default function OrderDetailPage() {
           </span>
         </button>
 
-        <div className="od-thumbs-row">
-          {books.map((b, i) => {
-            const bk = findBook(b.name);
-            return (
-              <span className="od-thumb" key={i}>
-                {bk?.image ? (
-                  <Image src={bk.image} alt={b.name} width={46} height={62} />
-                ) : (
-                  <span className="od-thumb-ph">
-                    <Package size={16} />
-                  </span>
-                )}
-                {b.qty > 1 && <span className="od-thumb-qty">×{b.qty}</span>}
-              </span>
-            );
-          })}
-        </div>
+        {!itemsOpen && (
+          <div className="od-thumbs-row">
+            {books.map((b, i) => {
+              const bk = findBook(b.name);
+              return (
+                <span className="od-thumb" key={i}>
+                  {bk?.image ? (
+                    <Image src={bk.image} alt={b.name} width={46} height={62} />
+                  ) : (
+                    <span className="od-thumb-ph">
+                      <Package size={16} />
+                    </span>
+                  )}
+                  {b.qty > 1 && <span className="od-thumb-qty">×{b.qty}</span>}
+                </span>
+              );
+            })}
+          </div>
+        )}
 
         <AnimatePresence initial={false}>
           {itemsOpen && (

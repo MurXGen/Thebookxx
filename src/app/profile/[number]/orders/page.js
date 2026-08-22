@@ -205,37 +205,41 @@ export default function OrdersListPage() {
                     href={`/profile/${number}/orders/${encodeURIComponent(oid)}`}
                     className="ord-card"
                   >
-                    <div className="ord-card-covers">
-                      {covers.length > 0 ? (
-                        covers.map((src, ci) => (
-                          <Image
-                            key={ci}
-                            src={src}
-                            alt=""
-                            width={40}
-                            height={54}
-                            className="ord-cover"
-                          />
-                        ))
-                      ) : (
-                        <span className="ord-cover ord-cover-ph">
-                          <Package size={18} />
-                        </span>
-                      )}
-                      {extra > 0 && <span className="ord-cover-more">+{extra}</span>}
-                    </div>
-                    <div className="ord-card-main">
-                      <div className="ord-card-top">
-                        <span className="ord-card-id">{oid || "Order"}</span>
-                        <span className={`ord-badge ${STATUS_TONE(o._status)}`}>
-                          {o._status}
-                        </span>
+                    <div className="ord-card-row">
+                      <div className="ord-card-covers">
+                        {covers.length > 0 ? (
+                          covers.map((src, ci) => (
+                            <Image
+                              key={ci}
+                              src={src}
+                              alt=""
+                              width={44}
+                              height={58}
+                              className="ord-cover"
+                            />
+                          ))
+                        ) : (
+                          <span className="ord-cover ord-cover-ph">
+                            <Package size={18} />
+                          </span>
+                        )}
+                        {extra > 0 && (
+                          <span className="ord-cover-more">+{extra}</span>
+                        )}
                       </div>
-                      <div className="ord-card-names">{names || "—"}</div>
-                      <div className="ord-card-meta">
-                        <span className="ord-card-count">
+                      <div className="ord-card-main">
+                        <span className="ord-card-id">{oid || "Order"}</span>
+                        <div className="ord-card-names">{names || "—"}</div>
+                        <div className="ord-card-count">
                           {count} item{count === 1 ? "" : "s"}
-                        </span>
+                        </div>
+                      </div>
+                      <span className={`ord-badge ${STATUS_TONE(o._status)}`}>
+                        {o._status}
+                      </span>
+                    </div>
+                    <div className="ord-card-foot">
+                      <div className="ord-card-foot-left">
                         {total ? (
                           <span className="ord-card-amt">₹{total}</span>
                         ) : null}
@@ -245,8 +249,11 @@ export default function OrdersListPage() {
                           </span>
                         ) : null}
                       </div>
+                      <span className="ord-card-view">
+                        View details
+                        <ChevronRight size={15} />
+                      </span>
                     </div>
-                    <ChevronRight size={18} className="ord-card-caret" />
                   </Link>
                 );
               })}

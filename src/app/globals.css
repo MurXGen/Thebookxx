@@ -34601,6 +34601,14 @@ img[data-loaded="true"] {
   background: #fff3e6;
   color: var(--tertiary, #fb8500);
 }
+.od-approx-note {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 6px;
+  font-size: var(--px-11);
+  color: var(--gray-500, #6b7280);
+}
 .od-track-btn {
   flex: 1 1 auto;
   display: inline-flex;

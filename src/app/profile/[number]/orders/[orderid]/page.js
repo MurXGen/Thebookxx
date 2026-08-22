@@ -198,73 +198,35 @@ export default function OrderDetailPage() {
       .map((x) => x.replace(/,?\s*Pinned location:\s*https?:\/\/\S+/i, ""));
     const q = parts.join(", ");
 
-    const savedShared = () => {
+    setGeoState("loading");
+    const geocode = async (query) => {
       try {
-        const raw = localStorage.getItem(geoKey);
-        if (!raw) return null;
-        const p = JSON.parse(raw);
-        return p && p.lat ? p : null;
+        const res = await fetch(`/api/geocode?q=${encodeURIComponent(query)}`);
+        const json = await res.json();
+        return json.result && json.result.lat ? json.result : null;
       } catch {
         return null;
       }
     };
-
-    if (!q || q.length < 4) {
-      const s = savedShared();
-      if (s) {
-        setReceiver(s);
+    (async () => {
+      // We never use the visitor's live location. Locate the destination from
+      // the order's address; if that can't be resolved, fall back to the order
+      // pincode so the map still shows the delivery area.
+      let result = q && q.length >= 4 ? await geocode(q) : null;
+      const pin = String(order["Pincode"] || "").trim();
+      if (!result && /^\d{6}$/.test(pin)) {
+        result = await geocode(`${pin}, India`);
+        if (result) result = { ...result, approx: true };
+      }
+      if (result) {
+        setReceiver(result);
         setGeoState("ok");
       } else {
         setGeoState("missing");
       }
-      return;
-    }
-    setGeoState("loading");
-    (async () => {
-      try {
-        const res = await fetch(`/api/geocode?q=${encodeURIComponent(q)}`);
-        const json = await res.json();
-        if (json.result && json.result.lat) {
-          setReceiver(json.result);
-          setGeoState("ok");
-        } else {
-          const s = savedShared();
-          if (s) {
-            setReceiver(s);
-            setGeoState("ok");
-          } else setGeoState("missing");
-        }
-      } catch {
-        const s = savedShared();
-        if (s) {
-          setReceiver(s);
-          setGeoState("ok");
-        } else setGeoState("missing");
-      }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [order]);
-
-  const shareLocation = () => {
-    if (!navigator.geolocation) return;
-    setGeoState("loading");
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const loc = {
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude,
-          label: "Your shared location",
-        };
-        try {
-          localStorage.setItem(geoKey, JSON.stringify(loc));
-        } catch {}
-        setReceiver(loc);
-        setGeoState("ok");
-      },
-      () => setGeoState("missing"),
-      { enableHighAccuracy: true, timeout: 8000 },
-    );
-  };
 
   // Fetch a real road route whenever the receiver coords change.
   useEffect(() => {
@@ -769,18 +731,10 @@ export default function OrderDetailPage() {
         ) : (
           <div className="od-map-fallback">
             <MapPin size={26} />
-            <strong>Where's my order?</strong>
+            <strong>Map unavailable</strong>
             <span>
-              We couldn't map your delivery address. Share your location to see
-              the parcel's route.
+              We couldn't locate the delivery area for this order right now.
             </span>
-            <button
-              type="button"
-              className="od-share-btn"
-              onClick={shareLocation}
-            >
-              <Navigation size={15} /> Share my location
-            </button>
           </div>
         )}
       </section>
@@ -805,6 +759,12 @@ export default function OrderDetailPage() {
             {order["Pincode"] ? ` - ${order["Pincode"]}` : ""}
           </span>
         </div>
+        {receiver?.approx && (
+          <div className="od-approx-note">
+            <MapPin size={12} /> Map showing the approximate area for pincode{" "}
+            {order["Pincode"]}
+          </div>
+        )}
       </section>
 
       {/* Items summary strip (Flipkart "Total N items" + thumbnails) */}

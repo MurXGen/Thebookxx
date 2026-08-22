@@ -676,11 +676,15 @@ export default function OrderDetailPage() {
     deliveryType: order["Delivery Type"] || "",
   };
 
-  // Recommendations — a few books not already in this order.
+  // Recommendations — a few books not already in this order, always featuring
+  // "The Art of Clarity" first.
   const inOrder = new Set(books.map((b) => normName(b.name)));
-  const recos = ALL_BOOKS.filter((b) => b.image && !inOrder.has(normName(b.name)))
-    .slice(0, 8)
-    .slice(0, 6);
+  const pool = ALL_BOOKS.filter((b) => b.image);
+  const clarity = pool.find((b) => /art of clarity/i.test(b.name));
+  const rest = pool.filter(
+    (b) => !inOrder.has(normName(b.name)) && b !== clarity,
+  );
+  const recos = [clarity, ...rest].filter(Boolean).slice(0, 8);
 
   return (
     <main className="od-page">
@@ -741,18 +745,6 @@ export default function OrderDetailPage() {
                 </div>
               </div>
               <div className="od-tc-divider" />
-              <div className="od-tc-deliver">
-                <span className="od-tc-deliver-ic">
-                  <Home size={14} />
-                </span>
-                <span className="od-tc-deliver-txt">
-                  <strong>Deliver to {custName || "you"}</strong>
-                  <span>
-                    {addr}
-                    {order["Pincode"] ? ` - ${order["Pincode"]}` : ""}
-                  </span>
-                </span>
-              </div>
               <div className="od-tc-foot">
                 <span className="od-tc-courier">
                   {isFaster ? <Plane size={15} /> : <Train size={15} />}
@@ -791,6 +783,28 @@ export default function OrderDetailPage() {
             </button>
           </div>
         )}
+      </section>
+
+      {/* Deliver-to (directly below the map) */}
+      <section className="od-block">
+        <div className="od-block-title">Delivery details</div>
+        <div className="od-deliver-row">
+          <span className="od-deliver-ic">
+            <User size={15} />
+          </span>
+          <span>
+            {custName || "—"} · +91 {order["Phone Number"] || number}
+          </span>
+        </div>
+        <div className="od-deliver-row">
+          <span className="od-deliver-ic">
+            <Home size={15} />
+          </span>
+          <span>
+            {addr}
+            {order["Pincode"] ? ` - ${order["Pincode"]}` : ""}
+          </span>
+        </div>
       </section>
 
       {/* Items summary strip (Flipkart "Total N items" + thumbnails) */}
@@ -955,31 +969,6 @@ export default function OrderDetailPage() {
                 <BookCard book={b} />
               </div>
             ))}
-          </div>
-        </section>
-      )}
-
-      {/* Delivery details — only when the map card (which already shows it) is
-          not visible, to avoid duplication */}
-      {geoState !== "ok" && (
-        <section className="od-block">
-          <div className="od-block-title">Delivery details</div>
-          <div className="od-deliver-row">
-            <span className="od-deliver-ic">
-              <User size={15} />
-            </span>
-            <span>
-              {custName || "—"} · +91 {order["Phone Number"] || number}
-            </span>
-          </div>
-          <div className="od-deliver-row">
-            <span className="od-deliver-ic">
-              <Home size={15} />
-            </span>
-            <span>
-              {addr}
-              {order["Pincode"] ? ` - ${order["Pincode"]}` : ""}
-            </span>
           </div>
         </section>
       )}

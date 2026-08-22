@@ -45,6 +45,7 @@ import {
 import Image from "next/image";
 import { FaWhatsapp } from "react-icons/fa";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { showToast } from "@/context/ToastContext";
 import TrackSheet from "@/components/profile/TrackSheet";
 import PageHeader from "@/components/UI/PageHeader";
@@ -356,6 +357,7 @@ export default function MyOrdersPage() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [orders, setOrders] = useState([]);
   const [pendingOrders, setPendingOrders] = useState([]); // awaiting confirmation
+  const router = useRouter();
   const shippedCancelRef = useRef({}); // orderId -> cancel-tap count
   const lastLookupRef = useRef(0); // throttle rapid login attempts (anti-bot)
   const honeypotRef = useRef(null); // bots fill this hidden field; humans don't
@@ -2029,19 +2031,20 @@ Please cancel this order. Thank you `;
                         <span>{order.status}</span>
                       </span>
                     </div>
-                    {!/delivered/i.test(order.status || "") && (
-                      <button
-                        type="button"
-                        className="order-track-btn"
-                        onClick={() => {
-                          setTrackCopied(false);
-                          setTrackOrder(order);
-                        }}
-                      >
-                        <Truck size={14} />
-                        {order.shippingId ? "Track shipment" : "Track order"}
-                      </button>
-                    )}
+                    <button
+                      type="button"
+                      className="order-track-btn"
+                      onClick={() =>
+                        router.push(
+                          `/profile/${phoneNumber}/orders/${encodeURIComponent(
+                            order["Order ID"] || "",
+                          )}`,
+                        )
+                      }
+                    >
+                      <Truck size={14} />
+                      View & track
+                    </button>
                   </div>
 
                   <AnimatePresence initial={false}>

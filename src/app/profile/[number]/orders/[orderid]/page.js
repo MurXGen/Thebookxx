@@ -419,7 +419,11 @@ export default function OrderDetailPage() {
   }, [mapFull]);
 
   const contactSupport = () => {
-    const msg = `Hi TheBookX, I need help with order ${orderId} (${number}).`;
+    const link =
+      typeof window !== "undefined"
+        ? `${window.location.origin}/profile/${number}/orders/${encodeURIComponent(orderId)}`
+        : "";
+    const msg = `Hi TheBookX, I need help with this order 🙏\nOrder: ${orderId}\n${link}`;
     window.open(
       `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(msg)}`,
       "_blank",
@@ -677,11 +681,13 @@ export default function OrderDetailPage() {
   const inTransit = /in\s*transit/i.test(order["Order Status"] || "");
   const outForDelivery = /out\s*for\s*delivery/i.test(order["Order Status"] || "");
   const delivered = /delivered|money received/i.test(order["Order Status"] || "");
+  const cancelled = /cancel/i.test(order["Order Status"] || "");
   const shippingId = order["Shipping ID"] || "";
 
   // ETA pill: the delivery-window range shows only once the parcel is moving
   // (in transit / out for delivery). Before that we show the current stage.
   const eta = (() => {
+    if (/cancel/i.test(order["Order Status"] || "")) return { done: "Cancelled" };
     if (delivered) return { done: "Delivered" };
     if (inTransit || outForDelivery)
       return isFaster
@@ -803,29 +809,33 @@ export default function OrderDetailPage() {
               )}
             </div>
           </div>
-          <div className="od-tc-bar" aria-hidden="true">
-            <span
-              className="od-tc-bar-fill"
-              style={{ width: `${progressPct}%` }}
-            />
-          </div>
-          <div className="od-tc-divider" />
-          <div className="od-tc-foot">
-            <span className="od-tc-courier">
-              {isFaster ? <Plane size={15} /> : <Train size={15} />}
-              {isFaster ? "Express delivery" : "Standard delivery"}
-              {!delivered ? ` · ${etaMin}–${etaMax} days` : ""}
-            </span>
-            {inTransit && shippingId && (
-              <button
-                type="button"
-                className="od-tc-track"
-                onClick={() => setShowTrack(true)}
-              >
-                Track ↗
-              </button>
-            )}
-          </div>
+          {!cancelled && (
+            <>
+              <div className="od-tc-bar" aria-hidden="true">
+                <span
+                  className="od-tc-bar-fill"
+                  style={{ width: `${progressPct}%` }}
+                />
+              </div>
+              <div className="od-tc-divider" />
+              <div className="od-tc-foot">
+                <span className="od-tc-courier">
+                  {isFaster ? <Plane size={15} /> : <Train size={15} />}
+                  {isFaster ? "Express delivery" : "Standard delivery"}
+                  {!delivered ? ` · ${etaMin}–${etaMax} days` : ""}
+                </span>
+                {inTransit && shippingId && (
+                  <button
+                    type="button"
+                    className="od-tc-track"
+                    onClick={() => setShowTrack(true)}
+                  >
+                    Track ↗
+                  </button>
+                )}
+              </div>
+            </>
+          )}
         </div>
       )}
 

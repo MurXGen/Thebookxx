@@ -34365,7 +34365,7 @@ img[data-loaded="true"] {
 }
 .od-map {
   width: 100%;
-  height: 300px;
+  height: 380px;
   /* Trap Leaflet's internal pane z-indexes so the overlay card/button sit on top. */
   position: relative;
   z-index: 0;
@@ -34556,7 +34556,7 @@ img[data-loaded="true"] {
   justify-content: center;
   gap: 8px;
   text-align: center;
-  height: 240px;
+  height: 300px;
   padding: 20px;
   color: var(--gray-500, #6b7280);
   background: linear-gradient(135deg, #fff7ec, #fffdf9);

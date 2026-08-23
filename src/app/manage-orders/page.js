@@ -1295,6 +1295,20 @@ function IndiaPostSheet({
             <div className="ip-order-head">
               <span className="ip-order-sr">{booked ? "✓" : i + 1}</span>
               <span className="ip-order-name">{o["Customer Name"] || "—"}</span>
+              {oid && (
+                <a
+                  className="ip-order-link"
+                  href={`/profile/${String(o["Phone Number"] || "")
+                    .replace(/\D/g, "")
+                    .slice(-10)}/orders/${encodeURIComponent(oid)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Open customer order page"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <ExternalLink size={13} /> View
+                </a>
+              )}
               <span className={`ip-tag ${isCOD ? "cod" : "prepaid"}`}>
                 {isCOD ? `COD ₹${amount}` : "Prepaid — no COD"}
               </span>

@@ -298,13 +298,13 @@ export default function OrderDetailPage() {
       const remaining = path.slice(splitIdx);
       const parcelAt = path[splitIdx];
 
-      // remaining (dashed grey) then travelled (solid dark-brand) on top
+      // remaining (dashed darker grey) then travelled (solid orange brand) on top
       L.polyline(remaining, {
-        color: "#cbd5e1",
+        color: "#64748b",
         weight: 4,
         dashArray: "6 8",
       }).addTo(map);
-      L.polyline(travelled, { color: "#111827", weight: 5 }).addTo(map);
+      L.polyline(travelled, { color: "#fb8500", weight: 5 }).addTo(map);
 
       // Inline lucide-style SVGs (white stroke) so map pins use icons, not emoji.
       const svg = (inner) =>

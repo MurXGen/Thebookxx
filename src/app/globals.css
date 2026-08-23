@@ -30795,6 +30795,10 @@ img[data-loaded="true"] {
 .wm-input:focus {
   border-color: var(--tertiary, #fb8500);
 }
+.wm-sheet {
+  max-height: 92vh;
+  overflow-y: auto;
+}
 .wm-reasons {
   display: flex;
   flex-wrap: wrap;

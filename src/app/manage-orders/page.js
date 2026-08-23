@@ -537,23 +537,21 @@ function WalletModal({ user, busy, onClose, onApply }) {
   const cur = user.wallet || 0;
   const delta = Math.abs(parseFloat(amount) || 0);
   return (
-    <div className="wm-backdrop" onClick={onClose}>
-      <div className="wm" onClick={(e) => e.stopPropagation()}>
-        <div className="wm-head">
-          <div>
-            <h3 className="wm-title">Adjust wallet</h3>
-            <p className="wm-who">
+    <div className="bill-modal-overlay" onClick={onClose}>
+      <div
+        className="bill-modal wm-sheet"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="bill-header">
+          <div className="flex flex-col">
+            <span className="weight-700 font-16">Adjust wallet</span>
+            <span className="font-12 gray-500">
               {user.name || "Customer"} · +91 {user.phone}
-            </p>
+            </span>
           </div>
-          <button
-            type="button"
-            className="wm-x"
-            onClick={onClose}
-            aria-label="Close"
-          >
+          <span className="cursor-pointer" onClick={onClose}>
             <X size={18} />
-          </button>
+          </span>
         </div>
 
         <div className="wm-cur">

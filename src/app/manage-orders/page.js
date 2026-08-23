@@ -243,6 +243,9 @@ const waMessages = (order) => {
 const SHEET_ID = "1ovqFn50d0TKjV0nm4q1lb3N9XvimUgIsHCOlHh6QRdg";
 const SHEET_NAME = "Form responses 1";
 const SHEET_API_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${SHEET_NAME}`;
+// Dedicated Wallet ledger tab (Timestamp | Phone Number | Amount | Type | Reason | Order ID)
+const WALLET_SHEET_NAME = "Wallet";
+const WALLET_SHEET_API_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(WALLET_SHEET_NAME)}`;
 
 // Google Forms submit URL
 const FORM_SUBMIT_URL =
@@ -520,8 +523,17 @@ function An2Section({ title, sub, right, defaultOpen = true, children }) {
 
 // Wallet adjust modal for the Users tab. Admin enters an amount, then Adds,
 // Deducts, or Sets the balance — written to the sheet by the parent.
+const WALLET_REASON_PRESETS = [
+  "Goodwill credit",
+  "Refund",
+  "Compensation for delay",
+  "Order cancelled",
+  "Correction",
+];
+
 function WalletModal({ user, busy, onClose, onApply }) {
   const [amount, setAmount] = useState("");
+  const [reason, setReason] = useState("");
   const cur = user.wallet || 0;
   const delta = Math.abs(parseFloat(amount) || 0);
   return (
@@ -543,10 +555,12 @@ function WalletModal({ user, busy, onClose, onApply }) {
             <X size={18} />
           </button>
         </div>
+
         <div className="wm-cur">
           <span className="wm-cur-l">Current balance</span>
           <strong className="wm-cur-v">₹{cur.toLocaleString()}</strong>
         </div>
+
         <label className="wm-lbl">Amount (₹)</label>
         <input
           className="wm-input"
@@ -557,12 +571,34 @@ function WalletModal({ user, busy, onClose, onApply }) {
           onChange={(e) => setAmount(e.target.value)}
           autoFocus
         />
+
+        <label className="wm-lbl">Reason (saved to the Wallet sheet)</label>
+        <input
+          className="wm-input"
+          type="text"
+          placeholder="e.g. Refund for cancelled order"
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+        />
+        <div className="wm-reasons">
+          {WALLET_REASON_PRESETS.map((r) => (
+            <button
+              key={r}
+              type="button"
+              className={`wm-reason-chip${reason === r ? " on" : ""}`}
+              onClick={() => setReason(r)}
+            >
+              {r}
+            </button>
+          ))}
+        </div>
+
         <div className="wm-actions">
           <button
             type="button"
             className="wm-btn wm-deduct"
             disabled={busy || !delta}
-            onClick={() => onApply(user, cur - delta)}
+            onClick={() => onApply(user, cur - delta, reason)}
           >
             − Deduct ₹{delta || 0}
           </button>
@@ -570,7 +606,7 @@ function WalletModal({ user, busy, onClose, onApply }) {
             type="button"
             className="wm-btn wm-add"
             disabled={busy || !delta}
-            onClick={() => onApply(user, cur + delta)}
+            onClick={() => onApply(user, cur + delta, reason)}
           >
             + Add ₹{delta || 0}
           </button>
@@ -579,14 +615,14 @@ function WalletModal({ user, busy, onClose, onApply }) {
           type="button"
           className="wm-set"
           disabled={busy || amount === ""}
-          onClick={() => onApply(user, delta)}
+          onClick={() => onApply(user, delta, reason)}
         >
           Set balance to ₹{delta.toLocaleString()}
         </button>
         <p className="wm-note">
           {busy
-            ? "Updating the sheet…"
-            : "Adds a signed entry (+ credit / − deduct) to the sheet against this number. Balance can't go below ₹0."}
+            ? "Saving to the Wallet sheet…"
+            : "Adds a signed transaction (+ credit / − deduct) to the Wallet tab with your reason. Balance can't go below ₹0."}
         </p>
       </div>
     </div>
@@ -3863,6 +3899,50 @@ export default function ManageOrdersPage() {
     fetchOrders();
   }, [fetchOrders]);
 
+  // Wallet balances now live in the dedicated Wallet tab. Read it and aggregate
+  // a signed balance per phone (+ earliest credit time for holding-days).
+  const [walletMap, setWalletMap] = useState({}); // phone -> { balance, firstCreditT }
+  const fetchWalletSheet = useCallback(async () => {
+    try {
+      const res = await fetch(WALLET_SHEET_API_URL);
+      const text = await res.text();
+      const data = JSON.parse(text.substring(text.indexOf("{"), text.lastIndexOf("}") + 1));
+      const headers = (data.table.cols || []).map((c) => c.label);
+      const idx = (label) => headers.indexOf(label);
+      const iPhone = idx("Phone Number");
+      const iAmt = idx("Amount");
+      const iType = idx("Type");
+      const iTs = idx("Timestamp");
+      const map = {};
+      (data.table.rows || []).forEach((row) => {
+        const cells = row.c || [];
+        const val = (i) => {
+          const cell = i >= 0 ? cells[i] : null;
+          let v = cell?.v;
+          if (v && typeof v === "object" && v.hasOwnProperty("value")) v = v.value;
+          return v;
+        };
+        const ph = String(val(iPhone) || "").replace(/\D/g, "").slice(-10);
+        if (ph.length !== 10) return;
+        let amt = parseFloat(val(iAmt));
+        if (isNaN(amt) || amt === 0) return;
+        const type = String(val(iType) || "").toLowerCase();
+        if (amt > 0 && type.startsWith("deb")) amt = -amt;
+        const tsRaw = val(iTs);
+        const t = tsRaw ? new Date(tsRaw).getTime() : 0;
+        if (!map[ph]) map[ph] = { balance: 0, firstCreditT: Infinity };
+        map[ph].balance += amt;
+        if (amt > 0 && t > 0 && t < map[ph].firstCreditT) map[ph].firstCreditT = t;
+      });
+      setWalletMap(map);
+    } catch (e) {
+      console.error("Wallet sheet read failed:", e);
+    }
+  }, []);
+  useEffect(() => {
+    fetchWalletSheet();
+  }, [fetchWalletSheet]);
+
   // Load the set of order IDs seen on the last visit
   useEffect(() => {
     try {
@@ -5032,7 +5112,13 @@ export default function ManageOrdersPage() {
     const nowT = Date.now();
     return Object.values(map)
       .map((u) => {
-        const wallet = Math.max(0, Math.round(u.wallet));
+        // Wallet is authoritative from the dedicated Wallet tab; fall back to
+        // legacy main-sheet ledger only if this phone isn't in the Wallet tab.
+        const wm = walletMap[u.phone];
+        const wallet = wm
+          ? Math.max(0, Math.round(wm.balance))
+          : Math.max(0, Math.round(u.wallet));
+        const firstCreditT = wm ? wm.firstCreditT : u.walletFirstCreditT;
         return {
           ...u,
           wallet,
@@ -5040,16 +5126,13 @@ export default function ManageOrdersPage() {
           repeat: u.orders > 1,
           // Days the wallet balance has been held (from earliest credit).
           holdingDays:
-            wallet > 0 && isFinite(u.walletFirstCreditT)
-              ? Math.max(
-                  0,
-                  Math.floor((nowT - u.walletFirstCreditT) / 86400000),
-                )
+            wallet > 0 && isFinite(firstCreditT)
+              ? Math.max(0, Math.floor((nowT - firstCreditT) / 86400000))
               : null,
         };
       })
       .sort((a, b) => b.spent - a.spent);
-  }, [orders]);
+  }, [orders, walletMap]);
 
   const userSummary = useMemo(() => {
     const total = userList.length;
@@ -5113,7 +5196,7 @@ export default function ManageOrdersPage() {
   // sheet (phone + delta + timestamp). The balance is the SUM of every Wallet
   // entry, so a positive delta credits and a negative delta deducts — exactly
   // what the customer profile reads. Never overwrite existing rows.
-  const applyWalletChange = async (user, newBalance) => {
+  const applyWalletChange = async (user, newBalance, reason = "") => {
     const target = Math.max(0, Math.round(newBalance));
     const cur = Math.round(user.wallet || 0);
     const delta = target - cur;
@@ -5127,22 +5210,26 @@ export default function ManageOrdersPage() {
       const res = await appendWalletTx(user.phone, {
         amount: delta,
         type: delta >= 0 ? "Credit" : "Debit",
-        reason: "Manual adjustment by admin",
+        reason:
+          String(reason || "").trim() ||
+          (delta >= 0 ? "Manual credit by admin" : "Manual deduction by admin"),
       });
       if (!res || !res.success) throw new Error("Ledger append failed");
-      // Reflect the new balance locally by appending a matching ledger row.
-      setOrders((prev) => [
-        ...prev,
-        {
-          "Order ID": "",
-          "Customer Name": user.name || "",
-          "Phone Number": user.phone,
-          Wallet: delta,
-          Timestamp: new Date().toISOString(),
-        },
-      ]);
+      // Optimistically reflect the new balance in the Wallet map so the Users
+      // tab updates immediately, then re-read the Wallet tab to confirm.
+      setWalletMap((prev) => {
+        const cur2 = prev[user.phone] || { balance: 0, firstCreditT: Infinity };
+        const firstCreditT =
+          delta > 0
+            ? Math.min(cur2.firstCreditT, Date.now())
+            : cur2.firstCreditT;
+        return {
+          ...prev,
+          [user.phone]: { balance: cur2.balance + delta, firstCreditT },
+        };
+      });
       setWalletModal(null);
-      setTimeout(() => fetchOrders(), 1800);
+      setTimeout(() => fetchWalletSheet(), 1800);
     } catch (e) {
       console.error("Wallet update failed:", e);
       alert("Could not update wallet. Please try again.");

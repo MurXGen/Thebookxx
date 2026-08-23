@@ -30780,6 +30780,7 @@ img[data-loaded="true"] {
   font-weight: 600;
   color: var(--dark-50);
   margin-bottom: 6px;
+  margin-top: 12px;
 }
 .wm-input {
   width: 100%;
@@ -30792,7 +30793,32 @@ img[data-loaded="true"] {
   transition: border-color 0.15s ease;
 }
 .wm-input:focus {
-  border-color: #2563eb;
+  border-color: var(--tertiary, #fb8500);
+}
+.wm-reasons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+.wm-reason-chip {
+  padding: 5px 11px;
+  border-radius: 999px;
+  border: 1px solid var(--hairline, #e5e7eb);
+  background: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--foreground, #111827);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+.wm-reason-chip:hover {
+  border-color: var(--tertiary, #fb8500);
+}
+.wm-reason-chip.on {
+  background: var(--tertiary, #fb8500);
+  border-color: var(--tertiary, #fb8500);
+  color: #fff;
 }
 .wm-actions {
   display: grid;

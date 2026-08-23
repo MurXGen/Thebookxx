@@ -4,6 +4,230 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "how-to-tell-if-a-book-was-written-by-ai": {
+    id: "blog-030",
+    title:
+      "How to Tell If a Book Was Written by AI: A Reader's Guide for 2026",
+    slug: "how-to-tell-if-a-book-was-written-by-ai",
+    author: "TheBookX Editorial",
+    authorSlug: "murthy-thevar",
+    publishDate: "2026-08-23",
+    lastModified: "2026-08-23",
+    excerpt:
+      "A No. 1 bestseller was flagged as partly AI-written this month, and a new study says 20% of self-published ebooks now contain substantial AI text. Here is how to read the signals.",
+
+    content: [
+      {
+        type: "paragraph",
+        content:
+          "In the last week of July 2026, a dystopian romance called <em>Daggermouth</em> did two things at once. It debuted at No. 1 on the New York Times hardcover fiction list, and it became the most publicly disputed book of the year — after a pre-print study flagged it as the highest-scoring popular title in a sample of more than 14,000 Kindle ebooks run through an AI-detection tool. The author, H.M. Wolfe, denies using generative AI to write it. Simon & Schuster, which reportedly paid seven figures for the book and its sequel, says it cleared the imprint's standard editorial process.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Whatever the truth of that particular case turns out to be, the reason it went so wide is that it landed on a nerve. Readers have started to suspect that some of what they are buying was not really written. This piece is not about one book. It is about how a reader can think clearly in a market where that suspicion is now reasonable — and what actually protects you.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "What the Research Actually Says",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The study behind the headlines examined 14,419 randomly selected self-published ebooks released between January 2023 and March 2026. Its findings are more interesting than the headline number:",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "Books with substantial AI-generated text made up about <strong>20% of the catalogue studied</strong> — but only 12.1% of sales and 11.3% of revenue. Machine-written books are over-represented on the shelf and under-represented in what people actually buy.",
+          "The share of <strong>new Top 25 entries</strong> containing substantial AI text rose from close to zero in early 2023 to roughly <strong>31% by 2026</strong>. The flood is reaching the charts, not just the long tail.",
+          "The sales share held by books with <strong>no AI text at all</strong> fell from nearly 100% in early 2023 to around 60% by the second quarter of 2026.",
+          "AI-heavy titles ran about <strong>19% shorter</strong>, priced roughly a dollar lower, and averaged <strong>26 reviews against 129</strong> for human-written comparables.",
+        ],
+      },
+      {
+        type: "paragraph",
+        content:
+          "Read those numbers carefully and a picture emerges that is neither apocalyptic nor reassuring. Machine-written books are numerous, cheap, thin, and mostly unread. The risk to a reader is not that literature is over. It is that finding a good book by browsing has become measurably harder, because the shelf is now padded.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "On AI detectors — be sceptical in both directions",
+        content:
+          "The tools used in these studies are statistical, not forensic. They produce false positives, and they are unreliable on non-native English, heavily edited prose, and translated text. A high score is a reason to look more closely; it is not proof. Wolfe's own objection — that accusations built on unreliable technology have real consequences for authors — is a fair one, and it applies to every writer you might be tempted to accuse on the basis of a score.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Eight Signals Worth Checking Before You Buy",
+      },
+      {
+        type: "paragraph",
+        content:
+          "None of these is conclusive on its own. Three or four together usually are. Work through them in order — the early ones take seconds.",
+      },
+      {
+        type: "list",
+        style: "ordered",
+        items: [
+          "<strong>Read the acknowledgements first.</strong> This is the single best tell. A real author thanks specific people for specific things — an editor who cut a chapter, a friend who read a bad draft, a spouse who absorbed a year of it. Machine-assembled books have acknowledgements that could belong to any book.",
+          "<strong>Look at the author's history.</strong> One title, published last month, no earlier work, no interviews, no traceable existence outside the retail page. Compare that to a writer with a decade of books behind them.",
+          "<strong>Check the title against the pattern.</strong> Generated non-fiction clusters hard around <em>Blueprint</em>, <em>Mastery</em>, <em>The Code</em>, <em>Secret Strategies</em>, <em>Ultimate Guide</em>. Human-written books in the same space lean towards ordinary nouns and specific promises.",
+          "<strong>Sample the rhythm.</strong> Use the preview and read two pages aloud in your head. Machine prose has a distinctive metronomic quality: sentences of near-identical length, paragraphs of near-identical shape, transitions that arrive exactly on schedule. Real writing varies because a person got tired, got excited, or changed their mind.",
+          "<strong>Count the examples.</strong> Generated non-fiction is fluent about categories and vague about instances. It will tell you that great leaders communicate clearly; it will not tell you what a specific leader said in a specific meeting in 2011.",
+          "<strong>Check the page count against the price.</strong> Very short at a suspiciously round price, in a category where established books run 250 pages, is a flag.",
+          "<strong>Read the negative reviews, not the positive ones.</strong> Three-star reviews are where readers say things like \"it repeats itself\" or \"nothing here I couldn't have guessed.\" That is the vocabulary of machine text.",
+          "<strong>Look at the cover and the copyright page.</strong> Generated books tend to be generated end to end — the cover, the blurb and the front matter often carry the same thinness as the prose.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "Where these signals break down",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Two honest caveats. First, AI use in publishing is a spectrum, not a binary: a novelist using a model to tighten a paragraph is doing something quite different from a content farm generating 300 pages overnight, and no reader-side test separates them. Second, these signals are calibrated on self-published ebooks. They say very little about traditionally published books, which is exactly why the <em>Daggermouth</em> case unsettled people — it crossed the line from one world into the other.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The Simpler Defence: Read Books That Have Already Been Read",
+      },
+      {
+        type: "paragraph",
+        content:
+          "There is a strategy that costs no effort and requires no detector. Weight your reading towards books that have already survived contact with a large number of readers over a long period. Nothing generated in 2026 has that. A book with a decade of readers behind it has been checked by thousands of people who had no reason to be kind about it.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "This is not an argument for reading only old books. It is an argument for making the backlist your default and the new release your deliberate choice — which happens to be the cheapest way to read well, since backlist paperbacks are the least expensive books in any catalogue.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "Fiction that earned its readers",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> is the obvious Indian starting point — Arundhati Roy's Booker winner, and a novel whose sentences could not have been produced by a system optimising for smoothness. <a href=\"/books/the-kite-runner\" style=\"color:#fb8500;font-weight:600\">The Kite Runner</a> and <a href=\"/books/a-thousand-splendid-suns\" style=\"color:#fb8500;font-weight:600\">A Thousand Splendid Suns</a> remain the two Khaled Hosseini novels that readers hand to other readers unprompted. For something stranger, <a href=\"/books/kafka-on-the-shore\" style=\"color:#fb8500;font-weight:600\">Kafka on the Shore</a> is Murakami at his most unpredictable, and <a href=\"/books/crime-and-punishment\" style=\"color:#fb8500;font-weight:600\">Crime and Punishment</a> is still the best argument ever made that a novel can be an interrogation.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "If you want fiction that is gentle rather than heavy, <a href=\"/books/days-at-the-morisaki-bookshop\" style=\"color:#fb8500;font-weight:600\">Days at the Morisaki Bookshop</a> is a small Japanese novel about a second-hand bookshop that has quietly become a favourite among Indian readers, and <a href=\"/books/the-alchemist\" style=\"color:#fb8500;font-weight:600\">The Alchemist</a> is the book most people finish in a single sitting. On the thriller side, <a href=\"/books/the-silent-patient\" style=\"color:#fb8500;font-weight:600\">The Silent Patient</a> is the modern benchmark for a twist that actually works. And <a href=\"/books/the-palace-of-illusions\" style=\"color:#fb8500;font-weight:600\">The Palace of Illusions</a> — the Mahabharata from Draupadi's point of view — is the retelling that made a generation of Indian readers rethink an epic they thought they knew.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "Non-fiction that holds up under scrutiny",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The genre most polluted by generated text is exactly the one most Indian readers buy from: self-improvement and business. The defence is to buy the small number of books in that space that are demonstrably the work of one mind. <a href=\"/books/thinking-fast-and-slow\" style=\"color:#fb8500;font-weight:600\">Thinking, Fast and Slow</a> is Daniel Kahneman summarising four decades of his own research — the opposite of a book assembled from summaries. <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> and <a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> are the two most imitated non-fiction books of the decade, which makes reading the originals a reasonable act of self-defence.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books/the-almanack-of-naval-ravikant\" style=\"color:#fb8500;font-weight:600\">The Almanack of Naval Ravikant</a> works because it is compiled from a real person's actual words over a decade. <a href=\"/books/wise-and-otherwise-a-salute-to-life\" style=\"color:#fb8500;font-weight:600\">Wise and Otherwise</a> is Sudha Murty writing down fifty encounters she personally had while travelling across India — the most un-generatable book on this list, because its entire value is that she was there. <a href=\"/books/the-let-them-theory\" style=\"color:#fb8500;font-weight:600\">The Let Them Theory</a> is the recent bestseller in this category that has held its readers rather than its algorithm.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "On the specific problem of thinking clearly in an environment engineered to muddle you, <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is worth reading alongside this piece. Its argument is that clarity is not a talent but a practice of filtering — deciding what deserves your attention before the volume of available input decides for you. That is more or less the exact skill a 2026 reader needs at a bookshop.",
+      },
+      {
+        type: "blockquote",
+        content:
+          "The flood does not make good books worse. It makes finding them a skill — and a skill is something you can get better at.",
+      },
+      {
+        type: "callout",
+        style: "success",
+        title: "How to build a backlist shelf cheaply",
+        content:
+          "On TheBookX, books start from ₹1, delivery is free, and Cash on Delivery is available across India. Because the deepest discounts sit on the backlist rather than on new releases, the cheapest way to buy here happens to be the safest way to buy in 2026: pick titles with years of readers behind them. Gift wrapping is available at ₹25 per book if the shelf you are building is someone else's.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "What This Is Really About",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The uncomfortable part of the <em>Daggermouth</em> story is not the detection score. It is that a million readers enjoyed the book before anyone thought to ask the question. That suggests the thing readers value in a novel is not always the thing we say we value — and it is worth sitting with rather than dismissing.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "But it cuts the other way too. If a machine can produce something readable, then readable stops being the standard, and the books that survive will be the ones doing something a system optimising for plausibility cannot do: being specific, being strange, being somebody's. That is a good filter. It was always a good filter. The flood has simply made it necessary to use it on purpose.",
+      },
+    ],
+
+    coverImage: "/blogs/how-to-tell-if-a-book-was-written-by-ai.jpeg",
+
+    images: [
+      {
+        url: "/blogs/how-to-tell-if-a-book-was-written-by-ai.jpeg",
+        alt: "A young woman reading a paperback at a wooden table beside a cup of tea and a small stack of books, natural window light",
+        caption:
+          "The most reliable defence against a flooded book market is not a detector — it is reading books that already have years of readers behind them",
+        category: "Book News",
+      },
+    ],
+
+    keywords: [
+      "how to tell if a book was written by ai",
+      "ai written books 2026",
+      "ai generated books amazon",
+      "daggermouth ai controversy",
+      "ai in publishing 2026",
+      "how to spot ai writing in books",
+      "best human written books to read",
+      "backlist books to read",
+      "buy books online india",
+      "TheBookX",
+    ],
+
+    categories: ["Book News", "Reading Culture", "Reading Lists"],
+
+    faqs: [
+      {
+        question: "How can I tell if a book was written by AI?",
+        answer:
+          "No single test is conclusive, but a combination is reliable. Read the acknowledgements — real authors thank specific people for specific things. Check whether the author has any earlier books, interviews or traceable history. Sample two pages from the preview and listen for metronomic rhythm, where every sentence runs to roughly the same length. Look for concrete examples with names and dates rather than general claims. Then check the three-star reviews, where readers tend to describe repetition and vagueness plainly.",
+      },
+      {
+        question: "What happened with the book Daggermouth in 2026?",
+        answer:
+          "Daggermouth, a dystopian romance by H.M. Wolfe that grew out of BookTok, was published in hardcover by Scarlett Press, a Simon & Schuster imprint, in late July 2026 and debuted at No. 1 on the New York Times hardcover fiction list. A day before publication, a pre-print study by Prof. Tuhin Chakrabarty reported that the book scored 60% on the AI-detection tool Pangram, the highest of any popular title in a sample of more than 14,000 Kindle ebooks. Wolfe has denied using generative AI to write the book and has criticised accusations based on detection tools she describes as unreliable. Simon & Schuster says the book went through its standard editorial process.",
+      },
+      {
+        question: "Are AI-generated books actually selling well?",
+        answer:
+          "Not proportionally. In the study of 14,419 self-published ebooks, titles with substantial AI content accounted for about 20% of the catalogue but only 12.1% of sales and 11.3% of revenue. They also averaged 26 reviews against 129 for human-written comparables. The concern is direction rather than current share: the proportion of new Top 25 entries containing substantial AI text rose from near zero in 2023 to roughly 31% by 2026.",
+      },
+      {
+        question: "Are AI detection tools accurate enough to accuse an author?",
+        answer:
+          "No. Detection tools are statistical estimators, not forensic proof. They are known to produce false positives, and they perform particularly poorly on non-native English, heavily edited manuscripts and translated text. A high score is grounds for closer reading, not for a public accusation. This is the substance of the objection raised by authors caught up in such claims, and it is a legitimate one.",
+      },
+    ],
+  },
+
   "ganesh-chaturthi-2026-books-to-gift": {
     id: "blog-029",
     title:

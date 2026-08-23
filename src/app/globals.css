@@ -34123,9 +34123,10 @@ img[data-loaded="true"] {
    ============================================================ */
 .ord-page,
 .od-page {
-  max-width: 640px;
+  max-width: 1200px;
+  min-width: 300px;
   margin: 0 auto;
-  padding: 16px 16px 60px;
+  padding: var(--px-24) var(--px-24) 60px;
   min-height: 100vh;
   background: var(--background, #fff);
 }
@@ -34721,6 +34722,29 @@ img[data-loaded="true"] {
 }
 
 /* ---- Order detail: Flipkart-style additions ---- */
+.od-help-btn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px;
+  margin-bottom: 10px;
+  border-radius: 14px;
+  border: 1px solid #25d366;
+  background: #f0fff6;
+  color: #128c4a;
+  font-size: var(--px-14);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.od-help-btn:hover {
+  background: #dcfce7;
+}
+.od-help-btn svg {
+  color: #25d366;
+}
 .od-actions {
   display: flex;
   gap: 10px;

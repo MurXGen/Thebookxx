@@ -26,6 +26,7 @@ import {
   Minimize2,
   CalendarClock,
 } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa";
 import TrackSheet from "@/components/profile/TrackSheet";
 import BookCard from "@/components/BookCard";
 import { books as ALL_BOOKS } from "@/utils/book";
@@ -333,11 +334,32 @@ export default function OrderDetailPage() {
       }).addTo(map);
 
       map.fitBounds(path, { padding: [36, 36] });
+      // The container may have been laid out after the map initialised (wider
+      // page width), leaving grey gaps — recompute the size then refit.
+      setTimeout(() => {
+        try {
+          map.invalidateSize();
+          map.fitBounds(path, { padding: [36, 36] });
+        } catch {}
+      }, 80);
     })();
     return () => {
       disposed = true;
     };
   }, [receiver, order, routeCoords]);
+
+  // Keep the map filling its container on window resize.
+  useEffect(() => {
+    const onResize = () => {
+      if (mapObj.current) {
+        try {
+          mapObj.current.invalidateSize();
+        } catch {}
+      }
+    };
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   useEffect(
     () => () => {
@@ -381,6 +403,19 @@ export default function OrderDetailPage() {
 
   const contactSupport = () => {
     const msg = `Hi TheBookX, I need help with order ${orderId} (${number}).`;
+    window.open(
+      `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(msg)}`,
+      "_blank",
+      "noopener,noreferrer",
+    );
+  };
+
+  const askAboutOrder = () => {
+    const link =
+      typeof window !== "undefined"
+        ? `${window.location.origin}/profile/${number}/orders/${encodeURIComponent(orderId)}`
+        : "";
+    const msg = `Hi TheBookX, I need some help with this order 🙏\nOrder: ${orderId}\n${link}`;
     window.open(
       `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(msg)}`,
       "_blank",
@@ -973,6 +1008,11 @@ export default function OrderDetailPage() {
           </div>
         </section>
       )}
+
+      {/* Ask about this order (WhatsApp) */}
+      <button type="button" className="od-help-btn" onClick={askAboutOrder}>
+        <FaWhatsapp size={17} /> Ask about this order
+      </button>
 
       {/* Actions */}
       <div className="od-actions">

@@ -26889,40 +26889,83 @@ img[data-loaded="true"] {
   display: flex;
   flex-direction: column;
 }
+/* Filter chips (ride-history style) */
+.wallet-filter {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.wallet-chip {
+  padding: 7px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--dark-20, #82828250);
+  background: #fff;
+  color: var(--foreground, #111827);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.wallet-chip.on {
+  background: #0a0a0a;
+  border-color: #0a0a0a;
+  color: #fff;
+}
+.wallet-txn-list {
+  display: flex;
+  flex-direction: column;
+}
 .wallet-txn {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 2px;
+  gap: 14px;
+  padding: 16px 2px;
   border-bottom: 1px solid var(--hairline, #eee);
+}
+.wallet-txn:last-child {
+  border-bottom: none;
 }
 .wallet-txn-ic {
   flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 .wallet-txn-ic.cr {
   color: #16a34a;
+  background: #ecfdf5;
 }
 .wallet-txn-ic.db {
   color: #dc2626;
+  background: #fef2f2;
 }
 .wallet-txn-mid {
   display: flex;
   flex-direction: column;
   flex: 1;
   min-width: 0;
+  gap: 2px;
 }
 .wallet-txn-title {
-  font-size: 13.5px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--foreground, #111827);
 }
 .wallet-txn-date {
-  font-size: 11px;
+  font-size: 12.5px;
   color: var(--dark-50);
 }
+.wallet-txn-exp {
+  font-size: 11px;
+  color: #c25e00;
+}
 .wallet-txn-amt {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 800;
+  flex-shrink: 0;
 }
 .wallet-txn-amt.cr {
   color: #16a34a;

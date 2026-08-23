@@ -17,10 +17,23 @@ const fmtDate = (d) =>
       })
     : "";
 
+const fmtDateTime = (d) =>
+  d
+    ? `${new Date(d).toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      })} · ${new Date(d).toLocaleTimeString("en-IN", {
+        hour: "2-digit",
+        minute: "2-digit",
+      })}`
+    : "";
+
 export default function WalletPage() {
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(true);
   const [ledger, setLedger] = useState(null);
+  const [filter, setFilter] = useState("all"); // all | credit | debit
 
   useEffect(() => {
     const p = getSavedPhone();
@@ -94,36 +107,63 @@ export default function WalletPage() {
         {ledger && ledger.history.length > 0 && (
           <div className="wallet-history">
             <h2 className="wallet-h2">Transaction history</h2>
-            {ledger.history.map((h, i) => (
-              <div key={i} className="wallet-txn">
-                <span
-                  className={`wallet-txn-ic ${h.type === "credit" ? "cr" : "db"}`}
+
+            {/* Filter chips (like the ride-history filter) */}
+            <div className="wallet-filter">
+              {[
+                { k: "all", label: "All" },
+                { k: "credit", label: "Credited" },
+                { k: "debit", label: "Used" },
+              ].map((f) => (
+                <button
+                  key={f.k}
+                  type="button"
+                  className={`wallet-chip${filter === f.k ? " on" : ""}`}
+                  onClick={() => setFilter(f.k)}
                 >
-                  {h.type === "credit" ? (
-                    <ArrowDownCircle size={18} />
-                  ) : (
-                    <ArrowUpCircle size={18} />
-                  )}
-                </span>
-                <div className="wallet-txn-mid">
-                  <span className="wallet-txn-title">
-                    {h.reason ||
-                      (h.type === "credit" ? "Reward credited" : "Used on order")}
-                  </span>
-                  <span className="wallet-txn-date">
-                    {fmtDate(h.date)}
-                    {h.type === "credit" && h.expires
-                      ? ` · expires ${fmtDate(h.expires)}`
-                      : ""}
-                  </span>
-                </div>
-                <span
-                  className={`wallet-txn-amt ${h.type === "credit" ? "cr" : "db"}`}
-                >
-                  {h.type === "credit" ? "+" : "−"}₹{Math.abs(h.amount)}
-                </span>
-              </div>
-            ))}
+                  {f.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="wallet-txn-list">
+              {ledger.history
+                .filter((h) => filter === "all" || h.type === filter)
+                .map((h, i) => (
+                  <div key={i} className="wallet-txn">
+                    <span
+                      className={`wallet-txn-ic ${h.type === "credit" ? "cr" : "db"}`}
+                    >
+                      {h.type === "credit" ? (
+                        <ArrowDownCircle size={20} />
+                      ) : (
+                        <ArrowUpCircle size={20} />
+                      )}
+                    </span>
+                    <div className="wallet-txn-mid">
+                      <span className="wallet-txn-title">
+                        {h.reason ||
+                          (h.type === "credit"
+                            ? "Reward credited"
+                            : "Used on order")}
+                      </span>
+                      <span className="wallet-txn-date">
+                        {fmtDateTime(h.date)}
+                      </span>
+                      {h.type === "credit" && h.expires && (
+                        <span className="wallet-txn-exp">
+                          Expires {fmtDate(h.expires)}
+                        </span>
+                      )}
+                    </div>
+                    <span
+                      className={`wallet-txn-amt ${h.type === "credit" ? "cr" : "db"}`}
+                    >
+                      {h.type === "credit" ? "+" : "−"}₹{Math.abs(h.amount)}
+                    </span>
+                  </div>
+                ))}
+            </div>
           </div>
         )}
 

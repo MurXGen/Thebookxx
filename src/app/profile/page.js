@@ -54,6 +54,7 @@ import InstallAppBar from "@/components/InstallAppBar";
 import RecommendationModal from "@/components/RecommendationModal";
 import ProfileQuickReads from "@/components/quickreads/ProfileQuickReads";
 import { getVerifiedBookIdsForPhone } from "@/lib/quickreads";
+import { fetchWalletLedger } from "@/utils/walletLedger";
 import { books as ALL_BOOKS } from "@/utils/book";
 
 // Match an order-item name to its book cover (order items come from the sheet,
@@ -892,17 +893,13 @@ export default function MyOrdersPage() {
           comment: order["Comment for this order"] || order["Comment"] || "",
         };
       });
-      // Wallet balance = SUM of all "Wallet" ledger entries for this phone
-      // (rewards positive, wallet spent on orders negative). Never below 0.
-      const walletValue = Math.max(
-        0,
-        Math.round(
-          parsedOrders.reduce((sum, order) => {
-            const w = parseFloat(order["Wallet"] ?? order["wallet"] ?? 0);
-            return isNaN(w) ? sum : sum + w;
-          }, 0),
-        ),
-      );
+      // Wallet balance now comes from the dedicated Wallet sheet (read via the
+      // ledger, which applies 60-day expiry). Never below 0.
+      let walletValue = 0;
+      try {
+        const led = await fetchWalletLedger(phone);
+        walletValue = led.balance || 0;
+      } catch (_) {}
       setWalletBalance(walletValue);
 
       // Only show genuine orders in the list. Wallet-only reward rows (pushed

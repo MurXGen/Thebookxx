@@ -170,6 +170,7 @@ export default function OrderDetailPage() {
 
   const mapRef = useRef(null);
   const mapObj = useRef(null);
+  const animRef = useRef(null);
   const geoKey = `tbx_geo_${number}`;
 
   // Fetch the order.
@@ -295,18 +296,6 @@ export default function OrderDetailPage() {
         0,
         Math.min(path.length - 1, Math.round(pct * (path.length - 1))),
       );
-      const travelled = path.slice(0, splitIdx + 1);
-      const remaining = path.slice(splitIdx);
-      const parcelAt = path[splitIdx];
-
-      // remaining (dashed darker grey) then travelled (solid orange brand) on top
-      L.polyline(remaining, {
-        color: "#64748b",
-        weight: 4,
-        dashArray: "6 8",
-      }).addTo(map);
-      L.polyline(travelled, { color: "#fb8500", weight: 5 }).addTo(map);
-
       // Inline lucide-style SVGs (white stroke) so map pins use icons, not emoji.
       const svg = (inner) =>
         `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
@@ -325,26 +314,54 @@ export default function OrderDetailPage() {
           iconSize: [size, size],
           iconAnchor: [size / 2, size / 2],
         });
+      // Full route as a dashed grey base; the orange "travelled" line grows
+      // over it as the vehicle animates from source to the current point.
+      L.polyline(path, {
+        color: "#64748b",
+        weight: 4,
+        dashArray: "6 8",
+      }).addTo(map);
+      const travelledLine = L.polyline([path[0]], {
+        color: "#fb8500",
+        weight: 5,
+      }).addTo(map);
+
       L.marker(A, { icon: dot("#111827", ICON_BOOK) }).addTo(map);
       L.marker(B, { icon: dot("#c0223b", ICON_HOME) }).addTo(map);
       // Vehicle travelling the route — train for standard, plane for express.
-      L.marker(parcelAt, {
+      const vehicle = L.marker(path[0], {
         icon: dot("#111827", isFaster ? ICON_PLANE : ICON_TRAIN, 36),
         zIndexOffset: 1000,
       }).addTo(map);
 
       map.fitBounds(path, { padding: [36, 36] });
-      // The container may have been laid out after the map initialised (wider
-      // page width), leaving grey gaps — recompute the size then refit.
       setTimeout(() => {
         try {
           map.invalidateSize();
           map.fitBounds(path, { padding: [36, 36] });
         } catch {}
       }, 80);
+
+      // Smoothly animate the vehicle + orange trail from source to the current
+      // point (easeOutCubic), a slow ~2.4s glide once the map is ready.
+      if (animRef.current) cancelAnimationFrame(animRef.current);
+      const targetIdx = splitIdx;
+      const duration = 2400;
+      const ease = (t) => 1 - Math.pow(1 - t, 3);
+      const startAt = performance.now() + 350; // small settle delay
+      const step = (now) => {
+        if (disposed) return;
+        const t = Math.max(0, Math.min(1, (now - startAt) / duration));
+        const idx = Math.max(0, Math.round(ease(t) * targetIdx));
+        travelledLine.setLatLngs(path.slice(0, idx + 1));
+        vehicle.setLatLng(path[idx]);
+        if (t < 1) animRef.current = requestAnimationFrame(step);
+      };
+      animRef.current = requestAnimationFrame(step);
     })();
     return () => {
       disposed = true;
+      if (animRef.current) cancelAnimationFrame(animRef.current);
     };
   }, [receiver, order, routeCoords]);
 
@@ -748,52 +765,6 @@ export default function OrderDetailPage() {
             >
               {mapFull ? <Minimize2 size={17} /> : <Maximize2 size={17} />}
             </button>
-
-            {/* Arrival card overlapping the map bottom */}
-            <div className="od-track-card">
-              <div className="od-tc-main">
-                <span className="od-tc-ic">
-                  {delivered ? <Home size={18} /> : <Truck size={18} />}
-                </span>
-                <div className="od-tc-txt">
-                  <strong>{stLabel.title}</strong>
-                  <span>{stLabel.sub}</span>
-                </div>
-                <div className="od-tc-eta">
-                  {eta.done ? (
-                    <span className="od-tc-eta-done">{eta.done}</span>
-                  ) : (
-                    <>
-                      <span className="od-tc-eta-num">{eta.num}</span>
-                      <span className="od-tc-eta-unit">{eta.unit}</span>
-                    </>
-                  )}
-                </div>
-              </div>
-              <div className="od-tc-bar" aria-hidden="true">
-                <span
-                  className="od-tc-bar-fill"
-                  style={{ width: `${progressPct}%` }}
-                />
-              </div>
-              <div className="od-tc-divider" />
-              <div className="od-tc-foot">
-                <span className="od-tc-courier">
-                  {isFaster ? <Plane size={15} /> : <Train size={15} />}
-                  {isFaster ? "Express delivery" : "Standard delivery"}
-                  {!delivered ? ` · ${etaMin}–${etaMax} days` : ""}
-                </span>
-                {inTransit && shippingId && (
-                  <button
-                    type="button"
-                    className="od-tc-track"
-                    onClick={() => setShowTrack(true)}
-                  >
-                    Track ↗
-                  </button>
-                )}
-              </div>
-            </div>
           </>
         ) : geoState === "loading" ? (
           <div className="od-map-fallback">
@@ -809,6 +780,54 @@ export default function OrderDetailPage() {
           </div>
         )}
       </section>
+
+      {/* Arrival card — pulled up to overlap the map bottom (Flipkart-style) */}
+      {geoState === "ok" && receiver && (
+        <div className="od-track-card">
+          <div className="od-tc-main">
+            <span className="od-tc-ic">
+              {delivered ? <Home size={18} /> : <Truck size={18} />}
+            </span>
+            <div className="od-tc-txt">
+              <strong>{stLabel.title}</strong>
+              <span>{stLabel.sub}</span>
+            </div>
+            <div className="od-tc-eta">
+              {eta.done ? (
+                <span className="od-tc-eta-done">{eta.done}</span>
+              ) : (
+                <>
+                  <span className="od-tc-eta-num">{eta.num}</span>
+                  <span className="od-tc-eta-unit">{eta.unit}</span>
+                </>
+              )}
+            </div>
+          </div>
+          <div className="od-tc-bar" aria-hidden="true">
+            <span
+              className="od-tc-bar-fill"
+              style={{ width: `${progressPct}%` }}
+            />
+          </div>
+          <div className="od-tc-divider" />
+          <div className="od-tc-foot">
+            <span className="od-tc-courier">
+              {isFaster ? <Plane size={15} /> : <Train size={15} />}
+              {isFaster ? "Express delivery" : "Standard delivery"}
+              {!delivered ? ` · ${etaMin}–${etaMax} days` : ""}
+            </span>
+            {inTransit && shippingId && (
+              <button
+                type="button"
+                className="od-tc-track"
+                onClick={() => setShowTrack(true)}
+              >
+                Track ↗
+              </button>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Deliver-to (directly below the map) */}
       <section className="od-block">
@@ -982,6 +1001,18 @@ export default function OrderDetailPage() {
         )}
       </section>
 
+      {/* Ask about this order (WhatsApp) — outlined, below price details */}
+      <button type="button" className="od-help-btn" onClick={askAboutOrder}>
+        <FaWhatsapp size={16} /> Ask about this order
+      </button>
+      <button
+        type="button"
+        className="od-bill-btn od-bill-full"
+        onClick={downloadBill}
+      >
+        <Download size={16} /> Download bill
+      </button>
+
       {/* Refer & earn — coming soon (kept for roadmap) */}
       <div className="od-ad-banner od-ad-soon" aria-disabled="true">
         <span className="od-ad-soon-badge">Coming soon</span>
@@ -1008,29 +1039,6 @@ export default function OrderDetailPage() {
           </div>
         </section>
       )}
-
-      {/* Actions */}
-      <div className="od-actions">
-        <button
-          type="button"
-          className="od-bill-btn"
-          onClick={downloadBill}
-        >
-          <Download size={16} /> Download bill
-        </button>
-        <button
-          type="button"
-          className="od-track-btn"
-          onClick={() => setShowTrack(true)}
-        >
-          <Package size={16} /> Track order
-        </button>
-      </div>
-
-      {/* Ask about this order (WhatsApp) — secondary, below the actions */}
-      <button type="button" className="od-help-btn" onClick={askAboutOrder}>
-        <FaWhatsapp size={16} /> Ask about this order
-      </button>
 
       <AnimatePresence>
         {showTrack && (

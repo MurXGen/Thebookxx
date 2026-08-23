@@ -34399,7 +34399,7 @@ img[data-loaded="true"] {
   border: 1px solid var(--dark-20, #82828250);
   border-radius: 16px;
   overflow: hidden;
-  margin-bottom: 14px;
+  margin-bottom: 0;
 }
 .od-map {
   width: 100%;
@@ -34427,15 +34427,14 @@ img[data-loaded="true"] {
 }
 /* Floating arrival card (Flipkart-style, overlaps map bottom) */
 .od-track-card {
-  position: absolute;
-  left: 12px;
-  right: 12px;
-  bottom: 12px;
-  z-index: 3;
+  position: relative;
+  z-index: 6;
+  /* Pull up so it overlaps the map bottom, then normal flow for what follows. */
+  margin: -48px 16px 16px;
   background: #fff;
   border: 1px solid var(--dark-20, #82828250);
   border-radius: 14px;
-  padding: 12px 14px;
+  padding: 14px 16px;
   box-shadow: 0 10px 28px -12px rgba(0, 0, 0, 0.35);
 }
 .od-tc-main {
@@ -34729,19 +34728,19 @@ img[data-loaded="true"] {
   justify-content: center;
   gap: 8px;
   padding: 13px;
-  margin-top: 10px;
+  margin-bottom: 14px;
   border-radius: 14px;
-  border: 1px solid var(--dark-20, #82828250);
+  border: 1px solid #0a0a0a;
   background: #fff;
-  color: var(--foreground, #111827);
+  color: #0a0a0a;
   font-size: var(--px-14);
   font-weight: 700;
   cursor: pointer;
-  transition: border-color 0.15s ease, background 0.15s ease;
+  transition: background 0.15s ease, color 0.15s ease;
 }
 .od-help-btn:hover {
-  border-color: #25d366;
-  background: #f6fef9;
+  background: #0a0a0a;
+  color: #fff;
 }
 .od-help-btn svg {
   color: #25d366;
@@ -34770,6 +34769,10 @@ img[data-loaded="true"] {
 .od-bill-btn:hover {
   background: #0a0a0a;
   color: #fff;
+}
+.od-bill-full {
+  width: 100%;
+  margin-bottom: 14px;
 }
 
 /* Promo banner */

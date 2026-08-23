@@ -640,6 +640,9 @@ export default function OrderDetailPage() {
     return { done: "Confirmed" };
   })();
 
+  // Journey progress 0..1 for the green fill bar.
+  const progressPct = Math.round(computeProgress(order) * 100);
+
   // Delivery window (min/max days) + estimated date range.
   const [etaMin, etaMax] = isFaster ? [1, 5] : [4, 9];
   const estimate = (() => {
@@ -731,6 +734,12 @@ export default function OrderDetailPage() {
                     </>
                   )}
                 </div>
+              </div>
+              <div className="od-tc-bar" aria-hidden="true">
+                <span
+                  className="od-tc-bar-fill"
+                  style={{ width: `${progressPct}%` }}
+                />
               </div>
               <div className="od-tc-divider" />
               <div className="od-tc-foot">

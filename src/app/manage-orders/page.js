@@ -8730,6 +8730,22 @@ export default function ManageOrdersPage() {
                                       <Copy size={11} className="gray-500" />
                                     )}
                                   </button>
+                                  {orderId && (
+                                    <a
+                                      className="mo-view-link"
+                                      href={`/profile/${String(
+                                        order["Phone Number"] || "",
+                                      )
+                                        .replace(/\D/g, "")
+                                        .slice(-10)}/orders/${encodeURIComponent(orderId)}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      title="Open customer order page"
+                                      onClick={(e) => e.stopPropagation()}
+                                    >
+                                      <ExternalLink size={11} /> View
+                                    </a>
+                                  )}
                                 </div>
                               </div>
                               <div className="mo-card-badges">

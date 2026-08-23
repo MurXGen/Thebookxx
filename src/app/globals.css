@@ -23100,6 +23100,24 @@ img[data-loaded="true"] {
   border-color: var(--tertiary, #fb8500);
   background: #fff7ec;
 }
+.mo-view-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-left: 4px;
+  padding: 1px 7px;
+  border-radius: 7px;
+  border: 1px solid var(--border, #e5e7eb);
+  background: #fff;
+  color: var(--tertiary, #fb8500);
+  font-size: var(--px-11);
+  font-weight: 700;
+  text-decoration: none;
+}
+.mo-view-link:hover {
+  border-color: var(--tertiary, #fb8500);
+  background: #fff7ec;
+}
 .ip-tag {
   font-size: var(--px-12);
   font-weight: 700;

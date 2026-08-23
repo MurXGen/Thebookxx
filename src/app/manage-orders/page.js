@@ -3983,6 +3983,10 @@ export default function ManageOrdersPage() {
     const isCOD = /cash|cod/i.test(o["Payment Type"] || "");
     // COD orders collect the NET amount (order value − 5.9%); non-COD unchanged.
     const codAmount = isCOD ? Math.round(rev - Math.round(rev * 0.059)) : rev;
+    // Order note: packer's comment (local edits win) or the customer's note.
+    const note =
+      String(orderNotes[o["Order ID"]] ?? o["Comment"] ?? "").trim() ||
+      String(o["Order Comment"] || "").trim();
     return {
       orderId: o["Order ID"],
       customerName: o["Customer Name"],
@@ -3994,6 +3998,7 @@ export default function ManageOrdersPage() {
       totalValueRs: rev,
       isCOD,
       codAmount,
+      note,
     };
   };
 
@@ -5535,6 +5540,7 @@ export default function ManageOrdersPage() {
       "Pincode",
       "Payment Type",
       "Amount",
+      "Shipping ID",
       "Books Count",
       "Book Titles",
       "Order Date",
@@ -5553,6 +5559,7 @@ export default function ManageOrdersPage() {
       o["Pincode"] || "",
       o["Payment Type"] || "",
       o["Total Amount"] || "",
+      o["Shipping ID"] || "",
       (o.parsedBooks || []).length,
       (o.parsedBooks || []).map((b) => `${b.name} x${b.quantity}`).join("; "),
       formatDate(o["Timestamp(D)"] || o["Timestamp"]),

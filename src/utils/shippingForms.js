@@ -394,6 +394,7 @@ export function drawAddressLabel(c, startY, data, opts = {}) {
     customerPhone,
     isCOD,
     codAmount,
+    note,
   } = data;
 
   // `big` (used by the standalone label-only download) scales up type and
@@ -614,6 +615,26 @@ export function drawAddressLabel(c, startY, data, opts = {}) {
       });
     }
     y += stripH;
+  }
+
+  // Order note strip — printed for the packer/courier when a note exists.
+  if (note && String(note).trim()) {
+    const noteFont = big ? "bold 12px sans-serif" : "bold 10px sans-serif";
+    const topPad = big ? 20 : 16;
+    const startNoteY = y;
+    c.text("NOTE:", X + 10, y + topPad, { font: F.caption, color: "#c25e00" });
+    const labelW = big ? 58 : 46;
+    const endY = c.wrap(
+      String(note).trim(),
+      X + 10 + labelW,
+      y + topPad,
+      W - 20 - labelW,
+      lineH,
+      { font: noteFont },
+    );
+    const noteH = Math.max(big ? 40 : 32, endY - startNoteY + (big ? 14 : 12));
+    c.rect(X, startNoteY, W, noteH);
+    y += noteH;
   }
 
   // Footer with order ID + date
@@ -912,7 +933,7 @@ export function buildAddressLabelCanvas(data) {
   // Wider label so a 3-up stack matches A4 proportions and fills the page
   // width instead of leaving big side margins.
   const W = 1080;
-  const SAFE_H = 780;
+  const SAFE_H = 940;
   const topPad = 36;
   const botPad = 36;
   const c = buildCanvas(W, SAFE_H);
@@ -931,6 +952,7 @@ export function buildAddressLabelCanvas(data) {
       isFaster: data.isFaster,
       hasGiftWrap: data.hasGiftWrap,
       hasBookmark: data.hasBookmark,
+      note: data.note,
     },
     { big: true },
   );

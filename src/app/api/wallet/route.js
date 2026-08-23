@@ -4,7 +4,12 @@
 // (scoped to that phone via a gviz `where`) and returns only that customer's
 // raw {date, amount} wallet rows. Balance/expiry math stays on the client.
 
-import { gvizQuery, tableToObjects, findColumn } from "@/lib/serverSheets";
+import {
+  gvizQuery,
+  tableToObjects,
+  findColumn,
+  WALLET_SHEET_NAME,
+} from "@/lib/serverSheets";
 import { rateLimit, clientIp, tooMany } from "@/lib/rateLimit";
 
 const parseSheetDate = (input) => {
@@ -42,7 +47,11 @@ export async function GET(request) {
   }
 
   try {
-    const meta = await gvizQuery({ tq: "select * limit 0" });
+    // Read the dedicated Wallet ledger tab, scoped to this phone.
+    const meta = await gvizQuery({
+      sheet: WALLET_SHEET_NAME,
+      tq: "select * limit 0",
+    });
     const phoneCol = findColumn(meta, "Phone Number");
     let where = "";
     if (phoneCol) {
@@ -51,7 +60,10 @@ export async function GET(request) {
           ? `where ${phoneCol.id} = ${digits}`
           : `where ${phoneCol.id} = '${digits}'`;
     }
-    const table = await gvizQuery({ tq: `select * ${where}`.trim() });
+    const table = await gvizQuery({
+      sheet: WALLET_SHEET_NAME,
+      tq: `select * ${where}`.trim(),
+    });
     const serverFiltered = !!phoneCol;
 
     const entries = tableToObjects(table)
@@ -62,12 +74,22 @@ export async function GET(request) {
             digits,
       )
       .map((o) => {
-        const amt = parseFloat(o["Wallet"] ?? o["wallet"] ?? 0);
+        // Amount is signed (+credit / −debit). Fall back to Type if a row only
+        // stores a positive magnitude with a Debit type.
+        let amt = parseFloat(o["Amount"] ?? o["amount"] ?? 0);
+        const type = String(o["Type"] ?? o["type"] ?? "").toLowerCase();
+        if (!isNaN(amt) && amt > 0 && type.startsWith("deb")) amt = -amt;
         const date =
           parseSheetDate(
             o["Timestamp (D)"] || o["Timestamp"] || o["Timestamp(D)"],
           ) || new Date();
-        return { date: date.getTime(), amount: amt };
+        return {
+          date: date.getTime(),
+          amount: amt,
+          type: type || (amt >= 0 ? "credit" : "debit"),
+          reason: o["Reason"] ?? o["reason"] ?? "",
+          orderId: o["Order ID"] ?? o["Order Id"] ?? "",
+        };
       })
       .filter((e) => !isNaN(e.amount) && e.amount !== 0);
 

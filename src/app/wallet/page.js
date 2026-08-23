@@ -107,7 +107,8 @@ export default function WalletPage() {
                 </span>
                 <div className="wallet-txn-mid">
                   <span className="wallet-txn-title">
-                    {h.type === "credit" ? "Reward credited" : "Used on order"}
+                    {h.reason ||
+                      (h.type === "credit" ? "Reward credited" : "Used on order")}
                   </span>
                   <span className="wallet-txn-date">
                     {fmtDate(h.date)}

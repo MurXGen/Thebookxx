@@ -193,31 +193,74 @@ export const fetchWalletBalance = async (phone) => {
   }
 };
 
-// Credit `reward` to the shopper's wallet as a POSITIVE ledger entry. When the
-// reward is earned by scratching a specific order, pass that order's id so the
-// credit row is tagged with the Order ID — this lets us remove the reward
-// automatically if that order is later deleted. Written via the server route
-// (append) so no sheet/form URL is exposed to the browser.
-export const creditWalletReward = async (phone, reward, orderId = "") => {
+// Append one wallet transaction row to the dedicated Wallet tab
+// (Timestamp | Phone Number | Amount | Type | Reason | Order ID). `amount` is
+// signed: positive = credit, negative = debit. Written via the server route so
+// no sheet/Apps Script URL is exposed to the browser.
+export const appendWalletTx = async (
+  phone,
+  { amount, type, reason = "", orderId = "" },
+) => {
   const digits = String(phone || "").replace(/\D/g, "").slice(-10);
-  if (digits.length !== 10 || !reward) return { success: false };
+  const amt = Math.round(Number(amount) || 0);
+  if (digits.length !== 10 || !amt) return { success: false };
   try {
     const data = {
-      "Phone Number": digits,
-      Wallet: String(Math.round(reward)),
       Timestamp: fmtSheetTs(new Date()),
+      "Phone Number": digits,
+      Amount: String(amt),
+      Type: type || (amt >= 0 ? "Credit" : "Debit"),
+      Reason: reason,
+      "Order ID": orderId ? String(orderId) : "",
     };
-    if (orderId) data["Order ID"] = String(orderId);
     await fetch("/api/order-write", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "append", data }),
+      body: JSON.stringify({ action: "append", data, target: "wallet" }),
     });
-    return { success: true, reward };
+    return { success: true };
   } catch (e) {
-    console.error("Wallet credit failed:", e);
+    console.error("Wallet transaction write failed:", e);
     return { success: false };
   }
+};
+
+// Credit `reward` to the shopper's wallet (positive transaction). When earned
+// by scratching a specific order, pass that order's id so the row is tagged —
+// letting us remove the reward automatically if that order is later deleted.
+export const creditWalletReward = async (
+  phone,
+  reward,
+  orderId = "",
+  reason = "Scratch card reward",
+) => {
+  const amt = Math.round(Number(reward) || 0);
+  if (amt <= 0) return { success: false };
+  const res = await appendWalletTx(phone, {
+    amount: Math.abs(amt),
+    type: "Credit",
+    reason,
+    orderId,
+  });
+  return res.success ? { success: true, reward: amt } : { success: false };
+};
+
+// Debit `amount` from the shopper's wallet (negative transaction) — used when
+// wallet balance is spent on an order.
+export const debitWallet = async (
+  phone,
+  amount,
+  orderId = "",
+  reason = "Used on order",
+) => {
+  const amt = Math.round(Number(amount) || 0);
+  if (amt <= 0) return { success: false };
+  return appendWalletTx(phone, {
+    amount: -Math.abs(amt),
+    type: "Debit",
+    reason: orderId ? `${reason} ${orderId}` : reason,
+    orderId,
+  });
 };
 
 // A random scratch-card reward between ₹20 and ₹29 (inclusive).
@@ -344,9 +387,9 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
         : ""),
     tinyUrl: orderLink,
     orderStatus: "Processing",
-    // Record wallet spent on this order as a NEGATIVE ledger entry so the
-    // shopper's balance nets down. Blank when no wallet was used.
-    wallet: walletUsed > 0 ? -Math.round(walletUsed) : "",
+    // Wallet spent is now recorded in the dedicated Wallet tab (see the debit
+    // write below), not on the order row.
+    wallet: "",
     timestamp: formattedTimestamp,
     userAgent:
       typeof navigator !== "undefined"
@@ -365,6 +408,12 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
   }
 
   await submitOrderToGoogleForm(formData);
+  // Record any wallet spent as a debit in the dedicated Wallet tab.
+  if (walletUsed > 0) {
+    debitWallet(walletPhone || addressData.phone, walletUsed, orderId).catch(
+      () => {},
+    );
+  }
   // Hand the order id back so the caller can poll this exact row.
   return formData.orderId;
 };
@@ -442,7 +491,8 @@ export const submitConfirmedOrder = async (
       String(row["TinyURL"] || "") ||
       `https://thebookx.in?orderID=${encodeURIComponent(confirmedId)}`,
     orderStatus: "Processing",
-    wallet: walletUsed > 0 ? -Math.round(walletUsed) : "",
+    // Wallet spent is recorded in the dedicated Wallet tab (debit below).
+    wallet: "",
     timestamp: fmtSheetTs(new Date()),
   };
 
@@ -462,5 +512,8 @@ export const submitConfirmedOrder = async (
   }
 
   const ok = await submitOrderToGoogleForm(orderData);
+  if (ok && walletUsed > 0) {
+    debitWallet(orderData.phone, walletUsed, confirmedId).catch(() => {});
+  }
   return { success: !!ok, orderData };
 };

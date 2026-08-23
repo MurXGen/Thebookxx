@@ -15,6 +15,11 @@ export const ORDERS_SHEET_ID =
 export const ORDERS_SHEET_NAME =
   process.env.ORDERS_SHEET_NAME || "Form responses 1";
 
+// Dedicated wallet ledger tab (Timestamp | Phone Number | Amount | Type |
+// Reason | Order ID). One row per transaction.
+export const WALLET_SHEET_NAME =
+  process.env.WALLET_SHEET_NAME || "Wallet";
+
 // Apps Script web apps (writes/edits). Keep these on the server so nobody can
 // call them directly to forge/modify sheet rows.
 export const APPSCRIPT_ORDER_URL =

@@ -78,7 +78,7 @@ import {
 import Link from "next/link";
 import { books as ALL_BOOKS } from "@/utils/book";
 import { getBookCost } from "@/data/bookCosts";
-import { creditWalletReward } from "@/utils/googleFormOrder";
+import { creditWalletReward, appendWalletTx } from "@/utils/googleFormOrder";
 import { showToast } from "@/context/ToastContext";
 import { getDeliveryCharge } from "@/utils/cartOffers";
 
@@ -5118,7 +5118,12 @@ export default function ManageOrdersPage() {
     }
     setWalletBusy(true);
     try {
-      const res = await creditWalletReward(user.phone, delta);
+      // Signed transaction to the Wallet tab: +delta credits, −delta deducts.
+      const res = await appendWalletTx(user.phone, {
+        amount: delta,
+        type: delta >= 0 ? "Credit" : "Debit",
+        reason: "Manual adjustment by admin",
+      });
       if (!res || !res.success) throw new Error("Ledger append failed");
       // Reflect the new balance locally by appending a matching ledger row.
       setOrders((prev) => [

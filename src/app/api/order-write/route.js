@@ -6,7 +6,11 @@
 //   target: "order" (default) -> APPSCRIPT_ORDER_URL (new orders + updates)
 //           "edit"            -> APPSCRIPT_EDIT_URL   (profile address edits)
 
-import { APPSCRIPT_ORDER_URL, APPSCRIPT_EDIT_URL } from "@/lib/serverSheets";
+import {
+  APPSCRIPT_ORDER_URL,
+  APPSCRIPT_EDIT_URL,
+  WALLET_SHEET_NAME,
+} from "@/lib/serverSheets";
 import { rateLimit, clientIp, tooMany } from "@/lib/rateLimit";
 
 export async function POST(request) {
@@ -40,6 +44,9 @@ export async function POST(request) {
   body.set("action", action);
   if (orderId) body.set("orderId", String(orderId));
   body.set("data", JSON.stringify(data || {}));
+  // Wallet transactions are appended to the dedicated Wallet tab; the Apps
+  // Script reads `sheet` to decide which tab to write to.
+  if (target === "wallet") body.set("sheet", WALLET_SHEET_NAME);
 
   try {
     await fetch(url, {

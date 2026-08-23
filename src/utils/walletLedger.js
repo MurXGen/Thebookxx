@@ -60,10 +60,23 @@ export function computeWalletLedger(entries, now = Date.now(), ttlDays = WALLET_
     if (e.amount > 0) {
       const expires = new Date(e.date.getTime() + ttlDays * DAY);
       credits.push({ date: e.date, remaining: e.amount, expires });
-      history.push({ date: e.date, amount: e.amount, type: "credit", expires });
+      history.push({
+        date: e.date,
+        amount: e.amount,
+        type: "credit",
+        reason: e.reason || "",
+        orderId: e.orderId || "",
+        expires,
+      });
     } else {
       let need = -e.amount;
-      history.push({ date: e.date, amount: e.amount, type: "debit" });
+      history.push({
+        date: e.date,
+        amount: e.amount,
+        type: "debit",
+        reason: e.reason || "",
+        orderId: e.orderId || "",
+      });
       for (const c of credits) {
         if (need <= 0) break;
         if (c.remaining <= 0) continue;
@@ -115,6 +128,9 @@ export async function fetchWalletEntries(phone) {
     return entries.map((e) => ({
       date: new Date(e.date),
       amount: e.amount,
+      reason: e.reason || "",
+      type: e.type || "",
+      orderId: e.orderId || "",
     }));
   } catch (e) {
     console.error("Wallet ledger fetch failed:", e);

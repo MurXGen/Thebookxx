@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Wallet, ArrowLeft, Clock, Gift, AlertTriangle, ArrowDownCircle, ArrowUpCircle } from "lucide-react";
+import { Wallet, ArrowLeft, Clock, Gift, AlertTriangle, ArrowDownCircle, ArrowUpCircle, Check } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { getSavedPhone } from "@/utils/userPhone";
 import { fetchWalletLedger, WALLET_TTL_DAYS } from "@/utils/walletLedger";
@@ -34,10 +34,18 @@ export default function WalletPage() {
   const [loading, setLoading] = useState(true);
   const [ledger, setLedger] = useState(null);
   const [filter, setFilter] = useState("all"); // all | credit | debit
+  const [name, setName] = useState("");
 
   useEffect(() => {
     const p = getSavedPhone();
     setPhone(p);
+    try {
+      const nm =
+        localStorage.getItem("track_orders_name") ||
+        JSON.parse(localStorage.getItem("checkoutAddress") || "null")?.name ||
+        "";
+      setName(String(nm || "").trim());
+    } catch (_) {}
     if (!p) {
       setLoading(false);
       return;
@@ -57,23 +65,38 @@ export default function WalletPage() {
           <ArrowLeft size={18} /> Back to profile
         </Link>
 
-        {/* Balance hero */}
+        {/* Balance card (white) */}
         <motion.div
           className="wallet-hero"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <div className="wallet-hero-ic">
-            <Wallet size={26} />
+          <div className="wallet-hero-top">
+            <div className="wallet-hero-ic">
+              <Wallet size={22} />
+            </div>
+            <div className="wallet-hero-id">
+              <span className="wallet-hero-label">TheBookX Wallet</span>
+              {name && <span className="wallet-hero-name">{name}</span>}
+            </div>
           </div>
-          <span className="wallet-hero-label">TheBookX Wallet</span>
-          <span className="wallet-hero-balance">
-            ₹{ledger ? ledger.balance : 0}
-          </span>
-          <span className="wallet-hero-sub">
-            Use it on your next order. Coins are valid for {WALLET_TTL_DAYS} days
-            from the day they are credited.
-          </span>
+          <div className="wallet-hero-balrow">
+            <span className="wallet-hero-balance">
+              ₹{ledger ? ledger.balance : 0}
+            </span>
+            <span className="wallet-hero-baltag">Available balance</span>
+          </div>
+          <div className="wallet-benefits">
+            <div className="wallet-benefit">
+              <Check size={15} /> Use on any order — no minimum
+            </div>
+            <div className="wallet-benefit">
+              <Clock size={15} /> Valid for {WALLET_TTL_DAYS} days from credit
+            </div>
+            <div className="wallet-benefit">
+              <Gift size={15} /> Earn coins with scratch cards at checkout
+            </div>
+          </div>
         </motion.div>
 
         {!phone && !loading && (

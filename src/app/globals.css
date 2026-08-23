@@ -26831,42 +26831,79 @@ img[data-loaded="true"] {
 .wallet-hero {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  text-align: center;
-  padding: 26px 18px;
+  gap: 14px;
+  padding: 20px;
   border-radius: 18px;
-  color: #1a1205;
-  background: linear-gradient(160deg, #ffd166 0%, #fb8500 100%);
-  box-shadow: 0 14px 34px -14px rgba(251, 133, 0, 0.6);
+  color: var(--foreground, #111827);
+  background: #fff;
+  border: 1px solid var(--dark-20, #82828250);
+  box-shadow: 0 12px 30px -20px rgba(0, 0, 0, 0.35);
+}
+.wallet-hero-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 .wallet-hero-ic {
-  width: 52px;
-  height: 52px;
+  width: 46px;
+  height: 46px;
   border-radius: 14px;
+  flex-shrink: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.35);
-  color: #1a1205;
+  background: #fff3e6;
+  color: var(--tertiary, #fb8500);
+}
+.wallet-hero-id {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 .wallet-hero-label {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.03em;
   text-transform: uppercase;
-  opacity: 0.85;
+  color: var(--tertiary, #fb8500);
+}
+.wallet-hero-name {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--foreground, #111827);
+}
+.wallet-hero-balrow {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
 }
 .wallet-hero-balance {
   font-size: 40px;
   font-weight: 800;
   line-height: 1;
+  color: var(--foreground, #111827);
 }
-.wallet-hero-sub {
+.wallet-hero-baltag {
   font-size: 12px;
-  max-width: 320px;
-  opacity: 0.85;
-  line-height: 1.5;
+  color: var(--dark-50, #6b7280);
+}
+.wallet-benefits {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--dark-20, #82828240);
+}
+.wallet-benefit {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #374151;
+}
+.wallet-benefit svg {
+  flex-shrink: 0;
+  color: var(--tertiary, #fb8500);
 }
 .wallet-expiry-warn {
   display: flex;

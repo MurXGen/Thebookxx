@@ -107,9 +107,10 @@ export default function OrdersListPage() {
             ),
             _status: o["Order Status"] || "Processing",
           }))
+          // Keep only real orders — a row must have items or a non-zero total.
+          // (Stray sheet rows that only carry an Order ID are skipped.)
           .filter(
             (o) =>
-              String(o["Order ID"] || "").trim() ||
               o._books.length > 0 ||
               parseFloat(o["Total Amount"] || 0) > 0,
           )

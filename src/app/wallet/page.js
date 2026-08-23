@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Wallet, ArrowLeft, Clock, Gift, AlertTriangle, ArrowDownCircle, ArrowUpCircle, Check } from "lucide-react";
+import { Wallet, ArrowLeft, Clock, Gift, AlertTriangle, ArrowDownCircle, ArrowUpCircle, Check, ChevronDown } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { getSavedPhone } from "@/utils/userPhone";
 import { fetchWalletLedger, WALLET_TTL_DAYS } from "@/utils/walletLedger";
@@ -35,6 +35,7 @@ export default function WalletPage() {
   const [ledger, setLedger] = useState(null);
   const [filter, setFilter] = useState("all"); // all | credit | debit
   const [name, setName] = useState("");
+  const [benefitsOpen, setBenefitsOpen] = useState(false);
 
   useEffect(() => {
     const p = getSavedPhone();
@@ -86,17 +87,31 @@ export default function WalletPage() {
             </span>
             <span className="wallet-hero-baltag">Available balance</span>
           </div>
-          <div className="wallet-benefits">
-            <div className="wallet-benefit">
-              <Check size={15} /> Use on any order — no minimum
+          <button
+            type="button"
+            className="wallet-benefits-toggle"
+            onClick={() => setBenefitsOpen((v) => !v)}
+            aria-expanded={benefitsOpen}
+          >
+            <span>How the wallet works</span>
+            <ChevronDown
+              size={17}
+              className={`wallet-benefits-chev${benefitsOpen ? " open" : ""}`}
+            />
+          </button>
+          {benefitsOpen && (
+            <div className="wallet-benefits">
+              <div className="wallet-benefit">
+                <Check size={15} /> Use on any order — no minimum
+              </div>
+              <div className="wallet-benefit">
+                <Clock size={15} /> Valid for {WALLET_TTL_DAYS} days from credit
+              </div>
+              <div className="wallet-benefit">
+                <Gift size={15} /> Earn coins with scratch cards at checkout
+              </div>
             </div>
-            <div className="wallet-benefit">
-              <Clock size={15} /> Valid for {WALLET_TTL_DAYS} days from credit
-            </div>
-            <div className="wallet-benefit">
-              <Gift size={15} /> Earn coins with scratch cards at checkout
-            </div>
-          </div>
+          )}
         </motion.div>
 
         {!phone && !loading && (

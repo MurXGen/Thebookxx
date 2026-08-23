@@ -26887,12 +26887,32 @@ img[data-loaded="true"] {
   font-size: 12px;
   color: var(--dark-50, #6b7280);
 }
+.wallet-benefits-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px 0 0;
+  border: none;
+  border-top: 1px dashed var(--dark-20, #82828240);
+  background: none;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--foreground, #111827);
+  cursor: pointer;
+}
+.wallet-benefits-chev {
+  color: var(--dark-50, #6b7280);
+  transition: transform 0.2s ease;
+}
+.wallet-benefits-chev.open {
+  transform: rotate(180deg);
+}
 .wallet-benefits {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding-top: 14px;
-  border-top: 1px dashed var(--dark-20, #82828240);
+  padding-top: 10px;
 }
 .wallet-benefit {
   display: flex;

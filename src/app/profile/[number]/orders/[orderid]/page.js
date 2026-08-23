@@ -1009,11 +1009,6 @@ export default function OrderDetailPage() {
         </section>
       )}
 
-      {/* Ask about this order (WhatsApp) */}
-      <button type="button" className="od-help-btn" onClick={askAboutOrder}>
-        <FaWhatsapp size={17} /> Ask about this order
-      </button>
-
       {/* Actions */}
       <div className="od-actions">
         <button
@@ -1031,6 +1026,11 @@ export default function OrderDetailPage() {
           <Package size={16} /> Track order
         </button>
       </div>
+
+      {/* Ask about this order (WhatsApp) — secondary, below the actions */}
+      <button type="button" className="od-help-btn" onClick={askAboutOrder}>
+        <FaWhatsapp size={16} /> Ask about this order
+      </button>
 
       <AnimatePresence>
         {showTrack && (

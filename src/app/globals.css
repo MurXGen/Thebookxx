@@ -34729,18 +34729,19 @@ img[data-loaded="true"] {
   justify-content: center;
   gap: 8px;
   padding: 13px;
-  margin-bottom: 10px;
+  margin-top: 10px;
   border-radius: 14px;
-  border: 1px solid #25d366;
-  background: #f0fff6;
-  color: #128c4a;
+  border: 1px solid var(--dark-20, #82828250);
+  background: #fff;
+  color: var(--foreground, #111827);
   font-size: var(--px-14);
   font-weight: 700;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: border-color 0.15s ease, background 0.15s ease;
 }
 .od-help-btn:hover {
-  background: #dcfce7;
+  border-color: #25d366;
+  background: #f6fef9;
 }
 .od-help-btn svg {
   color: #25d366;

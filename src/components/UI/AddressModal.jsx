@@ -1851,6 +1851,25 @@ export default function AddressModal({
                     </span>
                   </button>
                 </div>
+
+                {/* Social-proof trust stripe — most shoppers pay online */}
+                <div className="pay-trust">
+                  <span className="pay-trust-faces" aria-hidden="true">
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <img
+                        key={n}
+                        src={`/review/promotions/member-${n}.jpeg`}
+                        alt=""
+                        className="pay-trust-face"
+                        loading="lazy"
+                      />
+                    ))}
+                  </span>
+                  <span className="pay-trust-txt">
+                    <strong>9 out of 10 shoppers</strong> pay online &amp; skip
+                    the ₹{codFeeAmount} COD fee
+                  </span>
+                </div>
               </div>
 
               {/* Fixed footer — pay button (full width) + WhatsApp order */}
@@ -2209,6 +2228,25 @@ export default function AddressModal({
 
               {payMethodStage === "choose" ? (
                 <div className="paymeth">
+                  {/* Social-proof trust stripe */}
+                  <div className="pay-trust">
+                    <span className="pay-trust-faces" aria-hidden="true">
+                      {[1, 2, 3, 4, 5].map((n) => (
+                        <img
+                          key={n}
+                          src={`/review/promotions/member-${n}.jpeg`}
+                          alt=""
+                          className="pay-trust-face"
+                          loading="lazy"
+                        />
+                      ))}
+                    </span>
+                    <span className="pay-trust-txt">
+                      <strong>9 out of 10 shoppers</strong> pay online — you&apos;re
+                      saving money too!
+                    </span>
+                  </div>
+
                   {/* UPI apps */}
                   <div className="paymeth-group">
                     <span className="paymeth-group-title">Pay via UPI</span>

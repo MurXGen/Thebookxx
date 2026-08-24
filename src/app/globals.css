@@ -12515,6 +12515,44 @@ img[data-loaded="true"] {
   font-weight: 700;
   color: var(--dark-50, #6b7280);
 }
+/* Checkout social-proof trust stripe (Join-community style pill) */
+.pay-trust {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: #f0fff6;
+  border: 1px solid #bbf7d0;
+}
+.pay-trust-faces {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+.pay-trust-face {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 6px -2px rgba(0, 0, 0, 0.3);
+  margin-left: -12px;
+}
+.pay-trust-face:first-child {
+  margin-left: 0;
+}
+.pay-trust-txt {
+  font-size: 12.5px;
+  line-height: 1.35;
+  color: #166534;
+}
+.pay-trust-txt strong {
+  font-weight: 800;
+  color: #128c4a;
+}
+
 /* Merged hero button: overlapping avatars + label, feels like one button */
 .home-hero-community-btn {
   display: inline-flex;

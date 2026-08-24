@@ -35286,11 +35286,16 @@ img[data-loaded="true"] {
 .ok-cancel-note {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
   gap: 8px;
   padding: 12px 14px;
   border-radius: 12px;
   background: #fff7ec;
   border: 1px solid var(--tertiary-light-30, #ffe2bf);
+}
+.ok-cancel-list {
+  text-align: left;
 }
 .od-cancel-note {
   margin-bottom: 14px;

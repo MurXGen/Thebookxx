@@ -1866,8 +1866,8 @@ export default function AddressModal({
                     ))}
                   </span>
                   <span className="pay-trust-txt">
-                    <strong>9 out of 10 shoppers</strong> pay online &amp; skip
-                    the ₹{codFeeAmount} COD fee
+                    <strong>10,000+ customers</strong> opt for online mode —
+                    safer, faster &amp; more trusted
                   </span>
                 </div>
               </div>
@@ -2242,8 +2242,8 @@ export default function AddressModal({
                       ))}
                     </span>
                     <span className="pay-trust-txt">
-                      <strong>9 out of 10 shoppers</strong> pay online — you&apos;re
-                      saving money too!
+                      <strong>10,000+ customers</strong> opt for online mode —
+                      you&apos;re in trusted company!
                     </span>
                   </div>
 

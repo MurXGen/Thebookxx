@@ -1836,6 +1836,25 @@ export default function AddressModal({
                     </span>
                   </button>
 
+                  {/* Social-proof trust stripe — right below the online card */}
+                  <div className="pay-trust">
+                    <span className="pay-trust-faces" aria-hidden="true">
+                      {[1, 2, 3, 4, 5].map((n) => (
+                        <img
+                          key={n}
+                          src={`/review/promotions/member-${n}.jpeg`}
+                          alt=""
+                          className="pay-trust-face"
+                          loading="lazy"
+                        />
+                      ))}
+                    </span>
+                    <span className="pay-trust-txt">
+                      <strong>Most people</strong> opt for online mode — safer,
+                      faster &amp; more trusted
+                    </span>
+                  </div>
+
                   <button
                     type="button"
                     onClick={() => setPaySel("COD")}
@@ -1850,25 +1869,6 @@ export default function AddressModal({
                       Pay at door · incl. ₹{codFeeAmount} fee
                     </span>
                   </button>
-                </div>
-
-                {/* Social-proof trust stripe — most shoppers pay online */}
-                <div className="pay-trust">
-                  <span className="pay-trust-faces" aria-hidden="true">
-                    {[1, 2, 3, 4, 5].map((n) => (
-                      <img
-                        key={n}
-                        src={`/review/promotions/member-${n}.jpeg`}
-                        alt=""
-                        className="pay-trust-face"
-                        loading="lazy"
-                      />
-                    ))}
-                  </span>
-                  <span className="pay-trust-txt">
-                    <strong>10,000+ customers</strong> opt for online mode —
-                    safer, faster &amp; more trusted
-                  </span>
                 </div>
               </div>
 
@@ -2242,7 +2242,7 @@ export default function AddressModal({
                       ))}
                     </span>
                     <span className="pay-trust-txt">
-                      <strong>10,000+ customers</strong> opt for online mode —
+                      <strong>Most people</strong> opt for online mode —
                       you&apos;re in trusted company!
                     </span>
                   </div>

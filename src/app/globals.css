@@ -12520,11 +12520,10 @@ img[data-loaded="true"] {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-top: 12px;
   padding: 10px 14px;
-  border-radius: 999px;
-  background: #f0fff6;
-  border: 1px solid #bbf7d0;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #fdf6e3 0%, #f7eccf 100%);
+  border: 1px solid #e7d3a1;
 }
 .pay-trust-faces {
   display: flex;
@@ -12546,11 +12545,11 @@ img[data-loaded="true"] {
 .pay-trust-txt {
   font-size: 12.5px;
   line-height: 1.35;
-  color: #166534;
+  color: #7a5a12;
 }
 .pay-trust-txt strong {
   font-weight: 800;
-  color: #128c4a;
+  color: #8a5a00;
 }
 
 /* Merged hero button: overlapping avatars + label, feels like one button */
@@ -31172,8 +31171,8 @@ img[data-loaded="true"] {
 
 /* COD confirm — two equal choice cards */
 .cod-choice-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 10px;
 }
 .cod-choice {

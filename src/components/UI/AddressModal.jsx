@@ -3192,6 +3192,31 @@ export function CODSuccessModal({
                         </div>
                       </div>
 
+                      {/* Cancellation / confirmation notice (payment-aware) */}
+                      <div className="ok-cancel-note">
+                        <span className="ok-cancel-title">
+                          <Info size={14} /> Good to know
+                        </span>
+                        <ul className="ok-cancel-list">
+                          <li>This order can&apos;t be cancelled once placed.</li>
+                          {paymentMode === "COD" && (
+                            <li>
+                              You may get a call or WhatsApp to confirm your
+                              order — please stay responsive so it isn&apos;t
+                              delayed.
+                            </li>
+                          )}
+                        </ul>
+                        <a
+                          href="/terms#cancellation-policy"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="ok-cancel-link"
+                        >
+                          View cancellation policy →
+                        </a>
+                      </div>
+
                     </div>
                   </div>
 

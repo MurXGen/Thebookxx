@@ -274,6 +274,34 @@ export default function TermsAndConditions() {
             within 5-7 business days of return verification.
           </li>
         </ul>
+
+        <h3 id="cancellation-policy">Order cancellation policy</h3>
+        <ul>
+          <li>
+            <strong>Once an Order is placed, it cannot be cancelled by the
+            customer.</strong> Our team begins processing and packing Orders
+            almost immediately to ship them quickly.
+          </li>
+          <li>
+            If a paid (prepaid/UPI) Order must be cancelled at the customer's
+            request as an exception, a{" "}
+            <strong>flat cancellation charge of ₹100</strong> will be deducted
+            from the refund to cover payment-gateway, packing, and handling
+            costs. The balance, if any, is refunded to the original payment
+            method.
+          </li>
+          <li>
+            If <strong>TheBookX cancels an Order</strong> (for example, an item
+            is out of stock or undeliverable to your area), we will initiate a{" "}
+            <strong>full refund with no deductions</strong> — no questions
+            asked.
+          </li>
+          <li>
+            For Cash on Delivery (COD) Orders, our team may call or send a
+            WhatsApp message to confirm the Order before dispatch. Please stay
+            responsive so your Order isn't delayed.
+          </li>
+        </ul>
       </section>
 
       <section id="intellectual">

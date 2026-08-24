@@ -19,6 +19,7 @@ import {
   ChevronDown,
   Truck,
   ShieldCheck,
+  Info,
   Train,
   Plane,
   Gift,
@@ -871,6 +872,32 @@ export default function OrderDetailPage() {
           </div>
         )}
       </section>
+
+      {/* Cancellation / confirmation notice */}
+      {!delivered && !cancelled && (
+        <div className="ok-cancel-note od-cancel-note">
+          <span className="ok-cancel-title">
+            <Info size={14} /> Good to know
+          </span>
+          <ul className="ok-cancel-list">
+            <li>This order can&apos;t be cancelled once placed.</li>
+            {/cash on delivery|cod/i.test(order["Payment Type"] || "") && (
+              <li>
+                You may get a call or WhatsApp to confirm your order — please
+                stay responsive so it isn&apos;t delayed.
+              </li>
+            )}
+          </ul>
+          <a
+            href="/terms#cancellation-policy"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ok-cancel-link"
+          >
+            View cancellation policy →
+          </a>
+        </div>
+      )}
 
       {/* Items summary strip (Flipkart "Total N items" + thumbnails) */}
       <section className="od-block od-items-block">

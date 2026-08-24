@@ -164,7 +164,7 @@ export default function AddressModal({
   const [showPaySelect, setShowPaySelect] = useState(false);
   // Which method is currently highlighted on the "Choose payment method" sheet.
   // Defaults to none — the shopper must pick, then confirm with the button below.
-  const [paySel, setPaySel] = useState(null);
+  const [paySel, setPaySel] = useState("UPI"); // online selected by default
   // Which delivery speed is highlighted in the chooser (tap to select).
   const [deliverySel, setDeliverySel] = useState("standard");
   const [tempPaymentMethod, setTempPaymentMethod] = useState(null);
@@ -1816,57 +1816,70 @@ export default function AddressModal({
                   </label>
                 )}
 
-                {/* Two payment choices — tap to select (default COD) */}
+                {/* Two payment choices — online selected by default */}
                 <div className="cod-choice-grid">
                   <button
                     type="button"
                     onClick={() => setPaySel("UPI")}
                     className={`cod-choice cod-choice-upi${paySel === "UPI" ? " selected" : ""}`}
                   >
-                    <span className="cod-choice-badge">
-                      Save ₹{codFeeAmount}
+                    <span className="cod-choice-main">
+                      <span className="cod-choice-radio" aria-hidden="true" />
+                      <span className="cod-choice-info">
+                        <span className="cod-choice-title">Pay online</span>
+                        <span className="cod-choice-sub">
+                          UPI, cards &amp; more · no extra charge
+                        </span>
+                      </span>
+                      <span className="cod-choice-right">
+                        <span className="cod-choice-badge">
+                          Save ₹{codFeeAmount}
+                        </span>
+                        <span className="cod-choice-amt">
+                          ₹{upiTotalForFlow}
+                        </span>
+                      </span>
                     </span>
-                    <span className="cod-choice-ic">
-                      <Sparkles size={18} />
-                    </span>
-                    <span className="cod-choice-title">Pay online</span>
-                    <span className="cod-choice-amt">₹{upiTotalForFlow}</span>
-                    <span className="cod-choice-sub">
-                      UPI, cards &amp; more · no extra charge
+                    {/* Trust stripe inside the online card */}
+                    <span className="pay-trust">
+                      <span className="pay-trust-faces" aria-hidden="true">
+                        {[1, 2, 3].map((n) => (
+                          <img
+                            key={n}
+                            src={`/review/promotions/member-${n}.jpeg`}
+                            alt=""
+                            className="pay-trust-face"
+                            loading="lazy"
+                          />
+                        ))}
+                      </span>
+                      <span className="pay-trust-txt">
+                        <strong>Most people</strong> opt for online mode —
+                        safer, faster &amp; more trusted
+                      </span>
                     </span>
                   </button>
-
-                  {/* Social-proof trust stripe — right below the online card */}
-                  <div className="pay-trust">
-                    <span className="pay-trust-faces" aria-hidden="true">
-                      {[1, 2, 3].map((n) => (
-                        <img
-                          key={n}
-                          src={`/review/promotions/member-${n}.jpeg`}
-                          alt=""
-                          className="pay-trust-face"
-                          loading="lazy"
-                        />
-                      ))}
-                    </span>
-                    <span className="pay-trust-txt">
-                      <strong>Most people</strong> opt for online mode — safer,
-                      faster &amp; more trusted
-                    </span>
-                  </div>
 
                   <button
                     type="button"
                     onClick={() => setPaySel("COD")}
                     className={`cod-choice cod-choice-cod${paySel === "COD" ? " selected" : ""}`}
                   >
-                    <span className="cod-choice-ic cod-ic-neutral">
-                      <Wallet size={18} />
-                    </span>
-                    <span className="cod-choice-title">Cash on Delivery</span>
-                    <span className="cod-choice-amt">₹{codTotalWithFee}</span>
-                    <span className="cod-choice-sub">
-                      Pay at door · incl. ₹{codFeeAmount} fee
+                    <span className="cod-choice-main">
+                      <span className="cod-choice-radio" aria-hidden="true" />
+                      <span className="cod-choice-info">
+                        <span className="cod-choice-title">
+                          Cash on Delivery
+                        </span>
+                        <span className="cod-choice-sub">
+                          Pay at door · incl. ₹{codFeeAmount} fee
+                        </span>
+                      </span>
+                      <span className="cod-choice-right">
+                        <span className="cod-choice-amt">
+                          ₹{codTotalWithFee}
+                        </span>
+                      </span>
                     </span>
                   </button>
                 </div>

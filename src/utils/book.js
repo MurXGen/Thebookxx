@@ -9663,7 +9663,7 @@ export const books = [
     pages: "300-420",
     language: "English",
     size: "Paperback",
-    stock: 24,
+    stock: 0,
     catalogue: ["thriller", "fiction"],
     originalPrice: calculateOriginalPrice(179),
     discountedPrice: 179,

@@ -12520,13 +12520,15 @@ img[data-loaded="true"] {
   display: flex;
   align-items: center;
   gap: 9px;
-  /* Tuck it just under the online-payment card, slightly inset (RuPay-style) */
-  margin: -5px 10px 0;
-  padding: 6px 12px;
-  border-radius: 0 0 12px 12px;
+  padding: 8px 16px;
   background: linear-gradient(135deg, #fdf6e3 0%, #f7eccf 100%);
+  border-top: 1px solid #e7d3a1;
+}
+/* Standalone version on the UPI chooser screen — self-contained pill */
+.paymeth > .pay-trust {
+  margin: 0 0 12px;
   border: 1px solid #e7d3a1;
-  border-top: none;
+  border-radius: 12px;
 }
 .pay-trust-faces {
   display: flex;
@@ -31182,31 +31184,65 @@ img[data-loaded="true"] {
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
+  width: 100%;
   text-align: left;
-  padding: 14px;
-  border-radius: 14px;
+  padding: 0;
+  border-radius: 16px;
   border: 1.5px solid var(--dark-10, #e5e7eb);
   background: #fff;
   cursor: pointer;
+  overflow: hidden;
+  box-shadow: 0 6px 18px -12px rgba(0, 0, 0, 0.25);
   transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease;
 }
 .cod-choice:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px -8px rgba(0, 0, 0, 0.2);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px -12px rgba(0, 0, 0, 0.28);
+}
+/* Row: radio + name/sub on the left, amount on the right */
+.cod-choice-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 16px;
+}
+.cod-choice-radio {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--dark-20, #cbd5e1);
+  position: relative;
+  transition: border-color 0.15s ease;
+}
+.cod-choice.selected .cod-choice-radio::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.cod-choice-info {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.cod-choice-right {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
 }
 .cod-choice-upi {
-  border-color: rgba(0, 143, 12, 0.35);
-  background: linear-gradient(180deg, rgba(0, 143, 12, 0.05), #fff);
+  color: #008f0c;
 }
-.cod-choice-upi:hover {
-  border-color: #008f0c;
+.cod-choice-cod {
+  color: var(--tertiary, #fb8500);
 }
-.cod-choice-cod:hover {
-  border-color: var(--tertiary, #fb8500);
-}
-/* Selected state (cards are tap-to-select, confirm below) */
 .cod-choice-upi.selected {
   border-color: #008f0c;
   box-shadow: 0 0 0 3px rgba(0, 143, 12, 0.14);
@@ -31216,38 +31252,20 @@ img[data-loaded="true"] {
   box-shadow: 0 0 0 3px rgba(251, 133, 0, 0.14);
 }
 .cod-choice-badge {
-  position: absolute;
-  top: 10px;
-  right: 10px;
   font-size: 9.5px;
   font-weight: 800;
   color: #fff;
   background: #008f0c;
   border-radius: 999px;
-  padding: 2px 7px;
-}
-.cod-choice-ic {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
-  background: rgba(0, 143, 12, 0.12);
-  color: #008f0c;
-  margin-bottom: 4px;
-}
-.cod-ic-neutral {
-  background: rgba(251, 133, 0, 0.12);
-  color: var(--tertiary, #fb8500);
+  padding: 2px 8px;
 }
 .cod-choice-title {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--foreground);
 }
 .cod-choice-amt {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 800;
   color: var(--foreground);
   line-height: 1.15;
@@ -31256,13 +31274,8 @@ img[data-loaded="true"] {
   color: #008f0c;
 }
 .cod-choice-sub {
-  font-size: 10.5px;
+  font-size: 11px;
   color: var(--dark-50);
-}
-@media (max-width: 420px) {
-  .cod-choice-grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 /* Supported UPI apps chips */

@@ -1839,7 +1839,7 @@ export default function AddressModal({
                   {/* Social-proof trust stripe — right below the online card */}
                   <div className="pay-trust">
                     <span className="pay-trust-faces" aria-hidden="true">
-                      {[1, 2, 3, 4, 5].map((n) => (
+                      {[1, 2, 3].map((n) => (
                         <img
                           key={n}
                           src={`/review/promotions/member-${n}.jpeg`}
@@ -2231,7 +2231,7 @@ export default function AddressModal({
                   {/* Social-proof trust stripe */}
                   <div className="pay-trust">
                     <span className="pay-trust-faces" aria-hidden="true">
-                      {[1, 2, 3, 4, 5].map((n) => (
+                      {[1, 2, 3].map((n) => (
                         <img
                           key={n}
                           src={`/review/promotions/member-${n}.jpeg`}

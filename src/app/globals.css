@@ -12519,11 +12519,14 @@ img[data-loaded="true"] {
 .pay-trust {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 14px;
-  border-radius: 14px;
+  gap: 9px;
+  /* Tuck it just under the online-payment card, slightly inset (RuPay-style) */
+  margin: -5px 10px 0;
+  padding: 6px 12px;
+  border-radius: 0 0 12px 12px;
   background: linear-gradient(135deg, #fdf6e3 0%, #f7eccf 100%);
   border: 1px solid #e7d3a1;
+  border-top: none;
 }
 .pay-trust-faces {
   display: flex;
@@ -12531,20 +12534,20 @@ img[data-loaded="true"] {
   flex-shrink: 0;
 }
 .pay-trust-face {
-  width: 34px;
-  height: 34px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #fff;
-  box-shadow: 0 2px 6px -2px rgba(0, 0, 0, 0.3);
-  margin-left: -12px;
+  border: 2px solid #fdf6e3;
+  box-shadow: 0 1px 4px -1px rgba(0, 0, 0, 0.3);
+  margin-left: -9px;
 }
 .pay-trust-face:first-child {
   margin-left: 0;
 }
 .pay-trust-txt {
-  font-size: 12.5px;
-  line-height: 1.35;
+  font-size: 11.5px;
+  line-height: 1.3;
   color: #7a5a12;
 }
 .pay-trust-txt strong {

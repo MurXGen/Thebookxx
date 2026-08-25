@@ -20412,9 +20412,19 @@ img[data-loaded="true"] {
   font-weight: 800;
   color: var(--foreground, #0a0a0a);
   line-height: 1.2;
-  white-space: nowrap;
+  /* Identity field — never truncate to an ellipsis; wrap up to 2 lines. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
+  overflow-wrap: anywhere;
+}
+/* Order ID is an identity field — show it in full, wrap instead of ellipsis. */
+.mo-oid-val {
+  white-space: normal;
+  word-break: break-all;
+  overflow: visible;
+  text-overflow: clip;
 }
 .mo-meta {
   display: inline-flex;
@@ -22250,6 +22260,19 @@ img[data-loaded="true"] {
   font-size: 11px;
   font-weight: 600;
   color: #b45309;
+}
+.mo-loss-flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 5px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  font-size: 10.5px;
+  font-weight: 800;
 }
 /* Top-right badge cluster (age + pay + chevron over the status/delete row) */
 .mo-card-badges {

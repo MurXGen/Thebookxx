@@ -110,6 +110,21 @@ const openWhatsApp = (phone, text) => {
   window.open(url, "_blank", "noopener,noreferrer");
 };
 
+// Collapse a redundant delivery-type value like "Standard Delivery (Standard
+// Delivery)" — the checkout stores the label twice — into a single clean label.
+const cleanDeliveryType = (raw) => {
+  let s = String(raw || "").trim();
+  if (!s) return "—";
+  // "A (A)" or "A (a)" → "A"
+  const m = s.match(/^(.*?)\s*\((.*?)\)\s*$/);
+  if (m && m[1].trim().toLowerCase() === m[2].trim().toLowerCase()) {
+    s = m[1].trim();
+  }
+  // "Standard Delivery Delivery" → "Standard Delivery"
+  s = s.replace(/\b(\w+)\s+\1\b/gi, "$1");
+  return s || "—";
+};
+
 // Prefilled, nicely-formatted WhatsApp messages for each order stage.
 // Includes the tracking ID + India Post link (when a tracking ID exists)
 // and the customer's order-tracking profile link.
@@ -8849,7 +8864,7 @@ export default function ManageOrdersPage() {
                                   onClick={(e) => e.stopPropagation()}
                                 >
                                   <span className="mo-meta-label">Order</span>
-                                  <span className="mo-meta-val">
+                                  <span className="mo-meta-val mo-oid-val">
                                     {oidStr.slice(0, -3)}
                                     <span className="mo-oid-hl">
                                       {oidStr.slice(-3)}
@@ -8941,6 +8956,14 @@ export default function ManageOrdersPage() {
                                     {isCOD && (
                                       <span className="mo-amount-fee">
                                         −₹{fee.toLocaleString()} (5.9%)
+                                      </span>
+                                    )}
+                                    {Number(order.pnl) < 0 && (
+                                      <span className="mo-loss-flag">
+                                        <AlertCircle size={11} /> Loss ₹
+                                        {Math.abs(
+                                          Math.round(Number(order.pnl)),
+                                        ).toLocaleString()}
                                       </span>
                                     )}
                                   </button>
@@ -9580,7 +9603,7 @@ export default function ManageOrdersPage() {
                                         </span>
                                         <span className="aoc-dot">·</span>
                                         <span>
-                                          {order["Delivery Type"] || "—"}
+                                          {cleanDeliveryType(order["Delivery Type"])}
                                         </span>
                                       </div>
                                       <button
@@ -11145,7 +11168,7 @@ export default function ManageOrdersPage() {
                       <div className="aoc-meta">
                         <span>{order["Payment Type"] || "—"}</span>
                         <span className="aoc-dot">·</span>
-                        <span>{order["Delivery Type"] || "—"}</span>
+                        <span>{cleanDeliveryType(order["Delivery Type"])}</span>
                       </div>
                       <div className="aoc-edit-row">
                         <button

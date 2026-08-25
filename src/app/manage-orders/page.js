@@ -8889,66 +8889,69 @@ export default function ManageOrdersPage() {
                                 </div>
                               </div>
                               <div className="mo-card-badges">
-                                {agoLabel && (
+                                <div className="mo-badges-top">
+                                  {agoLabel && (
+                                    <span
+                                      className="mo-ago"
+                                      title={
+                                        orderDate
+                                          ? orderDate.toLocaleString("en-IN")
+                                          : ""
+                                      }
+                                    >
+                                      <Clock size={11} /> {agoLabel}
+                                    </span>
+                                  )}
                                   <span
-                                    className="mo-ago"
-                                    title={
-                                      orderDate
-                                        ? orderDate.toLocaleString("en-IN")
-                                        : ""
-                                    }
+                                    className={`mo-pay-pill ${isCOD ? "cod" : "upi"}`}
                                   >
-                                    <Clock size={11} /> {agoLabel}
+                                    {isCOD ? "COD" : "UPI"}
                                   </span>
-                                )}
-                                <span
-                                  className={`mo-pay-pill ${isCOD ? "cod" : "upi"}`}
-                                >
-                                  {isCOD ? "COD" : "UPI"}
-                                </span>
-                                {/* Editable status right on the collapsed card —
-                                    change & save without opening the accordion. */}
-                                <select
-                                  className={`mo-status-quick${pendingStatus[orderId] ? " dirty" : ""}`}
-                                  value={order.status || "Processing"}
-                                  title="Change status (queued — push to save)"
+                                  <ChevronDown
+                                    size={18}
+                                    className={`mo-card-caret${isExpanded ? " open" : ""}`}
+                                  />
+                                </div>
+                                <div
+                                  className="mo-badges-actions"
                                   onClick={(e) => e.stopPropagation()}
-                                  onChange={(e) => {
-                                    e.stopPropagation();
-                                    const val = e.target.value;
-                                    // Reflect locally + queue the edit; the
-                                    // global "Push" button saves them together.
-                                    patchLocalOrder(orderId, {
-                                      "Order Status": val,
-                                      status: val,
-                                    });
-                                    setPendingStatus((prev) => ({
-                                      ...prev,
-                                      [orderId]: val,
-                                    }));
-                                  }}
                                 >
-                                  {TRACK_STATUS_OPTIONS.map((s) => (
-                                    <option key={s} value={s}>
-                                      {s}
-                                    </option>
-                                  ))}
-                                </select>
-                                <button
-                                  type="button"
-                                  className="mo-card-delete"
-                                  title="Delete order from sheet"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    deleteOrderRow(order);
-                                  }}
-                                >
-                                  <Trash2 size={15} />
-                                </button>
-                                <ChevronDown
-                                  size={18}
-                                  className={`mo-card-caret${isExpanded ? " open" : ""}`}
-                                />
+                                  {/* Editable status — change & queue without
+                                      opening the accordion. */}
+                                  <select
+                                    className={`mo-status-quick${pendingStatus[orderId] ? " dirty" : ""}`}
+                                    value={order.status || "Processing"}
+                                    title="Change status (queued — push to save)"
+                                    onChange={(e) => {
+                                      const val = e.target.value;
+                                      patchLocalOrder(orderId, {
+                                        "Order Status": val,
+                                        status: val,
+                                      });
+                                      setPendingStatus((prev) => ({
+                                        ...prev,
+                                        [orderId]: val,
+                                      }));
+                                    }}
+                                  >
+                                    {TRACK_STATUS_OPTIONS.map((s) => (
+                                      <option key={s} value={s}>
+                                        {s}
+                                      </option>
+                                    ))}
+                                  </select>
+                                  <button
+                                    type="button"
+                                    className="mo-card-delete"
+                                    title="Delete order from sheet"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      deleteOrderRow(order);
+                                    }}
+                                  >
+                                    <Trash2 size={15} />
+                                  </button>
+                                </div>
                               </div>
                             </div>
 

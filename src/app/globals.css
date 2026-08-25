@@ -22224,7 +22224,7 @@ img[data-loaded="true"] {
   background: none;
   border: none;
   padding: 0;
-  margin-top: 12px;
+  margin-top: 0;
   cursor: pointer;
   text-align: left;
 }
@@ -22235,13 +22235,25 @@ img[data-loaded="true"] {
   font-weight: 600;
   color: #b45309;
 }
-/* Top-right badge cluster (age + status) */
+/* Top-right badge cluster (age + pay + chevron over the status/delete row) */
 .mo-card-badges {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 6px;
+  gap: 8px;
   flex: 0 0 auto;
+}
+.mo-badges-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.mo-badges-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 /* Dashed separator between amount and covers */
 .mo-card-sep {

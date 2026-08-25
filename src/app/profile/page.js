@@ -1867,6 +1867,27 @@ Please cancel this order. Thank you `;
           </div>
         )}
 
+        {/* Bookmark out-of-stock notice */}
+        {searched && !showPhoneInput && (
+          <div className="pf-bookmark-note">
+            <span className="pf-bookmark-txt">
+              <strong>Bookmarks are temporarily out of stock</strong> due to a
+              huge surge in orders. Please bear with us until we restock — message
+              us to claim your bookmark compensation.
+            </span>
+            <a
+              className="pf-bookmark-cta"
+              href={`https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(
+                "Hi TheBookX, I'd like to claim compensation for my missing bookmark.",
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <FaWhatsapp size={15} /> Claim compensation
+            </a>
+          </div>
+        )}
+
         {/* Orders — collapsed behind an "Order status & history" toggle */}
         {searched &&
           !loading &&

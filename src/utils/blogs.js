@@ -4,6 +4,468 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "read-the-book-before-the-movie-late-2026": {
+    id: "blog-032",
+    title:
+      "Read the Book Before the Movie: Every Major Adaptation Landing in Late 2026",
+    slug: "read-the-book-before-the-movie-late-2026",
+    author: "TheBookX Editorial",
+    authorSlug: "murthy-thevar",
+    publishDate: "2026-08-25",
+    lastModified: "2026-08-25",
+    excerpt:
+      "Sunrise on the Reaping arrives 20 November, Verity on 2 October, Dune: Part Three on 18 December. Here is the reading order, and how long each book actually takes.",
+
+    content: [
+      {
+        type: "paragraph",
+        content:
+          "Between October and December this year, three of the most-anticipated films of the decade open in Indian cinemas, and every one of them is a book first. <em>Verity</em> arrives on 2 October. <em>The Hunger Games: Sunrise on the Reaping</em> follows on 20 November. <em>Dune: Part Three</em> closes the year on 18 December. If you have ever walked out of a theatre and thought <em>I should have read it first</em>, you have roughly ten weeks of runway and this is the window to use it.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "This is not a trivial preference. Reading the book first changes what the film is for. You stop watching to find out what happens and start watching to see what a director chose to keep — which is a more interesting film, and a considerably better use of a ticket price. It also, in almost every case, spoils the book less than the trailer already has.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Why Adaptation Season Sends Old Books Back Up the Charts",
+      },
+      {
+        type: "paragraph",
+        content:
+          "There is a well-documented pattern here that publishers now plan around. Books published six to ten years earlier have recorded sales increases of anywhere between 395% and 1,698% after going viral online, and film announcements act as the same kind of accelerant. The #BookTok tag alone passed 80 million posts globally by June 2026, and a large share of that attention flows not to new releases but to backlist titles that suddenly have a trailer attached.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The practical consequence for a reader is timing. Paperback stock for an adapted title gets thin in the four to six weeks before release, and prices firm up as demand climbs. Buying eight weeks early is cheaper and less frustrating than buying eight days early. That is the entire logic of this list.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "How to read the film's book in time, without cramming",
+        content:
+          "Work backwards from the release date, not forwards from today. A 400-page novel at 30 pages a day is a fortnight. At 15 pages a day — roughly 25 minutes — it is a month. Both are comfortable if you start now; neither is possible in the last week, which is when most people try. Pick one title, not four.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "2 October: Verity",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books/verity\" style=\"color:#fb8500;font-weight:600\">Verity</a> is the first of the three and the easiest to finish in time. Michael Showalter directs, with Anne Hathaway as Verity Crawford, Dakota Johnson as Lowen Ashleigh and Josh Hartnett as Jeremy — a cast that suggests the film is being played as a straight psychological thriller rather than as romance.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The book is Colleen Hoover working well outside her usual register: a struggling writer is hired to finish a bestselling author's series, moves into her house, and finds an unpublished manuscript that reads like a confession. It is around 330 pages and most readers report finishing it in two or three sittings, which makes it the rare adaptation you can genuinely start in late September and still beat the credits. Readers who arrive at it from Hoover's better-known romances should know it is a harder, colder book than <a href=\"/books/it-ends-with-us\" style=\"color:#fb8500;font-weight:600\">It Ends with Us</a> or its sequel <a href=\"/books/it-starts-with-us\" style=\"color:#fb8500;font-weight:600\">It Starts with Us</a>.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "If you want the pattern rather than the single book, <a href=\"/books/reminders-of-him\" style=\"color:#fb8500;font-weight:600\">Reminders of Him</a> was adapted earlier this year and released in March 2026, which makes the Hoover-to-screen pipeline unusually easy to study: read one, watch one, then read the next before its film lands.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "20 November: The Hunger Games — Sunrise on the Reaping",
+      },
+      {
+        type: "paragraph",
+        content:
+          "This is the big one, and the one most worth preparing for. <a href=\"/books/sunrise-on-the-reaping\" style=\"color:#fb8500;font-weight:600\">Sunrise on the Reaping</a> is set 24 years before Katniss Everdeen's story and opens on the morning of the reaping for the 50th Hunger Games — the Quarter Quell that a teenage Haymitch Abernathy is sent into. Francis Lawrence, who directed four of the previous films, returns. Joseph Zada plays young Haymitch, with Elle Fanning, McKenna Grace, Jesse Plemons, Ralph Fiennes and Glenn Close in the ensemble, and Jennifer Lawrence and Josh Hutcherson reprising Katniss and Peeta.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Suzanne Collins wrote this book to be read by people who already know how Haymitch ends up, and the dramatic irony is the point — you spend 380 pages watching a sharp, funny sixteen-year-old walk toward a version of himself you have already met. Reading it first is not optional if you want the film to land the way it is designed to.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "The reading order, if you are starting from scratch",
+      },
+      {
+        type: "list",
+        style: "ordered",
+        items: [
+          "<strong>Publication order is the right order.</strong> Start with the original trilogy — <a href=\"/books/the-hunger-games-trilogy-set\" style=\"color:#fb8500;font-weight:600\">The Hunger Games Trilogy Set</a> — because both prequels are built to be read by someone who already knows Panem's ending.",
+          "<strong>Then the prequels, in the order they were written.</strong> The Ballad of Songbirds and Snakes first, then Sunrise on the Reaping.",
+          "<strong>If you are short on time, read Sunrise on the Reaping alone.</strong> It stands up as a self-contained story. You will miss some resonance, not the plot.",
+          "<strong>Do not start with the films.</strong> The trilogy runs about 1,150 pages total and reads fast; three weeks at 55 pages a day covers all of it comfortably before 20 November.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "18 December: Dune — Part Three",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Denis Villeneuve's third instalment adapts <em>Dune Messiah</em> and opens on 18 December 2026. This is the one where reading first pays the highest dividend, because Herbert's sequel is deliberately an anti-climax: it takes the messiah the first book built and dismantles him. Audiences who walk in expecting the scale and momentum of <em>Part Two</em> are going to be reading a very different film than the one Villeneuve made.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Start with <a href=\"/books/dune\" style=\"color:#fb8500;font-weight:600\">Dune</a> itself if you have only seen the films. It is the longest read on this list — roughly 700 pages, dense with invented vocabulary in the first hundred — and the standard advice holds: push through to the arrival on Arrakis and it stops feeling like homework. Four months is more than enough time; four days is not.",
+      },
+      {
+        type: "callout",
+        style: "success",
+        title: "Books from ₹1, delivered across India",
+        content:
+          "Every title on this page is available on TheBookX from ₹1, with free delivery and Cash on Delivery anywhere in India. Adaptation titles get expensive close to release, so this is the cheap window. Gift wrapping is available at ₹25 per book — useful if you are buying the film-night set for someone else.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Coming Later: Books Worth Reading Well Before Their Films",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Two of the most-discussed adaptations in development have no release date yet, which is the best possible reason to read them without deadline pressure. Amazon's Prime Video has ordered <a href=\"/books/fourth-wing\" style=\"color:#fb8500;font-weight:600\">Fourth Wing</a> as a multi-season series — one book per season, with Meredith Averill as showrunner and Michael B. Jordan's Outlier Society producing. No filming date has been announced, so there is time to read it and its sequel <a href=\"/books/iron-flame\" style=\"color:#fb8500;font-weight:600\">Iron Flame</a> properly rather than in a panic.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Netflix's <a href=\"/books/the-seven-husbands-of-evelyn-hugo\" style=\"color:#fb8500;font-weight:600\">The Seven Husbands of Evelyn Hugo</a>, with Anna Kendrick directing, has been in development since 2022 and is unlikely to arrive before late 2027. Read it now and you will have forgotten enough by then for the film to still work.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "It is also worth noting what already came and went this year. Emerald Fennell's <a href=\"/books/wuthering-heights\" style=\"color:#fb8500;font-weight:600\">Wuthering Heights</a>, with Margot Robbie and Jacob Elordi, released on 13 February 2026 — and the reaction to it was a near-perfect demonstration of this article's argument. Viewers who had read Emily Brontë judged the film on its choices. Viewers who had not judged it on its plot, and were baffled.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "If You Would Rather Read Something Nobody Is Filming",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Adaptation season has an obvious downside: it narrows what everyone reads to the same six titles at the same time. If that holds no appeal, the counter-programming is strong right now. The Booker Prize 2026 shortlist is announced on 22 September and the winner on 9 November — a reading calendar with no film attached at all.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "For fiction that stands entirely on its own, <a href=\"/books/the-song-of-achilles\" style=\"color:#fb8500;font-weight:600\">The Song of Achilles</a> and <a href=\"/books/circe\" style=\"color:#fb8500;font-weight:600\">Circe</a> remain the best pair of mythological retellings in print, and <a href=\"/books/normal-people\" style=\"color:#fb8500;font-weight:600\">Normal People</a> is the rare book whose television version is genuinely good and still less interesting than the prose. Thriller readers who want the plot-twist hit without a release date to chase should take <a href=\"/books/the-silent-patient\" style=\"color:#fb8500;font-weight:600\">The Silent Patient</a> or <a href=\"/books/the-housemaid\" style=\"color:#fb8500;font-weight:600\">The Housemaid</a>, both of which do in one weekend what a two-hour film cannot.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "And if the real problem is not what to read but that you have not finished a book in six months, the honest answer is that the fix is not a better novel. <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is about exactly that failure — attention that has been trained to fragment — and its chapters are short enough to rebuild the habit on. <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> covers the mechanics of making 20 pages a day stick, and <a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> is the non-fiction title most readers finish fastest. <a href=\"/books/the-midnight-library\" style=\"color:#fb8500;font-weight:600\">The Midnight Library</a> works as a gentle re-entry point for anyone coming back after a long gap.",
+      },
+      {
+        type: "blockquote",
+        content:
+          "A film has two hours and has to choose. A book has four hundred pages and does not. Reading first is how you find out what the choosing cost.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Pick one. Not the whole list — one book, matched to the release date furthest away, at whatever daily page count you will actually keep. The reader who finishes Sunrise on the Reaping on 19 November has a better night at the cinema than the reader who bought all six of these in October and finished none.",
+      },
+    ],
+
+    coverImage: "/blogs/read-the-book-before-the-movie-late-2026.jpeg",
+
+    images: [
+      {
+        url: "/blogs/read-the-book-before-the-movie-late-2026.jpeg",
+        alt: "A young woman curled up on a sofa reading a paperback by lamplight, with a bowl of popcorn and a small stack of novels beside her",
+        caption:
+          "Verity opens 2 October, Sunrise on the Reaping on 20 November and Dune: Part Three on 18 December — ten weeks is enough time to read first",
+        category: "Book to Screen",
+      },
+    ],
+
+    keywords: [
+      "read the book before the movie",
+      "book to movie adaptations 2026",
+      "sunrise on the reaping movie release date",
+      "verity movie 2026",
+      "dune part three release date",
+      "hunger games reading order",
+      "book adaptations coming out 2026",
+      "fourth wing tv series",
+      "books becoming movies india",
+      "booker prize 2026 shortlist",
+      "TheBookX",
+    ],
+
+    categories: ["Book to Screen", "Bestsellers", "Reading Lists"],
+
+    faqs: [
+      {
+        question:
+          "When does The Hunger Games: Sunrise on the Reaping release, and should I read the book first?",
+        answer:
+          "The film releases in theatres on 20 November 2026, directed by Francis Lawrence, with Joseph Zada as young Haymitch Abernathy alongside Elle Fanning, McKenna Grace, Jesse Plemons, Ralph Fiennes and Glenn Close. Reading first is strongly recommended because the novel runs on dramatic irony — it is written for readers who already know what becomes of Haymitch. At roughly 380 pages, 20 pages a day from late September gets you there comfortably.",
+      },
+      {
+        question: "What is the correct reading order for The Hunger Games series?",
+        answer:
+          "Publication order. Start with the original trilogy — The Hunger Games, Catching Fire and Mockingjay — then The Ballad of Songbirds and Snakes, then Sunrise on the Reaping. Both prequels assume you know how Panem's story ends, so reading them first flattens their best effects. If time is short, Sunrise on the Reaping does work as a standalone.",
+      },
+      {
+        question: "Which other book adaptations are releasing in late 2026?",
+        answer:
+          "Verity, based on Colleen Hoover's novel, releases in cinemas on 2 October 2026 with Anne Hathaway, Dakota Johnson and Josh Hartnett, directed by Michael Showalter. Dune: Part Three, adapting Frank Herbert's Dune Messiah, releases on 18 December 2026. Earlier in the year, Reminders of Him arrived in March and Emerald Fennell's Wuthering Heights on 13 February. Prime Video's Fourth Wing series and Netflix's The Seven Husbands of Evelyn Hugo are both in development without confirmed release dates.",
+      },
+      {
+        question: "Where can I buy these books in India, and how much do they cost?",
+        answer:
+          "All the titles mentioned are available on TheBookX, with books starting from ₹1, free delivery and Cash on Delivery across India. Prices for adapted titles tend to firm up in the four to six weeks before a film releases, so buying early is usually cheaper. Gift wrapping is available at ₹25 per book if you are putting together a film-night gift set.",
+      },
+    ],
+  },
+
+  "silent-reading-clubs-india": {
+    id: "blog-031",
+    title:
+      "Silent Reading Clubs Are Taking Over Indian Parks: How They Work and What to Bring",
+    slug: "silent-reading-clubs-india",
+    author: "TheBookX Editorial",
+    authorSlug: "murthy-thevar",
+    publishDate: "2026-08-24",
+    lastModified: "2026-08-24",
+    excerpt:
+      "Cubbon Reads started with two people under a peepal tree in 2023. There are now silent reading groups in over 100 cities. Here is how they work, and what to carry.",
+
+    content: [
+      {
+        type: "paragraph",
+        content:
+          "On 7 January 2023, two people sat down under a peepal tree in Cubbon Park, Bengaluru, and read their own books in silence for a couple of hours. That was the entire event. Shruti Sah and Harsh Snehanshu had been cycling to the park on Saturdays for a few weeks already, and had started posting about it on Instagram; the account they made for it, Cubbon Reads, was less an organisation than a place to say <em>we will be here again next week</em>.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Three and a half years later, silent reading groups modelled on that format run in over 100 cities in India and abroad — Bandra Reads, Powai Reads, Delhi Reads, Pune Reads, and dozens more that never make it into a news story. No membership. No registration. Often not even a WhatsApp group. You turn up on a Sunday morning with a book, sit on the grass, and read.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "It is worth asking why this particular, almost aggressively unremarkable idea has spread so far, and what it tells the rest of us about our own reading.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "What Actually Happens at a Silent Reading Session",
+      },
+      {
+        type: "paragraph",
+        content:
+          "For anyone who has never been, the mechanics are simpler than the name suggests, and almost every group runs on the same unwritten rules:",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<strong>Same time, same place, every week.</strong> Usually Saturday or Sunday morning, in a public park. Groups announce the spot on Instagram and nowhere else.",
+          "<strong>Bring your own book.</strong> There is no book of the month, no assigned reading, no one checking what you brought. Kindles and library copies count.",
+          "<strong>Read for two to three hours.</strong> People drift in and out. Arriving late is normal and nobody registers it.",
+          "<strong>No talking during the session.</strong> Phones stay face-down or away entirely. This is the only rule anyone enforces, and it is enforced by example rather than by anyone speaking up.",
+          "<strong>Conversation comes at the end.</strong> Many groups stack the books for a group photo, exchange a few words, and then most people simply go home. A handful head to a café.",
+          "<strong>Free.</strong> No fee, no brand sponsor, no commercial tie-in in most cases.",
+        ],
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "A silent reading group is not a book club",
+        content:
+          "This distinction matters more than it sounds. A book club asks you to finish a specific book by a specific date and then have an opinion about it in front of other people. A silent reading group asks you to sit down and read. The first is a commitment; the second is a room. If you have quietly dropped out of two book clubs already, the second thing is probably what you actually wanted.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Why Silence Works Better Than Discussion",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The founders of Cubbon Reads have a line about this that is hard to improve on: when two runners meet, they run together; when two musicians meet, they jam. Only readers, on meeting, were expected to stop reading and talk about reading instead. The silent format removes what they call the needless intellectualisation around books and puts the focus back on the one thing every reader has in common — the act itself.",
+      },
+      {
+        type: "blockquote",
+        content:
+          "Reading is such a solitary activity. What is great about a group like this is that it offers a sense of community. Also, when somebody is going through a reading slump, being part of such a group helps you get out of it. — Ananya Bhardwaj, who started Powai Reads in 2023 after being inspired by Cubbon Reads",
+      },
+      {
+        type: "paragraph",
+        content:
+          "There is a second, less romantic reason these groups work: they solve an attention problem that most Indian readers now have and few will admit to. The book is not boring. The problem is that at home, a chapter is interrupted four times — by a delivery call, by a work message, by the reflex to check a phone that has not even buzzed. A park bench with fifteen strangers who are visibly not looking at their phones is a surprisingly effective commitment device.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The wider mood has shifted in the same direction. In August 2026, the Gautam Buddh Nagar administration directed all schools in Noida and Greater Noida to cap daily smart-board screen time at 30 minutes for primary and 60 minutes for upper-primary classes, after parents complained that children were spending four to five hours a day in front of digital boards. The same order asked schools to introduce digital-free periods and digital zero days, and to promote reading and physical activity in their place. Uttar Pradesh separately mandated ten minutes of daily newspaper reading in school assemblies. The adults sitting under trees on Sunday mornings are running the same experiment on themselves, voluntarily.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "What to Bring: Books That Survive a Two-Hour Park Sit",
+      },
+      {
+        type: "paragraph",
+        content:
+          "This is the practical question, and the one people get wrong on their first visit. A silent reading session is not a library carrel. There is sunlight, there is a fair amount of ambient noise, there are joggers and dogs and someone's Bluetooth speaker two hundred metres away. The books that work are the ones that pull hard enough to hold you through all of that. The books that fail are usually the ones you brought to impress yourself.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "Short chapters and a fast hook, for a first session",
+      },
+      {
+        type: "paragraph",
+        content:
+          "If you have not read seriously in months, do not start with the eight-hundred-page one. Start with something built to be finished. <a href=\"/books/before-the-coffee-gets-cold\" style=\"color:#fb8500;font-weight:600\">Before the Coffee Gets Cold</a> is four self-contained stories in a Tokyo café and is close to ideal for a first outing — you can read one complete story in a single session and walk away feeling like something happened. <a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> works the same way for readers who want R.K. Narayan's south India rather than someone else's: each piece stands alone, each is short, and none of them punish you for looking up.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "For readers who need pace rather than brevity, thrillers do the heavy lifting. <a href=\"/books/the-silent-patient\" style=\"color:#fb8500;font-weight:600\">The Silent Patient</a> and <a href=\"/books/the-housemaid\" style=\"color:#fb8500;font-weight:600\">The Housemaid</a> are both engineered to make the next chapter feel compulsory, and <a href=\"/books/and-then-there-were-none\" style=\"color:#fb8500;font-weight:600\">And Then There Were None</a> remains the cleanest demonstration of the form ever written. If your last three attempts at reading ended at page 40, this is the shelf to raid.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "Literary fiction that rewards an uninterrupted stretch",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Once you have proved to yourself that you can sit for two hours, the format starts to pay off in a different way — it gives you the long, unbroken run that dense prose genuinely requires. <a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> is a book most people abandon in ten-minute bursts and finish easily in ninety-minute ones, because Arundhati Roy's sentences need momentum. <a href=\"/books/kafka-on-the-shore\" style=\"color:#fb8500;font-weight:600\">Kafka on the Shore</a> has the same property for different reasons. <a href=\"/books/normal-people\" style=\"color:#fb8500;font-weight:600\">Normal People</a> and <a href=\"/books/the-midnight-library\" style=\"color:#fb8500;font-weight:600\">The Midnight Library</a> sit in between: readable enough for a distracted afternoon, substantial enough to still be with you on Monday.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Readers who want something rooted closer to home tend to reach for <a href=\"/books/the-palace-of-illusions\" style=\"color:#fb8500;font-weight:600\">The Palace of Illusions</a>, Chitra Banerjee Divakaruni's retelling of the Mahabharata from Draupadi's point of view — familiar enough that you never lose the thread in a noisy park, unfamiliar enough in its angle that you keep turning pages.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "Non-fiction for readers who fidget",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Non-fiction is riskier in a park because there is no plot pulling you forward, so pick titles with short, self-contained units. <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is built around exactly this problem — thinking clearly when your attention is being pulled in six directions — and its chapters are short enough to finish one, look up at the trees, and start another. <a href=\"/books/meditations\" style=\"color:#fb8500;font-weight:600\">Meditations</a> is the two-thousand-year-old version of the same idea and can be opened anywhere.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "For the attention question specifically, <a href=\"/books/deep-work\" style=\"color:#fb8500;font-weight:600\">Deep Work</a> and <a href=\"/books/dopamine-detox\" style=\"color:#fb8500;font-weight:600\">Dopamine Detox</a> are the obvious pair, and there is something quietly funny about reading either of them in a group that has already solved the problem in practice. <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> is the most-carried non-fiction book at these sessions by a wide margin, which makes sense: a weekly reading ritual is a habit, and this is the book about how those get built. <a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> is another good park book for the same structural reason — twenty short chapters, each a complete argument.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "How to Start One in Your Own City",
+      },
+      {
+        type: "paragraph",
+        content:
+          "If there is no group where you live, the barrier to starting one is close to zero. Almost every group that exists today began this way:",
+      },
+      {
+        type: "list",
+        style: "ordered",
+        items: [
+          "<strong>Pick a park and a fixed slot.</strong> Saturday or Sunday, 9 AM to 11 AM works well across most Indian cities — before the heat, after the walkers thin out. Consistency matters far more than the choice of day.",
+          "<strong>Go alone for three weeks anyway.</strong> Sah and Snehanshu read by themselves for weeks before anyone joined. The first session of Cubbon Reads had two attendees. Treat low turnout as the normal early state, not as failure.",
+          "<strong>Make one Instagram account and post the location weekly.</strong> That is the entire infrastructure. Resist the urge to build a WhatsApp group; groups that stay lightweight last longer.",
+          "<strong>Keep the rules to one line.</strong> Bring a book, read in silence, talk afterwards. Every additional rule costs you attendees.",
+          "<strong>Expect friction, and be polite about it.</strong> Park authorities and other regulars will occasionally object. Cubbon Reads has been told it was damaging the grass, and once had books confiscated by guards who suspected an unauthorised gathering. Most of it resolves with a conversation.",
+          "<strong>Do not monetise it.</strong> The reason these groups feel different from everything else on your calendar is that nobody is selling anything.",
+        ],
+      },
+      {
+        type: "paragraph",
+        content:
+          "One footnote on how far this has travelled: after noticing that some regulars had started showing up in pairs, the Cubbon Reads founders launched a dating app called Bookmark, where profile photos stay hidden and people match on reading prompts instead. Silence, apparently, turned out to be a reasonable basis for conversation.",
+      },
+      {
+        type: "callout",
+        style: "success",
+        title: "Building a park-reading stack on a budget",
+        content:
+          "Books on TheBookX start from ₹1, with free delivery and Cash on Delivery across India. If you are testing whether the Sunday habit sticks, buy two cheap paperbacks rather than one expensive hardback — a book you can throw in a tote bag and read on the grass without worrying about it is the book you will actually finish. Gift wrapping is available at ₹25 per book if you are recruiting a friend into the habit.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The most common report from first-timers is not that they made friends or discovered a new author. It is that they read more in one morning than they had in the previous month, and were surprised by how little effort it took. That is the whole proposition. The community is real, but it is a side effect. What you are actually buying, for the price of a Sunday morning, is two hours in which nothing is allowed to interrupt you.",
+      },
+    ],
+
+    coverImage: "/blogs/silent-reading-clubs-india.jpeg",
+
+    images: [
+      {
+        url: "/blogs/silent-reading-clubs-india.jpeg",
+        alt: "A young woman sitting cross-legged on a mat under a large tree in an Indian city park, absorbed in a paperback during a silent reading session",
+        caption:
+          "Silent reading groups inspired by Cubbon Reads now meet in more than 100 cities — no membership, no discussion, just two hours of reading together",
+        category: "Reading Culture",
+      },
+    ],
+
+    keywords: [
+      "silent reading clubs india",
+      "cubbon reads",
+      "silent reading group",
+      "book clubs in india",
+      "powai reads",
+      "bandra reads",
+      "reading community india",
+      "how to start a silent reading group",
+      "best books to read in a park",
+      "reading slump",
+      "TheBookX",
+    ],
+
+    categories: ["Reading Culture", "Book Clubs", "Reading Habits"],
+
+    faqs: [
+      {
+        question: "What is a silent reading club and how is it different from a book club?",
+        answer:
+          "A silent reading club is a group that meets in a public place, usually a park on a weekend morning, where everyone reads their own book in silence for two to three hours. There is no assigned book, no discussion during the session, and usually no membership or registration. A book club, by contrast, asks members to read the same book by a deadline and discuss it at the meeting. Silent reading groups deliberately remove that obligation — the only shared activity is reading itself.",
+      },
+      {
+        question: "Where did silent reading groups in India start?",
+        answer:
+          "The format was popularised by Cubbon Reads, founded by Shruti Sah and Harsh Snehanshu in Bengaluru. The two had been cycling to Cubbon Park to read under a peepal tree in late 2022, and held the first formal Cubbon Reads session on 7 January 2023 with just the two of them attending. Groups inspired by it now run in more than 100 cities in India and abroad, including Powai Reads and Bandra Reads in Mumbai, Delhi Reads and Pune Reads.",
+      },
+      {
+        question: "Which books work best at a silent reading session?",
+        answer:
+          "Books with short, self-contained units and a strong pull. Short-story collections such as Malgudi Days or Before the Coffee Gets Cold let you finish something complete in one sitting. Fast thrillers like The Silent Patient, The Housemaid and And Then There Were None hold attention despite park noise. For non-fiction, pick titles with short chapters — The Art of Clarity, Atomic Habits, The Psychology of Money and Meditations all work well. Avoid dense reference books and anything you feel obliged rather than eager to read.",
+      },
+      {
+        question: "Do I need to register or pay to attend a silent reading group?",
+        answer:
+          "In almost all cases, no. Most groups have no membership, no fee and no registration. They announce the park and the time on Instagram, and anyone who wants to read simply shows up with a book and something to sit on. Arriving late or leaving early is normal. The only expectation is that you stay off your phone and keep quiet until the session ends.",
+      },
+    ],
+  },
+
   "how-to-tell-if-a-book-was-written-by-ai": {
     id: "blog-030",
     title:

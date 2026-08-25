@@ -22213,20 +22213,36 @@ img[data-loaded="true"] {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+  flex-wrap: wrap;
+  row-gap: 10px;
   margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--hairline, #e5e7eb);
 }
 .mo-amount {
-  display: block;
-  font-size: 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
   font-weight: 800;
   color: var(--success, #0a8f0c);
   line-height: 1.1;
   background: none;
   border: none;
   padding: 0;
-  margin-top: 0;
   cursor: pointer;
   text-align: left;
+}
+.mo-amount-num {
+  font-size: 22px;
+  font-weight: 800;
+}
+.mo-ctrls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 .mo-amount-fee {
   display: block;
@@ -22260,7 +22276,7 @@ img[data-loaded="true"] {
   border-top: 1px dashed var(--hairline, #e5e7eb);
   margin: 12px 0;
 }
-.mo-amount:hover {
+.mo-amount:hover .mo-amount-num {
   text-decoration: underline;
 }
 /* WhatsApp icon button in the card price row */

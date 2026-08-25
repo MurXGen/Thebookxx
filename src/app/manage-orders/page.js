@@ -8912,56 +8912,16 @@ export default function ManageOrdersPage() {
                                     className={`mo-card-caret${isExpanded ? " open" : ""}`}
                                   />
                                 </div>
-                                <div
-                                  className="mo-badges-actions"
-                                  onClick={(e) => e.stopPropagation()}
-                                >
-                                  {/* Editable status — change & queue without
-                                      opening the accordion. */}
-                                  <select
-                                    className={`mo-status-quick${pendingStatus[orderId] ? " dirty" : ""}`}
-                                    value={order.status || "Processing"}
-                                    title="Change status (queued — push to save)"
-                                    onChange={(e) => {
-                                      const val = e.target.value;
-                                      patchLocalOrder(orderId, {
-                                        "Order Status": val,
-                                        status: val,
-                                      });
-                                      setPendingStatus((prev) => ({
-                                        ...prev,
-                                        [orderId]: val,
-                                      }));
-                                    }}
-                                  >
-                                    {TRACK_STATUS_OPTIONS.map((s) => (
-                                      <option key={s} value={s}>
-                                        {s}
-                                      </option>
-                                    ))}
-                                  </select>
-                                  <button
-                                    type="button"
-                                    className="mo-card-delete"
-                                    title="Delete order from sheet"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      deleteOrderRow(order);
-                                    }}
-                                  >
-                                    <Trash2 size={15} />
-                                  </button>
-                                </div>
                               </div>
                             </div>
 
-                            {/* Amount (big, green) — above the covers; opens detail.
-                          WhatsApp icon opens the message picker for this order. */}
+                            {/* Control bar — amount + status + quick actions.
+                                Consolidates the previously scattered status,
+                                WhatsApp and delete controls into one row. */}
                             <div className="mo-amount-row">
                               {(() => {
                                 const rev = Number(order.revenue) || 0;
                                 // 5.9% deduction applies to COD orders only.
-                                // UPI orders show the full amount, no fee line.
                                 const fee = isCOD ? Math.round(rev * 0.059) : 0;
                                 const net = Math.round(rev - fee);
                                 return (
@@ -8975,7 +8935,9 @@ export default function ManageOrdersPage() {
                                         : `₹${rev.toLocaleString()} · tap for details`
                                     }
                                   >
-                                    ₹{net.toLocaleString()}
+                                    <span className="mo-amount-num">
+                                      ₹{net.toLocaleString()}
+                                    </span>
                                     {isCOD && (
                                       <span className="mo-amount-fee">
                                         −₹{fee.toLocaleString()} (5.9%)
@@ -8984,19 +8946,53 @@ export default function ManageOrdersPage() {
                                   </button>
                                 );
                               })()}
-                              <button
-                                type="button"
-                                className="mo-wa-btn"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setWaCustomText("");
-                                  setWaPickerOrder(order);
-                                }}
-                                title="WhatsApp the customer"
-                                aria-label="WhatsApp the customer"
+                              <div
+                                className="mo-ctrls"
+                                onClick={(e) => e.stopPropagation()}
                               >
-                                <FaWhatsapp size={18} />
-                              </button>
+                                <select
+                                  className={`mo-status-quick${pendingStatus[orderId] ? " dirty" : ""}`}
+                                  value={order.status || "Processing"}
+                                  title="Change status (queued — push to save)"
+                                  onChange={(e) => {
+                                    const val = e.target.value;
+                                    patchLocalOrder(orderId, {
+                                      "Order Status": val,
+                                      status: val,
+                                    });
+                                    setPendingStatus((prev) => ({
+                                      ...prev,
+                                      [orderId]: val,
+                                    }));
+                                  }}
+                                >
+                                  {TRACK_STATUS_OPTIONS.map((s) => (
+                                    <option key={s} value={s}>
+                                      {s}
+                                    </option>
+                                  ))}
+                                </select>
+                                <button
+                                  type="button"
+                                  className="mo-wa-btn"
+                                  onClick={() => {
+                                    setWaCustomText("");
+                                    setWaPickerOrder(order);
+                                  }}
+                                  title="WhatsApp the customer"
+                                  aria-label="WhatsApp the customer"
+                                >
+                                  <FaWhatsapp size={18} />
+                                </button>
+                                <button
+                                  type="button"
+                                  className="mo-card-delete"
+                                  title="Delete order from sheet"
+                                  onClick={() => deleteOrderRow(order)}
+                                >
+                                  <Trash2 size={15} />
+                                </button>
+                              </div>
                             </div>
 
                             {/* Book covers — scrollable row with name + price,

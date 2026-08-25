@@ -30886,6 +30886,12 @@ img[data-loaded="true"] {
   max-height: 92vh;
   overflow-y: auto;
 }
+/* No background blur behind the admin wallet modal */
+.wm-overlay {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: rgba(0, 0, 0, 0.4);
+}
 .wm-reasons {
   display: flex;
   flex-wrap: wrap;

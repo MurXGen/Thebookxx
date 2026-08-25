@@ -536,8 +536,9 @@ function WalletModal({ user, busy, onClose, onApply }) {
   const [reason, setReason] = useState("");
   const cur = user.wallet || 0;
   const delta = Math.abs(parseFloat(amount) || 0);
-  return (
-    <div className="bill-modal-overlay" onClick={onClose}>
+  if (typeof document === "undefined") return null;
+  return createPortal(
+    <div className="bill-modal-overlay wm-overlay" onClick={onClose}>
       <div
         className="bill-modal wm-sheet"
         onClick={(e) => e.stopPropagation()}
@@ -622,7 +623,8 @@ function WalletModal({ user, busy, onClose, onApply }) {
             : "Adds a signed transaction (+ credit / − deduct) to the Wallet tab with your reason. Balance can't go below ₹0."}
         </p>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 

@@ -899,6 +899,26 @@ export default function OrderDetailPage() {
         </div>
       )}
 
+      {/* Bookmark out-of-stock notice */}
+      <div className="od-bookmark-note">
+        <Info size={14} />
+        <span>
+          <strong>Bookmarks are temporarily out of stock</strong> due to a huge
+          surge in orders. Please bear with us until we restock —{" "}
+          <a
+            href={`https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(
+              `Hi TheBookX, I'd like to claim compensation for my missing bookmark (order ${orderId}).`,
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="od-bookmark-link"
+          >
+            message us to claim your bookmark compensation
+          </a>
+          .
+        </span>
+      </div>
+
       {/* Items summary strip (Flipkart "Total N items" + thumbnails) */}
       <section className="od-block od-items-block">
         <button

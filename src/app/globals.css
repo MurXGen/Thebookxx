@@ -35544,6 +35544,34 @@ img[data-loaded="true"] {
   color: var(--tertiary, #fb8500);
   box-shadow: 0 4px 12px -6px rgba(251, 133, 0, 0.5);
 }
+/* Bookmark out-of-stock notice (order detail) — inline text with a link CTA */
+.od-bookmark-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 14px;
+  padding: 11px 13px;
+  border-radius: 12px;
+  background: #fff7ec;
+  border: 1px solid var(--tertiary-light-30, #ffe2bf);
+  font-size: var(--px-12);
+  line-height: 1.5;
+  color: #7a5312;
+}
+.od-bookmark-note svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--tertiary, #fb8500);
+}
+.od-bookmark-note strong {
+  color: #b45309;
+}
+.od-bookmark-link {
+  color: var(--tertiary, #fb8500);
+  font-weight: 700;
+  text-decoration: underline;
+}
+
 /* Cancellation / confirmation notice (success modal + order detail) */
 .ok-cancel-note {
   display: flex;

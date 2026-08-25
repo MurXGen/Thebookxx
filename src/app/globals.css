@@ -30765,6 +30765,16 @@ img[data-loaded="true"] {
 .um-search input::placeholder {
   color: #9ca3af;
 }
+/* Rely on the wrapper/select box-shadow ring only — suppress the global
+   focus-visible outline so there's no double ring. */
+.um-search input:focus,
+.um-search input:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+.um-hold-filter:focus-visible {
+  outline: none;
+}
 .um-search-x {
   display: inline-flex;
   border: none;

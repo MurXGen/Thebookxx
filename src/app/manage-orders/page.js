@@ -567,7 +567,6 @@ function WalletModal({ user, busy, onClose, onApply }) {
           placeholder="e.g. 100"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
-          autoFocus
         />
 
         <label className="wm-lbl">Reason (saved to the Wallet sheet)</label>

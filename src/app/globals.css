@@ -30871,7 +30871,13 @@ img[data-loaded="true"] {
   border: 1.5px solid var(--hairline, #e5e7eb);
   border-radius: 11px;
   outline: none;
+  background: #fff;
+  color: #111827;
   transition: border-color 0.15s ease;
+}
+.wm-input::placeholder {
+  color: #9ca3af;
+  font-weight: 500;
 }
 .wm-input:focus {
   border-color: var(--tertiary, #fb8500);

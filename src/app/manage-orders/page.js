@@ -2737,6 +2737,10 @@ export default function ManageOrdersPage() {
   const [walletMinFilter, setWalletMinFilter] = useState(0);
   // Users tab — sort order: recent | walletAsc | walletDesc.
   const [userSort, setUserSort] = useState("recent");
+  // Users tab — paginate: show N cards, "Load more" reveals another 20.
+  const [userVisible, setUserVisible] = useState(20);
+  // Users tab — which customer row's 3-dot action menu is open.
+  const [openUserMenu, setOpenUserMenu] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
   // Orders list lazy loading — render 10 at a time, grow on scroll.
   const ORDERS_BATCH = 10;
@@ -5191,6 +5195,12 @@ export default function ManageOrdersPage() {
     return sorted;
   }, [userList, userSearch, walletHoldFilter, walletMinFilter, userSort]);
 
+  // Reset pagination whenever the filter/search/sort changes.
+  useEffect(() => {
+    setUserVisible(20);
+    setOpenUserMenu(null);
+  }, [userSearch, walletHoldFilter, walletMinFilter, userSort]);
+
   // Adjust a customer's wallet by APPENDING a signed ledger row to the orders
   // sheet (phone + delta + timestamp). The balance is the SUM of every Wallet
   // entry, so a positive delta credits and a negative delta deducts — exactly
@@ -7539,7 +7549,7 @@ export default function ManageOrdersPage() {
               </div>
             </div>
 
-            <section className="an2-card">
+            <section className="an2-card um-section">
               <div className="an2-card-head">
                 <div>
                   <h3 className="an2-card-title">All customers</h3>
@@ -7612,11 +7622,8 @@ export default function ManageOrdersPage() {
                 {filteredUsers.length === 0 && (
                   <div className="an2-bp-empty">No customers found.</div>
                 )}
-                {filteredUsers.map((u) => (
+                {filteredUsers.slice(0, userVisible).map((u) => (
                   <div className="um-row" key={u.phone}>
-                    <div className="um-avatar">
-                      {(u.name || u.phone).slice(0, 1).toUpperCase()}
-                    </div>
                     <div className="um-main">
                       <div className="um-name-row">
                         <span className="um-name">{u.name || "Unknown"}</span>
@@ -7666,31 +7673,66 @@ export default function ManageOrdersPage() {
                       </div>
                     </div>
                     <div className="um-actions">
-                      {u.wallet > 0 && (
-                        <button
-                          type="button"
-                          className="um-wa-btn"
-                          title="Message on WhatsApp about their wallet balance"
-                          onClick={() =>
-                            openWhatsApp(
-                              u.phone,
-                              `Hi${u.name ? " " + u.name.split(" ")[0] : ""}! You have ₹${u.wallet} waiting in your TheBookX wallet. Use it on your next order before it expires — view your balance & orders here: ${PROFILE_URL}`,
-                            )
-                          }
-                        >
-                          <FaWhatsapp size={16} />
-                        </button>
-                      )}
                       <button
                         type="button"
-                        className="um-wallet-btn"
-                        onClick={() => setWalletModal(u)}
+                        className="um-kebab"
+                        aria-label="Actions"
+                        onClick={() =>
+                          setOpenUserMenu((p) =>
+                            p === u.phone ? null : u.phone,
+                          )
+                        }
                       >
-                        <Wallet size={14} /> Wallet
+                        <MoreVertical size={18} />
                       </button>
+                      {openUserMenu === u.phone && (
+                        <>
+                          <div
+                            className="um-menu-backdrop"
+                            onClick={() => setOpenUserMenu(null)}
+                          />
+                          <div className="um-menu" role="menu">
+                            <button
+                              type="button"
+                              className="um-menu-item"
+                              onClick={() => {
+                                setWalletModal(u);
+                                setOpenUserMenu(null);
+                              }}
+                            >
+                              <Wallet size={15} /> Adjust wallet
+                            </button>
+                            {u.wallet > 0 && (
+                              <button
+                                type="button"
+                                className="um-menu-item"
+                                onClick={() => {
+                                  openWhatsApp(
+                                    u.phone,
+                                    `Hi${u.name ? " " + u.name.split(" ")[0] : ""}! You have ₹${u.wallet} waiting in your TheBookX wallet. Use it on your next order before it expires — view your balance & orders here: ${PROFILE_URL}`,
+                                  );
+                                  setOpenUserMenu(null);
+                                }}
+                              >
+                                <FaWhatsapp size={15} /> WhatsApp reminder
+                              </button>
+                            )}
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
                 ))}
+
+                {filteredUsers.length > userVisible && (
+                  <button
+                    type="button"
+                    className="um-loadmore"
+                    onClick={() => setUserVisible((n) => n + 20)}
+                  >
+                    Load more ({filteredUsers.length - userVisible} left)
+                  </button>
+                )}
               </div>
             </section>
 

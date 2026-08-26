@@ -133,6 +133,24 @@ export default function HomePage() {
       {/* Static hero, provides the visible H1 + value prop above the carousel. */}
       <HomeHero />
 
+      {/* Explore Categories — moved to the top of the homepage */}
+      <LazySection threshold={0.05}>
+        <Suspense fallback={<BooksSkeleton />}>
+          <SmoothAppear delay={0.2}>
+            <CatalogueSection />
+          </SmoothAppear>
+        </Suspense>
+      </LazySection>
+
+      {/* ₹1 books deals carousel — moved to the top, below categories */}
+      <LazySection threshold={0.05}>
+        <Suspense fallback={<BooksSkeleton />}>
+          <SmoothAppear delay={0.3}>
+            <OneRupeeDeals />
+          </SmoothAppear>
+        </Suspense>
+      </LazySection>
+
       <PincodeModal />
 
       {/* <UnlockModal /> */}
@@ -157,23 +175,6 @@ export default function HomePage() {
         <Suspense fallback={null}>
           <SmoothAppear delay={0.4}>
             <RecommendationModal />
-          </SmoothAppear>
-        </Suspense>
-      </LazySection>
-
-      <LazySection threshold={0.05}>
-        <Suspense fallback={<BooksSkeleton />}>
-          <SmoothAppear delay={0.6}>
-            <CatalogueSection />
-          </SmoothAppear>
-        </Suspense>
-      </LazySection>
-
-      {/* ₹1 books deals carousel, placed below the categories */}
-      <LazySection threshold={0.05}>
-        <Suspense fallback={<BooksSkeleton />}>
-          <SmoothAppear delay={0.7}>
-            <OneRupeeDeals />
           </SmoothAppear>
         </Suspense>
       </LazySection>

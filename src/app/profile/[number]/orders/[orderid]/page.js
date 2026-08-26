@@ -4,9 +4,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowLeft,
+  X,
   User,
   Home,
   Store,
@@ -26,11 +27,13 @@ import {
   Maximize2,
   Minimize2,
   CalendarClock,
+  Pencil,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import TrackSheet from "@/components/profile/TrackSheet";
 import SupportSheet from "@/components/profile/SupportSheet";
 import BookCard from "@/components/BookCard";
+import { updateOrderRow } from "@/utils/googleFormOrder";
 import { books as ALL_BOOKS } from "@/utils/book";
 
 // TheBookX dispatch origin (Matunga, Mumbai).
@@ -170,6 +173,14 @@ export default function OrderDetailPage() {
   const [itemsOpen, setItemsOpen] = useState(false);
   const [mapFull, setMapFull] = useState(false);
   const [showSupport, setShowSupport] = useState(false);
+  // Address edit sheet
+  const [showAddrEdit, setShowAddrEdit] = useState(false);
+  const [addrForm, setAddrForm] = useState(null);
+  const [addrSaving, setAddrSaving] = useState(false);
+  // Order note (Order Comment)
+  const [noteEditing, setNoteEditing] = useState(false);
+  const [noteDraft, setNoteDraft] = useState("");
+  const [noteSaving, setNoteSaving] = useState(false);
 
   const mapRef = useRef(null);
   const mapObj = useRef(null);
@@ -687,6 +698,77 @@ export default function OrderDetailPage() {
   const cancelled = /cancel/i.test(order["Order Status"] || "");
   const shippingId = order["Shipping ID"] || "";
 
+  // Address is editable before the parcel really moves: not delivered/cancelled/
+  // out-for-delivery, and not in-transit UNLESS no tracking ID exists yet.
+  const canEditAddress =
+    !delivered &&
+    !cancelled &&
+    !outForDelivery &&
+    (!inTransit || !String(shippingId).trim());
+
+  const cleanAddr = String(order["Address"] || "").replace(
+    /,?\s*Pinned location:\s*https?:\/\/\S+/i,
+    "",
+  ).trim();
+
+  const openAddrEdit = () => {
+    setAddrForm({
+      name: custName,
+      address: cleanAddr,
+      city: String(order["City"] || ""),
+      state: String(order["State"] || ""),
+      pincode: String(order["Pincode"] || ""),
+    });
+    setShowAddrEdit(true);
+  };
+
+  const saveAddr = async () => {
+    if (!addrForm) return;
+    setAddrSaving(true);
+    const fields = {
+      Address: addrForm.address.trim(),
+      City: addrForm.city.trim(),
+      State: addrForm.state.trim(),
+      Pincode: addrForm.pincode.trim(),
+    };
+    try {
+      await updateOrderRow(orderId, fields);
+      setOrder((o) => ({ ...o, ...fields }));
+      setShowAddrEdit(false);
+      // Tell the team the address changed so they update the courier before dispatch.
+      const line = [fields.Address, fields.City, fields.State, fields.Pincode]
+        .filter(Boolean)
+        .join(", ");
+      const msg = `Hi TheBookX, I've updated the delivery address for order ${orderId}. New address: ${line}. Please use this for shipping. (${number})`;
+      window.open(
+        `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(msg)}`,
+        "_blank",
+        "noopener,noreferrer",
+      );
+    } catch (e) {
+      console.error("Address update failed", e);
+      alert("Couldn't update the address. Please try again.");
+    } finally {
+      setAddrSaving(false);
+    }
+  };
+
+  const orderNote = String(order["Order Comment"] || "").trim();
+  const saveNote = async () => {
+    const t = noteDraft.trim();
+    setNoteSaving(true);
+    try {
+      await updateOrderRow(orderId, { "Order Comment": t });
+      setOrder((o) => ({ ...o, "Order Comment": t }));
+      setNoteEditing(false);
+    } catch (e) {
+      console.error("Note save failed", e);
+      alert("Couldn't save your note. Please try again.");
+    } finally {
+      setNoteSaving(false);
+    }
+  };
+
   // ETA pill: the delivery-window range shows only once the parcel is moving
   // (in transit / out for delivery). Before that we show the current stage.
   const eta = (() => {
@@ -848,7 +930,18 @@ export default function OrderDetailPage() {
 
       {/* Deliver-to (directly below the map) */}
       <section className="od-block">
-        <div className="od-block-title">Delivery details</div>
+        <div className="od-block-titlerow">
+          <div className="od-block-title">Delivery details</div>
+          {canEditAddress && (
+            <button
+              type="button"
+              className="od-edit-btn"
+              onClick={openAddrEdit}
+            >
+              <Pencil size={13} /> Edit
+            </button>
+          )}
+        </div>
         <div className="od-deliver-row">
           <span className="od-deliver-ic">
             <User size={15} />
@@ -876,6 +969,60 @@ export default function OrderDetailPage() {
               <strong>{order["Pincode"]}</strong>
             </span>
           </div>
+        )}
+      </section>
+
+      {/* Note for this order */}
+      <section className="od-block">
+        <div className="od-block-titlerow">
+          <div className="od-block-title">Note for this order</div>
+          {!noteEditing && (
+            <button
+              type="button"
+              className="od-edit-btn"
+              onClick={() => {
+                setNoteDraft(orderNote);
+                setNoteEditing(true);
+              }}
+            >
+              <Pencil size={13} /> {orderNote ? "Edit" : "Add"}
+            </button>
+          )}
+        </div>
+        {noteEditing ? (
+          <>
+            <textarea
+              className="od-note-input"
+              rows={3}
+              placeholder="e.g. Please call before delivery, leave with the guard…"
+              value={noteDraft}
+              onChange={(e) => setNoteDraft(e.target.value)}
+            />
+            <div className="od-note-actions">
+              <button
+                type="button"
+                className="od-note-cancel"
+                onClick={() => setNoteEditing(false)}
+                disabled={noteSaving}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="od-note-save"
+                onClick={saveNote}
+                disabled={noteSaving}
+              >
+                {noteSaving ? "Saving…" : "Save note"}
+              </button>
+            </div>
+          </>
+        ) : orderNote ? (
+          <p className="od-note-text">{orderNote}</p>
+        ) : (
+          <p className="od-note-empty">
+            No note added yet. Add delivery instructions for this order.
+          </p>
         )}
       </section>
 
@@ -1105,6 +1252,99 @@ export default function OrderDetailPage() {
             orderId={orderId}
             onClose={() => setShowSupport(false)}
           />
+        )}
+      </AnimatePresence>
+
+      {/* Edit delivery address — bottom sheet */}
+      <AnimatePresence>
+        {showAddrEdit && addrForm && (
+          <motion.div
+            className="bill-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => !addrSaving && setShowAddrEdit(false)}
+          >
+            <motion.div
+              className="bill-modal od-addr-sheet"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.34, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="bill-header">
+                <span className="weight-700 font-16">Edit delivery address</span>
+                <span
+                  className="cursor-pointer"
+                  onClick={() => !addrSaving && setShowAddrEdit(false)}
+                >
+                  <X size={18} />
+                </span>
+              </div>
+              <p className="ep-hint" style={{ marginBottom: 10 }}>
+                We&apos;ll update the address on your order and open WhatsApp so
+                our team can ship it to the new address.
+              </p>
+
+              <label className="od-field-lbl">Full address</label>
+              <textarea
+                className="od-note-input"
+                rows={3}
+                value={addrForm.address}
+                onChange={(e) =>
+                  setAddrForm((f) => ({ ...f, address: e.target.value }))
+                }
+              />
+              <div className="od-field-grid">
+                <div>
+                  <label className="od-field-lbl">City</label>
+                  <input
+                    className="od-field-input"
+                    value={addrForm.city}
+                    onChange={(e) =>
+                      setAddrForm((f) => ({ ...f, city: e.target.value }))
+                    }
+                  />
+                </div>
+                <div>
+                  <label className="od-field-lbl">State</label>
+                  <input
+                    className="od-field-input"
+                    value={addrForm.state}
+                    onChange={(e) =>
+                      setAddrForm((f) => ({ ...f, state: e.target.value }))
+                    }
+                  />
+                </div>
+                <div>
+                  <label className="od-field-lbl">Pincode</label>
+                  <input
+                    className="od-field-input"
+                    inputMode="numeric"
+                    maxLength={6}
+                    value={addrForm.pincode}
+                    onChange={(e) =>
+                      setAddrForm((f) => ({
+                        ...f,
+                        pincode: e.target.value.replace(/\D/g, "").slice(0, 6),
+                      }))
+                    }
+                  />
+                </div>
+              </div>
+
+              <button
+                type="button"
+                className="od-track-btn"
+                style={{ marginTop: 14 }}
+                onClick={saveAddr}
+                disabled={addrSaving || !addrForm.address.trim()}
+              >
+                {addrSaving ? "Saving…" : "Save & notify on WhatsApp"}
+              </button>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
     </main>

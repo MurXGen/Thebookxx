@@ -752,6 +752,74 @@ button:hover {
   box-shadow: var(--shadow-xs);
 }
 
+/* All Books grid — borderless section, soft shadow, hairline separators */
+.trending-section {
+  border: none;
+  box-shadow: 0 12px 34px -22px rgba(0, 0, 0, 0.22);
+}
+.trending-section .grid-2 {
+  gap: 0;
+}
+.trending-section .grid-2 .trending-card {
+  background: transparent;
+  border-radius: 0;
+  min-width: 0;
+  padding: 16px 14px;
+  border-right: 1px solid var(--hairline, #ececec);
+  border-bottom: 1px solid var(--hairline, #ececec);
+  transition: background 0.2s ease, box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+.trending-section .grid-2 .trending-card:hover {
+  transform: none;
+  background: rgba(251, 133, 0, 0.035);
+  border-color: rgba(251, 133, 0, 0.5);
+  /* the bordering lines glow on hover */
+  box-shadow: inset -1px 0 0 rgba(251, 133, 0, 0.5),
+    inset 0 -1px 0 rgba(251, 133, 0, 0.5),
+    inset 1px 0 0 rgba(251, 133, 0, 0.28),
+    inset 0 1px 0 rgba(251, 133, 0, 0.28);
+}
+
+/* Card actions in one row: add-to-cart + wishlist + share */
+.bc-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.bc-action-main {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.bc-icon-btn {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  border: 1px solid var(--dark-20, #e5e7eb);
+  background: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--foreground, #111827);
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+.bc-icon-btn:hover {
+  border-color: var(--tertiary, #fb8500);
+  color: var(--tertiary, #fb8500);
+}
+.bc-icon-btn.on {
+  color: #e11d48;
+  border-color: #f7b3c2;
+  background: #fff1f4;
+}
+@media (max-width: 480px) {
+  .bc-add-label {
+    display: none;
+  }
+}
+
 /* Trending books  */
 
 .h-scroll-wrapper {

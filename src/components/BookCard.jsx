@@ -3,7 +3,7 @@
 import { useStore } from "@/context/StoreContext";
 import { trackAddToCart } from "@/lib/ga";
 import { books } from "@/utils/book";
-import { Book, Minus, Plus, Share2, ShoppingCart, Bell } from "lucide-react";
+import { Book, Minus, Plus, Share2, ShoppingCart, Bell, Heart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
@@ -210,27 +210,6 @@ export default function BookCard({ book }) {
 
         {/* Image */}
         <div className="book-image-wrapper" ref={coverRef}>
-          <WishlistButton
-            inWishlist={inWishlist}
-            onClick={() => toggleWishlist(book.id)}
-          />
-
-          {/* Share Button */}
-          <button
-            onClick={handleShare}
-            className="add-wishlist"
-            aria-label={`Share ${book.name}`}
-            title="Share this book"
-            style={{
-              top: "4px",
-              background: "#00000010",
-              border: "none",
-              backdropFilter: "blur(12px)",
-            }}
-          >
-            <Share2 size={14} color="black" />
-          </button>
-
           {!imageLoaded && <div className="image-skeleton" />}
 
           {book.image ? (
@@ -361,8 +340,8 @@ export default function BookCard({ book }) {
             </div>
           </div>
 
-          {/* Add to cart — full width, dashed divider above, below the price */}
-          <div className="bookcard-cart-row">
+          {/* Actions — add-to-cart (or notify / qty) + wishlist + share, one row */}
+          <div className="bookcard-cart-row bc-actions-row">
             {book.stock === 0 ? (
               <a
                 href={`https://wa.me/917710892108?text=${encodeURIComponent(
@@ -372,27 +351,27 @@ export default function BookCard({ book }) {
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bookcard-notify-btn"
+                className="bookcard-notify-btn bc-action-main"
                 aria-label={`Notify me when ${book.name} is back in stock`}
                 onClick={(e) => e.stopPropagation()}
               >
                 <Bell size={16} />
-                <span>Notify me</span>
+                <span className="bc-add-label">Notify me</span>
               </a>
             ) : qty === 0 ? (
               <LoadingButton
-                className="bookcard-add-btn"
+                className="bookcard-add-btn bc-action-main"
                 onClick={handleAddToCart}
                 aria-label={`Add ${book.name} to cart`}
                 aria-disabled={isOneRupeeLimitReached}
               >
                 <span className="bc-add-inner">
                   <ShoppingCart size={17} />
-                  <span>Add to Cart</span>
+                  <span className="bc-add-label">Add to Cart</span>
                 </span>
               </LoadingButton>
             ) : (
-              <div className="bookcard-qty">
+              <div className="bookcard-qty bc-action-main">
                 <button
                   onClick={() => decreaseQty(book.id)}
                   className="minus-cart"
@@ -400,11 +379,9 @@ export default function BookCard({ book }) {
                 >
                   <Minus size={14} />
                 </button>
-
                 <span className="qty" aria-label={`Quantity: ${qty}`}>
                   {qty}
                 </span>
-
                 <button
                   onClick={handleIncreaseQty}
                   className="plus-cart"
@@ -415,6 +392,29 @@ export default function BookCard({ book }) {
                 </button>
               </div>
             )}
+
+            <button
+              type="button"
+              className={`bc-icon-btn${inWishlist ? " on" : ""}`}
+              onClick={() => toggleWishlist(book.id)}
+              aria-label={
+                inWishlist
+                  ? `Remove ${book.name} from wishlist`
+                  : `Add ${book.name} to wishlist`
+              }
+              title="Wishlist"
+            >
+              <Heart size={17} fill={inWishlist ? "currentColor" : "none"} />
+            </button>
+            <button
+              type="button"
+              className="bc-icon-btn"
+              onClick={handleShare}
+              aria-label={`Share ${book.name}`}
+              title="Share"
+            >
+              <Share2 size={16} />
+            </button>
           </div>
 
           {/* Stock Status Display — only when in stock & running low */}

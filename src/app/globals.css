@@ -37059,3 +37059,34 @@ img[data-loaded="true"] {
     align-items: flex-end;
   }
 }
+
+/* Lazy "load more" control in the recommendation results */
+.reco-lazy-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin: 14px 0 4px;
+  padding: 12px;
+  border: 1px solid var(--hairline, #ececec);
+  border-radius: 12px;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--dark-50, #6b7280);
+  cursor: pointer;
+}
+.reco-lazy-spinner {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 2px solid var(--hairline, #e5e7eb);
+  border-top-color: var(--tertiary, #fb8500);
+  animation: reco-lazy-spin 0.7s linear infinite;
+}
+@keyframes reco-lazy-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

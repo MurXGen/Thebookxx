@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
+import { createPortal } from "react-dom";
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import {
   X,
@@ -45,6 +46,11 @@ export default function RecommendationModal({
 
   const [internalIsOpen, setInternalIsOpen] = useState(false);
   const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
+
+  // The modal is often rendered inside transformed/fixed ancestors (e.g. the
+  // cart bar), which would trap a position:fixed overlay. Portal to <body>.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   // Optional, inline chip filters over the live results.
   const [genres, setGenres] = useState([]);
@@ -166,7 +172,9 @@ export default function RecommendationModal({
   const chatUrl =
     WHATSAPP + encodeURIComponent("Hi! Can you help me pick a book?");
 
-  return (
+  if (!mounted) return null;
+
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
         <motion.div
@@ -413,6 +421,7 @@ export default function RecommendationModal({
           </motion.div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   );
 }

@@ -427,9 +427,9 @@ export default function AddressModal({
 
   // For the COD fee modal comparison
   const upiTotalForFlow = getTotalWithDelivery(fasterDelivery) + addOnsCharge;
-  // COD handling fee is 5.9% of the bill (Indian Post raised their charges,
-  // so COD now carries a percentage fee instead of a flat ₹29).
-  const codFeeAmount = Math.max(0, Math.round(upiTotalForFlow * 0.059));
+  // COD handling fee: a minimum of ₹29, or 5.9% of the bill when that exceeds
+  // ₹29 (whichever is higher).
+  const codFeeAmount = Math.max(29, Math.round(upiTotalForFlow * 0.059));
   const codTotalWithFee = upiTotalForFlow + codFeeAmount;
 
   // Only ONE ₹1 book is allowed per order. Count the total quantity of

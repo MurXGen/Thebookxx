@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import TrackSheet from "@/components/profile/TrackSheet";
+import SupportSheet from "@/components/profile/SupportSheet";
 import BookCard from "@/components/BookCard";
 import { books as ALL_BOOKS } from "@/utils/book";
 
@@ -168,6 +169,7 @@ export default function OrderDetailPage() {
   const [trackCopied, setTrackCopied] = useState(false);
   const [itemsOpen, setItemsOpen] = useState(false);
   const [mapFull, setMapFull] = useState(false);
+  const [showSupport, setShowSupport] = useState(false);
 
   const mapRef = useRef(null);
   const mapObj = useRef(null);
@@ -751,7 +753,11 @@ export default function OrderDetailPage() {
           <h1>Order details</h1>
           <span className="ord-sub">{orderId}</span>
         </div>
-        <button type="button" className="ord-support-btn" onClick={contactSupport}>
+        <button
+          type="button"
+          className="ord-support-btn"
+          onClick={() => setShowSupport(true)}
+        >
           <MessageCircle size={16} />
           Support
         </button>
@@ -872,52 +878,6 @@ export default function OrderDetailPage() {
           </div>
         )}
       </section>
-
-      {/* Cancellation / confirmation notice */}
-      {!delivered && !cancelled && (
-        <div className="ok-cancel-note od-cancel-note">
-          <span className="ok-cancel-title">
-            <Info size={14} /> Good to know
-          </span>
-          <ul className="ok-cancel-list">
-            <li>This order can&apos;t be cancelled once placed.</li>
-            {/cash on delivery|cod/i.test(order["Payment Type"] || "") && (
-              <li>
-                You may get a call or WhatsApp to confirm your order — please
-                stay responsive so it isn&apos;t delayed.
-              </li>
-            )}
-          </ul>
-          <a
-            href="/terms#cancellation-policy"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="ok-cancel-link"
-          >
-            View cancellation policy →
-          </a>
-        </div>
-      )}
-
-      {/* Bookmark out-of-stock notice */}
-      <div className="od-bookmark-note">
-        <Info size={14} />
-        <span>
-          <strong>Bookmarks are temporarily out of stock</strong> due to a huge
-          surge in orders. Please bear with us until we restock —{" "}
-          <a
-            href={`https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(
-              `Hi TheBookX, I'd like to claim compensation for my missing bookmark (order ${orderId}).`,
-            )}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="od-bookmark-link"
-          >
-            message us to claim your bookmark compensation
-          </a>
-          .
-        </span>
-      </div>
 
       {/* Items summary strip (Flipkart "Total N items" + thumbnails) */}
       <section className="od-block od-items-block">
@@ -1058,8 +1018,12 @@ export default function OrderDetailPage() {
         )}
       </section>
 
-      {/* Ask about this order (WhatsApp) — outlined, below price details */}
-      <button type="button" className="od-help-btn" onClick={askAboutOrder}>
+      {/* Ask about this order — opens the support topic sheet */}
+      <button
+        type="button"
+        className="od-help-btn"
+        onClick={() => setShowSupport(true)}
+      >
         <FaWhatsapp size={16} /> Ask about this order
       </button>
       <button
@@ -1097,6 +1061,32 @@ export default function OrderDetailPage() {
         </section>
       )}
 
+      {/* Good to know — cancellation notice, at the bottom */}
+      {!delivered && !cancelled && (
+        <div className="ok-cancel-note od-cancel-note">
+          <span className="ok-cancel-title">
+            <Info size={14} /> Good to know
+          </span>
+          <ul className="ok-cancel-list">
+            <li>This order can&apos;t be cancelled once placed.</li>
+            {/cash on delivery|cod/i.test(order["Payment Type"] || "") && (
+              <li>
+                You may get a call or WhatsApp to confirm your order — please
+                stay responsive so it isn&apos;t delayed.
+              </li>
+            )}
+          </ul>
+          <a
+            href="/terms#cancellation-policy"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ok-cancel-link"
+          >
+            View cancellation policy →
+          </a>
+        </div>
+      )}
+
       <AnimatePresence>
         {showTrack && (
           <TrackSheet
@@ -1104,6 +1094,16 @@ export default function OrderDetailPage() {
             onClose={() => setShowTrack(false)}
             trackCopied={trackCopied}
             setTrackCopied={setTrackCopied}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showSupport && (
+          <SupportSheet
+            phone={number}
+            orderId={orderId}
+            onClose={() => setShowSupport(false)}
           />
         )}
       </AnimatePresence>

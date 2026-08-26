@@ -5,7 +5,9 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, Package, ChevronRight, Clock, MessageCircle } from "lucide-react";
+import { AnimatePresence } from "framer-motion";
 import { books as ALL_BOOKS } from "@/utils/book";
+import SupportSheet from "@/components/profile/SupportSheet";
 
 const SUPPORT_WHATSAPP = "917710892108";
 
@@ -80,6 +82,7 @@ export default function OrdersListPage() {
 
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showSupport, setShowSupport] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -166,7 +169,11 @@ export default function OrdersListPage() {
           <h1>My orders</h1>
           <span className="ord-sub">+91 {number}</span>
         </div>
-        <button type="button" className="ord-support-btn" onClick={contactSupport}>
+        <button
+          type="button"
+          className="ord-support-btn"
+          onClick={() => setShowSupport(true)}
+        >
           <MessageCircle size={16} />
           Support
         </button>
@@ -262,6 +269,12 @@ export default function OrdersListPage() {
           ))}
         </div>
       )}
+
+      <AnimatePresence>
+        {showSupport && (
+          <SupportSheet phone={number} onClose={() => setShowSupport(false)} />
+        )}
+      </AnimatePresence>
     </main>
   );
 }

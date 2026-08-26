@@ -56,6 +56,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { showToast } from "@/context/ToastContext";
 import TrackSheet from "@/components/profile/TrackSheet";
+import ProductCard from "@/components/BookCard";
+import HorizontalScroll from "@/components/UI/HorizontalScroll";
 import PageHeader from "@/components/UI/PageHeader";
 import InstallAppBar from "@/components/InstallAppBar";
 import RecommendationModal from "@/components/RecommendationModal";
@@ -1394,6 +1396,19 @@ Please cancel this order. Thank you `;
     ALL_BOOKS.find((b) => /atomic habits/i.test(b.name)),
   ].filter((b) => b && b.image);
 
+  // Popular books rail shown on the profile (always feature The Art of Clarity).
+  const popularBooks = (() => {
+    const clarity = ALL_BOOKS.find((b) => /art of clarity/i.test(b.name));
+    const inStock = ALL_BOOKS.filter(
+      (b) =>
+        b &&
+        b.image &&
+        (b.stock === undefined || b.stock > 0) &&
+        !/art of clarity/i.test(b.name),
+    );
+    return [clarity, ...inStock].filter(Boolean).slice(0, 10);
+  })();
+
   // ── Edit-profile helpers ──
   const openEditProfile = () => {
     setEpName(customerName || "");
@@ -1655,6 +1670,18 @@ Please cancel this order. Thank you `;
                 </a>
                 </div>
               </div>
+
+              {/* Popular books rail — so the profile always has something to
+                  browse, even before signing in. */}
+              {popularBooks.length > 0 && (
+                <section className="catalogue-section-2 trending-section profile-books-rail">
+                  <HorizontalScroll title="Popular right now">
+                    {popularBooks.map((b) => (
+                      <ProductCard key={b.id} book={b} />
+                    ))}
+                  </HorizontalScroll>
+                </section>
+              )}
             </motion.div>
           ) : (
             <motion.div
@@ -1820,13 +1847,6 @@ Please cancel this order. Thank you `;
         )}
 
 
-        {loading && (
-          <div className="loading-state flex flex-col items-center justify-center">
-            <div className="spinner"></div>
-            Getting your order details
-          </div>
-        )}
-
         {error && !showPhoneInput && (
           <div className="error-state">
             <div className="error-icon"></div>
@@ -1844,6 +1864,17 @@ Please cancel this order. Thank you `;
         {!showPhoneInput && !verifying && (!loading || cardLoading) && (
           <div className="profile-menu">
         <div className="pm-section-title">Your orders</div>
+        {/* While fetching, shimmer the order row itself instead of a separate
+            "getting your order details" loader. */}
+        {loading && (
+          <div className="orders-accordion">
+            <div className="orders-toggle orders-toggle-skel" aria-busy="true">
+              <span className="ot-ic ot-sk-ic" />
+              <span className="ot-sk-line" style={{ width: "48%" }} />
+              <span className="ot-sk-badge" />
+            </div>
+          </div>
+        )}
         {/* Order(s) still being confirmed by the team. */}
         {searched && !loading && !error && pendingOrders.length > 0 && (
           <div className="order-pending-card">

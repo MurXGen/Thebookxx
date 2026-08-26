@@ -17384,6 +17384,45 @@ img[data-loaded="true"] {
 .orders-toggle:hover {
   background: #faf7f2;
 }
+/* Shimmer placeholder for the order row while orders are being fetched */
+.orders-toggle-skel {
+  cursor: default;
+  pointer-events: none;
+}
+.orders-toggle-skel:hover {
+  background: transparent;
+}
+.ot-sk-ic,
+.ot-sk-line,
+.ot-sk-badge {
+  display: block;
+  border-radius: 6px;
+  background: #eef0f2;
+  background-image: linear-gradient(
+    90deg,
+    #eef0f2 0,
+    #f6f7f9 40px,
+    #eef0f2 80px
+  );
+  background-size: 600px 100%;
+  animation: ord-sk-shimmer 1.2s ease-in-out infinite;
+}
+.ot-sk-ic {
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+.ot-sk-line {
+  height: 12px;
+}
+.ot-sk-badge {
+  width: 26px;
+  height: 20px;
+  border-radius: 999px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
 .ot-ic {
   display: inline-flex;
   align-items: center;
@@ -17932,6 +17971,11 @@ img[data-loaded="true"] {
 .pm-logout .pm-arrow {
   color: #dc2626;
 }
+/* Popular books rail on the profile (logged-out state) */
+.profile-books-rail {
+  margin-top: 18px;
+}
+
 /* Sub-division headings inside the profile account menu */
 .pm-section-title {
   padding: 14px 16px 6px;

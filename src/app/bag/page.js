@@ -1209,7 +1209,9 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🧾 Invoice: ${orderLink || "—"}${
           )}
 
           {cartBooks.length > 0 ? (
-            <div className="fixed-bill-bar flex flex-col">
+            <div
+              className={`fixed-bill-bar flex flex-col${showRecommendationModal ? " reco-open" : ""}`}
+            >
               <div className="flex flex-row justify-between width100 items-center">
                 <div className="bill-left">
                   <span className="font-12 dark-50">Total payable</span>
@@ -1267,7 +1269,9 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🧾 Invoice: ${orderLink || "—"}${
               </div>
             </div>
           ) : (
-            <div className="fixed-bill-bar flex flex-col">
+            <div
+              className={`fixed-bill-bar flex flex-col${showRecommendationModal ? " reco-open" : ""}`}
+            >
               <div className="flex flex-row justify-between width100 items-center">
                 <div className="bill-left">
                   <span className="font-12 dark-50">Total payable</span>

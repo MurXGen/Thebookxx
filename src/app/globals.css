@@ -759,6 +759,17 @@ button:hover {
 }
 .trending-section .grid-2 {
   gap: 0;
+  grid-template-columns: repeat(4, 1fr);
+}
+@media (max-width: 900px) {
+  .trending-section .grid-2 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (max-width: 620px) {
+  .trending-section .grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 .trending-section .grid-2 .trending-card {
   background: transparent;
@@ -768,17 +779,61 @@ button:hover {
   border-right: 1px solid var(--hairline, #ececec);
   border-bottom: 1px solid var(--hairline, #ececec);
   transition: background 0.2s ease, box-shadow 0.2s ease,
-    border-color 0.2s ease;
+    border-color 0.2s ease, border-radius 0.2s ease;
 }
 .trending-section .grid-2 .trending-card:hover {
   transform: none;
-  background: rgba(251, 133, 0, 0.035);
-  border-color: rgba(251, 133, 0, 0.5);
-  /* the bordering lines glow on hover */
-  box-shadow: inset -1px 0 0 rgba(251, 133, 0, 0.5),
-    inset 0 -1px 0 rgba(251, 133, 0, 0.5),
-    inset 1px 0 0 rgba(251, 133, 0, 0.28),
-    inset 0 1px 0 rgba(251, 133, 0, 0.28);
+  border-radius: 16px;
+  background: rgba(251, 133, 0, 0.05);
+  border-color: transparent;
+  box-shadow: 0 0 0 1.5px rgba(251, 133, 0, 0.45),
+    0 10px 26px -14px rgba(0, 0, 0, 0.25);
+}
+
+/* All Books — category dropdown + slide modal */
+.ab-cat-btn {
+  white-space: nowrap;
+}
+.ab-cat-sheet {
+  max-width: 560px;
+}
+.ab-cat-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 6px 0 16px;
+  max-height: 52vh;
+  overflow-y: auto;
+}
+.ab-cat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 14px;
+  border-radius: 999px;
+  border: 1.5px solid var(--dark-20, #e5e7eb);
+  background: #fff;
+  color: var(--foreground, #374151);
+  font-size: var(--px-13);
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+.ab-cat-chip:hover {
+  border-color: var(--tertiary, #fb8500);
+}
+.ab-cat-chip.on {
+  border-color: var(--tertiary, #fb8500);
+  background: #fff4e5;
+  color: var(--tertiary, #fb8500);
+}
+.ab-cat-count {
+  font-size: var(--px-11);
+  font-weight: 700;
+  color: var(--gray-500, #9ca3af);
+}
+.ab-cat-chip.on .ab-cat-count {
+  color: var(--tertiary, #fb8500);
 }
 
 /* Card actions: full-width highlighted Add to Cart (wishlist/share are bare

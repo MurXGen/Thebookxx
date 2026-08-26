@@ -3,7 +3,7 @@
 import BookCard from "@/components/BookCard";
 import { books } from "@/utils/book";
 import { getCatalogueData } from "@/utils/catalogueUtils";
-import { ArrowRight, X, SlidersHorizontal, ArrowUpDown } from "lucide-react";
+import { ArrowRight, X, SlidersHorizontal, ArrowUpDown, ChevronDown } from "lucide-react";
 import { useMemo, useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -27,6 +27,7 @@ export default function AllBooks() {
 
   const [showFiltersModal, setShowFiltersModal] = useState(false);
   const [showSortModal, setShowSortModal] = useState(false);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
 
   const [stagedCategories, setStagedCategories] = useState([]);
   const [stagedPriceMin, setStagedPriceMin] = useState("");
@@ -186,6 +187,20 @@ export default function AllBooks() {
               <div className="margin-tp-12px font-12 dark-50">
                 {visibleBooks.length} of {filteredBooks.length} books
               </div>
+              <button
+                className="sec-mid-btn flex flex-row gap-6 items-center ab-cat-btn"
+                onClick={() => setShowCategoryModal(true)}
+              >
+                <span>
+                  {selectedCategories.length === 1
+                    ? categoryData.find((c) => c.key === selectedCategories[0])
+                        ?.label || "Category"
+                    : selectedCategories.length > 1
+                      ? `${selectedCategories.length} categories`
+                      : "Category"}
+                </span>
+                <ChevronDown size={15} />
+              </button>
               <button
                 className="sec-mid-btn flex flex-row gap-8 items-center"
                 onClick={openFiltersModal}
@@ -589,6 +604,81 @@ export default function AllBooks() {
                   Cancel
                 </button>
               </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Category slide modal */}
+      <AnimatePresence>
+        {showCategoryModal && (
+          <motion.div
+            className="bill-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowCategoryModal(false)}
+          >
+            <motion.div
+              className="bill-modal ab-cat-sheet"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.36, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="bill-header">
+                <div className="flex flex-col">
+                  <span className="weight-700 font-16">Browse by category</span>
+                  <span className="font-12 gray-500">
+                    {selectedCategories.length
+                      ? `${selectedCategories.length} selected`
+                      : "Pick one or more"}
+                  </span>
+                </div>
+                <span
+                  className="cursor-pointer"
+                  onClick={() => setShowCategoryModal(false)}
+                >
+                  <X size={18} />
+                </span>
+              </div>
+              <div className="ab-cat-grid">
+                <button
+                  type="button"
+                  className={`ab-cat-chip${selectedCategories.length === 0 ? " on" : ""}`}
+                  onClick={() => setSelectedCategories([])}
+                >
+                  All books
+                </button>
+                {categoryData.map((cat) => {
+                  const on = selectedCategories.includes(cat.key);
+                  return (
+                    <button
+                      key={cat.key}
+                      type="button"
+                      className={`ab-cat-chip${on ? " on" : ""}`}
+                      onClick={() =>
+                        setSelectedCategories((prev) =>
+                          prev.includes(cat.key)
+                            ? prev.filter((k) => k !== cat.key)
+                            : [...prev, cat.key],
+                        )
+                      }
+                    >
+                      {cat.label}
+                      <span className="ab-cat-count">{cat.count}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              <button
+                type="button"
+                className="pri-big-btn"
+                onClick={() => setShowCategoryModal(false)}
+              >
+                Show {filteredBooks.length} books
+              </button>
             </motion.div>
           </motion.div>
         )}

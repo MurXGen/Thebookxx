@@ -781,43 +781,50 @@ button:hover {
     inset 0 1px 0 rgba(251, 133, 0, 0.28);
 }
 
-/* Card actions in one row: add-to-cart + wishlist + share */
+/* Card actions: full-width highlighted Add to Cart (wishlist/share are bare
+   mini icons up in the title area). */
 .bc-actions-row {
   display: flex;
-  align-items: center;
-  gap: 8px;
 }
 .bc-action-main {
   flex: 1 1 auto;
   min-width: 0;
 }
-.bc-icon-btn {
-  flex: 0 0 auto;
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
-  border: 1px solid var(--dark-20, #e5e7eb);
-  background: #fff;
+.bc-actions-row .bc-add-inner {
+  white-space: nowrap;
+}
+/* Bare wishlist + share icons at the top-right of the title area */
+.book-card {
+  position: relative;
+}
+.book-card > h3 {
+  padding-right: 44px;
+}
+.bc-title-icons {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.bc-mini-icon {
+  background: none;
+  border: none;
+  padding: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--foreground, #111827);
+  color: var(--dark-50, #6b7280);
   cursor: pointer;
-  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+  transition: color 0.15s ease, transform 0.12s ease;
 }
-.bc-icon-btn:hover {
-  border-color: var(--tertiary, #fb8500);
+.bc-mini-icon:hover {
   color: var(--tertiary, #fb8500);
+  transform: scale(1.08);
 }
-.bc-icon-btn.on {
+.bc-mini-icon.on {
   color: #e11d48;
-  border-color: #f7b3c2;
-  background: #fff1f4;
-}
-@media (max-width: 480px) {
-  .bc-add-label {
-    display: none;
-  }
 }
 
 /* Trending books  */

@@ -242,6 +242,31 @@ export default function BookCard({ book }) {
 
         {/* Content */}
         <div className="flex flex-col gap-12 book-card margin-tp-24px">
+          {/* Bare wishlist + share icons, top-right of the title area */}
+          <div className="bc-title-icons">
+            <button
+              type="button"
+              className={`bc-mini-icon${inWishlist ? " on" : ""}`}
+              onClick={() => toggleWishlist(book.id)}
+              aria-label={
+                inWishlist
+                  ? `Remove ${book.name} from wishlist`
+                  : `Add ${book.name} to wishlist`
+              }
+              title="Wishlist"
+            >
+              <Heart size={16} fill={inWishlist ? "currentColor" : "none"} />
+            </button>
+            <button
+              type="button"
+              className="bc-mini-icon"
+              onClick={handleShare}
+              aria-label={`Share ${book.name}`}
+              title="Share"
+            >
+              <Share2 size={15} />
+            </button>
+          </div>
           <h3 className="font-16 weight-500" itemProp="name">
             <Link
               href={bookUrl}
@@ -392,29 +417,6 @@ export default function BookCard({ book }) {
                 </button>
               </div>
             )}
-
-            <button
-              type="button"
-              className={`bc-icon-btn${inWishlist ? " on" : ""}`}
-              onClick={() => toggleWishlist(book.id)}
-              aria-label={
-                inWishlist
-                  ? `Remove ${book.name} from wishlist`
-                  : `Add ${book.name} to wishlist`
-              }
-              title="Wishlist"
-            >
-              <Heart size={17} fill={inWishlist ? "currentColor" : "none"} />
-            </button>
-            <button
-              type="button"
-              className="bc-icon-btn"
-              onClick={handleShare}
-              aria-label={`Share ${book.name}`}
-              title="Share"
-            >
-              <Share2 size={16} />
-            </button>
           </div>
 
           {/* Stock Status Display — only when in stock & running low */}

@@ -42,6 +42,13 @@ import {
   ShieldCheck,
   Pencil,
   Home,
+  Library,
+  LayoutGrid,
+  ShoppingBag,
+  Store,
+  Info,
+  RotateCcw,
+  Lightbulb,
 } from "lucide-react";
 import Image from "next/image";
 import { FaWhatsapp } from "react-icons/fa";
@@ -1818,6 +1825,7 @@ Please cancel this order. Thank you `;
         {/* ── Rapido-style account menu ── */}
         {!showPhoneInput && !verifying && !loading && (
           <div className="profile-menu">
+        <div className="pm-section-title">Your orders</div>
         {/* Order(s) still being confirmed by the team. */}
         {searched && !loading && !error && pendingOrders.length > 0 && (
           <div className="order-pending-card">
@@ -2356,6 +2364,36 @@ Please cancel this order. Thank you `;
           </div>
         )}
 
+            {/* ── Shop ── */}
+            <div className="pm-section-title">Shop</div>
+
+            <Link href="/books" className="pm-row">
+              <span className="pm-ic">
+                <Library size={18} />
+              </span>
+              <span className="pm-label">All books</span>
+              <ChevronRight size={18} className="pm-arrow" />
+            </Link>
+
+            <Link href="/category" className="pm-row">
+              <span className="pm-ic">
+                <LayoutGrid size={18} />
+              </span>
+              <span className="pm-label">Categories</span>
+              <ChevronRight size={18} className="pm-arrow" />
+            </Link>
+
+            <Link href="/bag" className="pm-row">
+              <span className="pm-ic">
+                <ShoppingBag size={18} />
+              </span>
+              <span className="pm-label">Your cart</span>
+              <ChevronRight size={18} className="pm-arrow" />
+            </Link>
+
+            {/* ── Your library ── */}
+            <div className="pm-section-title">Your library</div>
+
             <Link href="/reading-tracker" className="pm-row">
               <span className="pm-ic">
                 <Notebook size={18} />
@@ -2363,6 +2401,9 @@ Please cancel this order. Thank you `;
               <span className="pm-label">My reading tracker</span>
               <ChevronRight size={18} className="pm-arrow" />
             </Link>
+
+            {/* ── Community & rewards ── */}
+            <div className="pm-section-title">Community &amp; rewards</div>
 
             <a
               href="https://chat.whatsapp.com/Lk3okPbq21s8kJeoM3UA4c?mode=gi_t"
@@ -2413,6 +2454,44 @@ Please cancel this order. Thank you `;
               <ChevronRight size={18} className="pm-arrow" />
             </Link>
 
+            <a href="https://thebookx.in?suggest" className="pm-row">
+              <span className="pm-ic">
+                <Lightbulb size={18} />
+              </span>
+              <span className="pm-label">Suggest a book</span>
+              <ChevronRight size={18} className="pm-arrow" />
+            </a>
+
+            {/* ── Sell with us ── */}
+            <div className="pm-section-title">Sell with us</div>
+
+            <Link href="/list-your-books" className="pm-row">
+              <span className="pm-ic">
+                <Store size={18} />
+              </span>
+              <span className="pm-label">List your books</span>
+              <ChevronRight size={18} className="pm-arrow" />
+            </Link>
+
+            {/* ── Help & policies ── */}
+            <div className="pm-section-title">Help &amp; policies</div>
+
+            <Link href="/about-us" className="pm-row">
+              <span className="pm-ic">
+                <Info size={18} />
+              </span>
+              <span className="pm-label">About us</span>
+              <ChevronRight size={18} className="pm-arrow" />
+            </Link>
+
+            <Link href="/contact-us" className="pm-row">
+              <span className="pm-ic">
+                <Phone size={18} />
+              </span>
+              <span className="pm-label">Contact us</span>
+              <ChevronRight size={18} className="pm-arrow" />
+            </Link>
+
             <Link href="/terms" className="pm-row">
               <span className="pm-ic">
                 <FileText size={18} />
@@ -2426,6 +2505,22 @@ Please cancel this order. Thank you `;
                 <ShieldCheck size={18} />
               </span>
               <span className="pm-label">Privacy Policy</span>
+              <ChevronRight size={18} className="pm-arrow" />
+            </Link>
+
+            <Link href="/refund" className="pm-row">
+              <span className="pm-ic">
+                <RotateCcw size={18} />
+              </span>
+              <span className="pm-label">Refund Policy</span>
+              <ChevronRight size={18} className="pm-arrow" />
+            </Link>
+
+            <Link href="/shipping" className="pm-row">
+              <span className="pm-ic">
+                <Truck size={18} />
+              </span>
+              <span className="pm-label">Shipping Policy</span>
               <ChevronRight size={18} className="pm-arrow" />
             </Link>
 

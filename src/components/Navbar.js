@@ -83,7 +83,6 @@ function RotatingTrust() {
 
 export default function Navbar() {
   const [index, setIndex] = useState(0);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [navHidden, setNavHidden] = useState(false);
   const [walletBalance, setWalletBalance] = useState(0);
@@ -129,17 +128,6 @@ export default function Navbar() {
 
   const currentOffer = CART_OFFERS[index];
 
-  // Menu links data
-  const menuLinks = [
-    { name: "List your books", path: "/list-your-books" },
-    { name: "About us", path: "/about-us" },
-    { name: "Terms and Conditions", path: "/terms" },
-    { name: "Privacy Policy", path: "/privacy" },
-    { name: "Refund Policy", path: "/refund" },
-    { name: "Shipping Policy", path: "/shipping" },
-    { name: "Contact us", path: "/contact-us" },
-  ];
-
   return (
     <>
       <header className={`navbar-wrapper${navHidden ? " nav-hidden" : ""}`}>
@@ -174,15 +162,8 @@ export default function Navbar() {
         {/* Mobile promo strip */}
 
         <nav className="navbar section-1200">
-          {/* LEFT — menu + brand */}
+          {/* LEFT — brand */}
           <div className="nav-left">
-            <button
-              onClick={() => setIsMenuOpen(true)}
-              aria-label="Menu"
-              className="menu-button nav-ic"
-            >
-              <MenuIcon size={26} />
-            </button>
             <Link href="/" aria-label="TheBookX home" className="nav-brand">
               <span className="logo-text">TheBookX</span>
               <span className="nav-brand-sub">formerly Uskillbook</span>
@@ -256,107 +237,6 @@ export default function Navbar() {
       </header>
 
       <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
-
-      {/* Full Screen Menu Component */}
-      <AnimatePresence>
-        {isMenuOpen && (
-          <>
-            {/* Backdrop */}
-            <motion.div
-              className="menu-backdrop"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsMenuOpen(false)}
-            />
-
-            {/* Sliding Menu */}
-            <motion.div
-              className="menu-slide-panel"
-              initial={{ x: "-100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "-100%" }}
-              transition={{ type: "tween", duration: 0.3 }}
-            >
-              <div className="menu-header">
-                <span className="menu-title">TheBookX</span>
-
-                <button
-                  onClick={() => setIsMenuOpen(false)}
-                  aria-label="Close menu"
-                  className="menu-close"
-                >
-                  <X size={28} />
-                </button>
-              </div>
-
-              {/* TOP LINKS */}
-              <div className="menu-links">
-                <Link
-                  href="/profile"
-                  className="menu-link"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Profile
-                </Link>
-                <Link
-                  href="/books"
-                  className="menu-link"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  All Books
-                </Link>
-
-                <Link
-                  href="/category"
-                  className="menu-link"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Categories
-                </Link>
-
-                <Link
-                  href="/reading-tracker"
-                  className="menu-link"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Reading Tracker
-                </Link>
-
-                <Link
-                  href="/bag"
-                  className="menu-link"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Your Cart
-                </Link>
-
-                <Link
-                  href="https://thebookx.in?suggest"
-                  className="menu-link"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Suggestion
-                </Link>
-              </div>
-
-              {/* BOTTOM POLICY LINKS */}
-              <div className="menu-links">
-                {menuLinks.map((link) => (
-                  <Link
-                    key={link.path}
-                    href={link.path}
-                    className=" font-12"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {link.name}
-                  </Link>
-                ))}
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
     </>
   );
 }

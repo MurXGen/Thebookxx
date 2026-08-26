@@ -17892,6 +17892,20 @@ img[data-loaded="true"] {
 .pm-logout .pm-arrow {
   color: #dc2626;
 }
+/* Sub-division headings inside the profile account menu */
+.pm-section-title {
+  padding: 14px 16px 6px;
+  font-size: var(--px-12, 12px);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--dark-50);
+  background: #faf9f7;
+  border-bottom: 1px solid var(--hairline);
+}
+.pm-section-title:first-child {
+  padding-top: 12px;
+}
 
 /* ── Verifying-number splash (3s) ── */
 .verify-overlay {

@@ -130,10 +130,7 @@ export default function HomePage() {
           Join-community CTA. */}
       <RakshaBandhanDecor banner={false} />
 
-      {/* Static hero, provides the visible H1 + value prop above the carousel. */}
-      <HomeHero />
-
-      {/* Explore Categories — moved to the top of the homepage */}
+      {/* Explore Categories — moved above the hero */}
       <LazySection threshold={0.05}>
         <Suspense fallback={<BooksSkeleton />}>
           <SmoothAppear delay={0.2}>
@@ -142,7 +139,7 @@ export default function HomePage() {
         </Suspense>
       </LazySection>
 
-      {/* ₹1 books deals carousel — moved to the top, below categories */}
+      {/* ₹1 books deals carousel — moved above the hero, below categories */}
       <LazySection threshold={0.05}>
         <Suspense fallback={<BooksSkeleton />}>
           <SmoothAppear delay={0.3}>
@@ -150,6 +147,9 @@ export default function HomePage() {
           </SmoothAppear>
         </Suspense>
       </LazySection>
+
+      {/* Static hero, provides the visible H1 + value prop above the carousel. */}
+      <HomeHero />
 
       <PincodeModal />
 

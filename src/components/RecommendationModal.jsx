@@ -620,26 +620,6 @@ export default function RecommendationModal({
                             </p>
                           </div>
 
-                          {/* Add All Buttons */}
-                          <div className="flex flex-row gap-12 mb-16">
-                            <button
-                              onClick={handleAddAllToCart}
-                              className="pri-big-btn flex flex-row gap-4 items-center justify-center"
-                              style={{ flex: 1, background: "#10B981" }}
-                            >
-                              <ShoppingCart size={16} />
-                              Add All to Cart
-                            </button>
-                            <button
-                              onClick={handleAddAllToWishlist}
-                              className="sec-big-btn flex flex-row gap-4 items-center justify-center"
-                              style={{ flex: 1 }}
-                            >
-                              <Heart size={16} />
-                              Add All to Wishlist
-                            </button>
-                          </div>
-
                           <div className="grid-2 margin-tp-12px">
                             {recommendations.slice(0, visibleCount).map((book) => (
                               <BookCard key={book.id} book={book} />
@@ -702,6 +682,26 @@ export default function RecommendationModal({
                 </motion.div>
               )}
             </div>
+
+            {/* Fixed bottom bar — Add All actions, always in reach */}
+            {step === 4 && !isLoading && recommendations.length > 0 && (
+              <div className="reco-addall-bar">
+                <button
+                  onClick={handleAddAllToCart}
+                  className="reco-addall-btn reco-addall-cart"
+                >
+                  <ShoppingCart size={16} />
+                  Add All to Cart
+                </button>
+                <button
+                  onClick={handleAddAllToWishlist}
+                  className="reco-addall-btn reco-addall-wish"
+                >
+                  <Heart size={16} />
+                  Add All to Wishlist
+                </button>
+              </div>
+            )}
           </motion.div>
         </motion.div>
       )}

@@ -9,6 +9,7 @@
 import {
   APPSCRIPT_ORDER_URL,
   APPSCRIPT_EDIT_URL,
+  APPSCRIPT_WALLET_URL,
   WALLET_SHEET_NAME,
 } from "@/lib/serverSheets";
 import { rateLimit, clientIp, tooMany } from "@/lib/rateLimit";
@@ -39,13 +40,19 @@ export async function POST(request) {
     );
   }
 
-  const url = target === "edit" ? APPSCRIPT_EDIT_URL : APPSCRIPT_ORDER_URL;
+  // Wallet transactions: prefer the dedicated wallet web app (always writes to
+  // the Wallet tab). Fall back to the order web app + `sheet=Wallet` param.
+  let url;
+  if (target === "wallet" && APPSCRIPT_WALLET_URL) url = APPSCRIPT_WALLET_URL;
+  else if (target === "edit") url = APPSCRIPT_EDIT_URL;
+  else url = APPSCRIPT_ORDER_URL;
+
   const body = new URLSearchParams();
   body.set("action", action);
   if (orderId) body.set("orderId", String(orderId));
   body.set("data", JSON.stringify(data || {}));
-  // Wallet transactions are appended to the dedicated Wallet tab; the Apps
-  // Script reads `sheet` to decide which tab to write to.
+  // Also pass the tab name so a `sheet`-aware order script routes correctly when
+  // no dedicated wallet URL is configured.
   if (target === "wallet") body.set("sheet", WALLET_SHEET_NAME);
 
   try {

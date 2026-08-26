@@ -30,6 +30,12 @@ export const APPSCRIPT_EDIT_URL =
   process.env.APPSCRIPT_EDIT_URL ||
   "https://script.google.com/macros/s/AKfycbzYyEYufYZBP4pV-sJvgTvTBrcIb3iNUH3BgDD31zCL9xiULoKWnATFfad2awNMgvyC/exec";
 
+// Dedicated Apps Script Web App that appends ONLY to the Wallet tab. Deploy the
+// standalone script in docs/wallet-apps-script-standalone.gs and paste its /exec
+// URL here (or set APPSCRIPT_WALLET_URL). When empty, wallet writes fall back to
+// the order web app with a `sheet=Wallet` parameter.
+export const APPSCRIPT_WALLET_URL = process.env.APPSCRIPT_WALLET_URL || "";
+
 const gvizBase = (sheetName) =>
   `https://docs.google.com/spreadsheets/d/${ORDERS_SHEET_ID}/gviz/tq?tqx=out:json${
     sheetName ? `&sheet=${encodeURIComponent(sheetName)}` : ""

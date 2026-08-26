@@ -106,7 +106,28 @@ export default function PincodeModal() {
     if (scratchDone) return;
     setScratchDone(true);
     if (scratchEligible && scratchReward > 0) {
-      await creditWalletReward(phoneNumber, scratchReward);
+      // Credit to the dedicated Wallet sheet (Credit · Scratch card reward).
+      const res = await creditWalletReward(
+        phoneNumber,
+        scratchReward,
+        "",
+        "Scratch card reward",
+      );
+      if (!res || !res.success) {
+        console.error(
+          "[wallet] homepage scratch credit FAILED",
+          phoneNumber,
+          scratchReward,
+          res,
+        );
+      } else {
+        console.info(
+          "[wallet] homepage scratch credited ₹" +
+            scratchReward +
+            " to " +
+            phoneNumber,
+        );
+      }
       // Mark the one-time scratch perk as claimed so a repeat scratch shows
       // "Better luck next time" instead of crediting again.
       try {

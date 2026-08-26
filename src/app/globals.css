@@ -1411,20 +1411,68 @@ label.sec-mid-btn {
   cursor: pointer;
   white-space: nowrap;
 }
-@media (max-width: 420px) {
+@media (max-width: 480px) {
   .cbx {
-    gap: 8px;
-    padding: 9px 10px;
+    gap: 9px;
+    padding: 8px 10px;
+    align-items: center;
+    border-radius: 16px;
+  }
+  /* keep the stack compact — one cover + count */
+  .cbx-stack {
+    flex-shrink: 0;
   }
   .cbx-thumb {
-    width: 32px;
-    height: 44px;
+    width: 30px;
+    height: 40px;
+    margin-left: -12px;
+    border-width: 1.5px;
+  }
+  .cbx-mid {
+    gap: 4px;
+  }
+  .cbx-next {
+    font-size: 11.5px;
+    line-height: 1.3;
+    gap: 3px;
+  }
+  .cbx-next svg {
+    width: 12px;
+    height: 12px;
+  }
+  .cbx-progress {
+    height: 4px;
+  }
+  .cbx-availed {
+    font-size: 10px;
+  }
+  .cbx-right {
+    gap: 8px;
+  }
+  .cbx-strike {
+    font-size: 10px;
   }
   .cbx-final {
-    font-size: 16px;
+    font-size: 15px;
   }
   .cbx-checkout {
-    padding: 10px 12px;
+    padding: 9px 12px;
+    font-size: 13px;
+    gap: 4px;
+    border-radius: 11px;
+  }
+  .cbx-checkout svg {
+    width: 15px;
+    height: 15px;
+  }
+}
+/* Very narrow phones — drop the checkout label to an arrow so nothing wraps */
+@media (max-width: 360px) {
+  .cbx-checkout span {
+    display: none;
+  }
+  .cbx-checkout {
+    padding: 10px;
   }
 }
 

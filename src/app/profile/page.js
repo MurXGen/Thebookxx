@@ -808,10 +808,9 @@ export default function MyOrdersPage() {
     // Remember every submitted number (chip), regardless of result.
     savePhoneNumber(phone);
     setLoading(true);
-    // Silent boot shimmers just the profile card; a manual submit shows the
-    // full "verifying your number" splash.
-    if (silent) setCardLoading(true);
-    else setVerifying(true);
+    // Both silent boot and manual submit shimmer the profile card in place
+    // (no full-screen splash) — the card "reloads" then shows the details.
+    setCardLoading(true);
     setError("");
     setSearched(true);
     try {
@@ -960,7 +959,6 @@ export default function MyOrdersPage() {
       );
     } finally {
       setLoading(false);
-      setVerifying(false);
       setCardLoading(false);
     }
   };
@@ -1530,23 +1528,6 @@ Please cancel this order. Thank you `;
 
   return (
     <div className="my-orders-page">
-      {/* Verifying-number splash (3s) after a successful lookup */}
-      {verifying && (
-        <div className="verify-overlay">
-          <div className="verify-box">
-            <div className="verify-phone-ic">
-              <Phone size={26} />
-            </div>
-            <div className="verify-spinner" />
-            <h3 className="verify-title">Verifying your number</h3>
-            <p className="verify-num">+91 {phoneNumber}</p>
-            <span className="verify-sub">
-              Fetching your orders and wallet…
-            </span>
-          </div>
-        </div>
-      )}
-
       <div className="section-680 flex flex-col gap-24">
         {/* Header */}
         <div className="orders-header profile-header-row">
@@ -1564,101 +1545,100 @@ Please cancel this order. Thank you `;
           )}
         </div>
 
-        <AnimatePresence mode="wait">
-          {showPhoneInput ? (
-            <motion.div
-              key="input"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="phone-search-section"
-            >
-              <div className="phone-card rapido-card">
-                {/* Branded header — TheBookX + three 3D book covers */}
-                <div className="rapido-hero">
-                  <div className="rapido-brand">
-                    <span className="rapido-logo">TheBookX</span>
-                    <span className="rapido-brand-sub">
-                      Books starting at ₹1
-                    </span>
+        {/* One unified profile card for both states: logged-out shows an inline
+            number entry, logged-in shows the details, and while verifying it
+            shimmers in place. */}
+        <div className="customer-info-section">
+          <div
+            className={`customer-info-card${cardLoading ? " is-loading" : ""}`}
+          >
+            {cardLoading ? (
+              <div className="customer-info-content">
+                <div className="customer-avatar">
+                  <User size={20} />
+                </div>
+                <div className="customer-details">
+                  <span className="ci-skeleton ci-sk-sm" />
+                  <span className="ci-skeleton ci-sk-lg" />
+                  <span className="ci-skeleton ci-sk-md" />
+                </div>
+              </div>
+            ) : showPhoneInput ? (
+              <div className="ci-login">
+                <div className="customer-info-content">
+                  <div className="customer-avatar">
+                    <User size={20} />
                   </div>
-                  <div className="rapido-books" aria-hidden="true">
-                    {heroBooks.map((b, i) => (
-                      <div className={`rapido-book rb-${i}`} key={b.id || i}>
-                        <img src={b.image} alt="" loading="lazy" />
-                      </div>
-                    ))}
+                  <div className="customer-details">
+                    <span className="customer-label">
+                      Track your orders &amp; wallet
+                    </span>
+                    <span className="customer-name">
+                      What&apos;s your number?
+                    </span>
                   </div>
                 </div>
 
-                <div className="rapido-body">
-                  <h2 className="phone-card-title">What&apos;s your number?</h2>
-                  <p className="phone-card-sub">
-                    Enter the mobile number you used at checkout to see your
-                    orders and wallet.
-                  </p>
+                {/* Honeypot: hidden from humans; bots that auto-fill inputs
+                    trip it and the lookup is silently ignored. */}
+                <input
+                  ref={honeypotRef}
+                  type="text"
+                  name="company"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  style={{
+                    position: "absolute",
+                    left: "-9999px",
+                    width: 1,
+                    height: 1,
+                    opacity: 0,
+                  }}
+                />
 
-                  {/* Honeypot: hidden from humans; bots that auto-fill inputs
-                      trip it and the lookup is silently ignored. */}
+                <div className="phone-input-wrap rapido-input ci-login-input">
+                  <span className="rapido-cc">+91</span>
                   <input
-                    ref={honeypotRef}
-                    type="text"
-                    name="company"
-                    tabIndex={-1}
-                    autoComplete="off"
-                    aria-hidden="true"
-                    style={{
-                      position: "absolute",
-                      left: "-9999px",
-                      width: 1,
-                      height: 1,
-                      opacity: 0,
-                    }}
+                    type="tel"
+                    inputMode="numeric"
+                    maxLength={10}
+                    className="phone-card-input"
+                    placeholder="10-digit mobile number"
+                    value={phoneNumber}
+                    onChange={(e) =>
+                      setPhoneNumber(
+                        e.target.value.replace(/\D/g, "").slice(0, 10),
+                      )
+                    }
+                    onKeyDown={(e) => e.key === "Enter" && fetchOrders()}
                   />
-
-                  <div className="phone-input-wrap rapido-input">
-                    <span className="rapido-cc">+91</span>
-                    <input
-                      type="tel"
-                      inputMode="numeric"
-                      maxLength={10}
-                      className="phone-card-input"
-                      placeholder="10-digit mobile number"
-                      value={phoneNumber}
-                      onChange={(e) =>
-                        setPhoneNumber(
-                          e.target.value.replace(/\D/g, "").slice(0, 10),
-                        )
-                      }
-                      onKeyDown={(e) => e.key === "Enter" && fetchOrders()}
-                    />
-                    <button
-                      type="button"
-                      className="phone-paste"
-                      onClick={handlePasteClick}
-                      title="Paste from clipboard"
-                      aria-label="Paste from clipboard"
-                    >
-                      <ClipboardPaste size={16} />
-                    </button>
-                  </div>
-
                   <button
-                    className="pri-big-btn rapido-submit"
-                    onClick={() => fetchOrders()}
-                    disabled={loading || phoneNumber.length !== 10}
+                    type="button"
+                    className="phone-paste"
+                    onClick={handlePasteClick}
+                    title="Paste from clipboard"
+                    aria-label="Paste from clipboard"
                   >
-                    {loading ? "Searching..." : "Submit"}
+                    <ClipboardPaste size={16} />
                   </button>
+                </div>
 
-                  {error && (
+                <button
+                  className="pri-big-btn rapido-submit ci-login-submit"
+                  onClick={() => fetchOrders()}
+                  disabled={loading || phoneNumber.length !== 10}
+                >
+                  {loading ? "Searching..." : "Submit"}
+                </button>
+
+                {error && (
                   <div className="phone-warning" role="alert">
                     <AlertCircle size={16} />
                     <span>{error}</span>
                   </div>
                 )}
 
-                {/* WhatsApp help */}
                 <a
                   href="https://wa.me/917710892108?text=Hi%2C%20I%20need%20help%20with%20my%20order%20on%20TheBookX"
                   target="_blank"
@@ -1668,51 +1648,20 @@ Please cancel this order. Thank you `;
                   <FaWhatsapp size={16} color="#25D366" />
                   Facing an issue? Chat with us
                 </a>
-                </div>
               </div>
-
-              {/* Popular books rail — so the profile always has something to
-                  browse, even before signing in. */}
-              {popularBooks.length > 0 && (
-                <section className="catalogue-section-2 trending-section profile-books-rail">
-                  <HorizontalScroll title="Popular right now">
-                    {popularBooks.map((b) => (
-                      <ProductCard key={b.id} book={b} />
-                    ))}
-                  </HorizontalScroll>
-                </section>
-              )}
-            </motion.div>
-          ) : (
-            <motion.div
-              key="customer-info"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="customer-info-section"
-            >
-              <div
-                className={`customer-info-card${cardLoading ? " is-loading" : ""}`}
-              >
+            ) : (
+              <>
                 <div className="customer-info-content">
                   <div className="customer-avatar">
                     <User size={20} />
                   </div>
-                  {cardLoading ? (
-                    <div className="customer-details">
-                      <span className="ci-skeleton ci-sk-sm" />
-                      <span className="ci-skeleton ci-sk-lg" />
-                      <span className="ci-skeleton ci-sk-md" />
-                    </div>
-                  ) : (
-                    <div className="customer-details">
-                      <span className="customer-label">Welcome back,</span>
-                      <span className="customer-name">
-                        {capName(customerName) || "Customer"}
-                      </span>
-                      <span className="customer-phone">{phoneNumber}</span>
-                    </div>
-                  )}
+                  <div className="customer-details">
+                    <span className="customer-label">Welcome back,</span>
+                    <span className="customer-name">
+                      {capName(customerName) || "Customer"}
+                    </span>
+                    <span className="customer-phone">{phoneNumber}</span>
+                  </div>
                   <div className="flex flex-row gap-8 items-center">
                     <button
                       className="profile-refresh-btn"
@@ -1823,10 +1772,10 @@ Please cancel this order. Thank you `;
                     </Link>
                   </motion.div>
                 )}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              </>
+            )}
+          </div>
+        </div>
 
         {/* QuickReads library — shown once a number is loaded (works even if
             the number has QuickReads but no physical book orders). */}
@@ -1858,15 +1807,15 @@ Please cancel this order. Thank you `;
         )}
 
         {/* Install app — inline card just above the account menu */}
-        {!showPhoneInput && !verifying && !loading && <InstallAppBar inline />}
+        {!showPhoneInput && !loading && <InstallAppBar inline />}
 
-        {/* ── Rapido-style account menu ── */}
-        {!showPhoneInput && !verifying && (!loading || cardLoading) && (
-          <div className="profile-menu">
-        <div className="pm-section-title">Your orders</div>
+        {/* ── Account menu — always visible (logged in or out) ── */}
+        <div className="profile-menu">
+        {/* Your orders section — only when a number is loaded. */}
+        {!showPhoneInput && <div className="pm-section-title">Your orders</div>}
         {/* While fetching, shimmer the order row itself instead of a separate
             "getting your order details" loader. */}
-        {loading && (
+        {!showPhoneInput && loading && (
           <div className="orders-accordion">
             <div className="orders-toggle orders-toggle-skel" aria-busy="true">
               <span className="ot-ic ot-sk-ic" />
@@ -2573,19 +2522,20 @@ Please cancel this order. Thank you `;
               <ChevronRight size={18} className="pm-arrow" />
             </Link>
 
-            <button
-              type="button"
-              className="pm-row pm-logout"
-              onClick={handleNewSearch}
-            >
-              <span className="pm-ic">
-                <LogOut size={18} />
-              </span>
-              <span className="pm-label">Log out</span>
-              <ChevronRight size={18} className="pm-arrow" />
-            </button>
+            {!showPhoneInput && (
+              <button
+                type="button"
+                className="pm-row pm-logout"
+                onClick={handleNewSearch}
+              >
+                <span className="pm-ic">
+                  <LogOut size={18} />
+                </span>
+                <span className="pm-label">Log out</span>
+                <ChevronRight size={18} className="pm-arrow" />
+              </button>
+            )}
           </div>
-        )}
       </div>
 
       {/* ========== Edit profile modal ========== */}

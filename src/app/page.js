@@ -128,7 +128,7 @@ export default function HomePage() {
       {/* Raksha Bandhan ribbon (+ falling petals) directly below the navbar.
           The greeting/scratch banner renders inside the hero, above the
           Join-community CTA. */}
-      <RakshaBandhanDecor banner={false} />
+      <RakshaBandhanDecor banner={false} ribbon={false} />
 
       {/* Explore Categories — moved above the hero */}
       <LazySection threshold={0.05}>

@@ -116,7 +116,7 @@ export default function RakshaBandhanDecor({
 
       {/* Centred banner: rakhi (absolute) → heading → scratch card */}
       {banner && (
-        <div className="rb-banner">
+        <div className="rb-banner" ref={bannerRef}>
           {/* Rakhi medallion (flower design), absolutely centred at the top */}
           <span className="rb-rakhi" aria-hidden="true">
             <span className="rb-tail rb-tail-l" />

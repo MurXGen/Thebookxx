@@ -20,15 +20,28 @@
  *
  * The app POSTs (application/x-www-form-urlencoded):
  *   action=append
+ *   secret=<the shared secret>
  *   data={"Timestamp":"..","Phone Number":"..","Amount":"11","Type":"Credit",
  *         "Reason":"Scratch card reward","Order ID":".."}
+ *
+ * AUTH: set SHARED_SECRET below to a long random string and set the SAME value
+ * in the app env as APPSCRIPT_SHARED_SECRET. The script rejects any POST whose
+ * `secret` doesn't match, so only your server (which sends it server-side) can
+ * write. Leave SHARED_SECRET empty to disable the check (not recommended).
  */
 
 var WALLET_TAB = "Wallet";
+// 🔒 Replace with a long random string, e.g. "tbx_wallet_9f3c...". Must equal
+// the app's APPSCRIPT_SHARED_SECRET env var.
+var SHARED_SECRET = "";
 
 function doPost(e) {
   try {
     var p = (e && e.parameter) || {};
+    // Reject unauthenticated writes when a secret is configured.
+    if (SHARED_SECRET && String(p.secret || "") !== SHARED_SECRET) {
+      return json({ success: false, error: "unauthorized" });
+    }
     var data = p.data ? JSON.parse(p.data) : {};
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var sheet = ss.getSheetByName(WALLET_TAB);

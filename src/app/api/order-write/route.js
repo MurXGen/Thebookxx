@@ -10,6 +10,7 @@ import {
   APPSCRIPT_ORDER_URL,
   APPSCRIPT_EDIT_URL,
   APPSCRIPT_WALLET_URL,
+  APPSCRIPT_SHARED_SECRET,
   WALLET_SHEET_NAME,
 } from "@/lib/serverSheets";
 import { rateLimit, clientIp, tooMany } from "@/lib/rateLimit";
@@ -53,7 +54,12 @@ export async function POST(request) {
   body.set("data", JSON.stringify(data || {}));
   // Also pass the tab name so a `sheet`-aware order script routes correctly when
   // no dedicated wallet URL is configured.
-  if (target === "wallet") body.set("sheet", WALLET_SHEET_NAME);
+  if (target === "wallet") {
+    body.set("sheet", WALLET_SHEET_NAME);
+    // Shared-secret auth — only the server knows it; the wallet script rejects
+    // any POST without it. Sent from the server only, never the browser.
+    if (APPSCRIPT_SHARED_SECRET) body.set("secret", APPSCRIPT_SHARED_SECRET);
+  }
 
   try {
     await fetch(url, {

@@ -36,6 +36,11 @@ export const APPSCRIPT_EDIT_URL =
 // the order web app with a `sheet=Wallet` parameter.
 export const APPSCRIPT_WALLET_URL = process.env.APPSCRIPT_WALLET_URL || "";
 
+// Shared secret sent (server-side only) with wallet writes so the wallet Apps
+// Script can reject any request that doesn't carry it. Set the SAME value here
+// (or via env) and in the wallet script's SHARED_SECRET constant.
+export const APPSCRIPT_SHARED_SECRET = process.env.APPSCRIPT_SHARED_SECRET || "";
+
 const gvizBase = (sheetName) =>
   `https://docs.google.com/spreadsheets/d/${ORDERS_SHEET_ID}/gviz/tq?tqx=out:json${
     sheetName ? `&sheet=${encodeURIComponent(sheetName)}` : ""

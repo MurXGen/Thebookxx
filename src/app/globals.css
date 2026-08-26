@@ -831,22 +831,42 @@ button:hover {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
+    gap: 8px;
   }
   .bc-price-actions .book-content {
-    flex: 0 0 auto;
-  }
-  .bc-price-actions .bc-actions-row {
     flex: 1 1 auto;
     min-width: 0;
   }
+  .bc-price-actions .bc-actions-row {
+    flex: 0 0 auto;
+  }
+  .bc-price-actions .bc-action-main {
+    flex: 0 0 auto;
+  }
+  /* Add to Cart / Notify → icon-only square button on mobile */
   .bc-price-actions .bookcard-add-btn,
   .bc-price-actions .bookcard-notify-btn {
-    padding: 10px 12px;
+    width: 46px;
+    height: 46px;
+    min-width: 46px;
+    padding: 0;
+    border-radius: 12px;
+    justify-content: center;
   }
-  /* keep the compact add label from wrapping */
+  .bc-price-actions .bc-add-label {
+    display: none;
+  }
   .bc-price-actions .bc-add-inner {
+    gap: 0;
     white-space: nowrap;
+  }
+  /* Compact quantity stepper so it fits beside the price */
+  .bc-price-actions .bookcard-qty {
+    width: auto;
+    min-width: 118px;
+    height: 46px;
+    gap: 6px;
+    padding: 0 4px;
   }
 }
 
@@ -1310,6 +1330,153 @@ label.sec-mid-btn {
 /* Slide fully out of view (bar + floating FAB) when scrolling down */
 .cart-bar.cart-bar-hidden {
   transform: translateY(135%);
+}
+
+/* ── Revamped one-row cart bar — floats like the navbar ── */
+.cbx {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 12px calc(12px + env(safe-area-inset-bottom, 0px));
+  padding: 10px 12px;
+  background: #fff;
+  border: 1px solid var(--hairline, #ececec);
+  border-radius: 18px;
+  box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.24),
+    0 2px 8px rgba(0, 0, 0, 0.06);
+}
+.cbx-stack {
+  display: flex;
+  flex-shrink: 0;
+}
+.cbx-thumb {
+  width: 38px;
+  height: 50px;
+  border-radius: 7px;
+  overflow: hidden;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+  background: #f2f2f2;
+  margin-left: -14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cbx-stack .cbx-thumb:first-child {
+  margin-left: 0;
+}
+.cbx-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.cbx-thumb-more {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--dark-50, #6b7280);
+  background: #f0eee9;
+}
+.cbx-mid {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.cbx-next {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  font-size: 13px;
+  color: var(--foreground, #0a0a0a);
+  font-weight: 500;
+}
+.cbx-next b {
+  font-weight: 800;
+}
+.cbx-next-reward {
+  color: var(--tertiary, #fb8500);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.cbx-next svg {
+  color: var(--tertiary, #fb8500);
+  flex-shrink: 0;
+}
+.cbx-progress {
+  height: 5px;
+  border-radius: 999px;
+  background: #eee;
+  overflow: hidden;
+}
+.cbx-progress-fill {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #22c55e, #16a34a);
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+.cbx-availed {
+  font-size: 11px;
+  font-weight: 700;
+  color: #16a34a;
+}
+.cbx-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.cbx-amt {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.15;
+}
+.cbx-strike {
+  font-size: 11px;
+  color: var(--dark-50, #6b7280);
+  text-decoration: line-through;
+}
+.cbx-final {
+  font-size: 17px;
+  font-weight: 800;
+}
+.cbx-checkout {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #0a0a0a;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 11px 16px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+@media (max-width: 420px) {
+  .cbx {
+    gap: 8px;
+    padding: 9px 10px;
+  }
+  .cbx-thumb {
+    width: 32px;
+    height: 44px;
+  }
+  .cbx-final {
+    font-size: 16px;
+  }
+  .cbx-checkout {
+    padding: 10px 12px;
+  }
 }
 
 .cart-offer {

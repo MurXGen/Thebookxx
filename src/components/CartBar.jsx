@@ -340,46 +340,21 @@ export default function CartBar({ tab = "books" }) {
       className={`cart-bar${barHidden ? " cart-bar-hidden" : ""}`}
       style={{ maxWidth: "680px", margin: "0 auto" }}
     >
-      {/* Quick actions: Suggest + Search (mobile), above the strip */}
-      <div
-        className={`cart-fab ${showBar ? "with-bar" : ""} ${fabShake ? "fab-shake" : ""}`}
+      {/* Small emotional prompt above the bar — opens the suggestion modal */}
+      <button
+        type="button"
+        className="cbx-suggest-strip"
+        onClick={() => {
+          trackEvent("suggestion_opened", { source: "suggest_strip" });
+          setSuggestOpen(true);
+        }}
+        aria-label="Get a book suggestion"
       >
-        <button
-          type="button"
-          className={`cart-fab-hint ${fabHint ? "show" : ""}`}
-          onClick={() => {
-            trackEvent("suggestion_opened", { source: "fab_hint" });
-            setSuggestOpen(true);
-          }}
-          tabIndex={fabHint ? 0 : -1}
-          aria-hidden={!fabHint}
-        >
-          Need a book? Ask Suggest
-        </button>
-        <button
-          type="button"
-          className="cart-fab-btn"
-          onClick={() => {
-            trackEvent("suggestion_opened", { source: "fab" });
-            setSuggestOpen(true);
-          }}
-          aria-label="Get book suggestions"
-        >
-          <Sparkles size={18} />
-        </button>
-        <span className="cart-fab-div" />
-        <button
-          type="button"
-          className="cart-fab-btn"
-          onClick={() => {
-            trackEvent("search_opened", { source: "fab" });
-            setSearchOpen(true);
-          }}
-          aria-label="Search books"
-        >
-          <Search size={18} />
-        </button>
-      </div>
+        <Sparkles size={14} />
+        <span>
+          Not sure what to read next? <b>Get a pick →</b>
+        </span>
+      </button>
       <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
       <RecommendationModal
         isOpen={suggestOpen}

@@ -17971,9 +17971,37 @@ img[data-loaded="true"] {
 .pm-logout .pm-arrow {
   color: #dc2626;
 }
-/* Popular books rail on the profile (logged-out state) */
-.profile-books-rail {
-  margin-top: 18px;
+/* Popular books rail on the profile (logged-out state) — clean, compact,
+   no heavy container border/shadow, fixed-width scrolling cards. */
+.profile-books-rail.trending-section {
+  margin-top: 20px;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: hidden;
+}
+.profile-books-rail .h-scroll-header h3 {
+  font-size: var(--px-16);
+  font-weight: 700;
+}
+.profile-books-rail .h-scroll-track {
+  gap: 12px;
+  padding-bottom: 4px;
+}
+.profile-books-rail .h-scroll-track .trending-card {
+  width: 150px;
+  min-width: 150px;
+  max-width: 150px;
+  padding: 8px;
+  border: 1px solid var(--hairline, #ececec);
+  border-radius: 14px;
+  background: #fff;
+}
+.profile-books-rail .h-scroll-track .trending-card:hover {
+  border-color: var(--hairline, #ececec);
+  background: #fff;
+  box-shadow: 0 8px 22px -14px rgba(0, 0, 0, 0.25);
 }
 
 /* Sub-division headings inside the profile account menu */

@@ -307,7 +307,6 @@ export default function BookCard({ book }) {
             )}
           </h3>
 
-          <div className="bc-price-actions">
           <div className="book-content">
             {/* Price */}
             <div
@@ -418,7 +417,6 @@ export default function BookCard({ book }) {
                 </button>
               </div>
             )}
-          </div>
           </div>
 
           {/* Stock Status Display — only when in stock & running low */}

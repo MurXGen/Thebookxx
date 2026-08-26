@@ -819,57 +819,6 @@ button:hover {
     0 10px 26px -14px rgba(0, 0, 0, 0.25);
 }
 
-/* Price + actions wrapper — stacked on desktop, side-by-side on mobile so the
-   Add to Cart button sits in the price row. */
-.bc-price-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-@media (max-width: 620px) {
-  .bc-price-actions {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-  }
-  .bc-price-actions .book-content {
-    flex: 1 1 auto;
-    min-width: 0;
-  }
-  .bc-price-actions .bc-actions-row {
-    flex: 0 0 auto;
-  }
-  .bc-price-actions .bc-action-main {
-    flex: 0 0 auto;
-  }
-  /* Add to Cart / Notify → icon-only square button on mobile */
-  .bc-price-actions .bookcard-add-btn,
-  .bc-price-actions .bookcard-notify-btn {
-    width: 46px;
-    height: 46px;
-    min-width: 46px;
-    padding: 0;
-    border-radius: 12px;
-    justify-content: center;
-  }
-  .bc-price-actions .bc-add-label {
-    display: none;
-  }
-  .bc-price-actions .bc-add-inner {
-    gap: 0;
-    white-space: nowrap;
-  }
-  /* Compact quantity stepper so it fits beside the price */
-  .bc-price-actions .bookcard-qty {
-    width: auto;
-    min-width: 118px;
-    height: 46px;
-    gap: 6px;
-    padding: 0 4px;
-  }
-}
-
 /* Card actions: full-width highlighted Add to Cart (wishlist/share are bare
    mini icons up in the title area). */
 .bc-actions-row {

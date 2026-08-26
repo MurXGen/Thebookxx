@@ -12,6 +12,7 @@ import {
   APPSCRIPT_WALLET_URL,
   APPSCRIPT_SHARED_SECRET,
   WALLET_SHEET_NAME,
+  ORDERS_SHEET_NAME,
 } from "@/lib/serverSheets";
 import { rateLimit, clientIp, tooMany } from "@/lib/rateLimit";
 
@@ -52,13 +53,17 @@ export async function POST(request) {
   body.set("action", action);
   if (orderId) body.set("orderId", String(orderId));
   body.set("data", JSON.stringify(data || {}));
-  // Also pass the tab name so a `sheet`-aware order script routes correctly when
-  // no dedicated wallet URL is configured.
+  // Always pass the target tab name so the `sheet`-aware Apps Script routes
+  // every write to the correct sheet. Without this, order appends (which used
+  // to send no `sheet`) were falling into the Wallet tab.
   if (target === "wallet") {
     body.set("sheet", WALLET_SHEET_NAME);
     // Shared-secret auth — only the server knows it; the wallet script rejects
     // any POST without it. Sent from the server only, never the browser.
     if (APPSCRIPT_SHARED_SECRET) body.set("secret", APPSCRIPT_SHARED_SECRET);
+  } else if (target !== "edit") {
+    // Orders (append + update) must land in "Form responses 1".
+    body.set("sheet", ORDERS_SHEET_NAME);
   }
 
   try {

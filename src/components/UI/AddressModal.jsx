@@ -54,6 +54,7 @@ import {
   updateOrderRow,
 } from "@/utils/googleFormOrder";
 import ScratchRewardSheet from "./ScratchRewardSheet";
+import OrderPlacedSuccess from "./OrderPlacedSuccess";
 import { showToast } from "@/context/ToastContext";
 
 const PINCODE_DATA_KEY = "user_pincode";
@@ -175,7 +176,7 @@ export default function AddressModal({
 
   // ── Upsell: "The Art of Clarity" add-on before payment ──
   const ART_ID = "bk-002";
-  const { cart, addToCart } = useStore();
+  const { cart, addToCart, clearCart } = useStore();
   const artBook = ALL_BOOKS.find((b) => b.id === ART_ID);
   const hasArtInCart = (cart || []).some((i) => i.id === ART_ID);
   const [showUpsell, setShowUpsell] = useState(false);
@@ -2147,49 +2148,30 @@ export default function AddressModal({
         )}
       </AnimatePresence>
 
-      {/* ========== COD SUCCESS MODAL ========== */}
+      {/* ========== ORDER PLACED SPLASH → order detail page ========== */}
       <AnimatePresence>
         {showCODSuccess && (
-          <CODSuccessModal
-            name={name}
-            phone={phone}
-            address={fullAddress}
-            city={city}
-            pincode={pincode}
-            fasterDelivery={fasterDelivery}
-            cartBooks={cartBooks}
-            // ---- breakdown fields ----
-            totalDiscounted={totalDiscounted}
-            offerDiscount={offerDiscount}
-            offerLabel={offerLabel}
-            walletApplied={walletApplied}
-            deliveryCharge={getDeliveryCharge(fasterDelivery)}
-            fasterDeliveryCharge={getDeliveryCharge(true)}
-            standardDeliveryCharge={getDeliveryCharge(false)}
-            orderRefIn={placedOrderId}
-            giftWrap={giftWrap || giftWrapSelected}
-            giftWrapCharge={giftWrapCharge}
-            bookmark={bookmark}
-            bookmarkCharge={bookmarkChargeAmount}
-            codFee={successPayment === "UPI" ? 0 : codFeeAmount}
-            paymentMode={successPayment}
-            paymentLabel={successPaymentLabel}
-            quickReadCount={quickReadItems.length}
-            quickReadTotal={qrAddOn}
-            // ---- totals derived from above for convenience ----
-            baseAmount={getTotalWithDelivery(fasterDelivery) + addOnsCharge}
-            totalAmount={
-              getTotalWithDelivery(fasterDelivery) +
-              addOnsCharge +
-              (successPayment === "UPI" ? 0 : codFeeAmount)
-            }
-            onContinue={
-              successPayment === "UPI"
-                ? handleUPISuccessContinue
-                : handleCODSuccessContinue
-            }
-            onClose={() => setShowCODSuccess(false)}
-            onViewProfile={goToProfile}
+          <OrderPlacedSuccess
+            onDone={() => {
+              const digits = String(phone || "")
+                .replace(/\D/g, "")
+                .slice(-10);
+              const oid = placedOrderId || upiOrderRef;
+              // Clear the cart now the order is placed.
+              try {
+                clearCart && clearCart();
+              } catch {}
+              setShowCODSuccess(false);
+              if (typeof window !== "undefined") {
+                if (digits.length === 10 && oid) {
+                  window.location.assign(
+                    `/profile/${digits}/orders/${encodeURIComponent(oid)}`,
+                  );
+                } else {
+                  window.location.assign("/profile");
+                }
+              }
+            }}
           />
         )}
       </AnimatePresence>

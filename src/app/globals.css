@@ -35689,6 +35689,85 @@ img[data-loaded="true"] {
   text-decoration: underline;
 }
 
+/* Order-placed success splash */
+.ops-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 4000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+}
+.ops-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 24px;
+}
+.ops-badge {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ops-svg {
+  width: 120px;
+  height: 120px;
+  overflow: visible;
+}
+.ops-track {
+  fill: #ecfdf5;
+  stroke: #d1fae5;
+  stroke-width: 6;
+}
+.ops-ring {
+  fill: none;
+  stroke: #16a34a;
+  stroke-width: 6;
+  stroke-linecap: round;
+}
+.ops-check {
+  fill: none;
+  stroke: #16a34a;
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.ops-blast {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 3px solid #22c55e;
+  pointer-events: none;
+}
+.ops-spark {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  pointer-events: none;
+}
+.ops-spark:nth-child(odd) {
+  background: var(--tertiary, #fb8500);
+}
+.ops-title {
+  margin: 22px 0 4px;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--foreground, #111827);
+}
+.ops-sub {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--gray-500, #6b7280);
+}
+
 /* Cancellation / confirmation notice (success modal + order detail) */
 .ok-cancel-note {
   display: flex;

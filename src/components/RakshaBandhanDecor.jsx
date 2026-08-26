@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 // Raksha Bandhan celebration decor for the homepage.
 // Active in the run-up to Rakhi (2026 = 28 Aug). Flat, solid-colour festive
@@ -26,12 +26,16 @@ export default function RakshaBandhanDecor({
 }) {
   const [active, setActive] = useState(false);
   const [sink, setSink] = useState(0); // 0 = popped up, 1 = in the ground
+  const bannerRef = useRef(null);
 
   useEffect(() => {
     setActive(isActive());
   }, []);
 
-  // Scroll drives the card in/out of the ground.
+  // Scroll drives the card in/out of the ground. Anchored to the banner's own
+  // position in the viewport (not absolute scrollY) so the card is popped up
+  // whenever the banner is in view — regardless of where the banner sits on the
+  // page — and only sinks as you scroll it up and out of view.
   useEffect(() => {
     if (!active || !banner) return;
     let raf = 0;
@@ -39,8 +43,14 @@ export default function RakshaBandhanDecor({
       if (raf) return;
       raf = requestAnimationFrame(() => {
         raf = 0;
-        const y = typeof window !== "undefined" ? window.scrollY || 0 : 0;
-        setSink(Math.min(y / 320, 1));
+        const el = bannerRef.current;
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        const vh = typeof window !== "undefined" ? window.innerHeight : 800;
+        // Popped up while the banner top is below 55% of the viewport; sinks
+        // over the next 320px of upward scroll.
+        const s = (vh * 0.55 - rect.top) / 320;
+        setSink(Math.max(0, Math.min(s, 1)));
       });
     };
     window.addEventListener("scroll", onScroll, { passive: true });

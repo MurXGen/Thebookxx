@@ -73,6 +73,8 @@ function BagContent() {
   const [showFreeShippingNudge, setShowFreeShippingNudge] = useState(false);
   const [sharedBooks, setSharedBooks] = useState([]); // [{ book, qty }]
   const [showSharedModal, setShowSharedModal] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false); // review-before-share
+  const [shareBusy, setShareBusy] = useState(false);
 
   const [hasAcceptedShipping, setHasAcceptedShipping] = useState(false);
 
@@ -105,23 +107,42 @@ function BagContent() {
     }
   }, [searchParams]);
 
-  // Share the current bag as a link
-  const handleShareBag = async () => {
+  // The long bag link (bk-id based). Shortened to a TinyURL when copied.
+  const buildBagLink = () => {
     const enc = cart.map((i) => `${i.id}:${i.qty || 1}`).join(",");
-    const url = `${siteOrigin || (typeof window !== "undefined" ? window.location.origin : "")}/bag?shared=${encodeURIComponent(enc)}`;
+    const origin =
+      siteOrigin ||
+      (typeof window !== "undefined" ? window.location.origin : "");
+    return `${origin}/bag?shared=${encodeURIComponent(enc)}`;
+  };
+
+  // Open a review modal first — the shopper sees what they're sharing.
+  const handleShareBag = () => {
+    if (!cart.length) return;
+    setShowShareModal(true);
+  };
+
+  // Confirm from the modal: shorten to TinyURL, then share/copy it.
+  const confirmShareBag = async () => {
+    setShareBusy(true);
     try {
+      const longUrl = buildBagLink();
+      const tiny = (await shortenUrl(longUrl)) || longUrl;
       if (navigator.share && window.innerWidth <= 768) {
         await navigator.share({
           title: "My TheBookX bag",
           text: "Check out the books I picked on TheBookX ",
-          url,
+          url: tiny,
         });
       } else {
-        await navigator.clipboard.writeText(url);
+        await navigator.clipboard.writeText(tiny);
         showToast("Bag link copied — share it with anyone!", "success");
       }
+      setShowShareModal(false);
     } catch (_) {
       /* user dismissed share sheet */
+    } finally {
+      setShareBusy(false);
     }
   };
 
@@ -244,6 +265,81 @@ function BagContent() {
     .filter(Boolean);
 
   const hasOneRupeeItem = cartBooks.some((book) => book.discountedPrice === 1);
+
+  const shareTotal = cartBooks.reduce(
+    (s, b) => s + (b.discountedPrice || 0) * (b.qty || 1),
+    0,
+  );
+  const shareModal = (
+    <AnimatePresence>
+      {showShareModal && (
+        <motion.div
+          className="bill-modal-overlay"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={() => !shareBusy && setShowShareModal(false)}
+        >
+          <motion.div
+            className="bill-modal sharebag-sheet"
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "100%" }}
+            transition={{ duration: 0.38, ease: "easeOut" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="bill-header">
+              <div className="flex flex-col">
+                <span className="weight-600 font-16">Share your bag</span>
+                <span className="font-12 gray-500">
+                  {cartBooks.length} book{cartBooks.length > 1 ? "s" : ""} · ₹
+                  {shareTotal.toLocaleString()}
+                </span>
+              </div>
+              <span
+                className="cursor-pointer"
+                onClick={() => !shareBusy && setShowShareModal(false)}
+              >
+                <X size={18} />
+              </span>
+            </div>
+            <p className="ep-hint" style={{ marginBottom: 10 }}>
+              Anyone who opens this link can add these books to their own bag.
+            </p>
+            <div className="sharebag-list">
+              {cartBooks.map((b) => (
+                <div className="sharebag-row" key={b.id}>
+                  {b.image ? (
+                    <img className="sharebag-cover" src={b.image} alt={b.name} />
+                  ) : (
+                    <span className="sharebag-cover sharebag-cover-ph" />
+                  )}
+                  <div className="sharebag-info">
+                    <span className="sharebag-name">{b.name}</span>
+                    <span className="sharebag-meta">
+                      Qty {b.qty || 1} · ₹{b.discountedPrice}
+                    </span>
+                  </div>
+                  <span className="sharebag-amt">
+                    ₹{((b.discountedPrice || 0) * (b.qty || 1)).toLocaleString()}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <button
+              type="button"
+              className="pri-big-btn sharebag-cta"
+              onClick={confirmShareBag}
+              disabled={shareBusy}
+            >
+              <Share2 size={17} />
+              {shareBusy ? "Preparing link…" : "Copy & share link"}
+            </button>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
 
   // Recommendations for the empty-bag state (exclude ₹1 books).
   const recTrending = books
@@ -903,6 +999,7 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🧾 Invoice: ${orderLink || "—"}${
         />
 
         {sharedModal}
+        {shareModal}
       </>
     );
   }

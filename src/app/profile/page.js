@@ -382,6 +382,7 @@ export default function MyOrdersPage() {
   const [verifyTimer, setVerifyTimer] = useState(30);
   const [showPhoneInput, setShowPhoneInput] = useState(true);
   const [verifying, setVerifying] = useState(false); // 3s "verifying number" screen
+  const [cardLoading, setCardLoading] = useState(false); // silent boot: shimmer the profile card only
   const [ordersOpen, setOrdersOpen] = useState(false); // orders history accordion
   const [showSupport, setShowSupport] = useState(false); // support templates sheet
   // ── Edit-profile modal (name / number / addresses) ──
@@ -496,8 +497,10 @@ export default function MyOrdersPage() {
     if (savedPhone) {
       setPhoneNumber(savedPhone);
       if (savedName) setCustomerName(savedName);
-      fetchOrders(savedPhone);
       setShowPhoneInput(false);
+      // Silent boot: render the profile shell immediately and shimmer only the
+      // profile card while we verify the saved number in the background.
+      fetchOrders(savedPhone, { silent: true });
     }
   }, []);
 
@@ -786,7 +789,8 @@ export default function MyOrdersPage() {
     return parsedBooks;
   };
 
-  const fetchOrders = async (phone = phoneNumber) => {
+  const fetchOrders = async (phone = phoneNumber, opts = {}) => {
+    const silent = !!opts.silent;
     if (!phone || phone.length !== 10) {
       setError(
         "That doesn't look like a valid number. Please enter the 10-digit mobile number you used while ordering.",
@@ -802,7 +806,10 @@ export default function MyOrdersPage() {
     // Remember every submitted number (chip), regardless of result.
     savePhoneNumber(phone);
     setLoading(true);
-    setVerifying(true); // show the verifying-number splash for the whole fetch
+    // Silent boot shimmers just the profile card; a manual submit shows the
+    // full "verifying your number" splash.
+    if (silent) setCardLoading(true);
+    else setVerifying(true);
     setError("");
     setSearched(true);
     try {
@@ -952,6 +959,7 @@ export default function MyOrdersPage() {
     } finally {
       setLoading(false);
       setVerifying(false);
+      setCardLoading(false);
     }
   };
 
@@ -1656,18 +1664,28 @@ Please cancel this order. Thank you `;
               exit={{ opacity: 0, y: -20 }}
               className="customer-info-section"
             >
-              <div className="customer-info-card">
+              <div
+                className={`customer-info-card${cardLoading ? " is-loading" : ""}`}
+              >
                 <div className="customer-info-content">
                   <div className="customer-avatar">
                     <User size={20} />
                   </div>
-                  <div className="customer-details">
-                    <span className="customer-label">Welcome back,</span>
-                    <span className="customer-name">
-                      {capName(customerName) || "Customer"}
-                    </span>
-                    <span className="customer-phone">{phoneNumber}</span>
-                  </div>
+                  {cardLoading ? (
+                    <div className="customer-details">
+                      <span className="ci-skeleton ci-sk-sm" />
+                      <span className="ci-skeleton ci-sk-lg" />
+                      <span className="ci-skeleton ci-sk-md" />
+                    </div>
+                  ) : (
+                    <div className="customer-details">
+                      <span className="customer-label">Welcome back,</span>
+                      <span className="customer-name">
+                        {capName(customerName) || "Customer"}
+                      </span>
+                      <span className="customer-phone">{phoneNumber}</span>
+                    </div>
+                  )}
                   <div className="flex flex-row gap-8 items-center">
                     <button
                       className="profile-refresh-btn"
@@ -1823,7 +1841,7 @@ Please cancel this order. Thank you `;
         {!showPhoneInput && !verifying && !loading && <InstallAppBar inline />}
 
         {/* ── Rapido-style account menu ── */}
-        {!showPhoneInput && !verifying && !loading && (
+        {!showPhoneInput && !verifying && (!loading || cardLoading) && (
           <div className="profile-menu">
         <div className="pm-section-title">Your orders</div>
         {/* Order(s) still being confirmed by the team. */}

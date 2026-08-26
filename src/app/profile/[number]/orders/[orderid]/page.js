@@ -187,21 +187,27 @@ export default function OrderDetailPage() {
   const animRef = useRef(null);
   const geoKey = `tbx_geo_${number}`;
 
-  // Fetch the order.
+  // Fetch the order. The `ignore` guard means React's dev double-invoke (Strict
+  // Mode) can't trigger a second state update / re-render flicker — the order
+  // resolves once and the skeleton hands off directly to the content.
   useEffect(() => {
+    let ignore = false;
     (async () => {
       try {
         const res = await fetch(
           `/api/order?orderId=${encodeURIComponent(orderId)}`,
         );
         const json = await res.json();
-        setOrder(json.order || null);
+        if (!ignore) setOrder(json.order || null);
       } catch {
-        setOrder(null);
+        if (!ignore) setOrder(null);
       } finally {
-        setLoading(false);
+        if (!ignore) setLoading(false);
       }
     })();
+    return () => {
+      ignore = true;
+    };
   }, [orderId]);
 
   // Geocode the receiver address once the order is known; fall back to a
@@ -651,8 +657,31 @@ export default function OrderDetailPage() {
   if (loading) {
     return (
       <main className="od-page">
-        <div className="od-loading">
-          <Loader2 size={26} className="lb-spinner" /> Loading order…
+        <div className="od-skel" aria-busy="true" aria-label="Loading order">
+          {/* header */}
+          <div className="od-skel-head">
+            <span className="od-sk od-sk-back" />
+            <span className="od-sk od-sk-title" />
+          </div>
+          {/* map */}
+          <div className="od-sk od-sk-map">
+            <span className="od-sk-shine" />
+          </div>
+          {/* arrival card */}
+          <div className="od-skel-card">
+            <span className="od-sk od-sk-dot" />
+            <div className="od-skel-card-lines">
+              <span className="od-sk od-sk-line" style={{ width: "40%" }} />
+              <span className="od-sk od-sk-line" style={{ width: "70%" }} />
+              <span className="od-sk od-sk-bar" />
+            </div>
+          </div>
+          {/* delivery details */}
+          <div className="od-skel-block">
+            <span className="od-sk od-sk-line" style={{ width: "35%" }} />
+            <span className="od-sk od-sk-line" style={{ width: "85%" }} />
+            <span className="od-sk od-sk-line" style={{ width: "60%" }} />
+          </div>
         </div>
       </main>
     );
@@ -862,8 +891,14 @@ export default function OrderDetailPage() {
             </button>
           </>
         ) : geoState === "loading" ? (
-          <div className="od-map-fallback">
-            <Loader2 size={22} className="lb-spinner" /> Locating your parcel…
+          <div className="od-map-locating">
+            <span className="od-sk-shine" />
+            <div className="od-locating-badge">
+              <span className="od-locating-pulse">
+                <MapPin size={20} />
+              </span>
+              <span className="od-locating-text">Locating your parcel…</span>
+            </div>
           </div>
         ) : (
           <div className="od-map-fallback">

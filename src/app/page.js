@@ -139,6 +139,15 @@ export default function HomePage() {
         </Suspense>
       </LazySection>
 
+      {/* Combo offers — curated multi-book bundles, above the ₹1 rail */}
+      <LazySection threshold={0.05}>
+        <Suspense fallback={<BooksSkeleton />}>
+          <SmoothAppear delay={0.28}>
+            <ComboDeals />
+          </SmoothAppear>
+        </Suspense>
+      </LazySection>
+
       {/* ₹1 books deals carousel — moved above the hero, below categories */}
       <LazySection threshold={0.05}>
         <Suspense fallback={<BooksSkeleton />}>
@@ -175,15 +184,6 @@ export default function HomePage() {
         <Suspense fallback={null}>
           <SmoothAppear delay={0.4}>
             <RecommendationModal />
-          </SmoothAppear>
-        </Suspense>
-      </LazySection>
-
-      {/* Combo offers — curated multi-book bundles, right-scrolling rail */}
-      <LazySection threshold={0.05}>
-        <Suspense fallback={<BooksSkeleton />}>
-          <SmoothAppear delay={0.75}>
-            <ComboDeals />
           </SmoothAppear>
         </Suspense>
       </LazySection>

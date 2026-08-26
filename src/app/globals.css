@@ -375,17 +375,22 @@ button:hover {
 ========================= */
 
 .navbar-wrapper {
-  width: 100%;
+  width: auto;
   background: #fff;
-  border-bottom: 2px solid #eee;
+  border: 1px solid var(--hairline, #ececec);
+  border-radius: 18px;
   position: sticky;
-  top: 0;
+  top: 10px;
   z-index: 50;
+  margin: 10px 12px 0;
+  overflow: hidden;
+  box-shadow: 0 8px 26px -12px rgba(0, 0, 0, 0.18),
+    0 2px 6px rgba(0, 0, 0, 0.05);
   transition: transform 0.32s cubic-bezier(0.22, 0.61, 0.36, 1);
   will-change: transform;
 }
 .navbar-wrapper.nav-hidden {
-  transform: translateY(-100%);
+  transform: translateY(-120%);
 }
 @media (prefers-reduced-motion: reduce) {
   .navbar-wrapper {
@@ -8665,6 +8670,41 @@ textarea.sec-mid-btn,
 
 .customer-details {
   flex: 1;
+}
+
+/* Silent-boot shimmer for the profile card (only the card loads, not the page) */
+.ci-skeleton {
+  display: block;
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    #eef0f2 25%,
+    #f7f8fa 37%,
+    #eef0f2 63%
+  );
+  background-size: 400% 100%;
+  animation: ci-shimmer 1.3s ease-in-out infinite;
+}
+.ci-sk-sm {
+  width: 84px;
+  margin-bottom: 8px;
+}
+.ci-sk-lg {
+  width: 150px;
+  height: 16px;
+  margin-bottom: 8px;
+}
+.ci-sk-md {
+  width: 110px;
+}
+@keyframes ci-shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
 }
 
 .customer-label {
@@ -34809,6 +34849,60 @@ img[data-loaded="true"] {
 .ord-card:active {
   transform: scale(0.995);
 }
+/* ── Skeleton loader for the orders list ── */
+.ord-card-skeleton {
+  pointer-events: none;
+  border-color: var(--hairline, #ececec);
+}
+.ord-card-skeleton:hover {
+  box-shadow: none;
+  border-color: var(--hairline, #ececec);
+}
+.ord-card-foot .ord-sk-line {
+  margin-top: 12px;
+}
+.ord-sk-line,
+.ord-sk-cover,
+.ord-sk-badge {
+  display: block;
+  border-radius: 6px;
+  background: #eef0f2;
+  background-image: linear-gradient(
+    90deg,
+    #eef0f2 0,
+    #f6f7f9 40px,
+    #eef0f2 80px
+  );
+  background-size: 600px 100%;
+  animation: ord-sk-shimmer 1.2s ease-in-out infinite;
+}
+.ord-sk-line {
+  height: 11px;
+  margin: 6px 0;
+}
+.ord-sk-cover {
+  width: 44px;
+  height: 58px;
+  border-radius: 6px;
+}
+.ord-sk-badge {
+  width: 64px;
+  height: 20px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+.ord-group-date.ord-sk-line {
+  height: 14px;
+  margin: 4px 0 14px;
+}
+@keyframes ord-sk-shimmer {
+  0% {
+    background-position: -120px 0;
+  }
+  100% {
+    background-position: 480px 0;
+  }
+}
 .ord-card-row {
   display: flex;
   align-items: flex-start;
@@ -35157,6 +35251,153 @@ img[data-loaded="true"] {
 .od-map-fallback strong {
   color: var(--foreground, #1a1a1a);
   font-size: var(--px-15);
+}
+
+/* ── Map "locating" loader — sweeping shine + pulsing pin ── */
+.od-map-locating {
+  position: relative;
+  height: 300px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #eef1f4 0%, #f7f9fb 100%);
+}
+.od-sk-shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.75) 50%,
+    transparent 80%
+  );
+  transform: translateX(-100%);
+  animation: od-sk-sweep 1.5s ease-in-out infinite;
+}
+@keyframes od-sk-sweep {
+  100% {
+    transform: translateX(100%);
+  }
+}
+.od-locating-badge {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.od-locating-pulse {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background: var(--tertiary, #fb8500);
+  box-shadow: 0 0 0 0 rgba(251, 133, 0, 0.5);
+  animation: od-pin-pulse 1.5s ease-out infinite;
+}
+@keyframes od-pin-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(251, 133, 0, 0.45);
+  }
+  70% {
+    box-shadow: 0 0 0 18px rgba(251, 133, 0, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(251, 133, 0, 0);
+  }
+}
+.od-locating-text {
+  font-size: var(--px-13);
+  font-weight: 600;
+  color: var(--dark-50, #6b7280);
+}
+
+/* ── Order-detail page skeleton loader ── */
+.od-skel {
+  display: flex;
+  flex-direction: column;
+}
+.od-sk {
+  background: #eef0f2;
+  background-image: linear-gradient(
+    90deg,
+    #eef0f2 0,
+    #f6f7f9 40px,
+    #eef0f2 80px
+  );
+  background-size: 600px 100%;
+  animation: ord-sk-shimmer 1.2s ease-in-out infinite;
+  border-radius: 8px;
+  display: block;
+}
+.od-skel-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+}
+.od-sk-back {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+.od-sk-title {
+  width: 180px;
+  height: 20px;
+}
+.od-sk-map {
+  width: 100%;
+  height: 380px;
+  border-radius: 0;
+  position: relative;
+  overflow: hidden;
+}
+.od-skel-card {
+  display: flex;
+  gap: 14px;
+  margin: -46px 16px 0;
+  padding: 16px;
+  background: #fff;
+  border: 1px solid var(--hairline, #ececec);
+  border-radius: 16px;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 12px 30px -18px rgba(0, 0, 0, 0.25);
+}
+.od-sk-dot {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+.od-skel-card-lines {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.od-sk-line {
+  height: 12px;
+}
+.od-sk-bar {
+  height: 8px;
+  border-radius: 999px;
+  margin-top: 4px;
+}
+.od-skel-block {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 20px 16px 0;
+  padding: 16px;
+  border: 1px solid var(--hairline, #ececec);
+  border-radius: 16px;
 }
 .od-share-btn {
   display: inline-flex;

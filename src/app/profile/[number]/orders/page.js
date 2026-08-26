@@ -180,7 +180,32 @@ export default function OrdersListPage() {
       </header>
 
       {loading ? (
-        <div className="ord-empty">Loading your orders…</div>
+        <div className="ord-groups" aria-busy="true" aria-label="Loading your orders">
+          <section className="ord-group">
+            <div className="ord-group-date ord-sk-line" style={{ width: 120 }} />
+            {[0, 1, 2].map((i) => (
+              <div className="ord-card ord-card-skeleton" key={i}>
+                <div className="ord-card-row">
+                  <div className="ord-card-covers">
+                    <span className="ord-sk-cover" />
+                    <span className="ord-sk-cover" />
+                    <span className="ord-sk-cover" />
+                  </div>
+                  <div className="ord-card-main">
+                    <span className="ord-sk-line" style={{ width: "45%" }} />
+                    <span className="ord-sk-line" style={{ width: "80%" }} />
+                    <span className="ord-sk-line" style={{ width: "30%" }} />
+                  </div>
+                  <span className="ord-sk-badge" />
+                </div>
+                <div className="ord-card-foot">
+                  <span className="ord-sk-line" style={{ width: 90 }} />
+                  <span className="ord-sk-line" style={{ width: 70 }} />
+                </div>
+              </div>
+            ))}
+          </section>
+        </div>
       ) : error ? (
         <div className="ord-empty">{error}</div>
       ) : orders.length === 0 ? (

@@ -128,7 +128,37 @@ export default function HomePage() {
       {/* Raksha Bandhan ribbon (+ falling petals) directly below the navbar.
           The greeting/scratch banner renders inside the hero, above the
           Join-community CTA. */}
-      <RakshaBandhanDecor banner={false} ribbon={false} />
+      <RakshaBandhanDecor banner={false} ribbon={true} />
+
+      {/* Static hero, provides the visible H1 + value prop above the carousel. */}
+      <HomeHero />
+
+      <PincodeModal />
+
+      {/* <UnlockModal /> */}
+
+      {/* Review-photo trust gallery — replaces the Bestseller carousel */}
+      <ReviewGallery />
+
+      {/* Floating ₹1 gift box temporarily removed */}
+      {/* <OneRupeeHero /> */}
+
+      {/* Live-orders social proof — below the bestseller section, by reviews */}
+      <LiveOrdersStrip />
+
+      {/* Verified store reviews now live inside ReviewGallery, revealed via its
+          "Read verified reviews" CTA. */}
+
+      {/* QuickReads feature promo — below the bestseller + reviews section */}
+      <QuickReadsPromo />
+
+      <LazySection threshold={0.05}>
+        <Suspense fallback={null}>
+          <SmoothAppear delay={0.4}>
+            <RecommendationModal />
+          </SmoothAppear>
+        </Suspense>
+      </LazySection>
 
       {/* Explore Categories — moved above the hero */}
       <LazySection threshold={0.05}>
@@ -153,37 +183,6 @@ export default function HomePage() {
         <Suspense fallback={<BooksSkeleton />}>
           <SmoothAppear delay={0.3}>
             <OneRupeeDeals />
-          </SmoothAppear>
-        </Suspense>
-      </LazySection>
-
-      {/* Static hero, provides the visible H1 + value prop above the carousel. */}
-      <HomeHero />
-
-      <PincodeModal />
-
-      {/* <UnlockModal /> */}
-
-      {/* Review-photo trust gallery — replaces the Bestseller carousel */}
-      <ReviewGallery />
-
-
-      {/* Floating ₹1 gift box temporarily removed */}
-      {/* <OneRupeeHero /> */}
-
-      {/* Live-orders social proof — below the bestseller section, by reviews */}
-      <LiveOrdersStrip />
-
-      {/* Verified store reviews now live inside ReviewGallery, revealed via its
-          "Read verified reviews" CTA. */}
-
-      {/* QuickReads feature promo — below the bestseller + reviews section */}
-      <QuickReadsPromo />
-
-      <LazySection threshold={0.05}>
-        <Suspense fallback={null}>
-          <SmoothAppear delay={0.4}>
-            <RecommendationModal />
           </SmoothAppear>
         </Suspense>
       </LazySection>

@@ -4,6 +4,468 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "hindi-diwas-2026-indian-language-books": {
+    id: "blog-034",
+    title:
+      "Hindi Diwas 2026 (14 September): What the Day Actually Marks, and 20 Books for Reading India in Its Own Languages",
+    slug: "hindi-diwas-2026-indian-language-books",
+    author: "TheBookX Editorial",
+    authorSlug: "murthy-thevar",
+    publishDate: "2026-08-27",
+    lastModified: "2026-08-27",
+    excerpt:
+      "Hindi Diwas falls on Monday, 14 September 2026. What the date commemorates, why India has no national language, and 20 books for reading India properly.",
+
+    content: [
+      {
+        type: "paragraph",
+        content:
+          "Hindi Diwas falls on <strong>Monday, 14 September 2026</strong>. In most offices and schools it will pass as a poster, a poetry recitation and a short speech, which is a shame, because the date marks one of the more genuinely interesting decisions the Constituent Assembly ever took — and it was not the decision most people think it was.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The timing is good for a bookshop to say something useful. On <strong>25 August 2026</strong>, the Publications Division of the Ministry of Information and Broadcasting picked up seven awards at the Federation of Indian Publishers' Awards for Excellence in Book Production 2026 — four second prizes and three third prizes, spread deliberately across Hindi, English and Urdu titles, journals and children's books. That spread is the actual story of Indian publishing in 2026: not one language winning, but several being produced to a standard worth judging side by side. This piece covers what Hindi Diwas commemorates, the correction most Hindi Diwas reading lists need, and a shelf of twenty books for reading India in something closer to its own voice.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "Hindi Diwas 2026 — the essentials",
+        content:
+          "Date: Monday, 14 September 2026. What it marks: on 14 September 1949 the Constituent Assembly adopted Hindi in the Devanagari script as an official language of the Union, a decision later written into Article 343 of the Constitution. First observed: 1953. Not to be confused with World Hindi Day, observed on 10 January, which is about Hindi's presence abroad rather than its constitutional status at home.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The Thing Almost Every Hindi Diwas Post Gets Wrong",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Hindi is not India's national language. India does not have one. What the Constituent Assembly settled on 14 September 1949, after some of the most bad-tempered debate of the entire drafting process, was that Hindi in Devanagari would be <em>an official language of the Union</em>, with English continuing alongside it for official purposes. The Eighth Schedule now recognises 22 scheduled languages, and several states run their administration in a language other than Hindi entirely.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "This is not pedantry. It changes what the day is for. If Hindi were the national language, Hindi Diwas would be a loyalty test. Because it is not, the day works better as what it was originally intended to be — an annual argument for using an Indian language for serious work, rather than treating English as the only register in which grown-up thought happens. Read that way, Hindi Diwas belongs as much to a Malayalam reader in Kochi as to a Hindi reader in Patna.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Indian-Language Writing Is Having a Better Decade Than Its Sales Figures Suggest",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The prize record for Indian-language literature over the last few years has been unusually strong, and it has not been confined to Hindi.",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<strong>The 60th Jnanpith Award,</strong> India's highest literary honour, went to the Tamil poet and lyricist R. Vairamuthu — announced in March 2026 for the year 2025. He is only the third Tamil writer to receive it, after Akilan in 1975 and Jayakanthan in 2002, and the first recognised primarily as a poet.",
+          "<strong>The 59th Jnanpith</strong> went to the Hindi writer Vinod Kumar Shukla, whose spare, strange prose is the best rebuttal available to anyone who thinks contemporary Hindi fiction is provincial.",
+          "<strong>Translation has stopped being a niche.</strong> Indian-language novels in English translation now routinely outsell their originals, and international recognition for translated fiction — the International Booker, the Nobel to Han Kang — has made publishers far braver about commissioning them.",
+          "<strong>Production quality has caught up.</strong> The FIP awards on 25 August 2026 judged Hindi, English and Urdu books in the same room, on the same criteria. Twenty years ago that comparison would have been embarrassing for one side.",
+        ],
+      },
+      {
+        type: "blockquote",
+        content:
+          "A language does not survive because it is celebrated once a year. It survives because somebody keeps buying books in it, and keeps handing them to somebody younger.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "20 Books for Reading India in Its Own Languages",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The honest position for an Indian online bookstore is this: most of our catalogue is in English, most Indian readers read Indian stories in English, and pretending otherwise helps nobody. So this shelf is built in three layers — books in the original Hindi, books translated into English from an Indian language, and English-language Indian writing that carries the same texture. Start wherever you actually are.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "Read one in the original",
+      },
+      {
+        type: "paragraph",
+        content:
+          "If you can read Devanagari at all — and a great many people who claim they cannot, can, slowly — the single most appropriate thing to do on 14 September is finish one short book in Hindi. <a href=\"/books/diwar-mein-ek-khidki-rahti-thi\" style=\"color:#fb8500;font-weight:600\">Diwar Mein Ek Khidki Rahti Thi</a> is the right size for it: a modern Hindi novel of roughly 180 pages, unhurried, domestic, and far stranger than its quiet surface suggests. Reading in a language you last used in Class 10 is slow for about forty pages and then stops being slow. That is the whole experience, and it is worth having once a year.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "Translated from an Indian language",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Sudha Murty is the most useful entry point in print, because she writes in Kannada and English both and her translated work loses almost nothing. <a href=\"/books/dollar-bahu\" style=\"color:#fb8500;font-weight:600\">Dollar Bahu</a> is the sharpest of them — a novel about an Indian family recalibrating itself around a son's dollar salary, which has aged into something closer to social history. <a href=\"/books/mahashweta\" style=\"color:#fb8500;font-weight:600\">Mahashweta</a> is the one readers finish in a sitting and then argue about, and <a href=\"/books/gently-falls-the-bakula\" style=\"color:#fb8500;font-weight:600\">Gently Falls the Bakula</a> is the quietest and, for a certain kind of reader, the most devastating.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Her non-fiction belongs on a Hindi Diwas shelf for a different reason. <a href=\"/books/how-i-taught-my-grandmother-to-read\" style=\"color:#fb8500;font-weight:600\">How I Taught My Grandmother to Read</a> is a collection of short true stories built around exactly the thing this day is nominally about — an older woman learning Kannada script late in life so she can read a serialised novel herself. <a href=\"/books/three-thousand-stitches\" style=\"color:#fb8500;font-weight:600\">Three Thousand Stitches</a> is the tougher companion volume.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "For proof that translation is not a consolation prize, read <a href=\"/books/the-vegetarian\" style=\"color:#fb8500;font-weight:600\">The Vegetarian</a> — Han Kang's Korean novel in Deborah Smith's English, which won the International Booker and did more for the global standing of translated fiction than a decade of arts funding. Indian publishers noticed. So should Indian readers.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "Indian writing in English that earns its place",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> is Arundhati Roy's Booker-winning novel of Ayemenem, and it is the book on this list most worth reading slowly. <a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> is R. K. Narayan in short, complete pieces — the best possible option for a reader who cannot yet commit to a novel — and <a href=\"/books/the-guide\" style=\"color:#fb8500;font-weight:600\">The Guide</a>, which won him the Sahitya Akademi Award, is where to go the moment Malgudi lands.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "For range: <a href=\"/books/sacred-games\" style=\"color:#fb8500;font-weight:600\">Sacred Games</a> is the great Bombay novel and unapologetically bilingual on the page, which is itself an argument about how Indians actually speak. <a href=\"/books/an-equal-music\" style=\"color:#fb8500;font-weight:600\">An Equal Music</a> is Vikram Seth writing about Western classical music with no India in it at all — included deliberately, because an Indian writer is not obliged to explain India. And Ruskin Bond remains the most reliable gateway drug in Indian publishing: <a href=\"/books/the-room-on-the-roof\" style=\"color:#fb8500;font-weight:600\">The Room on the Roof</a>, which he wrote at seventeen, and <a href=\"/books/a-flight-of-pigeons\" style=\"color:#fb8500;font-weight:600\">A Flight of Pigeons</a>, his novella of 1857 Shahjahanpur.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "Myth, memoir and the school shelf",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books/the-palace-of-illusions\" style=\"color:#fb8500;font-weight:600\">The Palace of Illusions</a> retells the Mahabharata from Draupadi's side and is the book most likely to convert a reluctant teenager into an argumentative one. <a href=\"/books/jaya-an-illustrated-retelling-of-the-mahabharata\" style=\"color:#fb8500;font-weight:600\">Jaya</a> is Devdutt Pattanaik's illustrated retelling and works better as a family reference than as a straight read. <a href=\"/books/five-point-someone\" style=\"color:#fb8500;font-weight:600\">Five Point Someone</a> is on this list for one reason: it converted more non-readers in India than any prize list ever has, and a language-pride post that sneers at popular fiction has misunderstood the problem.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> is the standing counter-argument to the idea that English is a prerequisite for an Indian life of the mind — the autobiography of a boy from Rameswaram who read his way out in Tamil first. For anyone genuinely working on their English rather than defending it, <a href=\"/books/word-power-made-easy\" style=\"color:#fb8500;font-weight:600\">Word Power Made Easy</a> is still the most efficient book in print, and there is no contradiction in owning it alongside everything above.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "One more, on the meta-problem. Most people who say they want to read more in an Indian language are not blocked by vocabulary; they are blocked by attention that has been trained to fragment. <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is written directly at that failure, in short chapters, and it makes a reasonable pairing with whichever book above you actually intend to finish.",
+      },
+      {
+        type: "callout",
+        style: "success",
+        title: "Ordering from TheBookX",
+        content:
+          "Titles on TheBookX start from ₹1, with free delivery and Cash on Delivery available across India. If you are buying a book for a teacher, a parent or a school library this fortnight, gift wrapping is available for ₹25.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Four Things Worth Doing on 14 September",
+      },
+      {
+        type: "list",
+        style: "ordered",
+        items: [
+          "<strong>Finish one short book in an Indian language.</strong> Not start — finish. Pick something under 200 pages so the win is available inside a single Monday.",
+          "<strong>Buy one translated novel from a language that is not yours.</strong> A Hindi reader buying Kannada in translation, or a Tamil reader buying Bengali, does more for Indian-language publishing than any amount of posting.",
+          "<strong>Ask an older relative what they read in their first language.</strong> This is how most reading lists in Indian families are actually inherited, and it stops working the moment nobody asks.",
+          "<strong>Give a child a book in the language spoken at home.</strong> Reading habits are set before twelve, and they are set by what is lying around the house rather than by what is on the syllabus.",
+        ],
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The Constituent Assembly's compromise in 1949 was messier than either side wanted, and seventy-seven years on it has held up better than most of the clean solutions proposed at the time. India reads in many languages at once, badly and beautifully, and the only version of Hindi Diwas worth observing is the one that ends with a book bought rather than a point made.",
+      },
+    ],
+
+    coverImage: "/blogs/hindi-diwas-2026-indian-language-books.jpeg",
+
+    images: [
+      {
+        url: "/blogs/hindi-diwas-2026-indian-language-books.jpeg",
+        alt: "A young Indian woman reading a hardcover book at a wooden table by a window, with a small stack of books and a steel tumbler of tea beside her",
+        caption:
+          "Hindi Diwas 2026 falls on Monday, 14 September - marking the Constituent Assembly's adoption of Hindi in Devanagari as an official language of the Union on 14 September 1949",
+        category: "Indian Literature",
+      },
+    ],
+
+    keywords: [
+      "hindi diwas 2026",
+      "hindi diwas 14 september 2026",
+      "hindi diwas date and significance",
+      "is hindi the national language of india",
+      "indian language books to read",
+      "best indian books in translation",
+      "hindi books to read online india",
+      "jnanpith award 2026 vairamuthu",
+      "sudha murty books in translation",
+      "indian literature reading list 2026",
+      "TheBookX",
+    ],
+
+    categories: ["Indian Literature", "Reading Lists", "Literary News"],
+
+    faqs: [
+      {
+        question: "When is Hindi Diwas 2026 and what does it commemorate?",
+        answer:
+          "Hindi Diwas 2026 falls on Monday, 14 September 2026. It marks 14 September 1949, the day the Constituent Assembly adopted Hindi written in the Devanagari script as an official language of the Union - a decision later set out in Article 343 of the Constitution. The day was first observed in 1953. It should not be confused with World Hindi Day, which is observed on 10 January and concerns Hindi's use outside India.",
+      },
+      {
+        question: "Is Hindi the national language of India?",
+        answer:
+          "No. India has no national language. Hindi in Devanagari is an official language of the Union, with English retained alongside it for official purposes, and the Eighth Schedule of the Constitution recognises 22 scheduled languages in total. Several states conduct their administration in a language other than Hindi. This is why Hindi Diwas is best understood as an argument for using Indian languages for serious work, rather than as a claim that one language outranks the others.",
+      },
+      {
+        question: "Who won the 60th Jnanpith Award?",
+        answer:
+          "The 60th Jnanpith Award, for the year 2025, went to the Tamil poet and lyricist R. Vairamuthu, announced by Bharatiya Jnanpith in March 2026. He is the third Tamil writer to receive India's highest literary honour, after Akilan in 1975 and Jayakanthan in 2002, and the first recognised primarily for poetry. The award carries a cash prize of ₹11 lakh, a bronze Vagdevi statuette and a citation. The 59th Jnanpith went to the Hindi writer Vinod Kumar Shukla.",
+      },
+      {
+        question: "Which Indian books should I read on Hindi Diwas if I am not fluent in Hindi?",
+        answer:
+          "Read Indian writing in translation or in English rather than skipping the day. Sudha Murty's Dollar Bahu, Mahashweta and Gently Falls the Bakula come from Kannada and read cleanly in English. For English-language Indian writing, start with Malgudi Days or The Guide by R. K. Narayan, then The God of Small Things by Arundhati Roy and Sacred Games by Vikram Chandra. Wings of Fire and The Palace of Illusions work well for younger readers. All are available on TheBookX from ₹1, with free delivery and Cash on Delivery across India.",
+      },
+    ],
+  },
+  "international-literacy-day-2026-india-books": {
+    id: "blog-033",
+    title:
+      "International Literacy Day 2026 (8 September): The Theme, India's 80.9% Milestone, and 15 Books Worth Starting With",
+    slug: "international-literacy-day-2026-india-books",
+    author: "TheBookX Editorial",
+    authorSlug: "murthy-thevar",
+    publishDate: "2026-08-27",
+    lastModified: "2026-08-27",
+    excerpt:
+      "International Literacy Day turns 60 on 8 September 2026. The official theme, India's climb from 74% to 80.9%, and 15 books that make a real first shelf.",
+
+    content: [
+      {
+        type: "paragraph",
+        content:
+          "International Literacy Day falls on <strong>8 September 2026</strong>, and this year it carries a round number: UNESCO first proclaimed the day in 1966, which makes 2026 its <strong>60th anniversary</strong>. The official theme is <em>Literacy for people, the planet and prosperity</em>, and the global celebration runs across 8 and 9 September, hosted by UNESCO in partnership with the Government of Mexico, with the UNESCO International Literacy Prizes awarded at the ceremony.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "For an Indian reader the day is less abstract than it sounds. India has moved from a literacy rate of 74% at the 2011 Census to 80.9% in 2023-24 — a figure the Union Education Minister announced on International Literacy Day itself last year. That is roughly seven percentage points across a population of 1.4 billion, which is not a statistic so much as a logistics achievement. This piece covers what the day is actually for, what India's numbers do and do not mean, and — because a reading list is the only honest way for a bookshop to mark it — fifteen books that work as a genuine first shelf.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "International Literacy Day 2026 — the essentials",
+        content:
+          "Date: Tuesday, 8 September 2026. Theme: Literacy for people, the planet and prosperity. Global celebration: 8-9 September, organised by UNESCO with the Government of Mexico, including the UNESCO International Literacy Prizes ceremony. Significance: the 60th observance since UNESCO proclaimed the day in 1966.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "What the 2026 Theme Is Actually Arguing",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Themes for UN days are usually diplomatic wallpaper. This one is doing something more specific. By binding literacy to <em>people, planet and prosperity</em>, UNESCO is making the case that reading is not a standalone welfare good but a precondition for everything else on the sustainable development list — that a farmer who can read a soil report, a worker who can read a contract, and a voter who can read a ballot are the same argument at three scales.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The sixtieth anniversary framing matters too. In 1966 the target was signature literacy: could a person write their name. Six decades on the target has quietly moved to functional literacy — can a person read a bus timetable, a medicine label, a bank SMS, a rental agreement. That is a far harder bar, and it is the bar most national programmes now measure against, India's included.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "India's Numbers: 74% to 80.9%, and What Drove It",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Most of the recent movement is credited to <strong>ULLAS - Nav Bharat Saaksharta Karyakram</strong>, the New India Literacy Programme, which runs from 2022 to 2027 and targets adults aged 15 and above with literacy, numeracy, life skills and vocational training. It is built almost entirely on volunteers rather than salaried instructors, which is why it scaled the way it did.",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<strong>National literacy rate:</strong> 74% at Census 2011, rising to 80.9% in 2023-24.",
+          "<strong>Scale of ULLAS:</strong> more than 3 crore learners enrolled, supported by around 42 lakh volunteer teachers.",
+          "<strong>Assessment:</strong> roughly 1.83 crore learners have sat the Foundational Literacy and Numeracy Assessment Test, with a pass rate near 90%.",
+          "<strong>States and UTs declared fully literate under ULLAS:</strong> Mizoram was first, in May 2025, followed by Goa, Tripura, Ladakh and Himachal Pradesh. Sikkim has reported 99.82% among adults aged 15 and above.",
+          "<strong>Among the larger states,</strong> Kerala continues to lead at around 96.2% — a position it has held, in one form or another, since the Total Literacy Campaign of the early 1990s.",
+        ],
+      },
+      {
+        type: "paragraph",
+        content:
+          "The honest caveat: 'fully literate' under this framework means a state has crossed a 95% functional-literacy threshold among the adults it surveyed, not that every person in it reads fluently. It is a real achievement measured against a specific, modest bar. Treating it as the end of the project is how literacy campaigns historically lose their funding.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Literacy Is Not the Same Thing as a Reading Habit",
+      },
+      {
+        type: "paragraph",
+        content:
+          "This is the gap the bookselling trade sees most clearly. A country can push functional literacy to 90% and still watch the average number of books finished per adult per year fall, because the two are different skills with different failure modes. Decoding a sentence is a capability. Sustaining attention across 300 pages is a habit — and habits decay when the environment changes, which it comprehensively has.",
+      },
+      {
+        type: "blockquote",
+        content:
+          "Teaching a person to read takes a few hundred hours. Teaching a person to want to read takes one book they cannot put down. Most literacy programmes fund the first and leave the second to chance.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Which is where a bookshop can be useful rather than sanctimonious. The single most effective thing an ordinary reader can do on 8 September is not post about literacy — it is to put one well-chosen book into the hands of one person who has stopped reading, or never started. The list below is organised around that job.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "15 Books That Make a Good First Shelf",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "If someone has stopped reading and wants to start again",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The re-entry problem is almost never the book — it is attention that has been trained to fragment. <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is written directly at that failure, and its chapters are short enough that a lapsed reader can finish one on a commute and feel the small win that restarts the habit. Pair it with <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a>, which supplies the mechanics — twenty pages a day, same time, same chair — and <a href=\"/books/deep-work\" style=\"color:#fb8500;font-weight:600\">Deep Work</a> if the reader wants the argument for why sustained attention is worth defending at all.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "For pure momentum, <a href=\"/books/the-midnight-library\" style=\"color:#fb8500;font-weight:600\">The Midnight Library</a> is the gentlest re-entry novel in print — short chapters, clean prose, an idea that carries you forward. Readers who want the opposite of gentle should take <a href=\"/books/the-silent-patient\" style=\"color:#fb8500;font-weight:600\">The Silent Patient</a>, which does in one weekend what six months of good intentions cannot.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "Indian voices, read first",
+      },
+      {
+        type: "paragraph",
+        content:
+          "There is a case for starting close to home, and Kerala — the state this list keeps returning to — produced the obvious entry point. <a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> is Arundhati Roy's Booker-winning novel of Ayemenem, and it is worth reading slowly rather than quickly. <a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> is the counterweight: R. K. Narayan in short, complete, unhurried pieces, which makes it one of the best books in Indian English for a reader who cannot yet commit to a novel. <a href=\"/books/the-guide\" style=\"color:#fb8500;font-weight:600\">The Guide</a> is where to go next if Malgudi lands.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "For readers who came up through the Indian school system, <a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> remains the most quietly effective literacy argument the country has produced — an autobiography of a boy from Rameswaram who read his way out. <a href=\"/books/five-point-someone\" style=\"color:#fb8500;font-weight:600\">Five Point Someone</a> is the other end of the register and converted an entire generation of non-readers in the 2000s, which is precisely the point of this list. <a href=\"/books/the-immortals-of-meluha\" style=\"color:#fb8500;font-weight:600\">The Immortals of Meluha</a> did the same job a few years later for mythology readers.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "Non-fiction that repays the hours",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books/sapiens-a-brief-history-of-humankind\" style=\"color:#fb8500;font-weight:600\">Sapiens: A Brief History of Humankind</a> is the standard recommendation for a reason — it is a history book that reads like an argument, and it rewires how a reader thinks about almost everything else on the shelf. <a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> is the non-fiction title most first-time readers actually finish, and the one with the most immediate practical return. <a href=\"/books/man-s-search-for-meaning\" style=\"color:#fb8500;font-weight:600\">Man's Search for Meaning</a> is under 200 pages and has outlasted every self-help book written since. <a href=\"/books/ikigai\" style=\"color:#fb8500;font-weight:600\">Ikigai</a> is the shortest of the four and works well as a gift for someone who insists they have no time to read.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "For children, and for households where nobody reads yet",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Reading habits are inherited from rooms, not lectures. If there is a child in the house, the highest-leverage purchase on this entire page is a series rather than a single book, because series create the next-one impulse that single titles do not. <a href=\"/books/harry-potter-series-set-books-1-7\" style=\"color:#fb8500;font-weight:600\">Harry Potter Series Set (Books 1-7)</a> is still the most reliable conversion engine in children's publishing. <a href=\"/books/diary-of-a-wimpy-kid\" style=\"color:#fb8500;font-weight:600\">Diary of a Wimpy Kid</a> works for reluctant readers who find prose intimidating, and <a href=\"/books/percy-jackson-ultimate-collection\" style=\"color:#fb8500;font-weight:600\">Percy Jackson Ultimate Collection</a> catches the ones who have outgrown it. For an older child, <a href=\"/books/the-diary-of-a-young-girl\" style=\"color:#fb8500;font-weight:600\">The Diary of a Young Girl</a> is the book that most often turns a competent reader into a permanent one.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Five Things Worth Doing on 8 September",
+      },
+      {
+        type: "list",
+        style: "ordered",
+        items: [
+          "<strong>Give one book to one specific person.</strong> Not a donation drive, not a pledge — one book chosen for one named human who has stopped reading. This is the entire intervention.",
+          "<strong>Find out your own state's ULLAS status.</strong> Every state runs volunteer registration through the ULLAS portal and app; teaching an adult to read is a few hours a week, not a career change.",
+          "<strong>Read aloud to a child for twenty minutes.</strong> The single best-evidenced predictor of a child's later reading level is whether an adult read to them before they could read themselves.",
+          "<strong>Restart a book you abandoned.</strong> Most abandoned books are abandoned in the first forty pages for reasons that have nothing to do with the book. Pick the one you feel guiltiest about and give it a fresh forty.",
+          "<strong>Set a number, not an intention.</strong> 'Read more' fails. 'Twenty pages before bed' does not. Fifteen minutes a day finishes roughly fifteen books a year.",
+        ],
+      },
+      {
+        type: "callout",
+        style: "success",
+        title: "Books from ₹1, delivered anywhere in India",
+        content:
+          "Every title on this page is available on TheBookX from ₹1, with free delivery and Cash on Delivery across India. If you are marking 8 September by giving a book to someone, gift wrapping is available at ₹25 per book. Cost is the most common reason a first shelf never gets built, and it is the easiest one to remove.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Sixty years in, International Literacy Day has largely won the argument it started with — most of the world can now read. The argument it has not won is the second one: that reading is worth continuing to do once school stops requiring it. That one is not settled by policy. It is settled one book at a time, usually by somebody handing it over.",
+      },
+    ],
+
+    coverImage: "/blogs/international-literacy-day-2026-india-books.jpeg",
+
+    images: [
+      {
+        url: "/blogs/international-literacy-day-2026-india-books.jpeg",
+        alt: "A young Indian woman sitting cross-legged by a sunlit window reading a book, with a small stack of books and a cup of tea beside her",
+        caption:
+          "International Literacy Day 2026 falls on 8 September - the 60th observance, with the theme Literacy for people, the planet and prosperity",
+        category: "Literacy",
+      },
+    ],
+
+    keywords: [
+      "international literacy day 2026",
+      "international literacy day 2026 theme",
+      "world literacy day 8 september 2026",
+      "literacy for people the planet and prosperity",
+      "india literacy rate 2026",
+      "ullas nav bharat saaksharta karyakram",
+      "new india literacy programme",
+      "books to read for literacy day",
+      "how to start reading again",
+      "best books for first time readers india",
+      "TheBookX",
+    ],
+
+    categories: ["Literary News", "Reading Lists", "Education"],
+
+    faqs: [
+      {
+        question: "When is International Literacy Day 2026 and what is the theme?",
+        answer:
+          "International Literacy Day 2026 falls on Tuesday, 8 September 2026. The theme is 'Literacy for people, the planet and prosperity', which frames literacy as a precondition for sustainable development rather than a standalone goal. The global celebration runs across 8 and 9 September, organised by UNESCO with the Government of Mexico, and includes the UNESCO International Literacy Prizes award ceremony. Because UNESCO proclaimed the day in 1966, 2026 marks its 60th anniversary.",
+      },
+      {
+        question: "What is India's literacy rate in 2026?",
+        answer:
+          "India's literacy rate stood at 80.9% in 2023-24, up from 74% recorded at the 2011 Census. The figure was announced by the Union Education Minister on International Literacy Day 2025. The improvement is largely credited to ULLAS - Nav Bharat Saaksharta Karyakram, the New India Literacy Programme running from 2022 to 2027, which has enrolled more than 3 crore learners with support from around 42 lakh volunteer teachers.",
+      },
+      {
+        question: "Which Indian states have been declared fully literate?",
+        answer:
+          "Mizoram was declared fully literate under the ULLAS framework in May 2025, followed by Goa, Tripura, Ladakh and Himachal Pradesh. Sikkim has reported a literacy rate of 99.82% among adults aged 15 and above. Among the larger states, Kerala continues to lead at approximately 96.2%. It is worth noting that 'fully literate' under this framework means crossing a 95% functional-literacy threshold among adults surveyed, not universal fluent reading.",
+      },
+      {
+        question: "What are good books to give someone who has stopped reading?",
+        answer:
+          "Choose short chapters and strong forward momentum over prestige. The Art of Clarity by Murthy Thevar is written specifically about fragmented attention and works well as a restart. The Midnight Library is the gentlest re-entry novel, and The Silent Patient is the fastest. For non-fiction, The Psychology of Money and Ikigai are the two titles first-time readers most reliably finish. For children, buy a series rather than a single book - Harry Potter, Diary of a Wimpy Kid or Percy Jackson - because series create the impulse to read the next one. All are available on TheBookX from ₹1 with free delivery and Cash on Delivery across India.",
+      },
+    ],
+  },
   "read-the-book-before-the-movie-late-2026": {
     id: "blog-032",
     title:

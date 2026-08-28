@@ -1312,18 +1312,18 @@ label.sec-mid-btn {
   border-color: var(--tertiary, #fb8500);
 }
 
-/* ── Revamped one-row cart bar — floats like the navbar ── */
+/* ── Revamped one-row cart bar — dark themed, floats like the navbar ── */
 .cbx {
   display: flex;
   align-items: center;
   gap: 12px;
   margin: 0 12px calc(12px + env(safe-area-inset-bottom, 0px));
   padding: 10px 12px;
-  background: #fff;
-  border: 1px solid var(--hairline, #ececec);
+  background: #14171d;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 18px;
-  box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.24),
-    0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 16px 40px -14px rgba(0, 0, 0, 0.6),
+    0 2px 10px rgba(0, 0, 0, 0.35);
 }
 .cbx-stack {
   display: flex;
@@ -1334,9 +1334,9 @@ label.sec-mid-btn {
   height: 50px;
   border-radius: 7px;
   overflow: hidden;
-  border: 2px solid #fff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
-  background: #f2f2f2;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  background: #23262e;
   margin-left: -14px;
   display: flex;
   align-items: center;
@@ -1353,8 +1353,8 @@ label.sec-mid-btn {
 .cbx-thumb-more {
   font-size: 12px;
   font-weight: 800;
-  color: var(--dark-50, #6b7280);
-  background: #f0eee9;
+  color: #cbd0d6;
+  background: #2a2e37;
 }
 .cbx-mid {
   flex: 1 1 auto;
@@ -1374,11 +1374,12 @@ label.sec-mid-btn {
   cursor: pointer;
   text-align: left;
   font-size: 13px;
-  color: var(--foreground, #0a0a0a);
+  color: #e8eaed;
   font-weight: 500;
 }
 .cbx-next b {
   font-weight: 800;
+  color: #fff;
 }
 .cbx-next-reward {
   color: var(--tertiary, #fb8500);
@@ -1392,7 +1393,7 @@ label.sec-mid-btn {
 .cbx-progress {
   height: 5px;
   border-radius: 999px;
-  background: #eee;
+  background: rgba(255, 255, 255, 0.14);
   overflow: hidden;
 }
 .cbx-progress-fill {
@@ -1421,19 +1422,20 @@ label.sec-mid-btn {
 }
 .cbx-strike {
   font-size: 11px;
-  color: var(--dark-50, #6b7280);
+  color: #9aa0a6;
   text-decoration: line-through;
 }
 .cbx-final {
   font-size: 17px;
   font-weight: 800;
+  color: #fff;
 }
 .cbx-checkout {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: #0a0a0a;
-  color: #fff;
+  background: #fff;
+  color: #0a0a0a;
   border: none;
   border-radius: 12px;
   padding: 11px 16px;

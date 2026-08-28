@@ -37263,65 +37263,101 @@ img[data-loaded="true"] {
   margin: 0 auto;
   line-height: 1.45;
 }
-.hbp-books {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin: 14px 0 12px;
+/* Podium — #1 in the centre (biggest), #2 left, #3 right, bottoms aligned */
+.hbp-podium {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 12px;
+  margin: 22px 0 14px;
 }
-.hbp-book {
+.hbp-slot {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 5px;
-  padding: 8px 6px;
-  border: 1px solid var(--hairline, #ececec);
-  border-radius: 14px;
-  background: #fff;
+  gap: 8px;
+  padding: 0;
+  border: none;
+  background: none;
   cursor: pointer;
-  transition: box-shadow 0.15s ease, border-color 0.15s ease,
-    transform 0.12s ease;
+  min-width: 0;
 }
-.hbp-book:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 22px -14px rgba(0, 0, 0, 0.35);
+.hbp-rank-1 {
+  flex: 1.32 1 0;
 }
-.hbp-book.added {
-  border-color: #16a34a;
-  background: #f0fdf4;
+.hbp-rank-2,
+.hbp-rank-3 {
+  flex: 1 1 0;
+}
+.hbp-medal {
+  position: absolute;
+  top: -11px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 900;
+  color: #4a2c00;
+  border: 2px solid #fff;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.28);
+}
+.hbp-medal-1 {
+  background: linear-gradient(160deg, #ffe082, #e6a83c);
+}
+.hbp-medal-2 {
+  background: linear-gradient(160deg, #eef1f4, #c2c8cf);
+  color: #3b4046;
+}
+.hbp-medal-3 {
+  background: linear-gradient(160deg, #f0c199, #cd7f43);
+  color: #4a2600;
 }
 .hbp-cover {
   position: relative;
   width: 100%;
   aspect-ratio: 3 / 4;
-  border-radius: 10px;
+  border-radius: 12px;
   overflow: hidden;
   background: #f2f2f2;
+  border: 2px solid #fff;
+  box-shadow: 0 12px 26px -14px rgba(0, 0, 0, 0.45);
+  transition: transform 0.14s ease, box-shadow 0.14s ease;
+}
+.hbp-rank-1 .hbp-cover {
+  border-color: #f6c651;
+  box-shadow: 0 16px 32px -14px rgba(230, 168, 60, 0.7);
+}
+.hbp-slot:hover .hbp-cover {
+  transform: translateY(-3px);
 }
 .hbp-cover img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
-.hbp-badge {
+.hbp-added-tick {
   position: absolute;
-  top: 5px;
-  right: 5px;
-  width: 22px;
-  height: 22px;
+  right: 6px;
+  bottom: 6px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
+  background: #16a34a;
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--tertiary, #fb8500);
-  color: #fff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-}
-.hbp-book.added .hbp-badge {
-  background: #16a34a;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 .hbp-name {
-  font-size: 11px;
+  font-size: 11.5px;
   font-weight: 700;
   line-height: 1.2;
   text-align: center;
@@ -37331,10 +37367,8 @@ img[data-loaded="true"] {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-.hbp-price {
-  font-size: 12px;
-  font-weight: 800;
-  color: var(--foreground, #0a0a0a);
+.hbp-rank-1 .hbp-name {
+  font-size: 12.5px;
 }
 .hbp-cta {
   display: flex;
@@ -37354,4 +37388,12 @@ img[data-loaded="true"] {
 .hbp-cta:disabled {
   background: #16a34a;
   cursor: default;
+}
+.hbp-proof {
+  display: block;
+  text-align: center;
+  margin-top: 9px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--dark-50, #6b7280);
 }

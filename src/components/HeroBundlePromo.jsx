@@ -1,77 +1,123 @@
 "use client";
 
 import { useMemo } from "react";
-import { Zap, Check, Plus } from "lucide-react";
+import { Zap, Check } from "lucide-react";
 import { books } from "@/utils/book";
 import { useStore } from "@/context/StoreContext";
 import { showToast } from "@/context/ToastContext";
 
-// Trust-led hero bundle: three reader-favourite books that a shopper can add in
-// one tap. Framed around the "pay online → up to ₹100 cashback" hook.
-const BUNDLE_IDS = ["bk-541", "bk-002", "bk-184"]; // Power of Now, Art of Clarity, Manifest
+// Trust-led "top 3 reader favourites" podium. Ranked #1 The Art of Clarity,
+// #2 The Power of Now, #3 Manifest. No prices — pure social proof + one-tap add,
+// framed around the "pay online, get up to ₹100 cashback" hook.
+const RANKED = [
+  { id: "bk-002", rank: 1 }, // The Art of Clarity
+  { id: "bk-541", rank: 2 }, // The Power of Now
+  { id: "bk-184", rank: 3 }, // Manifest
+];
+// Visual podium order: 2nd, 1st (centre, tallest), 3rd.
+const PODIUM_ORDER = [2, 1, 3];
 
 export default function HeroBundlePromo() {
   const { cart, addToCart } = useStore();
 
   const picks = useMemo(
-    () => BUNDLE_IDS.map((id) => books.find((b) => b.id === id)).filter(Boolean),
+    () =>
+      RANKED.map((r) => {
+        const b = books.find((x) => x.id === r.id);
+        return b ? { ...b, rank: r.rank } : null;
+      }).filter(Boolean),
     [],
   );
   if (picks.length < 3) return null;
 
-  const subtotal = picks.reduce((s, b) => s + b.discountedPrice, 0);
+  const byRank = (r) => picks.find((b) => b.rank === r);
   const inCart = (id) => cart.some((i) => i.id === id);
   const allIn = picks.every((b) => inCart(b.id));
+
+  const cleanName = (n) => String(n || "").replace(/\s*\(.*\)$/, "").trim();
 
   const addAll = () => {
     picks.forEach((b) => {
       if (!inCart(b.id)) addToCart(b.id);
     });
-    showToast("Added all 3 to your bag — pay online for cashback 🎉", "success");
+    showToast("Added all 3 to your bag. Pay online for cashback 🎉", "success");
   };
 
   const addOne = (b) => {
     if (inCart(b.id)) return;
     addToCart(b.id);
-    showToast(`${b.name} added to bag`, "success");
+    showToast(`${cleanName(b.name)} added to bag`, "success");
+  };
+
+  // Lightweight SEO: an ItemList of the ranked titles.
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Most-read books on TheBookX",
+    itemListElement: picks
+      .slice()
+      .sort((a, b) => a.rank - b.rank)
+      .map((b) => ({
+        "@type": "ListItem",
+        position: b.rank,
+        name: cleanName(b.name),
+      })),
   };
 
   return (
     <section className="hbp" aria-labelledby="hbp-heading">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       <div className="hbp-head">
         <span className="hbp-eyebrow">
           <Zap size={13} /> Reader favourites
         </span>
         <h2 id="hbp-heading" className="hbp-title">
-          Start with these 3 — grab up to <span className="hbp-cash">₹100 cashback</span>
+          The 3 books readers can&apos;t put down
         </h2>
         <p className="hbp-sub">
-          Loved by thousands of readers. Add all three, pay online and unlock up
-          to ₹100 back — no code needed.
+          Thousands of readers are reading these right now. Add all three, pay
+          online and unlock up to <b className="hbp-cash">₹100 cashback</b>.
         </p>
       </div>
 
-      <div className="hbp-books">
-        {picks.map((b) => {
+      <div className="hbp-podium" role="list">
+        {PODIUM_ORDER.map((r) => {
+          const b = byRank(r);
+          if (!b) return null;
           const added = inCart(b.id);
           return (
             <button
               key={b.id}
               type="button"
-              className={`hbp-book${added ? " added" : ""}`}
+              role="listitem"
+              className={`hbp-slot hbp-rank-${r}${added ? " added" : ""}`}
               onClick={() => addOne(b)}
-              aria-label={added ? `${b.name} in bag` : `Add ${b.name}`}
+              aria-label={
+                added
+                  ? `${cleanName(b.name)} is in your bag`
+                  : `Add ${cleanName(b.name)}, ranked number ${r}`
+              }
             >
+              <span className={`hbp-medal hbp-medal-${r}`}>{r}</span>
               <span className="hbp-cover">
                 {b.image ? (
-                  <img src={b.image} alt={b.name} loading="lazy" />
+                  <img
+                    src={b.image}
+                    alt={`${cleanName(b.name)} — #${r} most-read book on TheBookX`}
+                    loading="lazy"
+                  />
                 ) : null}
-                <span className="hbp-badge">
-                  {added ? <Check size={13} /> : <Plus size={13} />}
-                </span>
+                {added && (
+                  <span className="hbp-added-tick">
+                    <Check size={14} />
+                  </span>
+                )}
               </span>
-              <span className="hbp-name">{b.name.replace(/\s*\(.*\)$/, "")}</span>
-              <span className="hbp-price">₹{b.discountedPrice}</span>
+              <span className="hbp-name">{cleanName(b.name)}</span>
             </button>
           );
         })}
@@ -88,11 +134,10 @@ export default function HeroBundlePromo() {
             <Check size={17} /> All 3 in your bag
           </>
         ) : (
-          <>
-            Add all 3 to bag · ₹{subtotal}
-          </>
+          "Add all 3 to bag"
         )}
       </button>
+      <span className="hbp-proof">📖 Being read by thousands of readers now</span>
     </section>
   );
 }

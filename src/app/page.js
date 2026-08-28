@@ -124,9 +124,6 @@ export default function HomePage() {
 
       <Navbar />
 
-      {/* Janmashtami greeting + Dahi-Handi scratch card render inside the hero,
-          above the Join-community CTA. */}
-
       {/* Static hero, provides the visible H1 + value prop above the carousel. */}
       <HomeHero />
 

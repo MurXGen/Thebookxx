@@ -31,16 +31,6 @@ function getActiveEvent() {
   const now = new Date();
   const m = now.getMonth(); // 0-based
   const d = now.getDate();
-  // Janmashtami / Gokulashtami window: 20 Aug – 10 Sep (Janmashtami 2026 ≈ 4 Sep)
-  if ((m === 7 && d >= 20) || (m === 8 && d <= 10)) {
-    return {
-      key: "janmashtami",
-      emoji: "🦚",
-      title: "Happy Janmashtami!",
-      sub: "Break the Dahi Handi — scratch for a wallet reward",
-      gradient: "linear-gradient(135deg,#2b3a8f,#0f8a7e,#e6a83c)",
-    };
-  }
   // Diwali-ish window (rough): late Oct – mid Nov
   if ((m === 9 && d >= 20) || (m === 10 && d <= 15)) {
     return {

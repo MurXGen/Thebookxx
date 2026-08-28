@@ -31,14 +31,14 @@ function getActiveEvent() {
   const now = new Date();
   const m = now.getMonth(); // 0-based
   const d = now.getDate();
-  // Raksha Bandhan window: 15–30 Aug (Rakhi 2026 = 28 Aug)
-  if (m === 7 && d >= 15 && d <= 30) {
+  // Janmashtami / Gokulashtami window: 20 Aug – 10 Sep (Janmashtami 2026 ≈ 4 Sep)
+  if ((m === 7 && d >= 20) || (m === 8 && d <= 10)) {
     return {
-      key: "rakhi",
-      emoji: "🎀",
-      title: "Raksha Bandhan special!",
-      sub: "Scratch to unwrap a rakhi-gift wallet reward",
-      gradient: "linear-gradient(135deg,#c0223b,#e6a83c,#8a1c34)",
+      key: "janmashtami",
+      emoji: "🦚",
+      title: "Happy Janmashtami!",
+      sub: "Break the Dahi Handi — scratch for a wallet reward",
+      gradient: "linear-gradient(135deg,#2b3a8f,#0f8a7e,#e6a83c)",
     };
   }
   // Diwali-ish window (rough): late Oct – mid Nov

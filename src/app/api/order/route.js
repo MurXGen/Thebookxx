@@ -14,6 +14,11 @@ export async function GET(request) {
 
   const { searchParams } = new URL(request.url);
   const id = String(searchParams.get("orderId") || "").trim();
+  // Optional ownership check: when the caller supplies the phone number (the
+  // logged-in customer's own number), the full row is returned ONLY if it
+  // belongs to that number. This scopes the customer-facing order-detail page
+  // so an enumerable Order ID can't reveal another customer's PII.
+  const phone = String(searchParams.get("phone") || "").replace(/\D/g, "").slice(-10);
   if (!id) {
     return Response.json(
       { order: null, found: false, confirmed: false },
@@ -40,6 +45,22 @@ export async function GET(request) {
       const st = String(order["Order Status"] ?? "");
       if (!/unconfirmed/i.test(nm) || /received|confirmed|paid/i.test(st)) {
         confirmed = true;
+      }
+    }
+
+    // Enforce ownership when a phone number was supplied: never return another
+    // customer's row. Status flags are safe to return (used by the poller).
+    if (order && /^\d{10}$/.test(phone)) {
+      const rowPhone = String(order["Phone Number"] ?? "")
+        .replace(/\D/g, "")
+        .slice(-10);
+      if (rowPhone !== phone) {
+        return Response.json({
+          order: null,
+          found: false,
+          confirmed: false,
+          denied: true,
+        });
       }
     }
 

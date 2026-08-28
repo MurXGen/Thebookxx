@@ -194,11 +194,23 @@ export default function OrderDetailPage() {
     let ignore = false;
     (async () => {
       try {
+        // Pass the logged-in number so the server only returns this order when
+        // it belongs to that number (prevents viewing another customer's order
+        // by guessing an Order ID).
         const res = await fetch(
-          `/api/order?orderId=${encodeURIComponent(orderId)}`,
+          `/api/order?orderId=${encodeURIComponent(orderId)}${
+            /^\d{10}$/.test(number) ? `&phone=${number}` : ""
+          }`,
         );
         const json = await res.json();
-        if (!ignore) setOrder(json.order || null);
+        const row = json.order || null;
+        // Defence in depth: if the row's phone doesn't match the URL number,
+        // treat it as not found rather than rendering someone else's details.
+        const rowPhone = String(row?.["Phone Number"] || "")
+          .replace(/\D/g, "")
+          .slice(-10);
+        const owned = row && (!/^\d{10}$/.test(number) || rowPhone === number);
+        if (!ignore) setOrder(owned ? row : null);
       } catch {
         if (!ignore) setOrder(null);
       } finally {
@@ -208,7 +220,7 @@ export default function OrderDetailPage() {
     return () => {
       ignore = true;
     };
-  }, [orderId]);
+  }, [orderId, number]);
 
   // Geocode the receiver address once the order is known; fall back to a
   // previously-shared location saved for this number.

@@ -4,6 +4,232 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "circulating-libraries-india-2026-borrow-or-buy-books": {
+    id: "blog-035",
+    title:
+      "India's Circulating Libraries Are Thriving in 2026: What Borrowing Culture Teaches Us About Which Books to Actually Own",
+    slug: "circulating-libraries-india-2026-borrow-or-buy-books",
+    author: "TheBookX Editorial",
+    authorSlug: "murthy-thevar",
+    publishDate: "2026-08-28",
+    lastModified: "2026-08-28",
+    excerpt:
+      "India's neighbourhood circulating libraries are booming again in 2026. What they get right, what 17 million library loans reveal, and which books are worth owning.",
+
+    content: [
+      {
+        type: "paragraph",
+        content:
+          "On <strong>14 August 2026</strong>, Bloomberg CityLab ran a piece on something most Indian readers over thirty already knew and most reading surveys still miss: India's <strong>circulating libraries</strong> — small, privately run neighbourhood lending shops charging a monthly fee — are doing steady business, and in many cities they are the only functioning reading infrastructure people have. The report profiled a library owner in Mahim, Mumbai, who has spent four decades building an inventory shaped entirely around what his own street wants to read.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The same fortnight, the world's librarians met in Busan to argue about the future of the profession. It is a useful pair of stories. One is a global institution asking what a library is for in the age of AI. The other is a man in Mahim who answered that question decades ago by simply knowing his customers. This piece looks at what the borrowing economy gets right, what a very large set of loan records tells us about how people actually read, and — the part a bookshop should be honest about — where borrowing stops working and owning starts.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "The three stories behind this piece",
+        content:
+          "1) Bloomberg CityLab, 14 August 2026: Indian readers are turning to a centuries-old private lending system as public libraries fall short, with a Mahim, Mumbai owner of four decades' standing as the case study. 2) IFLA's 90th World Library and Information Congress closed on 13 August 2026 in Busan, Korea — roughly 3,500 participants, 200-plus sessions, theme \"Libraries Powering Transformation\", with AI as the dominant topic. 3) Radio Prague International's interview with Michal Kasparek on a study of about 17 million loans at Prague's Municipal Library over three years.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "What a Circulating Library Actually Is",
+      },
+      {
+        type: "paragraph",
+        content:
+          "A circulating library is a commercial lending business, not a public service. You pay a monthly or per-book fee, take a title home for a fixed period, and return it. The model is old: circulating libraries flourished across Britain and America through the eighteenth and nineteenth centuries, precisely when buying books was expensive enough to be out of reach for most women and most working people. When ownership is costly, access gets sold by the week.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "India never fully moved past that condition, which is why the model never fully died here. In Mumbai, Chennai, Kolkata, Pune and dozens of smaller towns, the neighbourhood library survived the arrival of the shopping-mall bookstore, the arrival of e-readers, and the arrival of same-day delivery. It survived because it does three things that none of those three do well.",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<strong>It curates for one street, not for a country.</strong> A national bestseller list is an average of a billion preferences. A Mahim library's shelf is a record of what the flat upstairs finished last month.",
+          "<strong>It makes the marginal book free of risk.</strong> At ₹100 a month you will try a writer you have never heard of. At ₹499 a copy, most readers will not.",
+          "<strong>It is a place, and places create habits.</strong> Walking somewhere weekly to swap a book is a ritual. An app notification is not.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "What 17 Million Loans Reveal About How People Read",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The most interesting reading research of this month came out of Prague rather than India. Michal Kasparek examined roughly 17 million loans made over three years at Prague's Municipal Library — a dataset large enough that it describes behaviour rather than opinion. Two findings travel well beyond the Czech Republic.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "First, women used the library close to three times as much as men. The gap does not exist in early childhood; it opens after age ten, widens to its maximum around thirty-five, then narrows after fifty without ever returning to parity. Whatever happens to boys' reading, it happens in the early teens, and it is not corrected later.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Second, the single most borrowed title across the whole dataset was Jeff Kinney's <a href=\"/books/diary-of-a-wimpy-kid-series-set\" style=\"color:#fb8500;font-weight:600\">Diary of a Wimpy Kid Series Set</a>. Restricted to adults, the most borrowed book was Karin Lednicka's <em>The Leaning Church</em>. The prestige list and the borrowing list are different lists, and the borrowing list is the one that tells you where readers actually come from: children's series and popular local fiction, not prizewinners.",
+      },
+      {
+        type: "blockquote",
+        content:
+          "Libraries must be redefined — not just as repositories of knowledge, but as reliable public knowledge infrastructures.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "That was the consensus reported out of the IFLA congress in Busan, where AI dominated the agenda and IFLA President Leslie Weir told delegates that libraries must \"boldly embrace change and serve as agents leading their communities toward a better future\". It is a fair ambition. It is also worth noting that the Mahim model already is public knowledge infrastructure — privately owned, unsubsidised, and answerable to its members every single month.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Borrow or Buy? A Practical Rule",
+      },
+      {
+        type: "paragraph",
+        content:
+          "A bookshop telling you to buy everything is not advice, it is a pitch. The honest position is that borrowing and owning solve different problems, and most Indian readers would be better off doing both deliberately rather than defaulting to one. Here is the rule we would give a friend.",
+      },
+      {
+        type: "list",
+        style: "ordered",
+        items: [
+          "<strong>Borrow anything you intend to read once.</strong> Airport thrillers, most contemporary bestsellers, the book everyone is discussing this month. One pass, no shelf cost.",
+          "<strong>Buy anything you will mark up.</strong> If a book's value comes from returning to a specific page, a borrowed copy is actively worse than no copy. Non-fiction you plan to apply belongs to you.",
+          "<strong>Buy anything a child in the house might pick up unsupervised.</strong> Reading habits are set before twelve, and they are set by what is lying around, not by what is on a syllabus. A borrowed book goes back before the habit forms.",
+          "<strong>Buy anything you will re-read.</strong> Re-reading is where most of a book's real return sits, and it is the one thing a lending model cannot support.",
+          "<strong>Buy anything you would want to lend.</strong> Every household reading culture in India was built by someone who owned enough books to give them away.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Fifteen Books Worth Owning Rather Than Borrowing",
+      },
+      {
+        type: "paragraph",
+        content:
+          "These are not necessarily the best books published this year. They are the ones that fail the borrowing test — the re-reads, the mark-ups and the ones a twelve-year-old should be able to find on a shelf without asking permission.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "The Ones You Will Mark Up",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is built to be worked through rather than read past — it is about cutting noise from your thinking and your speech, and the exercises only pay off if you can return to them. Alongside it, <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> is the most re-consulted non-fiction book of the last decade for a reason: nobody changes a habit on a single reading. <a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> earns its place because its chapters get more useful as your own finances change, and <a href=\"/books/man-s-search-for-meaning\" style=\"color:#fb8500;font-weight:600\">Man's Search for Meaning</a> is short enough to re-read in an evening and heavy enough that you will want to. <a href=\"/books/sapiens-a-brief-history-of-humankind\" style=\"color:#fb8500;font-weight:600\">Sapiens: A Brief History of Humankind</a> completes the set as the book most likely to be argued about across a dinner table, which requires having it to hand.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "The Fiction You Will Come Back To",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Haruki Murakami is having a loud year — his sixteenth novel drew midnight queues in Japan in July and a ten-publisher bidding war for Korean rights — and the entry points remain <a href=\"/books/norwegian-wood\" style=\"color:#fb8500;font-weight:600\">Norwegian Wood</a> for the realist Murakami and <a href=\"/books/kafka-on-the-shore\" style=\"color:#fb8500;font-weight:600\">Kafka on the Shore</a> for the strange one. On the Indian shelf, <a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> by R. K. Narayan is the closest thing we have to a book that works at ten and at forty, and <a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> by Arundhati Roy rewards a second reading more than almost any Indian novel in English. <a href=\"/books/before-the-coffee-gets-cold\" style=\"color:#fb8500;font-weight:600\">Before the Coffee Gets Cold</a> is the gentle one people re-read when they need it, and <a href=\"/books/the-alchemist\" style=\"color:#fb8500;font-weight:600\">The Alchemist</a> is the one that gets given away and therefore needs replacing. If you want the current bestseller instinct honoured too, <a href=\"/books/the-housemaid\" style=\"color:#fb8500;font-weight:600\">The Housemaid</a> by Freida McFadden is the title circulating libraries cannot keep on the shelf.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "The Ones a Child Should Be Able to Find",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The Prague data is blunt about this: children's series carry the whole borrowing system. <a href=\"/books/diary-of-a-wimpy-kid-series-set\" style=\"color:#fb8500;font-weight:600\">Diary of a Wimpy Kid Series Set</a> and <a href=\"/books/harry-potter-series-set-books-1-7\" style=\"color:#fb8500;font-weight:600\">Harry Potter Series Set (Books 1-7)</a> are the two sets most likely to convert a reluctant reader into a reader, and both are worth owning rather than borrowing because the conversion happens on re-reading. <a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> by A. P. J. Abdul Kalam belongs on the same shelf — it is the book that has probably started more Indian non-fiction habits than any other.",
+      },
+      {
+        type: "callout",
+        style: "success",
+        title: "Building a home shelf on a circulating-library budget",
+        content:
+          "The reason most Indian households borrow rather than buy is price, and that is the part we can do something about. Books on TheBookX start from ₹1, delivery is free, and Cash on Delivery is available across India — so a first shelf of ten or twelve titles can cost less than a few months of library membership. Gift wrapping is available at +₹25 if you are building someone else's shelf rather than your own.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Use Your Neighbourhood Library. Then Buy the Ones That Stayed With You",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The best reading system we know of is not a purist one. Join the circulating library down the road, because it is cheap, it is curated by someone who knows your street, and it lets you be adventurous at almost no cost. Then, twice a year, buy the four or five books from that year's borrowing that you found yourself thinking about weeks later. That is how a real shelf gets built — not by aspiration, but by evidence.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The librarians in Busan spent a week debating what a library should become. The man in Mahim has been quietly running one for forty years on the theory that a library is whatever the people on your street will walk to. Both are right. The only reading culture that fails is the one where nothing is within reach.",
+      },
+    ],
+
+    coverImage: "/blogs/circulating-libraries-india-2026-borrow-or-buy-books.jpeg",
+
+    images: [
+      {
+        url: "/blogs/circulating-libraries-india-2026-borrow-or-buy-books.jpeg",
+        alt: "A young Indian woman browsing tightly packed shelves inside a small neighbourhood lending library, holding two books against her arm",
+        caption:
+          "India's privately run circulating libraries are still doing steady business in 2026, lending books by the month in neighbourhoods where public libraries fall short",
+        category: "Reading Culture",
+      },
+    ],
+
+    keywords: [
+      "circulating libraries india",
+      "lending libraries mumbai",
+      "should i borrow or buy books",
+      "books worth owning",
+      "reading culture in india 2026",
+      "public libraries in india problem",
+      "how to build a home library india",
+      "cheap books online india from rs 1",
+      "prague library loans study",
+      "ifla world library congress 2026",
+      "best books to own not borrow",
+      "TheBookX",
+    ],
+
+    categories: ["Reading Culture", "Book Lists", "Literary News"],
+
+    faqs: [
+      {
+        question: "What is a circulating library and do they still exist in India?",
+        answer:
+          "A circulating library is a privately run commercial lending business: you pay a monthly or per-book fee and borrow titles for a fixed period. The model flourished in Britain and America in the eighteenth and nineteenth centuries, when buying books was unaffordable for most readers. In India it never disappeared. Bloomberg CityLab reported on 14 August 2026 that Indian readers continue to rely on these neighbourhood lending shops as public library provision falls short, profiling a Mahim, Mumbai owner who has run one for four decades.",
+      },
+      {
+        question: "Is it better to borrow books or buy them?",
+        answer:
+          "Both, deliberately. Borrow anything you will read once - most contemporary thrillers and bestsellers. Buy anything you will mark up, re-read, lend out, or leave lying around for a child to pick up, because those are the four things a lending model cannot support. A practical routine is to borrow widely through the year and then buy the four or five titles you were still thinking about weeks after finishing them.",
+      },
+      {
+        question: "What did the Prague library study of 17 million loans find?",
+        answer:
+          "Michal Kasparek analysed roughly 17 million loans made over three years at Prague's Municipal Library. Women borrowed close to three times as often as men, with the gap opening after age ten, peaking around thirty-five and narrowing after fifty without reaching parity. The most borrowed title overall was Jeff Kinney's Diary of a Wimpy Kid; among adults it was The Leaning Church by Karin Lednicka. The takeaway is that children's series and popular local fiction, not prizewinners, carry borrowing systems.",
+      },
+      {
+        question: "How can I start a home library cheaply in India?",
+        answer:
+          "Start with ten to twelve titles you know you will re-read rather than a long aspirational list. On TheBookX, books start from ₹1 with free delivery and Cash on Delivery available across India, so a first shelf can cost less than a few months of circulating-library membership. Good starting picks include The Art of Clarity, Atomic Habits, Malgudi Days, Wings of Fire, The Alchemist and one children's series set. Gift wrapping is available at +₹25 if you are building the shelf for someone else.",
+      },
+    ],
+  },
   "hindi-diwas-2026-indian-language-books": {
     id: "blog-034",
     title:

@@ -91,6 +91,18 @@ export default function OrdersListPage() {
       setLoading(false);
       return;
     }
+    // Only let a visitor view the number they actually signed in with. Viewing
+    // an arbitrary number's orders via the URL is blocked → back to login.
+    let savedPhone = "";
+    try {
+      savedPhone = String(localStorage.getItem("track_orders_phone") || "")
+        .replace(/\D/g, "")
+        .slice(-10);
+    } catch (_) {}
+    if (savedPhone !== number) {
+      router.replace("/profile");
+      return;
+    }
     (async () => {
       try {
         const res = await fetch(`/api/orders?phone=${number}`);

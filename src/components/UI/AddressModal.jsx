@@ -2161,6 +2161,12 @@ export default function AddressModal({
               try {
                 clearCart && clearCart();
               } catch {}
+              // Treat the ordering number as "signed in" so the profile/orders
+              // flow recognises them (and the ownership guards pass).
+              try {
+                if (digits.length === 10)
+                  localStorage.setItem("track_orders_phone", digits);
+              } catch {}
               setShowCODSuccess(false);
               if (typeof window !== "undefined") {
                 if (digits.length === 10 && oid) {

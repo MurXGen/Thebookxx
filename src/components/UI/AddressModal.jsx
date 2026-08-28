@@ -1855,8 +1855,8 @@ export default function AddressModal({
                         ))}
                       </span>
                       <span className="pay-trust-txt">
-                        <strong>Most people</strong> opt for online mode —
-                        safer, faster &amp; more trusted
+                        Pay online &amp; grab <strong>up to ₹100 cashback</strong>{" "}
+                        — most shoppers pick this to save a little extra
                       </span>
                     </span>
                   </button>

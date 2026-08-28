@@ -3347,8 +3347,8 @@ export const books = [
     size: "Paperback",
     stock: 20,
     catalogue: ["children", "fiction", "trending"],
-    originalPrice: calculateOriginalPrice(429),
-    discountedPrice: 429,
+    originalPrice: calculateOriginalPrice(569),
+    discountedPrice: 569,
     weight: 450,
   },
   {
@@ -4159,8 +4159,8 @@ export const books = [
     size: "Paperback",
     stock: 20,
     catalogue: ["non-fiction", "business", "bestseller"],
-    originalPrice: calculateOriginalPrice(239),
-    discountedPrice: 239,
+    originalPrice: calculateOriginalPrice(429),
+    discountedPrice: 429,
     weight: 400,
   },
   {

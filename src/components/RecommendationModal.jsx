@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
+import { createPortal } from "react-dom";
 import { useEffect, useState } from "react";
 import {
   X,
@@ -217,6 +218,11 @@ export default function RecommendationModal({
   const [recommendations, setRecommendations] = useState([]);
   const [savedRecommendations, setSavedRecommendations] = useState([]);
   const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
+  // Portal to <body> so the dark overlay always covers the viewport — otherwise,
+  // when opened from inside the cart bar (which uses transform/will-change), the
+  // fixed overlay gets trapped and the backdrop doesn't show on the home page.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const router = useRouter();
 
   const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
@@ -373,7 +379,9 @@ export default function RecommendationModal({
     handleClose();
   };
 
-  return (
+  if (!mounted) return null;
+
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
         <motion.div className="bill-modal-overlay" onClick={handleClose}>
@@ -705,6 +713,7 @@ export default function RecommendationModal({
           </motion.div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   );
 }

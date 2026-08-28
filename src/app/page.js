@@ -15,6 +15,7 @@ import OneRupeeHero from "@/components/OneRupeeHero";
 import HomeHero from "@/components/HomeHero";
 import LiveOrdersStrip from "@/components/LiveOrdersStrip";
 import QuickReadsPromo from "@/components/QuickReadsPromo";
+import QuickReadsTeaser from "@/components/QuickReadsTeaser";
 import InvoiceParamModal from "@/components/InvoiceParamModal";
 import ReviewGallery from "@/components/ReviewGallery";
 import { BooksSkeleton } from "@/components/UI/BookCardSkeleton";
@@ -133,6 +134,9 @@ export default function HomePage() {
 
       {/* Review-photo trust gallery — replaces the Bestseller carousel */}
       <ReviewGallery />
+
+      {/* Small QuickReads teaser right below the reviews / write-a-review CTA */}
+      <QuickReadsTeaser />
 
       {/* Floating ₹1 gift box temporarily removed */}
       {/* <OneRupeeHero /> */}

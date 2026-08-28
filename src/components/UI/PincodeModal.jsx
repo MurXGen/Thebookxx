@@ -192,6 +192,36 @@ export default function PincodeModal() {
     return () => window.removeEventListener("tbx:open-scratch", open);
   }, []);
 
+  // Auto-open the number modal once the visitor engages (scrolls past the hero).
+  // Throttled to once per 24h and skipped for already-logged-in shoppers.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    let done = false;
+    const eligible = () => {
+      if (isLoggedIn()) return false;
+      try {
+        const last = Number(localStorage.getItem(PINCODE_STORAGE_KEY) || 0);
+        if (Date.now() - last < 24 * 60 * 60 * 1000) return false;
+      } catch (_) {}
+      return true;
+    };
+    const onScroll = () => {
+      if (done) return;
+      if (window.scrollY < window.innerHeight * 0.6) return;
+      done = true;
+      window.removeEventListener("scroll", onScroll);
+      if (!eligible()) return;
+      setStage("form");
+      setIsOpen(true);
+      setStartTime(Date.now());
+      try {
+        localStorage.setItem(PINCODE_STORAGE_KEY, String(Date.now()));
+      } catch (_) {}
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   // Fetch location details based on pincode
   const fetchLocationDetails = async (pincodeValue) => {
     try {
@@ -278,7 +308,7 @@ export default function PincodeModal() {
     setLoading(false);
 
     // If they shared a valid phone number, reward them with a scratch card.
-    // The total wallet balance is capped at ₹16 for pincode rewards.
+    // The total wallet balance is capped at ₹25 for this beginner scratch perk.
     if (phoneNumber && phoneNumber.length === 10) {
       const balance = await fetchWalletBalance(phoneNumber);
       // The scratch reward is a FIRST-TIME welcome perk. A shopper who is
@@ -294,17 +324,37 @@ export default function PincodeModal() {
           ).length >= 10;
         alreadyClaimed = localStorage.getItem("tbx_scratch_claimed") === "1";
       } catch (_) {}
-      // Eligible only if there's room below ₹16 AND this is a first-time scratch.
-      const room = 16 - balance;
+      // Eligible only if there's room below ₹25 AND this is a first-time scratch.
+      const room = 25 - balance;
       const eligible = room > 0 && !alreadyLoggedIn && !alreadyClaimed;
       let rew = 0;
       if (eligible) {
-        rew = 11 + Math.floor(Math.random() * 6); // ₹11–16
-        if (rew > room) rew = room; // never let balance + reward exceed ₹16
+        rew = 11 + Math.floor(Math.random() * 15); // ₹11–25
+        if (rew > room) rew = room; // never let balance + reward exceed ₹25
       }
       setScratchEligible(eligible);
       setScratchReward(rew);
       setScratchDone(false);
+      // Sign them in now (eligibility was already computed above, so this
+      // doesn't affect the reward). Their profile recognises them afterwards.
+      try {
+        const digits = String(phoneNumber).replace(/\D/g, "").slice(-10);
+        if (digits.length === 10) {
+          localStorage.setItem("track_orders_phone", digits);
+          let list = [];
+          try {
+            list = JSON.parse(
+              localStorage.getItem("track_orders_saved_phones") || "[]",
+            );
+          } catch (_) {}
+          if (!Array.isArray(list)) list = [];
+          list = [digits, ...list.filter((x) => x !== digits)].slice(0, 5);
+          localStorage.setItem(
+            "track_orders_saved_phones",
+            JSON.stringify(list),
+          );
+        }
+      } catch (_) {}
       setIsOpen(false);
       setShowScratch(true);
       return;

@@ -13,6 +13,7 @@ import {
 import { FaWhatsapp, FaInstagram } from "react-icons/fa";
 import { books } from "@/utils/book";
 import HomeGreeting from "@/components/HomeGreeting";
+import HeroBundlePromo from "@/components/HeroBundlePromo";
 
 const INSTAGRAM_URL = "https://www.instagram.com/thebookx.in/";
 const WHATSAPP_GROUP_URL =
@@ -123,7 +124,8 @@ export default function HomeHero() {
           returns across India.
         </p>
 
-
+        {/* Trust-led 3-book bundle with cashback hook, above the community CTA */}
+        <HeroBundlePromo />
 
         <div className="home-hero-cta">
           <button

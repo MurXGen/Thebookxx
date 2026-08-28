@@ -361,6 +361,22 @@ export default function CartBar({ tab = "books" }) {
         onClose={() => setSuggestOpen(false)}
       />
 
+      {/* OFFER STRIP (books only — QuickReads has no cart offer) */}
+      <AnimatePresence mode="wait">
+        {!isQuickReads && hasCart && (
+          <motion.div
+            key="offer"
+            initial={{ opacity: 0, y: -10, filter: "blur(10px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            exit={{ opacity: 0, y: -10, filter: "blur(10px)" }}
+            transition={{ duration: 0.4, ease: "easeInOut" }}
+            style={{ margin: 0 }}
+          >
+            <CartOfferStrip discountedAmount={discountedAmount} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* QUICKREADS CART CTA */}
       <AnimatePresence mode="wait">
         {isQuickReads && qrCount > 0 && (
@@ -393,159 +409,69 @@ export default function CartBar({ tab = "books" }) {
         )}
       </AnimatePresence>
 
-      {/* CART CTA (books) — single revamped row: book stack + what's next +
-          availed offer on the left, amount + checkout on the right. */}
+      {/* CART CTA (books) */}
       <AnimatePresence mode="wait">
         {!isQuickReads && hasCart && (
           <motion.div
             key="cart"
-            className="cbx"
+            className="cart-bar-main flex flex-row gap-12"
             initial={{ opacity: 0, y: 20, filter: "blur(8px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             exit={{ opacity: 0, y: 20, filter: "blur(8px)" }}
             transition={{ duration: 0.4, ease: "easeInOut" }}
           >
-            {/* Book stack — what they've got */}
-            <div className="cbx-stack" aria-hidden="true">
-              {cartBooks.slice(0, 3).map((b, i) =>
-                i === 2 && cartBooks.length > 3 ? (
-                  <span key="more" className="cbx-thumb cbx-thumb-more">
-                    +{cartBooks.length - 2}
-                  </span>
-                ) : (
-                  <span
-                    key={b.id}
-                    className="cbx-thumb"
-                    style={{ zIndex: 3 - i }}
-                  >
-                    {b.image ? <img src={b.image} alt="" /> : null}
-                  </span>
-                ),
-              )}
-            </div>
+            <div className="flex flex-col width100 gap-4">
+              <div className="flex flex-row justify-between items-center">
+                <span className="font-14">Total amount</span>
 
-            {/* Middle — what's next (highlighted, clickable) + availed offer */}
-            <div className="cbx-mid">
-              <button
-                type="button"
-                className="cbx-next"
-                onClick={() => setShowOfferSheet(true)}
-              >
-                {progressOffer ? (
-                  <>
-                    Add <b>₹{remainingToNext}</b> more for{" "}
-                    <b className="cbx-next-reward">{nextRewardText}</b>
-                    <ArrowRight size={13} />
-                  </>
-                ) : (
-                  <>
-                    <b className="cbx-next-reward">All offers unlocked 🎉</b>
-                    <ArrowRight size={13} />
-                  </>
-                )}
-              </button>
-              <span className="cbx-progress">
-                <span
-                  className="cbx-progress-fill"
-                  style={{ width: `${progressPct}%` }}
-                />
-              </span>
-              {appliedOffer && (
-                <span className="cbx-availed">{offerLabel}</span>
-              )}
-            </div>
-
-            {/* Right — amount + checkout */}
-            <div className="cbx-right">
-              <span className="cbx-amt">
-                {appliedOffer && offerDiscount > 0 && (
-                  <span className="cbx-strike">₹{discountedAmount}</span>
-                )}
-                <span className="cbx-final">₹{finalPayable}</span>
-              </span>
-              <motion.button
-                className="cbx-checkout"
-                onClick={handleCheckoutClick}
-                whileTap={{ scale: 0.96 }}
-              >
-                <span>Checkout</span>
-                <ArrowRight size={16} />
-              </motion.button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* See-all-offers sheet — opened by the highlighted "what's next" text */}
-      <AnimatePresence>
-        {showOfferSheet && (
-          <motion.div
-            className="offer-sheet-overlay"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setShowOfferSheet(false)}
-          >
-            <motion.div
-              className="offer-sheet"
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "100%" }}
-              transition={{ duration: 0.35, ease: "easeOut" }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="offer-sheet-head">
-                <span className="offer-sheet-title">
-                  <Gift size={16} /> Unlock more rewards
-                </span>
-                <button
-                  type="button"
-                  className="offer-sheet-x"
-                  onClick={() => setShowOfferSheet(false)}
-                  aria-label="Close"
-                >
-                  <X size={16} />
-                </button>
-              </div>
-              <p className="offer-sheet-sub">
-                Your cart: <b>₹{discountedAmount}</b>
-              </p>
-              <div className="offer-sheet-list">
-                {activeOffers.map((o) => {
-                  const unlocked = discountedAmount >= o.target;
-                  const left = Math.max(o.target - discountedAmount, 0);
-                  return (
-                    <div
-                      key={`${o.type}-${o.target}`}
-                      className={`offer-tier${unlocked ? " unlocked" : ""}`}
+                <div className="flex flex-col">
+                  <div className="cart-price flex flex-row gap-8 justify-end items-center">
+                    {appliedOffer && offerDiscount > 0 && (
+                      <motion.span
+                        className="original strike"
+                        initial={{ opacity: 0, filter: "blur(4px)" }}
+                        animate={{ opacity: 1, filter: "blur(0px)" }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        ₹{discountedAmount}
+                      </motion.span>
+                    )}
+                    <motion.span
+                      className="final weight-600"
+                      initial={{ opacity: 0, filter: "blur(4px)" }}
+                      animate={{ opacity: 1, filter: "blur(0px)" }}
+                      transition={{ duration: 0.3, delay: 0.1 }}
                     >
-                      <span className="offer-tier-ic">
-                        {unlocked ? <Check size={14} /> : <Lock size={13} />}
-                      </span>
-                      <span className="offer-tier-main">
-                        <span className="offer-tier-reward">{o.reward}</span>
-                        <span className="offer-tier-note">
-                          {unlocked
-                            ? "Unlocked"
-                            : `Add ₹${left} more (spend ₹${o.target})`}
-                        </span>
-                      </span>
-                    </div>
-                  );
-                })}
+                      ₹{finalPayable}
+                    </motion.span>
+                  </div>
+
+                  {appliedOffer && (
+                    <motion.span
+                      className="font-14 green weight-600"
+                      initial={{ opacity: 0, y: -5, filter: "blur(4px)" }}
+                      animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                      transition={{ duration: 0.3, delay: 0.2 }}
+                    >
+                      {offerLabel}
+                    </motion.span>
+                  )}
+                </div>
               </div>
-              <button
-                type="button"
-                className="pri-big-btn width100 offer-sheet-cta"
-                onClick={() => {
-                  setShowOfferSheet(false);
-                  handleCheckoutClick();
-                }}
-              >
-                Go to bag
-                <ArrowRight size={17} strokeWidth={2.5} />
-              </button>
-            </motion.div>
+            </div>
+
+            <motion.button
+              className="pri-big-btn"
+              onClick={handleCheckoutClick}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              initial={{ opacity: 0, filter: "blur(4px)" }}
+              animate={{ opacity: 1, filter: "blur(0px)" }}
+              transition={{ duration: 0.3, delay: 0.15 }}
+            >
+              <span>Checkout</span>
+              <ArrowRight size={16} />
+            </motion.button>
           </motion.div>
         )}
       </AnimatePresence>

@@ -47,33 +47,8 @@ export default function CartBar({ tab = "books" }) {
   const [fabShake, setFabShake] = useState(false);
   const [fabHint, setFabHint] = useState(false);
   const shakenRef = useRef(false);
-  // Hide the bottom bar when scrolling down, reveal it when scrolling up / near
-  // the top — keeps the reading area clear but the checkout one swipe away.
-  const [barHidden, setBarHidden] = useState(false);
-  useEffect(() => {
-    let last = typeof window !== "undefined" ? window.scrollY : 0;
-    const onScroll = () => {
-      const y = window.scrollY;
-      if (y < 40) setBarHidden(false);
-      else if (y > last + 6) setBarHidden(true);
-      else if (y < last - 6) setBarHidden(false);
-      last = y;
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  // When the shopper adds an item (or increases qty) while scrolled down and
-  // the bar is hidden, slide it back up so they see it update immediately.
-  const prevItemCountRef = useRef(
-    cart.reduce((s, i) => s + (i.qty || 1), 0) + (qrCart?.length || 0),
-  );
-  useEffect(() => {
-    const count =
-      cart.reduce((s, i) => s + (i.qty || 1), 0) + (qrCart?.length || 0);
-    if (count > prevItemCountRef.current) setBarHidden(false);
-    prevItemCountRef.current = count;
-  }, [cart, qrCart]);
+  // The bottom bar stays fixed/visible at all times (does not hide on scroll).
+  const barHidden = false;
 
   // Draw attention to the Search/Suggest quick actions: the first time the
   // user is active in the session (scroll / tap / key / pointer move), shake

@@ -13,7 +13,7 @@ import OrderPlacedSuccess from "./OrderPlacedSuccess";
 const UPI_ID = "7977960242-1@okbizaxis";
 const SUPPORT_WHATSAPP = "917710892108";
 const AMOUNT_CHIPS = [100, 200, 500, 1000];
-const MIN_AMOUNT = 20;
+const MIN_AMOUNT = 10;
 
 export default function RechargeModal({ isOpen, onClose, phone }) {
   const [mounted, setMounted] = useState(false);
@@ -167,24 +167,29 @@ export default function RechargeModal({ isOpen, onClose, phone }) {
                     <button
                       key={v}
                       type="button"
-                      className={`rcg-chip${amt === v ? " on" : ""}`}
+                      className={`sec-mid-btn${amt === v ? " active" : ""}`}
                       onClick={() => setAmount(String(v))}
                     >
                       ₹{v}
                     </button>
                   ))}
                 </div>
-                <div className="rcg-input-wrap">
-                  <span className="rcg-cc">₹</span>
+                <div className="input-group">
+                  <label className="flex flex-row gap-4 items-center">
+                    <Wallet size={14} />
+                    Enter amount (min ₹{MIN_AMOUNT})
+                  </label>
                   <input
                     type="tel"
                     inputMode="numeric"
-                    className="rcg-input"
-                    placeholder="Enter amount"
+                    className="sec-mid-btn"
+                    placeholder="Amount in ₹"
                     value={amount}
+                    maxLength={5}
                     onChange={(e) =>
                       setAmount(e.target.value.replace(/\D/g, "").slice(0, 5))
                     }
+                    onKeyDown={(e) => e.key === "Enter" && submitAmount()}
                   />
                 </div>
                 <button

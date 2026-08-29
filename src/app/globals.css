@@ -37433,43 +37433,14 @@ img[data-loaded="true"] {
   flex-wrap: wrap;
   gap: 8px;
 }
-.rcg-chip {
+.rcg-chips .sec-mid-btn {
   flex: 1 1 0;
-  min-width: 66px;
-  padding: 11px 8px;
-  border-radius: 12px;
-  border: 1px solid var(--hairline, #ececec);
-  background: #fff;
+  min-width: 64px;
+  text-align: center;
   font-weight: 800;
-  font-size: 14px;
-  cursor: pointer;
 }
-.rcg-chip.on {
-  border-color: var(--tertiary, #fb8500);
-  background: rgba(251, 133, 0, 0.08);
-  color: var(--tertiary, #fb8500);
-}
-.rcg-input-wrap {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 14px;
-  border: 1px solid var(--hairline, #ececec);
-  border-radius: 12px;
-  height: 50px;
-}
-.rcg-cc {
-  font-size: 17px;
-  font-weight: 800;
-  color: var(--dark-50, #6b7280);
-}
-.rcg-input {
-  flex: 1;
-  border: none;
-  outline: none;
-  font-size: 17px;
-  font-weight: 700;
-  background: transparent;
+.rcg-body .input-group input.sec-mid-btn {
+  width: 100%;
 }
 .rcg-submit {
   margin-top: 2px;

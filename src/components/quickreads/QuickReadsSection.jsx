@@ -11,7 +11,7 @@ import {
   quickReadFrameCount,
   QUICKREAD_PRICE,
   QUICKREAD_MRP,
-} from "@/data/quickreads";
+} from "@/data/quickreadsMeta";
 import { showToast } from "@/context/ToastContext";
 import { useStore } from "@/context/StoreContext";
 import { Check, Plus } from "lucide-react";

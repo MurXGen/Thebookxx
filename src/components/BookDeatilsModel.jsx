@@ -49,7 +49,7 @@ import {
   hasQuickRead,
   QUICKREAD_PRICE,
   quickReadFrameCount,
-} from "@/data/quickreads";
+} from "@/data/quickreadsMeta";
 import QuickReadsReader from "./quickreads/QuickReadsReader";
 import BookCard from "./BookCard";
 import Link from "next/link";

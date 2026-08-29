@@ -4,11 +4,11 @@ import { notFound, redirect } from "next/navigation";
 import { books } from "@/utils/book";
 import {
   hasQuickRead,
-  getQuickRead,
+  quickReadTitles,
   quickReadBookIds,
   quickReadFrameCount,
   QUICKREAD_PRICE,
-} from "@/data/quickreads";
+} from "@/data/quickreadsMeta";
 import QuickReadBookLanding from "@/components/quickreads/QuickReadBookLanding";
 
 function slugify(text) {
@@ -117,8 +117,7 @@ export default async function QuickReadBookPage({ params }) {
 
   const url = `${SITE}/quickreads/${slugify(book.name)}`;
   const count = quickReadFrameCount(book.id);
-  const data = getQuickRead(book.id);
-  const frames = data?.frames || [];
+  const frames = quickReadTitles(book.id).map((t) => ({ title: t }));
 
   const productSchema = {
     "@context": "https://schema.org",

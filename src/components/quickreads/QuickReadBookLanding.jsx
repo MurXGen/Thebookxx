@@ -7,7 +7,11 @@ import Navbar from "@/components/Navbar";
 import CartBar from "@/components/CartBar";
 import Breadcrumbs from "@/components/UI/Breadcrumbs";
 import QuickReadsReader from "./QuickReadsReader";
-import { getQuickRead, QUICKREAD_PRICE, QUICKREAD_MRP } from "@/data/quickreads";
+import {
+  quickReadTitles,
+  QUICKREAD_PRICE,
+  QUICKREAD_MRP,
+} from "@/data/quickreadsMeta";
 import { useStore } from "@/context/StoreContext";
 import { showToast } from "@/context/ToastContext";
 
@@ -21,8 +25,9 @@ export default function QuickReadBookLanding({ book }) {
   const [startIndex, setStartIndex] = useState(0);
   const [resume, setResume] = useState(true);
   const { addQuickRead, isInQrCart } = useStore();
-  const data = getQuickRead(book.id);
-  const frames = data?.frames || [];
+  // Titles only (teaser TOC) — frame bodies stay server-side.
+  const titles = quickReadTitles(book.id);
+  const frames = titles.map((t) => ({ title: t }));
 
   // Jump to a specific insight.
   const readFrame = (i) => {

@@ -3,7 +3,7 @@
 import BookCard from "@/components/BookCard";
 import RecommendationModal from "@/components/RecommendationModal";
 import { books } from "@/utils/book";
-import { hasQuickRead, QUICKREAD_PRICE } from "@/data/quickreads";
+import { hasQuickRead, QUICKREAD_PRICE } from "@/data/quickreadsMeta";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   X,

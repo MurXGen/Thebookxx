@@ -8,7 +8,7 @@ import {
   getQuickReadProfileForPhone,
   grantBookAccess,
 } from "@/lib/quickreads";
-import { quickReadFrameCount } from "@/data/quickreads";
+import { quickReadFrameCount } from "@/data/quickreadsMeta";
 import QuickReadsReader from "./QuickReadsReader";
 
 // Shows the QuickReads a phone number has (read from the sheet, so it works

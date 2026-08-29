@@ -2,7 +2,7 @@ import { books } from "@/utils/book";
 import { authorData, getAllAuthors } from "@/utils/author";
 import { reviewsData } from "@/utils/reviews";
 import { getAllBlogs } from "@/utils/blogs";
-import { quickReadBookIds } from "@/data/quickreads";
+import { quickReadBookIds } from "@/data/quickreadsMeta";
 
 // Helper function to slugify text
 function slugify(text) {

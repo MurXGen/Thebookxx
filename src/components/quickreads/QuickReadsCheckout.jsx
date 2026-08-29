@@ -22,7 +22,7 @@ import {
   QUICKREAD_MRP,
   SUB_MONTHLY_PRICE,
   SUB_YEARLY_PRICE,
-} from "@/data/quickreads";
+} from "@/data/quickreadsMeta";
 import {
   submitQuickReadOrder,
   notifyQuickReadTelegram,

@@ -5,7 +5,7 @@ import CartBar from "@/components/CartBar";
 import HomeTabs from "@/components/quickreads/HomeTabs";
 import QuickReadsSection from "@/components/quickreads/QuickReadsSection";
 import { books } from "@/utils/book";
-import { quickReadBookIds, quickReadFrameCount, QUICKREAD_PRICE } from "@/data/quickreads";
+import { quickReadBookIds, quickReadFrameCount, QUICKREAD_PRICE } from "@/data/quickreadsMeta";
 
 function slugify(text) {
   return text

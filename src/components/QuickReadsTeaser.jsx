@@ -3,8 +3,7 @@
 import Link from "next/link";
 import { Zap, ArrowRight } from "lucide-react";
 import { books } from "@/utils/book";
-import { quickReadBookIds } from "@/data/quickreads";
-import { QUICKREAD_PRICE } from "@/data/quickreads";
+import { quickReadBookIds, QUICKREAD_PRICE } from "@/data/quickreadsMeta";
 
 // Small, conversational teaser that shows a few real QuickReads covers and nudges
 // shoppers to try the ₹29 10-minute summaries. Sits under the reviews section.

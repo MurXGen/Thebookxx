@@ -20,7 +20,7 @@ import {
   grantBookAccess,
   notifyQuickReadTelegram,
 } from "@/lib/quickreads";
-import { QUICKREAD_PRICE, quickReadFrameCount } from "@/data/quickreads";
+import { QUICKREAD_PRICE, quickReadFrameCount } from "@/data/quickreadsMeta";
 import { Zap, BookOpen, Trash2, Minus, Plus } from "lucide-react";
 import { useStore } from "@/context/StoreContext";
 import { showToast } from "@/context/ToastContext";

@@ -21,7 +21,11 @@ import {
   Sun,
   X,
 } from "lucide-react";
-import { getQuickRead, QUICKREAD_FREE_FRAMES, QUICKREAD_PRICE } from "@/data/quickreads";
+import {
+  QUICKREAD_FREE_FRAMES,
+  QUICKREAD_PRICE,
+  quickReadFrameCount,
+} from "@/data/quickreadsMeta";
 import { showToast } from "@/context/ToastContext";
 import {
   getSavedReads,
@@ -47,9 +51,10 @@ export default function QuickReadsReader({
   startIndex = 0,
   resume = false,
 }) {
-  const data = book ? getQuickRead(book.id) : null;
-  const frames = data?.frames || [];
-  const total = frames.length;
+  // Frame CONTENT is fetched from the server (gated by purchase). Only the
+  // free preview arrives until the sheet confirms this phone owns the book.
+  const [frames, setFrames] = useState([]);
+  const total = book ? quickReadFrameCount(book.id) : 0;
 
   // Resume where they left off unless an explicit start frame was requested.
   const initialIndex = resume
@@ -71,6 +76,51 @@ export default function QuickReadsReader({
   const validatingRef = useRef(false);
   const voicesRef = useRef([]);
   useEffect(() => setMounted(true), []);
+
+  // Load frame content from the gated API. Sends the saved phone so the server
+  // can return the FULL set when the purchase/subscription is verified; else it
+  // returns only the free preview frames.
+  useEffect(() => {
+    if (!book?.id) return;
+    let ignore = false;
+    const phone = getSavedPhone();
+    const url = `/api/quickread?bookId=${encodeURIComponent(book.id)}${
+      phone ? `&phone=${encodeURIComponent(phone)}` : ""
+    }`;
+    fetch(url, { cache: "no-store" })
+      .then((r) => r.json())
+      .then((j) => {
+        if (ignore) return;
+        setFrames(Array.isArray(j.frames) ? j.frames : []);
+        if (j.unlocked) setUnlocked(true);
+      })
+      .catch(() => {});
+    return () => {
+      ignore = true;
+    };
+  }, [book?.id]);
+
+  // When access is granted (verified), pull the full frame set from the server.
+  useEffect(() => {
+    if (!unlocked || !book?.id) return;
+    if (frames.length >= total) return; // already have everything
+    const phone = getSavedPhone();
+    if (!phone) return;
+    let ignore = false;
+    fetch(
+      `/api/quickread?bookId=${encodeURIComponent(book.id)}&phone=${encodeURIComponent(phone)}`,
+      { cache: "no-store" },
+    )
+      .then((r) => r.json())
+      .then((j) => {
+        if (!ignore && Array.isArray(j.frames) && j.frames.length > frames.length)
+          setFrames(j.frames);
+      })
+      .catch(() => {});
+    return () => {
+      ignore = true;
+    };
+  }, [unlocked, total, book?.id, frames.length]);
 
   // Load and keep the list of available speech voices (they populate async).
   useEffect(() => {
@@ -433,7 +483,7 @@ export default function QuickReadsReader({
     return () => window.removeEventListener("keydown", onKey);
   }, [index, total, showSaved]);
 
-  if (!book || !data) return null;
+  if (!book) return null;
 
   // Quick, clean horizontal slide in/out — no tilt, no bounce.
   const variants = {
@@ -572,10 +622,15 @@ export default function QuickReadsReader({
                     from {book.name}.
                   </p>
                 </>
-              ) : (
+              ) : current ? (
                 <>
                   <h3 className="qr-card-title">{current.title}</h3>
                   <p className="qr-card-text">{current.content}</p>
+                </>
+              ) : (
+                <>
+                  <h3 className="qr-card-title">Loading…</h3>
+                  <p className="qr-card-text">Fetching this insight…</p>
                 </>
               )}
             </motion.div>

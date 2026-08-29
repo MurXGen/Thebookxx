@@ -2,7 +2,7 @@
 
 import { books } from "@/utils/book";
 import { useStore } from "@/context/StoreContext";
-import { QUICKREAD_PRICE } from "@/data/quickreads";
+import { QUICKREAD_PRICE } from "@/data/quickreadsMeta";
 import { getCartOffers } from "@/utils/cartOffers";
 import { useRouter } from "next/navigation";
 import CartOfferStrip from "@/components/UI/CartOfferStrip";

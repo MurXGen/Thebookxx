@@ -8,7 +8,7 @@ import {
   QUICKREAD_PRICE,
   SUB_MONTHLY_PRICE,
   SUB_YEARLY_PRICE,
-} from "@/data/quickreads";
+} from "@/data/quickreadsMeta";
 import QuickReadsCheckout from "./QuickReadsCheckout";
 
 /**

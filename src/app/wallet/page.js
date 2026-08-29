@@ -3,10 +3,11 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Wallet, ArrowLeft, Clock, Gift, AlertTriangle, ArrowDownCircle, ArrowUpCircle, Check, ChevronDown } from "lucide-react";
+import { Wallet, ArrowLeft, Clock, Gift, AlertTriangle, ArrowDownCircle, ArrowUpCircle, Check, ChevronDown, Plus } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { getSavedPhone } from "@/utils/userPhone";
 import { fetchWalletLedger, WALLET_TTL_DAYS } from "@/utils/walletLedger";
+import RechargeModal from "@/components/UI/RechargeModal";
 
 const fmtDate = (d) =>
   d
@@ -36,6 +37,7 @@ export default function WalletPage() {
   const [filter, setFilter] = useState("all"); // all | credit | debit
   const [name, setName] = useState("");
   const [benefitsOpen, setBenefitsOpen] = useState(false);
+  const [rechargeOpen, setRechargeOpen] = useState(false);
 
   useEffect(() => {
     const p = getSavedPhone();
@@ -87,6 +89,15 @@ export default function WalletPage() {
             </span>
             <span className="wallet-hero-baltag">Available balance</span>
           </div>
+          {phone && (
+            <button
+              type="button"
+              className="wallet-recharge-btn"
+              onClick={() => setRechargeOpen(true)}
+            >
+              <Plus size={16} /> Recharge wallet
+            </button>
+          )}
           <button
             type="button"
             className="wallet-benefits-toggle"
@@ -220,6 +231,12 @@ export default function WalletPage() {
           <span>Coins expire {WALLET_TTL_DAYS} days after they are credited.</span>
         </div>
       </main>
+
+      <RechargeModal
+        isOpen={rechargeOpen}
+        onClose={() => setRechargeOpen(false)}
+        phone={phone}
+      />
     </>
   );
 }

@@ -9,7 +9,11 @@ import { motion } from "framer-motion";
  * scale-pop + expanding ring + confetti-ish sparks), with matching haptics.
  * Calls onDone() when the sequence finishes so the caller can redirect.
  */
-export default function OrderPlacedSuccess({ onDone }) {
+export default function OrderPlacedSuccess({
+  onDone,
+  title = "Order placed successfully",
+  subtitle = "Taking you to your order…",
+}) {
   const doneRef = useRef(false);
 
   useEffect(() => {
@@ -114,7 +118,7 @@ export default function OrderPlacedSuccess({ onDone }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.35, delay: 1.15 }}
         >
-          Order placed successfully
+          {title}
         </motion.h2>
         <motion.p
           className="ops-sub"
@@ -122,7 +126,7 @@ export default function OrderPlacedSuccess({ onDone }) {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.35, delay: 1.35 }}
         >
-          Taking you to your order…
+          {subtitle}
         </motion.p>
       </div>
     </motion.div>

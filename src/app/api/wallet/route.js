@@ -91,7 +91,14 @@ export async function GET(request) {
           orderId: o["Order ID"] ?? o["Order Id"] ?? "",
         };
       })
-      .filter((e) => !isNaN(e.amount) && e.amount !== 0);
+      .filter((e) => !isNaN(e.amount) && e.amount !== 0)
+      // Pending recharges (Type/Reason marked "unconfirmed") don't count toward
+      // the balance until an admin confirms them (removes the marker). Once
+      // confirmed the row appears here — which the recharge poller relies on.
+      .filter(
+        (e) =>
+          !/unconfirmed/i.test(e.type) && !/unconfirmed/i.test(e.reason || ""),
+      );
 
     return Response.json({ entries });
   } catch (e) {

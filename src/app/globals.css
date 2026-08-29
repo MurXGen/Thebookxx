@@ -37553,3 +37553,51 @@ img[data-loaded="true"] {
   background: #fef2f2;
   border-color: #fecaca;
 }
+
+/* QuickReads checkout: auto-verify indicator */
+.qrc-verify-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 11px 12px;
+  border-radius: 12px;
+  background: #f6f7f9;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--dark-50, #6b7280);
+}
+.qrc-processing-spin.sm {
+  width: 18px;
+  height: 18px;
+  border-width: 2.5px;
+}
+.qrc-item-mrp {
+  color: var(--dark-50, #9ca3af);
+  font-weight: 500;
+  margin-right: 3px;
+}
+
+/* QuickReads card price — struck MRP + limited-time flag */
+.qr-book-price {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  font-weight: 800;
+  flex-wrap: wrap;
+}
+.qr-book-mrp {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--dark-50, #9ca3af);
+}
+.qr-book-ltd {
+  font-size: 9px;
+  font-weight: 800;
+  color: #16a34a;
+  background: rgba(22, 163, 74, 0.1);
+  padding: 1px 6px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}

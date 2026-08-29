@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import {
   QUICKREAD_PRICE,
+  QUICKREAD_MRP,
   SUB_MONTHLY_PRICE,
   SUB_YEARLY_PRICE,
 } from "@/data/quickreads";
@@ -32,6 +33,7 @@ import {
   checkSubscription,
 } from "@/lib/quickreads";
 import { showToast } from "@/context/ToastContext";
+import OrderPlacedSuccess from "@/components/UI/OrderPlacedSuccess";
 
 const UPI_ID = "7977960242-1@okbizaxis";
 const QR_IMAGE = "/books/uskillbook.png";
@@ -60,23 +62,17 @@ export default function QuickReadsCheckout({
   const checkingRef = useRef(false);
   useEffect(() => setMounted(true), []);
 
-  // 30s countdown starts once the order is confirmed (written to the sheet) —
-  // gives you time to actually pay before the Verify (read) button enables.
+  // Once the order is written to the sheet (unconfirmed), poll the sheet every
+  // 3 seconds until an admin verifies the payment — then jump to success.
   useEffect(() => {
-    if (!confirmed) return;
-    setTimer(30);
+    if (!confirmed || step === "success") return;
     const iv = setInterval(() => {
-      setTimer((t) => {
-        if (t <= 1) {
-          clearInterval(iv);
-          return 0;
-        }
-        return t - 1;
-      });
-    }, 1000);
+      runCheck();
+    }, 3000);
     return () => clearInterval(iv);
-  }, [confirmed]);
-  const canVerify = timer === 0;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [confirmed, step]);
+  const canVerify = true;
 
   const handleCopyUpi = async () => {
     try {
@@ -148,6 +144,15 @@ export default function QuickReadsCheckout({
     } finally {
       setBusy(false);
     }
+  };
+
+  // Continue → immediately write the (unconfirmed) order to the sheet, reveal
+  // the QR and begin auto-verifying every 3s.
+  const startPayment = async () => {
+    if (busy || confirmed) return;
+    setStep("pay");
+    setQrOpen(true);
+    await handleConfirm();
   };
 
   // VERIFY = read the sheet only. If "unverified" has been removed → success;
@@ -280,7 +285,10 @@ export default function QuickReadsCheckout({
                 items.map((b) => (
                   <div key={b.id} className="qrc-item">
                     <span className="qrc-item-name">{b.name}</span>
-                    <span className="qrc-item-price">₹{QUICKREAD_PRICE}</span>
+                    <span className="qrc-item-price">
+                      <s className="qrc-item-mrp">₹{QUICKREAD_MRP}</s> ₹
+                      {QUICKREAD_PRICE}
+                    </span>
                   </div>
                 ))
               )}
@@ -325,11 +333,11 @@ export default function QuickReadsCheckout({
             <button
               type="button"
               className="pri-big-btn width100"
-              disabled={!canContinue}
-              onClick={() => setStep("pay")}
-              style={!canContinue ? { opacity: 0.55 } : undefined}
+              disabled={!canContinue || busy}
+              onClick={startPayment}
+              style={!canContinue || busy ? { opacity: 0.55 } : undefined}
             >
-              Continue to Pay ₹{amount}
+              {busy ? "Please wait…" : `Continue to Pay ₹${amount}`}
             </button>
           </div>
         )}
@@ -378,35 +386,24 @@ export default function QuickReadsCheckout({
                   </button>
                 </div>
                 <p className="qrc-pay-sub">
-                  {confirmed
-                    ? "Paid? Tap Verify — we'll check the payment status."
-                    : `Scan & pay ₹${amount}, then tap Confirm.`}
+                  Scan &amp; pay ₹{amount} with any UPI app. We&apos;ll verify it
+                  automatically.
                 </p>
-                {!confirmed ? (
-                  <button
-                    type="button"
-                    className="pri-big-btn width100"
-                    onClick={handleConfirm}
-                    disabled={busy}
-                    style={busy ? { opacity: 0.6 } : undefined}
-                  >
-                    {busy ? "Confirming…" : "I've Paid — Confirm"}
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    className="pri-big-btn width100"
-                    onClick={handleVerifyRead}
-                    disabled={!canVerify || checking}
-                    style={!canVerify || checking ? { opacity: 0.6 } : undefined}
-                  >
-                    {checking
-                      ? "Checking…"
-                      : !canVerify
-                        ? `Verify in ${timer}s`
-                        : "Verify Payment"}
-                  </button>
-                )}
+                <div className="qrc-verify-row">
+                  <span className="qrc-processing-spin sm" aria-hidden />
+                  <span>
+                    {checking ? "Checking payment…" : "Verifying your payment…"}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className="sec-big-btn width100"
+                  onClick={runCheck}
+                  disabled={checking}
+                  style={checking ? { opacity: 0.6 } : undefined}
+                >
+                  {checking ? "Checking…" : "I've paid — check now"}
+                </button>
               </div>
             )}
             <div className="qrc-trust">
@@ -456,24 +453,14 @@ export default function QuickReadsCheckout({
         )}
 
         {step === "success" && (
-          <div className="qrc-done">
-            <div className="qrc-done-ic">
-              <CheckCircle2 size={40} />
-            </div>
-            <h3 className="qrc-done-title">Payment successful 🎉</h3>
-            <p className="qrc-done-sub">
-              {isSub
-                ? `${planLabel} is active — every QuickRead is now unlocked on this device. Enjoy!`
-                : "Your QuickReads are unlocked on this device. Enjoy every insight!"}
-            </p>
-            <button
-              type="button"
-              className="pri-big-btn width100"
-              onClick={onClose}
-            >
-              <Sparkles size={16} /> Start reading
-            </button>
-          </div>
+          <OrderPlacedSuccess
+            title="Payment successful"
+            subtitle="Unlocking your QuickReads…"
+            onDone={() => {
+              if (typeof window !== "undefined")
+                window.location.assign("/profile");
+            }}
+          />
         )}
       </motion.div>
     </motion.div>,

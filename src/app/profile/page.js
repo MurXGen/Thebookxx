@@ -2385,6 +2385,14 @@ Please cancel this order. Thank you `;
               <ChevronRight size={18} className="pm-arrow" />
             </Link>
 
+            <Link href="/quickreads" className="pm-row">
+              <span className="pm-ic">
+                <Zap size={18} />
+              </span>
+              <span className="pm-label">My QuickReads</span>
+              <ChevronRight size={18} className="pm-arrow" />
+            </Link>
+
             <Link href="/category" className="pm-row">
               <span className="pm-ic">
                 <LayoutGrid size={18} />

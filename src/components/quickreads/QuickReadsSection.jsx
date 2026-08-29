@@ -10,6 +10,7 @@ import {
   quickReadBookIds,
   quickReadFrameCount,
   QUICKREAD_PRICE,
+  QUICKREAD_MRP,
 } from "@/data/quickreads";
 import { showToast } from "@/context/ToastContext";
 import { useStore } from "@/context/StoreContext";
@@ -126,7 +127,11 @@ export default function QuickReadsSection() {
                 </div>
 
                 <div className="qr-book-foot">
-                  <span className="qr-book-price">₹{QUICKREAD_PRICE}</span>
+                  <span className="qr-book-price">
+                    <s className="qr-book-mrp">₹{QUICKREAD_MRP}</s> ₹
+                    {QUICKREAD_PRICE}
+                    <span className="qr-book-ltd">Limited time</span>
+                  </span>
                   {isInQrCart(book.id) ? (
                     <span
                       className="qr-cart-icon added"

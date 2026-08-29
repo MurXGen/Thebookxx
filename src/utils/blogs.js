@@ -4,6 +4,243 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "september-2026-reading-calendar-india": {
+    id: "blog-036",
+    title:
+      "The September 2026 Reading Calendar for India: Every Date Worth Marking, and What to Read for Each",
+    slug: "september-2026-reading-calendar-india",
+    author: "TheBookX Editorial",
+    authorSlug: "murthy-thevar",
+    publishDate: "2026-08-29",
+    lastModified: "2026-08-29",
+    excerpt:
+      "September 2026 is the busiest month in the reading year: Teachers' Day, Literacy Day, Hindi Diwas, Ganesh Chaturthi and the Booker shortlist. Here is the calendar.",
+
+    content: [
+      {
+        type: "paragraph",
+        content:
+          "August is nearly over, and what follows is the densest month in the reading year. September is peak publishing season worldwide — one release tracker lists <strong>443 titles</strong> scheduled for September 2026 alone — and in India it also carries four occasions that get marked with books rather than sweets: Teachers' Day, International Literacy Day, Hindi Diwas and Ganesh Chaturthi. On top of that, the <strong>Booker Prize 2026 shortlist</strong> lands on 22 September, which is the single date that reshapes what half the reading world buys for the rest of the year.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Most \"what to read this month\" posts are a list of covers. This one is a calendar. Every entry below is a real, checkable date, with a short note on why it matters and what is genuinely worth reading or gifting around it. Print it, screenshot it, or just work down it — the point is to stop discovering these occasions the morning they arrive.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "September 2026 at a glance",
+        content:
+          "Saturday 5 September — Teachers' Day (India). Tuesday 8 September — International Literacy Day (UNESCO). Monday 14 September — Hindi Diwas. Monday 14 / Tuesday 15 September — Ganesh Chaturthi (the Chaturthi tithi runs from the morning of 14 September to the morning of 15 September, which is why panchangs differ). Tuesday 15 September — Engineer's Day, marking Sir M. Visvesvaraya's birthday. Tuesday 22 September — the Booker Prize 2026 shortlist is announced at the Southbank Centre, London. Looking further ahead: Sharad Navratri runs 11-19 October, with Vijayadashami on 20 October.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Tuesday 1 September: The Publishing Year's Loudest Month Begins",
+      },
+      {
+        type: "paragraph",
+        content:
+          "There is a reason your feed is about to fill with covers. Autumn is when publishers put out their literary heavyweights, their award contenders and their commercial blockbusters at the same time, because the season runs straight into prize announcements and the gifting quarter. September 2026 brings new work from Min Jin Lee, John Grisham, Elin Hilderbrand, Josh Malerman, Sarah Addison Allen, Ariel Lawhon and Meg Howrey, among several hundred others.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The practical problem for an Indian reader is that most of those titles arrive here months later and at import prices. The useful move in a heavy release month is not to chase every new hardback — it is to finally clear the backlist you already meant to read while everyone else is arguing about books they have not received yet. If you want the thriller instinct satisfied cheaply, <a href=\"/books/the-housemaid\" style=\"color:#fb8500;font-weight:600\">The Housemaid</a> by Freida McFadden and <a href=\"/books/verity\" style=\"color:#fb8500;font-weight:600\">Verity</a> by Colleen Hoover are still the two titles that move fastest off Indian shelves, and <a href=\"/books/it-ends-with-us\" style=\"color:#fb8500;font-weight:600\">It Ends with Us</a> remains the book most new readers start with.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Saturday 5 September: Teachers' Day",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Teachers' Day in India marks the birthday of Dr Sarvepalli Radhakrishnan — philosopher, professor, and the country's second President — who reportedly asked that the day be observed as a celebration of teachers rather than of himself. That origin story is worth remembering, because it sets the tone: the gift is supposed to acknowledge the work, not flatter the person.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The books that land best with a teacher are the ones they can use on Monday. <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a direct fit — it is about cutting noise out of your thinking and your speech, which is most of what teaching actually is, and it is built as exercises rather than as a lecture. <a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> by A. P. J. Abdul Kalam is the safe, correct choice for any teacher who works with school students, and it has probably started more Indian non-fiction reading habits than any other single book. For a teacher who reads fiction, <a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> by R. K. Narayan is short-form enough to fit between classes.",
+      },
+      {
+        type: "callout",
+        style: "success",
+        title: "If you are gifting this month",
+        content:
+          "Four of September's dates are gifting occasions, which makes it the heaviest month of the year for a bookshop. Books on TheBookX start from ₹1, delivery is free, and Cash on Delivery is available across India. Gift wrapping is available at +₹25, and it is worth adding for anything going to a teacher, a colleague or a host — an unwrapped book reads as something you had lying around, which is rarely the message.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Tuesday 8 September: International Literacy Day",
+      },
+      {
+        type: "paragraph",
+        content:
+          "UNESCO's International Literacy Day is the one date on this calendar that is not about what you read but about who gets to. It is also the date on which the least useful thing you can do is post about reading. The more useful thing is to move a book into a house that does not have many.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Every large study of borrowing behaviour says the same thing: children's series, not prizewinners, are what convert non-readers into readers. If you are buying for a child — yours, a neighbour's, or a school collection drive — the three sets that do the converting are <a href=\"/books/diary-of-a-wimpy-kid-series-set\" style=\"color:#fb8500;font-weight:600\">Diary of a Wimpy Kid Series Set</a>, <a href=\"/books/harry-potter-series-set-books-1-7\" style=\"color:#fb8500;font-weight:600\">Harry Potter Series Set (Books 1-7)</a> and <a href=\"/books/percy-jackson-ultimate-collection\" style=\"color:#fb8500;font-weight:600\">Percy Jackson Ultimate Collection</a>. A single book is a gift; a series is a habit, because the second volume removes the decision to keep going.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Monday 14 September: Hindi Diwas, and Reading India in Its Own Voice",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Hindi Diwas commemorates the Constituent Assembly's adoption of Hindi in the Devanagari script as an official language of the Union on 14 September 1949 — an official language, not a national language, a distinction India has never actually resolved and which is the interesting part of the date.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Search interest in Hindi novels is projected to rise 15-20 per cent through 2026, driven largely by younger readers who found the books through phones rather than syllabi. But the honest way to mark the day is to read India broadly rather than narrowly. <a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> by Arundhati Roy remains the Indian novel in English that rewards a second reading most. <a href=\"/books/the-palace-of-illusions\" style=\"color:#fb8500;font-weight:600\">The Palace of Illusions</a> by Chitra Banerjee Divakaruni retells the Mahabharata through Draupadi and is the usual gateway for readers who think epics are not for them. And <a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> is still the closest thing we have to a book that works equally at ten and at forty.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Monday 14 / Tuesday 15 September: Ganesh Chaturthi",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Expect to see both dates in circulation, and expect an argument about it in your family WhatsApp group. The reason is straightforward: the Chaturthi tithi in 2026 begins on the morning of 14 September and ends on the morning of 15 September, so panchangs that anchor the festival to the tithi's start and those that anchor it to the madhyahna puja window land on different days. Check what your own family and your local mandal are following rather than what a calendar app says.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Ganesh Chaturthi is a visiting festival, which makes it a book-gifting festival by accident — you will be in other people's homes, and a book is the one gift that does not add to the pile of sweets. Illustrated mythology travels best here because it works for the whole room. <a href=\"/books/jaya-an-illustrated-retelling-of-the-mahabharata\" style=\"color:#fb8500;font-weight:600\">Jaya: An Illustrated Retelling of the Mahabharata</a> and <a href=\"/books/sita-an-illustrated-retelling-of-the-ramayana\" style=\"color:#fb8500;font-weight:600\">Sita: An Illustrated Retelling of the Ramayana</a> by Devdutt Pattanaik are the two that get picked up and actually read rather than shelved. For a house with children, <a href=\"/books/the-gita-for-children\" style=\"color:#fb8500;font-weight:600\">The Gita: For Children</a> is the gentlest entry point, and for a reader who wants the myth as a novel, <a href=\"/books/the-shiva-trilogy-set\" style=\"color:#fb8500;font-weight:600\">The Shiva Trilogy Set</a> by Amish Tripathi is the set that turned Indian mythological fiction into a mass-market category.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Tuesday 22 September: The Booker Prize 2026 Shortlist",
+      },
+      {
+        type: "paragraph",
+        content:
+          "This is the date to actually mark. The Booker Prize 2026 longlist was announced on 28 July: thirteen novels chosen from 163 titles published in the UK and Ireland, selected by a panel chaired by the classicist and broadcaster Mary Beard. On <strong>Tuesday 22 September</strong>, that list of thirteen becomes a list of six at a ticketed event at London's Southbank Centre, with the winner following later in the autumn.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The longlist is unusually top-heavy with returning names. Douglas Stuart, who won in 2020 for <em>Shuggie Bain</em>, and Marlon James, who won in 2015 for <em>A Brief History of Seven Killings</em>, are both back. Elizabeth Strout is nominated for a third time, for <em>The Things We Never Say</em>. Against them sit three debut novels — Kenan Orhan's <em>The Renovation</em>, Djamel White's <em>All Them Dogs</em> and Rebecca Perry's <em>May We Feed the King</em> — which is where the interesting bets usually are.",
+      },
+      {
+        type: "blockquote",
+        content:
+          "A prize list is not a reading list. It is a snapshot of one panel's argument, in one year, about thirteen books out of a hundred and sixty-three.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Which is the honest caveat to put on any prize coverage — and also the reason the Booker back catalogue is far more useful to most readers than the current list. If you want to read toward 22 September without waiting for Indian editions of the longlist, the shelf below is where to start.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "A Booker Shelf You Can Actually Buy Today",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> won the Booker in 1997 and is still the most-read Indian winner. <a href=\"/books/never-let-me-go\" style=\"color:#fb8500;font-weight:600\">Never Let Me Go</a> by Kazuo Ishiguro was shortlisted in 2005, and <a href=\"/books/klara-and-the-sun\" style=\"color:#fb8500;font-weight:600\">Klara and the Sun</a> was longlisted in 2021 — Ishiguro himself won in 1989 for <em>The Remains of the Day</em>, and the two together are the clearest demonstration of what a career-length obsession looks like. <a href=\"/books/the-vegetarian\" style=\"color:#fb8500;font-weight:600\">The Vegetarian</a> by Han Kang won the International Booker in 2016 and remains the shortest route into a writer who has since won the Nobel. <a href=\"/books/normal-people\" style=\"color:#fb8500;font-weight:600\">Normal People</a> by Sally Rooney was longlisted in 2018 and is the one on this shelf people finish in a weekend.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The Rest of the Month: Non-Fiction That Does Not Need an Occasion",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Four of the five September dates above are about giving books to other people. If you want one for yourself, the pattern in Indian buying is clear enough — educational and self-improvement titles still carry the largest share of the market, and the four that keep getting re-consulted rather than read once are <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear, <a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> by Morgan Housel, <a href=\"/books/sapiens-a-brief-history-of-humankind\" style=\"color:#fb8500;font-weight:600\">Sapiens: A Brief History of Humankind</a> by Yuval Noah Harari and <a href=\"/books/ikigai\" style=\"color:#fb8500;font-weight:600\">Ikigai</a>. None of them needs a festival to justify it.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "How to Actually Use This Calendar",
+      },
+      {
+        type: "list",
+        style: "ordered",
+        items: [
+          "<strong>Order gifting books by the first week.</strong> Teachers' Day is on the 5th and Ganesh Chaturthi on the 14th. Both will be busy delivery windows; buying on the 3rd solves a problem that buying on the 12th creates.",
+          "<strong>Buy one book per occasion, not one per person.</strong> A single well-chosen title lands better than three generic ones, and it costs less than the sweets you would otherwise carry.",
+          "<strong>Use the Booker date as a deadline, not a shopping list.</strong> Read one past winner before 22 September. You will follow the shortlist coverage far better with a point of comparison than without one.",
+          "<strong>Pick the children's books for the 8th before the 8th.</strong> Literacy Day collection drives have a way of turning into a last-minute scramble for whatever is in stock. A series set bought a week early is worth five random paperbacks bought that morning.",
+          "<strong>Keep one book unassigned.</strong> Every September produces a conversation where someone mentions a title and you mean to get to it. Leave room in the month for that one.",
+        ],
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>",
+      },
+      {
+        type: "paragraph",
+        content:
+          "September is the month the reading year stops being theoretical. Publishers empty their best lists, prize panels commit to a position, and four separate occasions ask you to put a book in someone's hands. It is a lot to keep track of, which is exactly why it is worth writing down once and then not thinking about it again until the date arrives.",
+      },
+    ],
+
+    coverImage: "/blogs/september-2026-reading-calendar-india.jpeg",
+
+    images: [
+      {
+        url: "/blogs/september-2026-reading-calendar-india.jpeg",
+        alt: "A young Indian woman sitting by a window with a stack of books and an open paper calendar, planning her September reading with a cup of tea beside her",
+        caption:
+          "September 2026 carries Teachers' Day, International Literacy Day, Hindi Diwas, Ganesh Chaturthi and the Booker Prize shortlist - the densest month in the reading year",
+        category: "Reading Culture",
+      },
+    ],
+
+    keywords: [
+      "september 2026 reading calendar",
+      "books to read september 2026",
+      "booker prize 2026 shortlist date",
+      "teachers day 2026 book gifts india",
+      "ganesh chaturthi 2026 date",
+      "hindi diwas 2026",
+      "international literacy day 2026",
+      "september 2026 book releases india",
+      "festival book gifting india",
+      "booker prize winners to read",
+      "cheap books online india from rs 1",
+      "TheBookX",
+    ],
+
+    categories: ["Reading Culture", "Literary News", "Gifting"],
+
+    faqs: [
+      {
+        question: "When is the Booker Prize 2026 shortlist announced?",
+        answer:
+          "The Booker Prize 2026 shortlist is announced on Tuesday, 22 September 2026, at a ticketed event at London's Southbank Centre. It cuts the longlist of thirteen novels - chosen from 163 titles published in the UK and Ireland and selected by a panel chaired by Mary Beard - down to six, with the winner announced later in the autumn. The longlist itself was announced on 28 July 2026 and includes previous winners Douglas Stuart and Marlon James, third-time nominee Elizabeth Strout, and three debut novels.",
+      },
+      {
+        question: "Is Ganesh Chaturthi 2026 on 14 or 15 September?",
+        answer:
+          "Both dates are in circulation, and the reason is a genuine calendrical one rather than an error. The Chaturthi tithi in 2026 begins on the morning of 14 September and ends on the morning of 15 September, so panchangs that anchor the festival to the start of the tithi give 14 September while those that anchor it to the midday puja window give 15 September. Follow what your family tradition and your local mandal observe.",
+      },
+      {
+        question: "What are the main book-related dates in September 2026 in India?",
+        answer:
+          "Five worth marking. Saturday 5 September is Teachers' Day, marking Dr Sarvepalli Radhakrishnan's birthday. Tuesday 8 September is UNESCO's International Literacy Day. Monday 14 September is Hindi Diwas, commemorating the adoption of Hindi in Devanagari as an official language in 1949. Ganesh Chaturthi falls on 14 or 15 September depending on the panchang, and Tuesday 15 September is Engineer's Day. Tuesday 22 September brings the Booker Prize 2026 shortlist.",
+      },
+      {
+        question: "What is a good book to gift for Teachers' Day or Ganesh Chaturthi?",
+        answer:
+          "For Teachers' Day, pick something a teacher can use rather than display: The Art of Clarity by Murthy Thevar for thinking and speaking precisely, or Wings of Fire by A. P. J. Abdul Kalam for anyone working with school students. For Ganesh Chaturthi, illustrated mythology travels best because it works for a whole household - Jaya and Sita by Devdutt Pattanaik, The Gita: For Children for younger readers, or The Shiva Trilogy Set for a novel reader. On TheBookX, books start from ₹1 with free delivery and Cash on Delivery across India, and gift wrapping is available at +₹25.",
+      },
+    ],
+  },
   "circulating-libraries-india-2026-borrow-or-buy-books": {
     id: "blog-035",
     title:

@@ -3,7 +3,8 @@
 // Frames are original, paraphrased insights (no verbatim copyrighted text).
 // Add more books over time; the module + reader are fully data-driven.
 
-export const QUICKREAD_PRICE = 29;
+export const QUICKREAD_PRICE = 19; // limited-time discounted price
+export const QUICKREAD_MRP = 99; // struck-through original price
 export const QUICKREAD_FREE_FRAMES = 10; // frames readable before the paywall
 
 // Unlimited subscription plans (access to every QuickRead).

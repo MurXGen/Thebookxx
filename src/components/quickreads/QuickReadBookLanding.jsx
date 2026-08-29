@@ -7,7 +7,7 @@ import Navbar from "@/components/Navbar";
 import CartBar from "@/components/CartBar";
 import Breadcrumbs from "@/components/UI/Breadcrumbs";
 import QuickReadsReader from "./QuickReadsReader";
-import { getQuickRead, QUICKREAD_PRICE } from "@/data/quickreads";
+import { getQuickRead, QUICKREAD_PRICE, QUICKREAD_MRP } from "@/data/quickreads";
 import { useStore } from "@/context/StoreContext";
 import { showToast } from "@/context/ToastContext";
 
@@ -64,7 +64,9 @@ export default function QuickReadBookLanding({ book }) {
             <h1 className="qrb-title">{book.name} QuickReads</h1>
             {book.author && <p className="qrb-author">by {book.author}</p>}
             <p className="qrb-meta">
-              {frames.length} key insights · read in minutes · ₹{QUICKREAD_PRICE}
+              {frames.length} key insights · read in minutes ·{" "}
+              <s style={{ color: "var(--dark-50, #9ca3af)" }}>₹{QUICKREAD_MRP}</s>{" "}
+              ₹{QUICKREAD_PRICE} <strong>Limited time</strong>
             </p>
           </div>
         </div>

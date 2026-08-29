@@ -24885,7 +24885,7 @@ img[data-loaded="true"] {
   gap: 8px;
   padding: 10px;
   border-radius: 14px;
-  background: var(--surface-2, #faf9f7);
+  background: #fff;
   border: 1px solid var(--hairline, #ececec);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
   transition: transform 0.28s cubic-bezier(0.22, 0.61, 0.36, 1),
@@ -24915,22 +24915,19 @@ img[data-loaded="true"] {
   position: relative;
   width: 100%;
   border: none;
-  background: linear-gradient(180deg, #f7f7f8 0%, #efeff1 100%);
-  padding: 22px 16px 16px;
+  background: #f2f2f2;
+  padding: 0;
   cursor: pointer;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
+  display: block;
+  aspect-ratio: 3 / 4;
   border-radius: 12px;
   overflow: hidden;
 }
 .qr-book-img {
-  width: auto;
-  height: 150px;
-  border-radius: 4px;
-  object-fit: contain;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.06))
-    drop-shadow(0 8px 14px rgba(0, 0, 0, 0.1));
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  object-fit: cover;
   transition: transform 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 .qr-book-card:hover .qr-book-img {

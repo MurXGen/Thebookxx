@@ -1686,8 +1686,8 @@ Please cancel this order. Thank you `;
                   </div>
                 </div>
 
-                {/* Wallet balance strip, only shown when balance > 0 */}
-                {walletBalance > 0 && (
+                {/* Wallet balance strip — always shown (even at ₹0) */}
+                {true && (
                   <motion.div
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -1776,6 +1776,18 @@ Please cancel this order. Thank you `;
             )}
           </div>
         </div>
+
+        {/* Log out — directly below the profile card */}
+        {!showPhoneInput && (
+          <button
+            type="button"
+            className="profile-logout-btn"
+            onClick={handleNewSearch}
+          >
+            <LogOut size={16} />
+            Log out
+          </button>
+        )}
 
         {/* QuickReads library — shown once a number is loaded (works even if
             the number has QuickReads but no physical book orders). */}
@@ -2522,19 +2534,6 @@ Please cancel this order. Thank you `;
               <ChevronRight size={18} className="pm-arrow" />
             </Link>
 
-            {!showPhoneInput && (
-              <button
-                type="button"
-                className="pm-row pm-logout"
-                onClick={handleNewSearch}
-              >
-                <span className="pm-ic">
-                  <LogOut size={18} />
-                </span>
-                <span className="pm-label">Log out</span>
-                <ChevronRight size={18} className="pm-arrow" />
-              </button>
-            )}
           </div>
       </div>
 

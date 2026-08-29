@@ -37561,3 +37561,24 @@ img[data-loaded="true"] {
   font-size: 11px;
   color: var(--dark-50, #6b7280);
 }
+
+/* Log out button directly below the profile card */
+.profile-logout-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  align-self: flex-start;
+  margin-top: -8px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--hairline, #ececec);
+  background: #fff;
+  color: #dc2626;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.profile-logout-btn:hover {
+  background: #fef2f2;
+  border-color: #fecaca;
+}

@@ -14,6 +14,7 @@ import { FaWhatsapp, FaInstagram } from "react-icons/fa";
 import { books } from "@/utils/book";
 import HomeGreeting from "@/components/HomeGreeting";
 import HeroBundlePromo from "@/components/HeroBundlePromo";
+import ScratchTeaserCard from "@/components/ScratchTeaserCard";
 
 const INSTAGRAM_URL = "https://www.instagram.com/thebookx.in/";
 const WHATSAPP_GROUP_URL =
@@ -126,6 +127,9 @@ export default function HomeHero() {
 
         {/* Trust-led 3-book bundle with cashback hook, above the community CTA */}
         <HeroBundlePromo />
+
+        {/* Scratch-card teaser — opens the number modal + wallet-reward flow */}
+        <ScratchTeaserCard />
 
         <div className="home-hero-cta">
           <button

@@ -62,7 +62,7 @@ export default function ScratchTeaserCard() {
       </div>
 
       <span className="st-caption">
-        Scratch to win upto <b>₹50 cashback</b>
+        Scratch to win upto <b>₹25 cashback</b>
       </span>
 
       <style jsx>{`

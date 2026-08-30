@@ -6,6 +6,7 @@ import { ArrowLeft, SlidersHorizontal } from "lucide-react";
 import BookCard from "@/components/BookCard";
 import LazyBookGrid from "@/components/UI/LazyBookGrid";
 import Breadcrumbs from "@/components/UI/Breadcrumbs";
+import { getCategoryTheme } from "@/utils/categoryThemes";
 
 const SORTS = [
   { key: "relevance", label: "Relevance" },
@@ -14,7 +15,8 @@ const SORTS = [
   { key: "discount", label: "Biggest Discount" },
 ];
 
-export default function CategoryListing({ books = [], displayName = "" }) {
+export default function CategoryListing({ books = [], displayName = "", slug = "" }) {
+  const theme = getCategoryTheme(slug);
   const [sortType, setSortType] = useState("relevance");
   const [priceMin, setPriceMin] = useState("");
   const [priceMax, setPriceMax] = useState("");
@@ -50,7 +52,14 @@ export default function CategoryListing({ books = [], displayName = "" }) {
     (priceMin ? 1 : 0) + (priceMax ? 1 : 0) + (sortType !== "relevance" ? 1 : 0);
 
   return (
-    <div className="category-page">
+    <div
+      className="category-page cat-themed"
+      style={{
+        "--cat-a": theme.a,
+        "--cat-b": theme.b,
+        "--cat-accent": theme.accent,
+      }}
+    >
       <Breadcrumbs
         items={[
           { label: "Books", href: "/books" },
@@ -58,20 +67,26 @@ export default function CategoryListing({ books = [], displayName = "" }) {
         ]}
       />
       <div className="section-1200">
-        <div className="cat-hero">
+        <div className="cat-hero cat-hero-themed">
+          <span className="cat-hero-motif" aria-hidden="true">
+            {theme.emoji}
+          </span>
           <Link
-            href="/category"
+            href="/books"
             className="cat-hero-back"
             aria-label="Back to categories"
           >
             <ArrowLeft size={18} />
           </Link>
           <div className="cat-hero-text">
+            <span className="cat-hero-eyebrow">
+              <span className="cat-hero-eyebrow-emoji">{theme.emoji}</span>
+              {theme.tagline}
+            </span>
             {/* Real H1 for SEO */}
             <h1 className="cat-hero-title">{displayName} Books</h1>
             <span className="cat-hero-sub">
-              {books.length} books · lowest prices, from ₹1 · free delivery
-              across India
+              {books.length} books · from ₹1 · free delivery across India
             </span>
           </div>
           <div className="cat-hero-thumbs">

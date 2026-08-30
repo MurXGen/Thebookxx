@@ -101,7 +101,11 @@ export default async function CategoryPage({ params }) {
         }}
       />
 
-      <CategoryListing books={categoryBooks} displayName={displayName} />
+      <CategoryListing
+        books={categoryBooks}
+        displayName={displayName}
+        slug={slug}
+      />
     </>
   );
 }

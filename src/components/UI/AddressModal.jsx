@@ -216,9 +216,9 @@ export default function AddressModal({
     setGiftWrap(giftWrapSelected);
   }, [giftWrapSelected]);
 
-  // Free bookmark add-on (promotional / blank / casual) — no charge.
+  // Bookmark add-on: FREE with online (UPI) payment, ₹9 with Cash on Delivery.
   const [bookmark, setBookmark] = useState(false);
-  const BOOKMARK_CHARGE = 0;
+  const BOOKMARK_COD_CHARGE = 9;
 
   const UPI_ID = "7977960242-1@okbizaxis";
 
@@ -422,16 +422,17 @@ export default function AddressModal({
   const totalWithDelivery = getTotalWithDelivery(fasterDelivery);
   const codAdvanceAmount = 99;
 
-  // Add-ons that ride on the bill (gift wrap + bookmark).
-  const bookmarkChargeAmount = bookmark ? BOOKMARK_CHARGE : 0;
-  const addOnsCharge = (giftWrap ? giftWrapCharge : 0) + bookmarkChargeAmount;
+  // Add-ons that ride on the bill. Gift wrap applies to both flows; the bookmark
+  // is FREE on online payment and ₹9 only on Cash on Delivery.
+  const addOnsCharge = giftWrap ? giftWrapCharge : 0;
+  const bookmarkCodCharge = bookmark ? BOOKMARK_COD_CHARGE : 0;
 
-  // For the COD fee modal comparison
+  // For the COD fee modal comparison (online total: bookmark is free here).
   const upiTotalForFlow = getTotalWithDelivery(fasterDelivery) + addOnsCharge;
   // COD handling fee: a minimum of ₹29, or 5.9% of the bill when that exceeds
   // ₹29 (whichever is higher).
   const codFeeAmount = Math.max(29, Math.round(upiTotalForFlow * 0.059));
-  const codTotalWithFee = upiTotalForFlow + codFeeAmount;
+  const codTotalWithFee = upiTotalForFlow + codFeeAmount + bookmarkCodCharge;
 
   // Only ONE ₹1 book is allowed per order. Count the total quantity of
   // ₹1-priced books; if it's more than one, checkout is blocked.
@@ -661,7 +662,8 @@ export default function AddressModal({
       const deliveryChargeForOrder = getDeliveryCharge(isFaster);
       const giftWrapOn = giftWrap || giftWrapSelected;
       const giftWrapAmountForOrder = giftWrapOn ? giftWrapCharge : 0;
-      const bookmarkAmountForOrder = bookmark ? BOOKMARK_CHARGE : 0;
+      const bookmarkAmountForOrder =
+        bookmark && paymentType === "COD" ? BOOKMARK_COD_CHARGE : 0;
 
       // Until the shopper reaches the final confirm step, the order is logged
       // with a "(unconfirmed)" tag on the name so the dashboard can tell
@@ -1599,32 +1601,8 @@ export default function AddressModal({
                       onChange={(e) => setGiftWrap(e.target.checked)}
                     />
                   </label>
-
-                  {/* Bookmark add-on — chargeable ₹9 */}
-                  <label className="deliv-addon-row deliv-addon-opt">
-                    <div className="deliv-addon-l">
-                      <span
-                        className={`deliv-check${bookmark ? " on" : ""}`}
-                        aria-hidden="true"
-                      >
-                        {bookmark && <Check size={12} strokeWidth={3} />}
-                      </span>
-                      <div className="flex flex-col">
-                        <span className="deliv-addon-t">Bookmark</span>
-                        <span className="deliv-addon-s">
-                          A handpicked bookmark tucked into your parcel — never
-                          lose your page again
-                        </span>
-                      </div>
-                    </div>
-                    <span className="deliv-addon-free">FREE</span>
-                    <input
-                      type="checkbox"
-                      className="wc-switch-input"
-                      checked={bookmark}
-                      onChange={(e) => setBookmark(e.target.checked)}
-                    />
-                  </label>
+                  {/* Bookmark add-on moved to the Choose-payment step (free on
+                      online payment, ₹9 on COD). */}
                 </div>
               )}
             </div>
@@ -1773,7 +1751,14 @@ export default function AddressModal({
                       <span className="gift-3d on">
                         <Bookmark size={15} />
                       </span>
-                      <span>Bookmark added · FREE</span>
+                      <span>
+                        Bookmark added ·{" "}
+                        {paySel === "COD" ? (
+                          <>+₹{BOOKMARK_COD_CHARGE}</>
+                        ) : (
+                          <strong style={{ color: "#16a34a" }}>FREE</strong>
+                        )}
+                      </span>
                     </div>
                   )}
                   <div className="ps-row ps-total">
@@ -1884,6 +1869,43 @@ export default function AddressModal({
                     </span>
                   </button>
                 </div>
+
+                {/* Bookmark add-on — free on online payment, ₹9 on COD */}
+                <button
+                  type="button"
+                  className={`pay-bookmark${bookmark ? " on" : ""}`}
+                  onClick={() => setBookmark((v) => !v)}
+                  aria-pressed={bookmark}
+                >
+                  <span className="pay-bookmark-ic">
+                    <Bookmark size={18} />
+                  </span>
+                  <span className="pay-bookmark-txt">
+                    <span className="pay-bookmark-t">
+                      Add a matching bookmark
+                    </span>
+                    <span className="pay-bookmark-s">
+                      {paySel === "COD" ? (
+                        <>
+                          <strong>+₹{BOOKMARK_COD_CHARGE}</strong> with Cash on
+                          Delivery · <b className="pay-bookmark-free">FREE</b> if
+                          you pay online
+                        </>
+                      ) : (
+                        <>
+                          <b className="pay-bookmark-free">FREE</b> with online
+                          payment · ₹{BOOKMARK_COD_CHARGE} on Cash on Delivery
+                        </>
+                      )}
+                    </span>
+                  </span>
+                  <span
+                    className={`pay-bookmark-check${bookmark ? " on" : ""}`}
+                    aria-hidden="true"
+                  >
+                    {bookmark && <Check size={13} strokeWidth={3} />}
+                  </span>
+                </button>
               </div>
 
               {/* Fixed footer — pay button (full width) + WhatsApp order */}

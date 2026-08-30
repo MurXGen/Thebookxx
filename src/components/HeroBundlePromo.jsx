@@ -10,9 +10,9 @@ import { showToast } from "@/context/ToastContext";
 // #2 The Power of Now, #3 Manifest. No prices — pure social proof + one-tap add,
 // framed around the "pay online, get up to ₹100 cashback" hook.
 const RANKED = [
-  { id: "bk-002", rank: 1 }, // The Art of Clarity
-  { id: "bk-541", rank: 2 }, // The Power of Now
-  { id: "bk-184", rank: 3 }, // Manifest
+  { id: "bk-005", rank: 1 }, // Atomic Habits
+  { id: "bk-002", rank: 2 }, // The Art of Clarity
+  { id: "bk-391", rank: 3 }, // Ikigai
 ];
 // Visual podium order: 2nd, 1st (centre, tallest), 3rd.
 const PODIUM_ORDER = [2, 1, 3];

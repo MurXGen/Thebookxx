@@ -185,29 +185,29 @@ export default function HomePage() {
         </Suspense>
       </LazySection>
 
-      {/* <LazySection threshold={0.05}>
+      <LazySection threshold={0.05}>
         <Suspense fallback={<LoadingFallback delay={0.8} />}>
           <SmoothAppear delay={0.8}>
             <RecentlyViewed />
           </SmoothAppear>
         </Suspense>
-      </LazySection> */}
+      </LazySection>
 
-      {/* <LazySection threshold={0.05}>
+      <LazySection threshold={0.05}>
         <Suspense fallback={<LoadingFallback delay={0.9} />}>
           <SmoothAppear delay={0.9}>
             <NewlyAddedBooks />
           </SmoothAppear>
         </Suspense>
-      </LazySection> */}
+      </LazySection>
 
-      {/* <LazySection threshold={0.05}>
+      <LazySection threshold={0.05}>
         <Suspense fallback={<LoadingFallback delay={1.0} />}>
           <SmoothAppear delay={1.0}>
             <TrendingBooks />
           </SmoothAppear>
         </Suspense>
-      </LazySection> */}
+      </LazySection>
 
       {/* 
       <LazySection threshold={0.05}>

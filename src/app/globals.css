@@ -37156,22 +37156,43 @@ img[data-loaded="true"] {
   margin: 0 auto;
   line-height: 1.45;
 }
-.qrt-rail {
-  display: block;
-  overflow-x: auto;
-  scrollbar-width: none;
-  text-decoration: none;
-  -webkit-overflow-scrolling: touch;
+/* Infinite auto-scroll marquee (animates only while in view) */
+.qrt-marquee {
+  overflow: hidden;
+  width: 100%;
+  padding: 14px 0 4px;
+  -webkit-mask: linear-gradient(
+    90deg,
+    transparent,
+    #000 6%,
+    #000 94%,
+    transparent
+  );
+  mask: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
 }
-.qrt-rail::-webkit-scrollbar {
-  display: none;
-}
-.qrt-covers {
+.qrt-track {
   display: flex;
   gap: 12px;
-  padding: 14px 2px 4px;
   width: max-content;
-  margin: 0 auto;
+  will-change: transform;
+  animation: qrt-scroll 40s linear infinite;
+  animation-play-state: paused;
+}
+.qrt-track.running {
+  animation-play-state: running;
+}
+.qrt-track:hover {
+  animation-play-state: paused;
+}
+@keyframes qrt-scroll {
+  to {
+    transform: translateX(-50%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .qrt-track {
+    animation: none;
+  }
 }
 .qrt-cover {
   position: relative;

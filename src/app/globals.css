@@ -37860,3 +37860,74 @@ img[data-loaded="true"] {
     font-size: 96px;
   }
 }
+
+/* ── Whole-page category theming + SVG icon decor ── */
+.cat-themed {
+  position: relative;
+  min-height: 100vh;
+  background:
+    radial-gradient(
+      120% 60% at 100% 0%,
+      color-mix(in srgb, var(--cat-accent, #fb8500) 14%, transparent) 0%,
+      transparent 60%
+    ),
+    color-mix(in srgb, var(--cat-accent, #fb8500) 5%, #ffffff);
+  overflow: hidden;
+}
+/* Faint category-icon watermarks scattered behind the content (Lucide = SVG) */
+.cat-decor {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.cat-decor-ic {
+  position: absolute;
+  color: var(--cat-accent, #fb8500);
+  opacity: 0.06;
+}
+.cat-decor-ic-1 {
+  width: 260px;
+  height: 260px;
+  top: 120px;
+  right: -60px;
+  transform: rotate(-12deg);
+}
+.cat-decor-ic-2 {
+  width: 200px;
+  height: 200px;
+  top: 52%;
+  left: -50px;
+  transform: rotate(14deg);
+}
+.cat-decor-ic-3 {
+  width: 170px;
+  height: 170px;
+  bottom: 40px;
+  right: 12%;
+  transform: rotate(8deg);
+}
+/* keep real content above the decor */
+.cat-themed > .breadcrumbs,
+.cat-themed > .section-1200,
+.cat-themed > .lazy-book-grid,
+.cat-themed > div:not(.cat-decor) {
+  position: relative;
+  z-index: 1;
+}
+/* Accent icon chip in the themed hero */
+.cat-hero-icon {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--cat-accent, #fb8500);
+  color: #10151f;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 6px 16px -6px rgba(0, 0, 0, 0.5);
+}

@@ -2,11 +2,67 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, SlidersHorizontal } from "lucide-react";
+import {
+  ArrowLeft,
+  SlidersHorizontal,
+  Zap,
+  Search,
+  Fingerprint,
+  Ghost,
+  Brain,
+  TrendingUp,
+  Wallet,
+  LineChart,
+  Landmark,
+  Heart,
+  BookOpen,
+  Library,
+  Compass,
+  Sprout,
+  Rocket,
+  Sparkles,
+  UserRound,
+  Hourglass,
+  Baby,
+  Star,
+  Laugh,
+  HeartPulse,
+  FlaskConical,
+  Trophy,
+  Flame,
+} from "lucide-react";
 import BookCard from "@/components/BookCard";
 import LazyBookGrid from "@/components/UI/LazyBookGrid";
 import Breadcrumbs from "@/components/UI/Breadcrumbs";
 import { getCategoryTheme } from "@/utils/categoryThemes";
+
+const CAT_ICONS = {
+  Zap,
+  Search,
+  Fingerprint,
+  Ghost,
+  Brain,
+  TrendingUp,
+  Wallet,
+  LineChart,
+  Landmark,
+  Heart,
+  BookOpen,
+  Library,
+  Compass,
+  Sprout,
+  Rocket,
+  Sparkles,
+  UserRound,
+  Hourglass,
+  Baby,
+  Star,
+  Laugh,
+  HeartPulse,
+  FlaskConical,
+  Trophy,
+  Flame,
+};
 
 const SORTS = [
   { key: "relevance", label: "Relevance" },
@@ -17,6 +73,7 @@ const SORTS = [
 
 export default function CategoryListing({ books = [], displayName = "", slug = "" }) {
   const theme = getCategoryTheme(slug);
+  const CatIcon = CAT_ICONS[theme.icon] || BookOpen;
   const [sortType, setSortType] = useState("relevance");
   const [priceMin, setPriceMin] = useState("");
   const [priceMax, setPriceMax] = useState("");
@@ -60,6 +117,13 @@ export default function CategoryListing({ books = [], displayName = "", slug = "
         "--cat-accent": theme.accent,
       }}
     >
+      {/* Page-wide themed decor — faint category icon watermarks (SVG) */}
+      <div className="cat-decor" aria-hidden="true">
+        <CatIcon className="cat-decor-ic cat-decor-ic-1" strokeWidth={1.4} />
+        <CatIcon className="cat-decor-ic cat-decor-ic-2" strokeWidth={1.4} />
+        <CatIcon className="cat-decor-ic cat-decor-ic-3" strokeWidth={1.4} />
+      </div>
+
       <Breadcrumbs
         items={[
           { label: "Books", href: "/books" },
@@ -69,7 +133,7 @@ export default function CategoryListing({ books = [], displayName = "", slug = "
       <div className="section-1200">
         <div className="cat-hero cat-hero-themed">
           <span className="cat-hero-motif" aria-hidden="true">
-            {theme.emoji}
+            <CatIcon size={128} strokeWidth={1.2} />
           </span>
           <Link
             href="/books"
@@ -78,11 +142,11 @@ export default function CategoryListing({ books = [], displayName = "", slug = "
           >
             <ArrowLeft size={18} />
           </Link>
+          <span className="cat-hero-icon" aria-hidden="true">
+            <CatIcon size={22} strokeWidth={2.2} />
+          </span>
           <div className="cat-hero-text">
-            <span className="cat-hero-eyebrow">
-              <span className="cat-hero-eyebrow-emoji">{theme.emoji}</span>
-              {theme.tagline}
-            </span>
+            <span className="cat-hero-eyebrow">{theme.tagline}</span>
             {/* Real H1 for SEO */}
             <h1 className="cat-hero-title">{displayName} Books</h1>
             <span className="cat-hero-sub">

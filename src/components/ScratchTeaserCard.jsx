@@ -6,29 +6,17 @@ import { useEffect, useState } from "react";
 // not-logged-in shoppers. Two brand-coloured cards fanned in 3D, looking planted
 // in the ground, with a "Scratch to win" caption. Tapping it fires a window
 // event that PincodeModal listens for to open the phone-number flow.
-function isLoggedIn() {
-  if (typeof window === "undefined") return false;
-  try {
-    return (
-      String(localStorage.getItem("track_orders_phone") || "").replace(
-        /\D/g,
-        "",
-      ).length >= 10
-    );
-  } catch {
-    return false;
-  }
-}
-
 export default function ScratchTeaserCard() {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    let captured = false;
+    // Show to everyone (logged in or not) — the wallet check on number entry
+    // decides the reward. Hide only once they've actually claimed the scratch.
+    let claimed = false;
     try {
-      captured = !!localStorage.getItem("user_pincode");
+      claimed = localStorage.getItem("tbx_scratch_claimed") === "1";
     } catch {}
-    if (!isLoggedIn() && !captured) setShow(true);
+    if (!claimed) setShow(true);
   }, []);
 
   if (!show) return null;

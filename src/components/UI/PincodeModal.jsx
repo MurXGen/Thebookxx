@@ -324,9 +324,11 @@ export default function PincodeModal() {
           ).length >= 10;
         alreadyClaimed = localStorage.getItem("tbx_scratch_claimed") === "1";
       } catch (_) {}
-      // Eligible only if there's room below ₹25 AND this is a first-time scratch.
+      // Eligible if the wallet still has room below ₹25 and the scratch reward
+      // hasn't been claimed yet — logged-in shoppers qualify too (the wallet
+      // balance + claimed flag already prevent farming).
       const room = 25 - balance;
-      const eligible = room > 0 && !alreadyLoggedIn && !alreadyClaimed;
+      const eligible = room > 0 && !alreadyClaimed;
       let rew = 0;
       if (eligible) {
         rew = 11 + Math.floor(Math.random() * 15); // ₹11–25

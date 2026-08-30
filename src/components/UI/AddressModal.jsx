@@ -1639,39 +1639,44 @@ export default function AddressModal({
                           />
                         </button>
                         {billItemsOpen && (
-                          <div className="ps-books-scroll">
-                            {(cartBooks || []).map((b, i) => (
-                              <span
-                                key={i}
-                                className="ps-book-cover"
-                                title={b.name}
-                              >
-                                <img src={b.image} alt={b.name} loading="lazy" />
-                                {b.qty > 1 && (
-                                  <span className="ps-book-qty">×{b.qty}</span>
-                                )}
+                          <div className="ps-accordion-body">
+                            <div className="ps-books-scroll">
+                              {(cartBooks || []).map((b, i) => (
+                                <span
+                                  key={i}
+                                  className="ps-book-cover"
+                                  title={b.name}
+                                >
+                                  <img
+                                    src={b.image}
+                                    alt={b.name}
+                                    loading="lazy"
+                                  />
+                                  {b.qty > 1 && (
+                                    <span className="ps-book-qty">×{b.qty}</span>
+                                  )}
+                                </span>
+                              ))}
+                              {quickReadItems.length > 0 && (
+                                <span className="ps-book-chip">
+                                  {quickReadItems.length} QuickRead
+                                  {quickReadItems.length > 1 ? "s" : ""}
+                                </span>
+                              )}
+                            </div>
+                            <div className="ps-deliver">
+                              <span className="ps-deliver-ic">
+                                <MapPin size={14} />
                               </span>
-                            ))}
-                            {quickReadItems.length > 0 && (
-                              <span className="ps-book-chip">
-                                {quickReadItems.length} QuickRead
-                                {quickReadItems.length > 1 ? "s" : ""}
+                              <span className="ps-deliver-addr">
+                                {name}, {fullAddress}, {city} - {pincode}
                               </span>
-                            )}
+                            </div>
                           </div>
                         )}
                       </>
                     );
                   })()}
-
-                  <div className="ps-deliver">
-                    <span className="ps-deliver-ic">
-                      <MapPin size={14} />
-                    </span>
-                    <span className="ps-deliver-addr">
-                      {name}, {fullAddress}, {city} - {pincode}
-                    </span>
-                  </div>
 
                   {/* Add-ons (address-model styling, compact, incl. bookmark) */}
                   <div className="deliv-addon pay-addon-block">

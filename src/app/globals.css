@@ -38053,3 +38053,11 @@ img[data-loaded="true"] {
 .ps-items-chev.open {
   transform: rotate(180deg);
 }
+
+/* Accordion body inside the payment bill (book covers + address) */
+.ps-accordion-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 10px;
+}

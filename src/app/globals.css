@@ -37939,3 +37939,117 @@ img[data-loaded="true"] {
   z-index: 1;
   box-shadow: 0 6px 16px -6px rgba(0, 0, 0, 0.5);
 }
+
+/* Add-ons inside the Choose-payment bill (compact, no descriptions) */
+.pay-addons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+.pay-addons-head {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--dark-50, #6b7280);
+}
+.pay-addon-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 13px;
+  border: 1px solid var(--hairline, #ececec);
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+  text-align: left;
+}
+.pay-addon-row.on {
+  border-color: var(--tertiary, #fb8500);
+  background: rgba(251, 133, 0, 0.06);
+}
+.pay-addon-l {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--foreground, #0a0a0a);
+}
+.pay-addon-l svg {
+  color: var(--dark-50, #6b7280);
+}
+.pay-addon-row.on .pay-addon-l svg {
+  color: var(--tertiary, #fb8500);
+}
+.pay-addon-r {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.pay-addon-free {
+  font-size: 12px;
+  font-weight: 800;
+  color: #16a34a;
+}
+.pay-addon-price {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--foreground, #0a0a0a);
+}
+.pay-addon-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--dark-20, #cbd0d6);
+}
+.pay-addon-dot.on {
+  border-color: var(--tertiary, #fb8500);
+  background: radial-gradient(
+    circle,
+    var(--tertiary, #fb8500) 0 42%,
+    transparent 46%
+  );
+}
+.pay-addon-box {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 2px solid var(--dark-20, #cbd0d6);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+.pay-addon-box.on {
+  background: var(--tertiary, #fb8500);
+  border-color: var(--tertiary, #fb8500);
+}
+/* Collapsed book-summary accordion */
+.ps-items-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--hairline, #ececec);
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+}
+.ps-items-count {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--foreground, #0a0a0a);
+}
+.ps-items-chev {
+  color: var(--dark-50, #6b7280);
+  transition: transform 0.2s ease;
+}
+.ps-items-chev.open {
+  transform: rotate(180deg);
+}

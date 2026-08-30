@@ -20,6 +20,7 @@ import {
   Home,
   Zap,
   Clock,
+  ChevronDown,
   Package,
   CheckCircle2,
   Sparkles,
@@ -156,6 +157,7 @@ export default function AddressModal({
   const [district, setDistrict] = useState("");
   const [area, setArea] = useState("");
   const [fasterDelivery, setFasterDelivery] = useState(false);
+  const [billItemsOpen, setBillItemsOpen] = useState(false); // book summary accordion
   const [isValidPincode, setIsValidPincode] = useState(true);
   const [isFetchingLocation, setIsFetchingLocation] = useState(false);
   const [pincodeError, setPincodeError] = useState("");
@@ -1523,88 +1525,8 @@ export default function AddressModal({
                 )}
               </AnimatePresence>
 
-              {/* ===== Add-ons: shown once name + phone are filled ===== */}
-              {contactReady && (
-                <div className="deliv-addon">
-                  <span className="deliv-addon-head">Add-ons</span>
-                  <div className="deliv-addon-row">
-                    <div className="deliv-addon-l">
-                      <Truck size={18} className="green" />
-                      <div className="flex flex-col">
-                        <span className="deliv-addon-t flex flex-row items-center gap-6">
-                          Standard delivery
-                          {standardDeliveryCharge === 0 && (
-                            <span className="deliv-free-badge">
-                              FREE above ₹199
-                            </span>
-                          )}
-                        </span>
-                        <span className="deliv-addon-s">
-                          {standardDeliveryCharge > 0
-                            ? "Reaches you in 3–9 days · handling & care in bill"
-                            : "Reaches you in 3–9 days · included at no charge"}
-                        </span>
-                      </div>
-                    </div>
-                    <span className="deliv-addon-free">FREE</span>
-                  </div>
-
-                  <label className="deliv-addon-row deliv-addon-opt">
-                    <div className="deliv-addon-l">
-                      <span
-                        className={`deliv-check${fasterDelivery ? " on" : ""}`}
-                        aria-hidden="true"
-                      >
-                        {fasterDelivery && <Check size={12} strokeWidth={3} />}
-                      </span>
-                      <div className="flex flex-col">
-                        <span className="deliv-addon-t">Faster delivery</span>
-                        <span className="deliv-addon-s">
-                          Priority dispatch · reaches within 2–5 days
-                        </span>
-                      </div>
-                    </div>
-                    <span className="deliv-addon-price">
-                      +₹{fasterDeliveryCharge}
-                    </span>
-                    <input
-                      type="checkbox"
-                      className="wc-switch-input"
-                      checked={fasterDelivery}
-                      onChange={(e) => setFasterDelivery(e.target.checked)}
-                    />
-                  </label>
-
-                  {/* Gift wrap add-on with a 3D gift logo when opted */}
-                  <label className="deliv-addon-row deliv-addon-opt">
-                    <div className="deliv-addon-l">
-                      <span
-                        className={`deliv-check${giftWrap ? " on" : ""}`}
-                        aria-hidden="true"
-                      >
-                        {giftWrap && <Check size={12} strokeWidth={3} />}
-                      </span>
-                      <div className="flex flex-col">
-                        <span className="deliv-addon-t">Gift wrap</span>
-                        <span className="deliv-addon-s">
-                          Wrapped with a ribbon · perfect to gift
-                        </span>
-                      </div>
-                    </div>
-                    <span className="deliv-addon-price">
-                      +₹{giftWrapCharge}
-                    </span>
-                    <input
-                      type="checkbox"
-                      className="wc-switch-input"
-                      checked={giftWrap}
-                      onChange={(e) => setGiftWrap(e.target.checked)}
-                    />
-                  </label>
-                  {/* Bookmark add-on moved to the Choose-payment step (free on
-                      online payment, ₹9 on COD). */}
-                </div>
-              )}
+              {/* Add-ons (delivery speed + gift wrap + bookmark) moved to the
+                  Choose-payment step. */}
             </div>
 
             {/* Fixed footer — total + proceed stay pinned, form scrolls above */}
@@ -1694,37 +1616,53 @@ export default function AddressModal({
               <div className="pay-sel">
                 {/* Summary — books (horizontal), deliver-to, and the total */}
                 <div className="pay-sel-bill">
+                  {/* Book summary — collapsed accordion by default */}
                   {(() => {
                     const bookCount =
                       (cartBooks || []).reduce((s, b) => s + (b.qty || 1), 0) +
                       quickReadItems.length;
                     return (
-                      <div className="ps-books-head">
-                        <span className="ps-books-count">
-                          {bookCount} {bookCount > 1 ? "items" : "item"}
-                        </span>
-                        <span className="ps-books-total">
-                          ₹{totalDiscounted}
-                        </span>
-                      </div>
+                      <>
+                        <button
+                          type="button"
+                          className="ps-items-toggle"
+                          onClick={() => setBillItemsOpen((v) => !v)}
+                          aria-expanded={billItemsOpen}
+                        >
+                          <span className="ps-items-count">
+                            {bookCount} {bookCount > 1 ? "items" : "item"} · ₹
+                            {totalDiscounted}
+                          </span>
+                          <ChevronDown
+                            size={16}
+                            className={`ps-items-chev${billItemsOpen ? " open" : ""}`}
+                          />
+                        </button>
+                        {billItemsOpen && (
+                          <div className="ps-books-scroll">
+                            {(cartBooks || []).map((b, i) => (
+                              <span
+                                key={i}
+                                className="ps-book-cover"
+                                title={b.name}
+                              >
+                                <img src={b.image} alt={b.name} loading="lazy" />
+                                {b.qty > 1 && (
+                                  <span className="ps-book-qty">×{b.qty}</span>
+                                )}
+                              </span>
+                            ))}
+                            {quickReadItems.length > 0 && (
+                              <span className="ps-book-chip">
+                                {quickReadItems.length} QuickRead
+                                {quickReadItems.length > 1 ? "s" : ""}
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </>
                     );
                   })()}
-                  <div className="ps-books-scroll">
-                    {(cartBooks || []).map((b, i) => (
-                      <span key={i} className="ps-book-cover" title={b.name}>
-                        <img src={b.image} alt={b.name} loading="lazy" />
-                        {b.qty > 1 && (
-                          <span className="ps-book-qty">×{b.qty}</span>
-                        )}
-                      </span>
-                    ))}
-                    {quickReadItems.length > 0 && (
-                      <span className="ps-book-chip">
-                        {quickReadItems.length} QuickRead
-                        {quickReadItems.length > 1 ? "s" : ""}
-                      </span>
-                    )}
-                  </div>
 
                   <div className="ps-deliver">
                     <span className="ps-deliver-ic">
@@ -1733,34 +1671,57 @@ export default function AddressModal({
                     <span className="ps-deliver-addr">
                       {name}, {fullAddress}, {city} - {pincode}
                     </span>
-                    <span className="ps-deliver-type">
-                      {fasterDelivery ? <Zap size={12} /> : <Truck size={12} />}
-                      {fasterDelivery ? "Faster" : "Standard"}
-                    </span>
                   </div>
-                  {giftWrap && (
-                    <div className="ps-sum-gift">
-                      <span className="gift-3d on">
+
+                  {/* Add-ons (compact, no descriptions) */}
+                  <div className="pay-addons">
+                    <span className="pay-addons-head">Add-ons</span>
+                    <button
+                      type="button"
+                      className={`pay-addon-row${!fasterDelivery ? " on" : ""}`}
+                      onClick={() => setFasterDelivery(false)}
+                    >
+                      <span className="pay-addon-l">
+                        <Truck size={16} />
+                        <span>Standard delivery</span>
+                      </span>
+                      <span className="pay-addon-r">
+                        <span className="pay-addon-free">FREE</span>
+                        <span className={`pay-addon-dot${!fasterDelivery ? " on" : ""}`} />
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      className={`pay-addon-row${fasterDelivery ? " on" : ""}`}
+                      onClick={() => setFasterDelivery(true)}
+                    >
+                      <span className="pay-addon-l">
+                        <Zap size={16} />
+                        <span>Faster delivery</span>
+                      </span>
+                      <span className="pay-addon-r">
+                        <span className="pay-addon-price">+₹{fasterDeliveryCharge}</span>
+                        <span className={`pay-addon-dot${fasterDelivery ? " on" : ""}`} />
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      className={`pay-addon-row${giftWrap ? " on" : ""}`}
+                      onClick={() => setGiftWrap((v) => !v)}
+                    >
+                      <span className="pay-addon-l">
                         <Gift size={16} />
+                        <span>Gift wrap</span>
                       </span>
-                      <span>Gift wrapped · +₹{giftWrapCharge}</span>
-                    </div>
-                  )}
-                  {bookmark && (
-                    <div className="ps-sum-gift">
-                      <span className="gift-3d on">
-                        <Bookmark size={15} />
+                      <span className="pay-addon-r">
+                        <span className="pay-addon-price">+₹{giftWrapCharge}</span>
+                        <span className={`pay-addon-box${giftWrap ? " on" : ""}`}>
+                          {giftWrap && <Check size={12} strokeWidth={3} />}
+                        </span>
                       </span>
-                      <span>
-                        Bookmark added ·{" "}
-                        {paySel === "COD" ? (
-                          <>+₹{BOOKMARK_COD_CHARGE}</>
-                        ) : (
-                          <strong style={{ color: "#16a34a" }}>FREE</strong>
-                        )}
-                      </span>
-                    </div>
-                  )}
+                    </button>
+                  </div>
+
                   <div className="ps-row ps-total">
                     <span>Total payable</span>
                     <span>

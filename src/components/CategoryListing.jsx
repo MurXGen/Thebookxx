@@ -172,29 +172,16 @@ export default function CategoryListing({ books = [], displayName = "", slug = "
           { label: `${displayName} Books` },
         ]}
       />
-      <div className="section-1200">
-        {/* Minimal header — just back arrow + category title */}
-        <div className="cat-hero cat-hero-min">
-          <Link
-            href="/books"
-            className="cat-hero-back"
-            aria-label="Back to categories"
-          >
-            <ArrowLeft size={18} />
-          </Link>
-          {/* Real H1 for SEO */}
-          <h1 className="cat-hero-title">{displayName} Books</h1>
-        </div>
-      </div>
+      {/* SEO H1 kept for crawlers but visually hidden — breadcrumb is the header */}
+      <h1 className="sr-only">{displayName} Books</h1>
 
       {/* Filter / sort toolbar */}
       <div
         className="section-1200 flex flex-row items-center justify-between flex-wrap gap-12"
         style={{ paddingTop: 0 }}
       >
-        <span className="font-12 dark-50">
-          Showing <b style={{ color: "var(--foreground)" }}>{filtered.length}</b>{" "}
-          of {books.length} books
+        <span className="font-12 dark-50 cat-count">
+          Showing <b>{filtered.length}</b> of {books.length} books
         </span>
         <button
           className={`sec-mid-btn ${activeFilters ? "active" : ""}`}

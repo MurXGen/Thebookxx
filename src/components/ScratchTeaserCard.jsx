@@ -49,9 +49,7 @@ export default function ScratchTeaserCard() {
         <span className="st-ground" />
       </div>
 
-      <span className="st-caption">
-        Scratch to win upto <b>₹25 cashback</b>
-      </span>
+      <span className="st-caption">Scratch to win cashbacks</span>
 
       <style jsx>{`
         .st-teaser {
@@ -81,14 +79,15 @@ export default function ScratchTeaserCard() {
           justify-content: center;
           overflow: hidden;
           color: #fff;
-          box-shadow: 0 14px 22px rgba(251, 133, 0, 0.32),
+          box-shadow:
+            0 14px 22px rgba(251, 133, 0, 0.32),
             inset 0 0 0 2px rgba(255, 255, 255, 0.4);
-          background-image: radial-gradient(
-              rgba(255, 255, 255, 0.4) 1px,
-              transparent 1.4px
-            ),
+          background-image:
+            radial-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 1.4px),
             linear-gradient(150deg, #ffb14d, #fb8500 60%, #e06f00);
-          background-size: 8px 8px, 100% 100%;
+          background-size:
+            8px 8px,
+            100% 100%;
           transition: transform 0.22s ease;
         }
         .st-left {

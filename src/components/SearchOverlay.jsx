@@ -14,6 +14,7 @@ import {
   Clock,
 } from "lucide-react";
 import Link from "next/link";
+import { createPortal } from "react-dom";
 import { useEffect, useRef, useState } from "react";
 
 const normalize = (str = "") => str.toLowerCase().trim();
@@ -61,6 +62,8 @@ export default function SearchOverlay({
   initialSuggest = false,
 }) {
   const inputRef = useRef(null);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
@@ -289,10 +292,12 @@ export default function SearchOverlay({
 
   return (
     <>
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            className="search-overlay"
+      {mounted &&
+        createPortal(
+          <AnimatePresence>
+            {open && (
+              <motion.div
+                className="search-overlay"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -360,6 +365,14 @@ export default function SearchOverlay({
                     )}
                   </AnimatePresence>
                 </div>
+                <button
+                  type="button"
+                  className="search-close-btn"
+                  onClick={onClose}
+                  aria-label="Close search"
+                >
+                  <X size={18} />
+                </button>
               </div>
 
               {/* Recent searches — horizontally scrollable chips with arrows */}
@@ -408,7 +421,7 @@ export default function SearchOverlay({
               )}
 
               {/* Body, animated between placeholder / loader / empty / results */}
-              <div className="search-body" style={{ paddingBottom: 100 }}>
+              <div className="search-body" style={{ paddingBottom: 24 }}>
                 <AnimatePresence mode="wait">
                   {!query ? (
                     <motion.p
@@ -577,44 +590,14 @@ export default function SearchOverlay({
                 </AnimatePresence>
               </div>
 
-              {/* Fixed bottom-right close FAB, always visible, even when scrolled */}
-              <motion.button
-                type="button"
-                key="close-fab"
-                initial={{ opacity: 0, scale: 0.7, y: 12 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.7, y: 12 }}
-                whileTap={{ scale: 0.92 }}
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: 0.25, ease: "easeOut", delay: 0.1 }}
-                onClick={onClose}
-                aria-label="Close search"
-                style={{
-                  position: "fixed",
-                  bottom: 24,
-                  right: 24,
-                  width: 52,
-                  height: 52,
-                  borderRadius: "50%",
-                  background: "var(--foreground, #0a0a0a)",
-                  color: "#fff",
-                  border: "none",
-                  boxShadow: "0 6px 20px rgba(0, 0, 0, 0.28)",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  zIndex: 10000,
-                }}
-              >
-                <X size={22} />
-              </motion.button>
+              </motion.div>
             </motion.div>
-          </motion.div>
+            )}
+          </AnimatePresence>,
+          document.body,
         )}
-      </AnimatePresence>
 
-      {/* Recommendation modal, rendered as sibling so it layers above search */}
+      {/* Recommendation modal — sibling so it layers above search */}
       <RecommendationModal
         isOpen={showRecommendationModal}
         onClose={() => setShowRecommendationModal(false)}

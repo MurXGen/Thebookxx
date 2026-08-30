@@ -38061,3 +38061,68 @@ img[data-loaded="true"] {
   gap: 10px;
   padding-top: 10px;
 }
+
+/* Add-ons — compact 2×2 grid with emoji + checkbox */
+.pay-addon-block {
+  margin-top: 10px;
+}
+.pay-addon-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 8px;
+}
+.pa2 {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  padding: 12px 12px 10px;
+  border: 1px solid var(--hairline, #ececec);
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+  text-align: left;
+  min-width: 0;
+}
+.pa2.on {
+  border-color: var(--tertiary, #fb8500);
+  background: rgba(251, 133, 0, 0.06);
+}
+.pa2-check {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 2px solid var(--dark-20, #cbd0d6);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+.pa2-check.on {
+  background: var(--tertiary, #fb8500);
+  border-color: var(--tertiary, #fb8500);
+}
+.pa2-emoji {
+  font-size: 20px;
+  line-height: 1;
+}
+.pa2-name {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--foreground, #0a0a0a);
+  line-height: 1.2;
+  padding-right: 22px;
+}
+.pa2-price {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--foreground, #0a0a0a);
+}
+.pa2-price.free {
+  color: #16a34a;
+}

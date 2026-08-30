@@ -1678,75 +1678,70 @@ export default function AddressModal({
                     );
                   })()}
 
-                  {/* Add-ons (address-model styling, compact, incl. bookmark) */}
-                  <div className="deliv-addon pay-addon-block">
+                  {/* Add-ons — compact 2×2 grid with emoji + checkbox on each */}
+                  <div className="pay-addon-block">
                     <span className="deliv-addon-head">Add-ons</span>
+                    <div className="pay-addon-grid">
+                      {/* Standard delivery — default (mutually exclusive w/ Faster) */}
+                      <button
+                        type="button"
+                        className={`pa2${!fasterDelivery ? " on" : ""}`}
+                        onClick={() => setFasterDelivery(false)}
+                      >
+                        <span className={`pa2-check${!fasterDelivery ? " on" : ""}`}>
+                          {!fasterDelivery && <Check size={11} strokeWidth={3} />}
+                        </span>
+                        <span className="pa2-emoji">🚚</span>
+                        <span className="pa2-name">Standard delivery</span>
+                        <span className="pa2-price free">FREE</span>
+                      </button>
 
-                    {/* Standard delivery — default, free */}
-                    <div className="deliv-addon-row">
-                      <div className="deliv-addon-l">
-                        <Truck size={18} className="green" />
-                        <span className="deliv-addon-t">Standard delivery</span>
-                      </div>
-                      <span className="deliv-addon-free">FREE</span>
+                      {/* Faster delivery */}
+                      <button
+                        type="button"
+                        className={`pa2${fasterDelivery ? " on" : ""}`}
+                        onClick={() => setFasterDelivery(true)}
+                      >
+                        <span className={`pa2-check${fasterDelivery ? " on" : ""}`}>
+                          {fasterDelivery && <Check size={11} strokeWidth={3} />}
+                        </span>
+                        <span className="pa2-emoji">⚡</span>
+                        <span className="pa2-name">Faster delivery</span>
+                        <span className="pa2-price">+₹{fasterDeliveryCharge}</span>
+                      </button>
+
+                      {/* Gift wrap */}
+                      <button
+                        type="button"
+                        className={`pa2${giftWrap ? " on" : ""}`}
+                        onClick={() => setGiftWrap((v) => !v)}
+                      >
+                        <span className={`pa2-check${giftWrap ? " on" : ""}`}>
+                          {giftWrap && <Check size={11} strokeWidth={3} />}
+                        </span>
+                        <span className="pa2-emoji">🎁</span>
+                        <span className="pa2-name">Gift wrap</span>
+                        <span className="pa2-price">+₹{giftWrapCharge}</span>
+                      </button>
+
+                      {/* Matching bookmark — FREE online, ₹9 on COD */}
+                      <button
+                        type="button"
+                        className={`pa2${bookmark ? " on" : ""}`}
+                        onClick={() => setBookmark((v) => !v)}
+                      >
+                        <span className={`pa2-check${bookmark ? " on" : ""}`}>
+                          {bookmark && <Check size={11} strokeWidth={3} />}
+                        </span>
+                        <span className="pa2-emoji">🔖</span>
+                        <span className="pa2-name">Matching bookmark</span>
+                        <span
+                          className={`pa2-price${paySel === "COD" ? "" : " free"}`}
+                        >
+                          {paySel === "COD" ? `+₹${BOOKMARK_COD_CHARGE}` : "FREE"}
+                        </span>
+                      </button>
                     </div>
-
-                    {/* Faster delivery */}
-                    <label className="deliv-addon-row deliv-addon-opt">
-                      <div className="deliv-addon-l">
-                        <span className={`deliv-check${fasterDelivery ? " on" : ""}`} aria-hidden="true">
-                          {fasterDelivery && <Check size={12} strokeWidth={3} />}
-                        </span>
-                        <span className="deliv-addon-t">Faster delivery</span>
-                      </div>
-                      <span className="deliv-addon-price">+₹{fasterDeliveryCharge}</span>
-                      <input
-                        type="checkbox"
-                        className="wc-switch-input"
-                        checked={fasterDelivery}
-                        onChange={(e) => setFasterDelivery(e.target.checked)}
-                      />
-                    </label>
-
-                    {/* Gift wrap */}
-                    <label className="deliv-addon-row deliv-addon-opt">
-                      <div className="deliv-addon-l">
-                        <span className={`deliv-check${giftWrap ? " on" : ""}`} aria-hidden="true">
-                          {giftWrap && <Check size={12} strokeWidth={3} />}
-                        </span>
-                        <span className="deliv-addon-t">Gift wrap</span>
-                      </div>
-                      <span className="deliv-addon-price">+₹{giftWrapCharge}</span>
-                      <input
-                        type="checkbox"
-                        className="wc-switch-input"
-                        checked={giftWrap}
-                        onChange={(e) => setGiftWrap(e.target.checked)}
-                      />
-                    </label>
-
-                    {/* Matching bookmark — FREE online, ₹9 on COD */}
-                    <label className="deliv-addon-row deliv-addon-opt">
-                      <div className="deliv-addon-l">
-                        <span className={`deliv-check${bookmark ? " on" : ""}`} aria-hidden="true">
-                          {bookmark && <Check size={12} strokeWidth={3} />}
-                        </span>
-                        <span className="deliv-addon-t">Matching bookmark</span>
-                      </div>
-                      {paySel === "COD" ? (
-                        <span className="deliv-addon-price">
-                          +₹{BOOKMARK_COD_CHARGE}
-                        </span>
-                      ) : (
-                        <span className="deliv-addon-free">FREE</span>
-                      )}
-                      <input
-                        type="checkbox"
-                        className="wc-switch-input"
-                        checked={bookmark}
-                        onChange={(e) => setBookmark(e.target.checked)}
-                      />
-                    </label>
                   </div>
 
                   <div className="ps-row ps-total">

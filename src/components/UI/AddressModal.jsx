@@ -1673,53 +1673,75 @@ export default function AddressModal({
                     </span>
                   </div>
 
-                  {/* Add-ons (compact, no descriptions) */}
-                  <div className="pay-addons">
-                    <span className="pay-addons-head">Add-ons</span>
-                    <button
-                      type="button"
-                      className={`pay-addon-row${!fasterDelivery ? " on" : ""}`}
-                      onClick={() => setFasterDelivery(false)}
-                    >
-                      <span className="pay-addon-l">
-                        <Truck size={16} />
-                        <span>Standard delivery</span>
-                      </span>
-                      <span className="pay-addon-r">
-                        <span className="pay-addon-free">FREE</span>
-                        <span className={`pay-addon-dot${!fasterDelivery ? " on" : ""}`} />
-                      </span>
-                    </button>
-                    <button
-                      type="button"
-                      className={`pay-addon-row${fasterDelivery ? " on" : ""}`}
-                      onClick={() => setFasterDelivery(true)}
-                    >
-                      <span className="pay-addon-l">
-                        <Zap size={16} />
-                        <span>Faster delivery</span>
-                      </span>
-                      <span className="pay-addon-r">
-                        <span className="pay-addon-price">+₹{fasterDeliveryCharge}</span>
-                        <span className={`pay-addon-dot${fasterDelivery ? " on" : ""}`} />
-                      </span>
-                    </button>
-                    <button
-                      type="button"
-                      className={`pay-addon-row${giftWrap ? " on" : ""}`}
-                      onClick={() => setGiftWrap((v) => !v)}
-                    >
-                      <span className="pay-addon-l">
-                        <Gift size={16} />
-                        <span>Gift wrap</span>
-                      </span>
-                      <span className="pay-addon-r">
-                        <span className="pay-addon-price">+₹{giftWrapCharge}</span>
-                        <span className={`pay-addon-box${giftWrap ? " on" : ""}`}>
+                  {/* Add-ons (address-model styling, compact, incl. bookmark) */}
+                  <div className="deliv-addon pay-addon-block">
+                    <span className="deliv-addon-head">Add-ons</span>
+
+                    {/* Standard delivery — default, free */}
+                    <div className="deliv-addon-row">
+                      <div className="deliv-addon-l">
+                        <Truck size={18} className="green" />
+                        <span className="deliv-addon-t">Standard delivery</span>
+                      </div>
+                      <span className="deliv-addon-free">FREE</span>
+                    </div>
+
+                    {/* Faster delivery */}
+                    <label className="deliv-addon-row deliv-addon-opt">
+                      <div className="deliv-addon-l">
+                        <span className={`deliv-check${fasterDelivery ? " on" : ""}`} aria-hidden="true">
+                          {fasterDelivery && <Check size={12} strokeWidth={3} />}
+                        </span>
+                        <span className="deliv-addon-t">Faster delivery</span>
+                      </div>
+                      <span className="deliv-addon-price">+₹{fasterDeliveryCharge}</span>
+                      <input
+                        type="checkbox"
+                        className="wc-switch-input"
+                        checked={fasterDelivery}
+                        onChange={(e) => setFasterDelivery(e.target.checked)}
+                      />
+                    </label>
+
+                    {/* Gift wrap */}
+                    <label className="deliv-addon-row deliv-addon-opt">
+                      <div className="deliv-addon-l">
+                        <span className={`deliv-check${giftWrap ? " on" : ""}`} aria-hidden="true">
                           {giftWrap && <Check size={12} strokeWidth={3} />}
                         </span>
-                      </span>
-                    </button>
+                        <span className="deliv-addon-t">Gift wrap</span>
+                      </div>
+                      <span className="deliv-addon-price">+₹{giftWrapCharge}</span>
+                      <input
+                        type="checkbox"
+                        className="wc-switch-input"
+                        checked={giftWrap}
+                        onChange={(e) => setGiftWrap(e.target.checked)}
+                      />
+                    </label>
+
+                    {/* Matching bookmark — FREE online, ₹9 on COD */}
+                    <label className="deliv-addon-row deliv-addon-opt">
+                      <div className="deliv-addon-l">
+                        <span className={`deliv-check${bookmark ? " on" : ""}`} aria-hidden="true">
+                          {bookmark && <Check size={12} strokeWidth={3} />}
+                        </span>
+                        <span className="deliv-addon-t">Matching bookmark</span>
+                      </div>
+                      {paySel === "COD" ? (
+                        <span className="deliv-addon-price">
+                          +₹{BOOKMARK_COD_CHARGE}
+                        </span>
+                      ) : (
+                        <span className="deliv-addon-free">FREE</span>
+                      )}
+                      <input
+                        type="checkbox"
+                        className="wc-switch-input"
+                        checked={bookmark}
+                        onChange={(e) => setBookmark(e.target.checked)}
+                      />
+                    </label>
                   </div>
 
                   <div className="ps-row ps-total">
@@ -1830,43 +1852,6 @@ export default function AddressModal({
                     </span>
                   </button>
                 </div>
-
-                {/* Bookmark add-on — free on online payment, ₹9 on COD */}
-                <button
-                  type="button"
-                  className={`pay-bookmark${bookmark ? " on" : ""}`}
-                  onClick={() => setBookmark((v) => !v)}
-                  aria-pressed={bookmark}
-                >
-                  <span className="pay-bookmark-ic">
-                    <Bookmark size={18} />
-                  </span>
-                  <span className="pay-bookmark-txt">
-                    <span className="pay-bookmark-t">
-                      Add a matching bookmark
-                    </span>
-                    <span className="pay-bookmark-s">
-                      {paySel === "COD" ? (
-                        <>
-                          <strong>+₹{BOOKMARK_COD_CHARGE}</strong> with Cash on
-                          Delivery · <b className="pay-bookmark-free">FREE</b> if
-                          you pay online
-                        </>
-                      ) : (
-                        <>
-                          <b className="pay-bookmark-free">FREE</b> with online
-                          payment · ₹{BOOKMARK_COD_CHARGE} on Cash on Delivery
-                        </>
-                      )}
-                    </span>
-                  </span>
-                  <span
-                    className={`pay-bookmark-check${bookmark ? " on" : ""}`}
-                    aria-hidden="true"
-                  >
-                    {bookmark && <Check size={13} strokeWidth={3} />}
-                  </span>
-                </button>
               </div>
 
               {/* Fixed footer — pay button (full width) + WhatsApp order */}

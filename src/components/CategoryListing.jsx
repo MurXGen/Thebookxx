@@ -120,51 +120,47 @@ export default function CategoryListing({ books = [], displayName = "", slug = "
     >
       <Navbar />
 
-      {/* Page-wide themed decor — mysterious "roots"/tendrils creeping down the
-          left & right edges (SVG), plus one faint category-icon watermark. */}
-      <div className="cat-decor" aria-hidden="true">
-        <svg
-          className="cat-root cat-root-left"
-          viewBox="0 0 140 900"
-          fill="none"
-          preserveAspectRatio="xMidYMid slice"
-        >
-          <path
-            d="M78 -10 C62 120 30 160 54 300 C78 440 20 505 48 660 C74 815 60 860 66 930"
-            stroke="currentColor"
-            strokeWidth="2.4"
-            strokeLinecap="round"
-          />
-          <path d="M60 150 C90 140 108 158 132 150" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-          <path d="M54 300 C26 316 12 300 -2 292" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-          <path d="M62 470 C96 486 112 470 136 462" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-          <path d="M48 660 C20 678 10 702 -6 708" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-          <circle cx="133" cy="150" r="3" fill="currentColor" />
-          <circle cx="-2" cy="292" r="3" fill="currentColor" />
-          <circle cx="136" cy="462" r="3" fill="currentColor" />
-        </svg>
-        <svg
-          className="cat-root cat-root-right"
-          viewBox="0 0 140 900"
-          fill="none"
-          preserveAspectRatio="xMidYMid slice"
-        >
-          <path
-            d="M78 -10 C62 120 30 160 54 300 C78 440 20 505 48 660 C74 815 60 860 66 930"
-            stroke="currentColor"
-            strokeWidth="2.4"
-            strokeLinecap="round"
-          />
-          <path d="M60 150 C90 140 108 158 132 150" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-          <path d="M54 300 C26 316 12 300 -2 292" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-          <path d="M62 470 C96 486 112 470 136 462" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-          <path d="M48 660 C20 678 10 702 -6 708" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-          <circle cx="133" cy="150" r="3" fill="currentColor" />
-          <circle cx="-2" cy="292" r="3" fill="currentColor" />
-          <circle cx="136" cy="462" r="3" fill="currentColor" />
-        </svg>
-        <CatIcon className="cat-decor-ic cat-decor-ic-1" strokeWidth={1.3} />
-      </div>
+      {/* Tree-root SVGs fixed to the left & right screen edges — tinted to the
+          category's accent, kept light. */}
+      <svg
+        className="cat-root cat-root-left"
+        viewBox="0 0 120 800"
+        fill="none"
+        preserveAspectRatio="xMidYMid slice"
+        aria-hidden="true"
+      >
+        <g stroke="currentColor" strokeLinecap="round" fill="none">
+          {/* main trunk hugging the edge */}
+          <path d="M6 -30 C10 110 26 180 14 300 C4 420 30 500 16 640 C8 740 14 790 12 840" strokeWidth="11" />
+          {/* primary roots branching inward */}
+          <path d="M16 170 C50 190 74 202 104 244" strokeWidth="6.5" />
+          <path d="M15 360 C46 378 70 398 96 448" strokeWidth="6" />
+          <path d="M15 560 C42 576 62 600 90 642" strokeWidth="5.5" />
+          {/* secondary offshoots + tips */}
+          <path d="M104 244 C114 252 119 266 122 284" strokeWidth="3" />
+          <path d="M96 448 C108 458 114 474 118 492" strokeWidth="3" />
+          <path d="M90 642 C102 652 108 668 112 686" strokeWidth="2.5" />
+          <path d="M14 90 C34 100 44 96 60 108" strokeWidth="3" />
+        </g>
+      </svg>
+      <svg
+        className="cat-root cat-root-right"
+        viewBox="0 0 120 800"
+        fill="none"
+        preserveAspectRatio="xMidYMid slice"
+        aria-hidden="true"
+      >
+        <g stroke="currentColor" strokeLinecap="round" fill="none">
+          <path d="M6 -30 C10 110 26 180 14 300 C4 420 30 500 16 640 C8 740 14 790 12 840" strokeWidth="11" />
+          <path d="M16 170 C50 190 74 202 104 244" strokeWidth="6.5" />
+          <path d="M15 360 C46 378 70 398 96 448" strokeWidth="6" />
+          <path d="M15 560 C42 576 62 600 90 642" strokeWidth="5.5" />
+          <path d="M104 244 C114 252 119 266 122 284" strokeWidth="3" />
+          <path d="M96 448 C108 458 114 474 118 492" strokeWidth="3" />
+          <path d="M90 642 C102 652 108 668 112 686" strokeWidth="2.5" />
+          <path d="M14 90 C34 100 44 96 60 108" strokeWidth="3" />
+        </g>
+      </svg>
 
       <Breadcrumbs
         items={[
@@ -172,8 +168,19 @@ export default function CategoryListing({ books = [], displayName = "", slug = "
           { label: `${displayName} Books` },
         ]}
       />
-      {/* SEO H1 kept for crawlers but visually hidden — breadcrumb is the header */}
-      <h1 className="sr-only">{displayName} Books</h1>
+      <div className="section-1200">
+        <div className="cat-hero-min">
+          <Link
+            href="/books"
+            className="cat-hero-back"
+            aria-label="Back to categories"
+          >
+            <ArrowLeft size={18} />
+          </Link>
+          {/* Visible H1 — kept for SEO */}
+          <h1 className="cat-hero-title">{displayName} Books</h1>
+        </div>
+      </div>
 
       {/* Filter / sort toolbar */}
       <div

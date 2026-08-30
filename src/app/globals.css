@@ -37867,29 +37867,16 @@ img[data-loaded="true"] {
   position: relative;
   min-height: 100vh;
 }
-/* Faint category-icon watermarks scattered behind the content (Lucide = SVG) */
-.cat-decor {
-  position: absolute;
-  inset: 0;
+/* Tree-root SVGs fixed to the screen edges — accent-tinted, kept light */
+.cat-root {
+  position: fixed;
+  top: 0;
+  height: 100vh;
+  width: 120px;
+  color: var(--cat-accent, #fb8500);
+  opacity: 0.14;
   pointer-events: none;
   z-index: 0;
-  overflow: hidden;
-}
-.cat-decor-ic {
-  position: absolute;
-  color: var(--cat-accent, #fb8500);
-  opacity: 0.12;
-}
-/* Roots/tendrils creeping down the left & right edges */
-.cat-root {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  height: 100%;
-  width: 130px;
-  color: var(--cat-accent, #fb8500);
-  opacity: 0.3;
-  pointer-events: none;
 }
 .cat-root-left {
   left: 0;
@@ -37900,36 +37887,40 @@ img[data-loaded="true"] {
 }
 @media (max-width: 700px) {
   .cat-root {
-    width: 74px;
-    opacity: 0.16;
+    width: 66px;
+    opacity: 0.1;
   }
 }
-.cat-decor-ic-1 {
-  width: 260px;
-  height: 260px;
-  top: 120px;
-  right: -60px;
-  transform: rotate(-12deg);
+/* Category header (light page) — back arrow + title */
+.cat-hero-min {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0 4px;
 }
-.cat-decor-ic-2 {
-  width: 200px;
-  height: 200px;
-  top: 52%;
-  left: -50px;
-  transform: rotate(14deg);
+.cat-hero-min .cat-hero-back {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--dark-4, #f4f4f5);
+  border: 1px solid var(--hairline, #ececec);
+  color: var(--foreground, #0a0a0a);
 }
-.cat-decor-ic-3 {
-  width: 170px;
-  height: 170px;
-  bottom: 40px;
-  right: 12%;
-  transform: rotate(8deg);
+.cat-hero-min .cat-hero-title {
+  font-size: var(--px-24, 24px);
+  font-weight: 800;
+  color: var(--foreground, #0a0a0a);
+  margin: 0;
 }
-/* keep real content above the decor */
-.cat-themed > .breadcrumbs,
-.cat-themed > .section-1200,
-.cat-themed > .lazy-book-grid,
-.cat-themed > div:not(.cat-decor) {
+/* keep real content above the fixed roots */
+.cat-themed .breadcrumbs-pro,
+.cat-themed .section-1200,
+.cat-themed .books-grid,
+.cat-themed .lazy-book-grid {
   position: relative;
   z-index: 1;
 }

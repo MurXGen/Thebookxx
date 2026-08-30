@@ -1567,7 +1567,7 @@ export default function AddressModal({
                       showToast(validationMessage(), "error");
                       return;
                     }
-                    setPaySel(null);
+                    setPaySel("UPI"); // online payment selected by default
                     setShowPaySelect(true);
                   }}
                 >

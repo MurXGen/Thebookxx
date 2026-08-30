@@ -37874,12 +37874,22 @@ img[data-loaded="true"] {
     ),
     linear-gradient(180deg, var(--cat-a, #111827), var(--cat-b, #020617));
 }
-/* Minimal themed header: back arrow + title, light text on the dark page */
+/* Minimal themed header: back arrow + title on an accent-tinted translucent bar */
 .cat-hero-min {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 6px 0 4px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-left: 4px solid var(--cat-accent, #fb8500);
+  background: linear-gradient(
+    100deg,
+    color-mix(in srgb, var(--cat-accent, #fb8500) 22%, transparent),
+    rgba(255, 255, 255, 0.04) 55%
+  );
+  box-shadow: none;
+  overflow: hidden;
 }
 .cat-hero-min .cat-hero-back {
   flex-shrink: 0;
@@ -37923,6 +37933,19 @@ img[data-loaded="true"] {
   border-color: var(--cat-accent, #fb8500);
   color: #10151f;
 }
+/* Book cards get a solid surface so their text is readable on the dark page */
+.cat-themed .books-grid .trending-card {
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  padding: 10px 10px 12px;
+  box-shadow: 0 12px 30px -18px rgba(0, 0, 0, 0.6);
+}
+.cat-themed .books-grid .trending-card:hover {
+  border-color: rgba(0, 0, 0, 0.06);
+  background: #fff;
+  box-shadow: 0 16px 34px -16px rgba(0, 0, 0, 0.7);
+}
 /* Faint category-icon watermarks scattered behind the content (Lucide = SVG) */
 .cat-decor {
   position: absolute;
@@ -37935,6 +37958,30 @@ img[data-loaded="true"] {
   position: absolute;
   color: var(--cat-accent, #fb8500);
   opacity: 0.12;
+}
+/* Roots/tendrils creeping down the left & right edges */
+.cat-root {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  height: 100%;
+  width: 130px;
+  color: var(--cat-accent, #fb8500);
+  opacity: 0.22;
+  pointer-events: none;
+}
+.cat-root-left {
+  left: 0;
+}
+.cat-root-right {
+  right: 0;
+  transform: scaleX(-1);
+}
+@media (max-width: 700px) {
+  .cat-root {
+    width: 74px;
+    opacity: 0.16;
+  }
 }
 .cat-decor-ic-1 {
   width: 260px;

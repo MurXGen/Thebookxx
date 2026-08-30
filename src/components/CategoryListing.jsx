@@ -120,11 +120,50 @@ export default function CategoryListing({ books = [], displayName = "", slug = "
     >
       <Navbar />
 
-      {/* Page-wide themed decor — faint category icon watermarks (SVG) */}
+      {/* Page-wide themed decor — mysterious "roots"/tendrils creeping down the
+          left & right edges (SVG), plus one faint category-icon watermark. */}
       <div className="cat-decor" aria-hidden="true">
-        <CatIcon className="cat-decor-ic cat-decor-ic-1" strokeWidth={1.4} />
-        <CatIcon className="cat-decor-ic cat-decor-ic-2" strokeWidth={1.4} />
-        <CatIcon className="cat-decor-ic cat-decor-ic-3" strokeWidth={1.4} />
+        <svg
+          className="cat-root cat-root-left"
+          viewBox="0 0 140 900"
+          fill="none"
+          preserveAspectRatio="xMidYMid slice"
+        >
+          <path
+            d="M78 -10 C62 120 30 160 54 300 C78 440 20 505 48 660 C74 815 60 860 66 930"
+            stroke="currentColor"
+            strokeWidth="2.4"
+            strokeLinecap="round"
+          />
+          <path d="M60 150 C90 140 108 158 132 150" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+          <path d="M54 300 C26 316 12 300 -2 292" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+          <path d="M62 470 C96 486 112 470 136 462" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+          <path d="M48 660 C20 678 10 702 -6 708" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+          <circle cx="133" cy="150" r="3" fill="currentColor" />
+          <circle cx="-2" cy="292" r="3" fill="currentColor" />
+          <circle cx="136" cy="462" r="3" fill="currentColor" />
+        </svg>
+        <svg
+          className="cat-root cat-root-right"
+          viewBox="0 0 140 900"
+          fill="none"
+          preserveAspectRatio="xMidYMid slice"
+        >
+          <path
+            d="M78 -10 C62 120 30 160 54 300 C78 440 20 505 48 660 C74 815 60 860 66 930"
+            stroke="currentColor"
+            strokeWidth="2.4"
+            strokeLinecap="round"
+          />
+          <path d="M60 150 C90 140 108 158 132 150" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+          <path d="M54 300 C26 316 12 300 -2 292" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+          <path d="M62 470 C96 486 112 470 136 462" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+          <path d="M48 660 C20 678 10 702 -6 708" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+          <circle cx="133" cy="150" r="3" fill="currentColor" />
+          <circle cx="-2" cy="292" r="3" fill="currentColor" />
+          <circle cx="136" cy="462" r="3" fill="currentColor" />
+        </svg>
+        <CatIcon className="cat-decor-ic cat-decor-ic-1" strokeWidth={1.3} />
       </div>
 
       <Breadcrumbs

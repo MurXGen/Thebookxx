@@ -37910,10 +37910,14 @@ img[data-loaded="true"] {
   margin: 0;
 }
 /* Light text for the content that sits on the dark themed page */
-.cat-themed .breadcrumbs,
-.cat-themed .breadcrumbs a,
-.cat-themed .breadcrumbs span {
-  color: rgba(255, 255, 255, 0.8);
+.cat-themed .bc-current {
+  color: rgba(255, 255, 255, 0.92);
+}
+.cat-themed .bc-sep {
+  color: rgba(255, 255, 255, 0.4);
+}
+.cat-themed .bc-link {
+  color: var(--cat-accent, #fb8500);
 }
 .cat-themed .font-12.dark-50,
 .cat-themed .dark-50 {

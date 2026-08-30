@@ -34,6 +34,7 @@ import {
 import BookCard from "@/components/BookCard";
 import LazyBookGrid from "@/components/UI/LazyBookGrid";
 import Breadcrumbs from "@/components/UI/Breadcrumbs";
+import Navbar from "@/components/Navbar";
 import { getCategoryTheme } from "@/utils/categoryThemes";
 
 const CAT_ICONS = {
@@ -117,6 +118,8 @@ export default function CategoryListing({ books = [], displayName = "", slug = "
         "--cat-accent": theme.accent,
       }}
     >
+      <Navbar />
+
       {/* Page-wide themed decor — faint category icon watermarks (SVG) */}
       <div className="cat-decor" aria-hidden="true">
         <CatIcon className="cat-decor-ic cat-decor-ic-1" strokeWidth={1.4} />
@@ -131,10 +134,8 @@ export default function CategoryListing({ books = [], displayName = "", slug = "
         ]}
       />
       <div className="section-1200">
-        <div className="cat-hero cat-hero-themed">
-          <span className="cat-hero-motif" aria-hidden="true">
-            <CatIcon size={128} strokeWidth={1.2} />
-          </span>
+        {/* Minimal header — just back arrow + category title */}
+        <div className="cat-hero cat-hero-min">
           <Link
             href="/books"
             className="cat-hero-back"
@@ -142,32 +143,8 @@ export default function CategoryListing({ books = [], displayName = "", slug = "
           >
             <ArrowLeft size={18} />
           </Link>
-          <span className="cat-hero-icon" aria-hidden="true">
-            <CatIcon size={22} strokeWidth={2.2} />
-          </span>
-          <div className="cat-hero-text">
-            <span className="cat-hero-eyebrow">{theme.tagline}</span>
-            {/* Real H1 for SEO */}
-            <h1 className="cat-hero-title">{displayName} Books</h1>
-            <span className="cat-hero-sub">
-              {books.length} books · from ₹1 · free delivery across India
-            </span>
-          </div>
-          <div className="cat-hero-thumbs">
-            {books
-              .filter((b) => b.image)
-              .slice(0, 3)
-              .map((b, i) => (
-                <img
-                  key={i}
-                  src={typeof b.image === "string" ? b.image : b.image?.src}
-                  alt=""
-                  aria-hidden="true"
-                  className="cat-hero-thumb"
-                  loading="lazy"
-                />
-              ))}
-          </div>
+          {/* Real H1 for SEO */}
+          <h1 className="cat-hero-title">{displayName} Books</h1>
         </div>
       </div>
 

@@ -37865,14 +37865,63 @@ img[data-loaded="true"] {
 .cat-themed {
   position: relative;
   min-height: 100vh;
+  /* The whole page takes the category's dark theme gradient */
   background:
     radial-gradient(
-      120% 60% at 100% 0%,
-      color-mix(in srgb, var(--cat-accent, #fb8500) 14%, transparent) 0%,
-      transparent 60%
+      120% 55% at 100% 0%,
+      color-mix(in srgb, var(--cat-accent, #fb8500) 28%, transparent) 0%,
+      transparent 55%
     ),
-    color-mix(in srgb, var(--cat-accent, #fb8500) 5%, #ffffff);
-  overflow: hidden;
+    linear-gradient(180deg, var(--cat-a, #111827), var(--cat-b, #020617));
+}
+/* Minimal themed header: back arrow + title, light text on the dark page */
+.cat-hero-min {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 0 4px;
+}
+.cat-hero-min .cat-hero-back {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+}
+.cat-hero-min .cat-hero-title {
+  font-size: var(--px-24, 24px);
+  font-weight: 800;
+  color: #fff;
+  margin: 0;
+}
+/* Light text for the content that sits on the dark themed page */
+.cat-themed .breadcrumbs,
+.cat-themed .breadcrumbs a,
+.cat-themed .breadcrumbs span {
+  color: rgba(255, 255, 255, 0.8);
+}
+.cat-themed .font-12.dark-50,
+.cat-themed .dark-50 {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+.cat-themed .font-12.dark-50 b {
+  color: #fff;
+}
+/* Filter/sort chips readable on the dark page */
+.cat-themed .sec-mid-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.22);
+  color: #fff;
+}
+.cat-themed .sec-mid-btn.active {
+  background: var(--cat-accent, #fb8500);
+  border-color: var(--cat-accent, #fb8500);
+  color: #10151f;
 }
 /* Faint category-icon watermarks scattered behind the content (Lucide = SVG) */
 .cat-decor {
@@ -37885,7 +37934,7 @@ img[data-loaded="true"] {
 .cat-decor-ic {
   position: absolute;
   color: var(--cat-accent, #fb8500);
-  opacity: 0.06;
+  opacity: 0.12;
 }
 .cat-decor-ic-1 {
   width: 260px;

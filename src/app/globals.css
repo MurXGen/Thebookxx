@@ -37862,93 +37862,10 @@ img[data-loaded="true"] {
 }
 
 /* ── Whole-page category theming + SVG icon decor ── */
+/* Normal page background — only the edge roots carry the category theme. */
 .cat-themed {
   position: relative;
   min-height: 100vh;
-  /* The whole page takes the category's dark theme gradient */
-  background:
-    radial-gradient(
-      120% 55% at 100% 0%,
-      color-mix(in srgb, var(--cat-accent, #fb8500) 28%, transparent) 0%,
-      transparent 55%
-    ),
-    linear-gradient(180deg, var(--cat-a, #111827), var(--cat-b, #020617));
-}
-/* Minimal themed header: back arrow + title on an accent-tinted translucent bar */
-.cat-hero-min {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-left: 4px solid var(--cat-accent, #fb8500);
-  background: linear-gradient(
-    100deg,
-    color-mix(in srgb, var(--cat-accent, #fb8500) 22%, transparent),
-    rgba(255, 255, 255, 0.04) 55%
-  );
-  box-shadow: none;
-  overflow: hidden;
-}
-.cat-hero-min .cat-hero-back {
-  flex-shrink: 0;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.14);
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-}
-.cat-hero-min .cat-hero-title {
-  font-size: var(--px-24, 24px);
-  font-weight: 800;
-  color: #fff;
-  margin: 0;
-}
-/* Light text for the content that sits on the dark themed page */
-.cat-themed .bc-current {
-  color: rgba(255, 255, 255, 0.92);
-}
-.cat-themed .bc-sep {
-  color: rgba(255, 255, 255, 0.4);
-}
-.cat-themed .bc-link {
-  color: var(--cat-accent, #fb8500);
-}
-.cat-themed .font-12.dark-50,
-.cat-themed .dark-50 {
-  color: rgba(255, 255, 255, 0.7) !important;
-}
-.cat-themed .font-12.dark-50 b {
-  color: #fff;
-}
-/* Filter/sort chips readable on the dark page */
-.cat-themed .sec-mid-btn {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.22);
-  color: #fff;
-}
-.cat-themed .sec-mid-btn.active {
-  background: var(--cat-accent, #fb8500);
-  border-color: var(--cat-accent, #fb8500);
-  color: #10151f;
-}
-/* Book cards get a solid surface so their text is readable on the dark page */
-.cat-themed .books-grid .trending-card {
-  background: #fff;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  border-radius: 16px;
-  padding: 10px 10px 12px;
-  box-shadow: 0 12px 30px -18px rgba(0, 0, 0, 0.6);
-}
-.cat-themed .books-grid .trending-card:hover {
-  border-color: rgba(0, 0, 0, 0.06);
-  background: #fff;
-  box-shadow: 0 16px 34px -16px rgba(0, 0, 0, 0.7);
 }
 /* Faint category-icon watermarks scattered behind the content (Lucide = SVG) */
 .cat-decor {
@@ -37971,7 +37888,7 @@ img[data-loaded="true"] {
   height: 100%;
   width: 130px;
   color: var(--cat-accent, #fb8500);
-  opacity: 0.22;
+  opacity: 0.3;
   pointer-events: none;
 }
 .cat-root-left {

@@ -38077,8 +38077,8 @@ img[data-loaded="true"] {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 3px;
-  padding: 12px 12px 10px;
+  gap: 2px;
+  padding: 10px 12px 8px;
   border: 1px solid var(--hairline, #ececec);
   border-radius: 12px;
   background: #fff;
@@ -38108,6 +38108,9 @@ img[data-loaded="true"] {
   border-color: var(--tertiary, #fb8500);
 }
 .pa2-emoji {
+  position: absolute;
+  right: 9px;
+  bottom: 7px;
   font-size: 20px;
   line-height: 1;
 }
@@ -38116,7 +38119,7 @@ img[data-loaded="true"] {
   font-weight: 700;
   color: var(--foreground, #0a0a0a);
   line-height: 1.2;
-  padding-right: 22px;
+  padding-right: 24px;
 }
 .pa2-price {
   font-size: 12px;

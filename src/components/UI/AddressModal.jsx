@@ -1759,7 +1759,7 @@ export default function AddressModal({
                     </span>
                     <span className="wc-apply-txt">
                       <span className="wc-bal">
-                        Use coins · balance ₹{walletBalance}
+                        Use wallet balance · ₹{walletBalance}
                       </span>
                       <span className="wc-apply-note">
                         {walletEnabled

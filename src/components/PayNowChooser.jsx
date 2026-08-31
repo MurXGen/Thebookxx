@@ -20,6 +20,45 @@ import { FaWhatsapp } from "react-icons/fa";
 const UPI_ID = "7977960242-1@okbizaxis";
 const SUPPORT_WA = "917710892108";
 
+// Inline UPI-app brand marks (no PNG assets to host). Rendered inside the
+// 40×40 tile — recognisable logos so shoppers pick the right app at a glance.
+function UpiLogo({ app }) {
+  if (app === "Google Pay") {
+    return (
+      <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          fill="#4285F4"
+          d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82z"
+        />
+        <path
+          fill="#34A853"
+          d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96H1.29v3.09C3.26 21.3 7.31 24 12 24z"
+        />
+        <path
+          fill="#FBBC05"
+          d="M5.27 14.29c-.25-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.98-3.09z"
+        />
+        <path
+          fill="#EA4335"
+          d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.98 3.09C6.22 6.86 8.87 4.75 12 4.75z"
+        />
+      </svg>
+    );
+  }
+  if (app === "PhonePe") {
+    return <span className="upi-word upi-phonepe">Pe</span>;
+  }
+  if (app === "Paytm") {
+    return (
+      <span className="upi-word upi-paytm">
+        <span style={{ color: "#00baf2" }}>pay</span>
+        <span style={{ color: "#002970" }}>tm</span>
+      </span>
+    );
+  }
+  return <Smartphone size={18} />;
+}
+
 // Standalone "Pay here" flow used from the shared invoice (thebookx.in?orderID=).
 // Mirrors the checkout chooser: UPI apps → QR/deep-link; Cards/net-banking &
 // Amazon voucher → gift-card code. Completion is confirmed over WhatsApp since
@@ -176,9 +215,9 @@ export default function PayNowChooser({
               <span className="paymeth-group-title">Pay via UPI</span>
               <div className="paymeth-apps">
                 {[
-                  { k: "Paytm", c: "#00baf2" },
+                  { k: "Paytm", light: true },
                   { k: "PhonePe", c: "#5f259f" },
-                  { k: "Google Pay", c: "#1a73e8" },
+                  { k: "Google Pay", light: true },
                   { k: "Other UPI apps", c: "#fb8500" },
                 ].map((app) => (
                   <button
@@ -188,14 +227,10 @@ export default function PayNowChooser({
                     onClick={() => chooseUpi(app.k)}
                   >
                     <span
-                      className="paymeth-app-ic"
-                      style={{ background: app.c }}
+                      className={`paymeth-app-ic${app.light ? " light" : ""}`}
+                      style={app.c ? { background: app.c } : undefined}
                     >
-                      {app.k === "Other UPI apps" ? (
-                        <Smartphone size={18} />
-                      ) : (
-                        app.k[0]
-                      )}
+                      <UpiLogo app={app.k} />
                     </span>
                     <span className="paymeth-app-nm">{app.k}</span>
                   </button>

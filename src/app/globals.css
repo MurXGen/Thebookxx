@@ -28339,6 +28339,22 @@ img[data-loaded="true"] {
   font-size: 18px;
   font-weight: 800;
 }
+.paymeth-app-ic.light {
+  background: #fff;
+  border: 1px solid var(--hairline, #ececec);
+}
+.upi-word {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.upi-phonepe {
+  color: #fff;
+  font-size: 17px;
+}
+.upi-paytm {
+  font-size: 13px;
+}
 .paymeth-app-nm {
   font-size: 11.5px;
   font-weight: 700;

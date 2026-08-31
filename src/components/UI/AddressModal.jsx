@@ -1630,8 +1630,7 @@ export default function AddressModal({
                           aria-expanded={billItemsOpen}
                         >
                           <span className="ps-items-count">
-                            {bookCount} {bookCount > 1 ? "items" : "item"} · ₹
-                            {totalDiscounted}
+                            {bookCount} {bookCount > 1 ? "items" : "item"}
                           </span>
                           <ChevronDown
                             size={16}

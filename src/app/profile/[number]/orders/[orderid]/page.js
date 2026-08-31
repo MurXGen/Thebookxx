@@ -122,6 +122,13 @@ function loadLeaflet() {
   });
 }
 
+// Express delivery when the Shipping ID starts with "E" (or the delivery type
+// says faster/express). Drives the vehicle emoji, ETA and progress window.
+function isExpressOrder(order) {
+  const sid = String(order["Shipping ID"] || order.shippingId || "").trim();
+  return /^e/i.test(sid) || /faster|express/i.test(order["Delivery Type"] || "");
+}
+
 // Journey progress 0..1 from status (primary) + days elapsed (secondary).
 function computeProgress(order) {
   const st = String(order["Order Status"] || order.status || "").toLowerCase();
@@ -130,13 +137,20 @@ function computeProgress(order) {
   if (/out for delivery/.test(st)) return 1;
   // Only once it's actually in transit do we move the vehicle along the route.
   if (/in\s*transit/.test(st)) {
-    const isFaster = /faster|express/.test(order["Delivery Type"] || "");
-    const win = isFaster ? 5 : 12;
+    const win = isExpressOrder(order) ? 5 : 12;
     const od = parseSheetDate(
       order["Timestamp (D)"] || order["Timestamp"] || order["Timestamp(D)"],
     );
     const days = od ? (Date.now() - od.getTime()) / 86400000 : 0;
-    return Math.min(0.85, Math.max(0.3, days / win));
+    // After 3 days the parcel is shown at least halfway (feels "nearer"), then
+    // it keeps progressing from that point; before that it ramps up to ~50%.
+    let p;
+    if (days >= 3) {
+      p = 0.5 + Math.min(0.4, ((days - 3) / win) * 0.9);
+    } else {
+      p = Math.max(0.3, (days / 3) * 0.5);
+    }
+    return Math.min(0.92, p);
   }
   // Confirmed / getting shipped / anything else → still at the source.
   return 0;
@@ -335,10 +349,6 @@ export default function OrderDetailPage() {
         '<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>';
       const ICON_HOME =
         '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/>';
-      const ICON_TRAIN =
-        '<rect width="16" height="16" x="4" y="3" rx="2"/><path d="M4 11h16"/><path d="M12 3v8"/><path d="m8 19-2 3"/><path d="m18 22-2-3"/><path d="M8 15h.01"/><path d="M16 15h.01"/>';
-      const ICON_PLANE =
-        '<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>';
       const dot = (color, inner, size = 30) =>
         L.divIcon({
           className: "od-pin",
@@ -360,9 +370,16 @@ export default function OrderDetailPage() {
 
       L.marker(A, { icon: dot("#111827", ICON_BOOK) }).addTo(map);
       L.marker(B, { icon: dot("#c0223b", ICON_HOME) }).addTo(map);
-      // Vehicle travelling the route — train for standard, plane for express.
+      // Vehicle travelling the route — ✈️ for express (Shipping ID starts "E"),
+      // 🚆 for standard. Rendered as an emoji marker.
+      const vehicleEmoji = isExpressOrder(order) ? "✈️" : "🚆";
       const vehicle = L.marker(path[0], {
-        icon: dot("#111827", isFaster ? ICON_PLANE : ICON_TRAIN, 36),
+        icon: L.divIcon({
+          className: "od-vehicle",
+          html: `<span style="font-size:26px;line-height:1;filter:drop-shadow(0 3px 4px rgba(0,0,0,.4))">${vehicleEmoji}</span>`,
+          iconSize: [30, 30],
+          iconAnchor: [15, 15],
+        }),
         zIndexOffset: 1000,
       }).addTo(map);
 
@@ -732,7 +749,7 @@ export default function OrderDetailPage() {
     .filter(Boolean)
     .join(", ");
   const stLabel = statusLabel(order);
-  const isFaster = /faster|express/i.test(order["Delivery Type"] || "");
+  const isFaster = isExpressOrder(order);
   const inTransit = /in\s*transit/i.test(order["Order Status"] || "");
   const outForDelivery = /out\s*for\s*delivery/i.test(order["Order Status"] || "");
   const delivered = /delivered|money received/i.test(order["Order Status"] || "");

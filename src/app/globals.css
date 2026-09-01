@@ -30885,6 +30885,11 @@ img[data-loaded="true"] {
   border-radius: 12px;
   overflow: hidden;
 }
+/* Odd number of cells: last one spans the full row so there's no empty,
+   background-only slot dangling in the grid. */
+.an2-stats > .an2-stat:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
 .an2-stat-x {
   font-size: 10px;
   color: var(--dark-50);

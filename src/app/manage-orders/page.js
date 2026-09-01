@@ -7534,47 +7534,59 @@ export default function ManageOrdersPage() {
                 <div className="an2-stat-ic">
                   <User size={16} />
                 </div>
-                <span className="an2-stat-val">{userSummary.total}</span>
-                <span className="an2-stat-lbl">Total customers</span>
+                <div className="an2-stat-body">
+                  <span className="an2-stat-val">{userSummary.total}</span>
+                  <span className="an2-stat-lbl">Total customers</span>
+                </div>
               </div>
               <div className="an2-stat s-profit">
                 <div className="an2-stat-ic">
                   <TrendingUp size={16} />
                 </div>
-                <span className="an2-stat-val">{userSummary.repeatCount}</span>
-                <span className="an2-stat-lbl">
-                  Repeat buyers · {userSummary.repeatPct}%
-                </span>
+                <div className="an2-stat-body">
+                  <span className="an2-stat-val">
+                    {userSummary.repeatCount}
+                  </span>
+                  <span className="an2-stat-lbl">
+                    Repeat buyers · {userSummary.repeatPct}%
+                  </span>
+                </div>
               </div>
               <div className="an2-stat s-aov">
                 <div className="an2-stat-ic">
                   <IndianRupee size={16} />
                 </div>
-                <span className="an2-stat-val">
-                  ₹{userSummary.repeatAvg.toLocaleString()}
-                </span>
-                <span className="an2-stat-lbl">Avg order · repeat</span>
+                <div className="an2-stat-body">
+                  <span className="an2-stat-val">
+                    ₹{userSummary.repeatAvg.toLocaleString()}
+                  </span>
+                  <span className="an2-stat-lbl">Avg order · repeat</span>
+                </div>
               </div>
               <div className="an2-stat s-units">
                 <div className="an2-stat-ic">
                   <IndianRupee size={16} />
                 </div>
-                <span className="an2-stat-val">
-                  ₹{userSummary.overallAvg.toLocaleString()}
-                </span>
-                <span className="an2-stat-lbl">Avg order · all</span>
+                <div className="an2-stat-body">
+                  <span className="an2-stat-val">
+                    ₹{userSummary.overallAvg.toLocaleString()}
+                  </span>
+                  <span className="an2-stat-lbl">Avg order · all</span>
+                </div>
               </div>
               <div className="an2-stat s-rev">
                 <div className="an2-stat-ic">
                   <Wallet size={16} />
                 </div>
-                <span className="an2-stat-val">
-                  ₹{userSummary.walletTotal.toLocaleString()}
-                </span>
-                <span className="an2-stat-lbl">
-                  Wallet liability · {userSummary.walletHolders} holder
-                  {userSummary.walletHolders === 1 ? "" : "s"}
-                </span>
+                <div className="an2-stat-body">
+                  <span className="an2-stat-val">
+                    ₹{userSummary.walletTotal.toLocaleString()}
+                  </span>
+                  <span className="an2-stat-lbl">
+                    Wallet liability · {userSummary.walletHolders} holder
+                    {userSummary.walletHolders === 1 ? "" : "s"}
+                  </span>
+                </div>
               </div>
             </div>
 

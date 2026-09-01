@@ -22948,8 +22948,6 @@ img[data-loaded="true"] {
    is the header). The card is a flex column with gap, so a top border on
    each following section reads as an in-between separator. */
 .mo-when-row,
-.mo-status-frame,
-.mo-price-block,
 .mo-covers,
 .mo-card-desc {
   border-top: 1px dashed var(--hairline, #ececec);
@@ -22974,19 +22972,30 @@ img[data-loaded="true"] {
   color: var(--tertiary, #fb8500);
 }
 
-/* Status + actions framed together like one secondary button. */
-.mo-status-frame {
-  display: flex;
-  align-items: stretch;
+/* Unified status + price panel — one bordered box, rows split by a line. */
+.mo-panel {
   border: 1px solid var(--hairline, #ececec);
-  border-radius: 10px;
-  background: var(--background, #fff);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.75);
   overflow: hidden;
-  height: 40px;
   transition: border-color 0.18s ease, box-shadow 0.18s ease;
 }
-.mo-status-frame:hover {
-  border-color: rgba(0, 0, 0, 0.2);
+.mo-panel:hover {
+  border-color: rgba(0, 0, 0, 0.18);
+}
+.mo-panel-status {
+  display: flex;
+  align-items: stretch;
+  height: 42px;
+  border-bottom: 1px solid var(--hairline, #ececec);
+}
+.mo-panel-price {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 10px 12px;
 }
 .mo-status-select-wrap {
   position: relative;
@@ -22995,7 +23004,7 @@ img[data-loaded="true"] {
   display: flex;
   align-items: center;
 }
-.mo-status-frame .mo-status-quick {
+.mo-panel-status .mo-status-quick {
   flex: 1 1 auto;
   width: 100%;
   min-width: 0;
@@ -23038,15 +23047,15 @@ img[data-loaded="true"] {
   border-left: 1px solid var(--hairline, #ececec);
 }
 
-.mo-price-block {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+.mo-panel-price .mo-amount {
+  flex: 0 0 auto;
 }
 .mo-addon-badges {
   display: flex;
   flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 6px;
+  flex: 1 1 auto;
 }
 .mo-addon-badge {
   display: inline-flex;

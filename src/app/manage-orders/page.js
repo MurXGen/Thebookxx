@@ -8951,12 +8951,13 @@ export default function ManageOrdersPage() {
                               )}
                             </div>
 
-                            {/* Status (stretched) + WhatsApp + open-order icons,
-                                framed together like one secondary button. */}
+                            {/* Unified panel — status row + price row, one
+                                bordered grid separated by lines. */}
                             <div
-                              className="mo-status-frame"
+                              className="mo-panel"
                               onClick={(e) => e.stopPropagation()}
                             >
+                              <div className="mo-panel-status">
                               <div className="mo-status-select-wrap">
                                 <select
                                   className={`mo-status-quick${pendingStatus[orderId] ? " dirty" : ""}`}
@@ -9012,10 +9013,10 @@ export default function ManageOrdersPage() {
                                   <ExternalLink size={15} />
                                 </a>
                               )}
-                            </div>
+                              </div>
 
-                            {/* Book total + benefit badges (add-ons / savings). */}
-                            <div className="mo-price-block">
+                              {/* Book total + benefit badges (add-ons / savings). */}
+                              <div className="mo-panel-price">
                               {(() => {
                                 const rev = Number(order.revenue) || 0;
                                 // 5.9% deduction applies to COD orders only.
@@ -9108,6 +9109,7 @@ export default function ManageOrdersPage() {
                                   </div>
                                 );
                               })()}
+                              </div>
                             </div>
 
                             {/* Book covers — scrollable row with name + price,

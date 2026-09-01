@@ -22252,8 +22252,31 @@ img[data-loaded="true"] {
 .admin-order-card.mo-card {
   border: 1px solid transparent;
   border-radius: var(--px-14, 14px);
+  /* Full-width line-grid: sections are edge-to-edge cells, so kill the
+     card's own padding/gap and let each row carry its own padding + line. */
+  padding: 0;
+  gap: 0;
+  overflow: hidden;
   transition: border-color 0.2s ease, box-shadow 0.2s ease,
     background 0.2s ease, transform 0.2s cubic-bezier(0.32, 0.72, 0, 1);
+}
+/* Every section is a grid row divided by a dashed line (last row: none). */
+.mo-card > .mo-card-top,
+.mo-card > .mo-when-row,
+.mo-card > .mo-panel,
+.mo-card > .mo-covers,
+.mo-card > .mo-card-desc,
+.mo-card > .mo-cust-note {
+  border-top: none;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  padding-left: 16px;
+  padding-right: 16px;
+  border-bottom: 1px dashed var(--hairline, #ececec);
+}
+.mo-card > .mo-card-desc:last-child,
+.mo-card > .mo-cust-note:last-child {
+  border-bottom: none;
 }
 .admin-order-card.mo-card:hover {
   border-color: rgba(0, 0, 0, 0.14);
@@ -22947,12 +22970,6 @@ img[data-loaded="true"] {
 /* Light dashed divider between every section (not above the first, which
    is the header). The card is a flex column with gap, so a top border on
    each following section reads as an in-between separator. */
-.mo-when-row,
-.mo-covers,
-.mo-card-desc {
-  border-top: 1px dashed var(--hairline, #ececec);
-  padding-top: 12px;
-}
 .mo-when-row {
   display: flex;
   align-items: center;
@@ -22972,22 +22989,16 @@ img[data-loaded="true"] {
   color: var(--tertiary, #fb8500);
 }
 
-/* Unified status + price panel — one bordered box, rows split by a line. */
-.mo-panel {
-  border: 1px solid var(--hairline, #ececec);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.75);
-  overflow: hidden;
-  transition: border-color 0.18s ease, box-shadow 0.18s ease;
-}
-.mo-panel:hover {
-  border-color: rgba(0, 0, 0, 0.18);
+/* Status + price live as two edge-to-edge grid rows inside the card. The
+   card-row rule zeroes the panel's own padding; each sub-row carries its own. */
+.mo-card > .mo-panel {
+  padding: 0;
 }
 .mo-panel-status {
   display: flex;
   align-items: stretch;
-  height: 42px;
-  border-bottom: 1px solid var(--hairline, #ececec);
+  height: 46px;
+  border-bottom: 1px dashed var(--hairline, #ececec);
 }
 .mo-panel-price {
   display: flex;
@@ -22995,7 +23006,7 @@ img[data-loaded="true"] {
   justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
-  padding: 10px 12px;
+  padding: 10px 16px;
 }
 .mo-status-select-wrap {
   position: relative;
@@ -23012,7 +23023,7 @@ img[data-loaded="true"] {
   border: none !important;
   border-radius: 0 !important;
   background: transparent !important;
-  padding: 0 30px 0 12px;
+  padding: 0 30px 0 16px;
   font-weight: 700;
   appearance: none;
   -webkit-appearance: none;

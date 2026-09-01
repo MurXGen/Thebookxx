@@ -2804,6 +2804,8 @@ export default function ManageOrdersPage() {
   // draft state for inline tracking-ID and address edits pushed to the sheet.
   const [expandedCards, setExpandedCards] = useState({}); // { orderId: true }
   const [billOrderId, setBillOrderId] = useState(null); // order whose bill modal is open
+  const longPressRef = useRef(false); // true right after a long-press selects a card
+  const lpTimer = useRef(null); // long-press timer handle
   const [trackDrafts, setTrackDrafts] = useState({}); // { orderId: "CX..." }
   const [addrEdit, setAddrEdit] = useState({}); // { orderId: {address,city,state,pincode} }
   const [rowSaving, setRowSaving] = useState({}); // { orderId: "tracking"|"address"|"status" }
@@ -8794,6 +8796,30 @@ export default function ManageOrdersPage() {
                             }${cardSelectMode ? " selectable" : ""}${
                               isSelected ? " selected" : ""
                             }`}
+                            onPointerDown={() => {
+                              if (cardSelectMode) return;
+                              longPressRef.current = false;
+                              clearTimeout(lpTimer.current);
+                              lpTimer.current = setTimeout(() => {
+                                longPressRef.current = true;
+                                setCardSelectMode(true);
+                                setSelectedIds((p) =>
+                                  p.includes(orderId)
+                                    ? p
+                                    : [...p, orderId],
+                                );
+                                if (navigator.vibrate) navigator.vibrate(15);
+                              }, 480);
+                            }}
+                            onPointerUp={() =>
+                              clearTimeout(lpTimer.current)
+                            }
+                            onPointerMove={() =>
+                              clearTimeout(lpTimer.current)
+                            }
+                            onPointerLeave={() =>
+                              clearTimeout(lpTimer.current)
+                            }
                           >
                             {cardSelectMode && (
                               <button
@@ -8812,11 +8838,15 @@ export default function ManageOrdersPage() {
                             {/* Top — serial · name · payment pill. */}
                             <div
                               className="mo-card-top mo-card-top-toggle"
-                              onClick={() =>
+                              onClick={() => {
+                                if (longPressRef.current) {
+                                  longPressRef.current = false;
+                                  return;
+                                }
                                 cardSelectMode
                                   ? toggleCardSelect()
-                                  : setBillOrderId(orderId)
-                              }
+                                  : setBillOrderId(orderId);
+                              }}
                               title={
                                 cardSelectMode
                                   ? isSelected
@@ -8831,11 +8861,37 @@ export default function ManageOrdersPage() {
                                   <span className="mo-name">
                                     {order["Customer Name"] || "—"}
                                   </span>
-                                  <span
-                                    className={`mo-pay-pill ${isCOD ? "cod" : "upi"}`}
-                                  >
-                                    {isCOD ? "COD" : "UPI"}
-                                  </span>
+                                  <div className="mo-name-right">
+                                    <span
+                                      className={`mo-pay-pill ${isCOD ? "cod" : "upi"}`}
+                                    >
+                                      {isCOD ? "COD" : "UPI"}
+                                    </span>
+                                    <button
+                                      type="button"
+                                      className="mo-copy-ic"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        copyToClipboard(
+                                          orderId,
+                                          `order-${idx}`,
+                                        );
+                                      }}
+                                      title="Copy order ID"
+                                    >
+                                      {copiedId === `order-${idx}` ? (
+                                        <Check
+                                          size={13}
+                                          className="text-green"
+                                        />
+                                      ) : (
+                                        <Copy
+                                          size={13}
+                                          className="gray-500"
+                                        />
+                                      )}
+                                    </button>
+                                  </div>
                                 </div>
                                 <div
                                   className="mo-meta"
@@ -8858,33 +8914,6 @@ export default function ManageOrdersPage() {
                                     title="Copy phone"
                                   >
                                     {copiedId === `phone-${idx}` ? (
-                                      <Check size={12} className="text-green" />
-                                    ) : (
-                                      <Copy size={11} className="gray-500" />
-                                    )}
-                                  </button>
-                                </div>
-                                <div
-                                  className="mo-meta"
-                                  onClick={(e) => e.stopPropagation()}
-                                >
-                                  <span className="mo-meta-label">Order</span>
-                                  <span className="mo-meta-val mo-oid-val">
-                                    {oidStr.slice(0, -3)}
-                                    <span className="mo-oid-hl">
-                                      {oidStr.slice(-3)}
-                                    </span>
-                                  </span>
-                                  <button
-                                    type="button"
-                                    className="mo-copy-ic"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      copyToClipboard(orderId, `order-${idx}`);
-                                    }}
-                                    title="Copy order ID"
-                                  >
-                                    {copiedId === `order-${idx}` ? (
                                       <Check size={12} className="text-green" />
                                     ) : (
                                       <Copy size={11} className="gray-500" />
@@ -8922,36 +8951,43 @@ export default function ManageOrdersPage() {
                               )}
                             </div>
 
-                            {/* Status (stretched) + WhatsApp + open-order icons. */}
+                            {/* Status (stretched) + WhatsApp + open-order icons,
+                                framed together like one secondary button. */}
                             <div
-                              className="mo-status-row2"
+                              className="mo-status-frame"
                               onClick={(e) => e.stopPropagation()}
                             >
-                              <select
-                                className={`mo-status-quick${pendingStatus[orderId] ? " dirty" : ""}`}
-                                value={order.status || "Processing"}
-                                title="Change status (queued — push to save)"
-                                onChange={(e) => {
-                                  const val = e.target.value;
-                                  patchLocalOrder(orderId, {
-                                    "Order Status": val,
-                                    status: val,
-                                  });
-                                  setPendingStatus((prev) => ({
-                                    ...prev,
-                                    [orderId]: val,
-                                  }));
-                                }}
-                              >
-                                {TRACK_STATUS_OPTIONS.map((s) => (
-                                  <option key={s} value={s}>
-                                    {s}
-                                  </option>
-                                ))}
-                              </select>
+                              <div className="mo-status-select-wrap">
+                                <select
+                                  className={`mo-status-quick${pendingStatus[orderId] ? " dirty" : ""}`}
+                                  value={order.status || "Processing"}
+                                  title="Change status (queued — push to save)"
+                                  onChange={(e) => {
+                                    const val = e.target.value;
+                                    patchLocalOrder(orderId, {
+                                      "Order Status": val,
+                                      status: val,
+                                    });
+                                    setPendingStatus((prev) => ({
+                                      ...prev,
+                                      [orderId]: val,
+                                    }));
+                                  }}
+                                >
+                                  {TRACK_STATUS_OPTIONS.map((s) => (
+                                    <option key={s} value={s}>
+                                      {s}
+                                    </option>
+                                  ))}
+                                </select>
+                                <ChevronDown
+                                  size={15}
+                                  className="mo-status-chev"
+                                />
+                              </div>
                               <button
                                 type="button"
-                                className="mo-wa-btn"
+                                className="mo-frame-ic mo-frame-wa"
                                 onClick={() => {
                                   setWaCustomText("");
                                   setWaPickerOrder(order);
@@ -8959,11 +8995,11 @@ export default function ManageOrdersPage() {
                                 title="WhatsApp the customer"
                                 aria-label="WhatsApp the customer"
                               >
-                                <FaWhatsapp size={18} />
+                                <FaWhatsapp size={17} />
                               </button>
                               {orderId && (
                                 <a
-                                  className="mo-open-ic"
+                                  className="mo-frame-ic"
                                   href={`/profile/${String(
                                     order["Phone Number"] || "",
                                   )
@@ -8973,7 +9009,7 @@ export default function ManageOrdersPage() {
                                   rel="noopener noreferrer"
                                   title="Open customer order page"
                                 >
-                                  <ExternalLink size={16} />
+                                  <ExternalLink size={15} />
                                 </a>
                               )}
                             </div>
@@ -9217,11 +9253,25 @@ export default function ManageOrdersPage() {
                                                   : b.price > 0
                                                     ? b.price
                                                     : 0;
+                                              const bimg = getBookImage(
+                                                b.name,
+                                              );
                                               return (
                                                 <div
                                                   className="mo-bill-item"
                                                   key={bi}
                                                 >
+                                                  <span className="mo-bill-item-thumb">
+                                                    {bimg ? (
+                                                      <img
+                                                        src={bimg}
+                                                        alt={b.name}
+                                                        loading="lazy"
+                                                      />
+                                                    ) : (
+                                                      <Package size={16} />
+                                                    )}
+                                                  </span>
                                                   <span className="mo-bill-item-nm">
                                                     {b.name}
                                                     {b.quantity > 1

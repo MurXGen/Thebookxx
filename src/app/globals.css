@@ -20510,12 +20510,18 @@ img[data-loaded="true"] {
 }
 /* Payment-type tint: light blue for COD, light green for online/UPI. */
 .mo-card-cod {
-  background: rgba(59, 130, 246, 0.06);
-  border-color: rgba(59, 130, 246, 0.28);
+  background: rgba(16, 185, 129, 0.08);
+  border-color: transparent;
+}
+.mo-card-cod:hover {
+  border-color: rgba(16, 185, 129, 0.4);
 }
 .mo-card-online {
-  background: rgba(16, 185, 129, 0.07);
-  border-color: rgba(16, 185, 129, 0.3);
+  background: rgba(59, 130, 246, 0.07);
+  border-color: transparent;
+}
+.mo-card-online:hover {
+  border-color: rgba(59, 130, 246, 0.4);
 }
 .mo-card.packed {
   border-color: rgba(10, 143, 12, 0.45) !important;
@@ -20938,12 +20944,22 @@ img[data-loaded="true"] {
   font-weight: 800;
   color: var(--foreground, #0a0a0a);
   line-height: 1.2;
+  flex: 1 1 auto;
+  min-width: 0;
   /* Identity field — never truncate to an ellipsis; wrap up to 2 lines. */
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   overflow-wrap: anywhere;
+}
+/* Name & payment sit apart — pill + order-id copy pinned right. */
+.mo-name-right {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
 }
 /* Order ID is an identity field — show it in full, wrap instead of ellipsis. */
 .mo-oid-val {
@@ -22234,11 +22250,18 @@ img[data-loaded="true"] {
 /* ===== Manage-orders card: orange border, order-id highlight, pick badge,
    downloadable form buttons ===== */
 .admin-order-card.mo-card {
-  border: 1px solid rgba(251, 133, 0, 0.35);
+  border: 1px solid transparent;
   border-radius: var(--px-14, 14px);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease,
+    background 0.2s ease, transform 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }
 .admin-order-card.mo-card:hover {
-  border-color: rgba(251, 133, 0, 0.65);
+  border-color: rgba(0, 0, 0, 0.14);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.07);
+  transform: translateY(-2px);
+}
+.admin-order-card.mo-card:active {
+  transform: translateY(0) scale(0.994);
 }
 
 /* Last 3 digits of the order id in brand orange */
@@ -22839,12 +22862,30 @@ img[data-loaded="true"] {
 }
 .mo-bill-item {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
+  align-items: center;
+  gap: 10px;
   font-size: 13px;
 }
+.mo-bill-item-thumb {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 44px;
+  border-radius: 5px;
+  overflow: hidden;
+  background: var(--dark-4, #f3f4f6);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--dark-50, #6b7280);
+}
+.mo-bill-item-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
 .mo-bill-item-nm {
+  flex: 1 1 auto;
   color: var(--foreground, #0a0a0a);
   line-height: 1.3;
 }
@@ -22903,13 +22944,23 @@ img[data-loaded="true"] {
 }
 
 /* ── Redesigned order card ─────────────────────────────────────────── */
+/* Light dashed divider between every section (not above the first, which
+   is the header). The card is a flex column with gap, so a top border on
+   each following section reads as an in-between separator. */
+.mo-when-row,
+.mo-status-frame,
+.mo-price-block,
+.mo-covers,
+.mo-card-desc {
+  border-top: 1px dashed var(--hairline, #ececec);
+  padding-top: 12px;
+}
 .mo-when-row {
   display: flex;
   align-items: center;
   gap: 6px;
   font-size: 12.5px;
   color: var(--dark-50, #6b7280);
-  margin-top: 2px;
 }
 .mo-when-date {
   color: var(--foreground, #0a0a0a);
@@ -22922,37 +22973,75 @@ img[data-loaded="true"] {
   font-weight: 600;
   color: var(--tertiary, #fb8500);
 }
-.mo-status-row2 {
+
+/* Status + actions framed together like one secondary button. */
+.mo-status-frame {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 10px;
+  align-items: stretch;
+  border: 1px solid var(--hairline, #ececec);
+  border-radius: 10px;
+  background: var(--background, #fff);
+  overflow: hidden;
+  height: 40px;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
 }
-.mo-status-row2 .mo-status-quick {
+.mo-status-frame:hover {
+  border-color: rgba(0, 0, 0, 0.2);
+}
+.mo-status-select-wrap {
+  position: relative;
   flex: 1 1 auto;
   min-width: 0;
+  display: flex;
+  align-items: center;
 }
-.mo-open-ic {
+.mo-status-frame .mo-status-quick {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  border: none !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  padding: 0 30px 0 12px;
+  font-weight: 700;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+.mo-status-chev {
+  position: absolute;
+  right: 9px;
+  color: var(--dark-50, #6b7280);
+  pointer-events: none;
+}
+.mo-frame-ic {
+  flex: 0 0 auto;
+  width: 42px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  border: 1px solid var(--hairline, #ececec);
+  line-height: 0;
+  border: none;
+  background: transparent;
   color: var(--dark-50, #6b7280);
-  flex: 0 0 auto;
-  background: var(--background, #fff);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
 }
-.mo-open-ic:hover {
-  border-color: var(--tertiary, #fb8500);
-  color: var(--tertiary, #fb8500);
+.mo-frame-ic:hover {
+  background: var(--dark-4, #f3f4f6);
 }
+/* One divider only — WhatsApp is always the first icon, so the border sits
+   there, separating the whole icon group from the dropdown as one segment. */
+.mo-frame-wa {
+  color: #25d366;
+  border-left: 1px solid var(--hairline, #ececec);
+}
+
 .mo-price-block {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin-top: 12px;
 }
 .mo-addon-badges {
   display: flex;
@@ -22965,7 +23054,7 @@ img[data-loaded="true"] {
   gap: 4px;
   padding: 3px 9px;
   border-radius: 999px;
-  background: var(--dark-4, #f3f4f6);
+  background: rgba(255, 255, 255, 0.7);
   border: 1px solid var(--hairline, #ececec);
   font-size: 11.5px;
   font-weight: 700;
@@ -23334,8 +23423,8 @@ img[data-loaded="true"] {
   display: flex;
   gap: 8px;
   overflow-x: auto;
-  padding: 10px 0 4px;
-  margin-top: 10px;
+  padding-bottom: 4px;
+  margin-top: 0;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
 }
@@ -23387,16 +23476,16 @@ img[data-loaded="true"] {
 /* Cover with name + price caption, truncated to a fixed column width */
 .mo-cover-item {
   flex: 0 0 auto;
-  width: 76px;
+  width: 58px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   text-align: center;
 }
 .mo-cover-item .mo-cover {
-  width: 76px;
-  height: 104px;
+  width: 58px;
+  height: 80px;
 }
 .mo-cover-qty {
   position: absolute;
@@ -23411,8 +23500,8 @@ img[data-loaded="true"] {
   color: #fff;
 }
 .mo-cover-name {
-  font-size: 11px;
-  line-height: 1.3;
+  font-size: 9.5px;
+  line-height: 1.25;
   color: var(--foreground);
   width: 100%;
   display: -webkit-box;
@@ -23423,7 +23512,7 @@ img[data-loaded="true"] {
   word-break: break-word;
 }
 .mo-cover-price {
-  font-size: 11.5px;
+  font-size: 10.5px;
   font-weight: 700;
   color: var(--tertiary, #fb8500);
 }

@@ -47,6 +47,7 @@ import {
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, useRef, Suspense } from "react";
+import { createPortal } from "react-dom";
 import { permanentlyUnlockOffer, areOneRupeeBooksEnabled } from "@/utils/book";
 import { FaWhatsapp } from "react-icons/fa";
 import Link from "next/link";
@@ -162,7 +163,10 @@ function BagContent() {
 
   // Shared-bag modal — slide-up bill-modal style (like the suggestion modal),
   // scrollable list with fixed CTA buttons at the bottom.
-  const sharedModal = (
+  const sharedModal =
+    typeof document === "undefined"
+      ? null
+      : createPortal(
     <AnimatePresence>
       {showSharedModal && (
         <motion.div
@@ -254,7 +258,8 @@ function BagContent() {
           </motion.div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   );
 
   const cartBooks = cart
@@ -270,7 +275,10 @@ function BagContent() {
     (s, b) => s + (b.discountedPrice || 0) * (b.qty || 1),
     0,
   );
-  const shareModal = (
+  const shareModal =
+    typeof document === "undefined"
+      ? null
+      : createPortal(
     <AnimatePresence>
       {showShareModal && (
         <motion.div
@@ -338,7 +346,8 @@ function BagContent() {
           </motion.div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   );
 
   // Recommendations for the empty-bag state (exclude ₹1 books).

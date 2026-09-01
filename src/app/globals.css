@@ -22324,10 +22324,25 @@ img[data-loaded="true"] {
   align-items: center;
   gap: 5px;
   flex: 0 0 auto;
-  font-size: 11.5px;
+  /* Match the phone number: same size, weight and muted colour. */
+  font-size: 12.5px;
   font-weight: 600;
   color: var(--dark-50, #6b7280);
   white-space: nowrap;
+}
+/* Relative-age pill next to the payment badge. */
+.mo-age-pill {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  padding: 4px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+  color: var(--tertiary, #fb8500);
+  background: rgba(251, 133, 0, 0.1);
+  border: 1px solid rgba(251, 133, 0, 0.24);
 }
 
 /* Last 3 digits of the order id in brand orange */
@@ -22865,7 +22880,8 @@ img[data-loaded="true"] {
 
 /* ── Order-bill modal (opens on price / card tap) ──────────────────── */
 .mo-bill {
-  width: min(440px, 100%);
+  width: 100%;
+  max-width: 100%;
   max-height: 88vh;
   display: flex;
   flex-direction: column;

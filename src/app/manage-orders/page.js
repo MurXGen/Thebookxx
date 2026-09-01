@@ -8898,35 +8898,23 @@ export default function ManageOrdersPage() {
                                     {order["Customer Name"] || "—"}
                                   </span>
                                   <div className="mo-name-right">
+                                    {agoLabel && (
+                                      <span
+                                        className="mo-age-pill"
+                                        title={
+                                          orderDate
+                                            ? orderDate.toLocaleString("en-IN")
+                                            : ""
+                                        }
+                                      >
+                                        {agoLabel}
+                                      </span>
+                                    )}
                                     <span
                                       className={`mo-pay-pill ${isCOD ? "cod" : "upi"}`}
                                     >
                                       {isCOD ? "COD" : "UPI"}
                                     </span>
-                                    <button
-                                      type="button"
-                                      className="mo-copy-ic"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        copyToClipboard(
-                                          orderId,
-                                          `order-${idx}`,
-                                        );
-                                      }}
-                                      title="Copy order ID"
-                                    >
-                                      {copiedId === `order-${idx}` ? (
-                                        <Check
-                                          size={13}
-                                          className="text-green"
-                                        />
-                                      ) : (
-                                        <Copy
-                                          size={13}
-                                          className="gray-500"
-                                        />
-                                      )}
-                                    </button>
                                   </div>
                                 </div>
                                 <div className="mo-idline">
@@ -8949,7 +8937,8 @@ export default function ManageOrdersPage() {
                                       </span>
                                     )}
                                   </button>
-                                  {/* Date · relative age, right-aligned. */}
+                                  {/* Date only, right-aligned (time lives in
+                                      the bill modal). */}
                                   <span
                                     className="mo-idline-when"
                                     title={
@@ -8959,20 +8948,13 @@ export default function ManageOrdersPage() {
                                     }
                                   >
                                     <Calendar size={12} />
-                                    <span className="mo-when-date">
-                                      {formatDate(
-                                        order["Timestamp(D)"] ||
-                                          order["Timestamp"],
-                                      )}
-                                    </span>
-                                    {agoLabel && (
-                                      <>
-                                        <span className="mo-when-sep">|</span>
-                                        <span className="mo-when-ago">
-                                          {agoLabel}
-                                        </span>
-                                      </>
-                                    )}
+                                    {orderDate
+                                      ? orderDate.toLocaleDateString("en-IN", {
+                                          day: "numeric",
+                                          month: "short",
+                                          year: "numeric",
+                                        })
+                                      : "—"}
                                   </span>
                                 </div>
                               </div>

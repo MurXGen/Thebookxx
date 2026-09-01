@@ -8929,33 +8929,25 @@ export default function ManageOrdersPage() {
                                     </button>
                                   </div>
                                 </div>
-                                <div
-                                  className="mo-meta"
-                                  onClick={(e) => e.stopPropagation()}
+                                <button
+                                  type="button"
+                                  className="mo-phone-btn"
+                                  title="Tap to copy number"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    copyToClipboard(
+                                      String(order["Phone Number"] || ""),
+                                      `phone-${idx}`,
+                                    );
+                                  }}
                                 >
-                                  <Phone size={12} />
-                                  <span className="mo-meta-val">
-                                    +91 {order["Phone Number"]}
-                                  </span>
-                                  <button
-                                    type="button"
-                                    className="mo-copy-ic"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      copyToClipboard(
-                                        String(order["Phone Number"] || ""),
-                                        `phone-${idx}`,
-                                      );
-                                    }}
-                                    title="Copy phone"
-                                  >
-                                    {copiedId === `phone-${idx}` ? (
-                                      <Check size={12} className="text-green" />
-                                    ) : (
-                                      <Copy size={11} className="gray-500" />
-                                    )}
-                                  </button>
-                                </div>
+                                  +91 {order["Phone Number"]}
+                                  {copiedId === `phone-${idx}` && (
+                                    <span className="mo-phone-copied">
+                                      <Check size={12} /> Copied
+                                    </span>
+                                  )}
+                                </button>
                               </div>
                             </div>
 

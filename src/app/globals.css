@@ -20990,6 +20990,32 @@ img[data-loaded="true"] {
   font-weight: 700;
   opacity: 0.75;
 }
+/* Phone number under the name — the number itself is the copy button. */
+.mo-phone-btn {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+  padding: 0;
+  border: none;
+  background: none;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--dark-50, #6b7280);
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+.mo-phone-btn:hover {
+  color: var(--foreground, #0a0a0a);
+}
+.mo-phone-copied {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-weight: 700;
+  color: var(--success, #0a8f0c);
+}
 /* Selectable value — drag-select with the mouse on desktop */
 .mo-meta-val {
   user-select: text;

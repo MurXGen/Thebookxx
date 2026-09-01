@@ -6297,17 +6297,6 @@ export default function ManageOrdersPage() {
                 </button>
               </div>
             )}
-            {activeTab === "analytics" && (
-              <button
-                type="button"
-                className="mo-cal-icon-btn"
-                onClick={() => setShowCalModal(true)}
-                title="Open orders calendar"
-                aria-label="Open orders calendar"
-              >
-                <Calendar size={18} />
-              </button>
-            )}
           </div>
         </header>
 
@@ -6341,84 +6330,84 @@ export default function ManageOrdersPage() {
                 document.body,
               )}
 
-            {/* Overview stats */}
+            {/* Overview stats — icon + content in one row, emoji glyphs. */}
             <div className="an2-stats">
               <div className="an2-stat s-orders">
-                <div className="an2-stat-ic">
-                  <ShoppingBag size={16} />
+                <div className="an2-stat-ic">🛍️</div>
+                <div className="an2-stat-body">
+                  <span className="an2-stat-val">{overview.n}</span>
+                  <span className="an2-stat-lbl">Orders</span>
+                  <span className="an2-stat-x">
+                    {overview.delivered} delivered · {overview.cancelled}{" "}
+                    cancelled
+                  </span>
                 </div>
-                <span className="an2-stat-val">{overview.n}</span>
-                <span className="an2-stat-lbl">Orders</span>
-                <span className="an2-stat-x">
-                  {overview.delivered} delivered · {overview.cancelled}{" "}
-                  cancelled
-                </span>
               </div>
               <div className="an2-stat s-rev">
-                <div className="an2-stat-ic">
-                  <IndianRupee size={16} />
+                <div className="an2-stat-ic">💰</div>
+                <div className="an2-stat-body">
+                  <span className="an2-stat-val">
+                    ₹{overview.revenue.toLocaleString()}
+                  </span>
+                  <span className="an2-stat-lbl">Revenue</span>
+                  <span className="an2-stat-x">
+                    Avg order ₹{overview.aov.toLocaleString()}
+                  </span>
                 </div>
-                <span className="an2-stat-val">
-                  ₹{overview.revenue.toLocaleString()}
-                </span>
-                <span className="an2-stat-lbl">Revenue</span>
-                <span className="an2-stat-x">
-                  Avg order ₹{overview.aov.toLocaleString()}
-                </span>
               </div>
               <div className="an2-stat s-cost">
-                <div className="an2-stat-ic">
-                  <Package size={16} />
+                <div className="an2-stat-ic">🧾</div>
+                <div className="an2-stat-body">
+                  <span className="an2-stat-val">
+                    ₹{overview.cost.toLocaleString()}
+                  </span>
+                  <span className="an2-stat-lbl">Total cost</span>
+                  <span className="an2-stat-x">
+                    incl. ₹{overview.delivery.toLocaleString()} delivery
+                  </span>
                 </div>
-                <span className="an2-stat-val">
-                  ₹{overview.cost.toLocaleString()}
-                </span>
-                <span className="an2-stat-lbl">Total cost</span>
-                <span className="an2-stat-x">
-                  incl. ₹{overview.delivery.toLocaleString()} delivery
-                </span>
               </div>
               <div className="an2-stat s-profit">
                 <div className="an2-stat-ic">
-                  {overview.profit >= 0 ? (
-                    <TrendingUp size={16} />
-                  ) : (
-                    <TrendingDown size={16} />
-                  )}
+                  {overview.profit >= 0 ? "📈" : "📉"}
                 </div>
-                <span className="an2-stat-val">
-                  {overview.profit >= 0 ? "+" : "−"}₹
-                  {Math.abs(overview.profit).toLocaleString()}
-                </span>
-                <span className="an2-stat-lbl">
-                  {overview.profit >= 0 ? "Profit" : "Loss"} · {overview.margin}
-                  %
-                </span>
-                <span className="an2-stat-x">
-                  Net {netProfit >= 0 ? "+" : "−"}₹
-                  {Math.abs(netProfit).toLocaleString()}
-                </span>
+                <div className="an2-stat-body">
+                  <span className="an2-stat-val">
+                    {overview.profit >= 0 ? "+" : "−"}₹
+                    {Math.abs(overview.profit).toLocaleString()}
+                  </span>
+                  <span className="an2-stat-lbl">
+                    {overview.profit >= 0 ? "Profit" : "Loss"} ·{" "}
+                    {overview.margin}%
+                  </span>
+                  <span className="an2-stat-x">
+                    Net {netProfit >= 0 ? "+" : "−"}₹
+                    {Math.abs(netProfit).toLocaleString()}
+                  </span>
+                </div>
               </div>
               <div className="an2-stat s-units">
-                <div className="an2-stat-ic">
-                  <BarChart3 size={16} />
+                <div className="an2-stat-ic">📚</div>
+                <div className="an2-stat-body">
+                  <span className="an2-stat-val">{overview.units}</span>
+                  <span className="an2-stat-lbl">Books sold</span>
+                  <span className="an2-stat-x">
+                    across {overview.n} orders
+                  </span>
                 </div>
-                <span className="an2-stat-val">{overview.units}</span>
-                <span className="an2-stat-lbl">Books sold</span>
-                <span className="an2-stat-x">across {overview.n} orders</span>
               </div>
               <div className="an2-stat s-wallet">
-                <div className="an2-stat-ic">
-                  <Wallet size={16} />
+                <div className="an2-stat-ic">👛</div>
+                <div className="an2-stat-body">
+                  <span className="an2-stat-val">
+                    ₹{walletUsers.total.toLocaleString()}
+                  </span>
+                  <span className="an2-stat-lbl">Wallet outstanding</span>
+                  <span className="an2-stat-x">
+                    {walletUsers.count} customer
+                    {walletUsers.count === 1 ? "" : "s"} hold balance
+                  </span>
                 </div>
-                <span className="an2-stat-val">
-                  ₹{walletUsers.total.toLocaleString()}
-                </span>
-                <span className="an2-stat-lbl">Wallet outstanding</span>
-                <span className="an2-stat-x">
-                  {walletUsers.count} customer
-                  {walletUsers.count === 1 ? "" : "s"} hold balance
-                </span>
               </div>
             </div>
 
@@ -9924,7 +9913,8 @@ export default function ManageOrdersPage() {
 
         {/* ===== Mobile bottom navigation ===== */}
         <nav className="mo-bottomnav" aria-label="Dashboard sections">
-          {SECTION_TABS.map((t) => {
+          {/* "IDs" (tracking) tab hidden for now — filtered out here. */}
+          {SECTION_TABS.filter((t) => t.key !== "tracking").map((t) => {
             const Icon = t.Icon;
             const isActive = activeTab === t.key;
             return (

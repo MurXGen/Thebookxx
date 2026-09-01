@@ -30890,22 +30890,32 @@ img[data-loaded="true"] {
 .an2-stat {
   position: relative;
   display: flex;
-  flex-direction: column;
-  gap: 1px;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
   background: #fff;
   border: 1px solid var(--hairline, #e5e7eb);
   border-radius: 12px;
-  padding: 11px 12px;
+  padding: 12px 14px;
   overflow: hidden;
+}
+.an2-stat-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
 }
 .an2-stat-ic {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 7px;
-  margin-bottom: 6px;
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  border-radius: 11px;
+  margin-bottom: 0;
+  font-size: 20px;
+  line-height: 1;
   color: var(--tertiary, #fb8500);
   background: rgba(251, 133, 0, 0.12);
 }

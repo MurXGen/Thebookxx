@@ -2803,6 +2803,7 @@ export default function ManageOrdersPage() {
   // Inline order-card accordions: which cards are expanded, plus per-order
   // draft state for inline tracking-ID and address edits pushed to the sheet.
   const [expandedCards, setExpandedCards] = useState({}); // { orderId: true }
+  const [billOrderId, setBillOrderId] = useState(null); // order whose bill modal is open
   const [trackDrafts, setTrackDrafts] = useState({}); // { orderId: "CX..." }
   const [addrEdit, setAddrEdit] = useState({}); // { orderId: {address,city,state,pincode} }
   const [rowSaving, setRowSaving] = useState({}); // { orderId: "tracking"|"address"|"status" }
@@ -8813,16 +8814,14 @@ export default function ManageOrdersPage() {
                               onClick={() =>
                                 cardSelectMode
                                   ? toggleCardSelect()
-                                  : toggleExpand(orderId)
+                                  : setBillOrderId(orderId)
                               }
                               title={
                                 cardSelectMode
                                   ? isSelected
                                     ? "Deselect"
                                     : "Select"
-                                  : isExpanded
-                                    ? "Collapse"
-                                    : "Expand details"
+                                  : "Open order bill"
                               }
                             >
                               <div className="mo-card-id">
@@ -8943,11 +8942,11 @@ export default function ManageOrdersPage() {
                                   <button
                                     type="button"
                                     className="mo-amount"
-                                    onClick={() => toggleExpand(orderId)}
+                                    onClick={() => setBillOrderId(orderId)}
                                     title={
                                       isCOD
-                                        ? `Net after 5.9% deduction (₹${rev.toLocaleString()} − ₹${fee}) · tap for details`
-                                        : `₹${rev.toLocaleString()} · tap for details`
+                                        ? `Net after 5.9% deduction (₹${rev.toLocaleString()} − ₹${fee}) · tap for bill`
+                                        : `₹${rev.toLocaleString()} · tap for bill`
                                     }
                                   >
                                     <span className="mo-amount-num">
@@ -9190,20 +9189,124 @@ export default function ManageOrdersPage() {
                               </button>
                             </div>
 
-                            <AnimatePresence initial={false}>
-                              {isExpanded && (
-                                <motion.div
-                                  key="body"
-                                  initial={{ height: 0, opacity: 0 }}
-                                  animate={{ height: "auto", opacity: 1 }}
-                                  exit={{ height: 0, opacity: 0 }}
-                                  transition={{
-                                    duration: 0.28,
-                                    ease: [0.32, 0.72, 0, 1],
-                                  }}
-                                  style={{ overflow: "hidden" }}
+                            {billOrderId === orderId &&
+                              typeof document !== "undefined" &&
+                              createPortal(
+                                <div
+                                  className="bill-modal-overlay"
+                                  onClick={() => setBillOrderId(null)}
                                 >
-                                  <div className="aoc-body">
+                                  <motion.div
+                                    className="bill-modal mo-bill"
+                                    initial={{ opacity: 0, y: 24, scale: 0.98 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                    transition={{ duration: 0.24, ease: EASE_OUT }}
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    <div className="bill-header">
+                                      <div className="mo-bill-head-l">
+                                        <span className="mo-bill-title">
+                                          Order bill
+                                        </span>
+                                        <span className="mo-bill-sub">
+                                          {order["Customer Name"] || "Customer"}{" "}
+                                          · #{oidStr.slice(-6)}
+                                        </span>
+                                      </div>
+                                      <span
+                                        className="mo-bill-x"
+                                        onClick={() => setBillOrderId(null)}
+                                      >
+                                        <X size={18} />
+                                      </span>
+                                    </div>
+                                    <div className="mo-bill-body">
+                                      {books.length > 0 && (
+                                        <div className="mo-bill-sec">
+                                          <div className="mo-bill-sec-t">
+                                            Items · {books.length}
+                                          </div>
+                                          <div className="mo-bill-items">
+                                            {books.map((b, bi) => {
+                                              const price =
+                                                b.total > 0
+                                                  ? b.total
+                                                  : b.price > 0
+                                                    ? b.price
+                                                    : 0;
+                                              return (
+                                                <div
+                                                  className="mo-bill-item"
+                                                  key={bi}
+                                                >
+                                                  <span className="mo-bill-item-nm">
+                                                    {b.name}
+                                                    {b.quantity > 1
+                                                      ? ` ×${b.quantity}`
+                                                      : ""}
+                                                  </span>
+                                                  <span className="mo-bill-item-pr">
+                                                    {price > 0
+                                                      ? `₹${price.toLocaleString()}`
+                                                      : "—"}
+                                                  </span>
+                                                </div>
+                                              );
+                                            })}
+                                          </div>
+                                        </div>
+                                      )}
+
+                                      {(() => {
+                                        const rev = Number(order.revenue) || 0;
+                                        const fee = isCOD
+                                          ? Math.round(rev * 0.059)
+                                          : 0;
+                                        const net = Math.round(rev - fee);
+                                        return (
+                                          <div className="mo-bill-sec">
+                                            <div className="mo-bill-sec-t">
+                                              Payment
+                                            </div>
+                                            <div className="mo-bill-rows">
+                                              <div className="mo-bill-row">
+                                                <span>Order value</span>
+                                                <b>₹{rev.toLocaleString()}</b>
+                                              </div>
+                                              {isCOD && (
+                                                <>
+                                                  <div className="mo-bill-row muted">
+                                                    <span>COD fee · 5.9%</span>
+                                                    <b>−₹{fee.toLocaleString()}</b>
+                                                  </div>
+                                                  <div className="mo-bill-row">
+                                                    <span>Net receivable</span>
+                                                    <b>₹{net.toLocaleString()}</b>
+                                                  </div>
+                                                </>
+                                              )}
+                                              <div className="mo-bill-row muted">
+                                                <span>Cost</span>
+                                                <b>
+                                                  ₹
+                                                  {order.totalCost.toLocaleString()}
+                                                </b>
+                                              </div>
+                                              <div
+                                                className={`mo-bill-row total ${pnl >= 0 ? "pos" : "neg"}`}
+                                              >
+                                                <span>Profit</span>
+                                                <b>
+                                                  {pnl >= 0 ? "+" : "−"}₹
+                                                  {Math.abs(
+                                                    pnl,
+                                                  ).toLocaleString()}
+                                                </b>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        );
+                                      })()}
                                     {(() => {
                                       // India Post autofill payload — identical
                                       // shape to the "Book online" modal copy.
@@ -9531,30 +9634,8 @@ export default function ManageOrdersPage() {
                                       );
                                     })()}
 
-                                    <div className="aoc-money">
-                                      <div className="aoc-money-cell">
-                                        <span>Revenue</span>
-                                        <strong>
-                                          ₹{order.revenue.toLocaleString()}
-                                        </strong>
-                                      </div>
-                                      <div className="aoc-money-cell">
-                                        <span>Cost</span>
-                                        <strong>
-                                          ₹{order.totalCost.toLocaleString()}
-                                        </strong>
-                                      </div>
-                                      <div
-                                        className={`aoc-money-cell ${pnl >= 0 ? "pos" : "neg"}`}
-                                      >
-                                        <span>Profit</span>
-                                        <strong>
-                                          {pnl >= 0 ? "+" : "−"}₹
-                                          {Math.abs(pnl).toLocaleString()}
-                                        </strong>
-                                      </div>
-                                    </div>
-
+                                    <div className="mo-bill-sec">
+                                      <div className="mo-bill-sec-t">Status</div>
                                     <div className="aoc-status-row">
                                       <select
                                         className="bulk-wa-select aoc-status-select"
@@ -9595,6 +9676,7 @@ export default function ManageOrdersPage() {
                                         )}
                                       </button>
                                     </div>
+                                    </div>
 
                                     <div className="aoc-foot">
                                       <div className="aoc-meta">
@@ -9614,10 +9696,11 @@ export default function ManageOrdersPage() {
                                         <Edit size={14} /> Edit
                                       </button>
                                     </div>
-                                  </div>
-                                </motion.div>
+                                    </div>
+                                  </motion.div>
+                                </div>,
+                                document.body,
                               )}
-                            </AnimatePresence>
                           </motion.div>
                         );
                       })}

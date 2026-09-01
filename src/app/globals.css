@@ -22773,6 +22773,117 @@ img[data-loaded="true"] {
   font-size: 22px;
   font-weight: 800;
 }
+
+/* ── Order-bill modal (opens on price / card tap) ──────────────────── */
+.mo-bill {
+  width: min(440px, 100%);
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.mo-bill-head-l {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.mo-bill-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--foreground, #0a0a0a);
+}
+.mo-bill-sub {
+  font-size: 12px;
+  color: var(--dark-50, #6b7280);
+}
+.mo-bill-x {
+  display: inline-flex;
+  cursor: pointer;
+  color: var(--dark-50, #6b7280);
+  padding: 4px;
+  border-radius: 8px;
+}
+.mo-bill-x:hover {
+  background: var(--dark-4, #f3f4f6);
+}
+.mo-bill-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 16px 18px;
+  overflow-y: auto;
+}
+.mo-bill-sec {
+  border: 1px solid var(--hairline, #ececec);
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: var(--background, #fff);
+}
+.mo-bill-sec-t {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--dark-50, #6b7280);
+  margin-bottom: 8px;
+}
+.mo-bill-items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.mo-bill-item {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+}
+.mo-bill-item-nm {
+  color: var(--foreground, #0a0a0a);
+  line-height: 1.3;
+}
+.mo-bill-item-pr {
+  font-weight: 700;
+  color: var(--foreground, #0a0a0a);
+  white-space: nowrap;
+}
+.mo-bill-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.mo-bill-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--foreground, #0a0a0a);
+}
+.mo-bill-row.muted {
+  color: var(--dark-50, #6b7280);
+  font-size: 12.5px;
+}
+.mo-bill-row.total {
+  border-top: 1px dashed var(--hairline, #ececec);
+  padding-top: 8px;
+  margin-top: 2px;
+  font-size: 14px;
+  font-weight: 800;
+}
+.mo-bill-row.total.pos b {
+  color: var(--success, #0a8f0c);
+}
+.mo-bill-row.total.neg b {
+  color: #dc2626;
+}
+/* Reused inner sections sit flush inside the bill modal */
+.mo-bill-body .aoc-section,
+.mo-bill-body .aoc-status-row,
+.mo-bill-body .aoc-foot {
+  margin: 0;
+}
 .mo-ctrls {
   display: flex;
   align-items: center;

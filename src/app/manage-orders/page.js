@@ -3252,6 +3252,7 @@ export default function ManageOrdersPage() {
     calendar: false,
     indiapost: true,
     orders: true,
+    users: true,
   });
   const toggleAcc = (id) => setAccOpen((p) => ({ ...p, [id]: !p[id] }));
 
@@ -7597,17 +7598,13 @@ export default function ManageOrdersPage() {
             </div>
             </details>
 
-            <section className="an2-card um-section">
-              <div className="an2-card-head">
-                <div>
-                  <h3 className="an2-card-title">All customers</h3>
-                  <p className="an2-card-sub">
-                    Search, filter by wallet balance & sort
-                  </p>
-                </div>
-                <span className="an2-card-total">{filteredUsers.length}</span>
-              </div>
-
+            <Accordion
+              id="users"
+              title="All customers"
+              open={accOpen.users}
+              onToggle={toggleAcc}
+              right={<span className="acc-count">{filteredUsers.length}</span>}
+            >
               {/* Users toolbar — own search + wallet filters + sort */}
               <div className="um-toolbar">
                 <div className="um-search">
@@ -7725,14 +7722,16 @@ export default function ManageOrdersPage() {
                     <div className="um-btns">
                       <button
                         type="button"
-                        className="sec-big-btn um-btn"
+                        className="sec-big-btn um-btn um-btn-main"
                         onClick={() => setWalletModal(u)}
                       >
                         <Wallet size={15} /> Adjust balance
                       </button>
                       <button
                         type="button"
-                        className="sec-big-btn um-btn"
+                        className="sec-big-btn um-btn um-btn-wa"
+                        aria-label="WhatsApp the customer"
+                        title="WhatsApp the customer"
                         onClick={() =>
                           openWhatsApp(
                             u.phone,
@@ -7742,7 +7741,7 @@ export default function ManageOrdersPage() {
                           )
                         }
                       >
-                        <FaWhatsapp size={15} /> WhatsApp
+                        <FaWhatsapp size={17} />
                       </button>
                     </div>
                   </div>
@@ -7758,7 +7757,7 @@ export default function ManageOrdersPage() {
                   </button>
                 )}
               </div>
-            </section>
+            </Accordion>
 
             {walletModal && (
               <WalletModal

@@ -19667,19 +19667,32 @@ img[data-loaded="true"] {
 }
 .admin-chips-clear:hover{ text-decoration:underline; }
 
-/* Compact filtered-orders stats accordion */
+/* Filtered-orders stats accordion — same bordered container as .acc sections */
 .admin-stats{
-  border:none; border-radius:0; overflow:visible; background:transparent;
+  border:1px solid var(--hairline,#ececec); border-radius:16px; overflow:hidden;
+  background:#fff; box-shadow:var(--shadow-xs,0 1px 3px rgba(0,0,0,.05));
+  margin-bottom:14px;
 }
 .admin-stats-summary{
-  display:flex; align-items:center; gap:8px; padding:10px 2px;
-  font-size:13px; font-weight:700; color:var(--foreground); cursor:pointer; list-style:none;
+  display:flex; align-items:center; gap:8px; padding:14px 16px;
+  font-size:15px; font-weight:800; color:var(--foreground); cursor:pointer; list-style:none;
+  background:linear-gradient(180deg,#fff,#fafafb);
 }
 .admin-stats-summary::-webkit-details-marker{ display:none; }
 .admin-stats-caret{ margin-left:auto; color:var(--dark-50,#6b7280); transition:transform .2s ease; }
 .admin-stats[open] .admin-stats-caret{ transform:rotate(180deg); }
 .admin-stats-grid{
-  display:grid; grid-template-columns:repeat(4,1fr); gap:12px; padding:2px 0 4px;
+  display:grid; grid-template-columns:repeat(4,1fr); gap:12px; padding:4px 16px 16px;
+}
+/* When the line-grid an2-stats sits inside the bordered stats container,
+   drop its own outer border (the container already provides one) and inset it. */
+.admin-stats .an2-stats{
+  border:none; border-radius:0;
+  margin:4px 16px 16px;
+}
+.admin-stats.admin-stats-grid,
+.admin-stats .an2-stats.admin-stats-grid{ /* orders grid keeps its own inset */
+  margin:0;
 }
 .admin-stat{
   display:flex; flex-direction:column; align-items:flex-start; gap:3px;
@@ -31527,13 +31540,22 @@ img[data-loaded="true"] {
 }
 .um-btns {
   display: flex;
+  align-items: stretch;
   gap: 8px;
   padding-top: 10px;
   border-top: 1px dashed var(--hairline, #ececec);
 }
-.um-btns .um-btn {
-  flex: 1;
+.um-btns .um-btn-main {
+  flex: 1 1 auto;
   justify-content: center;
+}
+.um-btns .um-btn-wa {
+  flex: 0 0 auto;
+  width: 46px;
+  padding-left: 0;
+  padding-right: 0;
+  justify-content: center;
+  color: #25d366;
 }
 .um-row:hover {
   border-color: rgba(251, 133, 0, 0.4);
@@ -31804,37 +31826,27 @@ img[data-loaded="true"] {
   border-color: var(--tertiary, #fb8500);
   background: #fff7ec;
 }
-/* Mobile: strip the section container chrome, stack the row cleanly */
+/* Mobile: stack the card cleanly. Keep the top row (name + stats) and the
+   button row both full-width. */
 @media (max-width: 640px) {
-  .um-section {
-    padding: 0 !important;
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-  }
-  .um-row {
+  .um-row-top {
     flex-wrap: wrap;
     align-items: flex-start;
     row-gap: 10px;
   }
   .um-main {
     flex: 1 1 100%;
-    order: 1;
   }
-  .um-stats {
-    order: 2;
-    flex: 1 1 auto;
-    gap: 20px;
+  .um-row-top .um-stats {
+    order: 3;
+    width: 100%;
+    justify-content: space-between;
+    gap: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--hairline, #e5e7eb);
   }
-  /* 3-dot menu sits at the top-right, aligned with the customer name. */
-  .um-actions {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    margin: 0;
-  }
-  .um-main {
-    padding-right: 40px;
+  .um-btns {
+    width: 100%;
   }
 }
 .um-wa-btn {
@@ -31855,23 +31867,6 @@ img[data-loaded="true"] {
   background: #1da851;
 }
 
-/* Responsive: stack stats under name on narrow screens */
-@media (max-width: 640px) {
-  .um-row {
-    flex-wrap: wrap;
-  }
-  .um-stats {
-    order: 3;
-    width: 100%;
-    justify-content: space-between;
-    gap: 8px;
-    padding-top: 8px;
-    border-top: 1px dashed var(--hairline, #e5e7eb);
-  }
-  .um-actions {
-    order: 2;
-  }
-}
 
 /* Wallet adjust modal */
 .wm-backdrop {

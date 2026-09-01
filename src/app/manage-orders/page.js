@@ -8979,21 +8979,22 @@ export default function ManageOrdersPage() {
                               )}
                             </div>
 
-                            {/* Unified panel — status row + price row, one
-                                bordered grid separated by lines. */}
+                            {/* Panel — price on the left, status badge +
+                                WhatsApp + redirect grouped on the right. */}
                             <div
                               className="mo-panel"
                               onClick={(e) => e.stopPropagation()}
                             >
-                              <div className="mo-panel-status">
+                              <div className="mo-panel-row">
+                              <div className="mo-panel-actions">
                               <div
-                                className="mo-status-select-wrap"
+                                className="mo-status-badge-wrap"
                                 style={{
                                   "--st-color": moStatusColor(order.status),
                                 }}
                               >
                                 <select
-                                  className={`mo-status-quick${pendingStatus[orderId] ? " dirty" : ""}`}
+                                  className={`mo-status-badge${pendingStatus[orderId] ? " dirty" : ""}`}
                                   value={order.status || "Processing"}
                                   title="Change status (queued — push to save)"
                                   onChange={(e) => {
@@ -9049,7 +9050,7 @@ export default function ManageOrdersPage() {
                               </div>
 
                               {/* Book total + benefit badges (add-ons / savings). */}
-                              <div className="mo-panel-price">
+                              <div className="mo-panel-left">
                               {(() => {
                                 const rev = Number(order.revenue) || 0;
                                 // 5.9% deduction applies to COD orders only.
@@ -9142,6 +9143,7 @@ export default function ManageOrdersPage() {
                                   </div>
                                 );
                               })()}
+                              </div>
                               </div>
                             </div>
 

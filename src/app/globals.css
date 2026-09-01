@@ -23013,18 +23013,12 @@ img[data-loaded="true"] {
   color: var(--tertiary, #fb8500);
 }
 
-/* Status + price live as two edge-to-edge grid rows inside the card. The
-   card-row rule zeroes the panel's own padding; each sub-row carries its own. */
+/* Single panel row: price on the left, status badge + WhatsApp + redirect
+   grouped on the right, pushed apart across the full width. */
 .mo-card > .mo-panel {
   padding: 0;
 }
-.mo-panel-status {
-  display: flex;
-  align-items: stretch;
-  height: 46px;
-  border-bottom: 1px dashed var(--hairline, #ececec);
-}
-.mo-panel-price {
+.mo-panel-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -23032,45 +23026,61 @@ img[data-loaded="true"] {
   flex-wrap: wrap;
   padding: 10px 16px;
 }
-.mo-status-select-wrap {
-  position: relative;
-  flex: 1 1 auto;
-  min-width: 0;
+.mo-panel-left {
+  order: 1;
   display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 0;
+}
+.mo-panel-actions {
+  order: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+/* Status as a clickable colour badge (native select styled as a pill). */
+.mo-status-badge-wrap {
+  position: relative;
+  display: inline-flex;
   align-items: center;
 }
-/* Colour dot marking the current status. */
-.mo-status-select-wrap::before {
+.mo-status-badge {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid
+    color-mix(in srgb, var(--st-color, #6b7280) 35%, transparent) !important;
+  border-radius: 999px !important;
+  background: color-mix(
+    in srgb,
+    var(--st-color, #6b7280) 12%,
+    transparent
+  ) !important;
+  color: var(--st-color, var(--foreground)) !important;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 6px 26px 6px 24px;
+  cursor: pointer;
+  line-height: 1;
+}
+/* Status colour dot inside the badge. */
+.mo-status-badge-wrap::before {
   content: "";
   position: absolute;
-  left: 14px;
+  left: 11px;
   top: 50%;
   transform: translateY(-50%);
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: var(--st-color, #6b7280);
   pointer-events: none;
 }
-.mo-panel-status .mo-status-quick {
-  flex: 1 1 auto;
-  width: 100%;
-  min-width: 0;
-  height: 100%;
-  border: none !important;
-  border-radius: 0 !important;
-  background: transparent !important;
-  padding: 0 30px 0 30px;
-  font-size: 13.5px;
-  font-weight: 700;
-  color: var(--st-color, var(--foreground)) !important;
-  appearance: none;
-  -webkit-appearance: none;
-  cursor: pointer;
-}
 .mo-status-chev {
   position: absolute;
-  right: 10px;
+  right: 8px;
   top: 50%;
   transform: translateY(-50%);
   color: var(--st-color, var(--dark-50, #6b7280));
@@ -23078,36 +23088,33 @@ img[data-loaded="true"] {
 }
 .mo-frame-ic {
   flex: 0 0 auto;
-  width: 42px;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   line-height: 0;
-  border: none;
-  background: transparent;
+  border: 1px solid var(--hairline, #ececec);
+  background: #fff;
   color: var(--dark-50, #6b7280);
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition: background 0.15s ease, color 0.15s ease,
+    border-color 0.15s ease;
 }
 .mo-frame-ic:hover {
-  background: var(--dark-4, #f3f4f6);
+  border-color: var(--dark-20, #cbd0d6);
 }
-/* One divider only — WhatsApp is always the first icon, so the border sits
-   there, separating the whole icon group from the dropdown as one segment. */
 .mo-frame-wa {
   color: #25d366;
-  border-left: 1px solid var(--hairline, #ececec);
 }
-
-.mo-panel-price .mo-amount {
+.mo-panel-left .mo-amount {
   flex: 0 0 auto;
 }
 .mo-addon-badges {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-end;
   gap: 6px;
-  flex: 1 1 auto;
 }
 .mo-addon-badge {
   display: inline-flex;

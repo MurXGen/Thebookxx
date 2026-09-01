@@ -31601,7 +31601,7 @@ img[data-loaded="true"] {
   color: var(--foreground);
   background-color: #fff;
   border: 1px solid var(--dark-20, #e5e7eb);
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 0 34px 0 14px;
   cursor: pointer;
   appearance: none;
@@ -31683,7 +31683,7 @@ img[data-loaded="true"] {
   height: 44px;
   background: #fff;
   border: 1px solid var(--dark-20, #e5e7eb);
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 0 14px;
   color: var(--dark-50);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;

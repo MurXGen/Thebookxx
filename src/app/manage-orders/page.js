@@ -7529,6 +7529,12 @@ export default function ManageOrdersPage() {
         {/* ===== Users (customer management) ===== */}
         {activeTab === "users" && (
           <div className="an2 um">
+            <details className="admin-stats um-stats-acc">
+              <summary className="admin-stats-summary">
+                <BarChart3 size={14} />
+                Customer stats
+                <ChevronDown size={15} className="admin-stats-caret" />
+              </summary>
             <div className="an2-stats">
               <div className="an2-stat s-orders">
                 <div className="an2-stat-ic">
@@ -7589,6 +7595,7 @@ export default function ManageOrdersPage() {
                 </div>
               </div>
             </div>
+            </details>
 
             <section className="an2-card um-section">
               <div className="an2-card-head">

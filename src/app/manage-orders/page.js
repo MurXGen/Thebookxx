@@ -7665,6 +7665,7 @@ export default function ManageOrdersPage() {
                 )}
                 {filteredUsers.slice(0, userVisible).map((u) => (
                   <div className="um-row" key={u.phone}>
+                    <div className="um-row-top">
                     <div className="um-main">
                       <div className="um-name-row">
                         <span className="um-name">{u.name || "Unknown"}</span>
@@ -7713,54 +7714,29 @@ export default function ManageOrdersPage() {
                         <span>avg</span>
                       </div>
                     </div>
-                    <div className="um-actions">
+                    </div>
+                    <div className="um-btns">
                       <button
                         type="button"
-                        className="um-kebab"
-                        aria-label="Actions"
+                        className="sec-big-btn um-btn"
+                        onClick={() => setWalletModal(u)}
+                      >
+                        <Wallet size={15} /> Adjust balance
+                      </button>
+                      <button
+                        type="button"
+                        className="sec-big-btn um-btn"
                         onClick={() =>
-                          setOpenUserMenu((p) =>
-                            p === u.phone ? null : u.phone,
+                          openWhatsApp(
+                            u.phone,
+                            u.wallet > 0
+                              ? `Hi${u.name ? " " + u.name.split(" ")[0] : ""}! You have ₹${u.wallet} waiting in your TheBookX wallet. Use it on your next order before it expires — view your balance & orders here: ${PROFILE_URL}`
+                              : `Hi${u.name ? " " + u.name.split(" ")[0] : ""}! Thanks for shopping with TheBookX. View your orders & wallet here: ${PROFILE_URL}`,
                           )
                         }
                       >
-                        <MoreVertical size={18} />
+                        <FaWhatsapp size={15} /> WhatsApp
                       </button>
-                      {openUserMenu === u.phone && (
-                        <>
-                          <div
-                            className="um-menu-backdrop"
-                            onClick={() => setOpenUserMenu(null)}
-                          />
-                          <div className="um-menu" role="menu">
-                            <button
-                              type="button"
-                              className="um-menu-item"
-                              onClick={() => {
-                                setWalletModal(u);
-                                setOpenUserMenu(null);
-                              }}
-                            >
-                              <Wallet size={15} /> Adjust wallet
-                            </button>
-                            {u.wallet > 0 && (
-                              <button
-                                type="button"
-                                className="um-menu-item"
-                                onClick={() => {
-                                  openWhatsApp(
-                                    u.phone,
-                                    `Hi${u.name ? " " + u.name.split(" ")[0] : ""}! You have ₹${u.wallet} waiting in your TheBookX wallet. Use it on your next order before it expires — view your balance & orders here: ${PROFILE_URL}`,
-                                  );
-                                  setOpenUserMenu(null);
-                                }}
-                              >
-                                <FaWhatsapp size={15} /> WhatsApp reminder
-                              </button>
-                            )}
-                          </div>
-                        </>
-                      )}
                     </div>
                   </div>
                 ))}

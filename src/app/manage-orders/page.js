@@ -6330,10 +6330,12 @@ export default function ManageOrdersPage() {
                 document.body,
               )}
 
-            {/* Overview stats — icon + content in one row, emoji glyphs. */}
+            {/* Overview stats — one bordered section, grid cells split by lines. */}
             <div className="an2-stats">
               <div className="an2-stat s-orders">
-                <div className="an2-stat-ic">🛍️</div>
+                <div className="an2-stat-ic">
+                  <ShoppingBag size={16} />
+                </div>
                 <div className="an2-stat-body">
                   <span className="an2-stat-val">{overview.n}</span>
                   <span className="an2-stat-lbl">Orders</span>
@@ -6344,7 +6346,9 @@ export default function ManageOrdersPage() {
                 </div>
               </div>
               <div className="an2-stat s-rev">
-                <div className="an2-stat-ic">💰</div>
+                <div className="an2-stat-ic">
+                  <IndianRupee size={16} />
+                </div>
                 <div className="an2-stat-body">
                   <span className="an2-stat-val">
                     ₹{overview.revenue.toLocaleString()}
@@ -6356,7 +6360,9 @@ export default function ManageOrdersPage() {
                 </div>
               </div>
               <div className="an2-stat s-cost">
-                <div className="an2-stat-ic">🧾</div>
+                <div className="an2-stat-ic">
+                  <Package size={16} />
+                </div>
                 <div className="an2-stat-body">
                   <span className="an2-stat-val">
                     ₹{overview.cost.toLocaleString()}
@@ -6369,7 +6375,11 @@ export default function ManageOrdersPage() {
               </div>
               <div className="an2-stat s-profit">
                 <div className="an2-stat-ic">
-                  {overview.profit >= 0 ? "📈" : "📉"}
+                  {overview.profit >= 0 ? (
+                    <TrendingUp size={16} />
+                  ) : (
+                    <TrendingDown size={16} />
+                  )}
                 </div>
                 <div className="an2-stat-body">
                   <span className="an2-stat-val">
@@ -6387,7 +6397,9 @@ export default function ManageOrdersPage() {
                 </div>
               </div>
               <div className="an2-stat s-units">
-                <div className="an2-stat-ic">📚</div>
+                <div className="an2-stat-ic">
+                  <BarChart3 size={16} />
+                </div>
                 <div className="an2-stat-body">
                   <span className="an2-stat-val">{overview.units}</span>
                   <span className="an2-stat-lbl">Books sold</span>
@@ -6397,7 +6409,9 @@ export default function ManageOrdersPage() {
                 </div>
               </div>
               <div className="an2-stat s-wallet">
-                <div className="an2-stat-ic">👛</div>
+                <div className="an2-stat-ic">
+                  <Wallet size={16} />
+                </div>
                 <div className="an2-stat-body">
                   <span className="an2-stat-val">
                     ₹{walletUsers.total.toLocaleString()}
@@ -7284,53 +7298,61 @@ export default function ManageOrdersPage() {
                         {realOrders.length === 1 ? "" : "s"}
                         <ChevronDown size={15} className="admin-stats-caret" />
                       </summary>
-                      <div className="admin-stats-grid">
-                        <div className="admin-stat s-orders">
-                          <div className="admin-stat-ic">
+                      <div className="admin-stats-grid an2-stats">
+                        <div className="an2-stat s-orders">
+                          <div className="an2-stat-ic">
                             <ShoppingBag size={16} />
                           </div>
-                          <span className="admin-stat-val">
-                            {realOrders.length}
-                          </span>
-                          <span className="admin-stat-lbl">Orders</span>
-                          <span className="admin-stat-x">in this filter</span>
+                          <div className="an2-stat-body">
+                            <span className="an2-stat-val">
+                              {realOrders.length}
+                            </span>
+                            <span className="an2-stat-lbl">Orders</span>
+                            <span className="an2-stat-x">in this filter</span>
+                          </div>
                         </div>
-                        <div className="admin-stat s-rev">
-                          <div className="admin-stat-ic">
+                        <div className="an2-stat s-rev">
+                          <div className="an2-stat-ic">
                             <IndianRupee size={16} />
                           </div>
-                          <span className="admin-stat-val">
-                            ₹{fRevenue.toLocaleString()}
-                          </span>
-                          <span className="admin-stat-lbl">Revenue</span>
-                          <span className="admin-stat-x">
-                            Avg ₹
-                            {realOrders.length
-                              ? Math.round(
-                                  fRevenue / realOrders.length,
-                                ).toLocaleString()
-                              : 0}
-                          </span>
+                          <div className="an2-stat-body">
+                            <span className="an2-stat-val">
+                              ₹{fRevenue.toLocaleString()}
+                            </span>
+                            <span className="an2-stat-lbl">Revenue</span>
+                            <span className="an2-stat-x">
+                              Avg ₹
+                              {realOrders.length
+                                ? Math.round(
+                                    fRevenue / realOrders.length,
+                                  ).toLocaleString()
+                                : 0}
+                            </span>
+                          </div>
                         </div>
-                        <div className="admin-stat s-units">
-                          <div className="admin-stat-ic">
+                        <div className="an2-stat s-units">
+                          <div className="an2-stat-ic">
                             <BarChart3 size={16} />
                           </div>
-                          <span className="admin-stat-val">{fBooks}</span>
-                          <span className="admin-stat-lbl">Books sold</span>
-                          <span className="admin-stat-x">
-                            across {realOrders.length} orders
-                          </span>
+                          <div className="an2-stat-body">
+                            <span className="an2-stat-val">{fBooks}</span>
+                            <span className="an2-stat-lbl">Books sold</span>
+                            <span className="an2-stat-x">
+                              across {realOrders.length} orders
+                            </span>
+                          </div>
                         </div>
-                        <div className="admin-stat s-wallet">
-                          <div className="admin-stat-ic">
+                        <div className="an2-stat s-wallet">
+                          <div className="an2-stat-ic">
                             <Wallet size={16} />
                           </div>
-                          <span className="admin-stat-val">
-                            {fCod} / {fUpi}
-                          </span>
-                          <span className="admin-stat-lbl">COD / UPI</span>
-                          <span className="admin-stat-x">payment split</span>
+                          <div className="an2-stat-body">
+                            <span className="an2-stat-val">
+                              {fCod} / {fUpi}
+                            </span>
+                            <span className="an2-stat-lbl">COD / UPI</span>
+                            <span className="an2-stat-x">payment split</span>
+                          </div>
                         </div>
                       </div>
                     </details>

@@ -1165,7 +1165,7 @@
   align-items: center;
   gap: 10px;
   padding: 4px 6px 4px 14px;
-  border-radius: 999px;
+  border-radius: 14px;
   background: var(--g-surface-2);
   -webkit-backdrop-filter: blur(var(--g-blur)) saturate(170%);
   backdrop-filter: blur(var(--g-blur)) saturate(170%);
@@ -1231,7 +1231,7 @@
 
 /* Filter button + chips */
 .mo-glass .admin-filter-btn {
-  border-radius: 999px;
+  border-radius: 14px;
   background: var(--g-surface-2);
   -webkit-backdrop-filter: blur(var(--g-blur));
   backdrop-filter: blur(var(--g-blur));
@@ -1256,7 +1256,6 @@
   font-weight: 700;
 }
 
-.mo-glass .admin-chip,
 .mo-glass .admin-status-opt {
   border-radius: 999px;
   background: var(--g-surface-2);
@@ -2182,9 +2181,23 @@
 }
 
 /* Let stat tiles reflow instead of overflowing on mid-size screens */
-.mo-glass .an2-stats,
 .mo-glass .admin-stats-grid {
   grid-template-columns: repeat(auto-fit, minmax(178px, 1fr));
+}
+/* Overview stats = one bordered section with 1px internal grid lines. */
+.mo-glass .an2-stats {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background: var(--g-hairline);
+  border: 1px solid var(--g-hairline);
+  border-radius: var(--g-r-sm, 12px);
+  overflow: hidden;
+}
+.mo-glass .an2-stats .an2-stat {
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  background: var(--g-surface-3);
 }
 
 /* ---- Card padding ---- */

@@ -19650,14 +19650,14 @@ img[data-loaded="true"] {
   display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-top:12px;
 }
 .admin-chip{
-  display:inline-flex; align-items:center; gap:7px;
-  padding:6px 8px 6px 12px; border-radius:999px;
+  display:inline-flex; align-items:center; gap:6px;
+  padding:4px 6px 4px 11px; border-radius:8px;
   background:rgba(251,133,0,.10); border:1px solid rgba(251,133,0,.28);
-  color:var(--foreground,#0a0a0a); font-size:12.5px; font-weight:600;
+  color:var(--foreground,#0a0a0a); font-size:12px; font-weight:600;
 }
 .admin-chip button{
   display:inline-flex; align-items:center; justify-content:center;
-  width:18px; height:18px; border-radius:999px; border:none; cursor:pointer;
+  width:16px; height:16px; border-radius:6px; border:none; cursor:pointer;
   background:rgba(0,0,0,.06); color:var(--foreground);
 }
 .admin-chip button:hover{ background:rgba(0,0,0,.14); }
@@ -30877,8 +30877,13 @@ img[data-loaded="true"] {
 /* Overview stat cards */
 .an2-stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(2, 1fr);
+  /* 1px gaps over a hairline background paint the internal grid lines. */
+  gap: 1px;
+  background: var(--hairline, #ececec);
+  border: 1px solid var(--hairline, #ececec);
+  border-radius: 12px;
+  overflow: hidden;
 }
 .an2-stat-x {
   font-size: 10px;
@@ -30894,9 +30899,9 @@ img[data-loaded="true"] {
   align-items: center;
   gap: 12px;
   background: #fff;
-  border: 1px solid var(--hairline, #e5e7eb);
-  border-radius: 12px;
-  padding: 12px 14px;
+  border: none;
+  border-radius: 0;
+  padding: 13px 14px;
   overflow: hidden;
 }
 .an2-stat-body {
@@ -30910,11 +30915,10 @@ img[data-loaded="true"] {
   align-items: center;
   justify-content: center;
   flex: 0 0 auto;
-  width: 42px;
-  height: 42px;
-  border-radius: 11px;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
   margin-bottom: 0;
-  font-size: 20px;
   line-height: 1;
   color: var(--tertiary, #fb8500);
   background: rgba(251, 133, 0, 0.12);

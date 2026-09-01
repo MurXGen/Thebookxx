@@ -9077,63 +9077,6 @@ export default function ManageOrdersPage() {
                                   </button>
                                 );
                               })()}
-                              {(() => {
-                                const deliv = String(
-                                  order["Delivery Type"] || "",
-                                );
-                                const fasterD =
-                                  /faster|express/i.test(deliv) ||
-                                  /^e/i.test(
-                                    String(order.shippingId || "").trim(),
-                                  );
-                                const freeD = /free/i.test(deliv);
-                                const giftOn = order["Gift Wrap"] === "Yes";
-                                const subB = books.reduce(
-                                  (s, b) =>
-                                    s +
-                                    (b.total ||
-                                      b.price * (b.quantity || 1) ||
-                                      0),
-                                  0,
-                                );
-                                const grandB =
-                                  parseFloat(order["Total Amount"]) ||
-                                  Number(order.revenue) ||
-                                  subB;
-                                const delFeeB =
-                                  parseFloat(order["Delivery Charge"]) || 0;
-                                const giftFeeB = giftOn
-                                  ? parseFloat(order["Gift Wrap Charge"]) || 0
-                                  : 0;
-                                const extraB =
-                                  grandB - subB - delFeeB - giftFeeB;
-                                const discB = extraB < 0 ? -extraB : 0;
-                                const badges = [];
-                                if (fasterD)
-                                  badges.push({ e: "⚡", t: "Faster" });
-                                if (freeD)
-                                  badges.push({ e: "🚚", t: "Free delivery" });
-                                if (giftOn)
-                                  badges.push({ e: "🎁", t: "Gift wrap" });
-                                if (discB > 0)
-                                  badges.push({
-                                    e: "🏷️",
-                                    t: `Saved ₹${Math.round(discB).toLocaleString()}`,
-                                  });
-                                if (!badges.length) return null;
-                                return (
-                                  <div className="mo-addon-badges">
-                                    {badges.map((b, bi) => (
-                                      <span className="mo-addon-badge" key={bi}>
-                                        <span className="mo-addon-emoji">
-                                          {b.e}
-                                        </span>
-                                        {b.t}
-                                      </span>
-                                    ))}
-                                  </div>
-                                );
-                              })()}
                               </div>
                               </div>
                             </div>
@@ -9201,7 +9144,62 @@ export default function ManageOrdersPage() {
                               </div>
                             )}
 
-                            {/* Book count / picked-badge row removed. */}
+                            {/* Add-on / benefit chips — shown at the end of the
+                                card (kept out of the one-row price section). */}
+                            {(() => {
+                              const deliv = String(order["Delivery Type"] || "");
+                              const gwRaw = String(order["Gift Wrap"] || "");
+                              const fasterD =
+                                /faster|express/i.test(deliv) ||
+                                /^e/i.test(String(order.shippingId || "").trim());
+                              const freeD = /free/i.test(deliv);
+                              const giftOn = /^\s*yes/i.test(gwRaw);
+                              // Bookmark opt-in is stamped into the Gift Wrap
+                              // field: "No" = not opted, anything containing
+                              // "Bookmark" = opted.
+                              const bookmarkOn = /bookmark/i.test(gwRaw);
+                              const subB = books.reduce(
+                                (s, b) =>
+                                  s + (b.total || b.price * (b.quantity || 1) || 0),
+                                0,
+                              );
+                              const grandB =
+                                parseFloat(order["Total Amount"]) ||
+                                Number(order.revenue) ||
+                                subB;
+                              const delFeeB =
+                                parseFloat(order["Delivery Charge"]) || 0;
+                              const giftFeeB = giftOn
+                                ? parseFloat(order["Gift Wrap Charge"]) || 0
+                                : 0;
+                              const discB =
+                                grandB - subB - delFeeB - giftFeeB < 0
+                                  ? subB + delFeeB + giftFeeB - grandB
+                                  : 0;
+                              const badges = [];
+                              if (fasterD) badges.push({ e: "⚡", t: "Faster" });
+                              if (freeD)
+                                badges.push({ e: "🚚", t: "Free delivery" });
+                              if (giftOn) badges.push({ e: "🎁", t: "Gift wrap" });
+                              if (bookmarkOn)
+                                badges.push({ e: "🔖", t: "Bookmark" });
+                              if (discB > 0)
+                                badges.push({
+                                  e: "🏷️",
+                                  t: `Saved ₹${Math.round(discB).toLocaleString()}`,
+                                });
+                              if (!badges.length) return null;
+                              return (
+                                <div className="mo-card-chips">
+                                  {badges.map((b, bi) => (
+                                    <span className="mo-addon-badge" key={bi}>
+                                      <span className="mo-addon-emoji">{b.e}</span>
+                                      {b.t}
+                                    </span>
+                                  ))}
+                                </div>
+                              );
+                            })()}
 
                             {/* Customer's own note left at checkout. */}
                             {order["Order Comment"] && (

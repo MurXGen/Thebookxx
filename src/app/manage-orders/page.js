@@ -3284,6 +3284,8 @@ export default function ManageOrdersPage() {
     indiapost: true,
     orders: true,
     users: true,
+    cod: true,
+    online: true,
   });
   const toggleAcc = (id) => setAccOpen((p) => ({ ...p, [id]: !p[id] }));
 
@@ -8741,8 +8743,34 @@ export default function ManageOrdersPage() {
                   )}
 
                   {orderView === "cards" ? (
-                    <div className="admin-orders-grid">
-                      {visibleOrders.map((order, idx) => {
+                    <>
+                    {[
+                      { key: "cod", label: "COD orders", isCod: true },
+                      { key: "online", label: "Online orders", isCod: false },
+                    ].map((grp) => {
+                      const groupPairs = visibleOrders
+                        .map((order, idx) => ({ order, idx }))
+                        .filter(
+                          ({ order }) =>
+                            /cash|cod/i.test(order["Payment Type"] || "") ===
+                            grp.isCod,
+                        );
+                      if (!groupPairs.length) return null;
+                      return (
+                        <Accordion
+                          key={grp.key}
+                          id={grp.key}
+                          title={grp.label}
+                          open={accOpen[grp.key]}
+                          onToggle={toggleAcc}
+                          right={
+                            <span className="acc-count">
+                              {groupPairs.length}
+                            </span>
+                          }
+                        >
+                          <div className="admin-orders-grid">
+                            {groupPairs.map(({ order, idx }) => {
                         const orderId = order["Order ID"];
                         const books = order.parsedBooks || [];
                         const pnl = order.pnl;
@@ -9795,8 +9823,12 @@ export default function ManageOrdersPage() {
                               )}
                           </motion.div>
                         );
-                      })}
-                    </div>
+                              })}
+                          </div>
+                        </Accordion>
+                      );
+                    })}
+                    </>
                   ) : (
                     <div className="mo-table-wrap">
                       <table className="mo-table">

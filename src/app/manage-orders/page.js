@@ -683,6 +683,19 @@ const TRACK_STATUS_OPTIONS = [
   "Cancelled",
 ];
 
+// Status → accent colour for the order-card status chip.
+function moStatusColor(status) {
+  const s = String(status || "").toLowerCase();
+  if (/cancel/.test(s)) return "#dc2626"; // red
+  if (/delivered|money received/.test(s)) return "#16a34a"; // green
+  if (/out for delivery/.test(s)) return "#4f46e5"; // indigo
+  if (/in\s*transit/.test(s)) return "#0891b2"; // cyan
+  if (/shipped/.test(s)) return "#7c3aed"; // purple
+  if (/processing/.test(s)) return "#2563eb"; // blue
+  if (/pending/.test(s)) return "#d97706"; // amber
+  return "#6b7280"; // slate default
+}
+
 const ANALYTICS_SECTIONS = [
   { key: "kpis", label: "Summary cards" },
   { key: "profitCost", label: "Profit & cost" },
@@ -8963,7 +8976,12 @@ export default function ManageOrdersPage() {
                               onClick={(e) => e.stopPropagation()}
                             >
                               <div className="mo-panel-status">
-                              <div className="mo-status-select-wrap">
+                              <div
+                                className="mo-status-select-wrap"
+                                style={{
+                                  "--st-color": moStatusColor(order.status),
+                                }}
+                              >
                                 <select
                                   className={`mo-status-quick${pendingStatus[orderId] ? " dirty" : ""}`}
                                   value={order.status || "Processing"}

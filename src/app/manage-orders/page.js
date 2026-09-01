@@ -8929,54 +8929,53 @@ export default function ManageOrdersPage() {
                                     </button>
                                   </div>
                                 </div>
-                                <button
-                                  type="button"
-                                  className="mo-phone-btn"
-                                  title="Tap to copy number"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    copyToClipboard(
-                                      String(order["Phone Number"] || ""),
-                                      `phone-${idx}`,
-                                    );
-                                  }}
-                                >
-                                  +91 {order["Phone Number"]}
-                                  {copiedId === `phone-${idx}` && (
-                                    <span className="mo-phone-copied">
-                                      <Check size={12} /> Copied
-                                    </span>
-                                  )}
-                                </button>
-                              </div>
-                            </div>
-
-                            {/* Order date · time | relative age. */}
-                            <div
-                              className="mo-when-row"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <Calendar size={12} />
-                              <span className="mo-when-date">
-                                {formatDate(
-                                  order["Timestamp(D)"] || order["Timestamp"],
-                                )}
-                              </span>
-                              {agoLabel && (
-                                <>
-                                  <span className="mo-when-sep">|</span>
+                                <div className="mo-idline">
+                                  <button
+                                    type="button"
+                                    className="mo-phone-btn"
+                                    title="Tap to copy number"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      copyToClipboard(
+                                        String(order["Phone Number"] || ""),
+                                        `phone-${idx}`,
+                                      );
+                                    }}
+                                  >
+                                    +91 {order["Phone Number"]}
+                                    {copiedId === `phone-${idx}` && (
+                                      <span className="mo-phone-copied">
+                                        <Check size={12} /> Copied
+                                      </span>
+                                    )}
+                                  </button>
+                                  {/* Date · relative age, right-aligned. */}
                                   <span
-                                    className="mo-when-ago"
+                                    className="mo-idline-when"
                                     title={
                                       orderDate
                                         ? orderDate.toLocaleString("en-IN")
                                         : ""
                                     }
                                   >
-                                    {agoLabel}
+                                    <Calendar size={12} />
+                                    <span className="mo-when-date">
+                                      {formatDate(
+                                        order["Timestamp(D)"] ||
+                                          order["Timestamp"],
+                                      )}
+                                    </span>
+                                    {agoLabel && (
+                                      <>
+                                        <span className="mo-when-sep">|</span>
+                                        <span className="mo-when-ago">
+                                          {agoLabel}
+                                        </span>
+                                      </>
+                                    )}
                                   </span>
-                                </>
-                              )}
+                                </div>
+                              </div>
                             </div>
 
                             {/* Panel — price on the left, status badge +
@@ -9210,30 +9209,7 @@ export default function ManageOrdersPage() {
                               </div>
                             )}
 
-                            {/* Book count · picked badge — below the images
-                                (date now lives in the header row above). */}
-                            <div className="mo-card-desc">
-                              <span>
-                                {books.length} book{books.length > 1 ? "s" : ""}
-                              </span>
-                              {books.length > 0 && (
-                                <span
-                                  className={`mo-pick-badge ${
-                                    allPicked
-                                      ? "done"
-                                      : pickedCount > 0
-                                        ? "partial"
-                                        : ""
-                                  }`}
-                                >
-                                  {allPicked
-                                    ? ` Picked · ₹${pickedValue.toLocaleString()}`
-                                    : pickedCount > 0
-                                      ? `Partially picked ${pickedCount}/${books.length} · ₹${pickedValue.toLocaleString()} of ₹${totalBooksValue.toLocaleString()}`
-                                      : "Not picked"}
-                                </span>
-                              )}
-                            </div>
+                            {/* Book count / picked-badge row removed. */}
 
                             {/* Customer's own note left at checkout. */}
                             {order["Order Comment"] && (

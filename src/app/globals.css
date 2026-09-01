@@ -22307,8 +22307,27 @@ img[data-loaded="true"] {
   border-bottom: 1px dashed var(--hairline, #ececec);
 }
 .mo-card > .mo-card-desc:last-child,
-.mo-card > .mo-cust-note:last-child {
+.mo-card > .mo-cust-note:last-child,
+.mo-card > .mo-covers:last-child {
   border-bottom: none;
+}
+/* Phone (left) + order date · age (right) on one line under the name. */
+.mo-idline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 2px;
+}
+.mo-idline-when {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex: 0 0 auto;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--dark-50, #6b7280);
+  white-space: nowrap;
 }
 
 /* Last 3 digits of the order id in brand orange */

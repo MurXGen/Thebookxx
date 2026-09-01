@@ -8557,6 +8557,16 @@ export default function ManageOrdersPage() {
                         >
                           Select all
                         </button>
+                        <button
+                          type="button"
+                          className="mo-cardbulk-cancel"
+                          onClick={() => {
+                            setSelectedIds([]);
+                            setCardSelectMode(false);
+                          }}
+                        >
+                          <X size={14} /> Cancel
+                        </button>
                       </div>
                       <div className="mo-cardbulk-right">
                         <span className="mo-cardbulk-lbl">Set status</span>
@@ -8857,20 +8867,6 @@ export default function ManageOrdersPage() {
                               clearTimeout(lpTimer.current)
                             }
                           >
-                            {cardSelectMode && (
-                              <button
-                                type="button"
-                                className={`mo-card-checkbox${isSelected ? " on" : ""}`}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  toggleCardSelect();
-                                }}
-                                aria-pressed={isSelected}
-                                title={isSelected ? "Deselect" : "Select"}
-                              >
-                                {isSelected && <Check size={14} />}
-                              </button>
-                            )}
                             {/* Top — serial · name · payment pill. */}
                             <div
                               className="mo-card-top mo-card-top-toggle"
@@ -8893,6 +8889,20 @@ export default function ManageOrdersPage() {
                             >
                               <div className="mo-card-id">
                                 <div className="mo-name-row">
+                                  {cardSelectMode && (
+                                    <button
+                                      type="button"
+                                      className={`mo-card-checkbox${isSelected ? " on" : ""}`}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        toggleCardSelect();
+                                      }}
+                                      aria-pressed={isSelected}
+                                      title={isSelected ? "Deselect" : "Select"}
+                                    >
+                                      {isSelected && <Check size={14} />}
+                                    </button>
+                                  )}
                                   <span className="mo-srno">{idx + 1}</span>
                                   <span className="mo-name">
                                     {order["Customer Name"] || "—"}

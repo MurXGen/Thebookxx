@@ -15789,6 +15789,22 @@ img[data-loaded="true"] {
   cursor: pointer;
   padding: 2px 4px;
 }
+.mo-cardbulk-cancel {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #dc2626;
+  background: rgba(220, 38, 38, 0.08);
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  border-radius: 999px;
+  cursor: pointer;
+  padding: 4px 10px;
+}
+.mo-cardbulk-cancel:hover {
+  background: rgba(220, 38, 38, 0.14);
+}
 .mo-cardbulk-right {
   display: inline-flex;
   align-items: center;
@@ -15823,10 +15839,7 @@ img[data-loaded="true"] {
   box-shadow: 0 0 0 2px var(--tertiary) inset;
 }
 .mo-card-checkbox {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  z-index: 5;
+  flex: 0 0 auto;
   width: 24px;
   height: 24px;
   border-radius: 7px;

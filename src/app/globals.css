@@ -22781,6 +22781,11 @@ img[data-loaded="true"] {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  padding: 0;
+}
+.mo-bill .bill-header {
+  padding: 16px 16px 12px;
+  margin-bottom: 0;
 }
 .mo-bill-head-l {
   display: flex;
@@ -22883,6 +22888,93 @@ img[data-loaded="true"] {
 .mo-bill-body .aoc-status-row,
 .mo-bill-body .aoc-foot {
   margin: 0;
+}
+.mo-bill-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.mo-bill-actions .mo-note-add,
+.mo-bill-actions .mo-book-btn {
+  flex: 1;
+}
+.mo-bill-del {
+  flex: 0 0 auto;
+}
+
+/* ── Redesigned order card ─────────────────────────────────────────── */
+.mo-when-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--dark-50, #6b7280);
+  margin-top: 2px;
+}
+.mo-when-date {
+  color: var(--foreground, #0a0a0a);
+  font-weight: 600;
+}
+.mo-when-sep {
+  color: var(--dark-20, #cbd0d6);
+}
+.mo-when-ago {
+  font-weight: 600;
+  color: var(--tertiary, #fb8500);
+}
+.mo-status-row2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+.mo-status-row2 .mo-status-quick {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.mo-open-ic {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid var(--hairline, #ececec);
+  color: var(--dark-50, #6b7280);
+  flex: 0 0 auto;
+  background: var(--background, #fff);
+}
+.mo-open-ic:hover {
+  border-color: var(--tertiary, #fb8500);
+  color: var(--tertiary, #fb8500);
+}
+.mo-price-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+.mo-addon-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.mo-addon-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--dark-4, #f3f4f6);
+  border: 1px solid var(--hairline, #ececec);
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--foreground, #0a0a0a);
+  line-height: 1.4;
+}
+.mo-addon-emoji {
+  font-size: 13px;
+  line-height: 1;
 }
 .mo-ctrls {
   display: flex;

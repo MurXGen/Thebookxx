@@ -8809,6 +8809,7 @@ export default function ManageOrdersPage() {
                                 {isSelected && <Check size={14} />}
                               </button>
                             )}
+                            {/* Top — serial · name · payment pill. */}
                             <div
                               className="mo-card-top mo-card-top-toggle"
                               onClick={() =>
@@ -8829,6 +8830,11 @@ export default function ManageOrdersPage() {
                                   <span className="mo-srno">{idx + 1}</span>
                                   <span className="mo-name">
                                     {order["Customer Name"] || "—"}
+                                  </span>
+                                  <span
+                                    className={`mo-pay-pill ${isCOD ? "cod" : "upi"}`}
+                                  >
+                                    {isCOD ? "COD" : "UPI"}
                                   </span>
                                 </div>
                                 <div
@@ -8884,55 +8890,96 @@ export default function ManageOrdersPage() {
                                       <Copy size={11} className="gray-500" />
                                     )}
                                   </button>
-                                  {orderId && (
-                                    <a
-                                      className="mo-view-link"
-                                      href={`/profile/${String(
-                                        order["Phone Number"] || "",
-                                      )
-                                        .replace(/\D/g, "")
-                                        .slice(-10)}/orders/${encodeURIComponent(orderId)}`}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      title="Open customer order page"
-                                      onClick={(e) => e.stopPropagation()}
-                                    >
-                                      <ExternalLink size={11} /> View
-                                    </a>
-                                  )}
-                                </div>
-                              </div>
-                              <div className="mo-card-badges">
-                                <div className="mo-badges-top">
-                                  {agoLabel && (
-                                    <span
-                                      className="mo-ago"
-                                      title={
-                                        orderDate
-                                          ? orderDate.toLocaleString("en-IN")
-                                          : ""
-                                      }
-                                    >
-                                      <Clock size={11} /> {agoLabel}
-                                    </span>
-                                  )}
-                                  <span
-                                    className={`mo-pay-pill ${isCOD ? "cod" : "upi"}`}
-                                  >
-                                    {isCOD ? "COD" : "UPI"}
-                                  </span>
-                                  <ChevronDown
-                                    size={18}
-                                    className={`mo-card-caret${isExpanded ? " open" : ""}`}
-                                  />
                                 </div>
                               </div>
                             </div>
 
-                            {/* Control bar — amount + status + quick actions.
-                                Consolidates the previously scattered status,
-                                WhatsApp and delete controls into one row. */}
-                            <div className="mo-amount-row">
+                            {/* Order date · time | relative age. */}
+                            <div
+                              className="mo-when-row"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <Calendar size={12} />
+                              <span className="mo-when-date">
+                                {formatDate(
+                                  order["Timestamp(D)"] || order["Timestamp"],
+                                )}
+                              </span>
+                              {agoLabel && (
+                                <>
+                                  <span className="mo-when-sep">|</span>
+                                  <span
+                                    className="mo-when-ago"
+                                    title={
+                                      orderDate
+                                        ? orderDate.toLocaleString("en-IN")
+                                        : ""
+                                    }
+                                  >
+                                    {agoLabel}
+                                  </span>
+                                </>
+                              )}
+                            </div>
+
+                            {/* Status (stretched) + WhatsApp + open-order icons. */}
+                            <div
+                              className="mo-status-row2"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <select
+                                className={`mo-status-quick${pendingStatus[orderId] ? " dirty" : ""}`}
+                                value={order.status || "Processing"}
+                                title="Change status (queued — push to save)"
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  patchLocalOrder(orderId, {
+                                    "Order Status": val,
+                                    status: val,
+                                  });
+                                  setPendingStatus((prev) => ({
+                                    ...prev,
+                                    [orderId]: val,
+                                  }));
+                                }}
+                              >
+                                {TRACK_STATUS_OPTIONS.map((s) => (
+                                  <option key={s} value={s}>
+                                    {s}
+                                  </option>
+                                ))}
+                              </select>
+                              <button
+                                type="button"
+                                className="mo-wa-btn"
+                                onClick={() => {
+                                  setWaCustomText("");
+                                  setWaPickerOrder(order);
+                                }}
+                                title="WhatsApp the customer"
+                                aria-label="WhatsApp the customer"
+                              >
+                                <FaWhatsapp size={18} />
+                              </button>
+                              {orderId && (
+                                <a
+                                  className="mo-open-ic"
+                                  href={`/profile/${String(
+                                    order["Phone Number"] || "",
+                                  )
+                                    .replace(/\D/g, "")
+                                    .slice(-10)}/orders/${encodeURIComponent(orderId)}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  title="Open customer order page"
+                                >
+                                  <ExternalLink size={16} />
+                                </a>
+                              )}
+                            </div>
+
+                            {/* Book total + benefit badges (add-ons / savings). */}
+                            <div className="mo-price-block">
                               {(() => {
                                 const rev = Number(order.revenue) || 0;
                                 // 5.9% deduction applies to COD orders only.
@@ -8968,53 +9015,63 @@ export default function ManageOrdersPage() {
                                   </button>
                                 );
                               })()}
-                              <div
-                                className="mo-ctrls"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                <select
-                                  className={`mo-status-quick${pendingStatus[orderId] ? " dirty" : ""}`}
-                                  value={order.status || "Processing"}
-                                  title="Change status (queued — push to save)"
-                                  onChange={(e) => {
-                                    const val = e.target.value;
-                                    patchLocalOrder(orderId, {
-                                      "Order Status": val,
-                                      status: val,
-                                    });
-                                    setPendingStatus((prev) => ({
-                                      ...prev,
-                                      [orderId]: val,
-                                    }));
-                                  }}
-                                >
-                                  {TRACK_STATUS_OPTIONS.map((s) => (
-                                    <option key={s} value={s}>
-                                      {s}
-                                    </option>
-                                  ))}
-                                </select>
-                                <button
-                                  type="button"
-                                  className="mo-wa-btn"
-                                  onClick={() => {
-                                    setWaCustomText("");
-                                    setWaPickerOrder(order);
-                                  }}
-                                  title="WhatsApp the customer"
-                                  aria-label="WhatsApp the customer"
-                                >
-                                  <FaWhatsapp size={18} />
-                                </button>
-                                <button
-                                  type="button"
-                                  className="mo-card-delete"
-                                  title="Delete order from sheet"
-                                  onClick={() => deleteOrderRow(order)}
-                                >
-                                  <Trash2 size={15} />
-                                </button>
-                              </div>
+                              {(() => {
+                                const deliv = String(
+                                  order["Delivery Type"] || "",
+                                );
+                                const fasterD =
+                                  /faster|express/i.test(deliv) ||
+                                  /^e/i.test(
+                                    String(order.shippingId || "").trim(),
+                                  );
+                                const freeD = /free/i.test(deliv);
+                                const giftOn = order["Gift Wrap"] === "Yes";
+                                const subB = books.reduce(
+                                  (s, b) =>
+                                    s +
+                                    (b.total ||
+                                      b.price * (b.quantity || 1) ||
+                                      0),
+                                  0,
+                                );
+                                const grandB =
+                                  parseFloat(order["Total Amount"]) ||
+                                  Number(order.revenue) ||
+                                  subB;
+                                const delFeeB =
+                                  parseFloat(order["Delivery Charge"]) || 0;
+                                const giftFeeB = giftOn
+                                  ? parseFloat(order["Gift Wrap Charge"]) || 0
+                                  : 0;
+                                const extraB =
+                                  grandB - subB - delFeeB - giftFeeB;
+                                const discB = extraB < 0 ? -extraB : 0;
+                                const badges = [];
+                                if (fasterD)
+                                  badges.push({ e: "⚡", t: "Faster" });
+                                if (freeD)
+                                  badges.push({ e: "🚚", t: "Free delivery" });
+                                if (giftOn)
+                                  badges.push({ e: "🎁", t: "Gift wrap" });
+                                if (discB > 0)
+                                  badges.push({
+                                    e: "🏷️",
+                                    t: `Saved ₹${Math.round(discB).toLocaleString()}`,
+                                  });
+                                if (!badges.length) return null;
+                                return (
+                                  <div className="mo-addon-badges">
+                                    {badges.map((b, bi) => (
+                                      <span className="mo-addon-badge" key={bi}>
+                                        <span className="mo-addon-emoji">
+                                          {b.e}
+                                        </span>
+                                        {b.t}
+                                      </span>
+                                    ))}
+                                  </div>
+                                );
+                              })()}
                             </div>
 
                             {/* Book covers — scrollable row with name + price,
@@ -9080,15 +9137,9 @@ export default function ManageOrdersPage() {
                               </div>
                             )}
 
-                            {/* Date · book count · picked badge — below the images */}
+                            {/* Book count · picked badge — below the images
+                                (date now lives in the header row above). */}
                             <div className="mo-card-desc">
-                              <span className="mo-desc-item">
-                                <Calendar size={11} />
-                                {formatDate(
-                                  order["Timestamp(D)"] || order["Timestamp"],
-                                )}
-                              </span>
-                              <span className="aoc-dot">·</span>
                               <span>
                                 {books.length} book{books.length > 1 ? "s" : ""}
                               </span>
@@ -9119,75 +9170,7 @@ export default function ManageOrdersPage() {
                               </div>
                             )}
 
-                            {/* Comment + Book online — one row, secondary buttons.
-                                The comment is saved to the order's "Comment"
-                                column in the sheet. */}
-                            <div className="mo-card-actions">
-                              {(() => {
-                                const cmt =
-                                  orderNotes[orderId] ??
-                                  (order["Comment"] || "");
-                                return cmt ? (
-                                  <button
-                                    type="button"
-                                    className="mo-note-flag"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setNoteEditor({ orderId, draft: cmt });
-                                    }}
-                                    title="Edit comment"
-                                  >
-                                    <span className="mo-note-flag-ic">
-                                      <MessageCircle size={15} />
-                                    </span>
-                                    <span className="mo-note-flag-txt">
-                                      {cmt}
-                                    </span>
-                                    <Pencil
-                                      size={13}
-                                      className="mo-note-flag-edit"
-                                    />
-                                  </button>
-                                ) : (
-                                  <button
-                                    type="button"
-                                    className="sec-big-btn mo-note-add"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setNoteEditor({ orderId, draft: "" });
-                                    }}
-                                  >
-                                    <MessageCircle size={14} /> Comment
-                                  </button>
-                                );
-                              })()}
-
-                              {/* Book online with India Post — opens this order's
-                          booking sheet; shows a tick once marked done. */}
-                              <button
-                                type="button"
-                                className={`sec-big-btn mo-book-btn${bookedOrders[orderId] ? " done" : ""}`}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setBookOrder(order);
-                                }}
-                                title={
-                                  bookedOrders[orderId]
-                                    ? "Booked with India Post"
-                                    : "Book online with India Post"
-                                }
-                              >
-                                {bookedOrders[orderId] ? (
-                                  <>
-                                    <CheckCircle size={14} /> Booked
-                                  </>
-                                ) : (
-                                  <>
-                                    <Truck size={14} /> Book online
-                                  </>
-                                )}
-                              </button>
-                            </div>
+                            {/* Comment + Book online moved into the bill modal. */}
 
                             {billOrderId === orderId &&
                               typeof document !== "undefined" &&
@@ -9676,6 +9659,62 @@ export default function ManageOrdersPage() {
                                         )}
                                       </button>
                                     </div>
+                                    </div>
+
+                                    <div className="mo-bill-sec">
+                                      <div className="mo-bill-sec-t">
+                                        Actions
+                                      </div>
+                                      <div className="mo-bill-actions">
+                                        {(() => {
+                                          const cmt =
+                                            orderNotes[orderId] ??
+                                            (order["Comment"] || "");
+                                          return (
+                                            <button
+                                              type="button"
+                                              className="sec-big-btn mo-note-add"
+                                              onClick={() =>
+                                                setNoteEditor({
+                                                  orderId,
+                                                  draft: cmt,
+                                                })
+                                              }
+                                            >
+                                              <MessageCircle size={14} />{" "}
+                                              {cmt ? "Edit comment" : "Comment"}
+                                            </button>
+                                          );
+                                        })()}
+                                        <button
+                                          type="button"
+                                          className={`sec-big-btn mo-book-btn${bookedOrders[orderId] ? " done" : ""}`}
+                                          onClick={() => setBookOrder(order)}
+                                          title={
+                                            bookedOrders[orderId]
+                                              ? "Booked with India Post"
+                                              : "Book online with India Post"
+                                          }
+                                        >
+                                          {bookedOrders[orderId] ? (
+                                            <>
+                                              <CheckCircle size={14} /> Booked
+                                            </>
+                                          ) : (
+                                            <>
+                                              <Truck size={14} /> Book online
+                                            </>
+                                          )}
+                                        </button>
+                                        <button
+                                          type="button"
+                                          className="mo-card-delete mo-bill-del"
+                                          title="Delete order from sheet"
+                                          onClick={() => deleteOrderRow(order)}
+                                        >
+                                          <Trash2 size={15} />
+                                        </button>
+                                      </div>
                                     </div>
 
                                     <div className="aoc-foot">

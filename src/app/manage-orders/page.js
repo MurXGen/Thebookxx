@@ -8337,13 +8337,6 @@ export default function ManageOrdersPage() {
         {/* ===== Orders (accordion) ===== */}
         {activeTab === "orders" && (
           <>
-            <Accordion
-              id="orders"
-              title="Orders"
-              open={accOpen.orders}
-              onToggle={toggleAcc}
-              right={<span className="acc-count">{filteredOrders.length}</span>}
-            >
               {filteredOrders.length > 0 ? (
                 <div className="flex flex-col gap-12">
                   <div className="orders-list-header">
@@ -9948,7 +9941,6 @@ export default function ManageOrdersPage() {
                   </span>
                 </div>
               )}
-            </Accordion>
           </>
         )}
         </motion.div>

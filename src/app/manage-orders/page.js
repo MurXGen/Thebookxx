@@ -1695,23 +1695,41 @@ function Accordion({ id, title, icon, open, onToggle, right, children }) {
   );
 }
 
-// ── Minimal, smooth skeleton loader (light shimmer, no text) ──
+// ── Orders skeleton loader — placeholder order cards with a soft shimmer,
+// shown until the live orders finish loading. ──
+function OrderCardSkeleton() {
+  return (
+    <div className="mo-skel-card">
+      <div className="mo-skel-row mo-skel-head">
+        <span className="mo-skel-dot" />
+        <span className="mo-skel-line w-40" />
+        <span className="mo-skel-pill" />
+      </div>
+      <div className="mo-skel-row">
+        <span className="mo-skel-line w-60" />
+      </div>
+      <div className="mo-skel-status" />
+      <div className="mo-skel-row mo-skel-books">
+        <span className="mo-skel-cover" />
+        <span className="mo-skel-cover" />
+        <span className="mo-skel-cover" />
+      </div>
+    </div>
+  );
+}
+
 function OrdersLoader() {
   return (
     <div className="my-orders-page">
       <div className="section-1200 p-40">
-        <div className="an2-skel">
-          <div className="an2-skel-head">
+        <div className="mo-skel-wrap">
+          <div className="mo-skel-toprow">
             <span className="an2-skel-line w-40" />
             <span className="an2-skel-line w-20" />
           </div>
-          <div className="an2-skel-stats">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div className="an2-skel-card" key={i} />
-            ))}
-          </div>
-          <div className="an2-skel-chart" />
-          <div className="an2-skel-chart short" />
+          {Array.from({ length: 4 }).map((_, i) => (
+            <OrderCardSkeleton key={i} />
+          ))}
         </div>
       </div>
     </div>

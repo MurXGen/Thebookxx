@@ -20521,12 +20521,12 @@ img[data-loaded="true"] {
 .mo-unavail-btn:hover {
   background: rgba(239, 68, 68, 0.14);
 }
-/* Payment-type tint: greenish for COD, bluish for online/UPI. */
+/* Payment-type tint matches the pay badge: COD = blue, UPI/online = green. */
 .mo-card-cod {
-  background: rgba(16, 185, 129, 0.08);
+  background: rgba(37, 99, 235, 0.09);
 }
 .mo-card-online {
-  background: rgba(59, 130, 246, 0.07);
+  background: rgba(22, 163, 74, 0.09);
 }
 .mo-card.packed {
   border-color: rgba(10, 143, 12, 0.45) !important;
@@ -32511,6 +32511,92 @@ img[data-loaded="true"] {
 }
 .an2-skel-chart.short {
   height: 150px;
+}
+
+/* ── Orders list skeleton loader ─────────────────────────────────────── */
+.mo-skel-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.mo-skel-toprow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+.mo-skel-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--hairline, #ececec);
+  background: #fff;
+}
+.mo-skel-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.mo-skel-books {
+  gap: 8px;
+}
+.mo-skel-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  flex: 0 0 auto;
+}
+.mo-skel-line {
+  height: 12px;
+  border-radius: 6px;
+  flex: 1 1 auto;
+}
+.mo-skel-line.w-40 {
+  max-width: 160px;
+}
+.mo-skel-line.w-60 {
+  max-width: 220px;
+}
+.mo-skel-pill {
+  width: 46px;
+  height: 20px;
+  border-radius: 999px;
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+.mo-skel-status {
+  height: 44px;
+  border-radius: 10px;
+}
+.mo-skel-cover {
+  width: 52px;
+  height: 72px;
+  border-radius: 8px;
+  flex: 0 0 auto;
+}
+.mo-skel-dot,
+.mo-skel-line,
+.mo-skel-pill,
+.mo-skel-status,
+.mo-skel-cover {
+  background: linear-gradient(
+    100deg,
+    #eef0f2 30%,
+    #f7f8fa 50%,
+    #eef0f2 70%
+  );
+  background-size: 200% 100%;
+  animation: mo-skel-shimmer 1.3s ease-in-out infinite;
+}
+@keyframes mo-skel-shimmer {
+  0% {
+    background-position: 180% 0;
+  }
+  100% {
+    background-position: -180% 0;
+  }
 }
 .an2-skel-line,
 .an2-skel-card,

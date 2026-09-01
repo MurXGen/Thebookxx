@@ -1125,10 +1125,10 @@
   padding: 0;
 }
 .mo-glass .admin-order-card.mo-card.mo-card-cod {
-  background: rgba(16, 185, 129, 0.08);
+  background: rgba(37, 99, 235, 0.09);
 }
 .mo-glass .admin-order-card.mo-card.mo-card-online {
-  background: rgba(59, 130, 246, 0.07);
+  background: rgba(22, 163, 74, 0.09);
 }
 /* No left accent seam on the flat cards. */
 .mo-glass .admin-order-card.mo-card::before {

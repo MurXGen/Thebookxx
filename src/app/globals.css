@@ -22255,16 +22255,16 @@ img[data-loaded="true"] {
 /* ===== Manage-orders card: orange border, order-id highlight, pick badge,
    downloadable form buttons ===== */
 .admin-order-card.mo-card {
-  /* Flat card: no white box or shadow — just a dashed outline to segregate
-     each order, with a payment-type background tint (see .mo-card-cod/online).
-     Sections inside are edge-to-edge grid rows with their own padding. */
-  border: 1px dashed var(--hairline, #ececec);
+  /* Flat card: no box or shadow — just a payment-type background tint
+     (see .mo-card-cod/online). Sections inside are edge-to-edge grid rows
+     with their own padding + dashed dividers between them. */
+  border: none;
   border-radius: 12px;
   box-shadow: none;
   padding: 0;
   gap: 0;
   overflow: hidden;
-  transition: border-color 0.2s ease, background 0.2s ease;
+  transition: background 0.2s ease;
 }
 /* Every section is a grid row divided by a dashed line (last row: none). */
 .mo-card > .mo-card-top,
@@ -22283,9 +22283,6 @@ img[data-loaded="true"] {
 .mo-card > .mo-card-desc:last-child,
 .mo-card > .mo-cust-note:last-child {
   border-bottom: none;
-}
-.admin-order-card.mo-card:hover {
-  border-color: rgba(0, 0, 0, 0.22);
 }
 
 /* Last 3 digits of the order id in brand orange */

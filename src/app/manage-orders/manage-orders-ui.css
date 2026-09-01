@@ -1117,7 +1117,7 @@
    Wins over the shared glass-surface rule via higher specificity. */
 .mo-glass .admin-order-card.mo-card {
   background: transparent;
-  border: 1px dashed var(--g-hairline);
+  border: none;
   border-radius: 12px;
   box-shadow: none;
   -webkit-backdrop-filter: none;

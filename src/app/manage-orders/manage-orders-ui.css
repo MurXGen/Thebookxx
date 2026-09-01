@@ -1113,22 +1113,26 @@
   border-radius: var(--g-r-lg);
 }
 
-/* Warm accent seam down the left edge */
-.mo-glass .admin-order-card::before {
-  content: "";
-  position: absolute;
-  top: 10px;
-  bottom: 10px;
-  left: 0;
-  width: 3px;
-  border-radius: 0 4px 4px 0;
-  background: linear-gradient(180deg, var(--g-gold), var(--g-orange));
-  opacity: 0;
-  transition: opacity 0.28s var(--g-ease);
+/* Order card override: flat, no glass box — dashed outline + payment tint.
+   Wins over the shared glass-surface rule via higher specificity. */
+.mo-glass .admin-order-card.mo-card {
+  background: transparent;
+  border: 1px dashed var(--g-hairline);
+  border-radius: 12px;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  padding: 0;
 }
-
-.mo-glass .admin-order-card:hover::before {
-  opacity: 1;
+.mo-glass .admin-order-card.mo-card.mo-card-cod {
+  background: rgba(16, 185, 129, 0.08);
+}
+.mo-glass .admin-order-card.mo-card.mo-card-online {
+  background: rgba(59, 130, 246, 0.07);
+}
+/* No left accent seam on the flat cards. */
+.mo-glass .admin-order-card.mo-card::before {
+  display: none;
 }
 
 .mo-glass .mo-cover {

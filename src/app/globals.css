@@ -20521,20 +20521,12 @@ img[data-loaded="true"] {
 .mo-unavail-btn:hover {
   background: rgba(239, 68, 68, 0.14);
 }
-/* Payment-type tint: light blue for COD, light green for online/UPI. */
+/* Payment-type tint: greenish for COD, bluish for online/UPI. */
 .mo-card-cod {
   background: rgba(16, 185, 129, 0.08);
-  border-color: transparent;
-}
-.mo-card-cod:hover {
-  border-color: rgba(16, 185, 129, 0.4);
 }
 .mo-card-online {
   background: rgba(59, 130, 246, 0.07);
-  border-color: transparent;
-}
-.mo-card-online:hover {
-  border-color: rgba(59, 130, 246, 0.4);
 }
 .mo-card.packed {
   border-color: rgba(10, 143, 12, 0.45) !important;
@@ -22263,15 +22255,16 @@ img[data-loaded="true"] {
 /* ===== Manage-orders card: orange border, order-id highlight, pick badge,
    downloadable form buttons ===== */
 .admin-order-card.mo-card {
-  border: 1px solid transparent;
-  border-radius: var(--px-14, 14px);
-  /* Full-width line-grid: sections are edge-to-edge cells, so kill the
-     card's own padding/gap and let each row carry its own padding + line. */
+  /* Flat card: no white box or shadow — just a dashed outline to segregate
+     each order, with a payment-type background tint (see .mo-card-cod/online).
+     Sections inside are edge-to-edge grid rows with their own padding. */
+  border: 1px dashed var(--hairline, #ececec);
+  border-radius: 12px;
+  box-shadow: none;
   padding: 0;
   gap: 0;
   overflow: hidden;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease,
-    background 0.2s ease, transform 0.2s cubic-bezier(0.32, 0.72, 0, 1);
+  transition: border-color 0.2s ease, background 0.2s ease;
 }
 /* Every section is a grid row divided by a dashed line (last row: none). */
 .mo-card > .mo-card-top,
@@ -22292,12 +22285,7 @@ img[data-loaded="true"] {
   border-bottom: none;
 }
 .admin-order-card.mo-card:hover {
-  border-color: rgba(0, 0, 0, 0.14);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.07);
-  transform: translateY(-2px);
-}
-.admin-order-card.mo-card:active {
-  transform: translateY(0) scale(0.994);
+  border-color: rgba(0, 0, 0, 0.22);
 }
 
 /* Last 3 digits of the order id in brand orange */
@@ -23679,6 +23667,41 @@ img[data-loaded="true"] {
   justify-content: space-between;
   gap: 10px;
   flex-wrap: wrap;
+}
+/* Compact orders controls — filter tabs sit on top as a full-width segmented
+   control; the count + icon tools drop to a tighter row beneath. */
+.orders-toolbar {
+  order: -2;
+}
+.orders-toolbar .mo-view-toggle {
+  display: flex;
+  width: 100%;
+  border-radius: 12px;
+}
+.orders-toolbar .mo-view-btn {
+  flex: 1 1 0;
+  text-align: center;
+  padding: 8px 6px;
+  border-radius: 10px;
+}
+.orders-list-header {
+  flex-wrap: wrap;
+  row-gap: 8px;
+  margin-bottom: 0;
+}
+.orders-count {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--dark-50, #6b7280);
+}
+.orders-picked-stat {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--dark-50);
+  margin-left: 4px;
 }
 /* Icon-only card/table view toggle */
 .mo-view-icons .mo-view-btn {

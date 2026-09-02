@@ -56,6 +56,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { showToast } from "@/context/ToastContext";
 import TrackSheet from "@/components/profile/TrackSheet";
+import SupportSheet from "@/components/profile/SupportSheet";
 import ProductCard from "@/components/BookCard";
 import HorizontalScroll from "@/components/UI/HorizontalScroll";
 import PageHeader from "@/components/UI/PageHeader";
@@ -2764,99 +2765,13 @@ Please cancel this order. Thank you `;
         )}
       </AnimatePresence>
 
-      {/* ========== Support templates sheet ========== */}
+      {/* ========== Support sheet (shared reason picker) ========== */}
       <AnimatePresence>
         {showSupport && (
-          <motion.div
-            className="bill-modal-overlay"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setShowSupport(false)}
-          >
-            <motion.div
-              className="bill-modal"
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "100%" }}
-              transition={{ duration: 0.32, ease: "easeOut" }}
-              onClick={(e) => e.stopPropagation()}
-              style={{ maxHeight: "85vh", overflowY: "auto" }}
-            >
-              <div className="bill-header">
-                <span className="weight-600 font-16 flex items-center gap-8">
-                  <FaWhatsapp size={16} color="#25D366" /> How can we help?
-                </span>
-                <span
-                  className="cursor-pointer"
-                  onClick={() => setShowSupport(false)}
-                >
-                  <X size={18} />
-                </span>
-              </div>
-              <p className="ep-hint" style={{ marginBottom: 6 }}>
-                Pick a topic and we&apos;ll open WhatsApp with a ready message.
-              </p>
-              <div className="support-templates">
-                {[
-                  {
-                    label: "Where is my order?",
-                    msg: "Hi TheBookX, I'd like an update on where my order is. My number is " +
-                      phoneNumber +
-                      ".",
-                  },
-                  {
-                    label: "Delivery estimate",
-                    msg: "Hi TheBookX, when can I expect my order to be delivered? My number is " +
-                      phoneNumber +
-                      ".",
-                  },
-                  {
-                    label: "Change delivery address",
-                    msg: "Hi TheBookX, I'd like to change the delivery address for my order. My number is " +
-                      phoneNumber +
-                      ".",
-                  },
-                  {
-                    label: "Payment help",
-                    msg: "Hi TheBookX, I need help with the payment for my order. My number is " +
-                      phoneNumber +
-                      ".",
-                  },
-                  {
-                    label: "Wrong or damaged item",
-                    msg: "Hi TheBookX, I received a wrong or damaged item and need help. My number is " +
-                      phoneNumber +
-                      ".",
-                  },
-                  {
-                    label: "Something else",
-                    msg: "Hi TheBookX, I need some help with my order. My number is " +
-                      phoneNumber +
-                      ".",
-                  },
-                ].map((t) => (
-                  <button
-                    key={t.label}
-                    type="button"
-                    className="support-template-row"
-                    onClick={() => {
-                      window.open(
-                        `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(
-                          t.msg,
-                        )}`,
-                        "_blank",
-                      );
-                      setShowSupport(false);
-                    }}
-                  >
-                    <span>{t.label}</span>
-                    <ChevronRight size={18} />
-                  </button>
-                ))}
-              </div>
-            </motion.div>
-          </motion.div>
+          <SupportSheet
+            phone={phoneNumber}
+            onClose={() => setShowSupport(false)}
+          />
         )}
       </AnimatePresence>
 

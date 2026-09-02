@@ -35913,7 +35913,7 @@ img[data-loaded="true"] {
   width: 40px;
   height: 40px;
   border-radius: 12px;
-  border: 1px solid var(--dark-20, #82828250);
+  border: 1px solid var(--dark-50);
   background: #fff;
   color: #111827;
   display: inline-flex;

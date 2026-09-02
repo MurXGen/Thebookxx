@@ -26008,8 +26008,9 @@ img[data-loaded="true"] {
 .qr-feed-end svg {
   color: var(--tertiary, #fb8500);
 }
-/* Paywall as a feed card (not absolute overlay). */
-.qr-paywall-feed {
+/* Paywall as a feed card (not absolute overlay). Higher specificity so it
+   beats the base `.qr-paywall { position:absolute }` rule defined later. */
+.qr-feed .qr-paywall-feed {
   position: static;
   inset: auto;
   width: 100%;

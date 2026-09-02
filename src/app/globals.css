@@ -27887,6 +27887,35 @@ img[data-loaded="true"] {
   font-size: 14px;
   font-weight: 800;
   color: var(--tertiary, #fb8500);
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.search-qr-item-mrp {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--dark-50, #6b7280);
+  text-decoration: line-through;
+}
+.search-qr-cart {
+  margin-top: 2px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--dark-50);
+  background: #fff;
+  color: var(--foreground, #0a0a0a);
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.search-qr-cart:hover {
+  border-color: var(--foreground, #0a0a0a);
 }
 
 /* ===== Author page — FAQ ===== */

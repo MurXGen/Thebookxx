@@ -3,7 +3,13 @@
 import BookCard from "@/components/BookCard";
 import RecommendationModal from "@/components/RecommendationModal";
 import { books } from "@/utils/book";
-import { hasQuickRead, QUICKREAD_PRICE } from "@/data/quickreadsMeta";
+import {
+  hasQuickRead,
+  QUICKREAD_PRICE,
+  QUICKREAD_MRP,
+} from "@/data/quickreadsMeta";
+import { useStore } from "@/context/StoreContext";
+import { showToast } from "@/context/ToastContext";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   X,
@@ -12,6 +18,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Clock,
+  ShoppingCart,
+  Check,
 } from "lucide-react";
 import Link from "next/link";
 import { createPortal } from "react-dom";
@@ -62,6 +70,7 @@ export default function SearchOverlay({
   initialSuggest = false,
 }) {
   const inputRef = useRef(null);
+  const { addQuickRead, isInQrCart } = useStore();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
   const [query, setQuery] = useState("");
@@ -579,7 +588,38 @@ export default function SearchOverlay({
                                 </span>
                                 <span className="search-qr-item-price">
                                   ₹{QUICKREAD_PRICE}
+                                  <span className="search-qr-item-mrp">
+                                    ₹{QUICKREAD_MRP}
+                                  </span>
                                 </span>
+                                <button
+                                  type="button"
+                                  className="search-qr-cart"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    if (isInQrCart(item.book.id)) {
+                                      window.location.href =
+                                        "/bag?tab=quickreads";
+                                      return;
+                                    }
+                                    addQuickRead(item.book.id);
+                                    showToast(
+                                      "QuickRead added to your bag.",
+                                      "success",
+                                    );
+                                  }}
+                                >
+                                  {isInQrCart(item.book.id) ? (
+                                    <>
+                                      <Check size={14} /> In bag
+                                    </>
+                                  ) : (
+                                    <>
+                                      <ShoppingCart size={14} /> Add to cart
+                                    </>
+                                  )}
+                                </button>
                               </Link>
                             )}
                           </motion.div>

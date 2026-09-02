@@ -63,18 +63,25 @@ export default function SupportSheet({ phone = "", orderId = "", onClose }) {
         transition={{ duration: 0.34, ease: "easeOut" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="bill-header">
-          <span className="weight-700 font-16 flex flex-row items-center gap-6">
-            <MessageCircle size={17} /> How can we help?
-          </span>
-          <span className="cursor-pointer" onClick={onClose}>
+        <div className="support-head">
+          <div className="support-head-titles">
+            <span className="support-head-title">
+              <MessageCircle size={18} /> How can we help?
+            </span>
+            <p className="support-head-sub">
+              Pick a reason, then reach us on WhatsApp or email — we&apos;ll
+              have your details ready.
+            </p>
+          </div>
+          <button
+            type="button"
+            className="support-head-x"
+            onClick={onClose}
+            aria-label="Close"
+          >
             <X size={18} />
-          </span>
+          </button>
         </div>
-        <p className="ep-hint" style={{ marginBottom: 8 }}>
-          Pick a reason, then reach us on WhatsApp or email — we&apos;ll have
-          your details ready.
-        </p>
 
         <div className="support-reasons">
           {topics.map((t, i) => (
@@ -97,10 +104,10 @@ export default function SupportSheet({ phone = "", orderId = "", onClose }) {
         <div className="support-actions">
           <button
             type="button"
-            className="pri-big-btn support-wa"
+            className="sec-big-btn support-wa"
             onClick={openWhatsApp}
           >
-            <FaWhatsapp size={17} /> Chat on WhatsApp
+            <FaWhatsapp size={17} /> WhatsApp
           </button>
           <button
             type="button"

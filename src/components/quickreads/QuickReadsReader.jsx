@@ -24,9 +24,11 @@ import {
 import {
   QUICKREAD_FREE_FRAMES,
   QUICKREAD_PRICE,
+  QUICKREAD_MRP,
   quickReadFrameCount,
 } from "@/data/quickreadsMeta";
 import { showToast } from "@/context/ToastContext";
+import { useStore } from "@/context/StoreContext";
 import {
   getSavedReads,
   toggleSavedRead,
@@ -60,6 +62,8 @@ export default function QuickReadsReader({
   const initialIndex = resume
     ? Math.min(getReadProgress(book?.id), Math.max(0, total - 1))
     : startIndex || 0;
+  const { addQuickRead, isInQrCart } = useStore();
+  const inCart = book?.id ? isInQrCart(book.id) : false;
   const [index, setIndex] = useState(initialIndex);
   const [dir, setDir] = useState(0);
   const [unlocked, setUnlocked] = useState(false);
@@ -656,6 +660,33 @@ export default function QuickReadsReader({
               </p>
               <button className="qr-unlock-btn" onClick={handleUnlockAttempt}>
                 Unlock QuickReads – ₹{QUICKREAD_PRICE}
+              </button>
+              <button
+                type="button"
+                className="qr-addcart-btn"
+                onClick={() => {
+                  if (!book?.id) return;
+                  if (inCart) {
+                    window.location.href = "/bag?tab=quickreads";
+                    return;
+                  }
+                  addQuickRead(book.id);
+                  showToast(
+                    "Added to your bag — check out from there.",
+                    "success",
+                  );
+                }}
+              >
+                {inCart ? (
+                  <>
+                    <BookmarkCheck size={15} /> In bag — go to cart
+                  </>
+                ) : (
+                  <>
+                    Add to cart · ₹{QUICKREAD_PRICE}
+                    <span className="qr-addcart-mrp">₹{QUICKREAD_MRP}</span>
+                  </>
+                )}
               </button>
               <button
                 className="qr-unlimited-btn"

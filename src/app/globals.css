@@ -25980,6 +25980,37 @@ img[data-loaded="true"] {
   transform: translateY(-2px);
   box-shadow: 0 16px 30px -12px rgba(251, 133, 0, 0.9);
 }
+/* Add-to-cart — secondary button on the QuickReads paywall. */
+.qr-addcart-btn {
+  margin-top: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 12px;
+  border: 1px solid var(--dark-50);
+  background: #fff;
+  color: var(--foreground, #0a0a0a);
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.qr-addcart-btn:hover {
+  border-color: var(--foreground, #0a0a0a);
+}
+.qr-addcart-mrp {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--dark-50, #6b7280);
+  text-decoration: line-through;
+}
+.qr-dark .qr-addcart-btn {
+  background: transparent;
+  color: #f3f4f6;
+  border-color: rgba(255, 255, 255, 0.3);
+}
 .qr-unlimited-btn {
   margin-top: 10px;
   display: inline-flex;

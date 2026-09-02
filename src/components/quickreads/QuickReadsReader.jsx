@@ -8,6 +8,7 @@ import {
   Share2,
   Bookmark,
   BookmarkCheck,
+  ShoppingCart,
   Download,
   ChevronLeft,
   ChevronRight,
@@ -700,6 +701,36 @@ export default function QuickReadsReader({
             </motion.div>
           )}
         </div>
+
+        {/* Add to cart — shown while the read isn't owned/subscribed, above
+            the reader actions so it's always reachable. */}
+        {!unlocked && book?.id && (
+          <div className="qr-cart-bar">
+            <button
+              type="button"
+              className="qr-cart-btn"
+              onClick={() => {
+                if (inCart) {
+                  window.location.href = "/bag?tab=quickreads";
+                  return;
+                }
+                addQuickRead(book.id);
+                showToast("Added to your bag — check out from there.", "success");
+              }}
+            >
+              {inCart ? (
+                <>
+                  <BookmarkCheck size={16} /> In bag — go to cart
+                </>
+              ) : (
+                <>
+                  <ShoppingCart size={16} /> Add to cart · ₹{QUICKREAD_PRICE}
+                  <span className="qr-cart-mrp">₹{QUICKREAD_MRP}</span>
+                </>
+              )}
+            </button>
+          </div>
+        )}
 
         {/* Action buttons */}
         <div className="qr-actions">

@@ -23156,6 +23156,11 @@ img[data-loaded="true"] {
 .mo-frame-wa {
   color: #25d366;
 }
+.mo-frame-book.done {
+  color: var(--success, #0a8f0c);
+  border-color: rgba(10, 143, 12, 0.4);
+  background: rgba(10, 143, 12, 0.08);
+}
 .mo-panel-left .mo-amount {
   flex: 0 0 auto;
 }

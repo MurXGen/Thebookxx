@@ -3270,6 +3270,9 @@ export default function ManageOrdersPage() {
   // (orderId -> new status), so changing many statuses doesn't reload each time.
   const [pendingStatus, setPendingStatus] = useState({});
   const [pushingStatus, setPushingStatus] = useState(false);
+  // Queued tracking IDs — saved locally, pushed to the sheet together.
+  const [pendingTracking, setPendingTracking] = useState({}); // { orderId: "CX…IN" }
+  const [pushingTracking, setPushingTracking] = useState(false);
   const [bulkStage, setBulkStage] = useState(null); // WhatsApp stage key for bulk send
   const [bulkSent, setBulkSent] = useState([]); // order IDs already messaged
   const [mergeGroup, setMergeGroup] = useState(null); // customer group under merge preview
@@ -3428,6 +3431,44 @@ export default function ManageOrdersPage() {
   // Discard queued status edits and reload the true sheet values.
   const discardPendingStatus = () => {
     setPendingStatus({});
+    fetchOrders();
+  };
+
+  // Queue a tracking ID (local only) — pushed to the sheet with the others.
+  const queueTracking = (order, value) => {
+    const orderId = order["Order ID"];
+    const tid = String(value || "").trim();
+    if (!orderId || !tid) return;
+    setPendingTracking((p) => ({ ...p, [orderId]: tid }));
+    patchLocalOrder(orderId, { "Shipping ID": tid, shippingId: tid });
+    setTrackDrafts((p) => {
+      const n = { ...p };
+      delete n[orderId];
+      return n;
+    });
+  };
+
+  const pushPendingTracking = async () => {
+    const entries = Object.entries(pendingTracking);
+    if (entries.length === 0) return;
+    setPushingTracking(true);
+    try {
+      await Promise.all(
+        entries.map(([id, tid]) =>
+          updateOrderRow(id, { "Shipping ID": tid }).catch((e) =>
+            console.error("Tracking push failed for", id, e),
+          ),
+        ),
+      );
+    } finally {
+      setPushingTracking(false);
+      setPendingTracking({});
+      setTimeout(fetchOrders, 1300);
+    }
+  };
+
+  const discardPendingTracking = () => {
+    setPendingTracking({});
     fetchOrders();
   };
 
@@ -8500,6 +8541,36 @@ export default function ManageOrdersPage() {
                     </div>
                   )}
 
+                  {Object.keys(pendingTracking).length > 0 && (
+                    <div className="mo-status-pushbar mo-track-pushbar">
+                      <span className="mo-status-pushbar-lbl">
+                        {Object.keys(pendingTracking).length} tracking ID
+                        {Object.keys(pendingTracking).length === 1 ? "" : "s"}{" "}
+                        saved
+                      </span>
+                      <div className="mo-status-pushbar-actions">
+                        <button
+                          type="button"
+                          className="mo-status-discard"
+                          onClick={discardPendingTracking}
+                          disabled={pushingTracking}
+                        >
+                          Discard
+                        </button>
+                        <button
+                          type="button"
+                          className="mo-status-push"
+                          onClick={pushPendingTracking}
+                          disabled={pushingTracking}
+                        >
+                          {pushingTracking
+                            ? "Pushing…"
+                            : `Push ${Object.keys(pendingTracking).length} to sheet`}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="orders-toolbar">
                     <div className="mo-view-toggle">
                       {[
@@ -9059,6 +9130,23 @@ export default function ManageOrdersPage() {
                                   <ExternalLink size={15} />
                                 </a>
                               )}
+                              <button
+                                type="button"
+                                className={`mo-frame-ic mo-frame-book${bookedOrders[orderId] ? " done" : ""}`}
+                                onClick={() => setBookOrder(order)}
+                                title={
+                                  bookedOrders[orderId]
+                                    ? "Booked with India Post"
+                                    : "Book online with India Post"
+                                }
+                                aria-label="Book online with India Post"
+                              >
+                                {bookedOrders[orderId] ? (
+                                  <CheckCircle size={15} />
+                                ) : (
+                                  <Truck size={15} />
+                                )}
+                              </button>
                               </div>
 
                               {/* Book total + benefit badges (add-ons / savings). */}
@@ -10237,7 +10325,7 @@ export default function ManageOrdersPage() {
                               }
                               onKeyDown={(e) => {
                                 if (e.key === "Enter")
-                                  saveTrackingId(bookOrder, trackDrafts[bid]);
+                                  queueTracking(bookOrder, trackDrafts[bid]);
                               }}
                             />
                             <button
@@ -10248,11 +10336,13 @@ export default function ManageOrdersPage() {
                                 saving
                               }
                               onClick={() =>
-                                saveTrackingId(bookOrder, trackDrafts[bid])
+                                queueTracking(bookOrder, trackDrafts[bid])
                               }
                             >
-                              {saving ? (
-                                "Saving…"
+                              {pendingTracking[bid] ? (
+                                <>
+                                  <Check size={13} /> Saved
+                                </>
                               ) : (
                                 <>
                                   <Check size={13} /> Save

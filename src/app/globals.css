@@ -25903,15 +25903,14 @@ img[data-loaded="true"] {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 13px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #111111 0%, #444444 100%);
-  border: 1px solid rgba(0, 0, 0, 0.6);
+  padding: 0;
+  background: none;
+  border: none;
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.6px;
   text-transform: uppercase;
-  color: #ffffff;
+  color: var(--tertiary, #fb8500);
 }
 .qr-card-title {
   position: relative;
@@ -25929,8 +25928,8 @@ img[data-loaded="true"] {
   font-size: clamp(16px, 4.4vw, 19px);
   line-height: 1.72;
   color: #33373d;
-  padding-left: 18px;
-  border-left: 3px solid rgba(251, 133, 0, 0.4);
+  padding-left: 0;
+  border-left: none;
 }
 
 /* ── Vertical-scroll reader feed ─────────────────────────────────────── */

@@ -708,6 +708,7 @@ export default function AddressModal({
         giftWrapCharge: giftWrapAmountForOrder,
         codHandlingFee: feeForThisOrder,
         cartBooks,
+        quickReadItems,
         orderId,
       }).catch((err) => console.error("Google Form submit failed:", err));
     } catch (err) {

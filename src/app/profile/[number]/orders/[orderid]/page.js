@@ -54,7 +54,9 @@ ALL_BOOKS.forEach((b) => {
   if (b.name) BOOK_BY_NAME[normName(b.name)] = b;
 });
 function findBook(name) {
-  const n = normName(name);
+  // QuickReads share the same title as their book — drop the tag so the cover
+  // resolves to that book's image.
+  const n = normName(String(name || "").replace(/\(quickread\)/i, ""));
   if (!n) return null;
   if (BOOK_BY_NAME[n]) return BOOK_BY_NAME[n];
   const key = Object.keys(BOOK_BY_NAME).find(

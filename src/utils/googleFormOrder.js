@@ -283,14 +283,22 @@ export const orderWalletReward = (orderValue) => {
 };
 
 // Format books list for Google Form
-const formatBooksList = (cartBooks) => {
-  if (!cartBooks || cartBooks.length === 0) return "";
-  return cartBooks
-    .map(
-      (book, index) =>
-        `${index + 1}. ${book.name} | Qty: ${book.qty} | ₹${book.discountedPrice} each | Total: ₹${book.discountedPrice * book.qty}`,
-    )
-    .join("\n");
+const QUICKREAD_LINE_PRICE = 19;
+const formatBooksList = (cartBooks, quickReadItems = []) => {
+  const lines = [];
+  (cartBooks || []).forEach((book) => {
+    lines.push(
+      `${lines.length + 1}. ${book.name} | Qty: ${book.qty} | ₹${book.discountedPrice} each | Total: ₹${book.discountedPrice * book.qty}`,
+    );
+  });
+  // QuickReads ride on the same order — one copy each, ₹19, tagged so they can
+  // be told apart from physical books when parsed back.
+  (quickReadItems || []).forEach((qr) => {
+    lines.push(
+      `${lines.length + 1}. ${qr.name} (QuickRead) | Qty: 1 | ₹${QUICKREAD_LINE_PRICE} each | Total: ₹${QUICKREAD_LINE_PRICE}`,
+    );
+  });
+  return lines.join("\n");
 };
 
 // Track order to Google Form
@@ -309,6 +317,9 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
     walletUsed = 0,
     walletPhone = "",
     cartBooks,
+    // QuickReads riding on this same order — appended to the Books List so they
+    // show up in the order detail / summaries / sheet (₹19 each).
+    quickReadItems = [],
     // Accurate amounts computed at checkout — prefer these over recomputing.
     deliveryCharge: deliveryChargeIn,
     giftWrapCharge: giftWrapChargeIn,
@@ -332,7 +343,7 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
     totalDiscounted,
     fasterDeliveryChoice,
   );
-  const formattedBooksList = formatBooksList(cartBooks);
+  const formattedBooksList = formatBooksList(cartBooks, quickReadItems);
 
   const now = new Date();
   const formattedTimestamp = now.toLocaleString("en-IN", {

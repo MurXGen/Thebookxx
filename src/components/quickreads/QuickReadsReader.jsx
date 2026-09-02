@@ -65,6 +65,11 @@ export default function QuickReadsReader({
     : startIndex || 0;
   const { addQuickRead, isInQrCart } = useStore();
   const inCart = book?.id ? isInQrCart(book.id) : false;
+  // Vertical-feed scroll container + per-card refs (drives which insight is
+  // "current" via an IntersectionObserver, for progress + listen).
+  const scrollRef = useRef(null);
+  const cardRefs = useRef({});
+  const [scrollPct, setScrollPct] = useState(0);
   const [index, setIndex] = useState(initialIndex);
   const [dir, setDir] = useState(0);
   const [unlocked, setUnlocked] = useState(false);
@@ -488,6 +493,43 @@ export default function QuickReadsReader({
     return () => window.removeEventListener("keydown", onKey);
   }, [index, total, showSaved]);
 
+  // Vertical feed: track the most-visible insight card as the "current" one
+  // (for progress + listen), and drive the top scroll-progress bar.
+  useEffect(() => {
+    const root = scrollRef.current;
+    if (!root) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (autoPlayRef.current) return;
+        let best = null;
+        entries.forEach((e) => {
+          if (
+            e.isIntersecting &&
+            (!best || e.intersectionRatio > best.intersectionRatio)
+          )
+            best = e;
+        });
+        if (best) {
+          const i = Number(best.target.dataset.idx);
+          if (!Number.isNaN(i)) setIndex(i);
+        }
+      },
+      { root, threshold: [0.4, 0.6, 0.8] },
+    );
+    Object.values(cardRefs.current).forEach((el) => el && io.observe(el));
+    const onScroll = () => {
+      const max = root.scrollHeight - root.clientHeight;
+      setScrollPct(max > 0 ? Math.min(100, (root.scrollTop / max) * 100) : 0);
+    };
+    root.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => {
+      io.disconnect();
+      root.removeEventListener("scroll", onScroll);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [frames.length, unlocked, total, mounted]);
+
   if (!book) return null;
 
   // Quick, clean horizontal slide in/out — no tilt, no bounce.
@@ -556,166 +598,180 @@ export default function QuickReadsReader({
           </div>
         </div>
 
-        {/* Reading area */}
-        <div className="qr-body">
-          <AnimatePresence mode="wait" custom={dir}>
-            <motion.div
-              key={index}
-              className={`qr-card${isLockedFrame ? " locked" : ""}`}
-              custom={dir}
-              variants={variants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.18, ease: "easeOut" }}
-              drag="x"
-              dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={0.18}
-              onDragStart={() => {
-                movedRef.current = false;
-              }}
-              onDrag={(e, info) => {
-                if (Math.abs(info.offset.x) > 6) movedRef.current = true;
-              }}
-              onDragEnd={(e, info) => {
-                if (info.offset.x < -60) go(index + 1);
-                else if (info.offset.x > 60) go(index - 1);
-              }}
-              onClick={(e) => {
-                // Ignore the click that follows a drag/swipe.
-                if (movedRef.current) {
-                  movedRef.current = false;
-                  return;
-                }
-                const rect = e.currentTarget.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                if (x < rect.width / 2) go(index - 1);
-                else go(index + 1);
-              }}
-            >
-              {/* Corner tap zones — brand-orange rounded dots to move back/next */}
-              {!isLockedFrame && index > 0 && (
-                <button
-                  type="button"
-                  className="qr-tap-dot qr-tap-dot-left"
-                  aria-label="Previous insight"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    go(index - 1);
-                  }}
-                />
-              )}
-              {!isLockedFrame && index < total - 1 && (
-                <button
-                  type="button"
-                  className="qr-tap-dot qr-tap-dot-right"
-                  aria-label="Next insight"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    go(index + 1);
-                  }}
-                />
-              )}
-              <span className="qr-card-kicker">
-                Insight {index + 1}
-              </span>
-              {isLockedFrame ? (
-                <>
-                  <h3 className="qr-card-title">Premium insight locked</h3>
-                  <p className="qr-card-text">
-                    Unlock QuickReads to continue reading all {total} insights
-                    from {book.name}.
-                  </p>
-                </>
-              ) : current ? (
-                <>
-                  <h3 className="qr-card-title">{current.title}</h3>
-                  <p className="qr-card-text">{current.content}</p>
-                </>
-              ) : (
-                <>
-                  <h3 className="qr-card-title">Loading…</h3>
-                  <p className="qr-card-text">Fetching this insight…</p>
-                </>
-              )}
-            </motion.div>
-          </AnimatePresence>
-
-          {/* Paywall overlay */}
-          {isLockedFrame && (
-            <motion.div
-              className="qr-paywall"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-            >
-              <div className="qr-lock-ic">
-                <Lock size={26} />
-              </div>
-              <h4 className="qr-paywall-title">
-                You&apos;ve unlocked the first {QUICKREAD_FREE_FRAMES} QuickReads!
-              </h4>
-              <p className="qr-paywall-sub">
-                Continue reading the remaining {total - QUICKREAD_FREE_FRAMES}{" "}
-                insights from {book.name}. Unlock the complete QuickReads
-                experience for just ₹{QUICKREAD_PRICE}.
-              </p>
-              <button className="qr-unlock-btn" onClick={handleUnlockAttempt}>
-                Unlock QuickReads – ₹{QUICKREAD_PRICE}
-              </button>
-              <button
-                type="button"
-                className="qr-addcart-btn"
-                onClick={() => {
-                  if (!book?.id) return;
-                  if (inCart) {
-                    window.location.href = "/bag?tab=quickreads";
-                    return;
-                  }
-                  addQuickRead(book.id);
-                  showToast(
-                    "Added to your bag — check out from there.",
-                    "success",
-                  );
-                }}
-              >
-                {inCart ? (
-                  <>
-                    <BookmarkCheck size={15} /> In bag — go to cart
-                  </>
-                ) : (
-                  <>
-                    Add to cart · ₹{QUICKREAD_PRICE}
-                    <span className="qr-addcart-mrp">₹{QUICKREAD_MRP}</span>
-                  </>
-                )}
-              </button>
-              <button
-                className="qr-unlimited-btn"
-                onClick={() => setShowPlans(true)}
-              >
-                <Crown size={15} /> Go Unlimited — from ₹99/mo
-              </button>
-              <span className="qr-paywall-note">
-                Read every book’s insights with one plan.
-              </span>
-            </motion.div>
-          )}
+        {/* Scroll progress bar under the header */}
+        <div className="qr-progress" aria-hidden="true">
+          <span
+            className="qr-progress-fill"
+            style={{ width: `${scrollPct}%` }}
+          />
         </div>
 
-        {/* Add to cart — shown while the read isn't owned/subscribed, above
-            the reader actions so it's always reachable. */}
-        {!unlocked && book?.id && (
-          <div className="qr-cart-bar">
+        {/* Reading area — vertical feed of insight cards */}
+        <div className="qr-body qr-feed" ref={scrollRef}>
+          {(() => {
+            const lastVisible = unlocked
+              ? total
+              : Math.min(total, QUICKREAD_FREE_FRAMES);
+            const cards = [];
+            for (let i = 0; i < lastVisible; i += 1) {
+              const frame = frames[i];
+              const savedThis =
+                frame && isSavedFrame(saved, book?.id, frame.id);
+              cards.push(
+                <article
+                  key={i}
+                  data-idx={i}
+                  ref={(el) => {
+                    cardRefs.current[i] = el;
+                  }}
+                  className="qr-vcard"
+                >
+                  <div className="qr-vcard-top">
+                    <span className="qr-card-kicker">Insight {i + 1}</span>
+                    <div className="qr-vcard-tools">
+                      <button
+                        type="button"
+                        className={`qr-vcard-tool${savedThis ? " on" : ""}`}
+                        aria-label={savedThis ? "Saved" : "Save insight"}
+                        title={savedThis ? "Saved" : "Save"}
+                        onClick={() => {
+                          if (!frame) return;
+                          setSaved(
+                            toggleSavedRead({
+                              bookId: book.id,
+                              bookName: book.name,
+                              frameId: frame.id,
+                              title: frame.title,
+                              content: frame.content,
+                            }),
+                          );
+                        }}
+                      >
+                        {savedThis ? (
+                          <BookmarkCheck size={16} />
+                        ) : (
+                          <Bookmark size={16} />
+                        )}
+                      </button>
+                      <button
+                        type="button"
+                        className="qr-vcard-tool"
+                        aria-label="Listen to this insight"
+                        title="Listen"
+                        onClick={() => {
+                          if (!frame) return;
+                          stopAllSpeech();
+                          setSpeaking(true);
+                          speakText(speechText(frame), () =>
+                            setSpeaking(false),
+                          );
+                        }}
+                      >
+                        <Volume2 size={16} />
+                      </button>
+                    </div>
+                  </div>
+                  {frame ? (
+                    <>
+                      <h3 className="qr-card-title">{frame.title}</h3>
+                      <p className="qr-card-text">{frame.content}</p>
+                    </>
+                  ) : (
+                    <>
+                      <h3 className="qr-card-title">Loading…</h3>
+                      <p className="qr-card-text">Fetching this insight…</p>
+                    </>
+                  )}
+                </article>,
+              );
+            }
+            // Paywall card sits at the end of the free run when not unlocked.
+            if (!unlocked) {
+              cards.push(
+                <div className="qr-paywall qr-paywall-feed" key="paywall">
+                  <div className="qr-lock-ic">
+                    <Lock size={26} />
+                  </div>
+                  <h4 className="qr-paywall-title">
+                    {total - QUICKREAD_FREE_FRAMES} more insights inside
+                  </h4>
+                  <p className="qr-paywall-sub">
+                    You&apos;ve read the free preview. Unlock the full{" "}
+                    {total} insights of {book.name}.
+                  </p>
+                  <button
+                    className="qr-unlock-btn"
+                    onClick={handleUnlockAttempt}
+                  >
+                    Unlock QuickReads – ₹{QUICKREAD_PRICE}
+                  </button>
+                  <button
+                    type="button"
+                    className="qr-addcart-btn"
+                    onClick={() => {
+                      if (!book?.id) return;
+                      if (inCart) {
+                        window.location.href = "/bag?tab=quickreads";
+                        return;
+                      }
+                      addQuickRead(book.id);
+                      showToast(
+                        "Added to your bag — check out from there.",
+                        "success",
+                      );
+                    }}
+                  >
+                    {inCart ? (
+                      <>
+                        <BookmarkCheck size={15} /> In bag — go to cart
+                      </>
+                    ) : (
+                      <>
+                        Add to cart · ₹{QUICKREAD_PRICE}
+                        <span className="qr-addcart-mrp">₹{QUICKREAD_MRP}</span>
+                      </>
+                    )}
+                  </button>
+                  <button
+                    className="qr-unlimited-btn"
+                    onClick={() => setShowPlans(true)}
+                  >
+                    <Crown size={15} /> Go Unlimited — from ₹99/mo
+                  </button>
+                  <span className="qr-paywall-note">
+                    Read every book&apos;s insights with one plan.
+                  </span>
+                </div>,
+              );
+            } else {
+              // Finished state at the end of an unlocked read.
+              cards.push(
+                <div className="qr-feed-end" key="end">
+                  <Crown size={18} />
+                  <span>That&apos;s all {total} insights — nicely done!</span>
+                </div>,
+              );
+            }
+            return cards;
+          })()}
+        </div>
+
+        {/* Sticky footer — primary CTA + quick tools. */}
+        <div className="qr-footer">
+          {!unlocked && book?.id ? (
             <button
               type="button"
-              className="qr-cart-btn"
+              className="qr-cart-btn qr-footer-cta"
               onClick={() => {
                 if (inCart) {
                   window.location.href = "/bag?tab=quickreads";
                   return;
                 }
                 addQuickRead(book.id);
-                showToast("Added to your bag — check out from there.", "success");
+                showToast(
+                  "Added to your bag — check out from there.",
+                  "success",
+                );
               }}
             >
               {inCart ? (
@@ -729,77 +785,30 @@ export default function QuickReadsReader({
                 </>
               )}
             </button>
-          </div>
-        )}
-
-        {/* Action buttons */}
-        <div className="qr-actions">
-          <button className="qr-action" onClick={handleDownload}>
-            <Download size={16} /> Download
-          </button>
-          <button
-            className={`qr-action${currentSaved ? " on" : ""}`}
-            onClick={handleSave}
-          >
-            {currentSaved ? (
-              <>
-                <BookmarkCheck size={16} /> Saved
-              </>
-            ) : (
-              <>
-                <Bookmark size={16} /> Save
-              </>
-            )}
-          </button>
-          <button
-            className={`qr-action qr-action-icon${autoPlay ? " on" : ""}`}
-            onClick={toggleAutoPlay}
-            aria-label={autoPlay ? "Stop reading" : "Read all insights aloud"}
-            title={autoPlay ? "Stop reading" : "Listen — read each insight aloud"}
-          >
-            {autoPlay ? <Square size={16} /> : <Volume2 size={18} />}
-          </button>
-        </div>
-
-        {/* Navigation */}
-        <div className="qr-nav">
-          <span className="qr-nav-progress" aria-hidden="true">
-            <span
-              className="qr-nav-progress-fill"
-              style={{
-                width: `${total ? ((index + 1) / total) * 100 : 0}%`,
-              }}
-            />
-          </span>
-          <button
-            className="qr-nav-btn qr-nav-edge"
-            onClick={() => go(index - 1)}
-            disabled={index === 0}
-            aria-label="Previous"
-          >
-            <ChevronLeft size={20} />
-          </button>
-          <div className="qr-nav-center">
-            <span className="qr-nav-pos">
-              {index + 1} / {total}
-            </span>
+          ) : (
             <button
-              className="qr-nav-reset"
-              onClick={() => go(0)}
-              disabled={index === 0}
-              aria-label="Reset to the first insight"
-              title="Reset to page 1"
+              type="button"
+              className={`qr-footer-listen${autoPlay ? " on" : ""}`}
+              onClick={toggleAutoPlay}
             >
-              <RotateCcw size={15} />
+              {autoPlay ? (
+                <>
+                  <Square size={16} /> Stop
+                </>
+              ) : (
+                <>
+                  <Volume2 size={18} /> Listen to all
+                </>
+              )}
             </button>
-          </div>
+          )}
           <button
-            className="qr-nav-btn qr-nav-edge"
-            onClick={() => go(index + 1)}
-            disabled={index >= total - 1}
-            aria-label="Next"
+            className="qr-footer-tool"
+            onClick={handleDownload}
+            aria-label="Download"
+            title="Download"
           >
-            <ChevronRight size={20} />
+            <Download size={18} />
           </button>
         </div>
 

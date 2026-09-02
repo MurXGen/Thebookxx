@@ -117,10 +117,48 @@ function BagContent() {
     return `${origin}/bag?shared=${encodeURIComponent(enc)}`;
   };
 
-  // Open a review modal first — the shopper sees what they're sharing.
-  const handleShareBag = () => {
-    if (!cart.length) return;
-    setShowShareModal(true);
+  // Share the bag directly from the header button: build the link, shorten it,
+  // then use the native share sheet on mobile or copy to clipboard on desktop.
+  const handleShareBag = async () => {
+    if (!cart.length) {
+      showToast("Your bag is empty — add books to share.", "info");
+      return;
+    }
+    if (shareBusy) return;
+    setShareBusy(true);
+    try {
+      const longUrl = buildBagLink();
+      const tiny = (await shortenUrl(longUrl)) || longUrl;
+      const canNativeShare =
+        typeof navigator !== "undefined" &&
+        navigator.share &&
+        (typeof window === "undefined" || window.innerWidth <= 768);
+      if (canNativeShare) {
+        await navigator.share({
+          title: "My TheBookX bag",
+          text: "Check out the books I picked on TheBookX ",
+          url: tiny,
+        });
+      } else if (
+        typeof navigator !== "undefined" &&
+        navigator.clipboard?.writeText
+      ) {
+        await navigator.clipboard.writeText(tiny);
+        showToast("Bag link copied — share it with anyone!", "success");
+      } else {
+        // Last-resort fallback when clipboard API is unavailable.
+        window.prompt("Copy your bag link:", tiny);
+      }
+    } catch (err) {
+      if (err && err.name === "AbortError") {
+        /* user dismissed the native share sheet — no-op */
+      } else {
+        console.error("Share failed:", err);
+        showToast("Couldn't share the bag. Please try again.", "error");
+      }
+    } finally {
+      setShareBusy(false);
+    }
   };
 
   // Confirm from the modal: shorten to TinyURL, then share/copy it.

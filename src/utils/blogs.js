@@ -4,6 +4,264 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "india-book-festival-season-2026-how-to-shop-a-book-fair": {
+    id: "blog-039",
+    title:
+      "India's Book Festival Season Opens in Indore (4-8 September 2026): The Litfest Boom, and How to Actually Shop a Book Fair",
+    slug: "india-book-festival-season-2026-how-to-shop-a-book-fair",
+    author: "TheBookX Editorial",
+    authorSlug: "murthy-thevar",
+    publishDate: "2026-09-02",
+    lastModified: "2026-09-02",
+    excerpt:
+      "A five-day book festival opens in Indore on 4 September 2026. Here is what India's litfest boom actually proves, and a practical guide to shopping a book fair well.",
+
+    content: [
+      {
+        type: "paragraph",
+        content:
+          "A five-day book festival opens in Indore on <strong>4 September 2026</strong> and runs to <strong>8 September</strong>, hosted at the Pritam Lal Dua Sabhagruh on MG Road and organised by the Rajkamal Prakashan group. It is not a headline event. There will be no international keynote, no press pack, and very little coverage outside the Hindi press. It is also, for that reason, the most representative thing happening in Indian publishing this week.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "India now hosts well over a hundred literature festivals and book fairs a year. In February 2026, a piece in The Guardian asked why a country where most people reportedly do not read for pleasure sustains so many of them, and framed the answer as spectacle: celebrity panels, selfie queues, books somewhere in the background. The article drew enough pushback that it was retitled. William Dalrymple, who co-founded the Jaipur Literature Festival, called the framing ignorant. Ananth Padmanabhan, CEO of HarperCollins India, made the sharper point in reply: the spectacle is the strategy, not the problem, and 400,000 people spending a weekend at a book festival instead of doomscrolling at home is culture being formed rather than performed.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "He would say that, of course. But the sales figures are not a matter of opinion, and they are worth putting in one place.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "Indore book festival 2026 at a glance",
+        content:
+          "Dates: 4 to 8 September 2026, five days. Venue: Pritam Lal Dua Sabhagruh, MG Road, Indore. Organiser: Rajkamal Prakashan group, publishers of much of the modern Hindi canon. Expect deep Hindi and translated-Hindi stock that is genuinely hard to find in mainstream retail, plus author sessions. Entry to Rajkamal's Kitaab Utsav events has historically been free.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The Numbers Are Inside the Building, Not on the Sales Charts",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The standard argument for Indian reading decline runs on leisure-reading surveys, and those surveys are not wrong. What they miss is that in India a very large share of book buying happens at events, in a compressed window, in cash, and never touches a retail chain's numbers.",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "The 2026 Jaipur Literature Festival, its 19th edition, brought more than 500 speakers from over 40 countries and sold in excess of 44,000 books across five days.",
+          "The Pune Book Festival drew over 1.25 million visitors and recorded sales above ₹50 crore.",
+          "The New Delhi World Book Fair continues to pull close to two million visitors across a fortnight.",
+          "Hay and Edinburgh, Britain's two flagship literary festivals, together attract fewer visitors than Jaipur does on its own.",
+        ],
+      },
+      {
+        type: "paragraph",
+        content:
+          "Market analyses published at the end of August 2026 add the commercial half of the picture: combined Indian print revenues across trade, educational and print media are edging back toward pre-pandemic peaks, even as major houses now earn roughly a quarter of their income from audio, e-books, subscription apps and serialised web fiction. Print is not being replaced here. It is being joined.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The Travelling Festival Is the More Interesting Story",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Jaipur and Delhi are the events everyone can name. The structural change is happening elsewhere. Rajkamal Prakashan launched its Kitaab Utsav series in 2022 as a travelling literary festival, and over five years it has run 14 events across 10 cities, including Bhopal, Patna, Varanasi, Ranchi and Bareilly, without a single corporate sponsor. Indore this week is the same model.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Amod Maheshwari, Executive Director at Rajkamal, has made a point that deserves more attention than it gets: a significant share of the people who walk into these events are first-generation readers, from households with no literary tradition, and they arrive specifically wanting to be told what to read next. They are not browsing. They are asking.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "That is a different proposition from a Jaipur crowd, and it explains why a free festival in a mid-sized city with no sponsor is a better indicator of where Indian reading is going than any single bestseller list. It also explains the second finding everyone in the trade now cites: drawing on the Nielsen Books and Consumer Study covering July 2024 to March 2025, readers aged 16 to 24 account for roughly <strong>37 per cent of all print book purchases in India</strong>, making Gen Z the country's single largest print-buying demographic. The generation supposedly lost to short video is the one keeping physical books alive.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "What This New Reader Is Actually Buying",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Publicists working the festival circuit report a clear shift in what moves off the stall. Priyanshi Sharma of Aleph Book Company and Rupa Publications has described a marked rise in mythology and mythological fiction, and in wellness-centred non-fiction concerned with identity and inner life, at the expense of the blunt instructional self-help that dominated the last decade. Readers are looking for their own culture and their own anxieties on the page, not a five-step system.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "On the mythology side, the two titles that consistently justify their shelf space are <a href=\"/books/jaya-an-illustrated-retelling-of-the-mahabharata\" style=\"color:#fb8500;font-weight:600\">Jaya: An Illustrated Retelling of the Mahabharata</a>, which moves through the whole epic while footnoting its regional variants, and <a href=\"/books/mahagatha-100-tales-from-the-puranas\" style=\"color:#fb8500;font-weight:600\">Mahagatha: 100 Tales from the Puranas</a>, which arranges a hundred stories in rough cosmic sequence so the individual tales finally have context. For the fiction version of the same appetite, <a href=\"/books/the-immortals-of-meluha\" style=\"color:#fb8500;font-weight:600\">The Immortals of Meluha</a> is the book that opened the category in 2010 and is still the most reliable conversion for a reluctant reader in the family.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The wellness and thinking shelf has narrowed to a handful of books that survive rereading. <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> and <a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> remain the two most-bought non-fiction titles in the country for a defensible reason: both are built on mechanism rather than motivation. <a href=\"/books/ikigai\" style=\"color:#fb8500;font-weight:600\">Ikigai</a> is the gentler entry point, <a href=\"/books/thinking-fast-and-slow\" style=\"color:#fb8500;font-weight:600\">Thinking, Fast and Slow</a> the demanding one, and <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar the homegrown one, concerned with how to think and speak precisely rather than how to optimise a morning.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "How to Actually Shop a Book Fair",
+      },
+      {
+        type: "paragraph",
+        content:
+          "This is the part nobody writes down, and it is the difference between coming home with four books you read and eleven you do not. Anyone heading to Indore this week, or to any of the fifty-odd fairs that will run between now and February, should treat it as a specific skill.",
+      },
+      {
+        type: "list",
+        style: "ordered",
+        items: [
+          "Set a rupee budget before you enter, not a book count. Fair pricing is deliberately disorienting: heavy discounts on some tables, full price on others, and 'three for ₹500' piles designed to make arithmetic feel rude. A number in your head fixes this.",
+          "Do one full lap before buying anything. Publishers cluster, and the stall with the title you want at 20 per cent off is frequently forty metres from the one selling it at 50 per cent off.",
+          "Buy the books you cannot get online, first. This is the real value of a fair: regional-language stock, small-press translations, out-of-print backlist, academic titles. A Rajkamal event is worth attending specifically for Hindi literature that no mainstream retailer carries.",
+          "Do not buy the front table. The books stacked at the entrance are the ones the publisher needs to move, which is not the same as the ones you need to read. Walk to the back of the stall.",
+          "Open the book to page 50 and read a paragraph. Not the blurb, not page one, which every author has polished. Page 50 tells you whether the prose can hold you when nobody is trying.",
+          "Check the print quality on translations and cheap editions. Bleeding ink, missing pages and mirrored signatures are common in fair stock. Flip the whole block once, in ten seconds.",
+          "Carry a cloth bag and cash. Card machines fail at scale, and a stall that cannot process your payment will simply lose the sale while you stand there.",
+          "Write down the titles you were tempted by and did not buy. This list is more useful than the pile you carried home, and it is what you order in the quiet week after.",
+        ],
+      },
+      {
+        type: "callout",
+        style: "success",
+        title: "The page 50 test",
+        content:
+          "The single most useful habit for buying books anywhere, fair or online. Blurbs are marketing and first pages are auditions. Page 50 is the book working at its normal cruising speed, with the author no longer performing. If page 50 bores you, page 300 will defeat you. This one test will cut your unread shelf faster than any reading challenge.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "What to Buy at a Fair, and What to Buy Online",
+      },
+      {
+        type: "paragraph",
+        content:
+          "These are not competing channels, and pretending otherwise wastes money. A fair is unbeatable for discovery, for regional and small-press stock, and for the specific pleasure of handling a book before committing to it. It is poor at completeness: the one title you actually came for is frequently sold out by day two, the specific translation you wanted is not the one on the table, and there is no way to check a price against anything.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Online is the opposite. It is weak on serendipity and strong on exactly the things a fair cannot do — finding a named title, comparing editions, and buying at a price that does not depend on which day of the festival you turned up. On TheBookX, titles start from ₹1, delivery is free, and Cash on Delivery is available across India, which matters for the large number of readers who will not put a card into a website. Gift wrapping is ₹25 per book if the order is going to someone else.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The sensible pattern is to use the fair for the books you did not know existed, and online for the list you wrote down while standing in the queue.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "If You Cannot Get to Indore This Week",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Build the shelf anyway. This is the mix that a well-stocked fair table would actually offer a first-time buyer: some Indian literary fiction, some world classics, a thriller to keep momentum, and two or three books of ideas.",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> by Arundhati Roy - the Booker winner that changed what Indian English prose was allowed to sound like.",
+          "<a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> by R. K. Narayan - short, warm, and the best possible entry to Indian fiction for someone who has never read any.",
+          "<a href=\"/books/the-guide\" style=\"color:#fb8500;font-weight:600\">The Guide</a> by R. K. Narayan - the novel to read second, once Malgudi has done its work.",
+          "<a href=\"/books/the-room-on-the-roof\" style=\"color:#fb8500;font-weight:600\">The Room on the Roof</a> by Ruskin Bond - written when he was seventeen, and still the right gift for a teenager who resists reading.",
+          "<a href=\"/books/five-point-someone\" style=\"color:#fb8500;font-weight:600\">Five Point Someone</a> by Chetan Bhagat - the book that pulled a generation of Indian non-readers into bookshops, whatever the critics said.",
+          "<a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> by A. P. J. Abdul Kalam - the most-gifted Indian autobiography, and it earns it.",
+          "<a href=\"/books/to-kill-a-mockingbird\" style=\"color:#fb8500;font-weight:600\">To Kill a Mockingbird</a> - the classic most likely to be finished rather than abandoned.",
+          "<a href=\"/books/1984\" style=\"color:#fb8500;font-weight:600\">1984</a> by George Orwell - short, urgent, and more quoted than read. Fix that.",
+          "<a href=\"/books/the-midnight-library\" style=\"color:#fb8500;font-weight:600\">The Midnight Library</a> by Matt Haig - contemporary fiction that reads in two sittings and travels well as a gift.",
+          "<a href=\"/books/before-the-coffee-gets-cold\" style=\"color:#fb8500;font-weight:600\">Before the Coffee Gets Cold</a> by Toshikazu Kawaguchi - the gentlest way back into reading after a long gap.",
+          "<a href=\"/books/the-housemaid\" style=\"color:#fb8500;font-weight:600\">The Housemaid</a> by Freida McFadden - one thriller on the shelf is not a compromise, it is how you keep a reading habit alive between serious books.",
+          "<a href=\"/books/sapiens-a-brief-history-of-humankind\" style=\"color:#fb8500;font-weight:600\">Sapiens: A Brief History of Humankind</a> by Yuval Noah Harari - the non-fiction book most likely to make someone want another non-fiction book.",
+          "<a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar - on thinking and communicating without fog, which is the skill everything else on this list depends on.",
+        ],
+      },
+      {
+        type: "blockquote",
+        content:
+          "A country that queues for four hours to hear a novelist speak, then queues again to have the book signed, is not a country that has stopped reading. It is a country that reads in public.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The Festival Calendar Is Only Getting Busier",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Indore this week is the start of the long Indian book season. The circuit thickens through the festival months, gathers into the winter litfests, and peaks at the New Delhi World Book Fair. If you have never been to one, go to the smallest one near you rather than the largest one you have heard of. The stalls are less crowded, the publishers have time to talk, and the discovery rate is far higher.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "And if the nearest fair is months away, the point stands regardless. The reason a hundred festivals work in this country is not the panels. It is that a very large number of people want to be told what to read next, and nobody has been telling them. Pick three books, order them, and start with the shortest.",
+      },
+    ],
+
+    coverImage: "/blogs/india-book-festival-season-2026-how-to-shop-a-book-fair.jpeg",
+
+    images: [
+      {
+        url: "/blogs/india-book-festival-season-2026-how-to-shop-a-book-fair.jpeg",
+        alt: "A young woman browsing stacked books at a crowded Indian book fair stall, holding two titles she has chosen",
+        caption:
+          "India's book festival season opens in Indore on 4 September 2026",
+        category: "Literary News",
+      },
+    ],
+
+    keywords: [
+      "india book festival 2026",
+      "indore book festival september 2026",
+      "kitaab utsav indore",
+      "how to shop a book fair",
+      "literature festivals in india",
+      "book fair tips india",
+      "jaipur literature festival 2026 books sold",
+      "gen z print book buyers india",
+      "buy books online india",
+      "TheBookX",
+    ],
+
+    categories: ["Literary News", "Book Fairs", "Reading Culture"],
+
+    faqs: [
+      {
+        question: "When and where is the Indore book festival in September 2026?",
+        answer:
+          "The five-day book festival runs from 4 to 8 September 2026 at the Pritam Lal Dua Sabhagruh on MG Road, Indore, organised by the Rajkamal Prakashan group. Expect strong Hindi and translated-Hindi stock alongside author sessions.",
+      },
+      {
+        question: "Are Indians really reading less in 2026?",
+        answer:
+          "Leisure-reading surveys show a decline, but event sales tell a different story. The 2026 Jaipur Literature Festival sold over 44,000 books in five days, the Pune Book Festival recorded more than ₹50 crore in sales across 1.25 million visitors, and the New Delhi World Book Fair still draws close to two million people. Nielsen data covering July 2024 to March 2025 puts readers aged 16 to 24 at roughly 37 per cent of all print purchases in India.",
+      },
+      {
+        question: "What is the best way to buy books at a book fair?",
+        answer:
+          "Set a rupee budget rather than a book count, walk the full floor once before buying, prioritise regional-language and small-press titles you cannot find online, avoid the front display table, and use the page 50 test - read a paragraph from page 50, not the blurb or the first page. Write down the titles you did not buy and order them afterwards.",
+      },
+      {
+        question: "Where can I buy these books online in India?",
+        answer:
+          "TheBookX stocks bestsellers, Indian fiction, mythology and non-fiction with titles from ₹1, free delivery, and Cash on Delivery available across India. Gift wrapping is ₹25 per book. Browse the full catalogue at https://www.thebookx.in/books",
+      },
+    ],
+  },
+
   "janmashtami-2026-books-krishna-mahabharata-gita": {
     id: "blog-038",
     title:

@@ -1,12 +1,16 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { X, ChevronRight, MessageCircle } from "lucide-react";
+import { X, Check, Mail, MessageCircle } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa";
 
 const SUPPORT_WHATSAPP = "917710892108";
+const SUPPORT_EMAIL = "uskillbook@gmail.com";
 
-// "How can we help?" bottom-sheet — pick a topic, opens WhatsApp with a ready
-// message. Shared by the profile, orders list and order detail pages.
+// "How can we help?" bottom-sheet — pick a reason, then reach us on WhatsApp
+// or by email. The same reason message is prefilled into whichever channel is
+// chosen. Shared by the profile, orders list and order detail pages.
 export default function SupportSheet({ phone = "", orderId = "", onClose }) {
   const num = String(phone || "").replace(/\D/g, "").slice(-10);
   const ref = orderId ? ` (order ${orderId})` : "";
@@ -22,6 +26,26 @@ export default function SupportSheet({ phone = "", orderId = "", onClose }) {
     { label: "Something else", msg: `Hi TheBookX, I need some help with my order${ref}.${sig}` },
   ];
 
+  const [selected, setSelected] = useState(0);
+  const topic = topics[selected] || topics[0];
+
+  const openWhatsApp = () => {
+    window.open(
+      `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(topic.msg)}`,
+      "_blank",
+      "noopener,noreferrer",
+    );
+    onClose && onClose();
+  };
+
+  const openEmail = () => {
+    const subject = `TheBookX support: ${topic.label}${orderId ? ` — order ${orderId}` : ""}`;
+    window.location.href = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(
+      subject,
+    )}&body=${encodeURIComponent(topic.msg)}`;
+    onClose && onClose();
+  };
+
   return (
     <motion.div
       className="bill-modal-overlay"
@@ -31,7 +55,7 @@ export default function SupportSheet({ phone = "", orderId = "", onClose }) {
       onClick={onClose}
     >
       <motion.div
-        className="bill-modal"
+        className="bill-modal support-sheet"
         style={{ maxWidth: "500px" }}
         initial={{ y: "100%" }}
         animate={{ y: 0 }}
@@ -47,28 +71,44 @@ export default function SupportSheet({ phone = "", orderId = "", onClose }) {
             <X size={18} />
           </span>
         </div>
-        <p className="ep-hint" style={{ marginBottom: 6 }}>
-          Pick a topic and we&apos;ll open WhatsApp with a ready message.
+        <p className="ep-hint" style={{ marginBottom: 8 }}>
+          Pick a reason, then reach us on WhatsApp or email — we&apos;ll have
+          your details ready.
         </p>
-        <div className="support-templates">
-          {topics.map((t) => (
+
+        <div className="support-reasons">
+          {topics.map((t, i) => (
             <button
               key={t.label}
               type="button"
-              className="support-template-row"
-              onClick={() => {
-                window.open(
-                  `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(t.msg)}`,
-                  "_blank",
-                  "noopener,noreferrer",
-                );
-                onClose && onClose();
-              }}
+              className={`support-reason${selected === i ? " active" : ""}`}
+              onClick={() => setSelected(i)}
             >
+              <span
+                className={`support-reason-radio${selected === i ? " on" : ""}`}
+              >
+                {selected === i && <Check size={12} strokeWidth={3} />}
+              </span>
               <span>{t.label}</span>
-              <ChevronRight size={18} />
             </button>
           ))}
+        </div>
+
+        <div className="support-actions">
+          <button
+            type="button"
+            className="pri-big-btn support-wa"
+            onClick={openWhatsApp}
+          >
+            <FaWhatsapp size={17} /> Chat on WhatsApp
+          </button>
+          <button
+            type="button"
+            className="sec-big-btn support-email"
+            onClick={openEmail}
+          >
+            <Mail size={16} /> Email us
+          </button>
         </div>
       </motion.div>
     </motion.div>

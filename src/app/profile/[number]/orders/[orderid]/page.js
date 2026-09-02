@@ -899,7 +899,7 @@ export default function OrderDetailPage() {
           onClick={() => setShowSupport(true)}
         >
           <MessageCircle size={16} />
-          Support
+          Help
         </button>
       </header>
 

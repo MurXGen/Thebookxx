@@ -18115,6 +18115,68 @@ img[data-loaded="true"] {
   color: var(--dark-50);
   flex-shrink: 0;
 }
+/* Help sheet — selectable reasons + WhatsApp / Email actions. */
+.support-reasons {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 46vh;
+  overflow-y: auto;
+  padding-bottom: 6px;
+}
+.support-reason {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--hairline, #ececec);
+  border-radius: 12px;
+  background: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--foreground);
+  cursor: pointer;
+  text-align: left;
+}
+.support-reason.active {
+  border-color: var(--tertiary, #fb8500);
+  background: rgba(251, 133, 0, 0.06);
+}
+.support-reason-radio {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--dark-20, #cbd0d6);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+.support-reason-radio.on {
+  background: var(--tertiary, #fb8500);
+  border-color: var(--tertiary, #fb8500);
+}
+.support-actions {
+  display: flex;
+  gap: 8px;
+  padding-top: 12px;
+  margin-top: 8px;
+  border-top: 1px solid var(--hairline, #ececec);
+}
+.support-actions > button {
+  flex: 1 1 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.support-actions .support-wa {
+  background: #25d366;
+  border: none;
+  color: #fff;
+}
 
 /* ── Edit-profile modal ── */
 .ep-body {

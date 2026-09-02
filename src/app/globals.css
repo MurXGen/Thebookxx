@@ -23169,6 +23169,49 @@ img[data-loaded="true"] {
   flex-wrap: wrap;
   gap: 6px;
 }
+/* Inline "add tracking ID" row at the bottom of the order card. */
+.mo-card > .mo-card-track {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px dashed var(--hairline, #ececec);
+}
+.mo-card-track-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 36px;
+  padding: 0 12px;
+  font-size: 13px;
+  border: 1px solid var(--hairline, #ececec);
+  border-radius: 9px;
+  background: #fff;
+  color: var(--foreground, #0a0a0a);
+}
+.mo-card-track-input:focus {
+  outline: none;
+  border-color: var(--tertiary, #fb8500);
+  box-shadow: 0 0 0 3px rgba(251, 133, 0, 0.14);
+}
+.mo-card-track-save {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 36px;
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--tertiary, #fb8500);
+  border: none;
+  border-radius: 9px;
+  cursor: pointer;
+}
+.mo-card-track-save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 /* Add-on / benefit chips row at the bottom of the order card. */
 .mo-card > .mo-card-chips {
   display: flex;

@@ -9318,6 +9318,43 @@ export default function ManageOrdersPage() {
                               </div>
                             )}
 
+                            {/* Quick add-tracking — only when the order has no
+                                tracking ID yet. Saves to the push queue. */}
+                            {!hasTracking && (
+                              <div
+                                className="mo-card-track"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <input
+                                  className="mo-card-track-input"
+                                  placeholder="Add tracking ID (e.g. CX…IN)"
+                                  value={trackDrafts[orderId] ?? ""}
+                                  onChange={(e) =>
+                                    setTrackDrafts((p) => ({
+                                      ...p,
+                                      [orderId]: e.target.value,
+                                    }))
+                                  }
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter")
+                                      queueTracking(order, trackDrafts[orderId]);
+                                  }}
+                                />
+                                <button
+                                  type="button"
+                                  className="mo-card-track-save"
+                                  disabled={
+                                    !String(trackDrafts[orderId] || "").trim()
+                                  }
+                                  onClick={() =>
+                                    queueTracking(order, trackDrafts[orderId])
+                                  }
+                                >
+                                  <Check size={14} /> Save
+                                </button>
+                              </div>
+                            )}
+
                             {/* Comment + Book online moved into the bill modal. */}
 
                             {billOrderId === orderId &&

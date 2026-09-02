@@ -23205,7 +23205,7 @@ img[data-loaded="true"] {
   align-items: center;
   justify-content: center;
   line-height: 0;
-  border: 1px solid var(--hairline, #ececec);
+  border: 1px solid var(--dark-50);
   background: #fff;
   color: var(--dark-50, #6b7280);
   cursor: pointer;
@@ -23213,7 +23213,7 @@ img[data-loaded="true"] {
     border-color 0.15s ease;
 }
 .mo-frame-ic:hover {
-  border-color: var(--dark-20, #cbd0d6);
+  border-color: var(--foreground, #0a0a0a);
 }
 .mo-frame-wa {
   color: #25d366;
@@ -35886,7 +35886,7 @@ img[data-loaded="true"] {
   flex-shrink: 0;
   padding: 9px 16px;
   border-radius: 12px;
-  border: 1px solid var(--hairline, #ececec);
+  border: 1px solid var(--dark-50);
   background: #fff;
   color: #111827;
   font-size: var(--px-13);

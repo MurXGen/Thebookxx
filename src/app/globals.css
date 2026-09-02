@@ -3345,13 +3345,17 @@ input {
 
 .books-page-header {
   background: white;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: none;
   padding: 20px 24px;
   position: sticky;
   top: 0;
   z-index: 100;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(8px);
+}
+/* Align the Profile-style back button inside the title row. */
+.page-title .page-header-back {
+  margin-right: 4px;
 }
 
 .header-content {

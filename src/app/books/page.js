@@ -86,26 +86,31 @@ export default function BooksPage() {
       <header className="books-page-header">
         <div className="header-content">
           <h1 className="page-title flex flex-row items-center">
-            <ArrowLeft size={20} onClick={() => router.push("/")} />
+            <button
+              type="button"
+              className="page-header-back"
+              onClick={() => router.push("/")}
+              aria-label="Go back"
+            >
+              <ArrowLeft size={20} />
+            </button>
             Browse Categories
             <span className="page-title-count">{categories.length} categories</span>
           </h1>
           <div className="header-actions">
             <button
-              className="sec-big-btn flex flex-row flex-center"
+              type="button"
+              className="nav-ic"
               onClick={() => setSearchOpen(true)}
               aria-label="Search books"
             >
-              <Search size={14} />
+              <Search size={24} />
             </button>
           </div>
         </div>
       </header>
 
       <div className="section-1200">
-        <p className="books-cat-intro">
-          Pick a category to explore the books inside.
-        </p>
         <div className="books-cat-grid">
           {categories.map((cat) => (
             <CatalogueCard

@@ -569,58 +569,97 @@ export default function SearchOverlay({
                             {item.type === "book" ? (
                               <BookCard book={item.book} />
                             ) : (
-                              <Link
-                                href={`/quickreads/${qrSlug(item.book.name)}`}
-                                className="search-qr-item"
-                                onClick={onClose}
+                              <article
+                                className="trending-card"
+                                style={{ position: "relative" }}
                               >
-                                <div className="search-qr-item-cover">
-                                  <img
-                                    src={item.book.image}
-                                    alt={item.book.name}
-                                  />
+                                {/* Same layout as BookCard, just a QuickRead
+                                    badge + QuickRead pricing/behaviour. */}
+                                <div className="book-image-wrapper">
+                                  <Link
+                                    href={`/quickreads/${qrSlug(item.book.name)}`}
+                                    onClick={onClose}
+                                    aria-label={`Read ${item.book.name} QuickRead`}
+                                  >
+                                    <img
+                                      src={item.book.image}
+                                      alt={item.book.name}
+                                      className="book-image loaded"
+                                    />
+                                  </Link>
                                   <span className="search-qr-badge">
                                     <Zap size={11} /> QuickRead
                                   </span>
                                 </div>
-                                <span className="search-qr-item-name">
-                                  {item.book.name}
-                                </span>
-                                <span className="search-qr-item-price">
-                                  ₹{QUICKREAD_PRICE}
-                                  <span className="search-qr-item-mrp">
-                                    ₹{QUICKREAD_MRP}
-                                  </span>
-                                </span>
-                                <button
-                                  type="button"
-                                  className="search-qr-cart"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    if (isInQrCart(item.book.id)) {
-                                      window.location.href =
-                                        "/bag?tab=quickreads";
-                                      return;
-                                    }
-                                    addQuickRead(item.book.id);
-                                    showToast(
-                                      "QuickRead added to your bag.",
-                                      "success",
-                                    );
-                                  }}
-                                >
-                                  {isInQrCart(item.book.id) ? (
-                                    <>
-                                      <Check size={14} /> In bag
-                                    </>
-                                  ) : (
-                                    <>
-                                      <ShoppingCart size={14} /> Add to cart
-                                    </>
-                                  )}
-                                </button>
-                              </Link>
+
+                                <div className="flex flex-col gap-12 book-card margin-tp-24px">
+                                  <h3 className="font-16 weight-500">
+                                    <Link
+                                      href={`/quickreads/${qrSlug(item.book.name)}`}
+                                      onClick={onClose}
+                                      className="book-title-link"
+                                    >
+                                      {item.book.name}
+                                    </Link>
+                                    <div className="font-10 gray-500 mt-4">
+                                      <span>QuickRead</span>
+                                    </div>
+                                  </h3>
+
+                                  <div className="book-content">
+                                    <div className="flex flex-col width100">
+                                      <div className="price-row">
+                                        <span className="discounted price-ribbon-bg">
+                                          ₹{QUICKREAD_PRICE}
+                                        </span>
+                                        <span className="original">
+                                          ₹{QUICKREAD_MRP}
+                                        </span>
+                                      </div>
+                                      <span className="green font-10">
+                                        Save ₹{QUICKREAD_MRP - QUICKREAD_PRICE}
+                                      </span>
+                                    </div>
+                                  </div>
+
+                                  <div className="bookcard-cart-row bc-actions-row">
+                                    <button
+                                      type="button"
+                                      className="bookcard-add-btn bc-action-main"
+                                      onClick={() => {
+                                        if (isInQrCart(item.book.id)) {
+                                          window.location.href =
+                                            "/bag?tab=quickreads";
+                                          return;
+                                        }
+                                        addQuickRead(item.book.id);
+                                        showToast(
+                                          "QuickRead added to your bag.",
+                                          "success",
+                                        );
+                                      }}
+                                    >
+                                      <span className="bc-add-inner">
+                                        {isInQrCart(item.book.id) ? (
+                                          <>
+                                            <Check size={17} />
+                                            <span className="bc-add-label">
+                                              In bag
+                                            </span>
+                                          </>
+                                        ) : (
+                                          <>
+                                            <ShoppingCart size={17} />
+                                            <span className="bc-add-label">
+                                              Add to Cart
+                                            </span>
+                                          </>
+                                        )}
+                                      </span>
+                                    </button>
+                                  </div>
+                                </div>
+                              </article>
                             )}
                           </motion.div>
                         ))}

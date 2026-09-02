@@ -27858,10 +27858,11 @@ img[data-loaded="true"] {
   height: 100%;
   object-fit: cover;
 }
-.search-qr-item .search-qr-badge {
+.search-qr-badge {
   position: absolute;
   top: 8px;
   left: 8px;
+  z-index: 2;
   display: inline-flex;
   align-items: center;
   gap: 4px;

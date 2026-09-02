@@ -627,7 +627,7 @@ export default function QuickReadsReader({
                   className="qr-vcard"
                 >
                   <div className="qr-vcard-top">
-                    <span className="qr-card-kicker">Insight {i + 1}</span>
+                    <span className="qr-card-kicker">#{i + 1}</span>
                     <div className="qr-vcard-tools">
                       <button
                         type="button"

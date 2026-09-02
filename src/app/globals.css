@@ -26086,6 +26086,31 @@ img[data-loaded="true"] {
 .qr-dark .qr-progress {
   background: rgba(255, 255, 255, 0.08);
 }
+/* Smaller type on phones for the vertical feed. */
+@media (max-width: 640px) {
+  .qr-feed {
+    padding: 12px 12px 20px;
+  }
+  .qr-vcard {
+    padding: 16px 16px 18px;
+    margin-bottom: 12px;
+  }
+  .qr-vcard .qr-card-title {
+    font-size: 21px;
+    margin: 10px 0 10px;
+  }
+  .qr-vcard .qr-card-text {
+    font-size: 14.5px;
+    line-height: 1.6;
+  }
+  .qr-card-kicker {
+    font-size: 10px;
+  }
+  .qr-vcard-tool {
+    width: 30px;
+    height: 30px;
+  }
+}
 /* Paywall */
 .qr-paywall {
   position: absolute;
@@ -26517,9 +26542,9 @@ img[data-loaded="true"] {
   border-left-color: rgba(251, 133, 0, 0.5);
 }
 .qr-dark .qr-card-kicker {
-  color: #111111;
-  background: linear-gradient(135deg, #ffffff 0%, #c9ccd2 100%);
-  border-color: rgba(255, 255, 255, 0.5);
+  color: var(--tertiary, #fb8500);
+  background: none;
+  border: none;
 }
 .qr-dark .qr-action {
   background: transparent;

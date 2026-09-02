@@ -23364,6 +23364,74 @@ img[data-loaded="true"] {
   padding-top: 14px;
   border-top: 1px dashed var(--hairline, #e5e7eb);
 }
+/* Restructured WhatsApp picker */
+.wa-sec {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+.wa-sec-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--dark-50, #6b7280);
+}
+.wa-tpl-chip {
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid rgba(37, 211, 102, 0.5);
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(37, 211, 102, 0.08);
+}
+.wa-tpl-chip-btn {
+  border: none;
+  background: transparent;
+  color: #128c3e;
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 8px 6px 8px 14px;
+  cursor: pointer;
+}
+.wa-tpl-del {
+  border: none;
+  background: transparent;
+  color: rgba(0, 0, 0, 0.35);
+  padding: 0 10px 0 4px;
+  cursor: pointer;
+}
+.wa-tpl-del:hover {
+  color: #dc2626;
+}
+.wa-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+.wa-actions .wa-act-btn {
+  flex: 1 1 auto;
+  justify-content: center;
+}
+.wa-actions .wa-act-warn {
+  color: #b42318;
+  border-color: rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.06);
+}
+.wa-actions .wa-act-btn.active {
+  border-color: var(--tertiary, #fb8500);
+  color: var(--tertiary, #fb8500);
+}
+.wa-custom-row {
+  display: flex;
+  gap: 8px;
+}
+.wa-custom-row > button {
+  flex: 1 1 auto;
+  justify-content: center;
+}
 .wa-custom-label {
   display: inline-flex;
   align-items: center;

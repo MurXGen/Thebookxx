@@ -189,15 +189,20 @@ const waMessages = (order) => {
   const hi = `Hi ${name} 👋`;
 
   // Link block appended below every message: a divider, the customer's order
-  // link, the tracking ID and the India Post tracking link (tracking lines only
-  // when a tracking ID exists). Consistent across all stages.
-  const orderLink = orderId
-    ? `https://thebookx.in?orderID=${encodeURIComponent(orderId)}`
-    : PROFILE_URL;
+  // detail page link, their profile link, the tracking ID and the India Post
+  // tracking link (tracking lines only when a tracking ID exists).
+  const phone10 = String(order?.["Phone Number"] || "")
+    .replace(/\D/g, "")
+    .slice(-10);
+  const orderDetailUrl =
+    orderId && phone10
+      ? `https://www.thebookx.in/profile/${phone10}/orders/${encodeURIComponent(orderId)}`
+      : PROFILE_URL;
   const linkBlock =
     `\n\n━━━━━━━━━━━━━━` +
     (orderId ? `\n📦 *Order ID:* ${orderId}` : "") +
-    `\n🔗 *Your order:* ${orderLink}` +
+    `\n🔗 *Order details:* ${orderDetailUrl}` +
+    `\n👤 *Your profile:* ${PROFILE_URL}` +
     (tracking
       ? `\n🚚 *Tracking ID:* ${tracking}\n📍 Track: ${INDIA_POST_URL}`
       : "") +
@@ -2862,6 +2867,34 @@ export default function ManageOrdersPage() {
   }, []);
   const [waPickerOrder, setWaPickerOrder] = useState(null); // WhatsApp picker
   const [waCustomText, setWaCustomText] = useState(""); // custom WA message
+  // Saved custom WhatsApp templates — { title, text }, persisted locally.
+  const [waTemplates, setWaTemplates] = useState([]);
+  const [waTplTitle, setWaTplTitle] = useState("");
+  const [waTplBody, setWaTplBody] = useState("");
+  const [showWaTplForm, setShowWaTplForm] = useState(false);
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("mo_wa_templates");
+      if (raw) setWaTemplates(JSON.parse(raw));
+    } catch (_) {}
+  }, []);
+  const persistWaTemplates = (list) => {
+    setWaTemplates(list);
+    try {
+      localStorage.setItem("mo_wa_templates", JSON.stringify(list));
+    } catch (_) {}
+  };
+  const saveWaTemplate = () => {
+    const title = waTplTitle.trim();
+    const text = waTplBody.replace(/\s+$/, "");
+    if (!title || !text.trim()) return;
+    persistWaTemplates([...waTemplates, { title, text }]);
+    setWaTplTitle("");
+    setWaTplBody("");
+    setShowWaTplForm(false);
+  };
+  const deleteWaTemplate = (i) =>
+    persistWaTemplates(waTemplates.filter((_, idx) => idx !== i));
   const [darkMode, setDarkMode] = useState(false); // page dark theme
   useEffect(() => {
     try {
@@ -10505,85 +10538,150 @@ export default function ManageOrdersPage() {
                 ))}
               </div>
 
-              {/* Books unavailable — only when this order still has unpicked
-                  books; messages the customer the out-of-stock title(s). */}
-              {(() => {
-                const wpBooks = waPickerOrder.parsedBooks || [];
-                const oid = waPickerOrder["Order ID"];
-                const unpicked = wpBooks.filter(
-                  (_b, i) => !pickChecked[bookKey(oid, i)],
-                );
-                if (unpicked.length === 0) return null;
-                return (
-                  <button
-                    type="button"
-                    className="wa-unavail-btn"
-                    onClick={() => {
-                      openWhatsApp(
-                        waPickerOrder["Phone Number"],
-                        booksUnavailableMessage(
-                          waPickerOrder,
-                          unpicked.map((b) => b.name),
-                        ),
-                      );
-                      setWaPickerOrder(null);
-                    }}
-                    title="Tell the customer these books are out of stock"
-                  >
-                    <AlertCircle size={15} /> Books unavailable ({unpicked.length})
-                  </button>
-                );
-              })()}
+              {/* Saved custom templates — title is the button, tap to send. */}
+              {waTemplates.length > 0 && (
+                <div className="wa-sec">
+                  <span className="wa-sec-label">Saved templates</span>
+                  <div className="wa-picker-grid">
+                    {waTemplates.map((t, i) => (
+                      <span className="wa-tpl-chip" key={i}>
+                        <button
+                          type="button"
+                          className="wa-tpl-chip-btn"
+                          title={t.text}
+                          onClick={() => {
+                            openWhatsApp(
+                              waPickerOrder["Phone Number"],
+                              t.text,
+                            );
+                            setWaPickerOrder(null);
+                          }}
+                        >
+                          {t.title}
+                        </button>
+                        <button
+                          type="button"
+                          className="wa-tpl-del"
+                          title="Delete template"
+                          onClick={() => deleteWaTemplate(i)}
+                        >
+                          <X size={12} />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
 
-              {/* Send the printed-receipt / invoice link (opens the receipt
-                  modal for the customer via thebookx.in?orderID=…). */}
-              <button
-                type="button"
-                className="wa-receipt-btn"
-                onClick={() => {
-                  const oid = String(waPickerOrder["Order ID"] || "").trim();
-                  const nm = String(waPickerOrder["Customer Name"] || "")
-                    .replace(/\s*\(unconfirmed\)\s*/i, "")
-                    .trim();
-                  const invoice = `https://thebookx.in?orderID=${encodeURIComponent(
-                    oid,
-                  )}`;
-                  const msg = `Hi${
-                    nm ? " " + nm.split(" ")[0] : ""
-                  } Thank you for shopping with TheBookX!\n\n View your invoice & full order details: ${invoice}\n Track all your orders anytime: ${PROFILE_URL}`;
-                  openWhatsApp(waPickerOrder["Phone Number"], msg);
-                  setWaPickerOrder(null);
-                }}
-              >
-                <FaWhatsapp size={15} /> Send receipt / invoice
-              </button>
-
-              <div className="wa-custom">
-                <span className="wa-custom-label">
-                  <Pencil size={13} /> Custom message
-                </span>
-                <textarea
-                  className="sec-mid-btn textarea wa-custom-input"
-                  placeholder="Type a custom WhatsApp message…"
-                  value={waCustomText}
-                  rows={3}
-                  onChange={(e) => setWaCustomText(e.target.value)}
-                />
+              {/* Quick actions — consistent secondary buttons. */}
+              <div className="wa-actions">
+                {(() => {
+                  const wpBooks = waPickerOrder.parsedBooks || [];
+                  const oid = waPickerOrder["Order ID"];
+                  const unpicked = wpBooks.filter(
+                    (_b, i) => !pickChecked[bookKey(oid, i)],
+                  );
+                  if (unpicked.length === 0) return null;
+                  return (
+                    <button
+                      type="button"
+                      className="sec-big-btn wa-act-btn wa-act-warn"
+                      onClick={() => {
+                        openWhatsApp(
+                          waPickerOrder["Phone Number"],
+                          booksUnavailableMessage(
+                            waPickerOrder,
+                            unpicked.map((b) => b.name),
+                          ),
+                        );
+                        setWaPickerOrder(null);
+                      }}
+                    >
+                      <AlertCircle size={15} /> Books unavailable (
+                      {unpicked.length})
+                    </button>
+                  );
+                })()}
                 <button
                   type="button"
-                  className="pri-big-btn wa-custom-send"
-                  disabled={!waCustomText.trim()}
+                  className="sec-big-btn wa-act-btn"
                   onClick={() => {
-                    openWhatsApp(
-                      waPickerOrder["Phone Number"],
-                      waCustomText.trim(),
-                    );
+                    const oid = String(
+                      waPickerOrder["Order ID"] || "",
+                    ).trim();
+                    const nm = String(waPickerOrder["Customer Name"] || "")
+                      .replace(/\s*\(unconfirmed\)\s*/i, "")
+                      .trim();
+                    const phone10 = String(
+                      waPickerOrder["Phone Number"] || "",
+                    )
+                      .replace(/\D/g, "")
+                      .slice(-10);
+                    const detail =
+                      oid && phone10
+                        ? `https://www.thebookx.in/profile/${phone10}/orders/${encodeURIComponent(oid)}`
+                        : PROFILE_URL;
+                    const msg = `Hi${
+                      nm ? " " + nm.split(" ")[0] : ""
+                    } 👋 Thanks for shopping with TheBookX!\n\n🔗 Your order details: ${detail}\n👤 All your orders: ${PROFILE_URL}\n\n— Team TheBookX 📚`;
+                    openWhatsApp(waPickerOrder["Phone Number"], msg);
                     setWaPickerOrder(null);
                   }}
                 >
-                  <Send size={15} /> Send on WhatsApp
+                  <FaWhatsapp size={15} /> Send order details
+                </button>
+                <button
+                  type="button"
+                  className={`sec-big-btn wa-act-btn${showWaTplForm ? " active" : ""}`}
+                  onClick={() => setShowWaTplForm((s) => !s)}
+                >
+                  <Pencil size={15} /> Custom
                 </button>
               </div>
+
+              {/* Custom message — type & send now, or save as a reusable
+                  template (title becomes its button label). */}
+              {showWaTplForm && (
+                <div className="wa-custom">
+                  <input
+                    className="admin-input"
+                    placeholder="Title (shown as the button label)"
+                    value={waTplTitle}
+                    onChange={(e) => setWaTplTitle(e.target.value)}
+                  />
+                  <textarea
+                    className="admin-input wa-custom-input"
+                    placeholder="Type your message… (line breaks are kept)"
+                    value={waTplBody}
+                    rows={5}
+                    onChange={(e) => setWaTplBody(e.target.value)}
+                  />
+                  <div className="wa-custom-row">
+                    <button
+                      type="button"
+                      className="sec-big-btn"
+                      disabled={!waTplBody.trim()}
+                      onClick={() => {
+                        openWhatsApp(
+                          waPickerOrder["Phone Number"],
+                          waTplBody.replace(/\s+$/, ""),
+                        );
+                        setWaPickerOrder(null);
+                      }}
+                    >
+                      <Send size={15} /> Send now
+                    </button>
+                    <button
+                      type="button"
+                      className="pri-big-btn"
+                      disabled={!waTplTitle.trim() || !waTplBody.trim()}
+                      onClick={saveWaTemplate}
+                    >
+                      <Check size={15} /> Save template
+                    </button>
+                  </div>
+                </div>
+              )}
             </motion.div>
           </motion.div>
         )}

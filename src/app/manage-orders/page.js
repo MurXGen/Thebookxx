@@ -5963,8 +5963,9 @@ export default function ManageOrdersPage() {
     return true;
   });
   // Lazy-render the list in batches of 10 (infinite scroll).
-  const visibleOrders = listOrders.slice(0, ordersVisible);
-  const hasMoreOrders = ordersVisible < listOrders.length;
+  // Load every order at once (no scroll-lazy pagination in the card view).
+  const visibleOrders = listOrders;
+  const hasMoreOrders = false;
   const notedOrdersCount = filteredOrders.filter(
     (o) => !!(orderNotes[o["Order ID"]] || o["Comment"]),
   ).length;

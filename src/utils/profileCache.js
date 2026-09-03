@@ -3,7 +3,7 @@
 // Small IndexedDB cache for the profile page. It stores each phone's last
 // successful profile snapshot (orders, wallet, name, pending) plus a rolling
 // list of load timestamps. When a shopper reloads / refreshes the profile more
-// than the allowed number of times within a minute, the page serves this cached
+// than the allowed number of times within a 30-second window, the page serves this cached
 // snapshot instead of calling the order / wallet APIs again — protecting the
 // Google Sheet backend from rapid repeat reads.
 
@@ -89,7 +89,7 @@ export async function saveProfileData(phone, data) {
 
 // Record a load attempt and return how many loads have happened within the
 // trailing `windowMs` (including this one). Old timestamps are pruned.
-export async function recordLoad(phone, windowMs = 60000) {
+export async function recordLoad(phone, windowMs = 30000) {
   const k = key(phone);
   if (k.length !== 10) return 0;
   const prev = await readProfileCache(k);

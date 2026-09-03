@@ -812,8 +812,8 @@ export default function MyOrdersPage() {
     if (now - lastLookupRef.current < 1200) return;
     lastLookupRef.current = now;
 
-    // Per-minute load limit: record this load and, if the profile has been
-    // (re)loaded more than twice within the last minute, serve the last cached
+    // Per-30s load limit: record this load and, if the profile has been
+    // (re)loaded more than twice within the last 30 seconds, serve the last cached
     // snapshot from IndexedDB instead of calling the order/wallet APIs again.
     // `opts.force` (used after the shopper edits their own data) always fetches.
     try {
@@ -832,7 +832,7 @@ export default function MyOrdersPage() {
           setCardLoading(false);
           if (!silent) {
             showToast(
-              "Showing your saved details — you're refreshing very often. Please try again in a minute.",
+              "Showing your saved details — you're refreshing very often. Please try again in a moment.",
               "info",
             );
           }

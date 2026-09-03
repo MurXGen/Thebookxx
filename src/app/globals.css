@@ -29157,7 +29157,7 @@ img[data-loaded="true"] {
 /* Add-ons section heading + 3D gift badge */
 .deliv-addon-head {
   display: block;
-  padding: 10px 14px 0;
+  padding: 0;
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.05em;

@@ -65,6 +65,11 @@ import RecommendationModal from "@/components/RecommendationModal";
 import ProfileQuickReads from "@/components/quickreads/ProfileQuickReads";
 import { getVerifiedBookIdsForPhone } from "@/lib/quickreads";
 import { fetchWalletLedger } from "@/utils/walletLedger";
+import {
+  readProfileCache,
+  saveProfileCache,
+  clearProfileCache,
+} from "@/utils/profileCache";
 import { books as ALL_BOOKS } from "@/utils/book";
 
 // Match an order-item name to its book cover (order items come from the sheet,
@@ -504,13 +509,26 @@ export default function MyOrdersPage() {
       setPhoneNumber(savedPhone);
       if (savedName) setCustomerName(savedName);
       setShowPhoneInput(false);
-      // Silent boot: render the profile shell immediately and shimmer only the
-      // profile card while we verify the saved number in the background.
-      fetchOrders(savedPhone, { silent: true });
+
+      // Stale-while-revalidate: if we cached this shopper's last snapshot,
+      // paint it instantly (no skeleton) and refresh in the background. Only a
+      // brand-new device with nothing cached sees the loading skeleton.
+      const cached = readProfileCache(savedPhone);
+      if (cached) {
+        setOrders(cached.orders || []);
+        setPendingOrders(cached.pendingOrders || []);
+        setWalletBalance(cached.walletBalance || 0);
+        if (cached.customerName) setCustomerName(cached.customerName);
+        setSearched(true);
+        // Background refresh — no card skeleton, just the refresh-icon spinner.
+        fetchOrders(savedPhone, { silent: true, background: true });
+      } else {
+        fetchOrders(savedPhone, { silent: true });
+      }
     }
-    // Boot check done — reveal either the skeleton→details (logged in) or the
-    // login form (logged out). Until now the card shows a skeleton so the login
-    // form never flashes for a returning shopper.
+    // Boot check done — reveal either the profile (logged in) or the login form
+    // (logged out). Until now the card shows a skeleton so the login form never
+    // flashes for a returning shopper.
     setBooting(false);
   }, []);
 
@@ -818,7 +836,9 @@ export default function MyOrdersPage() {
     setLoading(true);
     // Both silent boot and manual submit shimmer the profile card in place
     // (no full-screen splash) — the card "reloads" then shows the details.
-    setCardLoading(true);
+    // A background revalidate (cache already shown) skips the skeleton and just
+    // spins the refresh icon instead.
+    if (!opts.background) setCardLoading(true);
     setError("");
     setSearched(true);
     try {
@@ -938,6 +958,14 @@ export default function MyOrdersPage() {
 
       setOrders(realOrders);
 
+      // Refresh the stale-while-revalidate cache with this fresh snapshot.
+      saveProfileCache(phone, {
+        orders: realOrders,
+        pendingOrders: pending,
+        walletBalance: walletValue,
+        customerName: freshName || customerName,
+      });
+
       // A number may have QuickReads but no physical book orders — treat that
       // as a valid "profile" too (show only QuickReads in that case).
       let qrCount = 0;
@@ -962,9 +990,13 @@ export default function MyOrdersPage() {
       }
     } catch (err) {
       console.error("Error fetching orders:", err);
-      setError(
-        `Something went wrong while fetching your orders. Please check your connection and try again.`,
-      );
+      // A background revalidate failing must not wipe the cached profile that's
+      // already on screen — only surface the error on a foreground fetch.
+      if (!opts.background) {
+        setError(
+          `Something went wrong while fetching your orders. Please check your connection and try again.`,
+        );
+      }
     } finally {
       setLoading(false);
       setCardLoading(false);
@@ -972,6 +1004,7 @@ export default function MyOrdersPage() {
   };
 
   const handleNewSearch = () => {
+    clearProfileCache(phoneNumber);
     setShowPhoneInput(true);
     setPhoneNumber("");
     setOrders([]);

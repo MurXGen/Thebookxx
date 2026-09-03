@@ -65,11 +65,6 @@ import RecommendationModal from "@/components/RecommendationModal";
 import ProfileQuickReads from "@/components/quickreads/ProfileQuickReads";
 import { getVerifiedBookIdsForPhone } from "@/lib/quickreads";
 import { fetchWalletLedger } from "@/utils/walletLedger";
-import {
-  readProfileCache,
-  saveProfileData,
-  recordLoad,
-} from "@/utils/profileCache";
 import { books as ALL_BOOKS } from "@/utils/book";
 
 // Match an order-item name to its book cover (order items come from the sheet,
@@ -391,6 +386,9 @@ export default function MyOrdersPage() {
   const [showPhoneInput, setShowPhoneInput] = useState(true);
   const [verifying, setVerifying] = useState(false); // 3s "verifying number" screen
   const [cardLoading, setCardLoading] = useState(false); // silent boot: shimmer the profile card only
+  // True until the first boot check finishes. Prevents the login form flashing
+  // before we know whether a saved number exists — we show the skeleton instead.
+  const [booting, setBooting] = useState(true);
   const [ordersOpen, setOrdersOpen] = useState(false); // orders history accordion
   const [showSupport, setShowSupport] = useState(false); // support templates sheet
   // ── Edit-profile modal (name / number / addresses) ──
@@ -510,6 +508,10 @@ export default function MyOrdersPage() {
       // profile card while we verify the saved number in the background.
       fetchOrders(savedPhone, { silent: true });
     }
+    // Boot check done — reveal either the skeleton→details (logged in) or the
+    // login form (logged out). Until now the card shows a skeleton so the login
+    // form never flashes for a returning shopper.
+    setBooting(false);
   }, []);
 
   // Cache the shopper's ordered books so the Reading Tracker can import them.
@@ -811,38 +813,6 @@ export default function MyOrdersPage() {
     const now = Date.now();
     if (now - lastLookupRef.current < 1200) return;
     lastLookupRef.current = now;
-
-    // Per-30s load limit: record this load and, if the profile has been
-    // (re)loaded more than twice within the last 30 seconds, serve the last cached
-    // snapshot from IndexedDB instead of calling the order/wallet APIs again.
-    // `opts.force` (used after the shopper edits their own data) always fetches.
-    try {
-      const loadsInWindow = await recordLoad(phone);
-      if (!opts.force && loadsInWindow > 2) {
-        const cached = await readProfileCache(phone);
-        if (cached && Array.isArray(cached.orders)) {
-          setOrders(cached.orders);
-          setPendingOrders(cached.pendingOrders || []);
-          setWalletBalance(cached.walletBalance || 0);
-          if (cached.customerName) setCustomerName(cached.customerName);
-          setShowPhoneInput(false);
-          setSearched(true);
-          setError("");
-          setLoading(false);
-          setCardLoading(false);
-          if (!silent) {
-            showToast(
-              "Showing your saved details — you're refreshing very often. Please try again in a moment.",
-              "info",
-            );
-          }
-          return;
-        }
-      }
-    } catch (_) {
-      /* cache/throttle is best-effort — fall through to a normal fetch */
-    }
-
     // Remember every submitted number (chip), regardless of result.
     savePhoneNumber(phone);
     setLoading(true);
@@ -967,15 +937,6 @@ export default function MyOrdersPage() {
       const realOrders = parsedOrders.filter(isRealOrder);
 
       setOrders(realOrders);
-
-      // Cache this fresh snapshot in IndexedDB so rapid repeat reloads can be
-      // served locally (see the per-minute load limit above).
-      saveProfileData(phone, {
-        orders: realOrders,
-        pendingOrders: pending,
-        walletBalance: walletValue,
-        customerName: freshName || customerName,
-      }).catch(() => {});
 
       // A number may have QuickReads but no physical book orders — treat that
       // as a valid "profile" too (show only QuickReads in that case).
@@ -1565,7 +1526,7 @@ Please cancel this order. Thank you `;
         ),
       );
       setEpEditId(null);
-      setTimeout(() => fetchOrders(phoneNumber, { force: true }), 1300);
+      setTimeout(() => fetchOrders(phoneNumber), 1300);
     } catch (e) {
       console.error("Address save failed:", e);
     } finally {
@@ -1597,9 +1558,9 @@ Please cancel this order. Thank you `;
             shimmers in place. */}
         <div className="customer-info-section">
           <div
-            className={`customer-info-card${cardLoading ? " is-loading" : ""}`}
+            className={`customer-info-card${cardLoading || booting ? " is-loading" : ""}`}
           >
-            {cardLoading ? (
+            {cardLoading || booting ? (
               <div className="customer-info-content">
                 <div className="customer-avatar">
                   <User size={20} />

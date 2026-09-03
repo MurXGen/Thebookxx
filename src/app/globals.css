@@ -29633,12 +29633,12 @@ img[data-loaded="true"] {
   margin: 4px 0 0;
 }
 .pay-sel-bill {
-  border: 1px solid var(--hairline, #e5e7eb);
-  border-radius: 14px;
-  padding: 14px;
+  border: none;
+  border-radius: 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 14px;
 }
 .ps-sum-books {
   display: flex;

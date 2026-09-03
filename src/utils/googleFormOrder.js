@@ -217,6 +217,11 @@ export const appendWalletTx = async (
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "append", data, target: "wallet" }),
+      // Critical: the debit is often fired right before the checkout redirect.
+      // `keepalive` lets the browser finish the request even after the page
+      // navigates away — otherwise the wallet spend can be silently dropped
+      // while the order still goes through (the "wallet not deducted" bug).
+      keepalive: true,
     });
     return { success: true };
   } catch (e) {

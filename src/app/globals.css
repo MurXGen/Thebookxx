@@ -30383,6 +30383,21 @@ img[data-loaded="true"] {
 /* ===== Order-detail scratch card (reward per order) ===== */
 .od-scratch-block {
   overflow: hidden;
+  background:
+    radial-gradient(
+      120% 140% at 100% 0%,
+      rgba(255, 183, 3, 0.14),
+      rgba(251, 133, 0, 0.05) 45%,
+      transparent 70%
+    ),
+    var(--card-bg, #fff);
+  border: 1px solid rgba(251, 133, 0, 0.22);
+}
+/* Ready state — text on the left, 3D scratch card on the right */
+.od-scratch-ready {
+  display: flex;
+  align-items: center;
+  gap: 14px;
 }
 /* -- Skeleton (while we confirm it isn't already scratched) -- */
 .od-scratch-skel-head {
@@ -30412,8 +30427,9 @@ img[data-loaded="true"] {
 }
 /* -- Ready state (3D scratchable) -- */
 .od-scratch-head {
-  text-align: center;
-  margin-bottom: 14px;
+  flex: 1;
+  min-width: 0;
+  text-align: left;
 }
 .od-scratch-badge {
   display: inline-flex;
@@ -30440,14 +30456,13 @@ img[data-loaded="true"] {
   font-size: 12px;
   line-height: 1.45;
   color: var(--dark-50, #6b7280);
-  max-width: 270px;
-  margin-inline: auto;
 }
 /* 3D perspective frame */
 .od-scratch-3d {
   position: relative;
   width: fit-content;
-  margin: 0 auto;
+  flex-shrink: 0;
+  margin: 0;
   perspective: 900px;
 }
 .od-scratch-glow {
@@ -30564,14 +30579,13 @@ img[data-loaded="true"] {
   overflow: hidden;
 }
 .od-scratch-hint {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 6px;
-  margin: 14px 0 0;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--dark-50, #6b7280);
+  gap: 5px;
+  margin: 9px 0 0;
+  font-size: 11px;
+  font-weight: 700;
+  color: #b45309;
 }
 .od-scratch-hint svg {
   color: #fb8500;

@@ -143,13 +143,16 @@ export default function OrderScratchCard({
         >
           <div className="od-scratch-head">
             <span className="od-scratch-badge">
-              <Gift size={14} /> Order reward
+              <Gift size={13} /> Order reward
             </span>
-            <h3 className="od-scratch-title">A reward is hiding under here</h3>
+            <h3 className="od-scratch-title">A reward is hiding here</h3>
             <p className="od-scratch-sub">
-              Scratch the card to reveal what you&apos;ve won — it lands straight
-              in your TheBookX wallet.
+              Scratch to reveal what you&apos;ve won — it lands straight in your
+              wallet.
             </p>
+            <span className="od-scratch-hint">
+              <Sparkles size={12} /> Swipe across the card
+            </span>
           </div>
 
           {/* 3D foil card: perspective frame + sheen sit behind a flat,
@@ -159,26 +162,23 @@ export default function OrderScratchCard({
             <div className="od-scratch-foil">
               <span className="od-scratch-shine" aria-hidden="true" />
               <span className="od-scratch-spark s1" aria-hidden="true">
-                <Sparkles size={16} />
+                <Sparkles size={14} />
               </span>
               <span className="od-scratch-spark s2" aria-hidden="true">
-                <Sparkles size={12} />
+                <Sparkles size={11} />
               </span>
               <div className="od-scratch-surface">
                 <ScratchCard
-                  width={232}
-                  height={104}
+                  width={150}
+                  height={98}
                   completeAt={0.8}
-                  revealText={`₹${reward} won!`}
-                  revealSub="Added to your wallet"
+                  revealText={`₹${reward}`}
+                  revealSub="won!"
                   onComplete={handleScratched}
                 />
               </div>
             </div>
           </div>
-          <p className="od-scratch-hint">
-            <Sparkles size={13} /> Swipe across the card with your finger
-          </p>
         </motion.div>
       )}
 

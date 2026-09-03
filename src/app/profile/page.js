@@ -65,6 +65,11 @@ import RecommendationModal from "@/components/RecommendationModal";
 import ProfileQuickReads from "@/components/quickreads/ProfileQuickReads";
 import { getVerifiedBookIdsForPhone } from "@/lib/quickreads";
 import { fetchWalletLedger } from "@/utils/walletLedger";
+import {
+  readProfileCache,
+  saveProfileData,
+  recordLoad,
+} from "@/utils/profileCache";
 import { books as ALL_BOOKS } from "@/utils/book";
 
 // Match an order-item name to its book cover (order items come from the sheet,
@@ -806,6 +811,38 @@ export default function MyOrdersPage() {
     const now = Date.now();
     if (now - lastLookupRef.current < 1200) return;
     lastLookupRef.current = now;
+
+    // Per-minute load limit: record this load and, if the profile has been
+    // (re)loaded more than twice within the last minute, serve the last cached
+    // snapshot from IndexedDB instead of calling the order/wallet APIs again.
+    // `opts.force` (used after the shopper edits their own data) always fetches.
+    try {
+      const loadsInWindow = await recordLoad(phone);
+      if (!opts.force && loadsInWindow > 2) {
+        const cached = await readProfileCache(phone);
+        if (cached && Array.isArray(cached.orders)) {
+          setOrders(cached.orders);
+          setPendingOrders(cached.pendingOrders || []);
+          setWalletBalance(cached.walletBalance || 0);
+          if (cached.customerName) setCustomerName(cached.customerName);
+          setShowPhoneInput(false);
+          setSearched(true);
+          setError("");
+          setLoading(false);
+          setCardLoading(false);
+          if (!silent) {
+            showToast(
+              "Showing your saved details — you're refreshing very often. Please try again in a minute.",
+              "info",
+            );
+          }
+          return;
+        }
+      }
+    } catch (_) {
+      /* cache/throttle is best-effort — fall through to a normal fetch */
+    }
+
     // Remember every submitted number (chip), regardless of result.
     savePhoneNumber(phone);
     setLoading(true);
@@ -930,6 +967,15 @@ export default function MyOrdersPage() {
       const realOrders = parsedOrders.filter(isRealOrder);
 
       setOrders(realOrders);
+
+      // Cache this fresh snapshot in IndexedDB so rapid repeat reloads can be
+      // served locally (see the per-minute load limit above).
+      saveProfileData(phone, {
+        orders: realOrders,
+        pendingOrders: pending,
+        walletBalance: walletValue,
+        customerName: freshName || customerName,
+      }).catch(() => {});
 
       // A number may have QuickReads but no physical book orders — treat that
       // as a valid "profile" too (show only QuickReads in that case).
@@ -1519,7 +1565,7 @@ Please cancel this order. Thank you `;
         ),
       );
       setEpEditId(null);
-      setTimeout(() => fetchOrders(phoneNumber), 1300);
+      setTimeout(() => fetchOrders(phoneNumber, { force: true }), 1300);
     } catch (e) {
       console.error("Address save failed:", e);
     } finally {

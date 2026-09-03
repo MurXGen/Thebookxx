@@ -196,7 +196,7 @@ export default function OrderScratchCard({
             <strong>You won ₹{reward} on this order</strong>
             <span>Added to your TheBookX wallet</span>
           </div>
-          <Link href={`/profile/${digits}`} className="od-scratch-won-btn">
+          <Link href="/wallet" className="od-scratch-won-btn">
             <Wallet size={14} /> Wallet
           </Link>
         </motion.div>

@@ -32931,6 +32931,118 @@ img[data-loaded="true"] {
   flex-direction: column;
   gap: 10px;
 }
+/* ── Payment-method cards (amount | icon+name | radio) ─────────────── */
+.pay-methods {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.pay-method {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0;
+  border: 1.5px solid var(--hairline, #ececec);
+  border-radius: 14px;
+  background: #fff;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  text-align: left;
+}
+.pay-method.selected {
+  border-color: var(--tertiary, #fb8500);
+  box-shadow: 0 0 0 3px rgba(251, 133, 0, 0.12);
+}
+.pay-method-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+}
+.pay-method-amt {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 62px;
+}
+.pay-method-strike {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--dark-50, #6b7280);
+  text-decoration: line-through;
+}
+.pay-method-price {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--foreground, #0a0a0a);
+}
+.pay-method-save {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 800;
+  color: #0a8f0c;
+  background: rgba(10, 143, 12, 0.12);
+  border-radius: 5px;
+  padding: 1px 6px;
+}
+.pay-method-div {
+  flex: 0 0 auto;
+  width: 1px;
+  align-self: stretch;
+  background: var(--hairline, #ececec);
+}
+.pay-method-body {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.pay-method-ic {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: var(--dark-4, #f3f4f6);
+}
+.pay-method-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--foreground, #0a0a0a);
+}
+.pay-method-radio {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--dark-20, #cbd0d6);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+.pay-method-radio.on {
+  background: var(--tertiary, #fb8500);
+  border-color: var(--tertiary, #fb8500);
+}
+.pay-method-expand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 12px 12px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  background: rgba(251, 133, 0, 0.07);
+  font-size: 11.5px;
+  line-height: 1.35;
+  color: var(--dark-50, #6b7280);
+}
 .cod-choice {
   position: relative;
   display: flex;

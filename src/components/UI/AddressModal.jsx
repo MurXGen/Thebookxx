@@ -1725,69 +1725,107 @@ export default function AddressModal({
                   </label>
                 )}
 
-                {/* Two payment choices — online selected by default */}
-                <div className="cod-choice-grid">
+                {/* Payment methods — full-width selectable cards. */}
+                <div className="pay-methods">
+                  {/* Pay Online (recommended, selected by default) */}
                   <button
                     type="button"
                     onClick={() => setPaySel("UPI")}
-                    className={`cod-choice cod-choice-upi${paySel === "UPI" ? " selected" : ""}`}
+                    className={`pay-method${paySel === "UPI" ? " selected" : ""}`}
                   >
-                    <span className="cod-choice-main">
-                      <span className="cod-choice-radio" aria-hidden="true" />
-                      <span className="cod-choice-info">
-                        <span className="cod-choice-title">Pay online</span>
-                        <span className="cod-choice-sub">
-                          UPI, cards &amp; more · no extra charge
+                    <span className="pay-method-head">
+                      <span className="pay-method-amt">
+                        <span className="pay-method-strike">
+                          ₹{codTotalWithFee}
                         </span>
-                      </span>
-                      <span className="cod-choice-right">
-                        <span className="cod-choice-badge">
-                          Save ₹{codFeeAmount}
-                        </span>
-                        <span className="cod-choice-amt">
+                        <span className="pay-method-price">
                           ₹{upiTotalForFlow}
                         </span>
+                        <span className="pay-method-save">
+                          Save ₹{codFeeAmount}
+                        </span>
+                      </span>
+                      <span className="pay-method-div" aria-hidden="true" />
+                      <span className="pay-method-body">
+                        <span className="pay-method-ic pay-ic-online">
+                          <svg width="22" height="22" viewBox="0 0 24 24">
+                            <path d="M4 4 L13 12 L4 20 Z" fill="#ff8500" />
+                            <path d="M9 4 L18 12 L9 20 Z" fill="#0a8f0c" />
+                          </svg>
+                        </span>
+                        <span className="pay-method-name">Pay Online</span>
+                      </span>
+                      <span
+                        className={`pay-method-radio${paySel === "UPI" ? " on" : ""}`}
+                        aria-hidden="true"
+                      >
+                        {paySel === "UPI" && (
+                          <Check size={13} strokeWidth={3} />
+                        )}
                       </span>
                     </span>
-                    {/* Trust stripe inside the online card */}
-                    <span className="pay-trust">
-                      <span className="pay-trust-faces" aria-hidden="true">
-                        {[1, 2, 3].map((n) => (
-                          <img
-                            key={n}
-                            src={`/review/promotions/member-${n}.jpeg`}
-                            alt=""
-                            className="pay-trust-face"
-                            loading="lazy"
-                          />
-                        ))}
+                    {paySel === "UPI" && (
+                      <span className="pay-method-expand">
+                        <span className="pay-trust-faces" aria-hidden="true">
+                          {[1, 2, 3].map((n) => (
+                            <img
+                              key={n}
+                              src={`/review/promotions/member-${n}.jpeg`}
+                              alt=""
+                              className="pay-trust-face"
+                              loading="lazy"
+                            />
+                          ))}
+                        </span>
+                        <span className="pay-trust-txt">
+                          Pay online &amp; grab{" "}
+                          <strong>up to ₹100 cashback</strong> — most readers
+                          pick this.
+                        </span>
                       </span>
-                      <span className="pay-trust-txt">
-                        Pay online &amp; grab <strong>up to ₹100 cashback</strong>{" "}
-                        — most readers pick this to save a little extra
-                      </span>
-                    </span>
+                    )}
                   </button>
 
+                  {/* Cash on Delivery */}
                   <button
                     type="button"
                     onClick={() => setPaySel("COD")}
-                    className={`cod-choice cod-choice-cod${paySel === "COD" ? " selected" : ""}`}
+                    className={`pay-method${paySel === "COD" ? " selected" : ""}`}
                   >
-                    <span className="cod-choice-main">
-                      <span className="cod-choice-radio" aria-hidden="true" />
-                      <span className="cod-choice-info">
-                        <span className="cod-choice-title">
-                          Cash on Delivery
-                        </span>
-                        <span className="cod-choice-sub">
-                          Pay at door · incl. ₹{codFeeAmount} fee
-                        </span>
-                      </span>
-                      <span className="cod-choice-right">
-                        <span className="cod-choice-amt">
+                    <span className="pay-method-head">
+                      <span className="pay-method-amt">
+                        <span className="pay-method-price">
                           ₹{codTotalWithFee}
                         </span>
+                      </span>
+                      <span className="pay-method-div" aria-hidden="true" />
+                      <span className="pay-method-body">
+                        <span className="pay-method-ic pay-ic-cod">
+                          <svg
+                            width="22"
+                            height="22"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="#0a8f0c"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <rect x="2" y="6" width="20" height="12" rx="2" />
+                            <circle cx="12" cy="12" r="2.5" />
+                          </svg>
+                        </span>
+                        <span className="pay-method-name">
+                          Cash on Delivery
+                        </span>
+                      </span>
+                      <span
+                        className={`pay-method-radio${paySel === "COD" ? " on" : ""}`}
+                        aria-hidden="true"
+                      >
+                        {paySel === "COD" && (
+                          <Check size={13} strokeWidth={3} />
+                        )}
                       </span>
                     </span>
                   </button>

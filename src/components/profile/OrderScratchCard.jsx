@@ -166,8 +166,8 @@ export default function OrderScratchCard({
               </span>
               <div className="od-scratch-surface">
                 <ScratchCard
-                  width={216}
-                  height={124}
+                  width={232}
+                  height={104}
                   completeAt={0.8}
                   revealText={`₹${reward} won!`}
                   revealSub="Added to your wallet"

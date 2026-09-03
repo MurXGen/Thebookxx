@@ -1,25 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
 // Decorative scratch-card teaser shown in the hero (below Join community) for
 // not-logged-in shoppers. Two brand-coloured cards fanned in 3D, looking planted
 // in the ground, with a "Scratch to win" caption. Tapping it fires a window
 // event that PincodeModal listens for to open the phone-number flow.
 export default function ScratchTeaserCard() {
-  const [show, setShow] = useState(false);
-
-  useEffect(() => {
-    // Show to everyone (logged in or not) — the wallet check on number entry
-    // decides the reward. Hide only once they've actually claimed the scratch.
-    let claimed = false;
-    try {
-      claimed = localStorage.getItem("tbx_scratch_claimed") === "1";
-    } catch {}
-    if (!claimed) setShow(true);
-  }, []);
-
-  if (!show) return null;
+  // The teaser is a decorative entry point to the scratch flow — always shown.
+  // Whether a reward is actually granted is decided downstream (wallet cap +
+  // the one-time `tbx_scratch_claimed` guard in PincodeModal), so returning
+  // shoppers still see the animation but can't farm rewards.
 
   const open = () => {
     if (typeof window !== "undefined") {

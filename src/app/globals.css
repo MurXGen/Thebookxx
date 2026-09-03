@@ -30404,8 +30404,8 @@ img[data-loaded="true"] {
 .od-scratch-sk-card {
   position: relative;
   width: 100%;
-  max-width: 320px;
-  height: 168px;
+  max-width: 260px;
+  height: 122px;
   margin: 0 auto;
   border-radius: 16px;
   overflow: hidden;
@@ -30413,7 +30413,7 @@ img[data-loaded="true"] {
 /* -- Ready state (3D scratchable) -- */
 .od-scratch-head {
   text-align: center;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 .od-scratch-badge {
   display: inline-flex;
@@ -30429,18 +30429,18 @@ img[data-loaded="true"] {
   background: rgba(251, 133, 0, 0.12);
 }
 .od-scratch-title {
-  margin: 9px 0 4px;
-  font-size: 17px;
+  margin: 8px 0 3px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--foreground, #111);
   line-height: 1.25;
 }
 .od-scratch-sub {
   margin: 0;
-  font-size: 12.5px;
-  line-height: 1.5;
+  font-size: 12px;
+  line-height: 1.45;
   color: var(--dark-50, #6b7280);
-  max-width: 300px;
+  max-width: 270px;
   margin-inline: auto;
 }
 /* 3D perspective frame */

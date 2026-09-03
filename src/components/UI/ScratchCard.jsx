@@ -11,6 +11,7 @@ export default function ScratchCard({
   height = 180,
   revealText = "Better luck next time",
   revealSub = "Thanks for reviewing ",
+  completeAt = 0.55,
   onComplete,
 }) {
   const canvasRef = useRef(null);
@@ -60,7 +61,7 @@ export default function ScratchCard({
         total++;
         if (data[i] === 0) cleared++;
       }
-      if (total && cleared / total > 0.55) {
+      if (total && cleared / total > completeAt) {
         done = true;
         setRevealed(true);
         // clear the rest for a clean reveal

@@ -423,13 +423,20 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
     });
   }
 
-  await submitOrderToGoogleForm(formData);
-  // Record any wallet spent as a debit in the dedicated Wallet tab.
+  // Record any wallet spent as a debit in the dedicated Wallet tab — FIRST,
+  // before the (slow) Google-Form order submit. Checkout usually navigates /
+  // unmounts right after this call resolves; if the debit were queued *after*
+  // the awaited form submit, the page could be torn down before that line ever
+  // executes and the spend would silently vanish (the "coin added but not
+  // deducted" bug). Firing it here initiates the request while the page is
+  // still alive, and `keepalive` on the fetch lets it finish through the
+  // navigation. It's fire-and-forget so it never delays the order write.
   if (walletUsed > 0) {
     debitWallet(walletPhone || addressData.phone, walletUsed, orderId).catch(
       () => {},
     );
   }
+  await submitOrderToGoogleForm(formData);
   // Hand the order id back so the caller can poll this exact row.
   return formData.orderId;
 };

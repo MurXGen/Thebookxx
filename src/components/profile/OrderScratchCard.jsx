@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Gift, Sparkles, Wallet, PartyPopper } from "lucide-react";
+import { Gift, Sparkles, Wallet } from "lucide-react";
 import ScratchCard from "@/components/UI/ScratchCard";
 import {
   fetchWalletBalance,
@@ -166,10 +166,11 @@ export default function OrderScratchCard({
               </span>
               <div className="od-scratch-surface">
                 <ScratchCard
-                  width={286}
-                  height={168}
+                  width={216}
+                  height={124}
+                  completeAt={0.8}
                   revealText={`₹${reward} won!`}
-                  revealSub="Added to your TheBookX wallet"
+                  revealSub="Added to your wallet"
                   onComplete={handleScratched}
                 />
               </div>
@@ -184,27 +185,19 @@ export default function OrderScratchCard({
       {status === "revealed" && (
         <motion.div
           className="od-scratch-won"
-          initial={{ opacity: 0, scale: 0.96 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ type: "spring", stiffness: 260, damping: 20 }}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, ease: "easeOut" }}
         >
-          <span className="od-scratch-confetti" aria-hidden="true">
-            {Array.from({ length: 10 }).map((_, i) => (
-              <span key={i} className={`od-cf od-cf-${i % 5}`} />
-            ))}
-          </span>
           <span className="od-scratch-won-ic">
-            <PartyPopper size={22} />
+            <Gift size={20} />
           </span>
           <div className="od-scratch-won-txt">
-            <strong>You won ₹{reward}!</strong>
+            <strong>You won ₹{reward} on this order</strong>
             <span>Added to your TheBookX wallet</span>
           </div>
-          <Link
-            href={`/profile/${digits}`}
-            className="od-scratch-won-btn"
-          >
-            <Wallet size={15} /> View wallet
+          <Link href={`/profile/${digits}`} className="od-scratch-won-btn">
+            <Wallet size={14} /> Wallet
           </Link>
         </motion.div>
       )}

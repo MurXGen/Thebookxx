@@ -1617,68 +1617,86 @@ export default function AddressModal({
               <div className="pay-sel">
                 {/* Add-ons only — no book summary / address here. */}
                 <div className="pay-sel-bill">
-                  {/* Add-ons — compact 2×2 grid with emoji + checkbox on each */}
+                  {/* Delivery speed — pick one (radio) */}
                   <div className="pay-addon-block">
-                    <span className="deliv-addon-head">Add-ons</span>
-                    <div className="pay-addon-grid">
-                      {/* Standard delivery — default (mutually exclusive w/ Faster) */}
+                    <span className="deliv-addon-head">Delivery speed</span>
+                    <div className="pa-list">
                       <button
                         type="button"
-                        className={`pa2${!fasterDelivery ? " on" : ""}`}
+                        className={`pa-row${!fasterDelivery ? " on" : ""}`}
                         onClick={() => setFasterDelivery(false)}
                       >
-                        <span className={`pa2-check${!fasterDelivery ? " on" : ""}`}>
-                          {!fasterDelivery && <Check size={11} strokeWidth={3} />}
+                        <span className="pa-row-emoji">🚚</span>
+                        <span className="pa-row-main">
+                          <span className="pa-row-name">Standard delivery</span>
+                          <span className="pa-row-sub">4–9 days</span>
                         </span>
-                        <span className="pa2-emoji">🚚</span>
-                        <span className="pa2-name">Standard delivery</span>
-                        <span className="pa2-price free">FREE</span>
+                        <span className="pa-row-price free">FREE</span>
+                        <span
+                          className={`pa-radio${!fasterDelivery ? " on" : ""}`}
+                        >
+                          {!fasterDelivery && <Check size={12} strokeWidth={3} />}
+                        </span>
                       </button>
-
-                      {/* Faster delivery */}
                       <button
                         type="button"
-                        className={`pa2${fasterDelivery ? " on" : ""}`}
+                        className={`pa-row${fasterDelivery ? " on" : ""}`}
                         onClick={() => setFasterDelivery(true)}
                       >
-                        <span className={`pa2-check${fasterDelivery ? " on" : ""}`}>
-                          {fasterDelivery && <Check size={11} strokeWidth={3} />}
+                        <span className="pa-row-emoji">⚡</span>
+                        <span className="pa-row-main">
+                          <span className="pa-row-name">Faster delivery</span>
+                          <span className="pa-row-sub">1–5 days</span>
                         </span>
-                        <span className="pa2-emoji">⚡</span>
-                        <span className="pa2-name">Faster delivery</span>
-                        <span className="pa2-price">+₹{fasterDeliveryCharge}</span>
+                        <span className="pa-row-price">
+                          +₹{fasterDeliveryCharge}
+                        </span>
+                        <span
+                          className={`pa-radio${fasterDelivery ? " on" : ""}`}
+                        >
+                          {fasterDelivery && <Check size={12} strokeWidth={3} />}
+                        </span>
                       </button>
+                    </div>
+                  </div>
 
-                      {/* Gift wrap */}
+                  {/* Add-ons — toggle (checkbox) */}
+                  <div className="pay-addon-block">
+                    <span className="deliv-addon-head">Add-ons</span>
+                    <div className="pa-list">
                       <button
                         type="button"
-                        className={`pa2${giftWrap ? " on" : ""}`}
+                        className={`pa-row${giftWrap ? " on" : ""}`}
                         onClick={() => setGiftWrap((v) => !v)}
                       >
-                        <span className={`pa2-check${giftWrap ? " on" : ""}`}>
-                          {giftWrap && <Check size={11} strokeWidth={3} />}
+                        <span className="pa-row-emoji">🎁</span>
+                        <span className="pa-row-main">
+                          <span className="pa-row-name">Gift wrap</span>
                         </span>
-                        <span className="pa2-emoji">🎁</span>
-                        <span className="pa2-name">Gift wrap</span>
-                        <span className="pa2-price">+₹{giftWrapCharge}</span>
+                        <span className="pa-row-price">+₹{giftWrapCharge}</span>
+                        <span className={`pa-check${giftWrap ? " on" : ""}`}>
+                          {giftWrap && <Check size={12} strokeWidth={3} />}
+                        </span>
                       </button>
-
-                      {/* Matching bookmark — FREE online, ₹9 on COD */}
                       <button
                         type="button"
-                        className={`pa2${bookmark ? " on" : ""}`}
+                        className={`pa-row${bookmark ? " on" : ""}`}
                         onClick={() => setBookmark((v) => !v)}
                       >
-                        <span className={`pa2-check${bookmark ? " on" : ""}`}>
-                          {bookmark && <Check size={11} strokeWidth={3} />}
+                        <span className="pa-row-emoji">🔖</span>
+                        <span className="pa-row-main">
+                          <span className="pa-row-name">Matching bookmark</span>
+                          <span className="pa-row-sub free">
+                            Free with online payment
+                          </span>
                         </span>
-                        <span className="pa2-emoji">🔖</span>
-                        <span className="pa2-name">Matching bookmark</span>
-                        <span className="pa2-note">Free with online payment</span>
                         <span
-                          className={`pa2-price${paySel === "COD" ? "" : " free"}`}
+                          className={`pa-row-price${paySel === "COD" ? "" : " free"}`}
                         >
                           {paySel === "COD" ? `+₹${BOOKMARK_COD_CHARGE}` : "FREE"}
+                        </span>
+                        <span className={`pa-check${bookmark ? " on" : ""}`}>
+                          {bookmark && <Check size={12} strokeWidth={3} />}
                         </span>
                       </button>
                     </div>

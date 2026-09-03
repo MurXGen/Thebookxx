@@ -32,6 +32,7 @@ import {
 import { FaWhatsapp } from "react-icons/fa";
 import TrackSheet from "@/components/profile/TrackSheet";
 import SupportSheet from "@/components/profile/SupportSheet";
+import OrderScratchCard from "@/components/profile/OrderScratchCard";
 import BookCard from "@/components/BookCard";
 import { updateOrderRow } from "@/utils/googleFormOrder";
 import { books as ALL_BOOKS } from "@/utils/book";
@@ -993,6 +994,14 @@ export default function OrderDetailPage() {
           )}
         </div>
       )}
+
+      {/* Scratch-card reward for this order (skeleton → 3D scratch → reveal) */}
+      <OrderScratchCard
+        phone={String(order["Phone Number"] || number)}
+        orderId={orderId}
+        orderValue={bd.grand}
+        cancelled={cancelled}
+      />
 
       {/* Deliver-to (directly below the map) */}
       <section className="od-block">

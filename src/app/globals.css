@@ -39191,6 +39191,13 @@ img[data-loaded="true"] {
   color: var(--foreground, #0a0a0a);
   line-height: 1.2;
 }
+.pa2-note {
+  grid-column: 2;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--success, #0a8f0c);
+  line-height: 1.25;
+}
 .pa2-price {
   grid-column: 2;
 }

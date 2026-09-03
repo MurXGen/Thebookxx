@@ -1615,69 +1615,8 @@ export default function AddressModal({
               </div>
 
               <div className="pay-sel">
-                {/* Summary — books (horizontal), deliver-to, and the total */}
+                {/* Add-ons only — no book summary / address here. */}
                 <div className="pay-sel-bill">
-                  {/* Book summary — collapsed accordion by default */}
-                  {(() => {
-                    const bookCount =
-                      (cartBooks || []).reduce((s, b) => s + (b.qty || 1), 0) +
-                      quickReadItems.length;
-                    return (
-                      <>
-                        <button
-                          type="button"
-                          className="ps-items-toggle"
-                          onClick={() => setBillItemsOpen((v) => !v)}
-                          aria-expanded={billItemsOpen}
-                        >
-                          <span className="ps-items-count">
-                            {bookCount} {bookCount > 1 ? "items" : "item"}
-                          </span>
-                          <ChevronDown
-                            size={16}
-                            className={`ps-items-chev${billItemsOpen ? " open" : ""}`}
-                          />
-                        </button>
-                        {billItemsOpen && (
-                          <div className="ps-accordion-body">
-                            <div className="ps-books-scroll">
-                              {(cartBooks || []).map((b, i) => (
-                                <span
-                                  key={i}
-                                  className="ps-book-cover"
-                                  title={b.name}
-                                >
-                                  <img
-                                    src={b.image}
-                                    alt={b.name}
-                                    loading="lazy"
-                                  />
-                                  {b.qty > 1 && (
-                                    <span className="ps-book-qty">×{b.qty}</span>
-                                  )}
-                                </span>
-                              ))}
-                              {quickReadItems.length > 0 && (
-                                <span className="ps-book-chip">
-                                  {quickReadItems.length} QuickRead
-                                  {quickReadItems.length > 1 ? "s" : ""}
-                                </span>
-                              )}
-                            </div>
-                            <div className="ps-deliver">
-                              <span className="ps-deliver-ic">
-                                <MapPin size={14} />
-                              </span>
-                              <span className="ps-deliver-addr">
-                                {name}, {fullAddress}, {city} - {pincode}
-                              </span>
-                            </div>
-                          </div>
-                        )}
-                      </>
-                    );
-                  })()}
-
                   {/* Add-ons — compact 2×2 grid with emoji + checkbox on each */}
                   <div className="pay-addon-block">
                     <span className="deliv-addon-head">Add-ons</span>
@@ -1735,6 +1674,7 @@ export default function AddressModal({
                         </span>
                         <span className="pa2-emoji">🔖</span>
                         <span className="pa2-name">Matching bookmark</span>
+                        <span className="pa2-note">Free with online payment</span>
                         <span
                           className={`pa2-price${paySel === "COD" ? "" : " free"}`}
                         >

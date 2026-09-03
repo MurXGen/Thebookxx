@@ -1753,7 +1753,13 @@ export default function AddressModal({
                             <path d="M9 4 L18 12 L9 20 Z" fill="#0a8f0c" />
                           </svg>
                         </span>
-                        <span className="pay-method-name">Pay Online</span>
+                        <span className="pay-method-labels">
+                          <span className="pay-method-name">Pay Online</span>
+                          <span className="pay-method-desc">
+                            Free bookmark + up to{" "}
+                            <strong>₹100 cashback</strong>
+                          </span>
+                        </span>
                       </span>
                       <span
                         className={`pay-method-radio${paySel === "UPI" ? " on" : ""}`}
@@ -1764,26 +1770,6 @@ export default function AddressModal({
                         )}
                       </span>
                     </span>
-                    {paySel === "UPI" && (
-                      <span className="pay-method-expand">
-                        <span className="pay-trust-faces" aria-hidden="true">
-                          {[1, 2, 3].map((n) => (
-                            <img
-                              key={n}
-                              src={`/review/promotions/member-${n}.jpeg`}
-                              alt=""
-                              className="pay-trust-face"
-                              loading="lazy"
-                            />
-                          ))}
-                        </span>
-                        <span className="pay-trust-txt">
-                          Pay online &amp; grab{" "}
-                          <strong>up to ₹100 cashback</strong> — most readers
-                          pick this.
-                        </span>
-                      </span>
-                    )}
                   </button>
 
                   {/* Cash on Delivery */}

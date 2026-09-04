@@ -759,6 +759,12 @@ export default function OrderDetailPage() {
   const inTransit = /in\s*transit/i.test(order["Order Status"] || "");
   const outForDelivery = /out\s*for\s*delivery/i.test(order["Order Status"] || "");
   const delivered = /delivered|money received/i.test(order["Order Status"] || "");
+  const shipped = /shipped|getting shipped/i.test(order["Order Status"] || "");
+  // The note is only useful (and shown) once the parcel is on the move —
+  // shipped and every status ahead of it (in transit / out for delivery /
+  // delivered). Hidden while the order is still just confirmed/processing.
+  const showOrderNote =
+    shipped || inTransit || outForDelivery || delivered;
   const cancelled = /cancel/i.test(order["Order Status"] || "");
   const shippingId = order["Shipping ID"] || "";
 
@@ -1109,7 +1115,8 @@ export default function OrderDetailPage() {
         )}
       </section>
 
-      {/* Note for this order */}
+      {/* Note for this order — shown once shipped and every status ahead. */}
+      {showOrderNote && (
       <section className="od-block">
         <div className="od-block-titlerow">
           <div className="od-block-title">Note for this order</div>
@@ -1162,6 +1169,7 @@ export default function OrderDetailPage() {
           </p>
         )}
       </section>
+      )}
 
       {/* Items summary strip (Flipkart "Total N items" + thumbnails) */}
       <section className="od-block od-items-block">

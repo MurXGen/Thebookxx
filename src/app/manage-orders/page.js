@@ -170,11 +170,12 @@ const booksUnavailableMessage = (order, names) => {
     "",
     `*Order ID:* ${order["Order ID"] || "-"}`,
     "",
-    "We'd love to make it right — you can choose:",
-    "1️⃣  *Swap* with a similar book, or",
-    "2️⃣  A quick *refund* for that amount.",
+    "We'd love to make it right — just reply with the *number* of what you'd prefer and we'll guide you:",
+    "1️⃣  *Swap* with a similar book we pick for you",
+    "2️⃣  Choose an *alternative* title yourself",
+    "3️⃣  Get a few *recommendations* from us to choose from",
     "",
-    "Just reply here and we'll sort it out right away. So sorry for the inconvenience 🙏",
+    "Reply with the number and we'll take it forward right away. So sorry for the inconvenience 🙏",
   ].join("\n");
 };
 
@@ -2899,6 +2900,13 @@ export default function ManageOrdersPage() {
     setIpScrollReady(!!node);
   }, []);
   const [waPickerOrder, setWaPickerOrder] = useState(null); // WhatsApp picker
+  const [cancelChoiceOrder, setCancelChoiceOrder] = useState(null); // cancel modal
+  const [cancelBusy, setCancelBusy] = useState(false);
+  const [waSel, setWaSel] = useState(null); // selected message key in the picker
+  // Reset the selection each time a different order's picker opens.
+  useEffect(() => {
+    setWaSel(null);
+  }, [waPickerOrder]);
   const [waCustomText, setWaCustomText] = useState(""); // custom WA message
   // Saved custom WhatsApp templates — { title, text }, persisted locally.
   const [waTemplates, setWaTemplates] = useState([]);
@@ -5649,6 +5657,26 @@ export default function ManageOrdersPage() {
     } catch (e) {
       console.error("Delete failed:", e);
       alert("Failed to delete order");
+    }
+  };
+
+  // Cancel an order by setting its sheet status (not a hard delete):
+  //  • "Cancelled"        — a full cancellation
+  //  • "Pre-cancellation" — cancelled before it shipped (recoverable state)
+  const setOrderCancelStatus = async (order, status) => {
+    const orderId = order?.["Order ID"];
+    if (!orderId) return;
+    setCancelBusy(true);
+    try {
+      await updateOrderRow(orderId, { "Order Status": status });
+      patchLocalOrder(orderId, { "Order Status": status, status });
+    } catch (e) {
+      console.error("Cancel status update failed:", e);
+      alert("Couldn't update the order status. Please try again.");
+    } finally {
+      setCancelBusy(false);
+      setCancelChoiceOrder(null);
+      setTimeout(fetchOrders, 1300);
     }
   };
 
@@ -9472,6 +9500,14 @@ export default function ManageOrdersPage() {
                             >
                               <button
                                 type="button"
+                                className="mo-card-cancel-btn"
+                                title="Cancel this order"
+                                onClick={() => setCancelChoiceOrder(order)}
+                              >
+                                <Trash2 size={14} /> Cancel
+                              </button>
+                              <button
+                                type="button"
                                 className="mo-card-json-btn"
                                 title="Copy India Post autofill JSON"
                                 onClick={() =>
@@ -10005,14 +10041,6 @@ export default function ManageOrdersPage() {
                                               <Truck size={14} /> Book online
                                             </>
                                           )}
-                                        </button>
-                                        <button
-                                          type="button"
-                                          className="mo-card-delete mo-bill-del"
-                                          title="Delete order from sheet"
-                                          onClick={() => deleteOrderRow(order)}
-                                        >
-                                          <Trash2 size={15} />
                                         </button>
                                       </div>
                                     </div>
@@ -10563,148 +10591,165 @@ export default function ManageOrdersPage() {
             onClick={() => setWaPickerOrder(null)}
           >
             <motion.div
-              className="bill-modal wa-picker-modal"
+              className="bill-modal support-sheet wa-picker-modal"
               initial={{ y: "100%", opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: "100%", opacity: 0 }}
               transition={{ duration: 0.35, ease: "easeOut" }}
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="bill-header">
-                <div className="flex flex-col">
-                  <span className="weight-600 font-16 flex items-center gap-8">
-                    <FaWhatsapp size={16} /> Message{" "}
+              <div className="support-head">
+                <div className="support-head-titles">
+                  <span className="support-head-title">
+                    <FaWhatsapp size={18} /> Message{" "}
                     {waPickerOrder["Customer Name"] || "customer"}
                   </span>
-                  <span className="font-12 gray-500">
-                    +91 {waPickerOrder["Phone Number"]}
-                  </span>
+                  <p className="support-head-sub">
+                    +91 {waPickerOrder["Phone Number"]} · pick a message, then
+                    send on WhatsApp.
+                  </p>
                 </div>
-                <span
-                  className="cursor-pointer"
+                <button
+                  type="button"
+                  className="support-head-x"
                   onClick={() => setWaPickerOrder(null)}
+                  aria-label="Close"
                 >
                   <X size={18} />
-                </span>
+                </button>
               </div>
 
-              <div className="wa-picker-grid">
-                {waMessages(waPickerOrder).map((m) => (
-                  <button
-                    key={m.key}
-                    type="button"
-                    className="wa-picker-chip"
-                    title={m.text}
-                    onClick={() => {
-                      openWhatsApp(waPickerOrder["Phone Number"], m.text);
-                      setWaPickerOrder(null);
-                    }}
-                  >
-                    {m.label}
-                  </button>
-                ))}
-              </div>
+              {(() => {
+                // One flat, selectable list (support-sheet style): stage
+                // messages, then a "Books unavailable" option when some titles
+                // aren't picked, then "Send order details", then saved templates.
+                const oid = waPickerOrder["Order ID"];
+                const wpBooks = waPickerOrder.parsedBooks || [];
+                const unpicked = wpBooks.filter(
+                  (_b, i) => !pickChecked[bookKey(oid, i)],
+                );
+                const nm = String(waPickerOrder["Customer Name"] || "")
+                  .replace(/\s*\(unconfirmed\)\s*/i, "")
+                  .trim();
+                const phone10 = String(waPickerOrder["Phone Number"] || "")
+                  .replace(/\D/g, "")
+                  .slice(-10);
+                const detailUrl =
+                  oid && phone10
+                    ? `https://www.thebookx.in/profile/${phone10}/orders/${encodeURIComponent(oid)}`
+                    : PROFILE_URL;
+                const detailsMsg = `Hi${
+                  nm ? " " + nm.split(" ")[0] : ""
+                } 👋 Thanks for shopping with TheBookX!\n\n🔗 Your order details: ${detailUrl}\n👤 All your orders: ${PROFILE_URL}\n\n— Team TheBookX 📚`;
 
-              {/* Saved custom templates — title is the button, tap to send. */}
-              {waTemplates.length > 0 && (
-                <div className="wa-sec">
-                  <span className="wa-sec-label">Saved templates</span>
-                  <div className="wa-picker-grid">
-                    {waTemplates.map((t, i) => (
-                      <span className="wa-tpl-chip" key={i}>
-                        <button
-                          type="button"
-                          className="wa-tpl-chip-btn"
-                          title={t.text}
-                          onClick={() => {
-                            openWhatsApp(
-                              waPickerOrder["Phone Number"],
-                              t.text,
-                            );
-                            setWaPickerOrder(null);
-                          }}
-                        >
-                          {t.title}
-                        </button>
-                        <button
-                          type="button"
-                          className="wa-tpl-del"
-                          title="Delete template"
-                          onClick={() => deleteWaTemplate(i)}
-                        >
-                          <X size={12} />
-                        </button>
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
+                const opts = [
+                  ...waMessages(waPickerOrder).map((m) => ({
+                    key: m.key,
+                    label: m.label,
+                    text: m.text,
+                  })),
+                ];
+                if (unpicked.length > 0) {
+                  opts.push({
+                    key: "unavail",
+                    label: `Books unavailable (${unpicked.length})`,
+                    text: booksUnavailableMessage(
+                      waPickerOrder,
+                      unpicked.map((b) => b.name),
+                    ),
+                    warn: true,
+                  });
+                }
+                opts.push({
+                  key: "details",
+                  label: "Send order details",
+                  text: detailsMsg,
+                });
+                waTemplates.forEach((t, i) => {
+                  opts.push({
+                    key: `tpl-${i}`,
+                    label: t.title,
+                    text: t.text,
+                    tplIndex: i,
+                  });
+                });
 
-              {/* Quick actions — consistent secondary buttons. */}
-              <div className="wa-actions">
-                {(() => {
-                  const wpBooks = waPickerOrder.parsedBooks || [];
-                  const oid = waPickerOrder["Order ID"];
-                  const unpicked = wpBooks.filter(
-                    (_b, i) => !pickChecked[bookKey(oid, i)],
-                  );
-                  if (unpicked.length === 0) return null;
-                  return (
-                    <button
-                      type="button"
-                      className="sec-big-btn wa-act-btn wa-act-warn"
-                      onClick={() => {
-                        openWhatsApp(
-                          waPickerOrder["Phone Number"],
-                          booksUnavailableMessage(
-                            waPickerOrder,
-                            unpicked.map((b) => b.name),
-                          ),
+                const selKey = waSel || opts[0]?.key;
+                const selOpt =
+                  opts.find((o) => o.key === selKey) || opts[0] || null;
+
+                return (
+                  <>
+                    <div className="support-reasons">
+                      {opts.map((o) => {
+                        const on = o.key === selKey;
+                        return (
+                          <div
+                            key={o.key}
+                            role="button"
+                            tabIndex={0}
+                            className={`support-reason${on ? " active" : ""}${
+                              o.warn ? " wa-reason-warn" : ""
+                            }`}
+                            title={o.text}
+                            onClick={() => setWaSel(o.key)}
+                            onKeyDown={(e) =>
+                              (e.key === "Enter" || e.key === " ") &&
+                              setWaSel(o.key)
+                            }
+                          >
+                            <span
+                              className={`support-reason-radio${on ? " on" : ""}`}
+                            >
+                              {on && <Check size={12} strokeWidth={3} />}
+                            </span>
+                            <span className="wa-reason-label">{o.label}</span>
+                            {o.tplIndex != null && (
+                              <button
+                                type="button"
+                                className="wa-reason-del"
+                                title="Delete template"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  deleteWaTemplate(o.tplIndex);
+                                  setWaSel(null);
+                                }}
+                              >
+                                <X size={13} />
+                              </button>
+                            )}
+                          </div>
                         );
-                        setWaPickerOrder(null);
-                      }}
-                    >
-                      <AlertCircle size={15} /> Books unavailable (
-                      {unpicked.length})
-                    </button>
-                  );
-                })()}
-                <button
-                  type="button"
-                  className="sec-big-btn wa-act-btn"
-                  onClick={() => {
-                    const oid = String(
-                      waPickerOrder["Order ID"] || "",
-                    ).trim();
-                    const nm = String(waPickerOrder["Customer Name"] || "")
-                      .replace(/\s*\(unconfirmed\)\s*/i, "")
-                      .trim();
-                    const phone10 = String(
-                      waPickerOrder["Phone Number"] || "",
-                    )
-                      .replace(/\D/g, "")
-                      .slice(-10);
-                    const detail =
-                      oid && phone10
-                        ? `https://www.thebookx.in/profile/${phone10}/orders/${encodeURIComponent(oid)}`
-                        : PROFILE_URL;
-                    const msg = `Hi${
-                      nm ? " " + nm.split(" ")[0] : ""
-                    } 👋 Thanks for shopping with TheBookX!\n\n🔗 Your order details: ${detail}\n👤 All your orders: ${PROFILE_URL}\n\n— Team TheBookX 📚`;
-                    openWhatsApp(waPickerOrder["Phone Number"], msg);
-                    setWaPickerOrder(null);
-                  }}
-                >
-                  <FaWhatsapp size={15} /> Send order details
-                </button>
-                <button
-                  type="button"
-                  className={`sec-big-btn wa-act-btn${showWaTplForm ? " active" : ""}`}
-                  onClick={() => setShowWaTplForm((s) => !s)}
-                >
-                  <Pencil size={15} /> Custom
-                </button>
-              </div>
+                      })}
+                    </div>
+
+                    <div className="support-actions">
+                      <button
+                        type="button"
+                        className="sec-big-btn support-wa"
+                        disabled={!selOpt}
+                        onClick={() => {
+                          if (!selOpt) return;
+                          openWhatsApp(
+                            waPickerOrder["Phone Number"],
+                            selOpt.text,
+                          );
+                          setWaPickerOrder(null);
+                        }}
+                      >
+                        <FaWhatsapp size={17} /> Send on WhatsApp
+                      </button>
+                      <button
+                        type="button"
+                        className={`sec-big-btn${showWaTplForm ? " active" : ""}`}
+                        onClick={() => setShowWaTplForm((s) => !s)}
+                      >
+                        <Pencil size={16} /> Custom
+                      </button>
+                    </div>
+                  </>
+                );
+              })()}
 
               {/* Custom message — type & send now, or save as a reusable
                   template (title becomes its button label). */}
@@ -10749,6 +10794,78 @@ export default function ManageOrdersPage() {
                   </div>
                 </div>
               )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ===== Cancel order — choose Cancelled vs Pre-cancellation ===== */}
+      <AnimatePresence>
+        {cancelChoiceOrder && (
+          <motion.div
+            className="bill-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => !cancelBusy && setCancelChoiceOrder(null)}
+          >
+            <motion.div
+              className="bill-modal mo-cancel-modal"
+              initial={{ y: "100%", opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: "100%", opacity: 0 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="bill-header">
+                <div className="flex flex-col">
+                  <span className="weight-600 font-16 flex items-center gap-8">
+                    <AlertCircle size={16} /> Cancel this order?
+                  </span>
+                  <span className="font-12 gray-500">
+                    {cancelChoiceOrder["Order ID"]} ·{" "}
+                    {cancelChoiceOrder["Customer Name"] || "—"}
+                  </span>
+                </div>
+                <span
+                  className="cursor-pointer"
+                  onClick={() => !cancelBusy && setCancelChoiceOrder(null)}
+                >
+                  <X size={18} />
+                </span>
+              </div>
+
+              <p className="mo-cancel-note">
+                Choose how to cancel. This updates the order status in the sheet
+                — it doesn&apos;t delete the row.
+              </p>
+
+              <div className="mo-cancel-actions">
+                <button
+                  type="button"
+                  className="mo-cancel-pre"
+                  disabled={cancelBusy}
+                  onClick={() =>
+                    setOrderCancelStatus(cancelChoiceOrder, "Pre-cancellation")
+                  }
+                >
+                  <span className="mo-cancel-lbl">Pre-cancel</span>
+                  <span className="mo-cancel-sub">
+                    Cancelled before shipment (recoverable)
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  className="mo-cancel-full"
+                  disabled={cancelBusy}
+                  onClick={() =>
+                    setOrderCancelStatus(cancelChoiceOrder, "Cancelled")
+                  }
+                >
+                  <span className="mo-cancel-lbl">Cancelled</span>
+                  <span className="mo-cancel-sub">Full cancellation</span>
+                </button>
+              </div>
             </motion.div>
           </motion.div>
         )}

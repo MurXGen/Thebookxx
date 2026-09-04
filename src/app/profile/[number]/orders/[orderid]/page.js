@@ -1063,14 +1063,6 @@ export default function OrderDetailPage() {
         </button>
       )}
 
-      {/* Scratch-card reward for this order (skeleton → 3D scratch → reveal) */}
-      <OrderScratchCard
-        phone={String(order["Phone Number"] || number)}
-        orderId={orderId}
-        orderValue={bd.grand}
-        cancelled={cancelled}
-      />
-
       {/* Deliver-to (directly below the map) */}
       <section className="od-block">
         <div className="od-block-titlerow">
@@ -1309,6 +1301,14 @@ export default function OrderDetailPage() {
           </div>
         )}
       </section>
+
+      {/* Scratch-card reward — below the bill breakdown (skeleton → 3D → reveal) */}
+      <OrderScratchCard
+        phone={String(order["Phone Number"] || number)}
+        orderId={orderId}
+        orderValue={bd.grand}
+        cancelled={cancelled}
+      />
 
       {/* Ask about this order — opens the support topic sheet */}
       <button

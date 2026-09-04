@@ -701,18 +701,23 @@ Thank you!
     // Merchant confirm link is useful for online payments AND WhatsApp orders
     // (merchant sets the final payment method on that page).
     const needsMerchantConfirm = isOnline || paymentType === "WhatsApp";
-    const orderLink = orderId
-      ? `https://thebookx.in?orderID=${encodeURIComponent(orderId)}`
-      : shortLink || "";
+    // The customer's own order-detail link (their profile order page):
+    //   https://www.thebookx.in/profile/<phone>/orders/<orderId>
+    const custDigits = String(addressData.phone || "")
+      .replace(/\D/g, "")
+      .slice(-10);
+    const orderLink =
+      orderId && custDigits.length === 10
+        ? `https://www.thebookx.in/profile/${custDigits}/orders/${encodeURIComponent(orderId)}`
+        : orderId
+          ? `https://thebookx.in?orderID=${encodeURIComponent(orderId)}`
+          : shortLink || "";
     const merchantLink = orderId
       ? `https://thebookx.in/${encodeURIComponent(orderId)}`
       : "";
 
     // Direct WhatsApp link to message THIS customer — warm, conversational,
     // sales-friendly opener pre-filled.
-    const custDigits = String(addressData.phone || "")
-      .replace(/\D/g, "")
-      .slice(-10);
     const firstName = String(addressData.name || "there").trim().split(/\s+/)[0];
     const orderRef = orderId ? ` (order ${orderId})` : "";
     // Message tailored to how the customer chose to pay/order.
@@ -725,6 +730,14 @@ Thank you!
     const waCustomerLink =
       custDigits.length === 10
         ? `https://wa.me/91${custDigits}?text=${encodeURIComponent(custMsg)}`
+        : "";
+
+    // One-tap WhatsApp link to tell THIS customer a title is unavailable and
+    // offer a swap with an alternative (used from the Telegram card).
+    const unavailMsg = `Hi ${firstName}! 📚 About your TheBookX order${orderRef} — unfortunately one or more of your titles are currently *out of stock*. We'd love to make it right: we can *swap it with a similar alternative* we pick for you, or you can choose another title. Just reply and we'll sort it out right away 🙏`;
+    const waUnavailableLink =
+      custDigits.length === 10
+        ? `https://wa.me/91${custDigits}?text=${encodeURIComponent(unavailMsg)}`
         : "";
 
     const payLine =
@@ -762,11 +775,15 @@ ${itemsBlock}${qrLines}
 💰 *Total: ₹${totalWithDelivery}*${codFee > 0 ? ` _(₹${codFee} collected at door)_` : ""}
 🚚 ${deliveryLabel}
 
-${orderId ? `🆔 ${orderId}\n` : ""}🧾 Invoice: ${orderLink || "—"}${
+${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
       needsMerchantConfirm && merchantLink
         ? `\n✅ Confirm & set payment: ${merchantLink}`
         : ""
-    }${waCustomerLink ? `\n💬 Message customer: ${waCustomerLink}` : ""}`;
+    }${waCustomerLink ? `\n💬 Message customer: ${waCustomerLink}` : ""}${
+      waUnavailableLink
+        ? `\n📕 Book unavailable (swap): ${waUnavailableLink}`
+        : ""
+    }`;
 
     const url = "https://api.journalx.app/api/bookxTelegram/order";
     const payload = JSON.stringify({

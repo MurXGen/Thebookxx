@@ -361,9 +361,16 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
   });
 
   const orderId = orderIdIn || `ORD${Date.now()}`;
-  // Store the customer's own order link (opens the printed invoice for this
-  // order) rather than a view-bag link. The manage-orders card reads this.
-  const orderLink = `https://thebookx.in?orderID=${encodeURIComponent(orderId)}`;
+  // Store the customer's own order-detail link (their profile order page) rather
+  // than the old invoice query link. Format:
+  //   https://www.thebookx.in/profile/<phone>/orders/<orderId>
+  const orderPhone10 = String(addressData.phone || "")
+    .replace(/\D/g, "")
+    .slice(-10);
+  const orderLink =
+    orderPhone10.length === 10
+      ? `https://www.thebookx.in/profile/${orderPhone10}/orders/${encodeURIComponent(orderId)}`
+      : `https://thebookx.in?orderID=${encodeURIComponent(orderId)}`;
 
   const formData = {
     orderId,

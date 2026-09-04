@@ -28,6 +28,8 @@ import {
   Minimize2,
   CalendarClock,
   Pencil,
+  Zap,
+  ChevronRight,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import TrackSheet from "@/components/profile/TrackSheet";
@@ -35,6 +37,7 @@ import SupportSheet from "@/components/profile/SupportSheet";
 import OrderScratchCard from "@/components/profile/OrderScratchCard";
 import BookCard from "@/components/BookCard";
 import { updateOrderRow } from "@/utils/googleFormOrder";
+import { getDeliveryCharge } from "@/utils/cartOffers";
 import { books as ALL_BOOKS } from "@/utils/book";
 
 // TheBookX dispatch origin (Matunga, Mumbai).
@@ -871,6 +874,34 @@ export default function OrderDetailPage() {
     deliveryType: order["Delivery Type"] || "",
   };
 
+  // Faster-delivery upgrade: offered only for a Standard order that hasn't been
+  // dispatched yet. The extra cost is priced with the SAME tiered logic as
+  // checkout (extra = faster charge − standard charge for this order's value).
+  const upgradeExtra = (() => {
+    if (isFaster || !canEditAddress) return null;
+    const orderValue = bd.sub || 0;
+    const hasOneRupee = books.some(
+      (b) => Number(b.price) === 1 || Number(b.total) === 1,
+    );
+    const standard = getDeliveryCharge(orderValue, false, hasOneRupee);
+    const faster = getDeliveryCharge(orderValue, true, hasOneRupee);
+    const extra = Math.max(0, faster - standard);
+    return extra > 0 ? extra : null;
+  })();
+
+  const requestFasterUpgrade = () => {
+    const link =
+      typeof window !== "undefined"
+        ? `${window.location.origin}/profile/${number}/orders/${encodeURIComponent(orderId)}`
+        : "";
+    const msg = `Hi TheBookX, I'd like to *upgrade this order to Faster delivery* (1–5 days) 🚀\nOrder: ${orderId}\nExtra to pay: ₹${upgradeExtra}\n${link}`;
+    window.open(
+      `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(msg)}`,
+      "_blank",
+      "noopener,noreferrer",
+    );
+  };
+
   // Recommendations — a few books not already in this order, always featuring
   // "The Art of Clarity" first.
   const inOrder = new Set(books.map((b) => normName(b.name)));
@@ -943,9 +974,15 @@ export default function OrderDetailPage() {
         )}
       </section>
 
-      {/* Arrival card — pulled up to overlap the map bottom (Flipkart-style) */}
-      {geoState === "ok" && receiver && (
-        <div className="od-track-card">
+      {/* Arrival card — pulled up to overlap the map bottom (Flipkart-style).
+          Shown regardless of the map: if the map can't load (bad pincode /
+          geocode error) the status card must still appear, just not overlapping. */}
+      {order && (
+        <div
+          className={`od-track-card${
+            geoState === "ok" && receiver ? "" : " od-track-card-flat"
+          }`}
+        >
           <div className="od-tc-main">
             <span className="od-tc-ic">
               {delivered ? <Home size={18} /> : <Truck size={18} />}
@@ -993,6 +1030,31 @@ export default function OrderDetailPage() {
             </>
           )}
         </div>
+      )}
+
+      {/* Upgrade to faster delivery — only for an un-dispatched Standard order.
+          Extra cost mirrors the checkout delivery tiers. */}
+      {upgradeExtra != null && (
+        <button
+          type="button"
+          className="od-upgrade-cta"
+          onClick={requestFasterUpgrade}
+        >
+          <span className="od-upgrade-ic">
+            <Zap size={18} />
+          </span>
+          <span className="od-upgrade-txt">
+            <strong>Upgrade to faster delivery</strong>
+            <span>
+              Arrives in 1–5 days instead of {etaMin}–{etaMax} · add ₹
+              {upgradeExtra}
+            </span>
+          </span>
+          <span className="od-upgrade-cost">
+            +₹{upgradeExtra}
+            <ChevronRight size={16} />
+          </span>
+        </button>
       )}
 
       {/* Scratch-card reward for this order (skeleton → 3D scratch → reveal) */}

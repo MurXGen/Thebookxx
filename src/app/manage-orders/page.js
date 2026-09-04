@@ -1179,6 +1179,39 @@ function ipChunks(s, size = 30) {
   return out;
 }
 
+// Build the India Post autofill payload (userscript reads this exact shape).
+// Shared by the expanded card's "Shipping address" section and the always-on
+// "Copy JSON" button on the order card.
+function buildIpAutofillJson(order, books = [], isCOD = false) {
+  const bkCount = (books && books.length) || 1;
+  const amtRaw = order["Total Amount"] || order.revenue || "";
+  const gross = Number(String(amtRaw).replace(/[^\d.]/g, "")) || 0;
+  const codNet = Math.max(0, gross - Math.round(gross * 0.059));
+  const ch = ipChunks(order["Address"]);
+  return JSON.stringify({
+    v: "tbx-ip-1",
+    orderId: order["Order ID"] || "",
+    isCOD,
+    dropPincode: "400017",
+    dropOffice: "Dharavi Road S.O",
+    mailShape: "Box Type (Non Roll Form)",
+    deliveryType: "Normal Delivery",
+    weight: "500",
+    length: "22",
+    width: "13",
+    height: String(bkCount),
+    codAmount: isCOD ? String(codNet) : "",
+    name: ipSanitize(order["Customer Name"]).slice(0, 30),
+    mobile: String(order["Phone Number"] || ""),
+    addr1: ch[0] || "",
+    addr2: [ch[1], ...ch.slice(3)].filter(Boolean).join(", "),
+    landmark: ch[2] || "",
+    city: order["City"] || "",
+    state: order["State"] || "",
+    pincode: String(order["Pincode"] || ""),
+  });
+}
+
 // One field row: label + value + copy icon (India Post booking sheet).
 function IpField({ label, value, hint, id, copiedId, onCopy }) {
   const has = value !== undefined && value !== null && String(value) !== "";
@@ -3303,9 +3336,50 @@ export default function ManageOrdersPage() {
   // (orderId -> new status), so changing many statuses doesn't reload each time.
   const [pendingStatus, setPendingStatus] = useState({});
   const [pushingStatus, setPushingStatus] = useState(false);
-  // Queued tracking IDs — saved locally, pushed to the sheet together.
-  const [pendingTracking, setPendingTracking] = useState({}); // { orderId: "CX…IN" }
+  // Queued tracking IDs — saved locally, pushed to the sheet together. Restored
+  // from localStorage so a queued-but-not-pushed batch survives a reload (the
+  // top bar keeps offering Push / Discard until it's actually pushed or cleared).
+  const [pendingTracking, setPendingTracking] = useState(() => {
+    if (typeof window === "undefined") return {};
+    try {
+      const raw = localStorage.getItem("mo_pending_tracking");
+      const obj = raw ? JSON.parse(raw) : {};
+      return obj && typeof obj === "object" ? obj : {};
+    } catch {
+      return {};
+    }
+  });
   const [pushingTracking, setPushingTracking] = useState(false);
+  // Persist the queued tracking IDs whenever they change (cleared on push/discard).
+  useEffect(() => {
+    try {
+      if (Object.keys(pendingTracking).length) {
+        localStorage.setItem(
+          "mo_pending_tracking",
+          JSON.stringify(pendingTracking),
+        );
+      } else {
+        localStorage.removeItem("mo_pending_tracking");
+      }
+    } catch {}
+  }, [pendingTracking]);
+  // Re-apply queued tracking IDs onto freshly-fetched orders so the cards show
+  // them again after a reload (until the batch is pushed to the sheet).
+  useEffect(() => {
+    const ids = Object.keys(pendingTracking);
+    if (!ids.length || !orders.length) return;
+    let changed = false;
+    const next = orders.map((o) => {
+      const tid = pendingTracking[String(o["Order ID"])];
+      if (tid && o["Shipping ID"] !== tid) {
+        changed = true;
+        return { ...o, "Shipping ID": tid, shippingId: tid };
+      }
+      return o;
+    });
+    if (changed) setOrders(next);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orders, pendingTracking]);
   const [bulkStage, setBulkStage] = useState(null); // WhatsApp stage key for bulk send
   const [bulkSent, setBulkSent] = useState([]); // order IDs already messaged
   const [mergeGroup, setMergeGroup] = useState(null); // customer group under merge preview
@@ -9389,6 +9463,36 @@ export default function ManageOrdersPage() {
                               </div>
                             )}
 
+                            {/* Copy the India Post autofill JSON straight from
+                                the card (same payload as the slide-up bill's
+                                Shipping section) — no need to open the detail. */}
+                            <div
+                              className="mo-card-json"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <button
+                                type="button"
+                                className="mo-card-json-btn"
+                                title="Copy India Post autofill JSON"
+                                onClick={() =>
+                                  copyToClipboard(
+                                    buildIpAutofillJson(order, books, isCOD),
+                                    `cardjson-${orderId}`,
+                                  )
+                                }
+                              >
+                                {copiedId === `cardjson-${orderId}` ? (
+                                  <>
+                                    <Check size={13} /> Copied
+                                  </>
+                                ) : (
+                                  <>
+                                    <Copy size={13} /> Copy JSON
+                                  </>
+                                )}
+                              </button>
+                            </div>
+
                             {/* Comment + Book online moved into the bill modal. */}
 
                             {billOrderId === orderId &&
@@ -9526,48 +9630,11 @@ export default function ManageOrdersPage() {
                                     {(() => {
                                       // India Post autofill payload — identical
                                       // shape to the "Book online" modal copy.
-                                      const bkCount = books.length || 1;
-                                      const amtRaw =
-                                        order["Total Amount"] ||
-                                        order.revenue ||
-                                        "";
-                                      const gross =
-                                        Number(
-                                          String(amtRaw).replace(/[^\d.]/g, ""),
-                                        ) || 0;
-                                      const codNet = Math.max(
-                                        0,
-                                        gross - Math.round(gross * 0.059),
-                                      );
-                                      const ch = ipChunks(order["Address"]);
-                                      const jsonPayload = JSON.stringify({
-                                        v: "tbx-ip-1",
-                                        orderId: orderId || "",
+                                      const jsonPayload = buildIpAutofillJson(
+                                        order,
+                                        books,
                                         isCOD,
-                                        dropPincode: "400017",
-                                        dropOffice: "Dharavi Road S.O",
-                                        mailShape: "Box Type (Non Roll Form)",
-                                        deliveryType: "Normal Delivery",
-                                        weight: "500",
-                                        length: "22",
-                                        width: "13",
-                                        height: String(bkCount),
-                                        codAmount: isCOD ? String(codNet) : "",
-                                        name: ipSanitize(
-                                          order["Customer Name"],
-                                        ).slice(0, 30),
-                                        mobile: String(
-                                          order["Phone Number"] || "",
-                                        ),
-                                        addr1: ch[0] || "",
-                                        addr2: [ch[1], ...ch.slice(3)]
-                                          .filter(Boolean)
-                                          .join(", "),
-                                        landmark: ch[2] || "",
-                                        city: order["City"] || "",
-                                        state: order["State"] || "",
-                                        pincode: String(order["Pincode"] || ""),
-                                      });
+                                      );
                                       const editing = !!addrEdit[orderId];
                                       const draft = addrEdit[orderId] || {
                                         address: order["Address"] || "",

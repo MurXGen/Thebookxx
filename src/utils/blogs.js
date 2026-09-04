@@ -4,6 +4,218 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "john-green-hollywood-ending-2026-books-to-read-while-you-wait": {
+    id: "blog-041",
+    title:
+      "John Green's Hollywood, Ending Arrives 22 September 2026: His First Adult Novel in Nine Years, and 15 Books to Read While You Wait",
+    slug: "john-green-hollywood-ending-2026-books-to-read-while-you-wait",
+    author: "TheBookX Editorial",
+    authorSlug: "murthy-thevar",
+    publishDate: "2026-09-04",
+    lastModified: "2026-09-04",
+    excerpt: "John Green's first novel in nine years lands on 22 September 2026. What Hollywood, Ending is about, why it is his first book for adults, and 15 titles to read first.",
+    content: [
+      {
+        type: "paragraph",
+        content: "On 22 September 2026, Dutton publishes <em>Hollywood, Ending</em> - John Green's first novel since <em>Turtles All the Way Down</em> in 2017, and the first he has written for adult readers rather than teenagers. For a writer whose last nine years were spent on non-fiction, a tuberculosis campaign and a YouTube channel, that is a long gap to close in a single week.",
+      },
+      {
+        type: "paragraph",
+        content: "Green announced the book on 31 March 2026 and has been candid that he started it soon after <em>Turtles</em> came out, then could not finish it for what he described as personal reasons. Nine years later, it exists. If you grew up on <a href=\"/books/the-fault-in-our-stars\" style=\"color:#fb8500;font-weight:600\">The Fault in Our Stars</a> - and in India an enormous number of readers did, it was for many people the first book they bought with their own money - this is the September release worth clearing a weekend for.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "What Hollywood, Ending Is Actually About",
+      },
+      {
+        type: "paragraph",
+        content: "The novel follows Kai, twenty, and Juniper, twenty-two: two young actors cast in a buzzy Andy Warhol biopic called <em>Andy Warhol Never Gets Old</em>. The film takes off. So do their lives, in ways that are thrilling and then frightening, and the book is largely about what a public life costs in private.",
+      },
+      {
+        type: "paragraph",
+        content: "Green has described it as a book about navigating love and loss while participating in what he calls the strange, complicated exchanges of attention and trauma of the social internet. That sentence is the most useful thing anyone has said about the novel so far, because it tells you the subject is not fame. It is attention - who gives it, who harvests it, and what happens to a person who is metabolised by it. Warhol is not an incidental choice.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "Hollywood, Ending: the facts",
+        content: "Author: John Green. Publisher: Dutton Books. Publication date: 22 September 2026. Format: adult literary fiction, his first for adults. Previous novel: Turtles All the Way Down (2017). Announced: 31 March 2026. Note that 22 September is also the day the Booker Prize 2026 shortlist is announced at the Southbank Centre in London - an unusually loaded Tuesday for anyone who reads.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Why the Jump to Adult Fiction Matters",
+      },
+      {
+        type: "paragraph",
+        content: "Green's YA novels were never really written down to teenagers - that was always the joke, and the reason adults read them without embarrassment. What changes with an adult novel is not vocabulary or subject matter. It is the permission to let a story end badly, or ambiguously, without an editor worrying about what a fifteen-year-old will take from it.",
+      },
+      {
+        type: "paragraph",
+        content: "That is a real shift for a writer whose signature move was giving young characters an articulate, slightly formal voice and then letting the world be unfair to them anyway. Kai and Juniper are twenty and twenty-two: old enough to consent to the machinery that will eat them, which is a much harder moral position than being sixteen and having it happen to you.",
+      },
+      {
+        type: "blockquote",
+        content: "Fame is a story other people tell about you, using your face. The only variable is how long you can keep reading it without believing it.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Fifteen Books to Read While You Wait",
+      },
+      {
+        type: "paragraph",
+        content: "Three weeks is exactly enough time to read two or three books. Sorted by which part of <em>Hollywood, Ending</em> you are most curious about.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "If you want the private cost of a public life",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<a href=\"/books/the-seven-husbands-of-evelyn-hugo\" style=\"color:#fb8500;font-weight:600\">The Seven Husbands of Evelyn Hugo</a> by Taylor Jenkins Reid - the definitive modern novel about a woman who built a public self and had to live behind it. Still the most-recommended book on this site, and the closest thematic cousin to Green's premise.",
+          "<a href=\"/books/daisy-jones-the-six\" style=\"color:#fb8500;font-weight:600\">Daisy Jones & The Six</a> by Taylor Jenkins Reid - an oral history of a band that broke up at its peak. The interview format does something clever: you never get the truth, only competing versions of it, which is how fame actually works.",
+          "<a href=\"/books/malibu-rising\" style=\"color:#fb8500;font-weight:600\">Malibu Rising</a> by Taylor Jenkins Reid - four famous siblings, one party, one night. Read it for the portrait of children raised inside someone else's celebrity.",
+          "<a href=\"/books/carrie-soto-is-back\" style=\"color:#fb8500;font-weight:600\">Carrie Soto Is Back</a> by Taylor Jenkins Reid - a tennis champion returning at thirty-seven to defend a record. The sharpest of the four on ambition that never switches off.",
+          "<a href=\"/books/the-picture-of-dorian-gray\" style=\"color:#fb8500;font-weight:600\">The Picture of Dorian Gray</a> by Oscar Wilde - written in 1890 and still the most exact book about the gap between an image and the person maintaining it. If you think the attention economy is new, this will fix that.",
+          "<a href=\"/books/the-great-gatsby\" style=\"color:#fb8500;font-weight:600\">The Great Gatsby</a> by F. Scott Fitzgerald - self-invention, an audience, and a party that everyone attends and nobody remembers hosting.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "If you want love and loss written young and precisely",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<a href=\"/books/the-fault-in-our-stars\" style=\"color:#fb8500;font-weight:600\">The Fault in Our Stars</a> by John Green - the obvious reread, and worth doing deliberately before the new one so you can see what has changed in the voice.",
+          "<a href=\"/books/normal-people\" style=\"color:#fb8500;font-weight:600\">Normal People</a> by Sally Rooney - two people who keep failing to say the one true sentence. The best modern novel about miscommunication as a form of love.",
+          "<a href=\"/books/conversations-with-friends\" style=\"color:#fb8500;font-weight:600\">Conversations with Friends</a> by Sally Rooney - younger, funnier and more uncertain than <em>Normal People</em>, and better on the specific vanity of being twenty-one and clever.",
+          "<a href=\"/books/the-song-of-achilles\" style=\"color:#fb8500;font-weight:600\">The Song of Achilles</a> by Madeline Miller - glory, and the person standing next to it. A book about what fame does to the people who love the famous.",
+          "<a href=\"/books/a-little-life\" style=\"color:#fb8500;font-weight:600\">A Little Life</a> by Hanya Yanagihara - four friends, one of whom is a successful actor. Long, and heavy enough that it deserves a warning: it deals with abuse and self-harm in detail. Read it when you have the room for it.",
+          "<a href=\"/books/it-ends-with-us\" style=\"color:#fb8500;font-weight:600\">It Ends with Us</a> by Colleen Hoover - the book that taught a generation of readers that a love story is allowed to be a hard one.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "If you want to understand the attention economy itself",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<a href=\"/books/dopamine-nation\" style=\"color:#fb8500;font-weight:600\">Dopamine Nation</a> by Dr Anna Lembke - a Stanford psychiatrist on why abundance makes us miserable. The clinical companion to everything Green is describing about the social internet.",
+          "<a href=\"/books/deep-work\" style=\"color:#fb8500;font-weight:600\">Deep Work</a> by Cal Newport - the practical counterargument: attention is a finite resource and you can choose where it goes.",
+          "<a href=\"/books/show-your-work\" style=\"color:#fb8500;font-weight:600\">Show Your Work</a> by Austin Kleon - on building an audience without letting the audience build you. Short, and unusually honest about the trade.",
+          "<a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar - on thinking and speaking precisely in an environment engineered for noise. The most useful book on this list if what you actually want is to be less scattered by your phone.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "How to Read a Nine-Years-Later Novel",
+      },
+      {
+        type: "paragraph",
+        content: "There is a specific trap with long-awaited books, and it is worth naming before 22 September. You will not be reading the novel. You will be reading the novel against the one you have spent nine years imagining, and the gap between them will feel like a flaw in the book rather than a flaw in the comparison.",
+      },
+      {
+        type: "list",
+        style: "ordered",
+        items: [
+          "Reread one earlier book first, not all of them. One is calibration. Four is nostalgia, and nostalgia is a bad lens for a new novel.",
+          "Give it fifty pages before you decide about the voice. A writer who has spent nine years on non-fiction will sound different on page one and usually settles by page fifty.",
+          "Read the first half before you read a single review. Nine-year gaps produce loud takes, and it is remarkably hard to un-read someone else's verdict.",
+          "Notice that it is an adult novel and let it be one. If it refuses to resolve, that is the point of the category change, not a failure of nerve.",
+          "Wait a week before deciding what you think. The books that reward the longest waits are usually the ones that need a few days to settle.",
+        ],
+      },
+      {
+        type: "callout",
+        style: "success",
+        title: "A cheaper way to build the pile",
+        content: "You do not need to spend much to read three books before 22 September. Titles on TheBookX start from ₹1, delivery is free, and Cash on Delivery is available across India, so you can order the stack without paying anything up front. Gift wrapping is ₹25 per book if you are putting one aside for someone else.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The Rest of September Is Unusually Good",
+      },
+      {
+        type: "paragraph",
+        content: "It is a dense month even by publishing standards. Chloe Benjamin's <em>Under Story</em>, a novel about a mycologist who takes a dishwashing job at an Antarctic research station, arrives in the same window. The Booker Prize 2026 shortlist lands on 22 September at the Southbank Centre, cut from the thirteen-book longlist announced on 28 July, with the winner named on 9 November at Old Billingsgate. And International Literacy Day falls on 8 September, marking sixty years of the observance.",
+      },
+      {
+        type: "paragraph",
+        content: "If you want one more novel alongside the Green, three from the catalogue reward the same kind of attention: <a href=\"/books/klara-and-the-sun\" style=\"color:#fb8500;font-weight:600\">Klara and the Sun</a> by Kazuo Ishiguro, on being watched and being loved by something that observes you closely; <a href=\"/books/lessons-in-chemistry\" style=\"color:#fb8500;font-weight:600\">Lessons in Chemistry</a> by Bonnie Garmus, on a woman who becomes a public figure entirely against her will; and <a href=\"/books/the-midnight-library\" style=\"color:#fb8500;font-weight:600\">The Midnight Library</a> by Matt Haig, on the lives you did not pick. For something lighter between the heavy ones, <a href=\"/books/beach-read\" style=\"color:#fb8500;font-weight:600\">Beach Read</a> by Emily Henry does the job in two sittings. And if the love-and-loss thread is what draws you to Green at all, <a href=\"/books/when-breath-becomes-air\" style=\"color:#fb8500;font-weight:600\">When Breath Becomes Air</a> by Paul Kalanithi is the non-fiction book that does it best.",
+      },
+      {
+        type: "paragraph",
+        content: "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>",
+      },
+      {
+        type: "paragraph",
+        content: "One closing thought. The most interesting thing about <em>Hollywood, Ending</em> may be that Green could not finish it for years and said so publicly, in an era where authors are expected to perform seamless productivity. A novel about the cost of being watched, delayed by the cost of being watched, is a coincidence worth holding on to while you read it.",
+      },
+    ],
+    coverImage: "/blogs/john-green-hollywood-ending-2026-books-to-read-while-you-wait.jpeg",
+    images: [
+      {
+        url: "/blogs/john-green-hollywood-ending-2026-books-to-read-while-you-wait.jpeg",
+        alt: "A young woman sitting cross-legged on a sofa reading a novel, a small stack of paperbacks and a mug of tea on the table beside her in warm afternoon light",
+        caption: "Three weeks is enough time to read two or three books before Hollywood, Ending arrives on 22 September 2026",
+        category: "Literary News",
+      },
+    ],
+    keywords: [
+      "john green hollywood ending",
+      "hollywood ending release date",
+      "john green new book 2026",
+      "john green first adult novel",
+      "hollywood ending john green plot",
+      "books like the fault in our stars",
+      "books about fame and celebrity",
+      "new books september 2026",
+      "books to read while waiting hollywood ending",
+      "buy john green books online india",
+      "TheBookX",
+    ],
+    categories: [
+      "Literary News",
+      "Fiction",
+      "Reading Lists",
+    ],
+    faqs: [
+      {
+        question: "When is John Green's Hollywood, Ending released?",
+        answer: "Hollywood, Ending is published on 22 September 2026 by Dutton Books. It is John Green's first novel since Turtles All the Way Down in 2017 and his first written for adult readers. He announced the book on 31 March 2026.",
+      },
+      {
+        question: "What is Hollywood, Ending about?",
+        answer: "It follows Kai, twenty, and Juniper, twenty-two, two young actors cast in a buzzy Andy Warhol biopic titled Andy Warhol Never Gets Old. The film takes off and so do their lives, in exciting and then frightening ways, forcing both to confront the private cost of a public life. Green has described it as a book about navigating love and loss while participating in the exchanges of attention and trauma of the social internet.",
+      },
+      {
+        question: "Is Hollywood, Ending a young adult novel like The Fault in Our Stars?",
+        answer: "No. It is marketed and written as Green's first novel for adults. His earlier novels, including The Fault in Our Stars, Looking for Alaska and Turtles All the Way Down, were published as young adult fiction. The subject matter and the freedom to leave a story unresolved are the main practical differences.",
+      },
+      {
+        question: "Which books should I read before Hollywood, Ending comes out?",
+        answer: "Start with a reread of The Fault in Our Stars to calibrate the voice. For the fame theme, The Seven Husbands of Evelyn Hugo and Daisy Jones & The Six by Taylor Jenkins Reid are the closest fits, with The Picture of Dorian Gray as the classic. For the love and loss thread, Normal People by Sally Rooney and When Breath Becomes Air by Paul Kalanithi. For the attention economy, Dopamine Nation, Deep Work and The Art of Clarity.",
+      },
+      {
+        question: "Where can I buy John Green books and new fiction online in India?",
+        answer: "TheBookX stocks John Green titles, contemporary fiction, bestsellers and classics with prices from ₹1, free delivery, and Cash on Delivery available across India. Gift wrapping is ₹25 per book. Browse the full catalogue at https://www.thebookx.in/books",
+      },
+    ],
+  },
+
   "best-memoirs-to-read-india-2026": {
     id: "blog-040",
     title: "Best Memoirs to Read in India (2026): Why Life Writing Became the Shelf Everyone Is Arguing About",

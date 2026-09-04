@@ -23316,6 +23316,29 @@ img[data-loaded="true"] {
   opacity: 0.5;
   cursor: not-allowed;
 }
+/* Always-visible "Copy JSON" (India Post autofill) on the order card. */
+.mo-card > .mo-card-json {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px 16px 12px;
+}
+.mo-card-json-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 30px;
+  padding: 0 11px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--tertiary, #fb8500);
+  background: rgba(251, 133, 0, 0.1);
+  border: 1px solid rgba(251, 133, 0, 0.28);
+  border-radius: 8px;
+  cursor: pointer;
+}
+.mo-card-json-btn:hover {
+  background: rgba(251, 133, 0, 0.16);
+}
 /* Add-on / benefit chips row at the bottom of the order card. */
 .mo-card > .mo-card-chips {
   display: flex;
@@ -36924,6 +36947,70 @@ img[data-loaded="true"] {
   border-radius: 14px;
   padding: 14px 16px;
   box-shadow: 0 10px 28px -12px rgba(0, 0, 0, 0.35);
+}
+/* When the map didn't load, the card sits in normal flow (no overlap pull-up). */
+.od-track-card.od-track-card-flat {
+  margin-top: 12px;
+}
+/* Upgrade-to-faster-delivery CTA (order-detail) */
+.od-upgrade-cta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: calc(100% - 32px);
+  margin: 4px 16px 4px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(251, 133, 0, 0.3);
+  background: linear-gradient(
+    135deg,
+    rgba(251, 133, 0, 0.1),
+    rgba(255, 183, 3, 0.05)
+  );
+  cursor: pointer;
+  text-align: left;
+}
+.od-upgrade-cta:active {
+  transform: scale(0.99);
+}
+.od-upgrade-ic {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  color: #fff;
+  background: linear-gradient(135deg, #fb8500, #ffb703);
+  box-shadow: 0 6px 14px -5px rgba(251, 133, 0, 0.6);
+}
+.od-upgrade-txt {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+.od-upgrade-txt strong {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--foreground, #111);
+}
+.od-upgrade-txt span {
+  font-size: 12px;
+  color: var(--dark-50, #6b7280);
+}
+.od-upgrade-cost {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  flex-shrink: 0;
+  font-size: 14px;
+  font-weight: 800;
+  color: #fb8500;
+}
+.dark .od-upgrade-txt strong {
+  color: #f5f5f5;
 }
 .od-tc-main {
   display: flex;

@@ -196,40 +196,42 @@ export default function HomeHero() {
           <span className="hero-scratch-title">Scratch &amp; win</span>
           <span className="hero-scratch-amt">Cashback upto ₹100</span>
         </div>
-        <div className="hero-scratch-visual" aria-hidden="true">
+
+        <div className="hero-scratch-mid" aria-hidden="true">
           <span className="hero-scratch-hint">scratch here</span>
           <svg
             className="hero-scratch-arrow"
-            viewBox="0 0 40 40"
+            viewBox="0 0 84 48"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
           >
             <path
-              d="M6 6c8 10 14 16 24 20"
+              d="M4 8C28 6 46 20 72 36"
               stroke="#0a0a0a"
-              strokeWidth="2.4"
+              strokeWidth="3"
               strokeLinecap="round"
             />
             <path
-              d="M22 28l8 -2 -3 8"
+              d="M60 30l14 7-6 12"
               stroke="#0a0a0a"
-              strokeWidth="2.4"
+              strokeWidth="3"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
           </svg>
-          <span className="hero-scratch-cards">
-            <span className="hero-scratch-card c-back" />
-            <span className="hero-scratch-card c-left">
-              <span className="hero-scratch-shine" />
-            </span>
-            <span className="hero-scratch-card c-right">
-              <span className="hero-scratch-shine" />
-              <span className="hero-scratch-coin">₹</span>
-            </span>
-            <span className="hero-scratch-ground" />
-          </span>
         </div>
+
+        <span className="hero-scratch-cards" aria-hidden="true">
+          <span className="hero-scratch-card c-back" />
+          <span className="hero-scratch-card c-left">
+            <span className="hero-scratch-shine" />
+          </span>
+          <span className="hero-scratch-card c-right">
+            <span className="hero-scratch-shine" />
+            <span className="hero-scratch-coin">₹</span>
+          </span>
+          <span className="hero-scratch-ground" />
+        </span>
       </div>
 
       {/* Search modal (existing overlay) */}

@@ -23633,38 +23633,44 @@ img[data-loaded="true"] {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  flex-shrink: 0;
 }
 .hero-scratch-title {
-  font-size: 22px;
+  font-size: clamp(24px, 6.5vw, 32px);
   font-weight: 800;
   color: var(--foreground, #0a0a0a);
-  line-height: 1.15;
+  line-height: 1.1;
 }
 .hero-scratch-amt {
-  font-size: 22px;
+  font-size: clamp(24px, 6.5vw, 32px);
   font-weight: 800;
   color: var(--tertiary, #fb8500);
-  line-height: 1.15;
+  line-height: 1.1;
 }
-.hero-scratch-visual {
+/* Middle: "scratch here" script + curved arrow pointing to the cards */
+.hero-scratch-mid {
   position: relative;
+  flex: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
+  justify-content: center;
+  gap: 2px;
+  min-width: 96px;
 }
 .hero-scratch-hint {
   font-family: "Comic Sans MS", "Segoe Print", cursive;
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 700;
   color: #0a0a0a;
-  transform: rotate(-8deg);
+  transform: rotate(-6deg);
   white-space: nowrap;
 }
 .hero-scratch-arrow {
-  width: 34px;
-  height: 34px;
-  flex-shrink: 0;
+  width: 72px;
+  height: 42px;
+  margin-top: 2px;
+  align-self: flex-end;
 }
 .hero-scratch-cards {
   position: relative;

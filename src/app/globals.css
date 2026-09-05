@@ -23636,27 +23636,29 @@ img[data-loaded="true"] {
   flex-shrink: 0;
 }
 .hero-scratch-title {
-  font-size: clamp(24px, 6.5vw, 32px);
+  font-size: clamp(16px, 4.4vw, 20px);
   font-weight: 800;
   color: var(--foreground, #0a0a0a);
-  line-height: 1.1;
+  line-height: 1.12;
 }
 .hero-scratch-amt {
-  font-size: clamp(24px, 6.5vw, 32px);
+  font-size: clamp(23px, 7vw, 33px);
   font-weight: 800;
   color: var(--tertiary, #fb8500);
-  line-height: 1.1;
+  line-height: 1.08;
 }
-/* Middle: "scratch here" script + curved arrow pointing to the cards */
+/* Middle: "scratch here" script + curved arrow, absolutely placed just to the
+   left of the scratch cards so the arrow points right at them. */
 .hero-scratch-mid {
-  position: relative;
-  flex: 1;
+  position: absolute;
+  top: 50%;
+  right: 148px;
+  transform: translateY(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   gap: 2px;
-  min-width: 96px;
+  pointer-events: none;
 }
 .hero-scratch-hint {
   font-family: "Comic Sans MS", "Segoe Print", cursive;
@@ -23667,8 +23669,8 @@ img[data-loaded="true"] {
   white-space: nowrap;
 }
 .hero-scratch-arrow {
-  width: 72px;
-  height: 42px;
+  width: 70px;
+  height: 40px;
   margin-top: 2px;
   align-self: flex-end;
 }

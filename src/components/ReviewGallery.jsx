@@ -2,7 +2,15 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Pause, Play, Star, ArrowRight } from "lucide-react";
+import {
+  Star,
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
+  Bookmark,
+  Gift,
+  Zap,
+} from "lucide-react";
 
 // Real buyer photos + their short review. Drop the photos into
 // /public/review/bookreviews/ named review-1.jpeg … review-N.jpeg. Any missing
@@ -152,129 +160,112 @@ export default function ReviewGallery() {
   const total = reviews.length;
   const safeIndex = currentIndex % total;
   const active = reviews[safeIndex];
-  // Show up to 2 neighbours per side, clamped so no photo repeats in two slots.
-  const range = Math.min(2, Math.floor((total - 1) / 2));
 
-  const wide = typeof window !== "undefined" && window.innerWidth > 680;
-  const baseOffset = wide ? 230 : 150;
-  const farOffset = wide ? 360 : 250;
+  const step = (dir) =>
+    setCurrentIndex((i) => (i + dir + total) % total);
 
-  const visible = [];
-  for (let i = -range; i <= range; i++) {
-    const idx = ((safeIndex + i) % total + total) % total;
-    let opacity = 0.5;
-    let scale = 0.85;
-    let zIndex = 1;
-    let x = 0;
-    if (i === 0) {
-      opacity = 1;
-      scale = 1.05;
-      zIndex = 10;
-    } else if (i === 1) {
-      opacity = 0.5;
-      scale = 0.9;
-      zIndex = 5;
-      x = baseOffset;
-    } else if (i === -1) {
-      opacity = 0.5;
-      scale = 0.9;
-      zIndex = 5;
-      x = -baseOffset;
-    } else if (i === 2) {
-      opacity = 0.12;
-      scale = 0.78;
-      zIndex = 2;
-      x = farOffset;
-    } else if (i === -2) {
-      opacity = 0.12;
-      scale = 0.78;
-      zIndex = 2;
-      x = -farOffset;
-    }
-    visible.push({ review: reviews[idx], opacity, scale, zIndex, x });
-  }
+  // Duplicate the photos so the marquee scrolls seamlessly.
+  const strip = [...reviews, ...reviews];
+
+  const features = [
+    { icon: Bookmark, label: "Free bookmarks" },
+    { icon: Gift, label: "Gift wrap" },
+    { icon: Zap, label: "Faster delivery" },
+  ];
 
   return (
-    <section ref={sectionRef} className="review-gallery-wrapper">
-      <div className="section-1200 flex flex-col gap-12">
-        <div className="review-cf-header">
-          <h2 className="review-cf-title">Real photos from real readers</h2>
-          <p className="review-cf-subtitle">
-            Unfiltered snaps our customers sent in after their books arrived
-          </p>
+    <section ref={sectionRef} className="rg2-wrapper">
+      <div className="section-1200 rg2-inner">
+        {/* Header — SEO heading unchanged, arrows step the quote */}
+        <div className="rg2-header">
+          <div className="rg2-heads">
+            <h2 className="rg2-title">Real photos from real readers</h2>
+            <p className="rg2-subtitle">
+              Unfiltered snaps our customers sent in after their books arrived
+            </p>
+          </div>
+          {total > 1 && (
+            <div className="rg2-arrows">
+              <button
+                type="button"
+                className="rg2-arrow"
+                onClick={() => step(-1)}
+                aria-label="Previous review"
+              >
+                <ChevronLeft size={18} />
+              </button>
+              <button
+                type="button"
+                className="rg2-arrow"
+                onClick={() => step(1)}
+                aria-label="Next review"
+              >
+                <ChevronRight size={18} />
+              </button>
+            </div>
+          )}
         </div>
 
-        <div className="review-cf">
-          {/* White edge masks left + right */}
-          <div className="review-cf-mask review-cf-mask-left" />
-          <div className="review-cf-mask review-cf-mask-right" />
-
-          <div className="review-cf-track">
-            {visible.map((p) => (
-              <motion.div
-                key={p.review.img}
-                className="review-cf-card"
-                style={{ zIndex: p.zIndex }}
-                animate={{ opacity: p.opacity, scale: p.scale, x: p.x }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              >
+        {/* Smooth one-by-one horizontal photo marquee */}
+        <div className="rg2-strip">
+          <div className="rg2-strip-mask left" />
+          <div className="rg2-strip-mask right" />
+          <div
+            className={`rg2-track${isAnimating ? " run" : " paused"}`}
+            style={{ ["--rg2-count"]: total }}
+          >
+            {strip.map((r, i) => (
+              <div className="rg2-photo" key={`${r.img}-${i}`}>
                 <img
-                  src={p.review.img}
-                  alt={`Book photo shared by ${p.review.name}`}
+                  src={r.img}
+                  alt={`Book photo shared by ${r.name}`}
                   loading="lazy"
                   draggable={false}
                   onError={() =>
-                    setBroken((prev) => ({ ...prev, [p.review.img]: true }))
+                    setBroken((prev) => ({ ...prev, [r.img]: true }))
                   }
                 />
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
 
-        {/* Active buyer's review caption — updates as photos rotate */}
-        <div className="review-cf-caption">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={active.img}
-              className="review-cf-caption-inner"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.35 }}
-            >
-              <Stars rating={active.rating} />
-              <p className="review-cf-text">“{active.text}”</p>
-              <span className="review-cf-author">
-                {active.name} · {active.city}
-                <span className="review-cf-verified">Verified buyer</span>
-              </span>
-            </motion.div>
-          </AnimatePresence>
-        </div>
-
-        <div className="review-cf-controls">
-          {reviews.length > 1 && (
-            <motion.button
-              type="button"
-              className="review-cf-playpause"
-              onClick={() => setIsPlaying((v) => !v)}
-              whileTap={{ scale: 0.95 }}
-              aria-label={isPlaying ? "Pause" : "Play"}
-            >
-              {isPlaying ? <Pause size={16} /> : <Play size={16} />}
-            </motion.button>
-          )}
-
+        {/* Current review quote (clamped by height) + fixed Review-us button */}
+        <div className="rg2-quote-row">
+          <div className="rg2-quote">
+            <Stars rating={active.rating} />
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={active.img}
+                className="rg2-quote-text"
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.3 }}
+              >
+                “{active.text}”
+                <span className="rg2-quote-author"> — {active.name}</span>
+              </motion.p>
+            </AnimatePresence>
+          </div>
           <a
             href="https://www.thebookx.in/review"
             target="_blank"
             rel="noopener noreferrer"
-            className="review-cf-write-btn"
+            className="rg2-review-btn"
           >
-            Write a Review
-            <ArrowRight size={16} />
+            Review us <ArrowRight size={16} />
           </a>
+        </div>
+
+        {/* Feature badges — what customers love */}
+        <div className="rg2-badges">
+          {features.map(({ icon: Icon, label }) => (
+            <span key={label} className="rg2-badge">
+              <Icon size={15} className="rg2-badge-ic" />
+              {label}
+            </span>
+          ))}
         </div>
       </div>
     </section>

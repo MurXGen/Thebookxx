@@ -13,7 +13,6 @@ import UnlockChip from "@/components/UI/UnlockChip";
 import StoreReviews from "@/components/StoreReviews";
 import OneRupeeHero from "@/components/OneRupeeHero";
 import HomeHero from "@/components/HomeHero";
-import LiveOrdersStrip from "@/components/LiveOrdersStrip";
 import QuickReadsPromo from "@/components/QuickReadsPromo";
 import QuickReadsTeaser from "@/components/QuickReadsTeaser";
 import InvoiceParamModal from "@/components/InvoiceParamModal";
@@ -141,8 +140,7 @@ export default function HomePage() {
       {/* Floating ₹1 gift box temporarily removed */}
       {/* <OneRupeeHero /> */}
 
-      {/* Live-orders social proof — below the bestseller section, by reviews */}
-      <LiveOrdersStrip />
+      {/* Live-orders social proof now lives inside the hero (HomeHero). */}
 
       {/* Verified store reviews now live inside ReviewGallery, revealed via its
           "Read verified reviews" CTA. */}

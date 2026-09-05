@@ -3,46 +3,45 @@
 import { useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  ArrowRight,
-  BadgeCheck,
+  Search,
+  Sparkles,
   Truck,
-  RotateCcw,
+  BadgePercent,
+  BadgeCheck,
   Star,
+  RotateCcw,
+  Check,
+  Lock,
+  Gift,
   X,
 } from "lucide-react";
-import { FaWhatsapp, FaInstagram } from "react-icons/fa";
 import { books } from "@/utils/book";
-import HomeGreeting from "@/components/HomeGreeting";
-import HeroBundlePromo from "@/components/HeroBundlePromo";
-import ScratchTeaserCard from "@/components/ScratchTeaserCard";
-
-const INSTAGRAM_URL = "https://www.instagram.com/thebookx.in/";
-const WHATSAPP_GROUP_URL =
-  "https://chat.whatsapp.com/Lk3okPbq21s8kJeoM3UA4c?mode=gi_t";
-
-// Overlapping member avatars shown in the Join-community sheet. Drop these
-// files into /public/review/promotions/ — any missing one is skipped.
-const COMMUNITY_AVATARS = [
-  "/review/promotions/member-1.jpeg",
-  "/review/promotions/member-2.jpeg",
-  "/review/promotions/member-3.jpeg",
-  "/review/promotions/member-4.jpeg",
-  "/review/promotions/member-5.jpeg",
-];
+import { getCartOffers } from "@/utils/cartOffers";
+import LiveOrdersStrip from "@/components/LiveOrdersStrip";
+import SearchOverlay from "@/components/SearchOverlay";
+import RecommendationModal from "@/components/RecommendationModal";
 
 // Static, above-the-fold hero. Gives the homepage a clear value proposition and
 // a real H1 before the animated Bestsellers carousel. All stats are derived
-// from the catalogue / policies, no invented numbers.
+// from the catalogue / policies, no invented numbers. (SEO copy unchanged.)
 export default function HomeHero() {
   const titleCount = Math.max(100, Math.floor(books.length / 100) * 100);
-  const [communityOpen, setCommunityOpen] = useState(false);
-  const [avatarBroken, setAvatarBroken] = useState({});
-  const avatars = COMMUNITY_AVATARS.filter((src) => !avatarBroken[src]);
+
+  // Modals wired to the existing app flows.
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [suggestOpen, setSuggestOpen] = useState(false);
+  const [offersOpen, setOffersOpen] = useState(false);
+
+  // Base reward tiers (no cart) shown as chips + inside the offers sheet.
+  const offers = getCartOffers(false);
+  const offerChips = offers.map((o) => ({
+    label: o.type === "free_shipping" ? "Free shipping" : `Flat ${o.reward}`,
+    freeShip: o.type === "free_shipping",
+  }));
 
   // Tap-anywhere firecracker: spawn a short-lived sparkle burst at the pointer.
   const heroRef = useRef(null);
   const [bursts, setBursts] = useState([]);
-  // Brand + festive palette (orange / saffron / gold / marigold / red).
   const SPARK_COLORS = ["#fb8500", "#ff8c42", "#e6a83c", "#ffd23f", "#c0223b"];
   const spawnBurst = (e) => {
     const el = heroRef.current;
@@ -64,18 +63,19 @@ export default function HomeHero() {
       };
     });
     setBursts((b) => [...b, { id, x, y, parts }]);
-    setTimeout(
-      () => setBursts((b) => b.filter((z) => z.id !== id)),
-      750,
-    );
+    setTimeout(() => setBursts((b) => b.filter((z) => z.id !== id)), 750);
   };
 
   const stats = [
+    { icon: Star, label: "4.4 rating" },
     { icon: BadgeCheck, label: `${titleCount}+ titles` },
-    { icon: Star, label: "4.4 avg rating" },
-    { icon: Truck, label: "Free delivery" },
     { icon: RotateCcw, label: "7-day returns" },
   ];
+
+  const openScratch = () => {
+    if (typeof window !== "undefined")
+      window.dispatchEvent(new Event("tbx:open-scratch"));
+  };
 
   return (
     <section
@@ -108,11 +108,24 @@ export default function HomeHero() {
       </div>
 
       <div className="home-hero-inner">
-        <span className="home-hero-eyebrow">
-          India’s friendly online bookstore
-        </span>
-
-        <HomeGreeting />
+        {/* Offers row — tap any chip to see all reward tiers */}
+        <div className="hero-offers-row" role="list">
+          {offerChips.map((c, i) => (
+            <button
+              key={`${c.label}-${i}`}
+              type="button"
+              className="hero-offer-chip"
+              onClick={() => setOffersOpen(true)}
+            >
+              {c.freeShip ? (
+                <Truck size={15} className="hero-offer-ic" />
+              ) : (
+                <BadgePercent size={15} className="hero-offer-ic" />
+              )}
+              {c.label}
+            </button>
+          ))}
+        </div>
 
         <h1 className="home-hero-title">
           Buy Books Online in India,{" "}
@@ -125,45 +138,6 @@ export default function HomeHero() {
           returns across India.
         </p>
 
-        {/* Trust-led 3-book bundle with cashback hook, above the community CTA */}
-        <HeroBundlePromo />
-
-        {/* Scratch-card teaser — opens the number modal + wallet-reward flow */}
-        <ScratchTeaserCard />
-
-        <div className="home-hero-cta">
-          <button
-            type="button"
-            className="home-hero-community-btn"
-            onClick={() => setCommunityOpen(true)}
-            aria-label="Join our community"
-          >
-            {avatars.length > 0 && (
-              <span className="community-avatars">
-                {avatars.map((src) => (
-                  <img
-                    key={src}
-                    src={src}
-                    alt=""
-                    className="community-avatar"
-                    loading="lazy"
-                    onError={() =>
-                      setAvatarBroken((prev) => ({ ...prev, [src]: true }))
-                    }
-                  />
-                ))}
-              </span>
-            )}
-            <span className="home-hero-community-label">
-              Join community
-              <span className="home-hero-community-sub">
-                5,000+ book lovers
-              </span>
-            </span>
-            <ArrowRight size={18} />
-          </button>
-        </div>
-
         <div className="home-hero-stats">
           {stats.map(({ icon: Icon, label }) => (
             <div key={label} className="home-hero-stat">
@@ -172,90 +146,136 @@ export default function HomeHero() {
             </div>
           ))}
         </div>
+
+        {/* Live-order social-proof ticker */}
+        <LiveOrdersStrip />
+
+        {/* Primary actions — Search + Suggest */}
+        <div className="hero-actions">
+          <button
+            type="button"
+            className="hero-search-btn"
+            onClick={() => setSearchOpen(true)}
+          >
+            <Search size={18} /> Search book
+          </button>
+          <button
+            type="button"
+            className="hero-suggest-btn"
+            onClick={() => setSuggestOpen(true)}
+          >
+            <Sparkles size={18} /> Suggest me
+          </button>
+        </div>
       </div>
 
-      {/* Join-community bottom sheet — Instagram + WhatsApp group */}
+      {/* Scratch & win band — reuses the homepage scratch flow (opens the
+          number modal + wallet reward via the tbx:open-scratch event). */}
+      <div
+        className="hero-scratch-band"
+        role="button"
+        tabIndex={0}
+        onClick={openScratch}
+        onKeyDown={(e) =>
+          (e.key === "Enter" || e.key === " ") && openScratch()
+        }
+        aria-label="Scratch to win cashback"
+      >
+        <div className="hero-scratch-copy">
+          <span className="hero-scratch-title">Scratch &amp; win</span>
+          <span className="hero-scratch-amt">Cashback upto ₹100</span>
+        </div>
+        <div className="hero-scratch-visual" aria-hidden="true">
+          <span className="hero-scratch-hint">scratch here</span>
+          <svg
+            className="hero-scratch-arrow"
+            viewBox="0 0 40 40"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M6 6c8 10 14 16 24 20"
+              stroke="#0a0a0a"
+              strokeWidth="2.4"
+              strokeLinecap="round"
+            />
+            <path
+              d="M22 28l8 -2 -3 8"
+              stroke="#0a0a0a"
+              strokeWidth="2.4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          <span className="hero-scratch-cards">
+            <span className="hero-scratch-card c-left" />
+            <span className="hero-scratch-card c-right" />
+          </span>
+        </div>
+      </div>
+
+      {/* Search modal (existing overlay) */}
+      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
+
+      {/* Suggest modal (existing recommendation flow) */}
+      <RecommendationModal
+        isOpen={suggestOpen}
+        onClose={() => setSuggestOpen(false)}
+      />
+
+      {/* All offers sheet */}
       <AnimatePresence>
-        {communityOpen && (
+        {offersOpen && (
           <motion.div
-            className="bill-modal-overlay"
+            className="offer-sheet-overlay"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => setCommunityOpen(false)}
-            style={{ maxWidth: "980px", margin: "0 auto" }}
+            onClick={() => setOffersOpen(false)}
           >
             <motion.div
-              className="bill-modal community-sheet"
+              className="offer-sheet"
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ duration: 0.35, ease: "easeOut" }}
               onClick={(e) => e.stopPropagation()}
-              drag="y"
-              dragConstraints={{ top: 0, bottom: 0 }}
-              dragElastic={{ top: 0, bottom: 0.6 }}
-              onDragEnd={(e, info) => {
-                if (info.offset.y > 120 || info.velocity.y > 700)
-                  setCommunityOpen(false);
-              }}
             >
-              <div className="bill-header">
-                <span className="weight-600 font-16">Join our community</span>
-                <span
-                  className="cursor-pointer"
-                  onClick={() => setCommunityOpen(false)}
-                >
-                  <X size={18} />
+              <div className="offer-sheet-head">
+                <span className="offer-sheet-title">
+                  <Gift size={16} /> All offers &amp; rewards
                 </span>
+                <button
+                  type="button"
+                  className="offer-sheet-x"
+                  onClick={() => setOffersOpen(false)}
+                  aria-label="Close"
+                >
+                  <X size={16} />
+                </button>
               </div>
-
-              {avatars.length > 0 && (
-                <div className="community-avatars">
-                  {avatars.map((src) => (
-                    <img
-                      key={src}
-                      src={src}
-                      alt=""
-                      className="community-avatar"
-                      loading="lazy"
-                      onError={() =>
-                        setAvatarBroken((prev) => ({ ...prev, [src]: true }))
-                      }
-                    />
-                  ))}
-                  <span className="community-avatars-note">
-                    Join 5,000+ book lovers
-                  </span>
-                </div>
-              )}
-
-              <p className="community-sub">
-                Be first to know about ₹1 drops, new arrivals and exclusive
-                offers. Pick where you’d like to join us.
+              <p className="offer-sheet-sub">
+                Add books to your bag to unlock these automatically.
               </p>
-
-              <div className="community-actions">
-                <a
-                  href={WHATSAPP_GROUP_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="community-btn wa"
-                  onClick={() => setCommunityOpen(false)}
-                >
-                  <FaWhatsapp size={20} />
-                  <span>Join WhatsApp group</span>
-                </a>
-                <a
-                  href={INSTAGRAM_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="community-btn ig"
-                  onClick={() => setCommunityOpen(false)}
-                >
-                  <FaInstagram size={20} />
-                  <span>Follow on Instagram</span>
-                </a>
+              <div className="offer-sheet-list">
+                {offers.map((o) => (
+                  <div key={`${o.type}-${o.target}`} className="offer-tier">
+                    <span className="offer-tier-ic">
+                      {o.type === "free_shipping" ? (
+                        <Truck size={14} />
+                      ) : (
+                        <BadgePercent size={14} />
+                      )}
+                    </span>
+                    <span className="offer-tier-main">
+                      <span className="offer-tier-reward">{o.reward}</span>
+                      <span className="offer-tier-note">
+                        Spend ₹{o.target}
+                      </span>
+                    </span>
+                    <Lock size={13} className="offer-tier-lock" />
+                  </div>
+                ))}
               </div>
             </motion.div>
           </motion.div>

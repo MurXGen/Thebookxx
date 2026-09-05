@@ -2865,6 +2865,7 @@ export default function ManageOrdersPage() {
 
   // ── Book-picking (fulfilment) state ──
   const [pickChecked, setPickChecked] = useState({}); // { "orderId::idx": true }
+  const [coversModalOpen, setCoversModalOpen] = useState(false); // covers picker
   const [pickFilter, setPickFilter] = useState("all"); // all | pending | done
   const [showPicking, setShowPicking] = useState(true);
   const [pickHydrated, setPickHydrated] = useState(false);
@@ -4344,19 +4345,26 @@ export default function ManageOrdersPage() {
 
   // Global single-frame PNG grid of every un-picked book cover (dense grid,
   // fits many covers per sheet). Async: waits for images to load.
-  const downloadCoversPNG = async () => {
+  const downloadCoversPNG = async (mode = "unpicked") => {
+    const wantPicked = mode === "picked";
     const items = [];
     filteredOrders.forEach((o) => {
       const oid = o["Order ID"] || o._rowIndex;
       (o.parsedBooks || []).forEach((b, i) => {
-        if (pickChecked[bookKey(oid, i)]) return;
+        const isPicked = !!pickChecked[bookKey(oid, i)];
+        // unpicked mode → skip picked; picked mode → skip unpicked.
+        if (wantPicked ? !isPicked : isPicked) return;
         const qty = Math.max(1, b.quantity || 1);
         const src = getBookImage(b.name);
         for (let k = 0; k < qty; k++) items.push({ src, name: b.name });
       });
     });
     if (!items.length) {
-      alert("All books are already picked — nothing to export.");
+      alert(
+        wantPicked
+          ? "No books are checked yet — nothing to export."
+          : "All books are already checked — nothing to export.",
+      );
       return;
     }
     // Show every copy as its own cover, grouped so identical books cluster.
@@ -4417,7 +4425,7 @@ export default function ManageOrdersPage() {
 
       ctx.fillStyle = "#0a0a0a";
       ctx.font = "800 26px Poppins, system-ui, sans-serif";
-      ctx.fillText("Books to pack", PAD, 46);
+      ctx.fillText(wantPicked ? "Picked books" : "Books to pack", PAD, 46);
       ctx.fillStyle = "#6b7280";
       ctx.font = "500 14px Poppins, system-ui, sans-serif";
       const partTxt = totalParts > 1 ? ` · Part ${part}/${totalParts}` : "";
@@ -4499,8 +4507,8 @@ export default function ManageOrdersPage() {
             a.href = url;
             a.download =
               totalParts > 1
-                ? `unpicked-covers-part${part}of${totalParts}-${Date.now()}.png`
-                : `unpicked-covers-${Date.now()}.png`;
+                ? `${mode}-covers-part${part}of${totalParts}-${Date.now()}.png`
+                : `${mode}-covers-${Date.now()}.png`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -8634,7 +8642,7 @@ export default function ManageOrdersPage() {
                                 type="button"
                                 className="mo-menu-item"
                                 onClick={() => {
-                                  downloadCoversPNG();
+                                  setCoversModalOpen(true);
                                   setShowListMenu(false);
                                 }}
                               >
@@ -10794,6 +10802,132 @@ export default function ManageOrdersPage() {
                   </div>
                 </div>
               )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ===== Covers picker — tap covers to check, then download ===== */}
+      <AnimatePresence>
+        {coversModalOpen && (
+          <motion.div
+            className="bill-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setCoversModalOpen(false)}
+          >
+            <motion.div
+              className="bill-modal covers-modal"
+              initial={{ y: "100%", opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: "100%", opacity: 0 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {(() => {
+                // One tile per order-line, sorted by title so identical books
+                // cluster together ("in series"). Tapping a tile toggles the
+                // same pick state used on the order cards.
+                const tiles = [];
+                filteredOrders.forEach((o) => {
+                  const oid = o["Order ID"] || o._rowIndex;
+                  (o.parsedBooks || []).forEach((b, i) => {
+                    tiles.push({
+                      oid,
+                      idx: i,
+                      name: b.name,
+                      src: getBookImage(b.name),
+                      qty: Math.max(1, b.quantity || 1),
+                      key: bookKey(oid, i),
+                    });
+                  });
+                });
+                tiles.sort((a, b) =>
+                  String(a.name || "").localeCompare(String(b.name || "")),
+                );
+                const pickedCount = tiles.filter(
+                  (t) => pickChecked[t.key],
+                ).length;
+                const total = tiles.length;
+                const unchecked = total - pickedCount;
+
+                return (
+                  <>
+                    <div className="bill-header">
+                      <div className="flex flex-col">
+                        <span className="weight-600 font-16 flex items-center gap-8">
+                          <Package size={16} /> Pick book covers
+                        </span>
+                        <span className="font-12 gray-500">
+                          Tap a cover to check · {pickedCount}/{total} picked
+                        </span>
+                      </div>
+                      <span
+                        className="cursor-pointer"
+                        onClick={() => setCoversModalOpen(false)}
+                      >
+                        <X size={18} />
+                      </span>
+                    </div>
+
+                    {total === 0 ? (
+                      <p className="covers-empty">
+                        No books to show for the current filter.
+                      </p>
+                    ) : (
+                      <div className="covers-grid">
+                        {tiles.map((t) => {
+                          const on = !!pickChecked[t.key];
+                          return (
+                            <button
+                              key={t.key}
+                              type="button"
+                              className={`covers-tile${on ? " picked" : ""}`}
+                              title={t.name}
+                              onClick={() => toggleBook(t.oid, t.idx)}
+                            >
+                              {t.src ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img src={t.src} alt={t.name} loading="lazy" />
+                              ) : (
+                                <span className="covers-tile-ph">
+                                  {String(t.name || "").slice(0, 18)}
+                                </span>
+                              )}
+                              {t.qty > 1 && (
+                                <span className="covers-qty">×{t.qty}</span>
+                              )}
+                              <span className="covers-check">
+                                <Check size={14} strokeWidth={3} />
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    <div className="covers-actions">
+                      <button
+                        type="button"
+                        className="sec-big-btn"
+                        disabled={pickedCount === 0}
+                        onClick={() => downloadCoversPNG("picked")}
+                      >
+                        <Download size={15} /> Checked ({pickedCount})
+                      </button>
+                      <button
+                        type="button"
+                        className="pri-big-btn"
+                        disabled={unchecked === 0}
+                        onClick={() => downloadCoversPNG("unpicked")}
+                      >
+                        <Download size={15} /> Unchecked ({unchecked})
+                      </button>
+                    </div>
+                  </>
+                );
+              })()}
             </motion.div>
           </motion.div>
         )}

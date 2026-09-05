@@ -219,8 +219,15 @@ export default function HomeHero() {
             />
           </svg>
           <span className="hero-scratch-cards">
-            <span className="hero-scratch-card c-left" />
-            <span className="hero-scratch-card c-right" />
+            <span className="hero-scratch-card c-back" />
+            <span className="hero-scratch-card c-left">
+              <span className="hero-scratch-shine" />
+            </span>
+            <span className="hero-scratch-card c-right">
+              <span className="hero-scratch-shine" />
+              <span className="hero-scratch-coin">₹</span>
+            </span>
+            <span className="hero-scratch-ground" />
           </span>
         </div>
       </div>

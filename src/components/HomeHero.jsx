@@ -261,19 +261,12 @@ export default function HomeHero() {
                 {offers.map((o) => (
                   <div key={`${o.type}-${o.target}`} className="offer-tier">
                     <span className="offer-tier-ic">
-                      {o.type === "free_shipping" ? (
-                        <Truck size={14} />
-                      ) : (
-                        <BadgePercent size={14} />
-                      )}
+                      <Lock size={13} />
                     </span>
                     <span className="offer-tier-main">
                       <span className="offer-tier-reward">{o.reward}</span>
-                      <span className="offer-tier-note">
-                        Spend ₹{o.target}
-                      </span>
+                      <span className="offer-tier-note">Spend ₹{o.target}</span>
                     </span>
-                    <Lock size={13} className="offer-tier-lock" />
                   </div>
                 ))}
               </div>

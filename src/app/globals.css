@@ -13138,10 +13138,10 @@ img[data-loaded="true"] {
 .home-hero-inner {
   max-width: 760px;
   margin: 0 auto;
-  text-align: center;
+  text-align: left;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   gap: 14px;
 }
 .home-hero-eyebrow {
@@ -13157,14 +13157,17 @@ img[data-loaded="true"] {
   border-radius: var(--r-pill);
 }
 .home-hero-title {
-  font-size: clamp(28px, 6vw, 46px);
-  line-height: 1.08;
+  font-size: clamp(30px, 7vw, 46px);
+  line-height: 1.06;
   letter-spacing: -0.02em;
   font-weight: 800;
   margin: 0;
   color: var(--foreground);
 }
 .home-hero-accent {
+  display: block;
+  margin-top: 2px;
+  font-size: 1.18em;
   color: var(--tertiary);
   white-space: nowrap;
 }
@@ -13189,11 +13192,9 @@ img[data-loaded="true"] {
 .home-hero-stats {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px 18px;
-  margin-top: 14px;
-  padding-top: 16px;
-  border-top: 1px solid var(--hairline);
+  justify-content: flex-start;
+  gap: 10px 22px;
+  margin-top: 8px;
   width: 100%;
   max-width: 620px;
 }
@@ -13206,7 +13207,7 @@ img[data-loaded="true"] {
   color: var(--foreground);
 }
 .home-hero-stat-icon {
-  color: var(--success);
+  color: var(--tertiary, #fb8500);
 }
 @media (max-width: 640px) {
   .home-hero {

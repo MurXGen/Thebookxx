@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { books } from "@/utils/book";
 import { getCartOffers } from "@/utils/cartOffers";
+import { useStore } from "@/context/StoreContext";
 import LiveOrdersStrip from "@/components/LiveOrdersStrip";
 import SearchOverlay from "@/components/SearchOverlay";
 import RecommendationModal from "@/components/RecommendationModal";
@@ -32,8 +33,18 @@ export default function HomeHero() {
   const [suggestOpen, setSuggestOpen] = useState(false);
   const [offersOpen, setOffersOpen] = useState(false);
 
-  // Base reward tiers (no cart) shown as chips + inside the offers sheet.
-  const offers = getCartOffers(false);
+  // Reward tiers driven by the live cart so the chips + the "Unlock more
+  // rewards" sheet reflect what the shopper has actually unlocked.
+  const { cart } = useStore();
+  const cartAmount = cart.reduce((s, it) => {
+    const b = books.find((x) => x.id === it.id);
+    return s + (b?.discountedPrice || 0) * (it.qty || 1);
+  }, 0);
+  const hasOneRupee = cart.some((it) => {
+    const b = books.find((x) => x.id === it.id);
+    return b?.discountedPrice === 1;
+  });
+  const offers = getCartOffers(hasOneRupee);
   const offerChips = offers.map((o) => ({
     label: o.type === "free_shipping" ? "Free shipping" : `Flat ${o.reward}`,
     freeShip: o.type === "free_shipping",
@@ -243,7 +254,7 @@ export default function HomeHero() {
             >
               <div className="offer-sheet-head">
                 <span className="offer-sheet-title">
-                  <Gift size={16} /> All offers &amp; rewards
+                  <Gift size={16} /> Unlock more rewards
                 </span>
                 <button
                   type="button"
@@ -255,20 +266,31 @@ export default function HomeHero() {
                 </button>
               </div>
               <p className="offer-sheet-sub">
-                Add books to your bag to unlock these automatically.
+                Your cart: <b>₹{cartAmount}</b>
               </p>
               <div className="offer-sheet-list">
-                {offers.map((o) => (
-                  <div key={`${o.type}-${o.target}`} className="offer-tier">
-                    <span className="offer-tier-ic">
-                      <Lock size={13} />
-                    </span>
-                    <span className="offer-tier-main">
-                      <span className="offer-tier-reward">{o.reward}</span>
-                      <span className="offer-tier-note">Spend ₹{o.target}</span>
-                    </span>
-                  </div>
-                ))}
+                {offers.map((o) => {
+                  const unlocked = cartAmount >= o.target;
+                  const left = Math.max(o.target - cartAmount, 0);
+                  return (
+                    <div
+                      key={`${o.type}-${o.target}`}
+                      className={`offer-tier${unlocked ? " unlocked" : ""}`}
+                    >
+                      <span className="offer-tier-ic">
+                        {unlocked ? <Check size={14} /> : <Lock size={13} />}
+                      </span>
+                      <span className="offer-tier-main">
+                        <span className="offer-tier-reward">{o.reward}</span>
+                        <span className="offer-tier-note">
+                          {unlocked
+                            ? "Unlocked"
+                            : `Add ₹${left} more (spend ₹${o.target})`}
+                        </span>
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
             </motion.div>
           </motion.div>

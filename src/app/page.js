@@ -19,6 +19,7 @@ import InvoiceParamModal from "@/components/InvoiceParamModal";
 import ReviewGallery from "@/components/ReviewGallery";
 import OneRupeeGrid from "@/components/OneRupeeGrid";
 import TrendingGrid from "@/components/TrendingGrid";
+import CategoryBrowse from "@/components/CategoryBrowse";
 import { BooksSkeleton } from "@/components/UI/BookCardSkeleton";
 
 // Lazy load components with named exports
@@ -27,6 +28,7 @@ const RecommendationModal = lazy(
   () => import("@/components/RecommendationModal"),
 );
 const OffersGift = lazy(() => import("@/components/OffersGift"));
+// eslint-disable-next-line no-unused-vars
 const CatalogueSection = lazy(() => import("@/components/CatalogueSection"));
 const ComboDeals = lazy(() => import("@/components/ComboDeals"));
 // Kept for reference — the old ₹1 rail, now replaced by <OneRupeeGrid /> above.
@@ -137,6 +139,9 @@ export default function HomePage() {
       {/* Compact 2-row trending rail — shows discounted price + savings. */}
       <TrendingGrid />
 
+      {/* Category tabs → 2-column book grid with a switch loader. */}
+      <CategoryBrowse />
+
       <PincodeModal />
 
       {/* <UnlockModal /> */}
@@ -166,7 +171,7 @@ export default function HomePage() {
         </Suspense>
       </LazySection>
 
-      {/* Explore Categories — moved above the hero */}
+      {/* Explore Categories — hidden for now (kept for reuse):
       <LazySection threshold={0.05}>
         <Suspense fallback={<BooksSkeleton />}>
           <SmoothAppear delay={0.2}>
@@ -174,6 +179,7 @@ export default function HomePage() {
           </SmoothAppear>
         </Suspense>
       </LazySection>
+      */}
 
       {/* Combo offers — curated multi-book bundles, above the ₹1 rail */}
       <LazySection threshold={0.05}>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef } from "react";
 import Link from "next/link";
 import { Plus, Check, Loader2, LayoutGrid, Search } from "lucide-react";
 import { books } from "@/utils/book";
@@ -16,7 +16,7 @@ const slugify = (t) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 
-const CAP = 24; // books shown per tab
+const BATCH = 12; // books revealed per lazy-load step
 
 export default function CategoryBrowse() {
   const { cart, addToCart } = useStore();
@@ -24,6 +24,9 @@ export default function CategoryBrowse() {
   const [switching, setSwitching] = useState(false);
   const [loadingId, setLoadingId] = useState(null);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [visible, setVisible] = useState(BATCH); // how many are rendered
+  const [loadingMore, setLoadingMore] = useState(false);
+  const scrollRef = useRef(null);
 
   // Tabs: "All" first, then categories with the most books.
   const cats = useMemo(() => {
@@ -33,13 +36,27 @@ export default function CategoryBrowse() {
     return [{ key: "all", label: "All" }, ...data];
   }, []);
 
-  const shown = useMemo(() => {
-    const list =
-      active === "all"
-        ? books.filter((b) => b.image)
-        : getBooksByCategory(active).filter((b) => b.image);
-    return list.slice(0, CAP);
+  // Full list for the active category (all of them — revealed lazily on scroll).
+  const full = useMemo(() => {
+    return active === "all"
+      ? books.filter((b) => b.image)
+      : getBooksByCategory(active).filter((b) => b.image);
   }, [active]);
+  const shown = full.slice(0, visible);
+  const hasMore = visible < full.length;
+
+  // Reveal the next batch (with a brief skeleton) as the rail nears its end.
+  const onRailScroll = () => {
+    const el = scrollRef.current;
+    if (!el || loadingMore || switching || !hasMore) return;
+    if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 240) {
+      setLoadingMore(true);
+      setTimeout(() => {
+        setVisible((v) => Math.min(v + BATCH, full.length));
+        setLoadingMore(false);
+      }, 400);
+    }
+  };
 
   if (cats.length <= 1) return null;
 
@@ -54,6 +71,8 @@ export default function CategoryBrowse() {
     if (key === active) return;
     setSwitching(true);
     setActive(key);
+    setVisible(BATCH); // restart lazy-load for the new category
+    if (scrollRef.current) scrollRef.current.scrollLeft = 0;
     // Brief, interactive loader while the grid swaps.
     setTimeout(() => setSwitching(false), 480);
   };
@@ -142,7 +161,7 @@ export default function CategoryBrowse() {
         ) : shown.length === 0 ? (
           <p className="cb-empty">No books in this category yet.</p>
         ) : (
-          <div className="or1-scroll">
+          <div className="or1-scroll" ref={scrollRef} onScroll={onRailScroll}>
           <div className="or1-grid">
             {shown.map((b) => {
               const on = inCart(b.id);
@@ -186,6 +205,17 @@ export default function CategoryBrowse() {
                 </div>
               );
             })}
+            {/* Skeleton placeholders while the next batch loads in. */}
+            {loadingMore &&
+              Array.from({ length: 4 }).map((_, i) => (
+                <div className="cb-skel" key={`more-${i}`}>
+                  <span className="cb-skel-cover">
+                    <span className="cb-skel-shine" />
+                  </span>
+                  <span className="cb-skel-line w70" />
+                  <span className="cb-skel-line w40" />
+                </div>
+              ))}
           </div>
           </div>
         )}

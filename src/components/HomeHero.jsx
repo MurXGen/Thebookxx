@@ -275,6 +275,17 @@ export default function HomeHero() {
                 );
               })}
           </motion.div>
+
+          <button
+            type="button"
+            className="hero-picks-addall"
+            onClick={() => {
+              picks.forEach((b) => addToCart(b.id));
+              showToast("Added all 3 picks to your bag 🎉", "success");
+            }}
+          >
+            <Plus size={16} /> Add all 3 to bag
+          </button>
         </aside>
       )}
       </div>

@@ -438,6 +438,14 @@ export default function AddressModal({
   const codFeeAmount = Math.max(29, Math.round(upiTotalForFlow * 0.059));
   const codTotalWithFee = upiTotalForFlow + codFeeAmount + bookmarkCodCharge;
 
+  // ₹99-advance: below ₹400 the COD charge is fully waived; from ₹400 up a
+  // silent 5.9% packing & care (handling) charge applies to the balance. The
+  // customer prepays ₹99 online and pays the rest at delivery.
+  const advanceHandlingFee =
+    upiTotalForFlow > 400 ? Math.max(0, Math.round(upiTotalForFlow * 0.059)) : 0;
+  const advanceOrderTotal = upiTotalForFlow + advanceHandlingFee;
+  const advanceRemaining = Math.max(0, advanceOrderTotal - codAdvanceAmount);
+
   // Only ONE ₹1 book is allowed per order. Count the total quantity of
   // ₹1-priced books; if it's more than one, checkout is blocked.
   const oneRupeeQty = (cartBooks || []).reduce(
@@ -663,15 +671,23 @@ export default function AddressModal({
             ) || "";
         }
       } catch (_) {}
-      // Advance-COD waives the COD handling fee, and the bookmark is free (like
-      // online payment), so the recorded total is the online-price total.
-      const feeForThisOrder =
-        paymentType === "COD" && !advance ? codFeeAmount : 0;
       const deliveryChargeForOrder = getDeliveryCharge(isFaster);
       const giftWrapOn = giftWrap || giftWrapSelected;
       const giftWrapAmountForOrder = giftWrapOn ? giftWrapCharge : 0;
+      // Advance orders get a FREE bookmark (like online payment).
       const bookmarkAmountForOrder =
         bookmark && paymentType === "COD" && !advance ? BOOKMARK_COD_CHARGE : 0;
+      // Fee: normal COD → COD fee. Advance → COD is waived below ₹400; from ₹400
+      // up a silent 5.9% packing & care (handling) charge applies to the balance.
+      const onlineBase =
+        netPayable + deliveryChargeForOrder + giftWrapAmountForOrder;
+      const feeForThisOrder = advance
+        ? onlineBase > 400
+          ? Math.max(0, Math.round(onlineBase * 0.059))
+          : 0
+        : paymentType === "COD"
+          ? codFeeAmount
+          : 0;
 
       // Until the shopper reaches the final confirm step, the order is logged
       // with a "(unconfirmed)" tag on the name so the dashboard can tell
@@ -1831,19 +1847,10 @@ export default function AddressModal({
                       </span>
                       <span className="pay-method-div" aria-hidden="true" />
                       <span className="pay-method-body">
-                        <span className="pay-method-ic pay-ic-adv">
-                          <svg
-                            width="22"
-                            height="22"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="#fb8500"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            <circle cx="12" cy="12" r="9" />
-                            <path d="M12 7v5l3 2" />
+                        <span className="pay-method-ic pay-ic-online">
+                          <svg width="22" height="22" viewBox="0 0 24 24">
+                            <path d="M4 4 L13 12 L4 20 Z" fill="#ff8500" />
+                            <path d="M9 4 L18 12 L9 20 Z" fill="#0a8f0c" />
                           </svg>
                         </span>
                         <span className="pay-method-labels">
@@ -1851,8 +1858,8 @@ export default function AddressModal({
                             Pay ₹{codAdvanceAmount} advance
                           </span>
                           <span className="pay-method-desc">
-                            Pay ₹{Math.max(0, upiTotalForFlow - codAdvanceAmount)}{" "}
-                            at delivery · <strong>no COD charges</strong>
+                            Pay ₹{advanceRemaining} at delivery ·{" "}
+                            <strong>no COD charges</strong>
                           </span>
                         </span>
                       </span>

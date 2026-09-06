@@ -19,6 +19,7 @@ import { books } from "@/utils/book";
 import { getCartOffers } from "@/utils/cartOffers";
 import { useStore } from "@/context/StoreContext";
 import LiveOrdersStrip from "@/components/LiveOrdersStrip";
+import ScratchTeaserCard from "@/components/ScratchTeaserCard";
 import SearchOverlay from "@/components/SearchOverlay";
 import RecommendationModal from "@/components/RecommendationModal";
 
@@ -200,13 +201,8 @@ export default function HomeHero() {
           <span className="hero-scratch-cta">Tap to scratch →</span>
         </div>
 
-        <span className="hero-scratch-cards" aria-hidden="true">
-          <span className="hero-scratch-glow" />
-          <span className="hero-scratch-pent p-back" />
-          <span className="hero-scratch-pent p-front">
-            <span className="hero-scratch-shine" />
-            <span className="hero-scratch-coin">₹</span>
-          </span>
+        <span className="hero-scratch-teaser" aria-hidden="true">
+          <ScratchTeaserCard visualOnly />
         </span>
       </div>
 

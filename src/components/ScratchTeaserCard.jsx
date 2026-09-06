@@ -4,11 +4,16 @@
 // not-logged-in shoppers. Two brand-coloured cards fanned in 3D, looking planted
 // in the ground, with a "Scratch to win" caption. Tapping it fires a window
 // event that PincodeModal listens for to open the phone-number flow.
-export default function ScratchTeaserCard() {
+export default function ScratchTeaserCard({
+  showCaption = true,
+  visualOnly = false,
+}) {
   // The teaser is a decorative entry point to the scratch flow — always shown.
   // Whether a reward is actually granted is decided downstream (wallet cap +
   // the one-time `tbx_scratch_claimed` guard in PincodeModal), so returning
   // shoppers still see the animation but can't farm rewards.
+  // `visualOnly` renders just the planted-cards cluster (no click / caption) so
+  // it can be embedded inside a parent that owns the click (e.g. the hero band).
 
   const open = () => {
     if (typeof window !== "undefined") {
@@ -16,15 +21,18 @@ export default function ScratchTeaserCard() {
     }
   };
 
+  const rootProps = visualOnly
+    ? {}
+    : {
+        role: "button",
+        tabIndex: 0,
+        onClick: open,
+        onKeyDown: (e) => (e.key === "Enter" || e.key === " ") && open(),
+        "aria-label": "Scratch to win cashback",
+      };
+
   return (
-    <div
-      className="st-teaser"
-      role="button"
-      tabIndex={0}
-      onClick={open}
-      onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && open()}
-      aria-label="Scratch to win cashback"
-    >
+    <div className={`st-teaser${visualOnly ? " st-visual" : ""}`} {...rootProps}>
       <div className="st-stage">
         <div className="st-card st-left">
           <span className="st-shine" />
@@ -38,7 +46,9 @@ export default function ScratchTeaserCard() {
         <span className="st-ground" />
       </div>
 
-      <span className="st-caption">Scratch to win cashbacks</span>
+      {showCaption && (
+        <span className="st-caption">Scratch to win cashbacks</span>
+      )}
 
       <style jsx>{`
         .st-teaser {
@@ -50,6 +60,11 @@ export default function ScratchTeaserCard() {
           cursor: pointer;
           user-select: none;
           width: fit-content;
+        }
+        .st-visual {
+          margin: 0;
+          cursor: inherit;
+          flex-shrink: 0;
         }
         .st-stage {
           position: relative;

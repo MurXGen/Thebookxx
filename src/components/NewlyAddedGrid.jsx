@@ -16,7 +16,7 @@ const slugify = (t) =>
 
 // Compact 2-row scrollable rail of the newest books (with price + savings).
 export default function NewlyAddedGrid() {
-  const { cart, addToCart } = useStore();
+  const { cart, addToCart, decreaseQty } = useStore();
   const [loadingId, setLoadingId] = useState(null);
 
   const newest = [...books]
@@ -59,7 +59,8 @@ export default function NewlyAddedGrid() {
         <div className="or1-scroll">
           <div className="or1-grid">
             {newest.map((b) => {
-              const on = inCart(b.id);
+              const qty = cart.find((i) => i.id === b.id)?.qty || 0;
+              const on = qty > 0;
               const loading = loadingId === b.id;
               const url = `/books/${slugify(b.name)}`;
               const mrp = Number(b.originalPrice) || 0;
@@ -71,21 +72,21 @@ export default function NewlyAddedGrid() {
                     <Link href={url} className="or1-cover-link" aria-label={b.name}>
                       <img src={b.image} alt={b.name} loading="lazy" />
                     </Link>
-                    <button
-                      type="button"
-                      className={`or1-add${on ? " on" : ""}${loading ? " loading" : ""}`}
-                      onClick={() => handleAdd(b)}
-                      disabled={loading}
-                      aria-label={on ? "In your bag" : `Add ${b.name} to bag`}
-                    >
-                      {loading ? (
+                    {loading ? (
+                      <button type="button" className="or1-add loading" disabled aria-label="Adding">
                         <Loader2 size={16} className="or1-spin" />
-                      ) : on ? (
-                        <Check size={16} strokeWidth={3} />
-                      ) : (
+                      </button>
+                    ) : on ? (
+                      <div className="or1-qty" onClick={(e) => e.stopPropagation()}>
+                        <button type="button" className="or1-qty-btn" onClick={() => decreaseQty(b.id)} aria-label="Remove one">−</button>
+                        <span className="or1-qty-n">{qty}</span>
+                        <button type="button" className="or1-qty-btn" onClick={() => addToCart(b.id)} aria-label="Add one">+</button>
+                      </div>
+                    ) : (
+                      <button type="button" className="or1-add" onClick={() => handleAdd(b)} aria-label={`Add ${b.name} to bag`}>
                         <Plus size={18} />
-                      )}
-                    </button>
+                      </button>
+                    )}
                   </div>
                   <Link href={url} className="or1-name">
                     {b.name}

@@ -11568,8 +11568,8 @@ textarea.sec-mid-btn,
 
 /* Order-history ticker — the ONLY dark band in the sticky bar */
 .bd-sticky-orders {
-  background: var(--foreground);
-  padding: var(--px-12) var(--px-16);
+  background: transparent;
+  padding: 0;
 }
 
 .bd-sticky-orders .live-orders-wrap {
@@ -24578,6 +24578,44 @@ img[data-loaded="true"] {
 .or1-add.on {
   color: #fff;
   background: var(--tertiary, #fb8500);
+}
+/* In-cart quantity stepper (− qty +) — shown only when the book is in cart. */
+.or1-qty {
+  position: absolute;
+  right: 7px;
+  bottom: 7px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 10px;
+  background: var(--tertiary, #fb8500);
+  box-shadow: 0 3px 10px -2px rgba(0, 0, 0, 0.28);
+}
+.or1-qty-btn {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+}
+.or1-qty-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.or1-qty-n {
+  min-width: 16px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 800;
+  color: #fff;
 }
 .or1-add.loading {
   cursor: default;

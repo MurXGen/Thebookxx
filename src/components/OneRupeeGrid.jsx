@@ -17,7 +17,7 @@ const slugify = (t) =>
 // Compact 2-row, horizontally-scrollable rail of ₹1 books. Two rows scroll
 // together (grid-auto-flow: column) so twice the books fit in the same height.
 export default function OneRupeeGrid() {
-  const { cart, addToCart } = useStore();
+  const { cart, addToCart, decreaseQty } = useStore();
   const [loadingId, setLoadingId] = useState(null);
   const oneRupee = books.filter((b) => b.discountedPrice === 1 && b.image);
   if (!oneRupee.length) return null;
@@ -92,7 +92,8 @@ export default function OneRupeeGrid() {
         <div className="or1-scroll">
           <div className="or1-grid">
             {oneRupee.map((b) => {
-              const on = inCart(b.id);
+              const qty = cart.find((i) => i.id === b.id)?.qty || 0;
+              const on = qty > 0;
               const loading = loadingId === b.id;
               const url = `/books/${slugify(b.name)}`;
               return (
@@ -101,21 +102,51 @@ export default function OneRupeeGrid() {
                     <Link href={url} className="or1-cover-link" aria-label={b.name}>
                       <img src={b.image} alt={b.name} loading="lazy" />
                     </Link>
-                    <button
-                      type="button"
-                      className={`or1-add${on ? " on" : ""}${loading ? " loading" : ""}`}
-                      onClick={() => handleAdd(b)}
-                      disabled={loading}
-                      aria-label={on ? "Added to bag" : `Add ${b.name} to bag`}
-                    >
-                      {loading ? (
+                    {loading ? (
+                      <button
+                        type="button"
+                        className="or1-add loading"
+                        disabled
+                        aria-label="Adding"
+                      >
                         <Loader2 size={16} className="or1-spin" />
-                      ) : on ? (
-                        <Check size={16} strokeWidth={3} />
-                      ) : (
+                      </button>
+                    ) : on ? (
+                      <div
+                        className="or1-qty"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <button
+                          type="button"
+                          className="or1-qty-btn"
+                          onClick={() => decreaseQty(b.id)}
+                          aria-label="Remove one"
+                        >
+                          −
+                        </button>
+                        <span className="or1-qty-n">{qty}</span>
+                        <button
+                          type="button"
+                          className="or1-qty-btn"
+                          onClick={() =>
+                            showToast("Only 1 book at ₹1 per order 😊", "info")
+                          }
+                          disabled
+                          aria-label="Max reached"
+                        >
+                          +
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        className="or1-add"
+                        onClick={() => handleAdd(b)}
+                        aria-label={`Add ${b.name} to bag`}
+                      >
                         <Plus size={18} />
-                      )}
-                    </button>
+                      </button>
+                    )}
                   </div>
                   <Link href={url} className="or1-name">
                     {b.name}

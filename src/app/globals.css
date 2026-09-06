@@ -34632,6 +34632,21 @@ img[data-loaded="true"] {
   border-radius: 9px;
   background: var(--dark-4, #f3f4f6);
 }
+.pay-ic-adv {
+  background: rgba(251, 133, 0, 0.12);
+}
+.upiv3-qr-adv {
+  margin-left: 5px;
+  padding: 1px 6px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #b45309;
+  background: rgba(251, 133, 0, 0.14);
+  vertical-align: middle;
+}
 .pay-method-labels {
   display: flex;
   flex-direction: column;

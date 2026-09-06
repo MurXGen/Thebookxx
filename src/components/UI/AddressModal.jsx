@@ -171,6 +171,8 @@ export default function AddressModal({
   // Which delivery speed is highlighted in the chooser (tap to select).
   const [deliverySel, setDeliverySel] = useState("standard");
   const [tempPaymentMethod, setTempPaymentMethod] = useState(null);
+  // ₹99-advance COD flow: pay ₹99 online now via the UPI QR, rest at delivery.
+  const [advanceMode, setAdvanceMode] = useState(false);
   const [addressFormStartTime, setAddressFormStartTime] = useState(null);
   // Tracks the last logged-in phone we prefilled from, so we re-prefill when a
   // shopper logs in as a different number but don't clobber active editing.
@@ -635,6 +637,7 @@ export default function AddressModal({
     confirmed = false,
     orderId = undefined,
     paymentLabel = "",
+    advance = false,
   ) => {
     // For a CONFIRMED order without an explicit id, mint one and remember it so
     // the success modal can edit this exact row (note / faster-delivery upgrade).
@@ -660,12 +663,15 @@ export default function AddressModal({
             ) || "";
         }
       } catch (_) {}
-      const feeForThisOrder = paymentType === "COD" ? codFeeAmount : 0;
+      // Advance-COD waives the COD handling fee, and the bookmark is free (like
+      // online payment), so the recorded total is the online-price total.
+      const feeForThisOrder =
+        paymentType === "COD" && !advance ? codFeeAmount : 0;
       const deliveryChargeForOrder = getDeliveryCharge(isFaster);
       const giftWrapOn = giftWrap || giftWrapSelected;
       const giftWrapAmountForOrder = giftWrapOn ? giftWrapCharge : 0;
       const bookmarkAmountForOrder =
-        bookmark && paymentType === "COD" ? BOOKMARK_COD_CHARGE : 0;
+        bookmark && paymentType === "COD" && !advance ? BOOKMARK_COD_CHARGE : 0;
 
       // Until the shopper reaches the final confirm step, the order is logged
       // with a "(unconfirmed)" tag on the name so the dashboard can tell
@@ -707,6 +713,7 @@ export default function AddressModal({
         deliveryType: isFaster ? "Faster" : "Standard",
         giftWrapCharge: giftWrapAmountForOrder,
         codHandlingFee: feeForThisOrder,
+        advancePaid: advance,
         cartBooks,
         quickReadItems,
         orderId,
@@ -919,6 +926,14 @@ export default function AddressModal({
     if (method === "UPI") {
       // "Pay online" → open the method chooser (UPI apps + Cards/gift-card).
       // The order row is written only once the shopper picks a real method.
+      setAdvanceMode(false);
+      setPayMethodStage("choose");
+      setGiftMethod("");
+      setGiftCode("");
+      setShowPayMethod(true);
+    } else if (method === "ADV") {
+      // ₹99 advance → same UPI app chooser, but only ₹99 is collected online.
+      setAdvanceMode(true);
       setPayMethodStage("choose");
       setGiftMethod("");
       setGiftCode("");
@@ -944,6 +959,17 @@ export default function AddressModal({
     setUpiOrderRef(ref);
     setUpiPhase("await");
     setQrUnlocked(false);
+    if (advanceMode) {
+      // ₹99 advance → record as a COD order with Advance Paid = Yes (no COD
+      // fee). Merchant confirms once the ₹99 lands, just like a UPI order.
+      const label = `${app} · ₹${codAdvanceAmount} advance (COD)`;
+      submitToGoogleForm("COD", fasterDelivery, false, ref, label, true);
+      setSuccessPayment("UPI");
+      setSuccessPaymentLabel(label);
+      setShowPayMethod(false);
+      setShowUPIPayment(true);
+      return;
+    }
     const label = `${app} (UPI)`;
     submitToGoogleForm("UPI", fasterDelivery, false, ref, label);
     setSuccessPayment("UPI");
@@ -1790,6 +1816,57 @@ export default function AddressModal({
                     </span>
                   </button>
 
+                  {/* Pay ₹99 advance, rest at delivery (no COD charges) */}
+                  <button
+                    type="button"
+                    onClick={() => setPaySel("ADV")}
+                    className={`pay-method${paySel === "ADV" ? " selected" : ""}`}
+                  >
+                    <span className="pay-method-head">
+                      <span className="pay-method-amt">
+                        <span className="pay-method-price">
+                          ₹{codAdvanceAmount} now
+                        </span>
+                        <span className="pay-method-save">No COD fee</span>
+                      </span>
+                      <span className="pay-method-div" aria-hidden="true" />
+                      <span className="pay-method-body">
+                        <span className="pay-method-ic pay-ic-adv">
+                          <svg
+                            width="22"
+                            height="22"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="#fb8500"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <circle cx="12" cy="12" r="9" />
+                            <path d="M12 7v5l3 2" />
+                          </svg>
+                        </span>
+                        <span className="pay-method-labels">
+                          <span className="pay-method-name">
+                            Pay ₹{codAdvanceAmount} advance
+                          </span>
+                          <span className="pay-method-desc">
+                            Pay ₹{Math.max(0, upiTotalForFlow - codAdvanceAmount)}{" "}
+                            at delivery · <strong>no COD charges</strong>
+                          </span>
+                        </span>
+                      </span>
+                      <span
+                        className={`pay-method-radio${paySel === "ADV" ? " on" : ""}`}
+                        aria-hidden="true"
+                      >
+                        {paySel === "ADV" && (
+                          <Check size={13} strokeWidth={3} />
+                        )}
+                      </span>
+                    </span>
+                  </button>
+
                   {/* Cash on Delivery */}
                   <button
                     type="button"
@@ -1868,9 +1945,11 @@ export default function AddressModal({
                         ? "Remove extra ₹1 book to continue"
                         : paySel === "UPI"
                           ? `Pay & save ₹${codFeeAmount}`
-                          : paySel === "COD"
-                            ? "Cash on Delivery"
-                            : "Select a payment method"}
+                          : paySel === "ADV"
+                            ? `Pay ₹${codAdvanceAmount} advance`
+                            : paySel === "COD"
+                              ? "Cash on Delivery"
+                              : "Select a payment method"}
                       {paySel && !tooManyOneRupee && (
                         <ArrowRight size={18} strokeWidth={2.5} />
                       )}
@@ -2331,7 +2410,12 @@ export default function AddressModal({
             giftWrapCharge={giftWrapCharge}
             quickReadCount={quickReadItems.length}
             quickReadTotal={qrAddOn}
-            totalToPay={getTotalWithDelivery(fasterDelivery) + addOnsCharge}
+            totalToPay={
+              advanceMode
+                ? codAdvanceAmount
+                : getTotalWithDelivery(fasterDelivery) + addOnsCharge
+            }
+            advanceMode={advanceMode}
             qrUnlocked={qrUnlocked}
             upiCopied={upiCopied}
             upiPhase={upiPhase}
@@ -3539,6 +3623,7 @@ function UPIPaymentModal({
   quickReadCount = 0,
   quickReadTotal = 0,
   totalToPay,
+  advanceMode = false,
   qrUnlocked,
   upiCopied,
   upiPhase = "await",
@@ -3604,7 +3689,12 @@ function UPIPaymentModal({
                   <span className="upiv3-qr-payee-lbl">Paying to</span>
                   <span className="upiv3-qr-payee">TheBookX</span>
                 </div>
-                <span className="upiv3-qr-amt">₹{totalToPay}</span>
+                <span className="upiv3-qr-amt">
+                  ₹{totalToPay}
+                  {advanceMode && (
+                    <span className="upiv3-qr-adv">advance</span>
+                  )}
+                </span>
               </div>
 
               <div

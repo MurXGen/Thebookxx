@@ -337,6 +337,8 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
     // Gift card: XXXX", "Amazon Gift Voucher · XXXX"). Overrides the default
     // COD/WhatsApp/UPI mapping so the sheet records the real method chosen.
     paymentLabel = "",
+    // ₹99-advance COD: customer paid ₹99 online, rest collected at delivery.
+    advancePaid = false,
   } = orderDetails;
 
   // Use the real charge the customer was shown; only fall back to the
@@ -409,6 +411,8 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
         ? ` · Wallet used ₹${walletUsed}${walletPhone ? ` (${walletPhone})` : ""}`
         : ""),
     tinyUrl: orderLink,
+    // "Yes" when the customer prepaid the ₹99 advance (rest collected at door).
+    ...(advancePaid ? { advancePaid: "Yes" } : {}),
     orderStatus: "Processing",
     // Wallet spent is now recorded in the dedicated Wallet tab (see the debit
     // write below), not on the order row.

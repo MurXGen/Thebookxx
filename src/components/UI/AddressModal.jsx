@@ -3729,12 +3729,20 @@ function UPIPaymentModal({
               <div
                 className={`upiv3-qr-img${qrUnlocked ? " ready" : " loading"}`}
               >
+                {/* scanner corner brackets */}
+                <span className="upiv3-corner tl" aria-hidden="true" />
+                <span className="upiv3-corner tr" aria-hidden="true" />
+                <span className="upiv3-corner bl" aria-hidden="true" />
+                <span className="upiv3-corner br" aria-hidden="true" />
                 <Image
                   src="/books/uskillbook.png"
                   alt="UPI QR Code"
                   width={300}
                   height={360}
                 />
+                {qrUnlocked && (
+                  <span className="upiv3-scanline" aria-hidden="true" />
+                )}
                 {!qrUnlocked && (
                   <div className="upiv3-qr-loader">
                     <span className="upiv3-spin lg" />
@@ -3748,8 +3756,26 @@ function UPIPaymentModal({
                   ? "Scan with any UPI app to pay"
                   : "Hang tight — preparing your QR"}
               </span>
+
+              {/* Live status while waiting for the payment */}
+              {qrUnlocked && (
+                <span className="upiv3-status">
+                  <span className="upiv3-status-dot" />
+                  Waiting for your payment…
+                </span>
+              )}
             </div>
           </motion.div>
+
+          {/* Works with — real UPI apps */}
+          <div className="upiv3-apps" aria-hidden="true">
+            <span className="upiv3-apps-lbl">Works with</span>
+            <span className="upiv3-app-chip gpay">GPay</span>
+            <span className="upiv3-app-chip phonepe">PhonePe</span>
+            <span className="upiv3-app-chip paytm">Paytm</span>
+            <span className="upiv3-app-chip bhim">BHIM</span>
+            <span className="upiv3-apps-more">+ all UPI</span>
+          </div>
 
           {/* Trust footer */}
           <div className="upiv3-trust">

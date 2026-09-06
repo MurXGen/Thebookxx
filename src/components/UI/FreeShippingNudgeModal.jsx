@@ -245,7 +245,11 @@ export default function FreeShippingNudgeModal({
             exit={{ y: "100%" }}
             transition={{ duration: 0.4, ease: "easeOut" }}
             onClick={(e) => e.stopPropagation()}
-            style={{ maxHeight: "92vh", overflowY: "auto" }}
+            style={{
+              maxHeight: "92vh",
+              display: "flex",
+              flexDirection: "column",
+            }}
           >
             <div className="bill-header">
               <span className="weight-600 font-16">
@@ -261,6 +265,9 @@ export default function FreeShippingNudgeModal({
                 display: "flex",
                 flexDirection: "column",
                 gap: 20,
+                flex: 1,
+                minHeight: 0,
+                overflowY: "auto",
               }}
             >
               {/* ===== Energetic Hero, Claim-Now style ===== */}
@@ -282,8 +289,8 @@ export default function FreeShippingNudgeModal({
                   ease: "easeInOut",
                 }}
                 style={{
-                  padding: "18px 18px 16px",
-                  borderRadius: 14,
+                  padding: "12px 14px",
+                  borderRadius: 12,
                   background: hasUnlocked
                     ? "linear-gradient(135deg, var(--success, #008f0c), #00b510)"
                     : "linear-gradient(135deg, var(--tertiary, #fb8500) 0%, var(--tertiary-light, #ffb703) 100%)",
@@ -297,8 +304,8 @@ export default function FreeShippingNudgeModal({
               >
                 {/* Icon + headline */}
                 <div
-                  className="flex flex-row gap-12 items-center"
-                  style={{ marginBottom: 14 }}
+                  className="flex flex-row gap-10 items-center"
+                  style={{ marginBottom: 10 }}
                 >
                   <motion.div
                     animate={
@@ -316,8 +323,8 @@ export default function FreeShippingNudgeModal({
                     }}
                     style={{
                       flexShrink: 0,
-                      width: 44,
-                      height: 44,
+                      width: 34,
+                      height: 34,
                       borderRadius: "50%",
                       background: "rgba(255,255,255,0.2)",
                       backdropFilter: "blur(4px)",
@@ -327,9 +334,9 @@ export default function FreeShippingNudgeModal({
                     }}
                   >
                     {hasUnlocked ? (
-                      <Check size={22} strokeWidth={2.5} />
+                      <Check size={18} strokeWidth={2.5} />
                     ) : (
-                      <Truck size={22} strokeWidth={2.5} />
+                      <Truck size={18} strokeWidth={2.5} />
                     )}
                   </motion.div>
 
@@ -338,7 +345,7 @@ export default function FreeShippingNudgeModal({
                       <>
                         <div
                           style={{
-                            fontSize: 17,
+                            fontSize: 15,
                             fontWeight: 800,
                             lineHeight: 1.2,
                           }}
@@ -347,9 +354,9 @@ export default function FreeShippingNudgeModal({
                         </div>
                         <div
                           style={{
-                            fontSize: 12,
+                            fontSize: 11,
                             opacity: 0.95,
-                            marginTop: 4,
+                            marginTop: 2,
                           }}
                         >
                           Shipping is on us, ready to checkout
@@ -359,7 +366,7 @@ export default function FreeShippingNudgeModal({
                       <>
                         <div
                           style={{
-                            fontSize: 17,
+                            fontSize: 15,
                             fontWeight: 800,
                             lineHeight: 1.2,
                           }}
@@ -368,9 +375,9 @@ export default function FreeShippingNudgeModal({
                         </div>
                         <div
                           style={{
-                            fontSize: 12,
+                            fontSize: 11,
                             opacity: 0.95,
-                            marginTop: 4,
+                            marginTop: 2,
                           }}
                         >
                           Delivery charges apply on orders below ₹
@@ -384,7 +391,7 @@ export default function FreeShippingNudgeModal({
                 {/* White progress bar on orange */}
                 <div
                   style={{
-                    height: 8,
+                    height: 5,
                     background: "rgba(255,255,255,0.25)",
                     borderRadius: 999,
                     overflow: "hidden",
@@ -404,8 +411,8 @@ export default function FreeShippingNudgeModal({
                 <div
                   className="flex flex-row justify-between"
                   style={{
-                    marginTop: 6,
-                    fontSize: 11,
+                    marginTop: 4,
+                    fontSize: 10,
                     opacity: 0.9,
                     fontWeight: 600,
                   }}
@@ -414,42 +421,6 @@ export default function FreeShippingNudgeModal({
                   <span>₹{FREE_SHIPPING_THRESHOLD}</span>
                 </div>
               </motion.div>
-
-              {/* ===== CTA ===== */}
-              <div
-                className="flex flex-col gap-8 items-stretch"
-                style={{ marginTop: 4 }}
-              >
-                {hasUnlocked ? (
-                  <motion.button
-                    initial={{ scale: 0.95, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    whileTap={{ scale: 0.97 }}
-                    onClick={onProceedAfterUnlock}
-                    className="pri-big-btn width100 flex flex-row items-center justify-center gap-8"
-                  >
-                    Continue to checkout
-                    <ArrowRight size={16} />
-                  </motion.button>
-                ) : (
-                  <>
-                    <button
-                      type="button"
-                      onClick={onSkip}
-                      className="sec-mid-btn width100 flex flex-row items-center justify-center gap-8"
-                      style={{ padding: "12px 16px" }}
-                    >
-                      I'm fine to pay shipping charges
-                    </button>
-                    <span
-                      className="font-10 dark-50"
-                      style={{ textAlign: "center" }}
-                    >
-                      Add a book above, or proceed with delivery charges
-                    </span>
-                  </>
-                )}
-              </div>
 
               {/* ===== Price Filter ===== */}
               {!hasUnlocked && filteredBooks.length > 0 && (
@@ -530,6 +501,47 @@ export default function FreeShippingNudgeModal({
                     Continue with delivery charges
                   </button>
                 </div>
+              )}
+            </div>
+
+            {/* ===== Fixed footer CTA — always reachable at the bottom ===== */}
+            <div
+              className="flex flex-col gap-8 items-stretch"
+              style={{
+                flexShrink: 0,
+                paddingTop: 12,
+                marginTop: 4,
+                borderTop: "1px solid var(--hairline, #ececec)",
+                background: "#fff",
+              }}
+            >
+              {hasUnlocked ? (
+                <motion.button
+                  initial={{ scale: 0.95, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={onProceedAfterUnlock}
+                  className="pri-big-btn width100 flex flex-row items-center justify-center gap-8"
+                >
+                  Continue to checkout
+                  <ArrowRight size={16} />
+                </motion.button>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={onSkip}
+                    className="pri-big-btn width100 flex flex-row items-center justify-center gap-8"
+                  >
+                    I'm fine to pay shipping charges
+                  </button>
+                  <span
+                    className="font-10 dark-50"
+                    style={{ textAlign: "center" }}
+                  >
+                    Add a book above, or proceed with delivery charges
+                  </span>
+                </>
               )}
             </div>
           </motion.div>

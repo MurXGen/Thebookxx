@@ -36022,6 +36022,140 @@ img[data-loaded="true"] {
 .upiv3-qr-img img {
   transition: filter 0.5s ease, opacity 0.5s ease;
 }
+/* Scanner-frame corner brackets */
+.upiv3-corner {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 3px solid var(--tertiary, #fb8500);
+  z-index: 2;
+  pointer-events: none;
+}
+.upiv3-corner.tl {
+  top: 6px;
+  left: 6px;
+  border-right: none;
+  border-bottom: none;
+  border-radius: 6px 0 0 0;
+}
+.upiv3-corner.tr {
+  top: 6px;
+  right: 6px;
+  border-left: none;
+  border-bottom: none;
+  border-radius: 0 6px 0 0;
+}
+.upiv3-corner.bl {
+  bottom: 6px;
+  left: 6px;
+  border-right: none;
+  border-top: none;
+  border-radius: 0 0 0 6px;
+}
+.upiv3-corner.br {
+  bottom: 6px;
+  right: 6px;
+  border-left: none;
+  border-top: none;
+  border-radius: 0 0 6px 0;
+}
+/* Sweeping scan line over the QR */
+.upiv3-scanline {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(251, 133, 0, 0.85),
+    transparent
+  );
+  box-shadow: 0 0 8px rgba(251, 133, 0, 0.7);
+  z-index: 2;
+  animation: upiScan 2.2s ease-in-out infinite;
+}
+@keyframes upiScan {
+  0%,
+  100% {
+    top: 10%;
+  }
+  50% {
+    top: 88%;
+  }
+}
+/* Live waiting-for-payment status */
+.upiv3-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 8px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #b45309;
+  background: rgba(251, 133, 0, 0.1);
+}
+.upiv3-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #fb8500;
+  animation: upiPulse 1.2s ease-in-out infinite;
+}
+@keyframes upiPulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.7);
+  }
+}
+/* Works-with UPI apps strip */
+.upiv3-apps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+.upiv3-apps-lbl,
+.upiv3-apps-more {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--dark-50, #6b7280);
+}
+.upiv3-app-chip {
+  padding: 3px 9px;
+  border-radius: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #fff;
+}
+.upiv3-app-chip.gpay {
+  background: #4285f4;
+}
+.upiv3-app-chip.phonepe {
+  background: #5f259f;
+}
+.upiv3-app-chip.paytm {
+  background: #012970;
+}
+.upiv3-app-chip.bhim {
+  background: #00847f;
+}
+@media (prefers-reduced-motion: reduce) {
+  .upiv3-scanline,
+  .upiv3-status-dot {
+    animation: none;
+  }
+}
 .upiv3-qr-img.loading img {
   filter: blur(9px);
   opacity: 0.55;

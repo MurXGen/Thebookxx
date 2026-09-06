@@ -198,7 +198,6 @@ export default function HomeHero() {
             <Sparkles size={13} /> Scratch &amp; win
           </span>
           <span className="hero-scratch-amt">Cashback upto ₹100</span>
-          <span className="hero-scratch-cta">Tap to scratch →</span>
         </div>
 
         <span className="hero-scratch-teaser" aria-hidden="true">

@@ -46,7 +46,7 @@ export default function ScratchTeaserCard({
         <span className="st-ground" />
       </div>
 
-      {showCaption && (
+      {showCaption && !visualOnly && (
         <span className="st-caption">Scratch to win cashbacks</span>
       )}
 

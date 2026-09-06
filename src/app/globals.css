@@ -13120,6 +13120,9 @@ img[data-loaded="true"] {
   padding: clamp(28px, 5vw, 56px) var(--px-24) clamp(8px, 2vw, 20px);
   max-width: 1200px;
   margin: 0 auto;
+  /* Full-bleed children (scratch band, live-orders bar) use negative margins;
+     clip any sub-pixel overflow so the page never scrolls horizontally. */
+  overflow-x: clip;
 }
 /* Tap-anywhere firecracker sparkle layer */
 .hero-spark-layer {
@@ -23588,7 +23591,7 @@ img[data-loaded="true"] {
 .hero-actions {
   display: flex;
   gap: 12px;
-  margin-top: 18px;
+  margin-top: 0;
   flex-wrap: wrap;
 }
 .hero-search-btn,
@@ -23673,7 +23676,6 @@ img[data-loaded="true"] {
   flex-shrink: 0;
   display: flex;
   align-items: flex-end;
-  margin-right: -4px;
 }
 /* Layered pentagon "scratch cards" that bleed off the band's right edge. */
 .hero-scratch-cards {

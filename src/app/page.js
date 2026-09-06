@@ -19,6 +19,7 @@ import InvoiceParamModal from "@/components/InvoiceParamModal";
 import ReviewGallery from "@/components/ReviewGallery";
 import OneRupeeGrid from "@/components/OneRupeeGrid";
 import TrendingGrid from "@/components/TrendingGrid";
+import NewlyAddedGrid from "@/components/NewlyAddedGrid";
 import CategoryBrowse from "@/components/CategoryBrowse";
 import { BooksSkeleton } from "@/components/UI/BookCardSkeleton";
 
@@ -35,7 +36,10 @@ const ComboDeals = lazy(() => import("@/components/ComboDeals"));
 // eslint-disable-next-line no-unused-vars
 const OneRupeeDeals = lazy(() => import("@/components/OneRupeeDeals"));
 const RecentlyViewed = lazy(() => import("@/components/RecentlyViewed"));
+// Replaced by compact 2-row rails (NewlyAddedGrid / TrendingGrid); kept for reuse.
+// eslint-disable-next-line no-unused-vars
 const NewlyAddedBooks = lazy(() => import("@/components/NewlyAddedBooks"));
+// eslint-disable-next-line no-unused-vars
 const TrendingBooks = lazy(() => import("@/components/TrendingBooks"));
 const UrgencyOffer = lazy(() => import("@/components/UrgencyOffer"));
 const IntroVideo = lazy(() => import("@/components/IntroVideo"));
@@ -139,6 +143,9 @@ export default function HomePage() {
       {/* Compact 2-row trending rail — shows discounted price + savings. */}
       <TrendingGrid />
 
+      {/* Compact 2-row newly-added rail. */}
+      <NewlyAddedGrid />
+
       {/* Category tabs → 2-column book grid with a switch loader. */}
       <CategoryBrowse />
 
@@ -209,21 +216,8 @@ export default function HomePage() {
         </Suspense>
       </LazySection>
 
-      <LazySection threshold={0.05}>
-        <Suspense fallback={<LoadingFallback delay={0.9} />}>
-          <SmoothAppear delay={0.9}>
-            <NewlyAddedBooks />
-          </SmoothAppear>
-        </Suspense>
-      </LazySection>
-
-      <LazySection threshold={0.05}>
-        <Suspense fallback={<LoadingFallback delay={1.0} />}>
-          <SmoothAppear delay={1.0}>
-            <TrendingBooks />
-          </SmoothAppear>
-        </Suspense>
-      </LazySection>
+      {/* Newly Added & Trending carousels moved up as compact 2-row rails
+          (NewlyAddedGrid / TrendingGrid) — old versions removed here. */}
 
       {/* 
       <LazySection threshold={0.05}>

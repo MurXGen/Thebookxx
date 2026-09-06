@@ -13352,21 +13352,19 @@ img[data-loaded="true"] {
   text-decoration: none;
 }
 .hpz-cover {
-  display: grid;
-  place-items: center;
+  display: block;
+  width: 80px;
   height: 108px;
-  width: auto;
+  border-radius: 8px;
+  overflow: hidden;
   background: transparent;
-  overflow: visible;
+  box-shadow: 0 8px 18px -8px rgba(0, 0, 0, 0.45);
   animation: hpzDance 3.4s ease-in-out infinite;
 }
 .hpz-cover img {
+  width: 100%;
   height: 100%;
-  width: auto;
-  max-width: none;
-  object-fit: contain;
-  border-radius: 6px;
-  box-shadow: 0 8px 18px -8px rgba(0, 0, 0, 0.45);
+  object-fit: cover;
   display: block;
 }
 .hpz-r2 .hpz-cover {

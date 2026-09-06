@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useRef } from "react";
+import { useMemo, useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { Plus, Check, Loader2, LayoutGrid, Search } from "lucide-react";
 import { books } from "@/utils/book";
@@ -44,6 +44,21 @@ export default function CategoryBrowse() {
   }, [active]);
   const shown = full.slice(0, visible);
   const hasMore = visible < full.length;
+
+  // On wide screens the first batch may not overflow the rail (so there's
+  // nothing to scroll). Keep revealing batches until it overflows or all show.
+  useEffect(() => {
+    if (switching) return;
+    const el = scrollRef.current;
+    if (!el || !hasMore) return;
+    if (el.scrollWidth <= el.clientWidth + 40) {
+      const t = setTimeout(
+        () => setVisible((v) => Math.min(v + BATCH, full.length)),
+        180,
+      );
+      return () => clearTimeout(t);
+    }
+  }, [visible, full.length, switching, active, hasMore]);
 
   // Reveal the next batch (with a brief skeleton) as the rail nears its end.
   const onRailScroll = () => {

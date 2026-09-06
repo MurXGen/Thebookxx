@@ -13350,6 +13350,9 @@ img[data-loaded="true"] {
   width: 100%;
   padding: 0 2px;
   text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 .hpz-cover {
   display: block;

@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
@@ -13,6 +14,7 @@ import {
   Check,
   Lock,
   Gift,
+  Plus,
   X,
 } from "lucide-react";
 import { books } from "@/utils/book";
@@ -26,8 +28,26 @@ import RecommendationModal from "@/components/RecommendationModal";
 // Static, above-the-fold hero. Gives the homepage a clear value proposition and
 // a real H1 before the animated Bestsellers carousel. All stats are derived
 // from the catalogue / policies, no invented numbers. (SEO copy unchanged.)
+const slugify = (t) =>
+  String(t || "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+
 export default function HomeHero() {
   const titleCount = Math.max(100, Math.floor(books.length / 100) * 100);
+  const { cart, addToCart } = useStore();
+
+  // Readers' top 3 picks shown in the hero showcase.
+  const pickNames = [
+    "Atomic Habits",
+    "The Art of Clarity",
+    "We Are There for Each Other",
+  ];
+  const picks = pickNames
+    .map((n) => books.find((b) => b.name === n))
+    .filter(Boolean);
 
   // Modals wired to the existing app flows.
   const [searchOpen, setSearchOpen] = useState(false);
@@ -36,7 +56,6 @@ export default function HomeHero() {
 
   // Reward tiers driven by the live cart so the chips + the "Unlock more
   // rewards" sheet reflect what the shopper has actually unlocked.
-  const { cart } = useStore();
   const cartAmount = cart.reduce((s, it) => {
     const b = books.find((x) => x.id === it.id);
     return s + (b?.discountedPrice || 0) * (it.qty || 1);
@@ -119,6 +138,7 @@ export default function HomeHero() {
         )}
       </div>
 
+      <div className="hero-top">
       <div className="home-hero-inner">
         {/* Offers row — tap any chip to see all reward tiers */}
         <div className="hero-offers-row" role="list">
@@ -179,6 +199,55 @@ export default function HomeHero() {
             <Sparkles size={18} /> Suggest me
           </button>
         </div>
+      </div>
+
+      {/* Readers' top-3 picks — right on desktop, stacked below on mobile */}
+      {picks.length > 0 && (
+        <aside className="hero-picks">
+          <div className="hero-picks-head">
+            <span className="hero-picks-badge">
+              <Sparkles size={14} /> Readers&apos; top picks
+            </span>
+            <span className="hero-picks-sub">Most-loved this week</span>
+          </div>
+          <div className="hero-picks-list">
+            {picks.map((b, i) => {
+              const url = `/books/${slugify(b.name)}`;
+              const on = cart.some((it) => it.id === b.id);
+              const mrp = Number(b.originalPrice) || 0;
+              const now = Number(b.discountedPrice) || 0;
+              return (
+                <div className="hero-pick" key={b.id}>
+                  <span className="hero-pick-rank">{i + 1}</span>
+                  <Link href={url} className="hero-pick-cover" aria-label={b.name}>
+                    <img src={b.image} alt={b.name} loading="lazy" />
+                  </Link>
+                  <div className="hero-pick-info">
+                    <Link href={url} className="hero-pick-name">
+                      {b.name}
+                    </Link>
+                    <span className="hero-pick-auth">{b.author}</span>
+                    <div className="hero-pick-price">
+                      <span className="hero-pick-now">₹{now}</span>
+                      {mrp > now && (
+                        <span className="hero-pick-mrp">₹{mrp}</span>
+                      )}
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    className={`hero-pick-add${on ? " on" : ""}`}
+                    onClick={() => addToCart(b.id)}
+                    aria-label={on ? "In your bag" : `Add ${b.name} to bag`}
+                  >
+                    {on ? <Check size={16} strokeWidth={3} /> : <Plus size={18} />}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </aside>
+      )}
       </div>
 
       {/* Scratch & win band — reuses the homepage scratch flow (opens the

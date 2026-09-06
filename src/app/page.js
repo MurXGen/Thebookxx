@@ -18,6 +18,7 @@ import QuickReadsTeaser from "@/components/QuickReadsTeaser";
 import InvoiceParamModal from "@/components/InvoiceParamModal";
 import ReviewGallery from "@/components/ReviewGallery";
 import OneRupeeGrid from "@/components/OneRupeeGrid";
+import TrendingGrid from "@/components/TrendingGrid";
 import { BooksSkeleton } from "@/components/UI/BookCardSkeleton";
 
 // Lazy load components with named exports
@@ -132,6 +133,9 @@ export default function HomePage() {
 
       {/* Compact 2-row ₹1 books rail — above the review gallery. */}
       <OneRupeeGrid />
+
+      {/* Compact 2-row trending rail — shows discounted price + savings. */}
+      <TrendingGrid />
 
       <PincodeModal />
 

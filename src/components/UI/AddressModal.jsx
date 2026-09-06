@@ -1752,7 +1752,7 @@ export default function AddressModal({
                       >
                         <span className="pa-row-emoji">🔖</span>
                         <span className="pa-row-main">
-                          <span className="pa-row-name">Matching bookmark</span>
+                          <span className="pa-row-name">Bookmark</span>
                           <span className="pa-row-sub free">
                             Free with online payment
                           </span>

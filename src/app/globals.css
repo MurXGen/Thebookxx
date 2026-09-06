@@ -41482,17 +41482,17 @@ img[data-loaded="true"] {
 }
 /* Single-column add-on rows (compact, grouped by category). */
 .pa-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 8px;
   margin-top: 8px;
 }
 .pa-row {
   display: flex;
   align-items: center;
-  gap: 11px;
+  gap: 8px;
   width: 100%;
-  padding: 11px 13px;
+  padding: 10px 11px;
   border: 1px solid var(--hairline, #ececec);
   border-radius: 12px;
   background: #fff;

@@ -1429,7 +1429,10 @@ export default function AddressModal({
             transition={{ duration: 0.4, ease: "easeOut" }}
           >
             <div className="bill-header">
-              <span className="weight-600 font-16">Delivery Details</span>
+              <span className="flex items-center gap-8">
+                <span className="weight-600 font-16">Delivery Details</span>
+                <span className="ps-step-badge">Step 1/2</span>
+              </span>
               <span className="cursor-pointer" onClick={onClose}>
                 <X size={16} />
               </span>

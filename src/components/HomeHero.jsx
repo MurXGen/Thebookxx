@@ -204,12 +204,6 @@ export default function HomeHero() {
       {/* Readers' top-3 picks — right on desktop, stacked below on mobile */}
       {picks.length > 0 && (
         <aside className="hero-picks">
-          <div className="hero-picks-head">
-            <span className="hero-picks-badge">
-              <Sparkles size={14} /> Readers&apos; top picks
-            </span>
-            <span className="hero-picks-sub">Most-loved this week</span>
-          </div>
           {/* Winners' podium: #1 tallest in the centre, #2 right, #3 left */}
           <div className="hero-podium">
             {[

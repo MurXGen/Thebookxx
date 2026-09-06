@@ -13157,10 +13157,9 @@ img[data-loaded="true"] {
 }
 /* Readers' top-picks showcase */
 .hero-picks {
-  border: 1px solid rgba(251, 133, 0, 0.22);
-  border-radius: 18px;
-  background: linear-gradient(160deg, #fff8ef 0%, #fdeede 100%);
-  padding: 16px;
+  border: none;
+  background: none;
+  padding: 4px 0 0;
 }
 .hero-picks-head {
   display: flex;
@@ -13348,18 +13347,20 @@ img[data-loaded="true"] {
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding-top: 7px;
+  padding-top: 8px;
   border-radius: 12px 12px 0 0;
-  background: linear-gradient(180deg, #fb8500 0%, #ffb703 55%, #fff7ee 100%);
-  box-shadow:
-    inset 0 2px 0 rgba(255, 255, 255, 0.45),
-    0 -1px 0 rgba(224, 111, 0, 0.3);
+  /* Light orange → white, so it fades softly into the page (no harsh block). */
+  background: linear-gradient(
+    180deg,
+    #ffc978 0%,
+    #ffe6cb 55%,
+    rgba(255, 255, 255, 0) 100%
+  );
 }
 .hpz-rank {
   font-size: 20px;
   font-weight: 900;
-  color: #fff;
-  text-shadow: 0 1px 3px rgba(180, 83, 9, 0.55);
+  color: #c2410c;
 }
 /* Podium heights + emphasis: #1 tallest (centre), #2, then #3 shortest. */
 .hpz-r1 .hpz-pillar {

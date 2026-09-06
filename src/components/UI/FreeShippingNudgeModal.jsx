@@ -270,171 +270,17 @@ export default function FreeShippingNudgeModal({
                 overflowY: "auto",
               }}
             >
-              {/* ===== Energetic Hero, Claim-Now style ===== */}
-              <motion.div
-                animate={
-                  hasUnlocked
-                    ? {}
-                    : {
-                        boxShadow: [
-                          "0 6px 20px rgba(251, 133, 0, 0.35)",
-                          "0 10px 28px rgba(251, 133, 0, 0.55)",
-                          "0 6px 20px rgba(251, 133, 0, 0.35)",
-                        ],
-                      }
-                }
-                transition={{
-                  duration: 1.8,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-                style={{
-                  padding: "12px 14px",
-                  borderRadius: 12,
-                  background: hasUnlocked
-                    ? "linear-gradient(135deg, var(--success, #008f0c), #00b510)"
-                    : "linear-gradient(135deg, var(--tertiary, #fb8500) 0%, var(--tertiary-light, #ffb703) 100%)",
-                  color: "#fff",
-                  boxShadow: hasUnlocked
-                    ? "0 6px 20px rgba(0, 143, 12, 0.35)"
-                    : undefined,
-                  overflow: "hidden",
-                  position: "relative",
-                }}
-              >
-                {/* Icon + headline */}
-                <div
-                  className="flex flex-row gap-10 items-center"
-                  style={{ marginBottom: 10 }}
-                >
-                  <motion.div
-                    animate={
-                      hasUnlocked
-                        ? { scale: [1, 1.15, 1] }
-                        : {
-                            rotate: [0, -10, 10, -10, 0],
-                            y: [0, -2, 0],
-                          }
-                    }
-                    transition={{
-                      duration: hasUnlocked ? 0.6 : 1.6,
-                      repeat: hasUnlocked ? 0 : Infinity,
-                      ease: "easeInOut",
-                    }}
-                    style={{
-                      flexShrink: 0,
-                      width: 34,
-                      height: 34,
-                      borderRadius: "50%",
-                      background: "rgba(255,255,255,0.2)",
-                      backdropFilter: "blur(4px)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {hasUnlocked ? (
-                      <Check size={18} strokeWidth={2.5} />
-                    ) : (
-                      <Truck size={18} strokeWidth={2.5} />
-                    )}
-                  </motion.div>
-
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    {hasUnlocked ? (
-                      <>
-                        <div
-                          style={{
-                            fontSize: 15,
-                            fontWeight: 800,
-                            lineHeight: 1.2,
-                          }}
-                        >
-                          You unlocked free delivery
-                        </div>
-                        <div
-                          style={{
-                            fontSize: 11,
-                            opacity: 0.95,
-                            marginTop: 2,
-                          }}
-                        >
-                          Shipping is on us, ready to checkout
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div
-                          style={{
-                            fontSize: 15,
-                            fontWeight: 800,
-                            lineHeight: 1.2,
-                          }}
-                        >
-                          Add ₹{remaining} more for FREE delivery
-                        </div>
-                        <div
-                          style={{
-                            fontSize: 11,
-                            opacity: 0.95,
-                            marginTop: 2,
-                          }}
-                        >
-                          Delivery charges apply on orders below ₹
-                          {FREE_SHIPPING_THRESHOLD}
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </div>
-
-                {/* White progress bar on orange */}
-                <div
-                  style={{
-                    height: 5,
-                    background: "rgba(255,255,255,0.25)",
-                    borderRadius: 999,
-                    overflow: "hidden",
-                  }}
-                >
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${progressPct}%` }}
-                    transition={{ duration: 0.7, ease: "easeOut" }}
-                    style={{
-                      height: "100%",
-                      background: "#fff",
-                      borderRadius: 999,
-                    }}
-                  />
-                </div>
-                <div
-                  className="flex flex-row justify-between"
-                  style={{
-                    marginTop: 4,
-                    fontSize: 10,
-                    opacity: 0.9,
-                    fontWeight: 600,
-                  }}
-                >
-                  <span>₹{totalDiscounted}</span>
-                  <span>₹{FREE_SHIPPING_THRESHOLD}</span>
-                </div>
-              </motion.div>
-
-              {/* ===== Price Filter ===== */}
+              {/* ===== Price Filter — homepage underlined-tab style ===== */}
               {!hasUnlocked && filteredBooks.length > 0 && (
-                <div className="price-filter-container">
-                  <span className="font-12 weight-600">Filter by price:</span>
-                  <div
-                    className="flex flex-row gap-12"
-                    style={{ overflow: "scroll" }}
-                  >
+                <div className="cb-tabbar">
+                  <div className="cb-tabs" role="tablist">
                     {priceFilterOptions.map((option) => (
                       <button
                         key={option.value}
-                        className={`sec-mid-btn ${priceFilter === option.value ? "active" : ""}`}
-                        style={{ minWidth: "fit-content" }}
+                        type="button"
+                        role="tab"
+                        aria-selected={priceFilter === option.value}
+                        className={`cb-tab${priceFilter === option.value ? " on" : ""}`}
                         onClick={() => {
                           setPriceFilter(option.value);
                           setDisplayCount(INITIAL_DISPLAY_COUNT);
@@ -504,17 +350,57 @@ export default function FreeShippingNudgeModal({
               )}
             </div>
 
-            {/* ===== Fixed footer CTA — always reachable at the bottom ===== */}
+            {/* ===== Fixed footer: minimal progress + CTA ===== */}
             <div
               className="flex flex-col gap-8 items-stretch"
               style={{
                 flexShrink: 0,
-                paddingTop: 12,
+                paddingTop: 10,
                 marginTop: 4,
                 borderTop: "1px solid var(--hairline, #ececec)",
                 background: "#fff",
               }}
             >
+              {/* Minimal free-delivery progress strip */}
+              <div style={{ marginBottom: 2 }}>
+                <div
+                  className="flex flex-row justify-between items-center"
+                  style={{ marginBottom: 5, fontSize: 11, fontWeight: 600 }}
+                >
+                  <span
+                    style={{ color: hasUnlocked ? "var(--success, #008f0c)" : "var(--tertiary, #fb8500)" }}
+                  >
+                    {hasUnlocked
+                      ? "🎉 Free delivery unlocked"
+                      : `Add ₹${remaining} more for FREE delivery`}
+                  </span>
+                  <span className="dark-50">
+                    ₹{totalDiscounted} / ₹{FREE_SHIPPING_THRESHOLD}
+                  </span>
+                </div>
+                <div
+                  style={{
+                    height: 4,
+                    background: "var(--dark-10, #eee)",
+                    borderRadius: 999,
+                    overflow: "hidden",
+                  }}
+                >
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progressPct}%` }}
+                    transition={{ duration: 0.6, ease: "easeOut" }}
+                    style={{
+                      height: "100%",
+                      borderRadius: 999,
+                      background: hasUnlocked
+                        ? "var(--success, #008f0c)"
+                        : "linear-gradient(90deg, var(--tertiary, #fb8500), var(--tertiary-light, #ffb703))",
+                    }}
+                  />
+                </div>
+              </div>
+
               {hasUnlocked ? (
                 <motion.button
                   initial={{ scale: 0.95, opacity: 0 }}

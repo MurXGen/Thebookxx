@@ -28,6 +28,7 @@ const SHEET_HEADERS = {
   tinyUrl: "TinyURL",
   orderStatus: "Order Status",
   advancePaid: "Advance Paid",
+  orderComment: "Order Comment",
   timestamp: "Timestamp",
   userAgent: "User Agent",
   shippingId: "Shipping ID",
@@ -339,6 +340,8 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
     paymentLabel = "",
     // ₹99-advance COD: customer paid ₹99 online, rest collected at delivery.
     advancePaid = false,
+    // Reseller margin note ("Reseller: preferred final ₹X · margin ₹Y").
+    orderComment = "",
   } = orderDetails;
 
   // Use the real charge the customer was shown; only fall back to the
@@ -413,6 +416,8 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
     tinyUrl: orderLink,
     // "Yes" when the customer prepaid the ₹99 advance (rest collected at door).
     ...(advancePaid ? { advancePaid: "Yes" } : {}),
+    // Reseller's preferred final price, printed on the invoice.
+    ...(orderComment ? { orderComment } : {}),
     orderStatus: "Processing",
     // Wallet spent is now recorded in the dedicated Wallet tab (see the debit
     // write below), not on the order row.

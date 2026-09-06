@@ -13,6 +13,7 @@ import {
   Truck,
   RefreshCw,
   Info,
+  Tag,
   X,
   MapPin,
   AlertCircle,
@@ -173,6 +174,12 @@ export default function AddressModal({
   const [tempPaymentMethod, setTempPaymentMethod] = useState(null);
   // ₹99-advance COD flow: pay ₹99 online now via the UPI QR, rest at delivery.
   const [advanceMode, setAdvanceMode] = useState(false);
+  // Reselling: shopper adds a margin; their preferred final price is saved to
+  // the Order Comment column (printed on the invoice). Order total is unchanged.
+  const [resellOpen, setResellOpen] = useState(false);
+  const [resellOn, setResellOn] = useState(false);
+  const [resellFinal, setResellFinal] = useState("");
+  const [resellNote, setResellNote] = useState("");
   const [addressFormStartTime, setAddressFormStartTime] = useState(null);
   // Tracks the last logged-in phone we prefilled from, so we re-prefill when a
   // shopper logs in as a different number but don't clobber active editing.
@@ -730,6 +737,7 @@ export default function AddressModal({
         giftWrapCharge: giftWrapAmountForOrder,
         codHandlingFee: feeForThisOrder,
         advancePaid: advance,
+        orderComment: resellNote || "",
         cartBooks,
         quickReadItems,
         orderId,
@@ -1894,6 +1902,10 @@ export default function AddressModal({
                         </span>
                       </div>
                     </div>
+                    <div className="pay-split-perks">
+                      <Check size={12} strokeWidth={3} /> Free bookmark &amp; COD
+                      fee waived
+                    </div>
                   </div>
 
                   {/* Cash on Delivery */}
@@ -1940,6 +1952,30 @@ export default function AddressModal({
                     </span>
                   </button>
                 </div>
+
+                {/* Reselling the order? — add a margin, saved to the invoice. */}
+                <button
+                  type="button"
+                  className="resell-row"
+                  onClick={() => setResellOpen(true)}
+                >
+                  <span className="resell-row-l">
+                    <Tag size={15} />
+                    <span>
+                      <span className="resell-row-title">
+                        Reselling the order?
+                      </span>
+                      {resellNote ? (
+                        <span className="resell-row-sub on">{resellNote}</span>
+                      ) : (
+                        <span className="resell-row-sub">
+                          Add your margin — printed on the invoice
+                        </span>
+                      )}
+                    </span>
+                  </span>
+                  <ChevronRight size={18} />
+                </button>
               </div>
 
               {/* Fixed footer — pay button (full width) + WhatsApp order */}
@@ -2421,6 +2457,122 @@ export default function AddressModal({
                   </p>
                 </div>
               )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ========== Reselling — add margin (saved to Order Comment) ========== */}
+      <AnimatePresence>
+        {resellOpen && (
+          <motion.div
+            className="bill-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setResellOpen(false)}
+            style={{ maxWidth: "980px", margin: "0 auto" }}
+          >
+            <motion.div
+              className="bill-modal resell-modal"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="bill-header">
+                <span className="weight-600 font-16">Reselling the order?</span>
+                <span
+                  className="cursor-pointer"
+                  onClick={() => setResellOpen(false)}
+                >
+                  <X size={18} />
+                </span>
+              </div>
+
+              {(() => {
+                const base = upiTotalForFlow;
+                const finalNum = parseInt(resellFinal, 10) || 0;
+                const margin = Math.max(0, finalNum - base);
+                return (
+                  <div className="resell-body">
+                    <div className="resell-toggle-row">
+                      <span>Add your margin to this order?</span>
+                      <span className="resell-toggle">
+                        <button
+                          type="button"
+                          className={`resell-tg${!resellOn ? " on" : ""}`}
+                          onClick={() => setResellOn(false)}
+                        >
+                          No
+                        </button>
+                        <button
+                          type="button"
+                          className={`resell-tg${resellOn ? " on" : ""}`}
+                          onClick={() => setResellOn(true)}
+                        >
+                          Yes
+                        </button>
+                      </span>
+                    </div>
+
+                    {resellOn && (
+                      <>
+                        <div className="resell-final">
+                          <span className="resell-final-lbl">
+                            Final Price{" "}
+                            <span className="resell-final-eq">
+                              Order Total (₹{base}) + Your Margin
+                            </span>
+                          </span>
+                          <div className="resell-input-wrap">
+                            <span>₹</span>
+                            <input
+                              type="tel"
+                              inputMode="numeric"
+                              className="resell-input"
+                              placeholder={`${base}`}
+                              value={resellFinal}
+                              onChange={(e) =>
+                                setResellFinal(
+                                  e.target.value.replace(/\D/g, "").slice(0, 6),
+                                )
+                              }
+                            />
+                          </div>
+                          <span className="resell-margin">
+                            Your Margin: ₹{margin}
+                          </span>
+                        </div>
+                        <div className="resell-note">
+                          Final Price will be printed on the invoice.
+                        </div>
+                      </>
+                    )}
+
+                    <button
+                      type="button"
+                      className="pri-big-btn resell-continue"
+                      onClick={() => {
+                        if (resellOn && finalNum > base) {
+                          setResellNote(
+                            `Reseller: preferred final ₹${finalNum} · margin ₹${margin}`,
+                          );
+                        } else {
+                          setResellNote("");
+                          setResellOn(false);
+                        }
+                        setResellOpen(false);
+                      }}
+                    >
+                      {resellOn && finalNum > base
+                        ? "Save margin"
+                        : "Continue"}
+                    </button>
+                  </div>
+                );
+              })()}
             </motion.div>
           </motion.div>
         )}

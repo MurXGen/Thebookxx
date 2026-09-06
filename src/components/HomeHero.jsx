@@ -222,15 +222,10 @@ export default function HomeHero() {
         </div>
 
         <span className="hero-scratch-cards" aria-hidden="true">
-          <span className="hero-scratch-card c-back" />
-          <span className="hero-scratch-card c-left">
-            <span className="hero-scratch-shine" />
-          </span>
-          <span className="hero-scratch-card c-right">
-            <span className="hero-scratch-shine" />
+          <span className="hero-scratch-pent p-back" />
+          <span className="hero-scratch-pent p-front">
             <span className="hero-scratch-coin">₹</span>
           </span>
-          <span className="hero-scratch-ground" />
         </span>
       </div>
 

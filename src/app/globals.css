@@ -23621,9 +23621,10 @@ img[data-loaded="true"] {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: 28px 0 4px;
-  padding: 22px 18px;
-  border-radius: 18px;
+  /* Full-bleed: cancel the hero's horizontal padding so it stretches edge-to-edge. */
+  margin: 28px calc(-1 * var(--px-24)) 4px;
+  padding: 26px var(--px-24);
+  border-radius: 0;
   overflow: hidden;
   background: linear-gradient(120deg, #fdf1e2 0%, #fbe6cf 100%);
   cursor: pointer;
@@ -23673,53 +23674,43 @@ img[data-loaded="true"] {
   margin-top: 1px;
   align-self: flex-end;
 }
+/* Layered pentagon "scratch cards" that bleed off the band's right edge. */
 .hero-scratch-cards {
   position: relative;
-  width: 112px;
-  height: 92px;
+  width: 128px;
+  height: 118px;
   flex-shrink: 0;
+  /* Push into the right padding so the shape runs off the edge (clipped). */
+  margin-right: calc(-1 * var(--px-24) - 6px);
 }
-.hero-scratch-card {
+.hero-scratch-pent {
   position: absolute;
-  bottom: 8px;
-  left: 50%;
-  width: 66px;
-  height: 80px;
-  border-radius: 14px;
-  background: linear-gradient(155deg, #ffbf6b 0%, #fb8f2b 60%, #f0791a 100%);
-  box-shadow:
-    0 12px 20px rgba(224, 111, 0, 0.28),
-    inset 0 0 0 1.5px rgba(255, 255, 255, 0.35);
+  bottom: 0;
+  width: 104px;
+  height: 104px;
+  clip-path: polygon(50% 0%, 100% 40%, 82% 100%, 18% 100%, 0% 40%);
 }
-.hero-scratch-card.c-back {
-  width: 60px;
-  height: 74px;
-  transform: translateX(-38%) rotate(9deg);
-  background: linear-gradient(155deg, #ffb457 0%, #f4831f 100%);
-  filter: brightness(0.96);
-  z-index: 0;
-}
-.hero-scratch-card.c-left {
-  transform: translateX(-64%) rotate(-6deg);
+.hero-scratch-pent.p-back {
+  right: 2px;
+  transform: rotate(8deg);
+  background: linear-gradient(160deg, #ffb457 0%, #ef8420 100%);
   z-index: 1;
 }
-.hero-scratch-card.c-right {
-  transform: translateX(-30%) rotate(6deg);
+.hero-scratch-pent.p-front {
+  right: 24px;
+  transform: rotate(-4deg);
+  background: linear-gradient(160deg, #ffc987 0%, #fb922f 70%, #f2831c 100%);
   z-index: 2;
 }
 .hero-scratch-coin {
   position: absolute;
-  top: 8px;
-  right: 9px;
-  font-size: 20px;
+  top: 34px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 26px;
   font-weight: 900;
-  color: rgba(255, 255, 255, 0.92);
+  color: rgba(255, 255, 255, 0.95);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
-/* Flat reference look — no shine sweep, no planted mound. */
-.hero-scratch-shine,
-.hero-scratch-ground {
-  display: none;
 }
 .offer-tier-lock {
   flex-shrink: 0;

@@ -17,6 +17,7 @@ import QuickReadsPromo from "@/components/QuickReadsPromo";
 import QuickReadsTeaser from "@/components/QuickReadsTeaser";
 import InvoiceParamModal from "@/components/InvoiceParamModal";
 import ReviewGallery from "@/components/ReviewGallery";
+import OneRupeeGrid from "@/components/OneRupeeGrid";
 import { BooksSkeleton } from "@/components/UI/BookCardSkeleton";
 
 // Lazy load components with named exports
@@ -26,8 +27,10 @@ const RecommendationModal = lazy(
 );
 const OffersGift = lazy(() => import("@/components/OffersGift"));
 const CatalogueSection = lazy(() => import("@/components/CatalogueSection"));
-const OneRupeeDeals = lazy(() => import("@/components/OneRupeeDeals"));
 const ComboDeals = lazy(() => import("@/components/ComboDeals"));
+// Kept for reference — the old ₹1 rail, now replaced by <OneRupeeGrid /> above.
+// eslint-disable-next-line no-unused-vars
+const OneRupeeDeals = lazy(() => import("@/components/OneRupeeDeals"));
 const RecentlyViewed = lazy(() => import("@/components/RecentlyViewed"));
 const NewlyAddedBooks = lazy(() => import("@/components/NewlyAddedBooks"));
 const TrendingBooks = lazy(() => import("@/components/TrendingBooks"));
@@ -127,6 +130,9 @@ export default function HomePage() {
       {/* Static hero, provides the visible H1 + value prop above the carousel. */}
       <HomeHero />
 
+      {/* Compact 2-row ₹1 books rail — above the review gallery. */}
+      <OneRupeeGrid />
+
       <PincodeModal />
 
       {/* <UnlockModal /> */}
@@ -174,7 +180,8 @@ export default function HomePage() {
         </Suspense>
       </LazySection>
 
-      {/* ₹1 books deals carousel — moved above the hero, below categories */}
+      {/* ₹1 books rail now lives above the review gallery (OneRupeeGrid).
+          The old carousel is kept but hidden:
       <LazySection threshold={0.05}>
         <Suspense fallback={<BooksSkeleton />}>
           <SmoothAppear delay={0.3}>
@@ -182,6 +189,7 @@ export default function HomePage() {
           </SmoothAppear>
         </Suspense>
       </LazySection>
+      */}
 
       <LazySection threshold={0.05}>
         <Suspense fallback={<LoadingFallback delay={0.8} />}>

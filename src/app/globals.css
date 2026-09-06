@@ -24000,6 +24000,168 @@ img[data-loaded="true"] {
     animation: none;
   }
 }
+
+/* ===== ₹1 store — compact 2-row scrollable rail ===== */
+.or1-section {
+  margin: 10px 0;
+}
+.or1-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.or1-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.or1-head-left {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.or1-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #b45309;
+  background: rgba(251, 133, 0, 0.12);
+}
+.or1-title {
+  margin: 2px 0 0;
+  font-size: clamp(20px, 5vw, 26px);
+  font-weight: 800;
+  color: var(--foreground, #0a0a0a);
+  line-height: 1.15;
+}
+.or1-accent {
+  color: var(--tertiary, #fb8500);
+}
+.or1-sub {
+  margin: 0;
+  font-size: 13px;
+  color: var(--dark-50, #6b7280);
+}
+.or1-save-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #fff;
+  background: linear-gradient(135deg, #fb8500, #ffb703);
+  box-shadow: 0 6px 14px -6px rgba(251, 133, 0, 0.6);
+}
+.or1-save-pill svg {
+  color: #fff;
+}
+/* Horizontal scroller holding a 2-row column-flow grid. */
+.or1-scroll {
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  margin: 0 calc(-1 * var(--px-24));
+  padding: 2px var(--px-24) 6px;
+}
+.or1-scroll::-webkit-scrollbar {
+  display: none;
+}
+.or1-grid {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(2, auto);
+  grid-auto-columns: 118px;
+  gap: 16px 12px;
+  width: max-content;
+}
+.or1-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 118px;
+}
+.or1-cover {
+  position: relative;
+  width: 118px;
+  height: 118px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #eef0f2;
+}
+.or1-cover-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.or1-cover-link img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.or1-add {
+  position: absolute;
+  right: 7px;
+  bottom: 7px;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  border: none;
+  color: var(--tertiary, #fb8500);
+  background: #fff;
+  box-shadow: 0 3px 10px -2px rgba(0, 0, 0, 0.28);
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease,
+    color 0.15s ease;
+}
+.or1-add:active {
+  transform: scale(0.9);
+}
+.or1-add.on {
+  color: #fff;
+  background: var(--tertiary, #fb8500);
+}
+.or1-name {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--foreground, #0a0a0a);
+  line-height: 1.3;
+  text-decoration: none;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.or1-price {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.or1-now {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--tertiary, #fb8500);
+}
+.or1-mrp {
+  font-size: 12px;
+  color: var(--dark-40, #9ca3af);
+  text-decoration: line-through;
+}
 /* Add-on / benefit chips row at the bottom of the order card. */
 .mo-card > .mo-card-chips {
   display: flex;

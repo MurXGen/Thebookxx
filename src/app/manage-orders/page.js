@@ -228,6 +228,17 @@ const waMessages = (order) => {
       text: `✅ *Confirm your order*\n\n${hi}\n\nWe've received your order. Please reply *YES* to confirm so we can pack and ship it right away.${linkBlock}`,
     },
     {
+      key: "predelivery",
+      label: "Pre-delivery check-in",
+      text:
+        `🙏 *Quick delivery check-in*\n\n${hi}\n\nYour TheBookX order is being prepared 📚 To make sure it reaches you smoothly on the *first attempt*, could you help us with a few quick things?\n\n` +
+        `1️⃣ *Is your address correct?* Please confirm your full address, landmark & pincode.\n` +
+        `2️⃣ *Available this week?* Delivery usually arrives on a *weekday* — will someone be home to receive it?\n` +
+        `3️⃣ *Not home that day?* No problem — you can ask a *neighbour or family member* to collect it for you.\n` +
+        `4️⃣ *Prefer to pay online?* Pay now and your parcel is fully secured & priority-shipped — reply *PAY* and we'll send the link.\n\n` +
+        `Just reply *YES* to confirm (or send any corrections) and we'll dispatch right away 🚚\n\nThank you for helping us get it to you right the first time! 💛${linkBlock}`,
+    },
+    {
       key: "about",
       label: "About to ship",
       text: `📦 *About to ship*\n\n${hi}\n\nYour TheBookX order is packed and about to ship. Tracking details will follow shortly.${linkBlock}`,

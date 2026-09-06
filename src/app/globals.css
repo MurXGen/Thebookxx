@@ -24012,7 +24012,7 @@ img[data-loaded="true"] {
 }
 .or1-head {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
 }
@@ -24081,21 +24081,25 @@ img[data-loaded="true"] {
   display: grid;
   grid-auto-flow: column;
   grid-template-rows: repeat(2, auto);
-  grid-auto-columns: 118px;
-  gap: 16px 12px;
+  grid-auto-columns: 130px;
+  gap: 14px 12px;
   width: max-content;
 }
 .or1-card {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  width: 118px;
+  width: 130px;
+  padding: 8px;
+  border-radius: 16px;
+  background: linear-gradient(160deg, #fff7ee 0%, #fdeede 100%);
+  border: 1px solid rgba(251, 133, 0, 0.14);
 }
 .or1-cover {
   position: relative;
-  width: 118px;
-  height: 118px;
-  border-radius: 14px;
+  width: 114px;
+  height: 114px;
+  border-radius: 12px;
   overflow: hidden;
   background: #eef0f2;
 }
@@ -24135,6 +24139,17 @@ img[data-loaded="true"] {
 .or1-add.on {
   color: #fff;
   background: var(--tertiary, #fb8500);
+}
+.or1-add.loading {
+  cursor: default;
+}
+.or1-spin {
+  animation: or1Spin 0.7s linear infinite;
+}
+@keyframes or1Spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 .or1-name {
   font-size: 12.5px;

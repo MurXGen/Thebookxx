@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { Plus, Check, Sparkles } from "lucide-react";
+import { Plus, Check, Sparkles, Loader2 } from "lucide-react";
 import { books } from "@/utils/book";
 import { useStore } from "@/context/StoreContext";
+import { showToast } from "@/context/ToastContext";
 
 const slugify = (t) =>
   String(t || "")
@@ -16,10 +18,43 @@ const slugify = (t) =>
 // together (grid-auto-flow: column) so twice the books fit in the same height.
 export default function OneRupeeGrid() {
   const { cart, addToCart } = useStore();
+  const [loadingId, setLoadingId] = useState(null);
   const oneRupee = books.filter((b) => b.discountedPrice === 1 && b.image);
   if (!oneRupee.length) return null;
 
   const inCart = (id) => cart.some((i) => i.id === id);
+  // Allotment rule: only one ₹1 book per order.
+  const oneRupeeInCartId = (() => {
+    const it = cart.find((i) => {
+      const b = books.find((x) => x.id === i.id);
+      return b?.discountedPrice === 1;
+    });
+    return it?.id || null;
+  })();
+
+  const handleAdd = (book) => {
+    // Already this book → gentle nudge, no dup.
+    if (inCart(book.id)) {
+      showToast("It's already in your bag 🛍️", "info");
+      return;
+    }
+    // Another ₹1 book already claimed → friendly one-per-order message.
+    if (oneRupeeInCartId && oneRupeeInCartId !== book.id) {
+      showToast(
+        "Just one ₹1 book per order 😊 Remove the one in your bag to pick this instead.",
+        "info",
+      );
+      return;
+    }
+    if (loadingId) return;
+    setLoadingId(book.id);
+    // Brief loading so the tap feels responsive, then confirm.
+    setTimeout(() => {
+      addToCart(book.id);
+      setLoadingId(null);
+      showToast(`Added for ₹1 🎉 “${book.name}” is in your bag`, "success");
+    }, 450);
+  };
   const maxSave = Math.max(
     0,
     ...oneRupee.map((b) => (Number(b.originalPrice) || 0) - 1),
@@ -58,6 +93,7 @@ export default function OneRupeeGrid() {
           <div className="or1-grid">
             {oneRupee.map((b) => {
               const on = inCart(b.id);
+              const loading = loadingId === b.id;
               const url = `/books/${slugify(b.name)}`;
               return (
                 <div className="or1-card" key={b.id}>
@@ -67,11 +103,18 @@ export default function OneRupeeGrid() {
                     </Link>
                     <button
                       type="button"
-                      className={`or1-add${on ? " on" : ""}`}
-                      onClick={() => addToCart(b.id)}
+                      className={`or1-add${on ? " on" : ""}${loading ? " loading" : ""}`}
+                      onClick={() => handleAdd(b)}
+                      disabled={loading}
                       aria-label={on ? "Added to bag" : `Add ${b.name} to bag`}
                     >
-                      {on ? <Check size={16} strokeWidth={3} /> : <Plus size={18} />}
+                      {loading ? (
+                        <Loader2 size={16} className="or1-spin" />
+                      ) : on ? (
+                        <Check size={16} strokeWidth={3} />
+                      ) : (
+                        <Plus size={18} />
+                      )}
                     </button>
                   </div>
                   <Link href={url} className="or1-name">

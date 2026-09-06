@@ -112,23 +112,26 @@ export default function CategoryBrowse() {
           ))}
         </div>
 
-        {/* Books grid (2 columns) or interactive loader while switching */}
+        {/* Compact 2-row scrollable rail (same as ₹1 / trending) or loader */}
         {switching ? (
-          <div className="cb-grid cb-loading" aria-busy="true">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div className="cb-skel" key={i}>
-                <span className="cb-skel-cover">
-                  <span className="cb-skel-shine" />
-                </span>
-                <span className="cb-skel-line w70" />
-                <span className="cb-skel-line w40" />
-              </div>
-            ))}
+          <div className="or1-scroll" aria-busy="true">
+            <div className="or1-grid">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div className="cb-skel" key={i}>
+                  <span className="cb-skel-cover">
+                    <span className="cb-skel-shine" />
+                  </span>
+                  <span className="cb-skel-line w70" />
+                  <span className="cb-skel-line w40" />
+                </div>
+              ))}
+            </div>
           </div>
         ) : shown.length === 0 ? (
           <p className="cb-empty">No books in this category yet.</p>
         ) : (
-          <div className="cb-grid">
+          <div className="or1-scroll">
+          <div className="or1-grid">
             {shown.map((b) => {
               const on = inCart(b.id);
               const loading = loadingId === b.id;
@@ -137,8 +140,8 @@ export default function CategoryBrowse() {
               const now = Number(b.discountedPrice) || 0;
               const save = mrp > now ? mrp - now : 0;
               return (
-                <div className="or1-card cb-card" key={b.id}>
-                  <div className="or1-cover cb-cover">
+                <div className="or1-card" key={b.id}>
+                  <div className="or1-cover">
                     <Link href={url} className="or1-cover-link" aria-label={b.name}>
                       <img src={b.image} alt={b.name} loading="lazy" />
                     </Link>
@@ -171,6 +174,7 @@ export default function CategoryBrowse() {
                 </div>
               );
             })}
+          </div>
           </div>
         )}
       </div>

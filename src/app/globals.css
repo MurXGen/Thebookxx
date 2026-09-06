@@ -24253,6 +24253,7 @@ img[data-loaded="true"] {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  width: 130px;
   padding: 8px;
   border-radius: 16px;
   background: linear-gradient(160deg, #fff7ee 0%, #fdeede 100%);
@@ -24260,8 +24261,8 @@ img[data-loaded="true"] {
 }
 .cb-skel-cover {
   position: relative;
-  width: 100%;
-  aspect-ratio: 1 / 1;
+  width: 114px;
+  height: 114px;
   border-radius: 12px;
   overflow: hidden;
   background: #eceef1;

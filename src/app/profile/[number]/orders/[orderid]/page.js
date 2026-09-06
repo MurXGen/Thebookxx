@@ -30,6 +30,7 @@ import {
   Pencil,
   Zap,
   ChevronRight,
+  Check,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import TrackSheet from "@/components/profile/TrackSheet";
@@ -201,6 +202,9 @@ export default function OrderDetailPage() {
   const [noteEditing, setNoteEditing] = useState(false);
   const [noteDraft, setNoteDraft] = useState("");
   const [noteSaving, setNoteSaving] = useState(false);
+  // Faster-delivery upgrade (applied to the sheet) + undo snapshot.
+  const [upgrading, setUpgrading] = useState(false);
+  const [upgradeUndo, setUpgradeUndo] = useState(null);
 
   const mapRef = useRef(null);
   const mapObj = useRef(null);
@@ -895,17 +899,58 @@ export default function OrderDetailPage() {
     return extra > 0 ? extra : null;
   })();
 
-  const requestFasterUpgrade = () => {
-    const link =
-      typeof window !== "undefined"
-        ? `${window.location.origin}/profile/${number}/orders/${encodeURIComponent(orderId)}`
-        : "";
-    const msg = `Hi TheBookX, I'd like to *upgrade this order to Faster delivery* (1–5 days) 🚀\nOrder: ${orderId}\nExtra to pay: ₹${upgradeExtra}\n${link}`;
-    window.open(
-      `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(msg)}`,
-      "_blank",
-      "noopener,noreferrer",
+  // Apply the faster-delivery upgrade directly to the order row (adds the extra
+  // charge to the total) and offer an Undo that reverts it exactly.
+  const applyFasterUpgrade = async () => {
+    if (upgrading || upgradeExtra == null) return;
+    setUpgrading(true);
+    const prev = {
+      type: order["Delivery Type"] || "",
+      total: order["Total Amount"] || "",
+      charge: order["Delivery Charge"] || "",
+    };
+    const orderValue = bd.sub || 0;
+    const hasOneRupee = books.some(
+      (b) => Number(b.price) === 1 || Number(b.total) === 1,
     );
+    const fasterCharge = getDeliveryCharge(orderValue, true, hasOneRupee);
+    const newTotal =
+      (parseFloat(order["Total Amount"]) || bd.grand) + upgradeExtra;
+    const fields = {
+      "Delivery Type": "Faster Delivery",
+      "Total Amount": String(newTotal),
+      "Delivery Charge": String(fasterCharge),
+    };
+    try {
+      await updateOrderRow(orderId, fields);
+      setOrder((o) => ({ ...o, ...fields }));
+      setUpgradeUndo(prev);
+    } catch (e) {
+      console.error("Faster upgrade failed", e);
+      alert("Couldn't upgrade right now. Please try again.");
+    } finally {
+      setUpgrading(false);
+    }
+  };
+
+  const undoFasterUpgrade = async () => {
+    if (!upgradeUndo || upgrading) return;
+    setUpgrading(true);
+    const fields = {
+      "Delivery Type": upgradeUndo.type,
+      "Total Amount": String(upgradeUndo.total),
+      "Delivery Charge": String(upgradeUndo.charge),
+    };
+    try {
+      await updateOrderRow(orderId, fields);
+      setOrder((o) => ({ ...o, ...fields }));
+      setUpgradeUndo(null);
+    } catch (e) {
+      console.error("Undo upgrade failed", e);
+      alert("Couldn't undo right now. Please try again.");
+    } finally {
+      setUpgrading(false);
+    }
   };
 
   // Recommendations — a few books not already in this order, always featuring
@@ -1041,26 +1086,40 @@ export default function OrderDetailPage() {
       {/* Upgrade to faster delivery — only for an un-dispatched Standard order.
           Extra cost mirrors the checkout delivery tiers. */}
       {upgradeExtra != null && (
-        <button
-          type="button"
-          className="od-upgrade-cta"
-          onClick={requestFasterUpgrade}
-        >
+        <div className="od-upgrade-cta">
           <span className="od-upgrade-ic">
             <Zap size={18} />
           </span>
-          <span className="od-upgrade-txt">
+          <div className="od-upgrade-txt">
             <strong>Upgrade to faster delivery</strong>
-            <span>
-              Arrives in 1–5 days instead of {etaMin}–{etaMax} · add ₹
-              {upgradeExtra}
-            </span>
+            <span>Arrives in 1–5 days instead of {etaMin}–{etaMax} days</span>
+          </div>
+          <button
+            type="button"
+            className="od-upgrade-btn"
+            onClick={applyFasterUpgrade}
+            disabled={upgrading}
+          >
+            {upgrading ? "Upgrading…" : `Upgrade +₹${upgradeExtra}`}
+          </button>
+        </div>
+      )}
+
+      {/* Fixed undo bar after a faster-delivery upgrade */}
+      {upgradeUndo && (
+        <div className="od-undo-bar">
+          <span className="od-undo-txt">
+            <Check size={15} /> Upgraded to faster delivery
           </span>
-          <span className="od-upgrade-cost">
-            +₹{upgradeExtra}
-            <ChevronRight size={16} />
-          </span>
-        </button>
+          <button
+            type="button"
+            className="od-undo-btn"
+            onClick={undoFasterUpgrade}
+            disabled={upgrading}
+          >
+            Undo
+          </button>
+        </div>
       )}
 
       {/* Deliver-to (directly below the map) */}

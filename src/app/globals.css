@@ -38848,6 +38848,61 @@ img[data-loaded="true"] {
   font-weight: 800;
   color: #fb8500;
 }
+.od-upgrade-btn {
+  flex-shrink: 0;
+  padding: 10px 16px;
+  border-radius: 11px;
+  border: none;
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #fff;
+  background: linear-gradient(135deg, #fb8500, #ffb703);
+  cursor: pointer;
+}
+.od-upgrade-btn:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+/* Fixed undo bar after upgrading */
+.od-undo-bar {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: calc(100% - 32px);
+  max-width: 520px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: #0a0a0a;
+  color: #fff;
+  box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.5);
+}
+.od-undo-txt {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+}
+.od-undo-txt svg {
+  color: #22c55e;
+}
+.od-undo-btn {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: none;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
 .dark .od-upgrade-txt strong {
   color: #f5f5f5;
 }

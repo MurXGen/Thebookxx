@@ -13123,6 +13123,16 @@ img[data-loaded="true"] {
   /* Full-bleed children (scratch band, live-orders bar) use negative margins;
      clip any sub-pixel overflow so the page never scrolls horizontally. */
   overflow-x: clip;
+  /* Subtle dotted texture (same feel as the scratch band). */
+  background-image:
+    radial-gradient(rgba(251, 133, 0, 0.16) 2px, transparent 2.5px),
+    radial-gradient(rgba(255, 183, 3, 0.13) 1.6px, transparent 2px);
+  background-size:
+    40px 36px,
+    54px 50px;
+  background-position:
+    0 0,
+    20px 22px;
 }
 /* Tap-anywhere firecracker sparkle layer */
 .hero-spark-layer {
@@ -13141,10 +13151,10 @@ img[data-loaded="true"] {
 .home-hero-inner {
   max-width: none;
   margin: 0;
-  text-align: left;
+  text-align: center;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
+  align-items: center;
   gap: 14px;
   flex: 1;
   min-width: 0;
@@ -13443,7 +13453,7 @@ img[data-loaded="true"] {
 .home-hero-stats {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-start;
+  justify-content: center;
   gap: 10px 22px;
   margin-top: 8px;
   width: 100%;
@@ -23811,6 +23821,7 @@ img[data-loaded="true"] {
 /* ===== Home hero revamp — offers chips, actions, scratch band ===== */
 .hero-offers-row {
   display: flex;
+  justify-content: center;
   gap: 10px;
   overflow-x: auto;
   padding: 2px 2px 4px;
@@ -23841,6 +23852,7 @@ img[data-loaded="true"] {
 }
 .hero-actions {
   display: flex;
+  justify-content: center;
   gap: 12px;
   margin-top: 0;
   flex-wrap: wrap;

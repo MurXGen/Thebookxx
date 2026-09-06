@@ -13358,7 +13358,7 @@ img[data-loaded="true"] {
   border-radius: 8px;
   overflow: hidden;
   background: transparent;
-  box-shadow: 0 8px 18px -8px rgba(0, 0, 0, 0.45);
+  box-shadow: none;
   animation: hpzDance 3.4s ease-in-out infinite;
 }
 .hpz-cover img {

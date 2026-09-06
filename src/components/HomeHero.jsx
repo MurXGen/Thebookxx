@@ -206,19 +206,49 @@ export default function HomeHero() {
       {/* Readers' top-3 picks — right on desktop, stacked below on mobile */}
       {picks.length > 0 && (
         <aside className="hero-picks">
-          {/* Winners' podium: #1 tallest in the centre, #2 right, #3 left */}
-          <div className="hero-podium">
+          {/* Winners' podium: #1 tallest in the centre, #2 right, #3 left.
+              Rises into place when scrolled into view, retracts when past. */}
+          <motion.div
+            className="hero-podium"
+            initial="hide"
+            whileInView="show"
+            viewport={{ once: false, amount: 0.35 }}
+          >
+            {/* tiny confetti */}
+            <motion.span
+              className="hpz-confetti"
+              aria-hidden="true"
+              variants={{ hide: { opacity: 0 }, show: { opacity: 1 } }}
+              transition={{ duration: 0.3, delay: 0.35 }}
+            >
+              {Array.from({ length: 10 }).map((_, i) => (
+                <span key={i} className={`hpz-cf hpz-cf-${i}`} />
+              ))}
+            </motion.span>
+
             {[
               { b: picks[2], rank: 3 },
               { b: picks[0], rank: 1 },
               { b: picks[1], rank: 2 },
             ]
               .filter((x) => x.b)
-              .map(({ b, rank }) => {
+              .map(({ b, rank }, idx) => {
                 const url = `/books/${slugify(b.name)}`;
                 const now = Number(b.discountedPrice) || 0;
                 return (
-                  <div className={`hpz hpz-r${rank}`} key={b.id}>
+                  <motion.div
+                    className={`hpz hpz-r${rank}`}
+                    key={b.id}
+                    variants={{
+                      hide: { opacity: 0, y: 48 },
+                      show: { opacity: 1, y: 0 },
+                    }}
+                    transition={{
+                      duration: 0.5,
+                      ease: [0.22, 1, 0.36, 1],
+                      delay: idx * 0.1,
+                    }}
+                  >
                     <Link href={url} className="hpz-book" aria-label={b.name}>
                       <span className="hpz-cover">
                         <img src={b.image} alt={b.name} loading="lazy" />
@@ -229,10 +259,10 @@ export default function HomeHero() {
                     <div className="hpz-pillar">
                       <span className="hpz-rank">{rank}</span>
                     </div>
-                  </div>
+                  </motion.div>
                 );
               })}
-          </div>
+          </motion.div>
         </aside>
       )}
       </div>

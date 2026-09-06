@@ -315,7 +315,7 @@ export default function CartBar({ tab = "books" }) {
       className={`cart-bar${barHidden ? " cart-bar-hidden" : ""}`}
       style={{ maxWidth: "680px", margin: "0 auto" }}
     >
-      {/* Small emotional prompt above the bar — opens the suggestion modal */}
+      {/* Suggest strip ("Not sure what to read next?") — hidden for now.
       <button
         type="button"
         className="cbx-suggest-strip"
@@ -330,6 +330,7 @@ export default function CartBar({ tab = "books" }) {
           Not sure what to read next? <b>Get a pick →</b>
         </span>
       </button>
+      */}
       <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
       <RecommendationModal
         isOpen={suggestOpen}

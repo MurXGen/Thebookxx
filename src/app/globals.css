@@ -13296,11 +13296,44 @@ img[data-loaded="true"] {
 }
 /* Winners' podium showcase */
 .hero-podium {
+  position: relative;
   display: flex;
   align-items: flex-end;
   justify-content: center;
   gap: 8px;
   padding-top: 6px;
+}
+/* Tiny confetti scattered around the podium. */
+.hpz-confetti {
+  position: absolute;
+  inset: -6px 0 0;
+  pointer-events: none;
+  z-index: 4;
+}
+.hpz-cf {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 1.5px;
+  opacity: 0.9;
+  animation: hpzFloat 2.6s ease-in-out infinite;
+}
+.hpz-cf-0 { left: 12%; top: 6%; background: #fb8500; }
+.hpz-cf-1 { left: 30%; top: 0; background: #ffb703; animation-delay: 0.3s; }
+.hpz-cf-2 { left: 48%; top: 10%; background: #c0223b; animation-delay: 0.6s; }
+.hpz-cf-3 { left: 66%; top: 2%; background: #22c55e; animation-delay: 0.15s; }
+.hpz-cf-4 { left: 84%; top: 8%; background: #3b82f6; animation-delay: 0.45s; }
+.hpz-cf-5 { left: 8%; top: 32%; background: #ffb703; animation-delay: 0.9s; }
+.hpz-cf-6 { left: 92%; top: 30%; background: #fb8500; animation-delay: 0.2s; }
+.hpz-cf-7 { left: 40%; top: 40%; background: #22c55e; animation-delay: 0.7s; }
+.hpz-cf-8 { left: 74%; top: 44%; background: #c0223b; animation-delay: 0.5s; }
+.hpz-cf-9 { left: 22%; top: 18%; background: #3b82f6; animation-delay: 1s; }
+@keyframes hpzFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.5; }
+  50% { transform: translateY(-6px) rotate(160deg); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hpz-cf { animation: none; }
 }
 .hpz {
   display: flex;

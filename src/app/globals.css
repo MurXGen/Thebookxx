@@ -19618,6 +19618,9 @@ img[data-loaded="true"] {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
+  /* Keep full-bleed rails/bars from ever creating a horizontal page scroll,
+     which would otherwise steal the swipe so the inner rails can't scroll. */
+  overflow-x: clip;
 }
 /* Inner page containers shouldn't double-cap or add extra side gaps now
    that the root .app-shell handles centering + max-width. */

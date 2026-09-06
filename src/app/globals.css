@@ -34769,12 +34769,12 @@ img[data-loaded="true"] {
   font-weight: 700;
   color: var(--success, #008f0c);
 }
-/* COD extra-fee note */
+/* COD extra-fee note — red so the extra charge reads as a negative. */
 .pay-method-cod-fee {
-  color: #b45309 !important;
+  color: #dc2626 !important;
 }
 .pay-method-cod-fee strong {
-  color: #b45309;
+  color: #dc2626;
 }
 /* Inline UPI apps under the selected Pay Online card */
 .pay-online-apps {

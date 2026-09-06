@@ -13462,8 +13462,37 @@ img[data-loaded="true"] {
   display: block;
   margin-top: 2px;
   font-size: 1.18em;
-  color: var(--tertiary);
+  color: var(--tertiary, #fb8500);
   white-space: nowrap;
+  /* Glossy shine sweeping across the orange text. */
+  background: linear-gradient(
+    100deg,
+    #fb8500 0%,
+    #fb8500 38%,
+    #ffe7c2 50%,
+    #ffffff 53%,
+    #ffe7c2 56%,
+    #fb8500 68%,
+    #fb8500 100%
+  );
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: heroAccentShine 3.2s linear infinite;
+}
+@keyframes heroAccentShine {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -60% 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-hero-accent {
+    animation: none;
+  }
 }
 .home-hero-sub {
   font-size: clamp(14px, 2.2vw, 16.5px);

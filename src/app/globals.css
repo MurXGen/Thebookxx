@@ -24679,6 +24679,13 @@ img[data-loaded="true"] {
   font-size: 13px;
   line-height: 1;
 }
+/* ₹99-advance prepaid — highlighted so ops collect only the balance. */
+.mo-addon-badge.mo-addon-adv {
+  color: #166534;
+  background: rgba(0, 143, 12, 0.12);
+  border-color: rgba(0, 143, 12, 0.35);
+  font-weight: 800;
+}
 .mo-ctrls {
   display: flex;
   align-items: center;

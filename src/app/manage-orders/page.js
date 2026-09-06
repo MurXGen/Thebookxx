@@ -9429,7 +9429,16 @@ export default function ManageOrdersPage() {
                                 grandB - subB - delFeeB - giftFeeB < 0
                                   ? subB + delFeeB + giftFeeB - grandB
                                   : 0;
+                              const advancePaid = /^\s*yes/i.test(
+                                String(order["Advance Paid"] || ""),
+                              );
                               const badges = [];
+                              if (advancePaid)
+                                badges.push({
+                                  e: "💸",
+                                  t: "₹99 advance paid",
+                                  cls: "adv",
+                                });
                               if (fasterD) badges.push({ e: "⚡", t: "Faster" });
                               if (freeD)
                                 badges.push({ e: "🚚", t: "Free delivery" });
@@ -9445,7 +9454,10 @@ export default function ManageOrdersPage() {
                               return (
                                 <div className="mo-card-chips">
                                   {badges.map((b, bi) => (
-                                    <span className="mo-addon-badge" key={bi}>
+                                    <span
+                                      className={`mo-addon-badge${b.cls ? " mo-addon-" + b.cls : ""}`}
+                                      key={bi}
+                                    >
                                       <span className="mo-addon-emoji">{b.e}</span>
                                       {b.t}
                                     </span>

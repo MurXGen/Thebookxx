@@ -34769,6 +34769,60 @@ img[data-loaded="true"] {
   font-weight: 700;
   color: var(--success, #008f0c);
 }
+/* COD extra-fee note */
+.pay-method-cod-fee {
+  color: #b45309 !important;
+}
+.pay-method-cod-fee strong {
+  color: #b45309;
+}
+/* Inline UPI apps under the selected Pay Online card */
+.pay-online-apps {
+  display: flex;
+  flex-direction: column;
+  margin: -6px 0 4px;
+  border: 1.5px solid rgba(251, 133, 0, 0.3);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.poa {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 11px 14px;
+  border: none;
+  border-top: 1px solid var(--hairline, #ececec);
+  background: #fff;
+  cursor: pointer;
+  text-align: left;
+}
+.poa:first-child {
+  border-top: none;
+}
+.poa:hover {
+  background: var(--dark-4, #f9fafb);
+}
+.poa-ic {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+}
+.poa-nm {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--foreground, #0a0a0a);
+}
+.poa-chev {
+  color: var(--dark-40, #9ca3af);
+}
 /* Reselling row + margin modal */
 .resell-row {
   display: flex;

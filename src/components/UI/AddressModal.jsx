@@ -1034,6 +1034,17 @@ export default function AddressModal({
     setShowCODSuccess(true);
   };
 
+  // Inline UPI-app pick (from under the Pay Online card) → straight to the QR.
+  const selectUpiAppInline = (app) => {
+    if (!isFormValid()) {
+      showToast(validationMessage(), "error");
+      return;
+    }
+    setAdvanceMode(false);
+    setShowPaySelect(false);
+    chooseUpiApp(app);
+  };
+
   const beginPayment = (method) => {
     if (!isFormValid()) {
       showToast(validationMessage(), "error");
@@ -1843,6 +1854,38 @@ export default function AddressModal({
                     </span>
                   </button>
 
+                  {/* When Pay Online is picked, choose a UPI app inline. */}
+                  {paySel === "UPI" && (
+                    <div className="pay-online-apps">
+                      {[
+                        { k: "Google Pay", c: "#1a73e8" },
+                        { k: "PhonePe", c: "#5f259f" },
+                        { k: "Paytm", c: "#00baf2" },
+                        { k: "Other UPI apps", c: "#fb8500" },
+                      ].map((app) => (
+                        <button
+                          key={app.k}
+                          type="button"
+                          className="poa"
+                          onClick={() => selectUpiAppInline(app.k)}
+                        >
+                          <span
+                            className="poa-ic"
+                            style={{ background: app.c }}
+                          >
+                            {app.k === "Other UPI apps" ? (
+                              <Smartphone size={16} />
+                            ) : (
+                              app.k[0]
+                            )}
+                          </span>
+                          <span className="poa-nm">{app.k}</span>
+                          <ChevronRight size={16} className="poa-chev" />
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
                   {/* Pay in two parts — ₹99 online now + rest at delivery */}
                   <div
                     className={`pay-method pay-method-split${paySel === "ADV" ? " selected" : ""}`}
@@ -1937,8 +1980,14 @@ export default function AddressModal({
                             <circle cx="12" cy="12" r="2.5" />
                           </svg>
                         </span>
-                        <span className="pay-method-name">
-                          Cash on Delivery
+                        <span className="pay-method-labels">
+                          <span className="pay-method-name">
+                            Cash on Delivery
+                          </span>
+                          <span className="pay-method-desc pay-method-cod-fee">
+                            Includes <strong>+₹{codFeeAmount}</strong> handling
+                            fee
+                          </span>
                         </span>
                       </span>
                       <span

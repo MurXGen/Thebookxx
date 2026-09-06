@@ -24101,18 +24101,27 @@ img[data-loaded="true"] {
   height: 114px;
   border-radius: 12px;
   overflow: hidden;
-  background: #eef0f2;
+  /* Soft card backdrop so the full book cover sits nicely (like BookCard). */
+  background: linear-gradient(155deg, #f6f7f9 0%, #eceef1 100%);
 }
 .or1-cover-link {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   height: 100%;
+  padding: 8px;
 }
 .or1-cover-link img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  /* Show the whole cover (no cropping), like the main book cards. */
+  object-fit: contain;
   display: block;
+  border-radius: 4px;
+  box-shadow: 0 4px 10px -4px rgba(0, 0, 0, 0.3);
 }
 .or1-add {
   position: absolute;

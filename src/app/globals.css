@@ -34687,6 +34687,79 @@ img[data-loaded="true"] {
   border-color: var(--tertiary, #fb8500);
   box-shadow: 0 0 0 3px rgba(251, 133, 0, 0.12);
 }
+/* Step badge in the payment sheet header */
+.ps-step-badge {
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  color: var(--tertiary, #fb8500);
+  background: rgba(251, 133, 0, 0.12);
+}
+/* "Pay in two parts" split card */
+.pay-method-splittop {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 14px 16px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+}
+.pay-split-row {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  margin: 0 14px 14px;
+  border: 1px dashed rgba(251, 133, 0, 0.45);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.pay-split-seg {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+}
+.pay-split-seg.on {
+  background: rgba(251, 133, 0, 0.09);
+}
+.pay-split-seg:first-child {
+  border-right: 1px dashed rgba(251, 133, 0, 0.45);
+}
+.pay-split-amt {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--foreground, #0a0a0a);
+}
+.pay-split-lbl {
+  font-size: 11.5px;
+  color: var(--dark-50, #6b7280);
+}
+.pay-split-plus {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1px solid rgba(251, 133, 0, 0.45);
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--dark-50, #6b7280);
+  z-index: 1;
+}
 .pay-method-head {
   display: flex;
   align-items: center;

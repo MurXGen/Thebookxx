@@ -1645,8 +1645,11 @@ export default function AddressModal({
               onClick={(e) => e.stopPropagation()}
             >
               <div className="bill-header">
-                <span className="weight-600 font-16">
-                  Choose payment method
+                <span className="flex items-center gap-8">
+                  <span className="weight-600 font-16">
+                    Choose payment method
+                  </span>
+                  <span className="ps-step-badge">Step 2/2</span>
                 </span>
                 <span
                   className="cursor-pointer"
@@ -1832,36 +1835,31 @@ export default function AddressModal({
                     </span>
                   </button>
 
-                  {/* Pay ₹99 advance, rest at delivery (no COD charges) */}
-                  <button
-                    type="button"
-                    onClick={() => setPaySel("ADV")}
-                    className={`pay-method${paySel === "ADV" ? " selected" : ""}`}
+                  {/* Pay in two parts — ₹99 online now + rest at delivery */}
+                  <div
+                    className={`pay-method pay-method-split${paySel === "ADV" ? " selected" : ""}`}
                   >
-                    <span className="pay-method-head">
+                    <button
+                      type="button"
+                      className="pay-method-splittop"
+                      onClick={() => setPaySel("ADV")}
+                    >
                       <span className="pay-method-amt">
-                        <span className="pay-method-price">
-                          ₹{codAdvanceAmount} now
+                        <span className="pay-method-strike">
+                          ₹{codTotalWithFee}
                         </span>
-                        <span className="pay-method-save">No COD fee</span>
+                        <span className="pay-method-price">
+                          ₹{advanceOrderTotal}
+                        </span>
+                        {codTotalWithFee > advanceOrderTotal && (
+                          <span className="pay-method-save">
+                            Save ₹{codTotalWithFee - advanceOrderTotal}
+                          </span>
+                        )}
                       </span>
                       <span className="pay-method-div" aria-hidden="true" />
                       <span className="pay-method-body">
-                        <span className="pay-method-ic pay-ic-online">
-                          <svg width="22" height="22" viewBox="0 0 24 24">
-                            <path d="M4 4 L13 12 L4 20 Z" fill="#ff8500" />
-                            <path d="M9 4 L18 12 L9 20 Z" fill="#0a8f0c" />
-                          </svg>
-                        </span>
-                        <span className="pay-method-labels">
-                          <span className="pay-method-name">
-                            Pay ₹{codAdvanceAmount} advance
-                          </span>
-                          <span className="pay-method-desc">
-                            Pay ₹{advanceRemaining} at delivery ·{" "}
-                            <strong>no COD charges</strong>
-                          </span>
-                        </span>
+                        <span className="pay-method-name">Pay in two parts</span>
                       </span>
                       <span
                         className={`pay-method-radio${paySel === "ADV" ? " on" : ""}`}
@@ -1871,8 +1869,32 @@ export default function AddressModal({
                           <Check size={13} strokeWidth={3} />
                         )}
                       </span>
-                    </span>
-                  </button>
+                    </button>
+                    <div
+                      className="pay-split-row"
+                      onClick={() => setPaySel("ADV")}
+                    >
+                      <div className="pay-split-seg on">
+                        <span className="pay-split-amt">
+                          ₹{codAdvanceAmount}
+                          <svg width="16" height="16" viewBox="0 0 24 24">
+                            <path d="M4 4 L13 12 L4 20 Z" fill="#ff8500" />
+                            <path d="M9 4 L18 12 L9 20 Z" fill="#0a8f0c" />
+                          </svg>
+                        </span>
+                        <span className="pay-split-lbl">Pay with UPI now</span>
+                      </div>
+                      <span className="pay-split-plus" aria-hidden="true">
+                        +
+                      </span>
+                      <div className="pay-split-seg">
+                        <span className="pay-split-amt">₹{advanceRemaining}</span>
+                        <span className="pay-split-lbl">
+                          Cash on Delivery later
+                        </span>
+                      </div>
+                    </div>
+                  </div>
 
                   {/* Cash on Delivery */}
                   <button

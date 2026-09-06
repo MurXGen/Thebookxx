@@ -16,14 +16,25 @@ export default function SupportSheet({ phone = "", orderId = "", onClose }) {
   const ref = orderId ? ` (order ${orderId})` : "";
   const sig = num ? ` My number is ${num}.` : "";
 
+  // Link the customer's own order page so support can pull it up instantly:
+  // the specific order-detail page when an order is open, otherwise their
+  // orders list.
+  const ordersUrl = num ? `https://www.thebookx.in/profile/${num}/orders` : "";
+  const detailUrl =
+    num && orderId
+      ? `https://www.thebookx.in/profile/${num}/orders/${orderId}`
+      : "";
+  const link = detailUrl || ordersUrl;
+  const linkLine = link ? `\n\nMy order page: ${link}` : "";
+
   const topics = [
-    { label: "Where is my order?", msg: `Hi TheBookX, I'd like an update on where my order is${ref}.${sig}` },
-    { label: "Delivery estimate", msg: `Hi TheBookX, when can I expect my order${ref} to be delivered?${sig}` },
-    { label: "Change delivery address", msg: `Hi TheBookX, I'd like to change the delivery address for my order${ref}.${sig}` },
-    { label: "Payment help", msg: `Hi TheBookX, I need help with the payment for my order${ref}.${sig}` },
-    { label: "Wrong or damaged item", msg: `Hi TheBookX, I received a wrong or damaged item${ref} and need help.${sig}` },
-    { label: "Bookmark compensation", msg: `Hi TheBookX, I'd like to claim compensation for my missing bookmark${ref}.${sig}` },
-    { label: "Something else", msg: `Hi TheBookX, I need some help with my order${ref}.${sig}` },
+    { label: "Where is my order?", msg: `Hi TheBookX, I'd like an update on where my order is${ref}.${sig}${linkLine}` },
+    { label: "Delivery estimate", msg: `Hi TheBookX, when can I expect my order${ref} to be delivered?${sig}${linkLine}` },
+    { label: "Change delivery address", msg: `Hi TheBookX, I'd like to change the delivery address for my order${ref}.${sig}${linkLine}` },
+    { label: "Payment help", msg: `Hi TheBookX, I need help with the payment for my order${ref}.${sig}${linkLine}` },
+    { label: "Wrong or damaged item", msg: `Hi TheBookX, I received a wrong or damaged item${ref} and need help.${sig}${linkLine}` },
+    { label: "Bookmark compensation", msg: `Hi TheBookX, I'd like to claim compensation for my missing bookmark${ref}.${sig}${linkLine}` },
+    { label: "Something else", msg: `Hi TheBookX, I need some help with my order${ref}.${sig}${linkLine}` },
   ];
 
   const [selected, setSelected] = useState(0);

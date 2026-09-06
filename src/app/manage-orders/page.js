@@ -160,6 +160,14 @@ const INDIA_POST_URL = "https://www.indiapost.gov.in";
 const booksUnavailableMessage = (order, names) => {
   const nm = String(order["Customer Name"] || "").trim() || "there";
   const many = names.length > 1;
+  const oid = order["Order ID"] || "";
+  const ph10 = String(order["Phone Number"] || "")
+    .replace(/\D/g, "")
+    .slice(-10);
+  const orderDetailUrl =
+    oid && ph10
+      ? `https://www.thebookx.in/profile/${ph10}/orders/${encodeURIComponent(oid)}`
+      : PROFILE_URL;
   return [
     `Hi ${nm} 👋`,
     "",
@@ -176,6 +184,8 @@ const booksUnavailableMessage = (order, names) => {
     "3️⃣  Get a few *recommendations* from us to choose from",
     "",
     "Reply with the number and we'll take it forward right away. So sorry for the inconvenience 🙏",
+    "",
+    `🔗 Your order: ${orderDetailUrl}`,
   ].join("\n");
 };
 

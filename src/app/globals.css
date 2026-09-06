@@ -24128,7 +24128,8 @@ img[data-loaded="true"] {
 .lo-bar {
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+  gap: 8px;
   /* Stretch to the section edges (cancel the hero's horizontal padding). */
   margin: 2px calc(-1 * var(--px-24)) 2px;
   padding: 11px var(--px-24);
@@ -24142,15 +24143,13 @@ img[data-loaded="true"] {
 }
 .lo-bar-track {
   position: relative;
-  flex: 1;
+  flex: 0 1 auto;
   min-width: 0;
-  height: 20px;
   overflow: hidden;
 }
 .lo-bar-row {
-  position: absolute;
-  inset: 0;
   display: block;
+  max-width: 100%;
   font-size: 13.5px;
   color: var(--dark-60, #4b5563);
   white-space: nowrap;

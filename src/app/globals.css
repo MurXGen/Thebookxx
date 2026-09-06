@@ -13139,8 +13139,8 @@ img[data-loaded="true"] {
   will-change: transform, opacity;
 }
 .home-hero-inner {
-  max-width: 760px;
-  margin: 0 auto;
+  max-width: none;
+  margin: 0;
   text-align: left;
   display: flex;
   flex-direction: column;
@@ -23654,10 +23654,58 @@ img[data-loaded="true"] {
   color: var(--tertiary, #fb8500);
 }
 .hero-scratch-amt {
-  font-size: clamp(22px, 6.6vw, 30px);
+  font-size: clamp(18px, 5vw, 24px);
   font-weight: 800;
+  color: var(--foreground, #0a0a0a);
+  line-height: 1.12;
+}
+.hero-scratch-amt-big {
   color: var(--tertiary, #fb8500);
-  line-height: 1.08;
+  font-size: 1.22em;
+}
+.hero-scratch-sub {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--dark-50, #6b7280);
+}
+.hero-scratch-sub svg {
+  color: var(--tertiary, #fb8500);
+}
+/* Decorative twinkle dots across the band. */
+.hero-scratch-deco {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(rgba(251, 133, 0, 0.5) 2px, transparent 2.5px),
+    radial-gradient(rgba(255, 183, 3, 0.45) 1.6px, transparent 2px);
+  background-size:
+    38px 34px,
+    52px 48px;
+  background-position:
+    0 0,
+    18px 20px;
+  opacity: 0.35;
+  animation: heroScratchTwinkle 3.6s ease-in-out infinite;
+}
+@keyframes heroScratchTwinkle {
+  0%,
+  100% {
+    opacity: 0.28;
+  }
+  50% {
+    opacity: 0.48;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-scratch-deco {
+    animation: none;
+  }
 }
 .hero-scratch-cta {
   display: inline-flex;
@@ -23673,6 +23721,8 @@ img[data-loaded="true"] {
 }
 /* Planted scratch-card cluster (reused ScratchTeaserCard) on the band's right. */
 .hero-scratch-teaser {
+  position: relative;
+  z-index: 2;
   flex-shrink: 0;
   display: flex;
   align-items: flex-end;
@@ -24197,6 +24247,30 @@ img[data-loaded="true"] {
   font-weight: 700;
   color: var(--success, #008f0c);
   background: rgba(0, 143, 12, 0.1);
+}
+/* Desktop: larger cards so the covers read clearly. */
+@media (min-width: 900px) {
+  .or1-grid {
+    grid-auto-columns: 172px;
+    gap: 18px 16px;
+  }
+  .or1-card {
+    width: 172px;
+  }
+  .or1-cover {
+    width: 156px;
+    height: 156px;
+  }
+  .or1-name {
+    font-size: 13.5px;
+  }
+  .cb-skel {
+    width: 172px;
+  }
+  .cb-skel-cover {
+    width: 156px;
+    height: 156px;
+  }
 }
 
 /* ===== Category browse — scrollable tabs + 2-col grid + loader ===== */

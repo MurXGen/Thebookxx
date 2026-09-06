@@ -193,11 +193,18 @@ export default function HomeHero() {
         }
         aria-label="Scratch to win cashback"
       >
+        <span className="hero-scratch-deco" aria-hidden="true" />
+
         <div className="hero-scratch-copy">
           <span className="hero-scratch-kicker">
-            <Sparkles size={13} /> Scratch &amp; win
+            <Gift size={13} /> Scratch &amp; win
           </span>
-          <span className="hero-scratch-amt">Cashback upto ₹100</span>
+          <span className="hero-scratch-amt">
+            Cashback upto <span className="hero-scratch-amt-big">₹100</span>
+          </span>
+          <span className="hero-scratch-sub">
+            <Sparkles size={13} /> Every order wins — tap the card to reveal
+          </span>
         </div>
 
         <span className="hero-scratch-teaser" aria-hidden="true">

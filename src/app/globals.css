@@ -24022,6 +24022,7 @@ img[data-loaded="true"] {
   position: relative;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   /* Full-bleed: cancel the hero's horizontal padding so it stretches edge-to-edge. */
   margin: 28px calc(-1 * var(--px-24)) 4px;
@@ -24037,7 +24038,7 @@ img[data-loaded="true"] {
   align-items: center;
   text-align: center;
   gap: 6px;
-  flex: 1;
+  flex: 0 1 auto;
   min-width: 0;
   z-index: 2;
 }
@@ -24122,7 +24123,9 @@ img[data-loaded="true"] {
 }
 /* Planted scratch-card cluster (reused ScratchTeaserCard) on the band's right. */
 .hero-scratch-teaser {
-  position: relative;
+  position: absolute;
+  right: var(--px-24);
+  bottom: 0;
   z-index: 2;
   flex-shrink: 0;
   display: flex;

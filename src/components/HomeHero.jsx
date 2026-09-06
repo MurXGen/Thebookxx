@@ -182,9 +182,6 @@ export default function HomeHero() {
           ))}
         </div>
 
-        {/* Live-order social-proof ticker */}
-        <LiveOrdersStrip />
-
         {/* Primary actions — Search + Suggest */}
         <div className="hero-actions">
           <button
@@ -202,6 +199,9 @@ export default function HomeHero() {
             <Sparkles size={18} /> Suggest me
           </button>
         </div>
+
+        {/* Live-order social-proof ticker */}
+        <LiveOrdersStrip />
       </div>
 
       {/* Readers' top-3 picks — right on desktop, stacked below on mobile */}

@@ -140,23 +140,25 @@ export default function HomeHero() {
 
       <div className="hero-top">
       <div className="home-hero-inner">
-        {/* Offers row — tap any chip to see all reward tiers */}
+        {/* Offers marquee — auto-scrolls; tap any chip to see all reward tiers */}
         <div className="hero-offers-row" role="list">
-          {offerChips.map((c, i) => (
-            <button
-              key={`${c.label}-${i}`}
-              type="button"
-              className="hero-offer-chip"
-              onClick={() => setOffersOpen(true)}
-            >
-              {c.freeShip ? (
-                <Truck size={15} className="hero-offer-ic" />
-              ) : (
-                <BadgePercent size={15} className="hero-offer-ic" />
-              )}
-              {c.label}
-            </button>
-          ))}
+          <div className="hero-offers-track">
+            {[...offerChips, ...offerChips].map((c, i) => (
+              <button
+                key={`${c.label}-${i}`}
+                type="button"
+                className="hero-offer-chip"
+                onClick={() => setOffersOpen(true)}
+              >
+                {c.freeShip ? (
+                  <Truck size={15} className="hero-offer-ic" />
+                ) : (
+                  <BadgePercent size={15} className="hero-offer-ic" />
+                )}
+                {c.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         <h1 className="home-hero-title">

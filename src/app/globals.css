@@ -13154,7 +13154,7 @@ img[data-loaded="true"] {
   text-align: center;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   gap: 14px;
   flex: 1;
   min-width: 0;
@@ -13437,7 +13437,7 @@ img[data-loaded="true"] {
   color: var(--dark-50);
   max-width: 620px;
   line-height: 1.55;
-  margin: 0;
+  margin: 0 auto;
 }
 .home-hero-cta {
   display: flex;
@@ -13455,7 +13455,7 @@ img[data-loaded="true"] {
   flex-wrap: wrap;
   justify-content: center;
   gap: 10px 22px;
-  margin-top: 8px;
+  margin: 8px auto 0;
   width: 100%;
   max-width: 620px;
 }
@@ -23820,16 +23820,47 @@ img[data-loaded="true"] {
 
 /* ===== Home hero revamp — offers chips, actions, scratch band ===== */
 .hero-offers-row {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  overflow-x: auto;
-  padding: 2px 2px 4px;
+  position: relative;
+  overflow: hidden;
+  padding: 2px 0 4px;
   margin-bottom: 18px;
-  scrollbar-width: none;
+  /* Soft white fade at both edges as chips scroll in/out. */
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 6%,
+    #000 94%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 6%,
+    #000 94%,
+    transparent
+  );
 }
-.hero-offers-row::-webkit-scrollbar {
-  display: none;
+.hero-offers-track {
+  display: flex;
+  gap: 10px;
+  width: max-content;
+  animation: heroOffersScroll 26s linear infinite;
+}
+.hero-offers-row:hover .hero-offers-track {
+  animation-play-state: paused;
+}
+@keyframes heroOffersScroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-offers-track {
+    animation: none;
+  }
 }
 .hero-offer-chip {
   display: inline-flex;

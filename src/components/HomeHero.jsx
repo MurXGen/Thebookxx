@@ -20,6 +20,7 @@ import {
 import { books } from "@/utils/book";
 import { getCartOffers } from "@/utils/cartOffers";
 import { useStore } from "@/context/StoreContext";
+import { showToast } from "@/context/ToastContext";
 import LiveOrdersStrip from "@/components/LiveOrdersStrip";
 import ScratchTeaserCard from "@/components/ScratchTeaserCard";
 import SearchOverlay from "@/components/SearchOverlay";
@@ -249,13 +250,24 @@ export default function HomeHero() {
                       delay: idx * 0.1,
                     }}
                   >
-                    <Link href={url} className="hpz-book" aria-label={b.name}>
+                    <button
+                      type="button"
+                      className="hpz-book"
+                      aria-label={`Add ${b.name} to bag`}
+                      onClick={() => {
+                        addToCart(b.id);
+                        showToast(
+                          `Added to your bag 🎉 “${b.name}”`,
+                          "success",
+                        );
+                      }}
+                    >
                       <span className="hpz-cover">
                         <img src={b.image} alt={b.name} loading="lazy" />
                       </span>
                       <span className="hpz-title">{b.name}</span>
                       <span className="hpz-price">₹{now}</span>
-                    </Link>
+                    </button>
                     <div className="hpz-pillar">
                       <span className="hpz-rank">{rank}</span>
                     </div>

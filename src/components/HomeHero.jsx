@@ -210,41 +210,32 @@ export default function HomeHero() {
             </span>
             <span className="hero-picks-sub">Most-loved this week</span>
           </div>
-          <div className="hero-picks-list">
-            {picks.map((b, i) => {
-              const url = `/books/${slugify(b.name)}`;
-              const on = cart.some((it) => it.id === b.id);
-              const mrp = Number(b.originalPrice) || 0;
-              const now = Number(b.discountedPrice) || 0;
-              return (
-                <div className="hero-pick" key={b.id}>
-                  <span className="hero-pick-rank">{i + 1}</span>
-                  <Link href={url} className="hero-pick-cover" aria-label={b.name}>
-                    <img src={b.image} alt={b.name} loading="lazy" />
-                  </Link>
-                  <div className="hero-pick-info">
-                    <Link href={url} className="hero-pick-name">
-                      {b.name}
+          {/* Winners' podium: #1 tallest in the centre, #2 right, #3 left */}
+          <div className="hero-podium">
+            {[
+              { b: picks[2], rank: 3 },
+              { b: picks[0], rank: 1 },
+              { b: picks[1], rank: 2 },
+            ]
+              .filter((x) => x.b)
+              .map(({ b, rank }) => {
+                const url = `/books/${slugify(b.name)}`;
+                const now = Number(b.discountedPrice) || 0;
+                return (
+                  <div className={`hpz hpz-r${rank}`} key={b.id}>
+                    <Link href={url} className="hpz-book" aria-label={b.name}>
+                      <span className="hpz-cover">
+                        <img src={b.image} alt={b.name} loading="lazy" />
+                      </span>
+                      <span className="hpz-title">{b.name}</span>
+                      <span className="hpz-price">₹{now}</span>
                     </Link>
-                    <span className="hero-pick-auth">{b.author}</span>
-                    <div className="hero-pick-price">
-                      <span className="hero-pick-now">₹{now}</span>
-                      {mrp > now && (
-                        <span className="hero-pick-mrp">₹{mrp}</span>
-                      )}
+                    <div className="hpz-pillar">
+                      <span className="hpz-rank">{rank}</span>
                     </div>
                   </div>
-                  <button
-                    type="button"
-                    className={`hero-pick-add${on ? " on" : ""}`}
-                    onClick={() => addToCart(b.id)}
-                    aria-label={on ? "In your bag" : `Add ${b.name} to bag`}
-                  >
-                    {on ? <Check size={16} strokeWidth={3} /> : <Plus size={18} />}
-                  </button>
-                </div>
-              );
-            })}
+                );
+              })}
           </div>
         </aside>
       )}

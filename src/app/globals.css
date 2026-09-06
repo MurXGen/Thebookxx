@@ -13285,6 +13285,102 @@ img[data-loaded="true"] {
 .hero-pick-add.on {
   background: var(--tertiary, #fb8500);
 }
+/* Winners' podium showcase */
+.hero-podium {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 8px;
+  padding-top: 6px;
+}
+.hpz {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+.hpz-book {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  width: 100%;
+  padding: 0 2px;
+  text-decoration: none;
+}
+.hpz-cover {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 76px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 8px 18px -8px rgba(0, 0, 0, 0.4);
+}
+.hpz-cover img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 3px;
+}
+.hpz-title {
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  color: var(--foreground, #0a0a0a);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.hpz-price {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--tertiary, #fb8500);
+}
+.hpz-pillar {
+  position: relative;
+  width: 100%;
+  margin-top: 8px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 7px;
+  border-radius: 12px 12px 0 0;
+  background: linear-gradient(180deg, #fb8500 0%, #ffb703 55%, #fff7ee 100%);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.45),
+    0 -1px 0 rgba(224, 111, 0, 0.3);
+}
+.hpz-rank {
+  font-size: 20px;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(180, 83, 9, 0.55);
+}
+/* Podium heights + emphasis: #1 tallest (centre), #2, then #3 shortest. */
+.hpz-r1 .hpz-pillar {
+  height: 100px;
+}
+.hpz-r2 .hpz-pillar {
+  height: 68px;
+}
+.hpz-r3 .hpz-pillar {
+  height: 46px;
+}
+.hpz-r1 .hpz-cover {
+  width: 74px;
+  height: 96px;
+}
+.hpz-r1 .hpz-rank {
+  font-size: 24px;
+}
+.hpz-r1 .hpz-price {
+  font-size: 13px;
+}
 @media (min-width: 900px) {
   .hero-top {
     flex-direction: row;

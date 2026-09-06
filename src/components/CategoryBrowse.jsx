@@ -2,11 +2,12 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Plus, Check, Loader2, LayoutGrid } from "lucide-react";
+import { Plus, Check, Loader2, LayoutGrid, Search } from "lucide-react";
 import { books } from "@/utils/book";
 import { getCatalogueData, getBooksByCategory } from "@/utils/catalogueUtils";
 import { useStore } from "@/context/StoreContext";
 import { showToast } from "@/context/ToastContext";
+import SearchOverlay from "@/components/SearchOverlay";
 
 const slugify = (t) =>
   String(t || "")
@@ -22,6 +23,7 @@ export default function CategoryBrowse() {
   const [active, setActive] = useState("all");
   const [switching, setSwitching] = useState(false);
   const [loadingId, setLoadingId] = useState(null);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   // Tabs: "All" first, then categories with the most books.
   const cats = useMemo(() => {
@@ -96,20 +98,30 @@ export default function CategoryBrowse() {
           </div>
         </div>
 
-        {/* Scrollable category tabs */}
-        <div className="cb-tabs" role="tablist">
-          {cats.map((c) => (
-            <button
-              key={c.key}
-              type="button"
-              role="tab"
-              aria-selected={active === c.key}
-              className={`cb-tab${active === c.key ? " on" : ""}`}
-              onClick={() => selectTab(c.key)}
-            >
-              {c.label}
-            </button>
-          ))}
+        {/* Underlined, scrollable category tabs + a pinned search button */}
+        <div className="cb-tabbar">
+          <div className="cb-tabs" role="tablist">
+            {cats.map((c) => (
+              <button
+                key={c.key}
+                type="button"
+                role="tab"
+                aria-selected={active === c.key}
+                className={`cb-tab${active === c.key ? " on" : ""}`}
+                onClick={() => selectTab(c.key)}
+              >
+                {c.label}
+              </button>
+            ))}
+          </div>
+          <button
+            type="button"
+            className="cb-search"
+            onClick={() => setSearchOpen(true)}
+            aria-label="Search books"
+          >
+            <Search size={18} />
+          </button>
         </div>
 
         {/* Compact 2-row scrollable rail (same as ₹1 / trending) or loader */}
@@ -178,6 +190,8 @@ export default function CategoryBrowse() {
           </div>
         )}
       </div>
+
+      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
     </section>
   );
 }

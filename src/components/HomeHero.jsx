@@ -193,37 +193,18 @@ export default function HomeHero() {
         aria-label="Scratch to win cashback"
       >
         <div className="hero-scratch-copy">
-          <span className="hero-scratch-title">Scratch &amp; win</span>
+          <span className="hero-scratch-kicker">
+            <Sparkles size={13} /> Scratch &amp; win
+          </span>
           <span className="hero-scratch-amt">Cashback upto ₹100</span>
-        </div>
-
-        <div className="hero-scratch-mid" aria-hidden="true">
-          <span className="hero-scratch-hint">scratch here</span>
-          <svg
-            className="hero-scratch-arrow"
-            viewBox="0 0 84 48"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M4 8C28 6 46 20 72 36"
-              stroke="#0a0a0a"
-              strokeWidth="3"
-              strokeLinecap="round"
-            />
-            <path
-              d="M60 30l14 7-6 12"
-              stroke="#0a0a0a"
-              strokeWidth="3"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          <span className="hero-scratch-cta">Tap to scratch →</span>
         </div>
 
         <span className="hero-scratch-cards" aria-hidden="true">
+          <span className="hero-scratch-glow" />
           <span className="hero-scratch-pent p-back" />
           <span className="hero-scratch-pent p-front">
+            <span className="hero-scratch-shine" />
             <span className="hero-scratch-coin">₹</span>
           </span>
         </span>

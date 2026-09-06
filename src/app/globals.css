@@ -23610,7 +23610,7 @@ img[data-loaded="true"] {
 .hero-suggest-btn {
   color: var(--foreground, #0a0a0a);
   background: #fff;
-  border: 1px solid var(--dark-20, #82828240);
+  border: 1.5px solid var(--dark-50, #9aa0a6);
 }
 .hero-suggest-btn svg {
   color: var(--tertiary, #fb8500);
@@ -23632,47 +23632,41 @@ img[data-loaded="true"] {
 .hero-scratch-copy {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  flex-shrink: 0;
-  max-width: 44%;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+  z-index: 2;
 }
-.hero-scratch-title {
-  font-size: clamp(17px, 4.6vw, 21px);
+.hero-scratch-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
   font-weight: 800;
-  color: var(--foreground, #0a0a0a);
-  line-height: 1.12;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #b45309;
+}
+.hero-scratch-kicker svg {
+  color: var(--tertiary, #fb8500);
 }
 .hero-scratch-amt {
-  font-size: clamp(21px, 6.4vw, 28px);
+  font-size: clamp(22px, 6.6vw, 30px);
   font-weight: 800;
   color: var(--tertiary, #fb8500);
-  line-height: 1.1;
+  line-height: 1.08;
 }
-/* Middle: "scratch here" script + curved arrow pointing to the cards. */
-.hero-scratch-mid {
-  position: relative;
-  flex: 1;
-  min-width: 78px;
-  display: flex;
-  flex-direction: column;
+.hero-scratch-cta {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 0;
-  pointer-events: none;
-}
-.hero-scratch-hint {
-  font-family: "Comic Sans MS", "Segoe Print", cursive;
-  font-size: 16px;
+  width: fit-content;
+  margin-top: 2px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
   font-weight: 700;
-  color: #0a0a0a;
-  transform: rotate(-6deg);
-  white-space: nowrap;
-}
-.hero-scratch-arrow {
-  width: 62px;
-  height: 36px;
-  margin-top: 1px;
-  align-self: flex-end;
+  color: #fff;
+  background: #0a0a0a;
 }
 /* Layered pentagon "scratch cards" that bleed off the band's right edge. */
 .hero-scratch-cards {
@@ -23711,6 +23705,112 @@ img[data-loaded="true"] {
   font-weight: 900;
   color: rgba(255, 255, 255, 0.95);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  z-index: 3;
+}
+/* Soft radial glow behind the cards + a gentle shine sweep on the front card. */
+.hero-scratch-glow {
+  position: absolute;
+  right: 6px;
+  bottom: -6px;
+  width: 150px;
+  height: 120px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at center,
+    rgba(251, 133, 0, 0.35),
+    rgba(251, 133, 0, 0) 68%
+  );
+  z-index: 0;
+  animation: heroScratchGlow 3.4s ease-in-out infinite;
+}
+@keyframes heroScratchGlow {
+  0%,
+  100% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+}
+.hero-scratch-shine {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.hero-scratch-shine::before {
+  content: "";
+  position: absolute;
+  top: -40%;
+  left: -60%;
+  width: 40%;
+  height: 200%;
+  background: linear-gradient(
+    100deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: rotate(16deg);
+  animation: heroScratchSheen 3.2s ease-in-out infinite;
+}
+@keyframes heroScratchSheen {
+  0% {
+    left: -60%;
+  }
+  60%,
+  100% {
+    left: 130%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-scratch-glow,
+  .hero-scratch-shine::before {
+    animation: none;
+  }
+}
+
+/* ===== Live-orders ticker — full-bleed peach bar (hero) ===== */
+.lo-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  /* Stretch to the section edges (cancel the hero's horizontal padding). */
+  margin: 2px calc(-1 * var(--px-24)) 2px;
+  padding: 11px var(--px-24);
+  background: linear-gradient(90deg, #fdf0e0, #fbe7d1);
+}
+.lo-bar-ic {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  color: var(--tertiary, #fb8500);
+}
+.lo-bar-track {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 20px;
+  overflow: hidden;
+}
+.lo-bar-row {
+  position: absolute;
+  inset: 0;
+  display: block;
+  font-size: 13.5px;
+  color: var(--dark-60, #4b5563);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.lo-bar-row strong {
+  color: var(--foreground, #0a0a0a);
+  font-weight: 700;
+}
+.lo-bar-time {
+  color: var(--tertiary, #fb8500);
+  font-weight: 700;
 }
 .offer-tier-lock {
   flex-shrink: 0;

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { BookOpen } from "lucide-react";
 import {
   getLiveOrders,
   getLast10MinSummary,
@@ -40,41 +41,26 @@ export default function LiveOrdersStrip() {
   if (!orders.length) return null;
   const o = orders[i];
 
+  // Full-bleed peach strip with a book icon + one rotating order line.
   return (
-    <div className="live-orders-wrap">
-      <div className="live-orders">
-        <span className="live-dot" aria-hidden="true" />
-
-        <div className="live-orders-track">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={i}
-              className="live-order-row"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.35, ease: "easeOut" }}
-            >
-              <span
-                className="live-avatar"
-                style={{ background: o.bg, color: o.fg }}
-              >
-                {o.initials}
-              </span>
-              <span className="live-msg">
-                <strong>
-                  {o.name} from {o.city}
-                </strong>{" "}
-                ordered ₹{o.amount} of books
-              </span>
-              <span className="live-time">{o.timeLabel}</span>
-            </motion.div>
-          </AnimatePresence>
-        </div>
-
-        <span className="live-summary">
-          {summary.books} books ordered recently
-        </span>
+    <div className="lo-bar" aria-live="polite">
+      <span className="lo-bar-ic" aria-hidden="true">
+        <BookOpen size={16} />
+      </span>
+      <div className="lo-bar-track">
+        <AnimatePresence mode="wait">
+          <motion.span
+            key={i}
+            className="lo-bar-row"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.35, ease: "easeOut" }}
+          >
+            <strong>{o.name}</strong> ordered books worth ₹{o.amount}
+            <span className="lo-bar-time"> · {o.timeLabel}</span>
+          </motion.span>
+        </AnimatePresence>
       </div>
     </div>
   );

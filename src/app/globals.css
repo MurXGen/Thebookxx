@@ -41972,6 +41972,66 @@ img[data-loaded="true"] {
   color: #fb8500;
 }
 
+/* Login-screen referral-code accordion (styled like the phone input) */
+.refcode-field {
+  margin: 2px 0 0;
+}
+.refcode-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  padding: 8px 2px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #fb8500;
+}
+.refcode-chev {
+  transition: transform 0.2s ease;
+  color: #fb8500;
+}
+.refcode-chev.up {
+  transform: rotate(180deg);
+}
+.refcode-collapse {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    max-height 0.28s ease,
+    opacity 0.2s ease,
+    margin 0.2s ease;
+}
+.refcode-collapse.open {
+  max-height: 140px;
+  opacity: 1;
+  margin-top: 8px;
+}
+.refcode-input-wrap {
+  margin: 0;
+}
+.refcode-cc {
+  display: inline-flex;
+  align-items: center;
+  color: #fb8500;
+}
+.refcode-input {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+}
+.refcode-hint {
+  margin: 8px 2px 2px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #b45309;
+}
+
 /* Apply referral code (profile page) */
 .refapply {
   margin: 2px 0;

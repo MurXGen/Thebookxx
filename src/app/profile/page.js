@@ -64,6 +64,7 @@ import InstallAppBar from "@/components/InstallAppBar";
 import RecommendationModal from "@/components/RecommendationModal";
 import ProfileQuickReads from "@/components/quickreads/ProfileQuickReads";
 import ReferralApply from "@/components/profile/ReferralApply";
+import ReferralCodeField from "@/components/profile/ReferralCodeField";
 import { getVerifiedBookIdsForPhone } from "@/lib/quickreads";
 import { fetchWalletLedger } from "@/utils/walletLedger";
 import {
@@ -1592,7 +1593,7 @@ Please cancel this order. Thank you `;
         {/* Header */}
         <div className="orders-header profile-header-row">
           <PageHeader title="Profile" />
-          {!showPhoneInput && (
+          {!showPhoneInput ? (
             <button
               type="button"
               className="profile-support-btn"
@@ -1602,6 +1603,17 @@ Please cancel this order. Thank you `;
               <MessageCircle size={16} />
               Support
             </button>
+          ) : (
+            <a
+              href="https://wa.me/917710892108?text=Hi%2C%20I%20need%20help%20with%20my%20order%20on%20TheBookX"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="profile-support-btn"
+              aria-label="Help"
+            >
+              <FaWhatsapp size={16} color="#25D366" />
+              Help
+            </a>
           )}
         </div>
 
@@ -1684,6 +1696,9 @@ Please cancel this order. Thank you `;
                   </button>
                 </div>
 
+                {/* Referral code — accordion above Submit (auto-opens via link) */}
+                <ReferralCodeField />
+
                 <button
                   className="pri-big-btn rapido-submit ci-login-submit"
                   onClick={() => fetchOrders()}
@@ -1698,16 +1713,6 @@ Please cancel this order. Thank you `;
                     <span>{error}</span>
                   </div>
                 )}
-
-                <a
-                  href="https://wa.me/917710892108?text=Hi%2C%20I%20need%20help%20with%20my%20order%20on%20TheBookX"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="phone-card-help"
-                >
-                  <FaWhatsapp size={16} color="#25D366" />
-                  Facing an issue? Chat with us
-                </a>
               </div>
             ) : (
               <>

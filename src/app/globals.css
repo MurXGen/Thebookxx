@@ -42014,15 +42014,24 @@ img[data-loaded="true"] {
 .refcode-input-wrap {
   margin: 0;
 }
+/* Darker, visible border on the login inputs (phone + referral) so they match
+   and don't disappear against the card. */
+.ci-login-input,
+.refcode-input-wrap {
+  border-color: #cbd2dc;
+}
+.ci-login-input:focus-within,
+.refcode-input-wrap:focus-within {
+  border-color: var(--tertiary, #fb8500);
+}
 .refcode-cc {
   display: inline-flex;
   align-items: center;
   color: #fb8500;
 }
 .refcode-input {
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
   font-weight: 700;
+  letter-spacing: 0.3px;
 }
 .refcode-hint {
   margin: 8px 2px 2px;

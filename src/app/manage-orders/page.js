@@ -5557,6 +5557,28 @@ export default function ManageOrdersPage() {
   };
 
   // Edit a row IN PLACE via the Apps Script web app (no new row appended).
+  // Refer & Earn payout: when an order is marked Delivered, the referred
+  // friend's first delivery qualifies their referrer for ₹50 (and the friend
+  // for ₹30). The server verifies delivery + a pending referral, and is
+  // idempotent, so firing more than once is safe. Slight delay lets the sheet
+  // write propagate before the server re-reads it.
+  const fireReferralPayout = (phone, orderId) => {
+    const digits = String(phone || "").replace(/\D/g, "").slice(-10);
+    if (digits.length !== 10) return;
+    setTimeout(() => {
+      fetch("/api/referral", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "payout",
+          referredPhone: digits,
+          orderId: orderId || "",
+        }),
+        keepalive: true,
+      }).catch(() => {});
+    }, 3500);
+  };
+
   const updateOrderRow = async (orderId, fields) => {
     const body = new URLSearchParams({
       action: "update",
@@ -5568,6 +5590,13 @@ export default function ManageOrdersPage() {
       mode: "no-cors",
       body,
     });
+    // Trigger a referral payout check when this write marks the order Delivered.
+    if (/deliver/i.test(String(fields?.["Order Status"] || ""))) {
+      const ord = orders.find(
+        (o) => String(o["Order ID"]) === String(orderId),
+      );
+      fireReferralPayout(ord?.["Phone Number"] || ord?.["Phone"] || "", orderId);
+    }
   };
 
   // Append a NEW order row via the Apps Script (action=append). `fields` is

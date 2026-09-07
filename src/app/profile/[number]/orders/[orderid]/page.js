@@ -36,6 +36,7 @@ import { FaWhatsapp } from "react-icons/fa";
 import TrackSheet from "@/components/profile/TrackSheet";
 import SupportSheet from "@/components/profile/SupportSheet";
 import OrderScratchCard from "@/components/profile/OrderScratchCard";
+import ReferAndEarn from "@/components/profile/ReferAndEarn";
 import BookCard from "@/components/BookCard";
 import { updateOrderRow } from "@/utils/googleFormOrder";
 import { getDeliveryCharge } from "@/utils/cartOffers";
@@ -1385,18 +1386,9 @@ export default function OrderDetailPage() {
         <Download size={16} /> Download bill
       </button>
 
-      {/* Refer & earn — coming soon (kept for roadmap) */}
-      <div className="od-ad-banner od-ad-soon" aria-disabled="true">
-        <span className="od-ad-soon-badge">Coming soon</span>
-        <div className="od-ad-left">
-          <span className="od-ad-badge">TheBookX Wallet</span>
-          <span className="od-ad-title">Refer &amp; earn ₹50</span>
-          <span className="od-ad-sub">Credited instantly to your wallet</span>
-        </div>
-        <span className="od-ad-emoji" aria-hidden="true">
-          <Gift size={28} />
-        </span>
-      </div>
+      {/* Refer & earn — generate a shareable link, earn ₹50 on a friend's
+          first delivered order. */}
+      <ReferAndEarn phone={String(order["Phone Number"] || number)} />
 
       {/* You might also be interested in */}
       {recos.length > 0 && (

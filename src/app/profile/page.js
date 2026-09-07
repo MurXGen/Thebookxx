@@ -63,6 +63,7 @@ import PageHeader from "@/components/UI/PageHeader";
 import InstallAppBar from "@/components/InstallAppBar";
 import RecommendationModal from "@/components/RecommendationModal";
 import ProfileQuickReads from "@/components/quickreads/ProfileQuickReads";
+import ReferralApply from "@/components/profile/ReferralApply";
 import { getVerifiedBookIdsForPhone } from "@/lib/quickreads";
 import { fetchWalletLedger } from "@/utils/walletLedger";
 import {
@@ -1828,6 +1829,12 @@ Please cancel this order. Thank you `;
             <LogOut size={16} />
             Log out
           </button>
+        )}
+
+        {/* Refer & Earn — apply a friend's code (auto-filled from a /refer link).
+            Reward lands in the wallet once the first order is delivered. */}
+        {!showPhoneInput && phoneNumber?.length === 10 && (
+          <ReferralApply phone={phoneNumber} />
         )}
 
         {/* QuickReads library — shown once a number is loaded (works even if

@@ -16,7 +16,9 @@ import {
   Gift,
   Plus,
   X,
+  ChevronRight,
 } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa";
 import { books } from "@/utils/book";
 import { getCartOffers } from "@/utils/cartOffers";
 import { useStore } from "@/context/StoreContext";
@@ -199,6 +201,22 @@ export default function HomeHero() {
             <Sparkles size={18} /> Suggest me
           </button>
         </div>
+
+        {/* First-time helper — talk to an expert on WhatsApp */}
+        <a
+          className="hero-expert-cta"
+          href="https://wa.me/917710892108?text=Hi%20TheBookX%2C%20I'm%20new%20here%20and%20would%20like%20some%20help%20choosing%20a%20book%20%F0%9F%98%8A"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <span className="hero-expert-ic">
+            <FaWhatsapp size={18} />
+          </span>
+          <span className="hero-expert-txt">
+            <strong>First time here?</strong> Talk with an expert for support
+          </span>
+          <ChevronRight size={16} className="hero-expert-arrow" />
+        </a>
 
         {/* Live-order social-proof ticker */}
         <LiveOrdersStrip />

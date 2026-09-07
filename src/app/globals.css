@@ -42115,6 +42115,57 @@ img[data-loaded="true"] {
   color: #b45309;
 }
 
+/* Homepage "talk with an expert" WhatsApp CTA */
+.hero-expert-cta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 460px;
+  margin: 12px auto 0;
+  padding: 11px 14px;
+  border-radius: 14px;
+  border: 1px solid #bbf7d0;
+  background: linear-gradient(120deg, #ecfdf3 0%, #ffffff 100%);
+  text-decoration: none;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.15s ease;
+}
+.hero-expert-cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px -14px rgba(16, 185, 129, 0.6);
+}
+.hero-expert-cta:active {
+  transform: scale(0.99);
+}
+.hero-expert-ic {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: #fff;
+  background: #25d366;
+}
+.hero-expert-txt {
+  flex: 1;
+  min-width: 0;
+  font-size: 13.5px;
+  color: #14532d;
+  line-height: 1.35;
+}
+.hero-expert-txt strong {
+  font-weight: 800;
+  color: #0a0a0a;
+}
+.hero-expert-arrow {
+  flex-shrink: 0;
+  color: #16a34a;
+}
+
 /* Apply referral code (profile page) */
 .refapply {
   margin: 2px 0;

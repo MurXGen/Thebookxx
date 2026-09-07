@@ -63,7 +63,6 @@ import PageHeader from "@/components/UI/PageHeader";
 import InstallAppBar from "@/components/InstallAppBar";
 import RecommendationModal from "@/components/RecommendationModal";
 import ProfileQuickReads from "@/components/quickreads/ProfileQuickReads";
-import ReferralApply from "@/components/profile/ReferralApply";
 import ReferralCodeField from "@/components/profile/ReferralCodeField";
 import { getVerifiedBookIdsForPhone } from "@/lib/quickreads";
 import { fetchWalletLedger } from "@/utils/walletLedger";
@@ -982,6 +981,39 @@ export default function MyOrdersPage() {
       setShowPhoneInput(false);
       localStorage.setItem("track_orders_phone", phone);
       savePhoneNumber(phone);
+
+      // Auto-apply a referral code captured from a /refer link now that we know
+      // the phone. Silent; the reward lands on the friend's first delivery.
+      try {
+        const refCode = (localStorage.getItem("tbx_ref_code") || "")
+          .trim()
+          .toUpperCase();
+        const alreadyApplied = localStorage.getItem(`tbx_ref_applied_${phone}`);
+        if (/^[A-Z0-9]{6}$/.test(refCode) && !alreadyApplied) {
+          fetch("/api/referral", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              action: "apply-code",
+              phone,
+              code: refCode,
+            }),
+          })
+            .then((r) => r.json())
+            .then((d) => {
+              if (["pending", "none", "already"].includes(d?.status)) {
+                try {
+                  localStorage.setItem(`tbx_ref_applied_${phone}`, d.status);
+                  localStorage.removeItem("tbx_ref_code");
+                } catch {}
+                if (d.status === "pending") {
+                  showToast(d.message || "Referral applied 🎉", "success");
+                }
+              }
+            })
+            .catch(() => {});
+        }
+      } catch {}
     } catch (err) {
       console.error("Error fetching orders:", err);
       // A background revalidate failing must not wipe the cached profile that's
@@ -1828,12 +1860,6 @@ Please cancel this order. Thank you `;
           </button>
         )}
 
-        {/* Refer & Earn — apply a friend's code (auto-filled from a /refer link).
-            Reward lands in the wallet once the first order is delivered. */}
-        {!showPhoneInput && phoneNumber?.length === 10 && (
-          <ReferralApply phone={phoneNumber} />
-        )}
-
         {/* QuickReads library — shown once a number is loaded (works even if
             the number has QuickReads but no physical book orders). */}
         {!showPhoneInput && phoneNumber?.length === 10 && (
@@ -2485,21 +2511,64 @@ Please cancel this order. Thank you `;
               type="button"
               className="pm-row"
               onClick={async () => {
-                const shareData = {
-                  title: "TheBookX",
-                  text: "Books starting at ₹1 on TheBookX! Check it out:",
-                  url: "https://thebookx.in",
-                };
+                const digits = String(phoneNumber || "")
+                  .replace(/\D/g, "")
+                  .slice(-10);
+                if (digits.length !== 10) {
+                  showToast("Log in to get your referral link.", "info");
+                  return;
+                }
                 try {
-                  if (navigator.share) await navigator.share(shareData);
-                  else
+                  const res = await fetch("/api/referral", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      action: "create-code",
+                      phone: digits,
+                    }),
+                  });
+                  const data = await res.json();
+                  if (data?.status === "locked") {
+                    showToast(
+                      data.message ||
+                        "You can refer once your first order is delivered 📦",
+                      "info",
+                    );
+                    return;
+                  }
+                  if (!data?.code) {
+                    showToast(
+                      "Couldn't get your referral link. Please retry.",
+                      "error",
+                    );
+                    return;
+                  }
+                  const link = `https://www.thebookx.in/refer/${data.code}`;
+                  const shareText = `📚 I love TheBookX — bestsellers from just ₹1! Use my link and get ₹30 off your first order: ${link}`;
+                  try {
+                    await navigator.clipboard.writeText(link);
+                  } catch (_) {}
+                  if (navigator.share) {
+                    try {
+                      await navigator.share({
+                        title: "TheBookX",
+                        text: shareText,
+                        url: link,
+                      });
+                    } catch (_) {}
+                  } else {
                     window.open(
-                      `https://wa.me/?text=${encodeURIComponent(
-                        `${shareData.text} ${shareData.url}`,
-                      )}`,
+                      `https://wa.me/?text=${encodeURIComponent(shareText)}`,
                       "_blank",
                     );
-                } catch (_) {}
+                  }
+                  showToast("Referral link copied 🎉", "success");
+                } catch (_) {
+                  showToast(
+                    "Couldn't get your referral link. Please retry.",
+                    "error",
+                  );
+                }
               }}
             >
               <span className="pm-ic">

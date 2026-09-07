@@ -16455,10 +16455,25 @@ img[data-loaded="true"] {
   display: flex;
   align-items: center;
   gap: 8px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+}
+/* Status dropdown + WhatsApp dropdown share the row evenly; send button fixed. */
+.mo-track-card-row .mo-track-status {
+  flex: 1 1 0;
+  min-width: 0;
 }
 .mo-track-card-row .mo-track-wa {
-  margin-left: auto;
+  margin-left: 0;
+  flex: 1 1 0;
+  min-width: 0;
+  gap: 6px;
+}
+.mo-track-card-row .mo-track-wa .bulk-wa-select {
+  flex: 1 1 0;
+  min-width: 0;
+}
+.mo-track-card-row .mo-track-send {
+  flex: 0 0 auto;
 }
 
 /* Customize (show / hide) panel */
@@ -21077,15 +21092,74 @@ img[data-loaded="true"] {
 }
 .mo-track-selall {
   font-size: 12.5px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--tertiary, #fb8500);
-  background: none;
-  border: none;
+  background: #fff6ec;
+  border: 1px solid #ffe0bd;
+  border-radius: 999px;
   cursor: pointer;
-  padding: 4px 6px;
+  padding: 5px 12px;
+}
+.mo-track-selall.prepaid {
+  color: #15803d;
+  background: #ecfdf3;
+  border-color: #bbf7d0;
+}
+.mo-track-selall.cod {
+  color: #b45309;
+  background: #fff7ed;
+  border-color: #fed7aa;
 }
 .mo-track-bulkbar {
   margin-bottom: 12px;
+}
+/* Staged status-change push bar (batch push from the top) */
+.mo-track-pushbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+}
+.mo-track-pushbar-txt {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #3730a3;
+}
+.mo-track-pushbar-acts {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.mo-track-pushbar-discard {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #6b7280;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 8px;
+}
+.mo-track-pushbar-push {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  background: #4f46e5;
+  border: none;
+  border-radius: 9px;
+  cursor: pointer;
+  padding: 8px 16px;
+}
+.mo-track-pushbar-push:disabled {
+  opacity: 0.6;
 }
 .mo-track-check {
   flex-shrink: 0;

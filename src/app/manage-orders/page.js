@@ -3706,16 +3706,62 @@ export default function ManageOrdersPage() {
   const [trackSel, setTrackSel] = useState([]); // selected Shipping ID keys
   const [trackBulkStat, setTrackBulkStat] = useState("Getting Shipped");
   const [trackBulkBusy, setTrackBulkBusy] = useState(false);
+  // Staged per-card status edits — { shippingIdKey: status }. Changing a card's
+  // status queues it here (saved to localStorage) instead of pushing to the
+  // sheet one by one; a single top button pushes them all at once.
+  const [trackStatusDrafts, setTrackStatusDrafts] = useState({});
+  const [trackPushBusy, setTrackPushBusy] = useState(false);
   useEffect(() => {
     try {
       const raw = localStorage.getItem("mo_track_notify");
       if (raw) setTrackList(JSON.parse(raw) || []);
+      const drafts = localStorage.getItem("mo_track_status_drafts");
+      if (drafts) setTrackStatusDrafts(JSON.parse(drafts) || {});
     } catch {}
   }, []);
   const persistTrackList = (next) => {
     try {
       localStorage.setItem("mo_track_notify", JSON.stringify(next));
     } catch {}
+  };
+  const persistStatusDrafts = (next) => {
+    try {
+      localStorage.setItem("mo_track_status_drafts", JSON.stringify(next));
+    } catch {}
+  };
+  // Push every staged status change to the sheet in one batch, then clear.
+  const pushTrackStatusUpdates = async () => {
+    const entries = Object.entries(trackStatusDrafts);
+    if (!entries.length) return;
+    setTrackPushBusy(true);
+    try {
+      await Promise.all(
+        entries.map(([key, st]) => {
+          const row = trackList.find(
+            (r) => sidUp(r["Shipping ID"]) === sidUp(key),
+          );
+          const oid = row?.["Order ID"];
+          if (!oid) return Promise.resolve();
+          return updateOrderRow(oid, { "Order Status": st }).catch((e) =>
+            console.error("Track status push failed:", oid, e),
+          );
+        }),
+      );
+      setTrackStatusDrafts({});
+      persistStatusDrafts({});
+      showToast(`${entries.length} status update(s) pushed ✓`, "success");
+      setTimeout(fetchOrders, 1300);
+    } finally {
+      setTrackPushBusy(false);
+    }
+  };
+  // Select every card matching a payment type (prepaid / COD).
+  const selectTrackByPayment = (kind) => {
+    const match = trackList.filter((r) => {
+      const isCOD = /cash|cod/i.test(r["Payment Type"] || "");
+      return kind === "cod" ? isCOD : !isCOD;
+    });
+    setTrackSel(match.map((r) => String(r["Shipping ID"])));
   };
   // Pull every India Post article number out of pasted text (raw IDs or a full
   // SMS / booking-report), uppercased & de-duplicated.
@@ -3878,7 +3924,9 @@ export default function ManageOrdersPage() {
   // Change an order's status right from a Track & notify card and save it to
   // the sheet (Apps Script) — plus optimistically reflect it in the list.
   const updateTrackStatus = (sid, val) => {
-    const row = trackList.find((r) => sidUp(r["Shipping ID"]) === sidUp(sid));
+    const key = String(sid);
+    // Reflect locally + persist the list, but DON'T push to the sheet yet —
+    // stage it so all changes push together from the top button.
     setTrackList((prev) => {
       const next = prev.map((r) =>
         sidUp(r["Shipping ID"]) === sidUp(sid) ? { ...r, status: val } : r,
@@ -3886,23 +3934,11 @@ export default function ManageOrdersPage() {
       persistTrackList(next);
       return next;
     });
-    const oid = row?.["Order ID"];
-    if (oid) {
-      // Optimistically reflect the change on the order card, push it to the
-      // sheet (Order Status column, matched by Order ID), then reconcile.
-      setOrders((prev) =>
-        prev.map((o) =>
-          o["Order ID"] === oid
-            ? { ...o, "Order Status": val, status: val }
-            : o,
-        ),
-      );
-      updateOrderRow(oid, { "Order Status": val })
-        .then(() => setTimeout(fetchOrders, 1300))
-        .catch((e) => console.error("Track status save failed:", e));
-    } else {
-      console.warn("No Order ID for shipping ID", sid, "- status not saved.");
-    }
+    setTrackStatusDrafts((prev) => {
+      const next = { ...prev, [key]: val };
+      persistStatusDrafts(next);
+      return next;
+    });
   };
 
   // Bulk-change status for the selected matched-tracking rows, writing each to
@@ -8138,19 +8174,72 @@ export default function ManageOrdersPage() {
                         </span>
                       </button>
                       {trackSelectMode && (
-                        <button
-                          type="button"
-                          className="mo-track-selall"
-                          onClick={() =>
-                            setTrackSel(
-                              trackList.map((r) => String(r["Shipping ID"])),
-                            )
-                          }
-                        >
-                          Select all ({trackList.length})
-                        </button>
+                        <>
+                          <button
+                            type="button"
+                            className="mo-track-selall"
+                            onClick={() =>
+                              setTrackSel(
+                                trackList.map((r) => String(r["Shipping ID"])),
+                              )
+                            }
+                          >
+                            All ({trackList.length})
+                          </button>
+                          <button
+                            type="button"
+                            className="mo-track-selall prepaid"
+                            onClick={() => selectTrackByPayment("prepaid")}
+                          >
+                            All prepaid
+                          </button>
+                          <button
+                            type="button"
+                            className="mo-track-selall cod"
+                            onClick={() => selectTrackByPayment("cod")}
+                          >
+                            All COD
+                          </button>
+                        </>
                       )}
                     </div>
+
+                    {/* Staged status pushes — one batch button instead of
+                        pushing each card change to the sheet individually. */}
+                    {Object.keys(trackStatusDrafts).length > 0 && (
+                      <div className="mo-track-pushbar">
+                        <span className="mo-track-pushbar-txt">
+                          <RefreshCw size={15} />
+                          {Object.keys(trackStatusDrafts).length} status change
+                          {Object.keys(trackStatusDrafts).length === 1
+                            ? ""
+                            : "s"}{" "}
+                          pending
+                        </span>
+                        <div className="mo-track-pushbar-acts">
+                          <button
+                            type="button"
+                            className="mo-track-pushbar-discard"
+                            onClick={() => {
+                              setTrackStatusDrafts({});
+                              persistStatusDrafts({});
+                            }}
+                          >
+                            Discard
+                          </button>
+                          <button
+                            type="button"
+                            className="mo-track-pushbar-push"
+                            disabled={trackPushBusy}
+                            onClick={pushTrackStatusUpdates}
+                          >
+                            {trackPushBusy
+                              ? "Pushing…"
+                              : `Push all (${Object.keys(trackStatusDrafts).length})`}
+                          </button>
+                        </div>
+                      </div>
+                    )}
 
                     {trackSelectMode && (
                       <div className="mo-cardbulk-bar mo-track-bulkbar">

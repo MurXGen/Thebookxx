@@ -1328,8 +1328,10 @@ function drawBigAddressLabel(c, startY, data) {
 
 export function buildAddressLabelCanvas(data) {
   const isCOD = !!data.isCOD;
-  const W = 1080;
-  const SAFE_H = 1500;
+  // Wider label so a 3-up A4 stack fills the page width (a narrower label leaves
+  // big side margins because the tall stack scales to fit page height).
+  const W = 1500;
+  const SAFE_H = 1400;
   const topPad = 30;
   const botPad = 30;
   const c = buildCanvas(W, SAFE_H);

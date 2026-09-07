@@ -975,11 +975,29 @@ export default function MyOrdersPage() {
         qrCount = qrIds.length;
       } catch (_) {}
 
+      // A visitor who arrived via a referral link (/refer/{code} → ?ref=1, or a
+      // captured code in storage) is a brand-new customer with no orders yet.
+      // Log them in anyway (wallet ₹0) so they can apply their referral code
+      // from the profile, instead of hitting the "no orders" wall.
+      const referredVisitor = (() => {
+        try {
+          if (typeof window !== "undefined") {
+            const sp = new URLSearchParams(window.location.search);
+            if (sp.get("ref")) return true;
+          }
+          const c = (localStorage.getItem("tbx_ref_code") || "").trim();
+          return /^[A-Z0-9]{6}$/i.test(c);
+        } catch {
+          return false;
+        }
+      })();
+
       if (
         realOrders.length === 0 &&
         qrCount === 0 &&
         walletValue <= 0 &&
-        pending.length === 0
+        pending.length === 0 &&
+        !referredVisitor
       ) {
         setError(
           `We couldn't find any orders for +91 ${phone}. Please enter the same mobile number you used while placing the order — a different number won't show your orders.`,

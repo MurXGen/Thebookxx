@@ -271,8 +271,11 @@ export async function POST(request) {
     );
     if (!row) return Response.json({ status: "noop" }); // nothing pending / already paid
 
-    // Confirm the referred friend's order really is Delivered.
-    const delivered = await orderIsDelivered(referredPhone, orderId);
+    // Confirm the referred friend has at least one Delivered order.
+    const delivered = orderId
+      ? (await orderIsDelivered(referredPhone, orderId)) ||
+        (await hasDeliveredOrder(referredPhone))
+      : await hasDeliveredOrder(referredPhone);
     if (!delivered) return Response.json({ status: "not-delivered" });
 
     const referrerPhone = ten(row["Referrer Phone"]);

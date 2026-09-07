@@ -959,6 +959,38 @@ export default function MyOrdersPage() {
 
       setOrders(realOrders);
 
+      // Referral payout safety-net: if this shopper was referred and now has a
+      // delivered order, settle the reward (₹50 to referrer, ₹30 to them). The
+      // server is idempotent, so this is a no-op once already paid, and it
+      // catches cases where the order was marked delivered directly in the sheet.
+      try {
+        const anyDelivered = realOrders.some((o) =>
+          /deliver/i.test(String(o["Order Status"] || o.status || "")),
+        );
+        const alreadySettled = localStorage.getItem(`tbx_ref_paid_${phone}`);
+        if (anyDelivered && !alreadySettled) {
+          fetch("/api/referral", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "payout", referredPhone: phone }),
+          })
+            .then((r) => r.json())
+            .then((d) => {
+              // "rewarded" = just paid; "noop" = already paid / not referred.
+              // Both mean don't fire again from this device.
+              if (d?.status === "rewarded" || d?.status === "noop") {
+                try {
+                  localStorage.setItem(`tbx_ref_paid_${phone}`, "1");
+                } catch {}
+              }
+              if (d?.status === "rewarded") {
+                showToast("Referral reward credited to your wallet 🎉", "success");
+              }
+            })
+            .catch(() => {});
+        }
+      } catch {}
+
       // Refresh the stale-while-revalidate cache with this fresh snapshot.
       saveProfileCache(phone, {
         orders: realOrders,

@@ -20,6 +20,20 @@ export const ORDERS_SHEET_NAME =
 export const WALLET_SHEET_NAME =
   process.env.WALLET_SHEET_NAME || "Wallet";
 
+// Refer & Earn tabs.
+//  ReferralCodes: Phone Number | Code | Created At | Total Referred | Total Earned
+//  Referrals:     Referrer Phone | Code | Referred Phone | Applied At | Status
+//                 | Reason | Reward | Qualifying Order ID | Rewarded At
+export const REFERRAL_CODES_SHEET_NAME =
+  process.env.REFERRAL_CODES_SHEET_NAME || "ReferralCodes";
+export const REFERRALS_SHEET_NAME =
+  process.env.REFERRALS_SHEET_NAME || "Referrals";
+
+// Reward amounts (credited to wallets only when the referred friend's first
+// order is DELIVERED). Two-sided: referrer earns, friend gets a welcome perk.
+export const REFERRER_REWARD = Number(process.env.REFERRER_REWARD || 50);
+export const REFEREE_REWARD = Number(process.env.REFEREE_REWARD || 30);
+
 // Apps Script web apps (writes/edits). Keep these on the server so nobody can
 // call them directly to forge/modify sheet rows.
 export const APPSCRIPT_ORDER_URL =
@@ -35,6 +49,12 @@ export const APPSCRIPT_EDIT_URL =
 // URL here (or set APPSCRIPT_WALLET_URL). When empty, wallet writes fall back to
 // the order web app with a `sheet=Wallet` parameter.
 export const APPSCRIPT_WALLET_URL = process.env.APPSCRIPT_WALLET_URL || "";
+
+// Dedicated Apps Script Web App for Refer & Earn (append + update to the
+// ReferralCodes / Referrals tabs). Deploy docs/referral-apps-script-standalone.gs
+// and paste its /exec URL here (or set APPSCRIPT_REFERRAL_URL). Required for
+// referral writes (reads use gviz directly).
+export const APPSCRIPT_REFERRAL_URL = process.env.APPSCRIPT_REFERRAL_URL || "";
 
 // Shared secret sent (server-side only) with wallet writes so the wallet Apps
 // Script can reject any request that doesn't carry it. Set the SAME value here
@@ -90,4 +110,76 @@ export function tableToObjects(table) {
 // filters like `where B = '<phone>'` regardless of column order).
 export function findColumn(table, label) {
   return (table.cols || []).find((c) => c.label === label) || null;
+}
+
+// ---------------------------------------------------------------------------
+// Server-only Apps Script writers (never import from client components).
+// ---------------------------------------------------------------------------
+
+// Low-level POST to an Apps Script /exec endpoint (form-encoded, secret added).
+async function appscriptPost(url, params) {
+  if (!url) return { success: false, error: "not configured" };
+  const body = new URLSearchParams();
+  Object.entries(params || {}).forEach(([k, v]) => {
+    body.set(k, typeof v === "object" ? JSON.stringify(v) : String(v ?? ""));
+  });
+  if (APPSCRIPT_SHARED_SECRET) body.set("secret", APPSCRIPT_SHARED_SECRET);
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body,
+    });
+    let json = null;
+    try {
+      json = JSON.parse(await res.text());
+    } catch {
+      /* Apps Script may return non-JSON on redirect; treat as success */
+    }
+    return json || { success: true };
+  } catch (e) {
+    return { success: false, error: String(e) };
+  }
+}
+
+// Append one wallet ledger row (server-side; used by the referral payout).
+export function walletAppend(data) {
+  const url = APPSCRIPT_WALLET_URL || APPSCRIPT_ORDER_URL;
+  return appscriptPost(url, {
+    action: "append",
+    sheet: WALLET_SHEET_NAME,
+    data,
+  });
+}
+
+// Append one row to a referral tab (ReferralCodes / Referrals).
+export function referralAppend(sheet, data) {
+  return appscriptPost(APPSCRIPT_REFERRAL_URL, {
+    action: "append",
+    sheet,
+    data,
+  });
+}
+
+// Update the first row in `sheet` where matchColumn == matchValue, setting the
+// header→value pairs in `data`. Used to flip a referral to "rewarded".
+export function referralUpdate(sheet, matchColumn, matchValue, data) {
+  return appscriptPost(APPSCRIPT_REFERRAL_URL, {
+    action: "update",
+    sheet,
+    matchColumn,
+    matchValue,
+    data,
+  });
+}
+
+// Read every row of a referral tab (small tables — no phone scoping needed for
+// code lookups; callers filter in-memory).
+export async function referralRows(sheet) {
+  try {
+    const table = await gvizQuery({ sheet });
+    return tableToObjects(table);
+  } catch {
+    return [];
+  }
 }

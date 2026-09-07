@@ -1049,35 +1049,301 @@ export function downloadCombinedFormsPDF(dataArray, filename) {
   );
 }
 
-// ── Address-label ONLY exports (bottom From/To section, no India Post CDF) ──
+// ── Address-label ONLY exports (clean, content-sized delivery label) ──
+// A single-column, top-to-bottom layout so there are no empty gaps: brand
+// header + payment badge, big COD collect banner (COD only), a hero DELIVER-TO
+// block, a highlighted call-before-delivery box, a compact FROM strip, optional
+// note, and an order-id/date footer. Returns the y where the label ends.
+function drawBigAddressLabel(c, startY, data) {
+  const ctx = c.ctx;
+  const BRAND = "#fb8500";
+  const isCOD = !!data.isCOD;
+  const X = 34;
+  const W = c.W - X * 2;
+  const padX = 28;
+  const innerX = X + padX;
+  const innerW = W - padX * 2;
+  let y = startY;
+
+  const rr = (x, yy, w, h, r) => {
+    ctx.beginPath();
+    ctx.moveTo(x + r, yy);
+    ctx.arcTo(x + w, yy, x + w, yy + h, r);
+    ctx.arcTo(x + w, yy + h, x, yy + h, r);
+    ctx.arcTo(x, yy + h, x, yy, r);
+    ctx.arcTo(x, yy, x + w, yy, r);
+    ctx.closePath();
+  };
+  const hline = (yy, color = "#e5e7eb") => {
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(X, yy);
+    ctx.lineTo(X + W, yy);
+    ctx.stroke();
+    ctx.restore();
+  };
+  // Simple book mark (cover + spine + two text lines) — reads as a book.
+  const drawBook = (x, yy, s, color) => {
+    ctx.save();
+    ctx.fillStyle = color;
+    rr(x, yy, s, s * 0.82, 4);
+    ctx.fill();
+    ctx.strokeStyle = "#fff";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(x + s * 0.5, yy + 4);
+    ctx.lineTo(x + s * 0.5, yy + s * 0.82 - 4);
+    ctx.stroke();
+    ctx.lineWidth = 1.6;
+    ctx.beginPath();
+    ctx.moveTo(x + s * 0.12, yy + s * 0.3);
+    ctx.lineTo(x + s * 0.38, yy + s * 0.3);
+    ctx.moveTo(x + s * 0.62, yy + s * 0.3);
+    ctx.lineTo(x + s * 0.88, yy + s * 0.3);
+    ctx.stroke();
+    ctx.restore();
+  };
+  const drawPhoneIcon = (x, yy, s, color) => {
+    ctx.save();
+    ctx.fillStyle = color;
+    ctx.translate(x, yy);
+    ctx.scale(s / 24, s / 24);
+    ctx.beginPath();
+    ctx.moveTo(6.6, 2);
+    ctx.lineTo(3, 2);
+    ctx.quadraticCurveTo(2, 2, 2, 3);
+    ctx.quadraticCurveTo(2, 13, 11, 20);
+    ctx.quadraticCurveTo(20, 22, 21, 17.4);
+    ctx.lineTo(21.5, 15);
+    ctx.quadraticCurveTo(21.6, 14, 20.6, 13.7);
+    ctx.lineTo(16.8, 12.9);
+    ctx.quadraticCurveTo(16, 12.8, 15.5, 13.4);
+    ctx.lineTo(14.8, 14.4);
+    ctx.quadraticCurveTo(11.5, 12.8, 9.6, 9.2);
+    ctx.lineTo(10.6, 8.5);
+    ctx.quadraticCurveTo(11.2, 8, 11.1, 7.2);
+    ctx.lineTo(10.3, 3.4);
+    ctx.quadraticCurveTo(10, 2, 8.6, 2);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  };
+  const pillRight = (rightX, topY, text, fill) => {
+    ctx.save();
+    ctx.font = "bold 16px sans-serif";
+    const w = ctx.measureText(text).width + 28;
+    const h = 34;
+    const x = rightX - w;
+    ctx.fillStyle = fill;
+    rr(x, topY, w, h, h / 2);
+    ctx.fill();
+    ctx.fillStyle = "#fff";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(text, x + w / 2, topY + h / 2 + 1);
+    ctx.restore();
+  };
+
+  // ===== Header =====
+  const headH = 84;
+  ctx.fillStyle = "#fff7ed";
+  ctx.fillRect(X, y, W, headH);
+  ctx.fillStyle = BRAND;
+  ctx.fillRect(X, y, W, 9);
+  const iconS = 32;
+  drawBook(innerX, y + headH / 2 - iconS / 2 + 2, iconS, BRAND);
+  c.text("TheBookX", innerX + iconS + 14, y + headH / 2 + 12, {
+    font: "bold 38px sans-serif",
+    color: BRAND,
+  });
+  pillRight(
+    X + W - padX,
+    y + headH / 2 - 17,
+    isCOD ? "CASH ON DELIVERY" : "PREPAID",
+    isCOD ? "#c25e00" : "#16a34a",
+  );
+  y += headH;
+
+  // ===== COD collect banner =====
+  if (isCOD && data.codAmount) {
+    const bh = 62;
+    ctx.fillStyle = "#fff3e6";
+    ctx.fillRect(X, y, W, bh);
+    ctx.fillStyle = "#c25e00";
+    ctx.fillRect(X, y, 7, bh);
+    c.text(`COLLECT  Rs. ${data.codAmount} /-`, innerX, y + bh / 2 + 12, {
+      font: "bold 34px sans-serif",
+      color: "#c25e00",
+    });
+    c.text("collect from customer", X + W - padX, y + bh / 2 + 6, {
+      font: "bold 15px sans-serif",
+      align: "right",
+      color: "#a35a1e",
+    });
+    y += bh;
+  }
+  hline(y);
+
+  // ===== DELIVER TO (hero) =====
+  y += 30;
+  c.text("DELIVER TO", innerX, y, {
+    font: "bold 15px sans-serif",
+    color: "#9ca3af",
+  });
+  y += 36;
+
+  const pinMatch = (data.customerAddress || "").match(
+    /Pinned location:\s*(https?:\/\/\S+)/i,
+  );
+  const mapLink = pinMatch ? pinMatch[1] : "";
+  const cleanAddress = (data.customerAddress || "")
+    .replace(/,?\s*Pinned location:\s*https?:\/\/\S+/gi, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+  const hasQR = !!mapLink;
+  const qSize = 150;
+  const textW = hasQR ? innerW - qSize - 28 : innerW;
+  const blockTop = y - 8;
+
+  c.text(data.customerName || "", innerX, y + 4, {
+    font: "bold 34px sans-serif",
+  });
+  y += 42;
+  const addrEnd = c.wrap(cleanAddress, innerX, y, textW, 31, {
+    font: "bold 23px sans-serif",
+  });
+  y = addrEnd + 34;
+  const cityPin = [data.customerCity, data.customerPincode]
+    .filter(Boolean)
+    .join(" - ");
+  if (cityPin) {
+    c.text(cityPin, innerX, y, { font: "bold 23px sans-serif" });
+    y += 8;
+  }
+
+  if (hasQR) {
+    const qx = X + W - padX - qSize;
+    const drew = drawQrCode(ctx, mapLink, qx, blockTop, qSize);
+    if (drew) {
+      c.text("Scan location", qx + qSize / 2, blockTop + qSize + 18, {
+        font: "bold 12px sans-serif",
+        align: "center",
+        color: "#6b7280",
+      });
+      y = Math.max(y, blockTop + qSize + 30);
+    }
+  }
+
+  // ===== Call-before-delivery box =====
+  y += 22;
+  const cbH = 66;
+  ctx.save();
+  ctx.fillStyle = "#eff6ff";
+  rr(innerX, y, innerW, cbH, 12);
+  ctx.fill();
+  ctx.strokeStyle = "#1d4ed8";
+  ctx.lineWidth = 2.4;
+  rr(innerX, y, innerW, cbH, 12);
+  ctx.stroke();
+  ctx.restore();
+  drawPhoneIcon(innerX + 20, y + 19, 30, "#1d4ed8");
+  c.text("CALL BEFORE DELIVERY", innerX + 64, y + 25, {
+    font: "bold 14px sans-serif",
+    color: "#1d4ed8",
+  });
+  c.text(`+91 ${data.customerPhone || ""}`, innerX + 64, y + 52, {
+    font: "bold 29px sans-serif",
+    color: "#0a2a6b",
+  });
+  y += cbH + 26;
+
+  // ===== FROM (compact) =====
+  hline(y);
+  y += 26;
+  c.text("FROM", innerX, y, { font: "bold 13px sans-serif", color: "#9ca3af" });
+  c.text(SENDER.name, innerX + 58, y, {
+    font: "bold 17px sans-serif",
+    color: BRAND,
+  });
+  y += 24;
+  const sEnd = c.wrap(SENDER.addressLines.join(", "), innerX, y, innerW, 22, {
+    font: "15px sans-serif",
+    color: "#4b5563",
+  });
+  y = sEnd + 22;
+  c.text(`Mobile: ${SENDER.mobile}`, innerX, y, {
+    font: "bold 15px sans-serif",
+    color: "#4b5563",
+  });
+  y += 14;
+
+  // ===== Note (optional) =====
+  if (data.note && String(data.note).trim()) {
+    y += 14;
+    c.text("NOTE:", innerX, y + 14, {
+      font: "bold 13px sans-serif",
+      color: "#c25e00",
+    });
+    const nEnd = c.wrap(
+      String(data.note).trim(),
+      innerX + 56,
+      y + 14,
+      innerW - 56,
+      22,
+      { font: "bold 14px sans-serif", color: "#7c5a12" },
+    );
+    y = nEnd + 14;
+  }
+
+  // ===== Footer =====
+  y += 16;
+  hline(y);
+  y += 30;
+  c.text(`ORDER ID: ${data.orderId || ""}`, innerX, y, {
+    font: "bold 15px sans-serif",
+  });
+  c.text(
+    new Date().toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    }),
+    X + W - padX,
+    y,
+    { font: "bold 15px sans-serif", align: "right", color: "#6b7280" },
+  );
+  y += 22;
+
+  // Outer frame (square, crisp).
+  ctx.save();
+  ctx.strokeStyle = "#111";
+  ctx.lineWidth = 2.4;
+  ctx.strokeRect(X, startY, W, y - startY);
+  ctx.restore();
+
+  return y;
+}
+
 export function buildAddressLabelCanvas(data) {
   const isCOD = !!data.isCOD;
-  // Wider label so a 3-up stack matches A4 proportions and fills the page
-  // width instead of leaving big side margins.
   const W = 1080;
-  const SAFE_H = 1120;
-  const topPad = 36;
-  const botPad = 36;
+  const SAFE_H = 1500;
+  const topPad = 30;
+  const botPad = 30;
   const c = buildCanvas(W, SAFE_H);
-  const endY = drawAddressLabel(
-    c,
-    topPad,
-    {
-      orderId: data.orderId,
-      customerName: data.customerName,
-      customerAddress: data.customerAddress,
-      customerCity: data.customerCity,
-      customerPincode: data.customerPincode,
-      customerPhone: data.customerPhone,
-      isCOD,
-      codAmount: data.codAmount,
-      isFaster: data.isFaster,
-      hasGiftWrap: data.hasGiftWrap,
-      hasBookmark: data.hasBookmark,
-      note: data.note,
-    },
-    { big: true },
-  );
+  const endY = drawBigAddressLabel(c, topPad, {
+    orderId: data.orderId,
+    customerName: data.customerName,
+    customerAddress: data.customerAddress,
+    customerCity: data.customerCity,
+    customerPincode: data.customerPincode,
+    customerPhone: data.customerPhone,
+    isCOD,
+    codAmount: data.codAmount,
+    note: data.note,
+  });
   const finalH = Math.min(endY + botPad, SAFE_H);
   const out = document.createElement("canvas");
   out.width = W * 2;

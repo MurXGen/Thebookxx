@@ -50,11 +50,13 @@ export const APPSCRIPT_EDIT_URL =
 // the order web app with a `sheet=Wallet` parameter.
 export const APPSCRIPT_WALLET_URL = process.env.APPSCRIPT_WALLET_URL || "";
 
-// Dedicated Apps Script Web App for Refer & Earn (append + update to the
-// ReferralCodes / Referrals tabs). Deploy docs/referral-apps-script-standalone.gs
-// and paste its /exec URL here (or set APPSCRIPT_REFERRAL_URL). Required for
-// referral writes (reads use gviz directly).
-export const APPSCRIPT_REFERRAL_URL = process.env.APPSCRIPT_REFERRAL_URL || "";
+// Apps Script Web App for Refer & Earn (append + update to the ReferralCodes /
+// Referrals tabs). Defaults to the orders-editor web app (APPSCRIPT_ORDER_URL),
+// which now handles referral tabs too — so no extra deployment is needed once
+// that script is redeployed. Override with APPSCRIPT_REFERRAL_URL if you host it
+// separately. Reads use gviz directly.
+export const APPSCRIPT_REFERRAL_URL =
+  process.env.APPSCRIPT_REFERRAL_URL || APPSCRIPT_ORDER_URL;
 
 // Shared secret sent (server-side only) with wallet writes so the wallet Apps
 // Script can reject any request that doesn't carry it. Set the SAME value here
@@ -136,7 +138,10 @@ async function appscriptPost(url, params) {
     } catch {
       /* Apps Script may return non-JSON on redirect; treat as success */
     }
-    return json || { success: true };
+    if (!json) return { success: true };
+    // Normalise: the orders-editor script returns { ok: true }, the standalone
+    // scripts return { success: true } — accept either as success.
+    return { ...json, success: json.success ?? json.ok ?? true };
   } catch (e) {
     return { success: false, error: String(e) };
   }

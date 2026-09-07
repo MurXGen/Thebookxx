@@ -32,11 +32,20 @@ export default function ReferAndEarn({ phone }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "create-code", phone: digits }),
       });
-      const data = await res.json();
-      if (data?.code) setCode(String(data.code).toUpperCase());
-      else showToast("Couldn't create your link. Please retry.", "error");
-    } catch {
-      showToast("Couldn't create your link. Please retry.", "error");
+      let data = {};
+      try {
+        data = await res.json();
+      } catch {}
+      if (data?.code) {
+        setCode(String(data.code).toUpperCase());
+      } else {
+        // Surface the real reason so issues are obvious while testing.
+        const reason = data?.error || `HTTP ${res.status}`;
+        showToast(`Couldn't create link: ${reason}`, "error");
+        console.error("create-code failed:", res.status, data);
+      }
+    } catch (e) {
+      showToast(`Couldn't create link: ${String(e?.message || e)}`, "error");
     } finally {
       setBusy(false);
     }

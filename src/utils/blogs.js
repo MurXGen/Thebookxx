@@ -4,6 +4,245 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "indian-edition-vs-imported-books-price-guide-2026": {
+    id: "blog-043",
+    title:
+      "Indian Edition vs Imported Edition: Why the Same Book Costs ₹1,800 on One Site and ₹250 on Another",
+    slug: "indian-edition-vs-imported-books-price-guide-2026",
+    author: "TheBookX Editorial",
+    authorSlug: "murthy-thevar",
+    publishDate: "2026-09-07",
+    lastModified: "2026-09-07",
+    excerpt:
+      "Same title, same words, wildly different price. Here is how Indian editions, export editions and territory rights actually work, and how to stop overpaying.",
+    content: [
+      {
+        type: "paragraph",
+        content:
+          "September is the loudest month in the publishing year, and September 2026 is louder than most. New books from R.F. Kuang, S.A. Cosby, Min Jin Lee, Emily St. John Mandel, Hernan Diaz, Marlon James, Tananarive Due and Ayad Akhtar are all landing within weeks of each other. If you have gone looking for any of them online this week, you will have run into something that makes no sense at first glance: the same title, the same author, the same number of pages, listed at ₹1,850 on one page and ₹299 on another.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Nobody is cheating you, and the cheap one is not a pirated copy. You are looking at two legally distinct editions of one book. Understanding the difference is the single most useful piece of knowledge an Indian book buyer can have, and almost nobody explains it. So here it is, properly.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "The short version",
+        content:
+          "Publishers sell the right to print a book territory by territory. An Indian publisher who buys those rights prints locally, on Indian paper, at Indian costs, and sells at Indian prices. An imported copy is physical stock flown in from the US or UK, carrying that country's cover price, freight and duty. The words inside are identical. The price difference is manufacturing and logistics, not quality.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Territory Rights: The One Idea That Explains Every Price You See",
+      },
+      {
+        type: "paragraph",
+        content:
+          "When an author signs a book deal, the contract does not sell the book once. It sells it in pieces, by geography. North American rights go to one publisher. UK and Commonwealth rights may go to another. Indian subcontinent rights, covering India, Pakistan, Bangladesh, Sri Lanka and Nepal, are frequently sold separately, and increasingly to an Indian arm of a large international house rather than licensed out.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The publisher holding Indian rights then makes an entirely local commercial decision: what price will this book actually sell at here? That decision is why a paperback of <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> or <a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> costs a fraction of what the identical book costs in a London or New York shop. It is not charity and it is not a discount. It is a separate print run, priced for the market it was printed for.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "This only works at scale, and India now has that scale. The India Book Market Report 2026-30, released on 3 September 2026 by NielsenIQ BookData and the Federation of Indian Publishers, puts India's print book market at roughly $10.1 billion and confirms India as the third-largest publishing market in the world, behind only the United States and China. A market that size justifies its own print runs. That is the whole reason the ₹250 edition exists.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The Three Editions You Will Actually Encounter",
+      },
+      {
+        type: "list",
+        style: "ordered",
+        items: [
+          "<strong>The Indian edition.</strong> Printed in India by the publisher holding subcontinent rights. Priced in rupees from the start. Usually paperback, usually the cheapest legitimate copy available, and by far the most common thing on an Indian shelf.",
+          "<strong>The export or \"Indian Subcontinent\" edition.</strong> Printed abroad or locally but licensed for sale only in this region. You will often see a line on the back cover restricting sale to the Indian subcontinent. Same text, lower price than the home-market edition, sometimes thinner paper.",
+          "<strong>The imported edition.</strong> Actual US or UK stock, shipped in. It carries the foreign cover price, plus freight, customs and the importer's margin. This is the ₹1,800 hardback. It is a genuinely nicer physical object. It is also five to seven times the price for the same sentences.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "How to Tell Them Apart in Ten Seconds",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "Check the price printed on the back cover. If it reads ₹ first, it is an Indian or export edition. If it reads $ or £ first, someone shipped it here.",
+          "Look for a \"For sale in the Indian subcontinent only\" line near the barcode. That is an export edition, and it is completely legitimate.",
+          "Compare ISBNs. Indian editions carry their own ISBN, and it will differ from the one on the American listing you were reading about.",
+          "Weigh the format. A hardback at an Indian paperback price usually means the Indian edition simply chose paperback and you are comparing two different formats, not two different sellers.",
+          "If the listing shows no photograph of the actual back cover and the price is far below every other seller, ask before you buy. Legitimate cheap editions are printed cheap; they are not printed badly.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Why the Indian Edition Is Not a Lesser Book",
+      },
+      {
+        type: "paragraph",
+        content:
+          "There is a persistent snobbery about this, and it deserves to be retired. The Indian edition is not abridged. It is not translated. It is not missing chapters. It has been through the same editorial process, because it is the same file sent to a different printer. What changes is paper GSM, binding, sometimes the cover art, and occasionally the conversion of American spellings. That is the entire list.",
+      },
+      {
+        type: "blockquote",
+        content:
+          "A book is a delivery system for a set of ideas. Paying five times more for a heavier delivery system is a decision about furniture, not about reading.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The practical proof is on any Indian bookshelf. <a href=\"/books/sapiens-a-brief-history-of-humankind\" style=\"color:#fb8500;font-weight:600\">Sapiens</a>, <a href=\"/books/thinking-fast-and-slow\" style=\"color:#fb8500;font-weight:600\">Thinking, Fast and Slow</a> and <a href=\"/books/the-alchemist\" style=\"color:#fb8500;font-weight:600\">The Alchemist</a> have shaped more Indian reading lives in local paperback than they ever would have as imports, precisely because the local paperback was affordable enough to risk on a book you had not read yet.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "When Paying More for the Import Is Actually Justified",
+      },
+      {
+        type: "paragraph",
+        content:
+          "There are real cases. Being frugal by default is sensible; being frugal without exception is just a different kind of thoughtlessness.",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<strong>Illustrated and photographic books.</strong> Art, architecture, photography and cookery books depend on colour fidelity and paper stock. Here the import genuinely is a different product.",
+          "<strong>Books with no Indian edition at all.</strong> Some titles never get subcontinent rights sold. If you want it, the import is the only legal route.",
+          "<strong>Gifting a keepsake.</strong> A hardback for a milestone occasion is a legitimate reason to spend more. The object is part of the gift.",
+          "<strong>Collectors' and first editions.</strong> Obvious, and outside the scope of ordinary buying.",
+          "<strong>Textbooks with different regional content.</strong> Rare, but it happens in law and medicine. Check before you assume the editions match.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The Delay: Why a September Release Reaches Indian Shelves in Spring",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The second thing that frustrates Indian readers is timing. A book everyone online is discussing in September may not have an affordable local paperback until well into the following year. The reason is straightforward: publishers usually hold the local paperback until the home-market hardback has finished its run, and the Indian print run is scheduled around that. Prize season complicates it further. The Booker Prize 2026 shortlist is announced on 22 September at the Southbank Centre in London, the winner on 9 November, and the Nobel Prize in Literature on 8 October. Each of those dates sends demand through the roof for a handful of titles, and local editions get scheduled in response.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Which means the sane strategy is the one serious readers have always used: buy the backlist now, and let the frontlist come to you at a civilised price. There is no shortage of extraordinary reading already sitting in Indian editions. <a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> won the Booker in 1997 and still reads like it was written this year. <a href=\"/books/klara-and-the-sun\" style=\"color:#fb8500;font-weight:600\">Klara and the Sun</a> is a Nobel laureate at full power. <a href=\"/books/babel\" style=\"color:#fb8500;font-weight:600\">Babel</a> and <a href=\"/books/yellowface\" style=\"color:#fb8500;font-weight:600\">Yellowface</a> will tell you everything you need to know about whether R.F. Kuang's new one is for you, for roughly the cost of a coffee each.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "A Practical Buying Checklist",
+      },
+      {
+        type: "list",
+        style: "ordered",
+        items: [
+          "Search the title with the word \"paperback\" before you search it plain. Indian editions surface faster that way.",
+          "Read the back-cover price in the listing photograph, not the seller's headline price.",
+          "Ignore the American hardback price you saw quoted in a review. It has no bearing on what you should pay here.",
+          "If a title is brand new abroad, check whether an older book by the same author already has an Indian edition. It usually does, and it is usually the better introduction anyway.",
+          "Buy the cheap edition of an author you have not read. Save the beautiful edition for the one you already love.",
+        ],
+      },
+      {
+        type: "callout",
+        style: "success",
+        title: "How this works on TheBookX",
+        content:
+          "Every book here is a legitimate edition priced for Indian readers, with titles starting from ₹1. Free delivery across India and Cash on Delivery are available on every order, so you can buy a book you are unsure about without paying anything upfront. Gift wrapping is available at +₹25 if the book is going to someone else.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Where to Start If You Are Building a Shelf From Scratch",
+      },
+      {
+        type: "paragraph",
+        content:
+          "For non-fiction that earns its shelf space: <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> for behaviour, <a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> for how you actually handle money rather than how you think you do, <a href=\"/books/ikigai\" style=\"color:#fb8500;font-weight:600\">Ikigai</a> for a short evening that reframes a long year, and <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar for the specific problem of thinking straight when there is too much coming at you at once.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "For fiction, the Indian edition advantage is at its most obvious. <a href=\"/books/the-midnight-library\" style=\"color:#fb8500;font-weight:600\">The Midnight Library</a> and <a href=\"/books/project-hail-mary\" style=\"color:#fb8500;font-weight:600\">Project Hail Mary</a> are the two contemporary novels most likely to convert someone who says they do not read. <a href=\"/books/the-silent-patient\" style=\"color:#fb8500;font-weight:600\">The Silent Patient</a> does the same job for thrillers. <a href=\"/books/norwegian-wood\" style=\"color:#fb8500;font-weight:600\">Norwegian Wood</a> and <a href=\"/books/the-kite-runner\" style=\"color:#fb8500;font-weight:600\">The Kite Runner</a> are the ones people still talk about a decade after reading them.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "And for Indian writing that no import will ever price better: <a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> by R.K. Narayan, <a href=\"/books/the-palace-of-illusions\" style=\"color:#fb8500;font-weight:600\">The Palace of Illusions</a> by Chitra Banerjee Divakaruni, and <a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> by A.P.J. Abdul Kalam, which has probably been gifted more times in this country than any other book in English.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The prestige of a book has never lived in its paper. India built the third-largest book market on earth by making the words affordable and letting the object be ordinary. That is a good trade, and it is worth knowing that you are making it deliberately rather than settling for it.",
+      },
+    ],
+    coverImage: "/blogs/indian-edition-vs-imported-books-price-guide-2026.jpeg",
+    images: [
+      {
+        url: "/blogs/indian-edition-vs-imported-books-price-guide-2026.jpeg",
+        alt: "A young Indian woman in a bookshop comparing two paperback copies of the same book, one in each hand, warm afternoon light across the shelves behind her",
+        caption: "Same words, two editions: the price gap between an Indian paperback and an imported copy is manufacturing and freight, not quality",
+        category: "Book Buying Guide",
+      },
+    ],
+    keywords: [
+      "indian edition vs imported books",
+      "why are imported books expensive in india",
+      "indian edition books meaning",
+      "export edition books india",
+      "book territory rights india",
+      "cheap original books online india",
+      "indian subcontinent edition book",
+      "buy books online india cheap",
+      "paperback price difference india",
+      "are indian edition books original",
+      "TheBookX",
+    ],
+    categories: [
+      "Book Buying Guide",
+      "Publishing Industry",
+      "Reading Culture",
+    ],
+    faqs: [
+      {
+        question: "Is an Indian edition of a book the same as the original?",
+        answer:
+          "Yes. An Indian edition is printed from the same text under a licence held by the publisher with Indian subcontinent rights. Nothing is abridged, removed or rewritten. The differences are physical only: paper quality, binding, sometimes the cover design, and occasionally the conversion of American to British spellings.",
+      },
+      {
+        question: "Why are imported books so expensive in India?",
+        answer:
+          "An imported copy is physical stock manufactured abroad and shipped here. Its price starts at the US or UK cover price and then absorbs freight, customs duty and the importer's margin. An Indian edition is manufactured locally at Indian costs and priced in rupees from the start, which is why the gap is often five to seven times.",
+      },
+      {
+        question: "How can I tell whether a book is an Indian edition or an import?",
+        answer:
+          "Look at the printed price on the back cover. A rupee price means an Indian or export edition; a dollar or pound price means imported stock. Export editions also usually carry a line near the barcode restricting sale to the Indian subcontinent, and Indian editions have their own ISBN that differs from the American listing.",
+      },
+      {
+        question: "Why do new international books take months to reach India cheaply?",
+        answer:
+          "Publishers generally hold the affordable local paperback until the home-market hardback has completed its sales run, and the Indian print run is scheduled around that window. Prize announcements shift it further. The Booker Prize 2026 shortlist is announced on 22 September and the winner on 9 November, and the Nobel Prize in Literature on 8 October, each of which reshapes demand and local publishing schedules.",
+      },
+    ],
+  },
   "india-book-market-report-2026-what-it-means-for-readers": {
     id: "blog-042",
     title:

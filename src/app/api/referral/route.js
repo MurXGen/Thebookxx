@@ -66,6 +66,25 @@ async function hasExistingOrder(phone) {
   }
 }
 
+// Does this phone have AT LEAST ONE delivered order? (gate for issuing a code)
+async function hasDeliveredOrder(phone) {
+  try {
+    const meta = await gvizQuery({ tq: "select * limit 0" });
+    const phoneCol = findColumn(meta, "Phone Number");
+    const where = phoneCol
+      ? phoneCol.type === "number"
+        ? `where ${phoneCol.id} = ${phone}`
+        : `where ${phoneCol.id} = '${phone}'`
+      : "";
+    const table = await gvizQuery({ tq: `select * ${where}`.trim() });
+    return tableToObjects(table).some((r) =>
+      /deliver/i.test(String(r["Status"] || r["Order Status"] || "")),
+    );
+  } catch {
+    return false;
+  }
+}
+
 // Is this phone's most-relevant order Delivered? (used at payout time)
 async function orderIsDelivered(phone, orderId) {
   try {
@@ -131,6 +150,16 @@ export async function POST(request) {
     const phone = ten(body.phone);
     if (phone.length !== 10)
       return Response.json({ error: "invalid phone" }, { status: 400 });
+
+    // Gate: only customers with at least one DELIVERED order can refer.
+    const delivered = await hasDeliveredOrder(phone);
+    if (!delivered) {
+      return Response.json({
+        status: "locked",
+        message:
+          "You can share your referral link once your first order is delivered 📦",
+      });
+    }
 
     const rows = await referralRows(REFERRAL_CODES_SHEET_NAME);
     const existing = rows.find((r) => ten(r["Phone Number"]) === phone);

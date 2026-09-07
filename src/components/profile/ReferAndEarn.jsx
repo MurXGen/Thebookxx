@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Gift, Copy, Check, Loader2, Users } from "lucide-react";
+import { Gift, Copy, Check, Loader2, Users, Lock } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import { showToast } from "@/context/ToastContext";
 
@@ -16,6 +16,7 @@ export default function ReferAndEarn({ phone }) {
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [locked, setLocked] = useState("");
 
   const digits = String(phone || "").replace(/\D/g, "").slice(-10);
   const link = code ? `${SITE}/refer/${code}` : "";
@@ -38,6 +39,9 @@ export default function ReferAndEarn({ phone }) {
       } catch {}
       if (data?.code) {
         setCode(String(data.code).toUpperCase());
+      } else if (data?.status === "locked") {
+        // Not eligible yet — needs a delivered order first.
+        setLocked(data.message || "Available after your first delivered order.");
       } else {
         // Surface the real reason so issues are obvious while testing.
         const reason = data?.error || `HTTP ${res.status}`;
@@ -85,7 +89,12 @@ export default function ReferAndEarn({ phone }) {
         </div>
       </div>
 
-      {!code ? (
+      {locked ? (
+        <div className="refearn-locked">
+          <Lock size={15} />
+          <span>{locked}</span>
+        </div>
+      ) : !code ? (
         <button
           type="button"
           className="refearn-enable"

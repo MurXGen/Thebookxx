@@ -41954,6 +41954,23 @@ img[data-loaded="true"] {
   color: #9ca3af;
   line-height: 1.5;
 }
+.refearn-locked {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #fff8ee;
+  border: 1px dashed #fcd9a6;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #b45309;
+}
+.refearn-locked svg {
+  flex-shrink: 0;
+  color: #fb8500;
+}
 
 /* Apply referral code (profile page) */
 .refapply {

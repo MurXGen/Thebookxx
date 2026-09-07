@@ -400,21 +400,93 @@ export function drawAddressLabel(c, startY, data, opts = {}) {
   // `big` (used by the standalone label-only download) scales up type and
   // bolds the main details for readability, since it has a full page to fill.
   const big = !!opts.big;
+  const isPrepaid = !isCOD;
   const F = {
-    title: big ? "bold 17px sans-serif" : "bold 13px sans-serif",
-    cod: big ? "bold 26px sans-serif" : "bold 20px sans-serif",
-    header: big ? "bold 14px sans-serif" : "bold 11px sans-serif",
-    caption: big ? "bold 12px sans-serif" : "bold 10px sans-serif",
-    name: big ? "bold 18px sans-serif" : "bold 13px sans-serif",
-    value: big ? "bold 15px sans-serif" : "12px sans-serif",
-    footer: big ? "bold 13px sans-serif" : "bold 11px sans-serif",
-    footerDate: big ? "13px sans-serif" : "11px sans-serif",
+    title: big ? "bold 20px sans-serif" : "bold 13px sans-serif",
+    cod: big ? "bold 30px sans-serif" : "bold 20px sans-serif",
+    header: big ? "bold 17px sans-serif" : "bold 11px sans-serif",
+    caption: big ? "bold 14px sans-serif" : "bold 10px sans-serif",
+    name: big ? "bold 25px sans-serif" : "bold 13px sans-serif",
+    value: big ? "bold 19px sans-serif" : "12px sans-serif",
+    footer: big ? "bold 15px sans-serif" : "bold 11px sans-serif",
+    footerDate: big ? "bold 15px sans-serif" : "11px sans-serif",
   };
-  const lineH = big ? 20 : 15;
+  const lineH = big ? 26 : 15;
   const titleH = big ? 42 : 35;
-  const codH = big ? 62 : 50;
-  const headerH = big ? 34 : 28;
-  const footerH = big ? 38 : 30;
+  const codH = big ? 68 : 50;
+  const headerH = big ? 40 : 28;
+  const footerH = big ? 46 : 30;
+
+  // ── Local canvas helpers for the revamped "big" label ──
+  const ctx = c.ctx;
+  const roundRectPath = (x, y, w, h, r) => {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  };
+  // Little book glyph (brand decor) next to "TheBookX".
+  const drawBookIcon = (x, y, s, color) => {
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.lineWidth = 2;
+    ctx.lineJoin = "round";
+    roundRectPath(x, y, s, s * 0.78, 3);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x + s / 2, y + 2);
+    ctx.lineTo(x + s / 2, y + s * 0.78 - 2);
+    ctx.stroke();
+    ctx.restore();
+  };
+  // Phone handset glyph for the call-out box.
+  const drawPhoneIcon = (x, y, s, color) => {
+    ctx.save();
+    ctx.fillStyle = color;
+    ctx.translate(x, y);
+    ctx.scale(s / 24, s / 24);
+    ctx.beginPath();
+    ctx.moveTo(6.6, 2);
+    ctx.lineTo(3, 2);
+    ctx.quadraticCurveTo(2, 2, 2, 3);
+    ctx.quadraticCurveTo(2, 13, 11, 20);
+    ctx.quadraticCurveTo(20, 22, 21, 17.4);
+    ctx.lineTo(21.5, 15);
+    ctx.quadraticCurveTo(21.6, 14, 20.6, 13.7);
+    ctx.lineTo(16.8, 12.9);
+    ctx.quadraticCurveTo(16, 12.8, 15.5, 13.4);
+    ctx.lineTo(14.8, 14.4);
+    ctx.quadraticCurveTo(11.5, 12.8, 9.6, 9.2);
+    ctx.lineTo(10.6, 8.5);
+    ctx.quadraticCurveTo(11.2, 8, 11.1, 7.2);
+    ctx.lineTo(10.3, 3.4);
+    ctx.quadraticCurveTo(10, 2, 8.6, 2);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  };
+  // Rounded pill badge with centered text (PREPAID / COD).
+  const drawPill = (x, y, text, { fill, textColor, font }) => {
+    ctx.save();
+    ctx.font = font;
+    const padX = 12;
+    const tw = ctx.measureText(text).width;
+    const w = tw + padX * 2;
+    const h = big ? 30 : 22;
+    ctx.fillStyle = fill;
+    roundRectPath(x - w, y, w, h, h / 2);
+    ctx.fill();
+    ctx.fillStyle = textColor;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(text, x - w / 2, y + h / 2 + 1);
+    ctx.restore();
+    return w;
+  };
 
   const BRAND = "#fb8500";
   const X = 40;
@@ -423,21 +495,43 @@ export function drawAddressLabel(c, startY, data, opts = {}) {
 
   // Title / brand header
   if (big) {
-    const brandH = 78;
-    c.rect(X, y, W, brandH);
+    const brandH = 92;
+    // soft brand-tinted header background + frame
+    c.rect(X, y, W, brandH, { fill: "#fff7ed", stroke: "#000" });
     // orange accent bar across the top of the header
-    c.rect(X, y, W, 7, { fill: BRAND, stroke: false });
-    c.text("TheBookX", c.W / 2, y + 46, {
-      font: "bold 32px sans-serif",
-      align: "center",
+    c.rect(X, y, W, 8, { fill: BRAND, stroke: false });
+    // brand lockup (book glyph + wordmark), centered
+    const wordFont = "bold 34px sans-serif";
+    ctx.font = wordFont;
+    const wordW = ctx.measureText("TheBookX").width;
+    const iconS = 30;
+    const lockW = iconS + 12 + wordW;
+    const lockX = c.W / 2 - lockW / 2;
+    drawBookIcon(lockX, y + 30, iconS, BRAND);
+    c.text("TheBookX", lockX + iconS + 12, y + 52, {
+      font: wordFont,
+      align: "left",
       color: BRAND,
     });
-    // subtitle with a little letter-spacing feel via caps
-    c.text("S H I P P I N G   L A B E L", c.W / 2, y + 67, {
-      font: "bold 12px sans-serif",
+    c.text("S H I P P I N G   L A B E L", c.W / 2, y + 78, {
+      font: "bold 13px sans-serif",
       align: "center",
-      color: "#666",
+      color: "#8a5a1e",
     });
+    // Payment badge — PREPAID (green) or COD (orange) — top-right.
+    if (isPrepaid) {
+      drawPill(X + W - 16, y + 16, "PREPAID", {
+        fill: "#16a34a",
+        textColor: "#fff",
+        font: "bold 15px sans-serif",
+      });
+    } else {
+      drawPill(X + W - 16, y + 16, "COD", {
+        fill: "#c25e00",
+        textColor: "#fff",
+        font: "bold 15px sans-serif",
+      });
+    }
     y += brandH;
   } else {
     c.rect(X, y, W, titleH);
@@ -472,8 +566,8 @@ export function drawAddressLabel(c, startY, data, opts = {}) {
   y += headerH;
 
   // Body, 2 columns
-  const H_BODY = big ? 340 : 280;
-  const nameGap = big ? 52 : 42;
+  const H_BODY = big ? 400 : 280;
+  const nameGap = big ? 58 : 42;
   const capGap = big ? 20 : 16;
   const rowGap = big ? 24 : 18;
   const cityValX = big ? 60 : 50;
@@ -540,10 +634,38 @@ export function drawAddressLabel(c, startY, data, opts = {}) {
   });
   c.text(customerPincode || "", aX + pinValX, ay, { font: F.value });
   ay += rowGap;
-  c.text("MOBILE:", aX, ay, { font: F.caption, color: "#555" });
-  c.text(`+91 ${customerPhone || ""}`, aX + mobValX, ay, {
-    font: F.value,
-  });
+  if (big) {
+    // Highlighted "call for delivery" box — bordered, rounded, with a phone
+    // icon so the courier immediately sees the number to call.
+    const boxW = COL_HALF - 20;
+    const boxH = 56;
+    const bx = aX;
+    const by = ay - 12;
+    ctx.save();
+    ctx.fillStyle = "#eff6ff";
+    roundRectPath(bx, by, boxW, boxH, 10);
+    ctx.fill();
+    ctx.strokeStyle = "#1d4ed8";
+    ctx.lineWidth = 2.2;
+    roundRectPath(bx, by, boxW, boxH, 10);
+    ctx.stroke();
+    ctx.restore();
+    drawPhoneIcon(bx + 12, by + 15, 26, "#1d4ed8");
+    c.text("CALL FOR DELIVERY", bx + 48, by + 21, {
+      font: "bold 13px sans-serif",
+      color: "#1d4ed8",
+    });
+    c.text(`+91 ${customerPhone || ""}`, bx + 48, by + 44, {
+      font: "bold 23px sans-serif",
+      color: "#0a2a6b",
+    });
+    ay = by + boxH + 6;
+  } else {
+    c.text("MOBILE:", aX, ay, { font: F.caption, color: "#555" });
+    c.text(`+91 ${customerPhone || ""}`, aX + mobValX, ay, {
+      font: F.value,
+    });
+  }
 
   // Map QR — when the customer pinned their location, a courier can scan it to
   // navigate straight to the drop point. Sits at the bottom-right of the TO box.
@@ -933,7 +1055,7 @@ export function buildAddressLabelCanvas(data) {
   // Wider label so a 3-up stack matches A4 proportions and fills the page
   // width instead of leaving big side margins.
   const W = 1080;
-  const SAFE_H = 940;
+  const SAFE_H = 1120;
   const topPad = 36;
   const botPad = 36;
   const c = buildCanvas(W, SAFE_H);

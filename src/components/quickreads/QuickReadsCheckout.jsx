@@ -16,6 +16,7 @@ import {
   Copy,
   Download,
   Check,
+  ChevronRight,
 } from "lucide-react";
 import {
   QUICKREAD_PRICE,
@@ -61,6 +62,7 @@ export default function QuickReadsCheckout({
   const [checking, setChecking] = useState(false); // approval read in flight
   const [nextIn, setNextIn] = useState(30); // seconds to next auto-check
   const [prefilled, setPrefilled] = useState(false); // logged-in details found
+  const [paySel, setPaySel] = useState("UPI"); // "UPI" | "COD" (single books only)
   const checkingRef = useRef(false);
   useEffect(() => setMounted(true), []);
 
@@ -173,6 +175,40 @@ export default function QuickReadsCheckout({
     setStep("pay");
     setQrOpen(true);
     await handleConfirm();
+  };
+
+  // COD for QuickReads: record the order as Cash-on-Delivery pending. Since
+  // there's no parcel, access stays LOCKED and unlocks only once the team
+  // confirms the order — same gating as an unverified online payment.
+  const confirmCod = async () => {
+    if (busy || confirmed) return;
+    setBusy(true);
+    const phone = mobile.replace(/\D/g, "");
+    setSavedPhone(phone);
+    try {
+      for (const book of items) {
+        const order = {
+          name: name.trim(),
+          mobile: phone,
+          bookId: book.id,
+          bookName: book.name,
+          amount: QUICKREAD_PRICE,
+          paymentMethod: "Cash on Delivery",
+          paymentStatus: "COD (pending)",
+          approvalStatus: "Pending",
+        };
+        // eslint-disable-next-line no-await-in-loop
+        await submitQuickReadOrder(order);
+        notifyQuickReadTelegram(order);
+      }
+      setConfirmed(true);
+      setStep("coddone");
+    } catch (e) {
+      console.error("QuickReads COD failed", e);
+      showToast("Something went wrong. Please try again.", "error");
+    } finally {
+      setBusy(false);
+    }
   };
 
   // VERIFY = read the sheet only. If "unverified" has been removed → success;
@@ -371,14 +407,160 @@ export default function QuickReadsCheckout({
               </>
             )}
 
+            {/* Payment method chooser — mirrors the bag's checkout. COD is
+                offered for single-book unlocks (not the subscription). */}
+            {!isSub && (
+              <div className="qrc-paysel">
+                <span className="qrc-paysel-head">Choose payment method</span>
+                <div className="pay-methods">
+                  <button
+                    type="button"
+                    onClick={() => setPaySel("UPI")}
+                    className={`pay-method${paySel === "UPI" ? " selected" : ""}`}
+                  >
+                    <span className="pay-method-head">
+                      <span className="pay-method-amt">
+                        <span className="pay-method-price">₹{amount}</span>
+                      </span>
+                      <span className="pay-method-div" aria-hidden="true" />
+                      <span className="pay-method-body">
+                        <span className="pay-method-ic pay-ic-online">
+                          <svg width="22" height="22" viewBox="0 0 24 24">
+                            <path d="M4 4 L13 12 L4 20 Z" fill="#ff8500" />
+                            <path d="M9 4 L18 12 L9 20 Z" fill="#0a8f0c" />
+                          </svg>
+                        </span>
+                        <span className="pay-method-labels">
+                          <span className="pay-method-name">Pay Online</span>
+                          <span className="pay-method-desc">
+                            Instant access after quick verification
+                          </span>
+                        </span>
+                      </span>
+                      <span
+                        className={`pay-method-radio${paySel === "UPI" ? " on" : ""}`}
+                        aria-hidden="true"
+                      >
+                        {paySel === "UPI" && <Check size={13} strokeWidth={3} />}
+                      </span>
+                    </span>
+                  </button>
+
+                  {paySel === "UPI" && (
+                    <div className="pay-online-apps">
+                      {[
+                        { k: "Google Pay", c: "#1a73e8" },
+                        { k: "PhonePe", c: "#5f259f" },
+                        { k: "Paytm", c: "#00baf2" },
+                        { k: "Other UPI apps", c: "#fb8500" },
+                      ].map((app) => (
+                        <button
+                          key={app.k}
+                          type="button"
+                          className="poa"
+                          disabled={!canContinue || busy}
+                          onClick={startPayment}
+                        >
+                          <span className="poa-ic" style={{ background: app.c }}>
+                            {app.k === "Other UPI apps" ? "UPI" : app.k[0]}
+                          </span>
+                          <span className="poa-nm">{app.k}</span>
+                          <ChevronRight size={16} className="poa-chev" />
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => setPaySel("COD")}
+                    className={`pay-method${paySel === "COD" ? " selected" : ""}`}
+                  >
+                    <span className="pay-method-head">
+                      <span className="pay-method-amt">
+                        <span className="pay-method-price">₹{amount}</span>
+                      </span>
+                      <span className="pay-method-div" aria-hidden="true" />
+                      <span className="pay-method-body">
+                        <span className="pay-method-ic pay-ic-cod">
+                          <svg
+                            width="22"
+                            height="22"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="#0a8f0c"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <rect x="2" y="6" width="20" height="12" rx="2" />
+                            <circle cx="12" cy="12" r="2.5" />
+                          </svg>
+                        </span>
+                        <span className="pay-method-labels">
+                          <span className="pay-method-name">
+                            Cash on Delivery
+                          </span>
+                          <span className="pay-method-desc">
+                            Access unlocks after we confirm
+                          </span>
+                        </span>
+                      </span>
+                      <span
+                        className={`pay-method-radio${paySel === "COD" ? " on" : ""}`}
+                        aria-hidden="true"
+                      >
+                        {paySel === "COD" && <Check size={13} strokeWidth={3} />}
+                      </span>
+                    </span>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Primary CTA — UPI reveals the QR; COD places the order. For UPI
+                the app rows above also start payment. */}
+            {paySel === "COD" && !isSub ? (
+              <button
+                type="button"
+                className="pri-big-btn width100"
+                disabled={!canContinue || busy}
+                onClick={confirmCod}
+                style={!canContinue || busy ? { opacity: 0.55 } : undefined}
+              >
+                {busy ? "Please wait…" : "Place order · Cash on Delivery"}
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="pri-big-btn width100"
+                disabled={!canContinue || busy}
+                onClick={startPayment}
+                style={!canContinue || busy ? { opacity: 0.55 } : undefined}
+              >
+                {busy ? "Please wait…" : `Continue to Pay ₹${amount}`}
+              </button>
+            )}
+          </div>
+        )}
+
+        {step === "coddone" && (
+          <div className="qrc-coddone">
+            <span className="qrc-coddone-ic">
+              <CheckCircle2 size={30} />
+            </span>
+            <h3>Order placed — Cash on Delivery</h3>
+            <p>
+              We&apos;ve received your QuickReads order. Since QuickReads is
+              digital, your access unlocks as soon as our team confirms your
+              order — you&apos;ll be notified.
+            </p>
             <button
               type="button"
               className="pri-big-btn width100"
-              disabled={!canContinue || busy}
-              onClick={startPayment}
-              style={!canContinue || busy ? { opacity: 0.55 } : undefined}
+              onClick={onClose}
             >
-              {busy ? "Please wait…" : `Continue to Pay ₹${amount}`}
+              Done
             </button>
           </div>
         )}

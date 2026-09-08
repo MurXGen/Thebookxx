@@ -42734,6 +42734,48 @@ img[data-loaded="true"] {
   color: var(--tertiary, #fb8500);
   cursor: pointer;
 }
+.qrc-paysel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.qrc-paysel-head {
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #6b7280;
+}
+.qrc-coddone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  padding: 24px 18px 8px;
+}
+.qrc-coddone-ic {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  color: #fff;
+  background: #16a34a;
+  margin-bottom: 4px;
+}
+.qrc-coddone h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+}
+.qrc-coddone p {
+  margin: 0 0 12px;
+  font-size: 13.5px;
+  color: #6b7280;
+  line-height: 1.55;
+}
 
 /* ===== Profile "pay in advance" nudge strip ===== */
 .pay-adv-strip {

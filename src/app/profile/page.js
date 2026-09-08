@@ -2505,7 +2505,7 @@ Please cancel this order. Thank you `;
               <ChevronRight size={18} className="pm-arrow" />
             </Link>
 
-            <Link href="/quickreads" className="pm-row">
+            <Link href="/my-quickreads" className="pm-row">
               <span className="pm-ic">
                 <Zap size={18} />
               </span>

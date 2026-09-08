@@ -9430,6 +9430,22 @@ export default function ManageOrdersPage() {
                                   <Truck size={15} />
                                 )}
                               </button>
+                              <button
+                                type="button"
+                                className="mo-frame-ic"
+                                onClick={() =>
+                                  downloadFormsFor(
+                                    [order],
+                                    "pdf",
+                                    `address_label_${orderId || Date.now()}.pdf`,
+                                    true,
+                                  )
+                                }
+                                title="Download address label (PDF)"
+                                aria-label="Download address label"
+                              >
+                                <Download size={15} />
+                              </button>
                               </div>
 
                               {/* Book total + benefit badges (add-ons / savings). */}

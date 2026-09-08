@@ -1,19 +1,29 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
-  Sparkles,
   BookOpen,
   Crown,
   Clock,
   RefreshCw,
   Lock,
+  Plus,
+  BookmarkCheck,
+  ShoppingCart,
 } from "lucide-react";
 import { books } from "@/utils/book";
-import { quickReadBookIds, quickReadFrameCount } from "@/data/quickreadsMeta";
+import { useStore } from "@/context/StoreContext";
+import { showToast } from "@/context/ToastContext";
+import {
+  quickReadBookIds,
+  quickReadFrameCount,
+  QUICKREAD_PRICE,
+  QUICKREAD_MRP,
+} from "@/data/quickreadsMeta";
 import {
   getQuickReadProfileForPhone,
   checkSubscription,
@@ -34,8 +44,11 @@ const dedupe = (list) => {
   });
 };
 
+const BATCH = 8; // lazy-load step for the browse list
+
 export default function MyQuickReadsPage() {
   const router = useRouter();
+  const { qrCart, addQuickRead, isInQrCart } = useStore();
   const [phone, setPhone] = useState("");
   const [phoneInput, setPhoneInput] = useState("");
   const [loading, setLoading] = useState(true);
@@ -44,6 +57,7 @@ export default function MyQuickReadsPage() {
   const [sub, setSub] = useState({ active: false });
   const [openBook, setOpenBook] = useState(null);
   const [showPlans, setShowPlans] = useState(false);
+  const [visible, setVisible] = useState(BATCH); // how many browse cards shown
 
   const allQr = dedupe(
     quickReadBookIds()
@@ -113,7 +127,24 @@ export default function MyQuickReadsPage() {
 
   const ownedIds = new Set(verified.map((b) => b.id));
   const activeBooks = subActive ? allQr : verified;
-  const youMayLike = allQr.filter((b) => !ownedIds.has(b.id)).slice(0, 6);
+  // Every QuickRead the shopper hasn't unlocked — browse + add to cart, lazy-loaded.
+  const browseAll = allQr.filter((b) => !ownedIds.has(b.id));
+  const browse = browseAll.slice(0, visible);
+  const hasMore = visible < browseAll.length;
+
+  // Lazy-load more browse cards as the page nears the bottom.
+  useEffect(() => {
+    if (!hasMore) return;
+    const onScroll = () => {
+      const nearBottom =
+        window.innerHeight + window.scrollY >=
+        document.body.offsetHeight - 400;
+      if (nearBottom) setVisible((v) => Math.min(v + BATCH, browseAll.length));
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [hasMore, browseAll.length]);
 
   const submitPhone = () => {
     const d = phoneInput.replace(/\D/g, "").slice(0, 10);
@@ -125,32 +156,63 @@ export default function MyQuickReadsPage() {
     load(d);
   };
 
-  const Card = ({ b, owned }) => (
-    <button type="button" className="mqr-card" onClick={() => setOpenBook(b)}>
-      <span className="mqr-cover">
-        {b.image ? (
-          <img src={b.image} alt={b.name} loading="lazy" />
+  const Card = ({ b, owned }) => {
+    const inCart = isInQrCart(b.id);
+    return (
+      <div className="mqr-card">
+        <button
+          type="button"
+          className="mqr-card-open"
+          onClick={() => setOpenBook(b)}
+        >
+          <span className="mqr-cover">
+            {b.image ? (
+              <img src={b.image} alt={b.name} loading="lazy" />
+            ) : (
+              <BookOpen size={22} />
+            )}
+          </span>
+          <span className="mqr-card-body">
+            <span className="mqr-card-name">{b.name}</span>
+            <span className="mqr-card-meta">
+              {owned ? (
+                <>
+                  <Crown size={12} /> {quickReadFrameCount(b.id)} insights ·
+                  Unlocked
+                </>
+              ) : (
+                <>{quickReadFrameCount(b.id)} insights · ₹{QUICKREAD_PRICE}</>
+              )}
+            </span>
+          </span>
+        </button>
+        {owned ? (
+          <button
+            type="button"
+            className="mqr-card-cta read"
+            onClick={() => setOpenBook(b)}
+          >
+            Read
+          </button>
+        ) : inCart ? (
+          <Link href="/bag?tab=quickreads" className="mqr-card-cta incart">
+            <BookmarkCheck size={14} /> In bag
+          </Link>
         ) : (
-          <BookOpen size={22} />
+          <button
+            type="button"
+            className="mqr-card-cta"
+            onClick={() => {
+              addQuickRead(b.id);
+              showToast("Added to your bag 🎉", "success");
+            }}
+          >
+            <Plus size={14} /> Add
+          </button>
         )}
-      </span>
-      <span className="mqr-card-body">
-        <span className="mqr-card-name">{b.name}</span>
-        <span className="mqr-card-meta">
-          {owned ? (
-            <>
-              <Crown size={12} /> {quickReadFrameCount(b.id)} insights · Unlocked
-            </>
-          ) : (
-            <>{quickReadFrameCount(b.id)} insights</>
-          )}
-        </span>
-      </span>
-      <span className={`mqr-card-cta${owned ? " read" : ""}`}>
-        {owned ? "Read" : "Preview"}
-      </span>
-    </button>
-  );
+      </div>
+    );
+  };
 
   return (
     <main className="mqr-page">
@@ -164,9 +226,7 @@ export default function MyQuickReadsPage() {
           <ArrowLeft size={20} />
         </button>
         <div className="ord-head-titles">
-          <h1 className="ord-head-title">
-            <Sparkles size={18} /> My QuickReads
-          </h1>
+          <h1 className="ord-head-title">My QuickReads</h1>
         </div>
       </header>
 
@@ -277,18 +337,44 @@ export default function MyQuickReadsPage() {
             </section>
           )}
 
-          {/* You may like — only when not on Unlimited */}
-          {!subActive && youMayLike.length > 0 && (
+          {/* Browse every QuickRead — add to cart (lazy-loaded) */}
+          {!subActive && browseAll.length > 0 && (
             <section className="mqr-section">
-              <h2 className="mqr-section-title">You may like</h2>
+              <h2 className="mqr-section-title">All QuickReads</h2>
               <div className="mqr-grid">
-                {youMayLike.map((b) => (
+                {browse.map((b) => (
                   <Card key={b.id} b={b} owned={false} />
                 ))}
               </div>
+              {hasMore && (
+                <div className="mqr-more">
+                  <RefreshCw size={15} className="cpo-spin" /> Loading more…
+                </div>
+              )}
             </section>
           )}
         </>
+      )}
+
+      {/* Sticky checkout bar — appears when QuickReads are in the bag */}
+      {qrCart.length > 0 && (
+        <div className="mqr-checkout-bar">
+          <div className="mqr-checkout-info">
+            <span className="mqr-checkout-total">
+              ₹{qrCart.length * QUICKREAD_PRICE}
+            </span>
+            <span className="mqr-checkout-count">
+              {qrCart.length} QuickRead{qrCart.length === 1 ? "" : "s"} in bag
+            </span>
+          </div>
+          <button
+            type="button"
+            className="mqr-checkout-btn"
+            onClick={() => router.push("/bag?tab=quickreads")}
+          >
+            <ShoppingCart size={16} /> Checkout
+          </button>
+        </div>
       )}
 
       <AnimatePresence>

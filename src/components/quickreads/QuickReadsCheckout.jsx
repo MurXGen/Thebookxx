@@ -31,6 +31,7 @@ import {
   grantBookAccess,
   submitSubscriptionOrder,
   checkSubscription,
+  getSavedPhone,
 } from "@/lib/quickreads";
 import { showToast } from "@/context/ToastContext";
 import OrderPlacedSuccess from "@/components/UI/OrderPlacedSuccess";
@@ -59,8 +60,27 @@ export default function QuickReadsCheckout({
   const [timer, setTimer] = useState(0); // seconds left before Verify enables
   const [checking, setChecking] = useState(false); // approval read in flight
   const [nextIn, setNextIn] = useState(30); // seconds to next auto-check
+  const [prefilled, setPrefilled] = useState(false); // logged-in details found
   const checkingRef = useRef(false);
   useEffect(() => setMounted(true), []);
+
+  // Prefill from the logged-in profile so we don't ask again — if both name and
+  // number are known, we skip the form and go straight to pay.
+  useEffect(() => {
+    try {
+      const p = (
+        localStorage.getItem("track_orders_phone") ||
+        getSavedPhone() ||
+        ""
+      )
+        .replace(/\D/g, "")
+        .slice(-10);
+      const n = (localStorage.getItem("track_orders_name") || "").trim();
+      if (p) setMobile(p);
+      if (n) setName(n);
+      if (p.length === 10 && n) setPrefilled(true);
+    } catch {}
+  }, []);
 
   // Once the order is written to the sheet (unconfirmed), poll the sheet every
   // 3 seconds until an admin verifies the payment — then jump to success.
@@ -294,41 +314,62 @@ export default function QuickReadsCheckout({
               )}
             </div>
 
-            <div className="flex flex-row justify-between gap-12">
-              <div className="input-group">
-                <label className="flex flex-row gap-4 flex-center items-center">
-                  <User size={14} />
-                  Name <span className="red">*</span>
-                </label>
-                <input
-                  className="sec-mid-btn width100"
-                  placeholder="Enter your name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
+            {prefilled ? (
+              <div className="qrc-payingas">
+                <span className="qrc-payingas-ic">
+                  <User size={16} />
+                </span>
+                <div className="qrc-payingas-txt">
+                  <strong>{name}</strong>
+                  <small>+91 {mobile}</small>
+                </div>
+                <button
+                  type="button"
+                  className="qrc-payingas-change"
+                  onClick={() => setPrefilled(false)}
+                >
+                  Change
+                </button>
               </div>
-              <div className="input-group">
-                <label className="flex flex-row gap-4 flex-center items-center">
-                  <Phone size={14} />
-                  Mobile Number <span className="red">*</span>
-                </label>
-                <input
-                  className="sec-mid-btn width100"
-                  placeholder="10-digit mobile number"
-                  inputMode="tel"
-                  maxLength={10}
-                  value={mobile}
-                  onChange={(e) =>
-                    setMobile(e.target.value.replace(/\D/g, "").slice(0, 10))
-                  }
-                />
-              </div>
-            </div>
+            ) : (
+              <>
+                <div className="flex flex-row justify-between gap-12">
+                  <div className="input-group">
+                    <label className="flex flex-row gap-4 flex-center items-center">
+                      <User size={14} />
+                      Name <span className="red">*</span>
+                    </label>
+                    <input
+                      className="sec-mid-btn width100"
+                      placeholder="Enter your name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                    />
+                  </div>
+                  <div className="input-group">
+                    <label className="flex flex-row gap-4 flex-center items-center">
+                      <Phone size={14} />
+                      Mobile Number <span className="red">*</span>
+                    </label>
+                    <input
+                      className="sec-mid-btn width100"
+                      placeholder="10-digit mobile number"
+                      inputMode="tel"
+                      maxLength={10}
+                      value={mobile}
+                      onChange={(e) =>
+                        setMobile(e.target.value.replace(/\D/g, "").slice(0, 10))
+                      }
+                    />
+                  </div>
+                </div>
 
-            <p className="font-12 dark-50">
-              Your mobile number unlocks your QuickReads after payment is
-              verified.
-            </p>
+                <p className="font-12 dark-50">
+                  Your mobile number unlocks your QuickReads after payment is
+                  verified.
+                </p>
+              </>
+            )}
 
             <button
               type="button"

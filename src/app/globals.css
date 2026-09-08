@@ -42360,9 +42360,10 @@ img[data-loaded="true"] {
 
 /* ===== My QuickReads personal library page ===== */
 .mqr-page {
-  max-width: 680px;
+  max-width: 1200px;
+  min-width: 300px;
   margin: 0 auto;
-  padding: 16px var(--px-24, 20px) 60px;
+  padding: 16px var(--px-24) 96px;
 }
 .mqr-login {
   display: flex;
@@ -42493,14 +42494,12 @@ img[data-loaded="true"] {
 .mqr-card {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   width: 100%;
-  text-align: left;
   padding: 10px;
   border: 1px solid var(--hairline, #eee);
   border-radius: 14px;
   background: #fff;
-  cursor: pointer;
   transition:
     border-color 0.15s ease,
     box-shadow 0.15s ease;
@@ -42508,6 +42507,18 @@ img[data-loaded="true"] {
 .mqr-card:hover {
   border-color: #fdba74;
   box-shadow: 0 10px 24px -18px rgba(251, 133, 0, 0.7);
+}
+.mqr-card-open {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0;
 }
 .mqr-cover {
   flex-shrink: 0;
@@ -42550,16 +42561,80 @@ img[data-loaded="true"] {
 }
 .mqr-card-cta {
   flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   padding: 8px 14px;
+  border: none;
   border-radius: 999px;
   font-size: 12.5px;
   font-weight: 800;
   color: #b45309;
   background: #fff7ed;
+  text-decoration: none;
+  cursor: pointer;
 }
 .mqr-card-cta.read {
   color: #fff;
   background: #0a0a0a;
+}
+.mqr-card-cta.incart {
+  color: #15803d;
+  background: #ecfdf3;
+}
+.mqr-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #9ca3af;
+}
+/* Sticky QuickReads checkout bar */
+.mqr-checkout-bar {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 16px;
+  z-index: 30;
+  width: min(680px, calc(100% - 32px));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px 12px 18px;
+  border-radius: 16px;
+  background: #0a0a0a;
+  box-shadow: 0 18px 40px -16px rgba(0, 0, 0, 0.55);
+}
+.mqr-checkout-info {
+  display: flex;
+  flex-direction: column;
+}
+.mqr-checkout-total {
+  font-size: 18px;
+  font-weight: 800;
+  color: #fff;
+}
+.mqr-checkout-count {
+  font-size: 12px;
+  color: #16a34a;
+  font-weight: 700;
+}
+.mqr-checkout-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 800;
+  color: #0a0a0a;
+  background: #fff;
+  cursor: pointer;
 }
 
 /* QuickReads access-unlocked celebration overlay */
@@ -42603,20 +42678,61 @@ img[data-loaded="true"] {
   color: #6b7280;
 }
 
-/* Count badge on a profile menu row (e.g. My QuickReads) */
+/* Count badge on a profile menu row — matches the orders badge (.ot-count) */
 .pm-row-badge {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 800;
+  color: #fff;
+  background: var(--tertiary, #fb8500);
+  padding: 2px 9px;
+  border-radius: 999px;
+}
+
+/* QuickReads checkout — compact "paying as" block for logged-in shoppers */
+.qrc-payingas {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--hairline, #eee);
+  background: #faf9f7;
+}
+.qrc-payingas-ic {
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 20px;
-  height: 20px;
-  padding: 0 6px;
-  border-radius: 999px;
-  font-size: 11.5px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: var(--tertiary, #fb8500);
+  background: #fff3e0;
+}
+.qrc-payingas-txt {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.qrc-payingas-txt strong {
+  font-size: 14px;
   font-weight: 800;
-  color: #fff;
-  background: var(--tertiary, #fb8500);
+  color: #0a0a0a;
+}
+.qrc-payingas-txt small {
+  font-size: 12.5px;
+  color: #6b7280;
+}
+.qrc-payingas-change {
+  flex-shrink: 0;
+  border: none;
+  background: none;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--tertiary, #fb8500);
+  cursor: pointer;
 }
 
 /* ===== Profile "pay in advance" nudge strip ===== */

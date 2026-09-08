@@ -62,7 +62,6 @@ import HorizontalScroll from "@/components/UI/HorizontalScroll";
 import PageHeader from "@/components/UI/PageHeader";
 import InstallAppBar from "@/components/InstallAppBar";
 import RecommendationModal from "@/components/RecommendationModal";
-import ProfileQuickReads from "@/components/quickreads/ProfileQuickReads";
 import ReferralCodeField from "@/components/profile/ReferralCodeField";
 import { getVerifiedBookIdsForPhone } from "@/lib/quickreads";
 import { fetchWalletLedger } from "@/utils/walletLedger";
@@ -396,6 +395,7 @@ export default function MyOrdersPage() {
   // before we know whether a saved number exists — we show the skeleton instead.
   const [booting, setBooting] = useState(true);
   const [ordersOpen, setOrdersOpen] = useState(false); // orders history accordion
+  const [qrCount, setQrCount] = useState(0); // QuickReads count (menu badge)
   const [showSupport, setShowSupport] = useState(false); // support templates sheet
   // ── Edit-profile modal (name / number / addresses) ──
   const [showEditProfile, setShowEditProfile] = useState(false);
@@ -1005,6 +1005,7 @@ export default function MyOrdersPage() {
       try {
         const qrIds = await getVerifiedBookIdsForPhone(phone);
         qrCount = qrIds.length;
+        setQrCount(qrCount);
       } catch (_) {}
 
       // Always log the number in — even with no orders yet — so it becomes an
@@ -1927,25 +1928,6 @@ Please cancel this order. Thank you `;
           </button>
         )}
 
-        {/* QuickReads library — shown once a number is loaded (works even if
-            the number has QuickReads but no physical book orders). */}
-        {!showPhoneInput && phoneNumber?.length === 10 && (
-          <ProfileQuickReads
-            phone={phoneNumber}
-            onName={(qrName) => {
-              // If the order sheet had no name (QuickReads-only customer), greet
-              // them with the name from the QuickReads sheet.
-              if (qrName && (!customerName || customerName === "Customer")) {
-                setCustomerName(qrName);
-                try {
-                  localStorage.setItem("track_orders_name", qrName);
-                } catch {}
-              }
-            }}
-          />
-        )}
-
-
         {error && !showPhoneInput && (
           <div className="error-state">
             <div className="error-icon"></div>
@@ -2528,6 +2510,7 @@ Please cancel this order. Thank you `;
                 <Zap size={18} />
               </span>
               <span className="pm-label">My QuickReads</span>
+              {qrCount > 0 && <span className="pm-row-badge">{qrCount}</span>}
               <ChevronRight size={18} className="pm-arrow" />
             </Link>
 

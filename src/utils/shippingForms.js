@@ -1084,6 +1084,18 @@ function drawBigAddressLabel(c, startY, data) {
     ctx.stroke();
     ctx.restore();
   };
+  // Small right-pointing arrow chip for section headings (DELIVER TO / FROM).
+  const drawArrow = (x, yy, s, color) => {
+    ctx.save();
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(x, yy);
+    ctx.lineTo(x + s, yy + s / 2);
+    ctx.lineTo(x, yy + s);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  };
   // Simple book mark (cover + spine + two text lines) — reads as a book.
   const drawBook = (x, yy, s, color) => {
     ctx.save();
@@ -1188,11 +1200,12 @@ function drawBigAddressLabel(c, startY, data) {
 
   // ===== DELIVER TO (hero) =====
   y += 30;
-  c.text("DELIVER TO", innerX, y, {
-    font: "bold 15px sans-serif",
-    color: "#9ca3af",
+  drawArrow(innerX, y - 13, 13, "#1d4ed8");
+  c.text("DELIVER TO", innerX + 22, y, {
+    font: "bold 16px sans-serif",
+    color: "#1d4ed8",
   });
-  y += 36;
+  y += 38;
 
   const pinMatch = (data.customerAddress || "").match(
     /Pinned location:\s*(https?:\/\/\S+)/i,
@@ -1207,20 +1220,20 @@ function drawBigAddressLabel(c, startY, data) {
   const textW = hasQR ? innerW - qSize - 28 : innerW;
   const blockTop = y - 8;
 
-  c.text(data.customerName || "", innerX, y + 4, {
-    font: "bold 34px sans-serif",
+  c.text(data.customerName || "", innerX, y + 6, {
+    font: "bold 38px sans-serif",
   });
-  y += 42;
-  const addrEnd = c.wrap(cleanAddress, innerX, y, textW, 31, {
-    font: "bold 23px sans-serif",
+  y += 48;
+  const addrEnd = c.wrap(cleanAddress, innerX, y, textW, 38, {
+    font: "bold 27px sans-serif",
   });
-  y = addrEnd + 34;
+  y = addrEnd + 40;
   const cityPin = [data.customerCity, data.customerPincode]
     .filter(Boolean)
     .join(" - ");
   if (cityPin) {
-    c.text(cityPin, innerX, y, { font: "bold 23px sans-serif" });
-    y += 8;
+    c.text(cityPin, innerX, y, { font: "bold 27px sans-serif" });
+    y += 10;
   }
 
   if (hasQR) {
@@ -1236,34 +1249,45 @@ function drawBigAddressLabel(c, startY, data) {
     }
   }
 
-  // ===== Call-before-delivery box =====
+  // ===== Call-out — one highlighted row spanning the full width =====
   y += 22;
-  const cbH = 66;
+  const cbH = 72;
   ctx.save();
   ctx.fillStyle = "#eff6ff";
   rr(innerX, y, innerW, cbH, 12);
   ctx.fill();
   ctx.strokeStyle = "#1d4ed8";
-  ctx.lineWidth = 2.4;
+  ctx.lineWidth = 2.6;
   rr(innerX, y, innerW, cbH, 12);
   ctx.stroke();
   ctx.restore();
-  drawPhoneIcon(innerX + 20, y + 19, 30, "#1d4ed8");
-  c.text("CALL BEFORE DELIVERY", innerX + 64, y + 25, {
-    font: "bold 14px sans-serif",
+  const midY = y + cbH / 2;
+  drawPhoneIcon(innerX + 22, midY - 16, 32, "#1d4ed8");
+  c.text("CALL ON THIS NUMBER FOR DELIVERY:", innerX + 66, midY, {
+    font: "bold 17px sans-serif",
     color: "#1d4ed8",
+    baseline: "middle",
   });
-  c.text(`+91 ${data.customerPhone || ""}`, innerX + 64, y + 52, {
-    font: "bold 29px sans-serif",
+  ctx.font = "bold 17px sans-serif";
+  const labelW = ctx.measureText("CALL ON THIS NUMBER FOR DELIVERY:").width;
+  c.text(`+91 ${data.customerPhone || ""}`, innerX + 66 + labelW + 14, midY, {
+    font: "bold 28px sans-serif",
     color: "#0a2a6b",
+    baseline: "middle",
   });
   y += cbH + 26;
 
   // ===== FROM (compact) =====
   hline(y);
   y += 26;
-  c.text("FROM", innerX, y, { font: "bold 13px sans-serif", color: "#9ca3af" });
-  c.text(SENDER.name, innerX + 58, y, {
+  drawArrow(innerX, y - 11, 12, "#9ca3af");
+  c.text("FROM (SENDER)", innerX + 20, y, {
+    font: "bold 14px sans-serif",
+    color: "#9ca3af",
+  });
+  ctx.font = "bold 14px sans-serif";
+  const fromLblW = ctx.measureText("FROM (SENDER)").width;
+  c.text(SENDER.name, innerX + 20 + fromLblW + 14, y, {
     font: "bold 17px sans-serif",
     color: BRAND,
   });

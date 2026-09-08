@@ -1056,7 +1056,10 @@ export function downloadCombinedFormsPDF(dataArray, filename) {
 // note, and an order-id/date footer. Returns the y where the label ends.
 function drawBigAddressLabel(c, startY, data) {
   const ctx = c.ctx;
-  const BRAND = "#fb8500";
+  // High-contrast black-and-white label — minimal colour, everything dark for
+  // crisp printing on any printer.
+  const BRAND = "#111111";
+  const INK = "#111111";
   const isCOD = !!data.isCOD;
   const X = 34;
   const W = c.W - X * 2;
@@ -1074,7 +1077,7 @@ function drawBigAddressLabel(c, startY, data) {
     ctx.arcTo(x, yy, x + w, yy, r);
     ctx.closePath();
   };
-  const hline = (yy, color = "#e5e7eb") => {
+  const hline = (yy, color = "#333333") => {
     ctx.save();
     ctx.strokeStyle = color;
     ctx.lineWidth = 1;
@@ -1160,50 +1163,50 @@ function drawBigAddressLabel(c, startY, data) {
 
   // ===== Header =====
   const headH = 84;
-  ctx.fillStyle = "#fff7ed";
+  ctx.fillStyle = "#f2f2f2";
   ctx.fillRect(X, y, W, headH);
-  ctx.fillStyle = BRAND;
+  ctx.fillStyle = INK;
   ctx.fillRect(X, y, W, 9);
   const iconS = 32;
-  drawBook(innerX, y + headH / 2 - iconS / 2 + 2, iconS, BRAND);
+  drawBook(innerX, y + headH / 2 - iconS / 2 + 2, iconS, INK);
   c.text("TheBookX", innerX + iconS + 14, y + headH / 2 + 12, {
     font: "bold 38px Poppins, sans-serif",
-    color: BRAND,
+    color: INK,
   });
   pillRight(
     X + W - padX,
     y + headH / 2 - 17,
     isCOD ? "CASH ON DELIVERY" : "PREPAID",
-    isCOD ? "#c25e00" : "#16a34a",
+    INK,
   );
   y += headH;
 
   // ===== COD collect banner =====
   if (isCOD && data.codAmount) {
     const bh = 62;
-    ctx.fillStyle = "#fff3e6";
+    ctx.fillStyle = "#e9e9e9";
     ctx.fillRect(X, y, W, bh);
-    ctx.fillStyle = "#c25e00";
-    ctx.fillRect(X, y, 7, bh);
+    ctx.fillStyle = INK;
+    ctx.fillRect(X, y, 8, bh);
     c.text(`COLLECT  Rs. ${data.codAmount} /-`, innerX, y + bh / 2 + 12, {
       font: "bold 34px Poppins, sans-serif",
-      color: "#c25e00",
+      color: INK,
     });
-    c.text("collect from customer", X + W - padX, y + bh / 2 + 6, {
+    c.text("COLLECT FROM CUSTOMER", X + W - padX, y + bh / 2 + 6, {
       font: "bold 15px Poppins, sans-serif",
       align: "right",
-      color: "#a35a1e",
+      color: "#333333",
     });
     y += bh;
   }
-  hline(y);
+  hline(y, "#333333");
 
   // ===== DELIVER TO (hero) =====
   y += 30;
-  drawArrow(innerX, y - 13, 13, "#1d4ed8");
+  drawArrow(innerX, y - 13, 13, INK);
   c.text("DELIVER TO", innerX + 22, y, {
     font: "bold 16px Poppins, sans-serif",
-    color: "#1d4ed8",
+    color: INK,
   });
   y += 38;
 
@@ -1253,26 +1256,26 @@ function drawBigAddressLabel(c, startY, data) {
   y += 22;
   const cbH = 78;
   ctx.save();
-  ctx.fillStyle = "#eff6ff";
+  ctx.fillStyle = "#f2f2f2";
   rr(innerX, y, innerW, cbH, 12);
   ctx.fill();
-  ctx.strokeStyle = "#1d4ed8";
-  ctx.lineWidth = 2.6;
+  ctx.strokeStyle = INK;
+  ctx.lineWidth = 2.8;
   rr(innerX, y, innerW, cbH, 12);
   ctx.stroke();
   ctx.restore();
   const midY = y + cbH / 2;
-  drawPhoneIcon(innerX + 22, midY - 17, 34, "#1d4ed8");
+  drawPhoneIcon(innerX + 22, midY - 17, 34, INK);
   c.text("CALL ON THIS NUMBER FOR DELIVERY:", innerX + 70, midY, {
     font: "bold 20px Poppins, sans-serif",
-    color: "#1d4ed8",
+    color: INK,
     baseline: "middle",
   });
   ctx.font = "bold 20px Poppins, sans-serif";
   const labelW = ctx.measureText("CALL ON THIS NUMBER FOR DELIVERY:").width;
   c.text(`+91 ${data.customerPhone || ""}`, innerX + 70 + labelW + 14, midY, {
     font: "bold 31px Poppins, sans-serif",
-    color: "#0a2a6b",
+    color: INK,
     baseline: "middle",
   });
   y += cbH + 26;
@@ -1280,16 +1283,16 @@ function drawBigAddressLabel(c, startY, data) {
   // ===== FROM (compact) =====
   hline(y);
   y += 26;
-  drawArrow(innerX, y - 11, 12, "#9ca3af");
+  drawArrow(innerX, y - 11, 12, "#333333");
   c.text("FROM (SENDER)", innerX + 20, y, {
     font: "bold 14px Poppins, sans-serif",
-    color: "#9ca3af",
+    color: "#333333",
   });
   ctx.font = "bold 14px Poppins, sans-serif";
   const fromLblW = ctx.measureText("FROM (SENDER)").width;
   c.text(SENDER.name, innerX + 20 + fromLblW + 14, y, {
     font: "bold 17px Poppins, sans-serif",
-    color: BRAND,
+    color: INK,
   });
   y += 24;
   const sEnd = c.wrap(SENDER.addressLines.join(", "), innerX, y, innerW, 24, {

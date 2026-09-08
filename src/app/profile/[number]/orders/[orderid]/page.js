@@ -37,6 +37,7 @@ import TrackSheet from "@/components/profile/TrackSheet";
 import SupportSheet from "@/components/profile/SupportSheet";
 import OrderScratchCard from "@/components/profile/OrderScratchCard";
 import ReferAndEarn from "@/components/profile/ReferAndEarn";
+import CodPayOnline from "@/components/profile/CodPayOnline";
 import BookCard from "@/components/BookCard";
 import { updateOrderRow } from "@/utils/googleFormOrder";
 import { getDeliveryCharge } from "@/utils/cartOffers";
@@ -1361,6 +1362,23 @@ export default function OrderDetailPage() {
           </div>
         )}
       </section>
+
+      {/* COD → pay-online upgrade (only before the parcel is moving) */}
+      {/cash on delivery|cod/i.test(order["Payment Type"] || "") &&
+        !inTransit &&
+        !outForDelivery &&
+        !delivered &&
+        !cancelled && (
+          <CodPayOnline
+            order={order}
+            orderId={orderId}
+            phone={number}
+            name={custName}
+            codFee={bd.codFee}
+            grand={bd.grand}
+            onPaid={(fields) => setOrder((o) => ({ ...o, ...fields }))}
+          />
+        )}
 
       {/* Scratch-card reward — below the bill breakdown (skeleton → 3D → reveal) */}
       <OrderScratchCard

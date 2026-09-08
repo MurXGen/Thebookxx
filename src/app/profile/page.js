@@ -1880,6 +1880,41 @@ Please cancel this order. Thank you `;
           </div>
         </div>
 
+        {/* Pay-in-advance nudge — shown when a COD order is still eligible to
+            switch to online (before it's shipped out). Links to that order. */}
+        {!showPhoneInput &&
+          (() => {
+            const codOrder = orders.find(
+              (o) =>
+                /cash on delivery|cod/i.test(o["Payment Type"] || "") &&
+                !/in\s*transit|out\s*for\s*delivery|delivered|money received|cancel/i.test(
+                  o["Order Status"] || "",
+                ) &&
+                !/\(unconfirmed\)/i.test(o["Customer Name"] || ""),
+            );
+            if (!codOrder) return null;
+            const oid = codOrder["Order ID"];
+            return (
+              <Link
+                href={`/profile/${phoneNumber}/orders/${encodeURIComponent(oid)}`}
+                className="pay-adv-strip"
+              >
+                <span className="pay-adv-ic">
+                  <Wallet size={18} />
+                </span>
+                <span className="pay-adv-txt">
+                  <strong>This order is Cash on Delivery</strong>
+                  <small>
+                    Pay online to get a free bookmark &amp; skip COD charges
+                  </small>
+                </span>
+                <span className="pay-adv-cta">
+                  Pay now <ChevronRight size={16} />
+                </span>
+              </Link>
+            );
+          })()}
+
         {/* Log out — directly below the profile card */}
         {!showPhoneInput && (
           <button

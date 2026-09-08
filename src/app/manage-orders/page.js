@@ -4637,19 +4637,24 @@ export default function ManageOrdersPage() {
     let filtered = [...orders];
 
     if (searchQuery) {
-      filtered = filtered.filter(
-        (order) =>
-          order["Customer Name"]
-            ?.toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          order["Order ID"]
-            ?.toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          String(order["Phone Number"] || "").includes(searchQuery) ||
-          order["Shipping ID"]
-            ?.toLowerCase()
-            .includes(searchQuery.toLowerCase()),
-      );
+      const qq = searchQuery.trim().toLowerCase();
+      const qDigits = searchQuery.replace(/\D/g, ""); // for phone / pincode
+      filtered = filtered.filter((order) => {
+        const name = String(order["Customer Name"] || "").toLowerCase();
+        const oid = String(order["Order ID"] || "").toLowerCase();
+        const phone = String(order["Phone Number"] || "").replace(/\D/g, "");
+        const ship = String(order["Shipping ID"] || "").toLowerCase();
+        const pin = String(order["Pincode"] || "");
+        const addr = String(order["Address"] || "").toLowerCase();
+        return (
+          name.includes(qq) ||
+          oid.includes(qq) ||
+          (qDigits.length > 0 && phone.includes(qDigits)) ||
+          ship.includes(qq) ||
+          (qDigits.length > 0 && pin.includes(qDigits)) ||
+          addr.includes(qq)
+        );
+      });
     }
 
     const statusSel = Array.isArray(statusFilter)

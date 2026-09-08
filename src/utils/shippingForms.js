@@ -65,7 +65,7 @@ export function buildCanvas(W, H) {
   ctx.fillStyle = "#000";
 
   const text = (str, x, y, opts = {}) => {
-    ctx.font = opts.font || "12px sans-serif";
+    ctx.font = opts.font || "12px Poppins, sans-serif";
     ctx.fillStyle = opts.color || "#000";
     ctx.textAlign = opts.align || "left";
     ctx.textBaseline = opts.baseline || "alphabetic";
@@ -83,7 +83,7 @@ export function buildCanvas(W, H) {
     }
   };
   const wrap = (str, x, y, maxW, lineHeight, opts = {}) => {
-    ctx.font = opts.font || "12px sans-serif";
+    ctx.font = opts.font || "12px Poppins, sans-serif";
     ctx.fillStyle = opts.color || "#000";
     ctx.textAlign = "left";
     const words = String(str || "").split(" ");
@@ -165,11 +165,11 @@ export function drawDeclarationForm(c, startY, data) {
   // ----- Title row -----
   c.rect(X, y, W, 60);
   c.text("CUSTOMER DECLARATION FORM (CDF-I)", c.W / 2, y + 24, {
-    font: "bold 14px sans-serif",
+    font: "bold 14px Poppins, sans-serif",
     align: "center",
   });
   c.text("INDIA POST / SPEED POST PARCEL", c.W / 2, y + 44, {
-    font: "bold 12px sans-serif",
+    font: "bold 12px Poppins, sans-serif",
     align: "center",
   });
   y += 60;
@@ -178,9 +178,9 @@ export function drawDeclarationForm(c, startY, data) {
   const COL_LEFT_W = W * 0.3;
   c.rect(X, y, COL_LEFT_W, 45);
   c.rect(X + COL_LEFT_W, y, W - COL_LEFT_W, 45);
-  c.text("CUSTOMER ID", X + 10, y + 27, { font: "bold 11px sans-serif" });
+  c.text("CUSTOMER ID", X + 10, y + 27, { font: "bold 11px Poppins, sans-serif" });
   c.text(orderId || "", X + COL_LEFT_W + 10, y + 27, {
-    font: "12px sans-serif",
+    font: "12px Poppins, sans-serif",
   });
   y += 45;
 
@@ -191,14 +191,14 @@ export function drawDeclarationForm(c, startY, data) {
   c.rect(X + COL_W, y, COL_W, H_CAT);
   c.rect(X + 2 * COL_W, y, W - 2 * COL_W, H_CAT);
   c.drawCheckbox(X + 10, y + 18, 14, true);
-  c.text("BOOKS / DOCUMENT", X + 32, y + 31, { font: "bold 11px sans-serif" });
+  c.text("BOOKS / DOCUMENT", X + 32, y + 31, { font: "bold 11px Poppins, sans-serif" });
   c.drawCheckbox(X + COL_W + 10, y + 18, 14, false);
   c.text("FASHION / APPAREL", X + COL_W + 32, y + 31, {
-    font: "bold 11px sans-serif",
+    font: "bold 11px Poppins, sans-serif",
   });
   c.drawCheckbox(X + 2 * COL_W + 10, y + 18, 14, false);
   c.text("SPORT EQUIPMENT", X + 2 * COL_W + 32, y + 31, {
-    font: "bold 11px sans-serif",
+    font: "bold 11px Poppins, sans-serif",
   });
   y += H_CAT;
 
@@ -207,14 +207,14 @@ export function drawDeclarationForm(c, startY, data) {
   c.rect(X + COL_W, y, COL_W, H_CAT);
   c.rect(X + 2 * COL_W, y, W - 2 * COL_W, H_CAT);
   c.drawCheckbox(X + 10, y + 18, 14, false);
-  c.text("ELECTRONICS", X + 32, y + 31, { font: "bold 11px sans-serif" });
+  c.text("ELECTRONICS", X + 32, y + 31, { font: "bold 11px Poppins, sans-serif" });
   c.drawCheckbox(X + COL_W + 10, y + 18, 14, false);
   c.text("HOUSEHOLD ITEMS", X + COL_W + 32, y + 31, {
-    font: "bold 11px sans-serif",
+    font: "bold 11px Poppins, sans-serif",
   });
   c.drawCheckbox(X + 2 * COL_W + 10, y + 18, 14, false);
   c.text("MEDICINES", X + 2 * COL_W + 32, y + 31, {
-    font: "bold 11px sans-serif",
+    font: "bold 11px Poppins, sans-serif",
   });
   y += H_CAT;
 
@@ -222,7 +222,7 @@ export function drawDeclarationForm(c, startY, data) {
   c.rect(X, y, COL_LEFT_W, 45);
   c.rect(X + COL_LEFT_W, y, W - COL_LEFT_W, 45);
   c.text("OTHER (PLEASE SPECIFY)", X + 10, y + 27, {
-    font: "bold 11px sans-serif",
+    font: "bold 11px Poppins, sans-serif",
   });
   y += 45;
 
@@ -230,24 +230,24 @@ export function drawDeclarationForm(c, startY, data) {
   const H_DANGER = 80;
   c.rect(X, y, W, H_DANGER);
   c.text("WHETHER THE PARCEL CONTAINS THE FOLLOWING:", c.W / 2, y + 18, {
-    font: "bold 11px sans-serif",
+    font: "bold 11px Poppins, sans-serif",
     align: "center",
   });
   c.text(
     "DRY COCONUT / BATTERY-INBUILT ELECTRONICS / FLAMMABLE ITEMS /",
     c.W / 2,
     y + 36,
-    { font: "11px sans-serif", align: "center" },
+    { font: "11px Poppins, sans-serif", align: "center" },
   );
   c.text("CHEMICAL SUBSTANCES / LIQUIDS / MAGNETIC MATERIAL", c.W / 2, y + 52, {
-    font: "11px sans-serif",
+    font: "11px Poppins, sans-serif",
     align: "center",
   });
   // YES [ ]   NO [X], rendered as labels with drawn checkboxes for the icon
   const cx = c.W / 2;
-  c.text("YES", cx - 70, y + 71, { font: "bold 11px sans-serif" });
+  c.text("YES", cx - 70, y + 71, { font: "bold 11px Poppins, sans-serif" });
   c.drawCheckbox(cx - 42, y + 58, 14, false);
-  c.text("NO", cx + 20, y + 71, { font: "bold 11px sans-serif" });
+  c.text("NO", cx + 20, y + 71, { font: "bold 11px Poppins, sans-serif" });
   c.drawCheckbox(cx + 42, y + 58, 14, true);
   y += H_DANGER;
 
@@ -255,10 +255,10 @@ export function drawDeclarationForm(c, startY, data) {
   c.rect(X, y, COL_LEFT_W, 45);
   c.rect(X + COL_LEFT_W, y, W - COL_LEFT_W, 45);
   c.text("TOTAL VALUE IN RS:", X + 10, y + 27, {
-    font: "bold 11px sans-serif",
+    font: "bold 11px Poppins, sans-serif",
   });
   c.text(`Rs. ${totalValueRs || 0} /-`, X + COL_LEFT_W + 10, y + 27, {
-    font: "bold 13px sans-serif",
+    font: "bold 13px Poppins, sans-serif",
   });
   y += 45;
 
@@ -267,7 +267,7 @@ export function drawDeclarationForm(c, startY, data) {
     const H_COD = 45;
     c.rect(X, y, W, H_COD); // border only, no fill
     c.text(`COLLECT CASH:   Rs. ${codAmount || 0} /-`, X + 10, y + 28, {
-      font: "bold 14px sans-serif",
+      font: "bold 14px Poppins, sans-serif",
     });
     y += H_COD;
   }
@@ -277,10 +277,10 @@ export function drawDeclarationForm(c, startY, data) {
   c.rect(X, y, COL_HALF, 30, { fill: "#f5f5f5", stroke: "#000" });
   c.rect(X + COL_HALF, y, COL_HALF, 30, { fill: "#f5f5f5", stroke: "#000" });
   c.text("SENDER / RETURN ADDRESS:", X + 10, y + 19, {
-    font: "bold 11px sans-serif",
+    font: "bold 11px Poppins, sans-serif",
   });
   c.text("ADDRESSEE ADDRESS:", X + COL_HALF + 10, y + 19, {
-    font: "bold 11px sans-serif",
+    font: "bold 11px Poppins, sans-serif",
   });
   y += 30;
 
@@ -291,60 +291,60 @@ export function drawDeclarationForm(c, startY, data) {
 
   // Sender (left column)
   let sy = y + 20;
-  c.text("NAME:", X + 10, sy, { font: "bold 10px sans-serif", color: "#555" });
-  c.text(SENDER.name, X + 60, sy, { font: "bold 12px sans-serif" });
+  c.text("NAME:", X + 10, sy, { font: "bold 10px Poppins, sans-serif", color: "#555" });
+  c.text(SENDER.name, X + 60, sy, { font: "bold 12px Poppins, sans-serif" });
   sy += 24;
   c.text("ADDRESS:", X + 10, sy, {
-    font: "bold 10px sans-serif",
+    font: "bold 10px Poppins, sans-serif",
     color: "#555",
   });
   let addrY = sy + 16;
   SENDER.addressLines.forEach((line) => {
-    c.text(line, X + 10, addrY, { font: "11px sans-serif" });
+    c.text(line, X + 10, addrY, { font: "11px Poppins, sans-serif" });
     addrY += 14;
   });
   sy = y + H_BODY - 70;
   c.text("STATE:", X + 10, sy, {
-    font: "bold 10px sans-serif",
+    font: "bold 10px Poppins, sans-serif",
     color: "#555",
   });
-  c.text(SENDER.state, X + 70, sy, { font: "11px sans-serif" });
+  c.text(SENDER.state, X + 70, sy, { font: "11px Poppins, sans-serif" });
   sy += 20;
   c.text("PINCODE:", X + 10, sy, {
-    font: "bold 10px sans-serif",
+    font: "bold 10px Poppins, sans-serif",
     color: "#555",
   });
-  c.text(SENDER.pincode, X + 70, sy, { font: "11px sans-serif" });
+  c.text(SENDER.pincode, X + 70, sy, { font: "11px Poppins, sans-serif" });
   sy += 20;
   c.text("MOBILE NO:", X + 10, sy, {
-    font: "bold 10px sans-serif",
+    font: "bold 10px Poppins, sans-serif",
     color: "#555",
   });
-  c.text(SENDER.mobile, X + 80, sy, { font: "11px sans-serif" });
+  c.text(SENDER.mobile, X + 80, sy, { font: "11px Poppins, sans-serif" });
 
   // Addressee (right column)
   const aX = X + COL_HALF + 10;
   let ay = y + 20;
-  c.text("NAME:", aX, ay, { font: "bold 10px sans-serif", color: "#555" });
-  c.text(customerName || "", aX + 50, ay, { font: "bold 12px sans-serif" });
+  c.text("NAME:", aX, ay, { font: "bold 10px Poppins, sans-serif", color: "#555" });
+  c.text(customerName || "", aX + 50, ay, { font: "bold 12px Poppins, sans-serif" });
   ay += 24;
-  c.text("ADDRESS:", aX, ay, { font: "bold 10px sans-serif", color: "#555" });
+  c.text("ADDRESS:", aX, ay, { font: "bold 10px Poppins, sans-serif", color: "#555" });
   c.wrap(customerAddress || "", aX, ay + 16, COL_HALF - 20, 14, {
-    font: "11px sans-serif",
+    font: "11px Poppins, sans-serif",
   });
 
   ay = y + H_BODY - 70;
-  c.text("STATE:", aX, ay, { font: "bold 10px sans-serif", color: "#555" });
-  c.text(customerState || "", aX + 60, ay, { font: "11px sans-serif" });
+  c.text("STATE:", aX, ay, { font: "bold 10px Poppins, sans-serif", color: "#555" });
+  c.text(customerState || "", aX + 60, ay, { font: "11px Poppins, sans-serif" });
   ay += 20;
-  c.text("PINCODE:", aX, ay, { font: "bold 10px sans-serif", color: "#555" });
-  c.text(customerPincode || "", aX + 70, ay, { font: "11px sans-serif" });
+  c.text("PINCODE:", aX, ay, { font: "bold 10px Poppins, sans-serif", color: "#555" });
+  c.text(customerPincode || "", aX + 70, ay, { font: "11px Poppins, sans-serif" });
   ay += 20;
   c.text("MOBILE NO:", aX, ay, {
-    font: "bold 10px sans-serif",
+    font: "bold 10px Poppins, sans-serif",
     color: "#555",
   });
-  c.text(customerPhone || "", aX + 80, ay, { font: "11px sans-serif" });
+  c.text(customerPhone || "", aX + 80, ay, { font: "11px Poppins, sans-serif" });
 
   y += H_BODY;
 
@@ -355,26 +355,26 @@ export function drawDeclarationForm(c, startY, data) {
     "I, THE UNDERSIGNED, WHOSE NAME AND ADDRESS ARE MENTIONED ABOVE, CERTIFY THAT",
     X + 10,
     y + 22,
-    { font: "10px sans-serif" },
+    { font: "10px Poppins, sans-serif" },
   );
   c.text(
     "THE PARTICULARS GIVEN IN THIS DECLARATION ARE CORRECT AND THAT THIS ITEM",
     X + 10,
     y + 40,
-    { font: "10px sans-serif" },
+    { font: "10px Poppins, sans-serif" },
   );
   c.text(
     "DOES NOT CONTAIN ANY DANGEROUS ARTICLE OR ARTICLES PROHIBITED BY LEGISLATION.",
     X + 10,
     y + 58,
-    { font: "10px sans-serif" },
+    { font: "10px Poppins, sans-serif" },
   );
   y += H_FOOT;
 
   // ----- Date / signature row -----
   c.rect(X, y, W, 50);
   c.text("DATE AND SENDER'S SIGNATURE", X + W - 10, y + 32, {
-    font: "bold 10px sans-serif",
+    font: "bold 10px Poppins, sans-serif",
     align: "right",
   });
   y += 50;
@@ -402,14 +402,14 @@ export function drawAddressLabel(c, startY, data, opts = {}) {
   const big = !!opts.big;
   const isPrepaid = !isCOD;
   const F = {
-    title: big ? "bold 20px sans-serif" : "bold 13px sans-serif",
-    cod: big ? "bold 30px sans-serif" : "bold 20px sans-serif",
-    header: big ? "bold 17px sans-serif" : "bold 11px sans-serif",
-    caption: big ? "bold 14px sans-serif" : "bold 10px sans-serif",
-    name: big ? "bold 25px sans-serif" : "bold 13px sans-serif",
-    value: big ? "bold 19px sans-serif" : "12px sans-serif",
-    footer: big ? "bold 15px sans-serif" : "bold 11px sans-serif",
-    footerDate: big ? "bold 15px sans-serif" : "11px sans-serif",
+    title: big ? "bold 20px Poppins, sans-serif" : "bold 13px Poppins, sans-serif",
+    cod: big ? "bold 30px Poppins, sans-serif" : "bold 20px Poppins, sans-serif",
+    header: big ? "bold 17px Poppins, sans-serif" : "bold 11px Poppins, sans-serif",
+    caption: big ? "bold 14px Poppins, sans-serif" : "bold 10px Poppins, sans-serif",
+    name: big ? "bold 25px Poppins, sans-serif" : "bold 13px Poppins, sans-serif",
+    value: big ? "bold 19px Poppins, sans-serif" : "12px Poppins, sans-serif",
+    footer: big ? "bold 15px Poppins, sans-serif" : "bold 11px Poppins, sans-serif",
+    footerDate: big ? "bold 15px Poppins, sans-serif" : "11px Poppins, sans-serif",
   };
   const lineH = big ? 26 : 15;
   const titleH = big ? 42 : 35;
@@ -501,7 +501,7 @@ export function drawAddressLabel(c, startY, data, opts = {}) {
     // orange accent bar across the top of the header
     c.rect(X, y, W, 8, { fill: BRAND, stroke: false });
     // brand lockup (book glyph + wordmark), centered
-    const wordFont = "bold 34px sans-serif";
+    const wordFont = "bold 34px Poppins, sans-serif";
     ctx.font = wordFont;
     const wordW = ctx.measureText("TheBookX").width;
     const iconS = 30;
@@ -514,7 +514,7 @@ export function drawAddressLabel(c, startY, data, opts = {}) {
       color: BRAND,
     });
     c.text("S H I P P I N G   L A B E L", c.W / 2, y + 78, {
-      font: "bold 13px sans-serif",
+      font: "bold 13px Poppins, sans-serif",
       align: "center",
       color: "#8a5a1e",
     });
@@ -523,13 +523,13 @@ export function drawAddressLabel(c, startY, data, opts = {}) {
       drawPill(X + W - 16, y + 16, "PREPAID", {
         fill: "#16a34a",
         textColor: "#fff",
-        font: "bold 15px sans-serif",
+        font: "bold 15px Poppins, sans-serif",
       });
     } else {
       drawPill(X + W - 16, y + 16, "COD", {
         fill: "#c25e00",
         textColor: "#fff",
-        font: "bold 15px sans-serif",
+        font: "bold 15px Poppins, sans-serif",
       });
     }
     y += brandH;
@@ -652,11 +652,11 @@ export function drawAddressLabel(c, startY, data, opts = {}) {
     ctx.restore();
     drawPhoneIcon(bx + 12, by + 15, 26, "#1d4ed8");
     c.text("CALL FOR DELIVERY", bx + 48, by + 21, {
-      font: "bold 13px sans-serif",
+      font: "bold 13px Poppins, sans-serif",
       color: "#1d4ed8",
     });
     c.text(`+91 ${customerPhone || ""}`, bx + 48, by + 44, {
-      font: "bold 23px sans-serif",
+      font: "bold 23px Poppins, sans-serif",
       color: "#0a2a6b",
     });
     ay = by + boxH + 6;
@@ -676,7 +676,7 @@ export function drawAddressLabel(c, startY, data, opts = {}) {
     const drew = drawQrCode(c.ctx, mapLink, qx, qy, qSize);
     if (drew) {
       c.text("Scan receiver location", qx + qSize / 2, qy + qSize + 14, {
-        font: big ? "bold 11px sans-serif" : "bold 9px sans-serif",
+        font: big ? "bold 11px Poppins, sans-serif" : "bold 9px Poppins, sans-serif",
         align: "center",
         color: "#333",
       });
@@ -698,7 +698,7 @@ export function drawAddressLabel(c, startY, data, opts = {}) {
     let ix = X + 14;
     if (data.isFaster) {
       c.text("⚡ FASTER DELIVERY", ix, midY, {
-        font: big ? "bold 15px sans-serif" : "bold 12px sans-serif",
+        font: big ? "bold 15px Poppins, sans-serif" : "bold 12px Poppins, sans-serif",
         color: "#c25e00",
         baseline: "middle",
       });
@@ -716,7 +716,7 @@ export function drawAddressLabel(c, startY, data, opts = {}) {
       c.ctx.stroke();
       c.ctx.restore();
       c.text("GIFT WRAP", cxx + r + 8, midY, {
-        font: big ? "bold 12px sans-serif" : "bold 10px sans-serif",
+        font: big ? "bold 12px Poppins, sans-serif" : "bold 10px Poppins, sans-serif",
         baseline: "middle",
       });
       ix = cxx + r + 8 + (big ? 108 : 92);
@@ -732,7 +732,7 @@ export function drawAddressLabel(c, startY, data, opts = {}) {
       c.ctx.strokeRect(ix, ry, rw, rh);
       c.ctx.restore();
       c.text("BOOKMARK", ix + rw + 8, midY, {
-        font: big ? "bold 12px sans-serif" : "bold 10px sans-serif",
+        font: big ? "bold 12px Poppins, sans-serif" : "bold 10px Poppins, sans-serif",
         baseline: "middle",
       });
     }
@@ -741,7 +741,7 @@ export function drawAddressLabel(c, startY, data, opts = {}) {
 
   // Order note strip — printed for the packer/courier when a note exists.
   if (note && String(note).trim()) {
-    const noteFont = big ? "bold 12px sans-serif" : "bold 10px sans-serif";
+    const noteFont = big ? "bold 12px Poppins, sans-serif" : "bold 10px Poppins, sans-serif";
     const topPad = big ? 20 : 16;
     const startNoteY = y;
     c.text("NOTE:", X + 10, y + topPad, { font: F.caption, color: "#c25e00" });
@@ -839,7 +839,7 @@ function drawDashedDivider(c, y, label) {
   ctx.restore();
   if (label) {
     c.text(label, c.W / 2, y - 6, {
-      font: "10px sans-serif",
+      font: "10px Poppins, sans-serif",
       align: "center",
       color: "#80868b",
     });
@@ -1144,7 +1144,7 @@ function drawBigAddressLabel(c, startY, data) {
   };
   const pillRight = (rightX, topY, text, fill) => {
     ctx.save();
-    ctx.font = "bold 16px sans-serif";
+    ctx.font = "bold 16px Poppins, sans-serif";
     const w = ctx.measureText(text).width + 28;
     const h = 34;
     const x = rightX - w;
@@ -1167,7 +1167,7 @@ function drawBigAddressLabel(c, startY, data) {
   const iconS = 32;
   drawBook(innerX, y + headH / 2 - iconS / 2 + 2, iconS, BRAND);
   c.text("TheBookX", innerX + iconS + 14, y + headH / 2 + 12, {
-    font: "bold 38px sans-serif",
+    font: "bold 38px Poppins, sans-serif",
     color: BRAND,
   });
   pillRight(
@@ -1186,11 +1186,11 @@ function drawBigAddressLabel(c, startY, data) {
     ctx.fillStyle = "#c25e00";
     ctx.fillRect(X, y, 7, bh);
     c.text(`COLLECT  Rs. ${data.codAmount} /-`, innerX, y + bh / 2 + 12, {
-      font: "bold 34px sans-serif",
+      font: "bold 34px Poppins, sans-serif",
       color: "#c25e00",
     });
     c.text("collect from customer", X + W - padX, y + bh / 2 + 6, {
-      font: "bold 15px sans-serif",
+      font: "bold 15px Poppins, sans-serif",
       align: "right",
       color: "#a35a1e",
     });
@@ -1202,7 +1202,7 @@ function drawBigAddressLabel(c, startY, data) {
   y += 30;
   drawArrow(innerX, y - 13, 13, "#1d4ed8");
   c.text("DELIVER TO", innerX + 22, y, {
-    font: "bold 16px sans-serif",
+    font: "bold 16px Poppins, sans-serif",
     color: "#1d4ed8",
   });
   y += 38;
@@ -1221,18 +1221,18 @@ function drawBigAddressLabel(c, startY, data) {
   const blockTop = y - 8;
 
   c.text(data.customerName || "", innerX, y + 6, {
-    font: "bold 38px sans-serif",
+    font: "bold 38px Poppins, sans-serif",
   });
   y += 48;
   const addrEnd = c.wrap(cleanAddress, innerX, y, textW, 38, {
-    font: "bold 27px sans-serif",
+    font: "bold 27px Poppins, sans-serif",
   });
   y = addrEnd + 40;
   const cityPin = [data.customerCity, data.customerPincode]
     .filter(Boolean)
     .join(" - ");
   if (cityPin) {
-    c.text(cityPin, innerX, y, { font: "bold 27px sans-serif" });
+    c.text(cityPin, innerX, y, { font: "bold 27px Poppins, sans-serif" });
     y += 10;
   }
 
@@ -1241,7 +1241,7 @@ function drawBigAddressLabel(c, startY, data) {
     const drew = drawQrCode(ctx, mapLink, qx, blockTop, qSize);
     if (drew) {
       c.text("Scan location", qx + qSize / 2, blockTop + qSize + 18, {
-        font: "bold 12px sans-serif",
+        font: "bold 12px Poppins, sans-serif",
         align: "center",
         color: "#6b7280",
       });
@@ -1251,7 +1251,7 @@ function drawBigAddressLabel(c, startY, data) {
 
   // ===== Call-out — one highlighted row spanning the full width =====
   y += 22;
-  const cbH = 72;
+  const cbH = 78;
   ctx.save();
   ctx.fillStyle = "#eff6ff";
   rr(innerX, y, innerW, cbH, 12);
@@ -1262,16 +1262,16 @@ function drawBigAddressLabel(c, startY, data) {
   ctx.stroke();
   ctx.restore();
   const midY = y + cbH / 2;
-  drawPhoneIcon(innerX + 22, midY - 16, 32, "#1d4ed8");
-  c.text("CALL ON THIS NUMBER FOR DELIVERY:", innerX + 66, midY, {
-    font: "bold 17px sans-serif",
+  drawPhoneIcon(innerX + 22, midY - 17, 34, "#1d4ed8");
+  c.text("CALL ON THIS NUMBER FOR DELIVERY:", innerX + 70, midY, {
+    font: "bold 20px Poppins, sans-serif",
     color: "#1d4ed8",
     baseline: "middle",
   });
-  ctx.font = "bold 17px sans-serif";
+  ctx.font = "bold 20px Poppins, sans-serif";
   const labelW = ctx.measureText("CALL ON THIS NUMBER FOR DELIVERY:").width;
-  c.text(`+91 ${data.customerPhone || ""}`, innerX + 66 + labelW + 14, midY, {
-    font: "bold 28px sans-serif",
+  c.text(`+91 ${data.customerPhone || ""}`, innerX + 70 + labelW + 14, midY, {
+    font: "bold 31px Poppins, sans-serif",
     color: "#0a2a6b",
     baseline: "middle",
   });
@@ -1282,24 +1282,24 @@ function drawBigAddressLabel(c, startY, data) {
   y += 26;
   drawArrow(innerX, y - 11, 12, "#9ca3af");
   c.text("FROM (SENDER)", innerX + 20, y, {
-    font: "bold 14px sans-serif",
+    font: "bold 14px Poppins, sans-serif",
     color: "#9ca3af",
   });
-  ctx.font = "bold 14px sans-serif";
+  ctx.font = "bold 14px Poppins, sans-serif";
   const fromLblW = ctx.measureText("FROM (SENDER)").width;
   c.text(SENDER.name, innerX + 20 + fromLblW + 14, y, {
-    font: "bold 17px sans-serif",
+    font: "bold 17px Poppins, sans-serif",
     color: BRAND,
   });
   y += 24;
-  const sEnd = c.wrap(SENDER.addressLines.join(", "), innerX, y, innerW, 22, {
-    font: "15px sans-serif",
-    color: "#4b5563",
+  const sEnd = c.wrap(SENDER.addressLines.join(", "), innerX, y, innerW, 24, {
+    font: "bold 16px Poppins, sans-serif",
+    color: "#111827",
   });
-  y = sEnd + 22;
+  y = sEnd + 24;
   c.text(`Mobile: ${SENDER.mobile}`, innerX, y, {
-    font: "bold 15px sans-serif",
-    color: "#4b5563",
+    font: "bold 16px Poppins, sans-serif",
+    color: "#111827",
   });
   y += 14;
 
@@ -1307,7 +1307,7 @@ function drawBigAddressLabel(c, startY, data) {
   if (data.note && String(data.note).trim()) {
     y += 14;
     c.text("NOTE:", innerX, y + 14, {
-      font: "bold 13px sans-serif",
+      font: "bold 13px Poppins, sans-serif",
       color: "#c25e00",
     });
     const nEnd = c.wrap(
@@ -1316,7 +1316,7 @@ function drawBigAddressLabel(c, startY, data) {
       y + 14,
       innerW - 56,
       22,
-      { font: "bold 14px sans-serif", color: "#7c5a12" },
+      { font: "bold 14px Poppins, sans-serif", color: "#7c5a12" },
     );
     y = nEnd + 14;
   }
@@ -1326,7 +1326,7 @@ function drawBigAddressLabel(c, startY, data) {
   hline(y);
   y += 30;
   c.text(`ORDER ID: ${data.orderId || ""}`, innerX, y, {
-    font: "bold 15px sans-serif",
+    font: "bold 15px Poppins, sans-serif",
   });
   c.text(
     new Date().toLocaleDateString("en-IN", {
@@ -1336,7 +1336,7 @@ function drawBigAddressLabel(c, startY, data) {
     }),
     X + W - padX,
     y,
-    { font: "bold 15px sans-serif", align: "right", color: "#6b7280" },
+    { font: "bold 15px Poppins, sans-serif", align: "right", color: "#6b7280" },
   );
   y += 22;
 

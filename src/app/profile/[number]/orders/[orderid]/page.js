@@ -1374,8 +1374,7 @@ export default function OrderDetailPage() {
             orderId={orderId}
             phone={number}
             name={custName}
-            codFee={bd.codFee}
-            grand={bd.grand}
+            bd={bd}
             onPaid={(fields) => setOrder((o) => ({ ...o, ...fields }))}
           />
         )}

@@ -31,8 +31,7 @@ export default function CodPayOnline({
   orderId,
   phone,
   name,
-  codFee = 0,
-  grand = 0,
+  bd = {},
   onPaid,
 }) {
   const [open, setOpen] = useState(false);
@@ -41,7 +40,28 @@ export default function CodPayOnline({
   const [busy, setBusy] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const onlineTotal = Math.max(0, Math.round(grand - codFee));
+  const codFee = Number(bd.codFee) || 0;
+  const grand = Number(bd.grand) || 0;
+  const sub = Number(bd.sub) || 0;
+  const deliveryFee = Number(bd.deliveryFee) || 0;
+  const discount = Number(bd.discount) || 0;
+  const freeDelivery = !!bd.freeDelivery;
+  const deliveryLabel = bd.deliveryLabel || "Delivery";
+  // Gift-wrap charge: reuse what the order already carries, else a default.
+  const giftWrapCharge = Number(order?.["Gift Wrap Charge"]) || 20;
+  const giftWasOn = order?.["Gift Wrap"] === "Yes";
+
+  // Add-ons — pre-checked from the order's existing data (exactly like checkout).
+  const [giftWrap, setGiftWrap] = useState(giftWasOn);
+  const [bookmark, setBookmark] = useState(true); // free with online payment
+
+  // Gift-wrap amount for this pay (existing charge if it was on, else default).
+  const giftAmt = giftWrap ? (giftWasOn ? Number(bd.giftFee) || giftWrapCharge : giftWrapCharge) : 0;
+  // Online total = drop the COD fee, keep/adjust gift wrap, bookmark is free.
+  const onlineTotal = Math.max(
+    0,
+    Math.round(grand - (Number(bd.giftFee) || 0) - codFee + giftAmt),
+  );
   const advanceAmt = 99;
   const remaining = Math.max(0, onlineTotal - advanceAmt);
   const payAmount = mode === "advance" ? advanceAmt : onlineTotal;
@@ -84,17 +104,23 @@ export default function CodPayOnline({
     const unconfirmedName = `${baseName} (unconfirmed)`;
     // Full online → switch payment type; advance → keep COD but mark advance.
     // Either way the COD fee is dropped from the total.
+    const addonFields = {
+      "Gift Wrap": giftWrap ? "Yes" : "No",
+      "Gift Wrap Charge": String(giftAmt),
+    };
     const fields =
       mode === "advance"
         ? {
             "Customer Name": unconfirmedName,
             "Advance Paid": "Yes",
             "Total Amount": String(onlineTotal),
+            ...addonFields,
           }
         : {
             "Customer Name": unconfirmedName,
             "Payment Type": "UPI (Online)",
             "Total Amount": String(onlineTotal),
+            ...addonFields,
           };
     try {
       await updateOrderRow(orderId, fields);
@@ -215,6 +241,85 @@ export default function CodPayOnline({
 
               {stage === "choose" && (
                 <div className="cpo-choose">
+                  {/* Bill summary — same rows/labels as checkout */}
+                  <div className="cpo-bill">
+                    <div className="bill-row">
+                      <span>Item total</span>
+                      <span>₹{sub}</span>
+                    </div>
+                    <div className="bill-row">
+                      <span>{deliveryLabel}</span>
+                      <span className={freeDelivery ? "cpo-free" : ""}>
+                        {freeDelivery ? "FREE" : `+₹${deliveryFee}`}
+                      </span>
+                    </div>
+                    {giftWrap && (
+                      <div className="bill-row">
+                        <span>Gift wrap</span>
+                        <span>+₹{giftAmt}</span>
+                      </div>
+                    )}
+                    <div className="bill-row">
+                      <span>Bookmark</span>
+                      <span className="cpo-free">FREE</span>
+                    </div>
+                    {codFee > 0 && (
+                      <div className="bill-row">
+                        <span>COD fee waived</span>
+                        <span className="cpo-free">−₹{Math.round(codFee)}</span>
+                      </div>
+                    )}
+                    {discount > 0 && (
+                      <div className="bill-row">
+                        <span>Discount</span>
+                        <span className="cpo-free">−₹{discount}</span>
+                      </div>
+                    )}
+                    <div className="bill-row total">
+                      <span>Total payable</span>
+                      <span>₹{onlineTotal}</span>
+                    </div>
+                  </div>
+
+                  {/* Add-ons — exact checkout UI, pre-checked from order data */}
+                  <div className="pay-addon-block cpo-addons">
+                    <span className="deliv-addon-head">Add-ons</span>
+                    <div className="pa-list">
+                      <button
+                        type="button"
+                        className={`pa-row${giftWrap ? " on" : ""}`}
+                        onClick={() => setGiftWrap((v) => !v)}
+                      >
+                        <span className="pa-row-emoji">🎁</span>
+                        <span className="pa-row-main">
+                          <span className="pa-row-name">Gift wrap</span>
+                        </span>
+                        <span className="pa-row-price">+₹{giftWrapCharge}</span>
+                        <span className={`pa-check${giftWrap ? " on" : ""}`}>
+                          {giftWrap && <Check size={12} strokeWidth={3} />}
+                        </span>
+                      </button>
+                      <button
+                        type="button"
+                        className={`pa-row${bookmark ? " on" : ""}`}
+                        onClick={() => setBookmark((v) => !v)}
+                      >
+                        <span className="pa-row-emoji">🔖</span>
+                        <span className="pa-row-main">
+                          <span className="pa-row-name">Bookmark</span>
+                          <span className="pa-row-sub free">
+                            Free with online payment
+                          </span>
+                        </span>
+                        <span className="pa-row-price free">FREE</span>
+                        <span className={`pa-check${bookmark ? " on" : ""}`}>
+                          {bookmark && <Check size={12} strokeWidth={3} />}
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <span className="cpo-choose-head">Choose how to pay</span>
                   <button
                     type="button"
                     className="cpo-opt"

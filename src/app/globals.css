@@ -42212,6 +42212,43 @@ img[data-loaded="true"] {
   gap: 12px;
   padding: 16px;
 }
+.cpo-bill {
+  border: 1px solid #eef0f2;
+  border-radius: 14px;
+  padding: 12px 14px;
+  background: #fafafa;
+}
+.cpo-bill .bill-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13.5px;
+  padding: 4px 0;
+  color: #374151;
+}
+.cpo-bill .bill-row.total {
+  margin-top: 6px;
+  padding-top: 10px;
+  border-top: 1px dashed #e5e7eb;
+  font-size: 15px;
+  font-weight: 800;
+  color: #0a0a0a;
+}
+.cpo-free {
+  color: #16a34a;
+  font-weight: 700;
+}
+.cpo-addons {
+  margin: 2px 0;
+}
+.cpo-choose-head {
+  margin-top: 2px;
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #6b7280;
+}
 .cpo-opt {
   width: 100%;
   text-align: left;

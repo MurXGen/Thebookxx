@@ -14,6 +14,7 @@ import {
   ChevronRight,
   Lock,
   Crown,
+  Check,
   Trash2,
   Volume2,
   Square,
@@ -85,7 +86,35 @@ export default function QuickReadsReader({
   const [mounted, setMounted] = useState(false);
   const validatingRef = useRef(false);
   const voicesRef = useRef([]);
+  // Celebration tick when access flips locked → unlocked (e.g. after the team
+  // verifies the payment while polling).
+  const [justUnlocked, setJustUnlocked] = useState(false);
+  const sawLockedRef = useRef(false);
+  const celebratedRef = useRef(false);
   useEffect(() => setMounted(true), []);
+
+  // Poll for approval while the paywall is up so access unlocks on its own once
+  // the team verifies — no need to reopen or refocus.
+  useEffect(() => {
+    if (unlocked || !book?.id) return;
+    const id = setInterval(() => verifyApproval(), 6000);
+    return () => clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [unlocked, book?.id]);
+
+  // Detect the locked → unlocked transition and play a tick animation.
+  useEffect(() => {
+    if (!unlocked) {
+      sawLockedRef.current = true;
+      return;
+    }
+    if (sawLockedRef.current && !celebratedRef.current) {
+      celebratedRef.current = true;
+      setJustUnlocked(true);
+      const t = setTimeout(() => setJustUnlocked(false), 2400);
+      return () => clearTimeout(t);
+    }
+  }, [unlocked]);
 
   // Load frame content from the gated API. Sends the saved phone so the server
   // can return the FULL set when the purchase/subscription is verified; else it
@@ -811,6 +840,31 @@ export default function QuickReadsReader({
             <Download size={18} />
           </button>
         </div>
+
+        {/* Access-unlocked celebration (locked → unlocked while polling) */}
+        <AnimatePresence>
+          {justUnlocked && (
+            <motion.div
+              className="qr-unlock-cel"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <motion.span
+                className="qr-unlock-cel-ic"
+                initial={{ scale: 0, rotate: -25 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ type: "spring", stiffness: 260, damping: 15 }}
+              >
+                <Check size={40} strokeWidth={3.5} />
+              </motion.span>
+              <span className="qr-unlock-cel-txt">Access unlocked!</span>
+              <span className="qr-unlock-cel-sub">
+                Enjoy all {total} insights 🎉
+              </span>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Saved Reads sheet */}
         <AnimatePresence>

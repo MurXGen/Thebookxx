@@ -42358,6 +42358,47 @@ img[data-loaded="true"] {
   line-height: 1.5;
 }
 
+/* QuickReads access-unlocked celebration overlay */
+.qr-unlock-cel {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(3px);
+}
+.qr-dark .qr-unlock-cel {
+  background: rgba(17, 17, 17, 0.9);
+}
+.qr-unlock-cel-ic {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  color: #fff;
+  background: #16a34a;
+  box-shadow: 0 16px 40px -14px rgba(22, 163, 74, 0.7);
+}
+.qr-unlock-cel-txt {
+  font-size: 20px;
+  font-weight: 800;
+  color: #0a0a0a;
+}
+.qr-dark .qr-unlock-cel-txt {
+  color: #fff;
+}
+.qr-unlock-cel-sub {
+  font-size: 13.5px;
+  color: #6b7280;
+}
+
 /* Count badge on a profile menu row (e.g. My QuickReads) */
 .pm-row-badge {
   flex-shrink: 0;

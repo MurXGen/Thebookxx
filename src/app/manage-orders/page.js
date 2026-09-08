@@ -5434,14 +5434,24 @@ export default function ManageOrdersPage() {
   }, [userList]);
 
   const filteredUsers = useMemo(() => {
-    const q = userSearch.trim().toLowerCase();
+    const raw = userSearch.trim();
+    const q = raw.toLowerCase();
+    // Normalise the typed number: drop +91, spaces, dashes; if a country code
+    // was pasted (>10 digits) keep the last 10. Any run of digits then matches
+    // anywhere in the phone (partial match).
+    let qDigits = raw.replace(/\D/g, "");
+    if (qDigits.length > 10) qDigits = qDigits.slice(-10);
     let list = userList;
-    if (q) {
-      list = list.filter(
-        (u) =>
-          (u.name || "").toLowerCase().includes(q) ||
-          u.phone.includes(q.replace(/\D/g, "")),
-      );
+    if (raw) {
+      list = list.filter((u) => {
+        const nameHit = (u.name || "").toLowerCase().includes(q);
+        const phoneHit =
+          qDigits.length > 0 &&
+          String(u.phone || "")
+            .replace(/\D/g, "")
+            .includes(qDigits);
+        return nameHit || phoneHit;
+      });
     }
     // Wallet holding-days filter — only users sitting on a balance for ≥ N days.
     if (walletHoldFilter > 0) {
@@ -7930,42 +7940,44 @@ export default function ManageOrdersPage() {
                     </button>
                   )}
                 </div>
-                <select
-                  className="um-hold-filter"
-                  value={walletMinFilter}
-                  onChange={(e) => setWalletMinFilter(Number(e.target.value))}
-                  title="Show only customers whose wallet balance is above this"
-                >
-                  <option value={0}>Balance: any</option>
-                  <option value={1}>Balance above ₹0</option>
-                  <option value={10}>Balance above ₹10</option>
-                  <option value={25}>Balance above ₹25</option>
-                  <option value={50}>Balance above ₹50</option>
-                  <option value={100}>Balance above ₹100</option>
-                  <option value={200}>Balance above ₹200</option>
-                </select>
-                <select
-                  className="um-hold-filter"
-                  value={walletHoldFilter}
-                  onChange={(e) => setWalletHoldFilter(Number(e.target.value))}
-                  title="Filter by how long the wallet balance has been held"
-                >
-                  <option value={0}>Holding: all</option>
-                  <option value={7}>Holding ≥ 7 days</option>
-                  <option value={15}>Holding ≥ 15 days</option>
-                  <option value={30}>Holding ≥ 30 days</option>
-                  <option value={45}>Holding ≥ 45 days</option>
-                </select>
-                <select
-                  className="um-hold-filter"
-                  value={userSort}
-                  onChange={(e) => setUserSort(e.target.value)}
-                  title="Sort customers"
-                >
-                  <option value="recent">Sort: Recent</option>
-                  <option value="walletDesc">Wallet: High Low</option>
-                  <option value="walletAsc">Wallet: Low High</option>
-                </select>
+                <div className="um-filters">
+                  <select
+                    className="um-hold-filter"
+                    value={walletMinFilter}
+                    onChange={(e) => setWalletMinFilter(Number(e.target.value))}
+                    title="Show only customers whose wallet balance is above this"
+                  >
+                    <option value={0}>Balance: any</option>
+                    <option value={1}>Balance above ₹0</option>
+                    <option value={10}>Balance above ₹10</option>
+                    <option value={25}>Balance above ₹25</option>
+                    <option value={50}>Balance above ₹50</option>
+                    <option value={100}>Balance above ₹100</option>
+                    <option value={200}>Balance above ₹200</option>
+                  </select>
+                  <select
+                    className="um-hold-filter"
+                    value={walletHoldFilter}
+                    onChange={(e) => setWalletHoldFilter(Number(e.target.value))}
+                    title="Filter by how long the wallet balance has been held"
+                  >
+                    <option value={0}>Holding: all</option>
+                    <option value={7}>Holding ≥ 7 days</option>
+                    <option value={15}>Holding ≥ 15 days</option>
+                    <option value={30}>Holding ≥ 30 days</option>
+                    <option value={45}>Holding ≥ 45 days</option>
+                  </select>
+                  <select
+                    className="um-hold-filter"
+                    value={userSort}
+                    onChange={(e) => setUserSort(e.target.value)}
+                    title="Sort customers"
+                  >
+                    <option value="recent">Sort: Recent</option>
+                    <option value="walletDesc">Wallet: High Low</option>
+                    <option value="walletAsc">Wallet: Low High</option>
+                  </select>
+                </div>
               </div>
               <div className="um-list">
                 {filteredUsers.length === 0 && (

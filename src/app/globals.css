@@ -34030,9 +34030,12 @@ img[data-loaded="true"] {
    Users / customer management tab
    ══════════════════════════════════════════════════════════════════════ */
 .um-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 12px;
+}
+.um-list .an2-bp-empty {
+  grid-column: 1 / -1;
 }
 .um-row {
   position: relative;
@@ -34204,17 +34207,32 @@ img[data-loaded="true"] {
 /* Users toolbar — search + wallet filters + sort */
 .um-toolbar {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
   gap: 10px;
-  flex-wrap: wrap;
   margin: 6px 0 16px;
+}
+/* Filter dropdowns — one horizontally-scrollable row below the search. */
+.um-filters {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  padding-bottom: 2px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.um-filters::-webkit-scrollbar {
+  display: none;
+}
+.um-filters .um-hold-filter {
+  flex: 0 0 auto;
 }
 .um-search {
   display: flex;
   align-items: center;
   gap: 9px;
-  flex: 1 1 260px;
-  min-width: 200px;
+  width: 100%;
   height: 44px;
   background: #fff;
   border: 1px solid var(--dark-20, #e5e7eb);

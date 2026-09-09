@@ -4,6 +4,229 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "navratri-dussehra-2026-books-to-gift": {
+    id: "blog-045",
+    title:
+      "Navratri and Dussehra 2026: Books to Gift for Saraswati Puja, Ayudha Puja and Vidyarambham",
+    slug: "navratri-dussehra-2026-books-to-gift",
+    author: "TheBookX Editorial",
+    authorSlug: "murthy-thevar",
+    publishDate: "2026-09-09",
+    lastModified: "2026-09-09",
+    excerpt:
+      "Sharad Navratri 2026 runs 11 to 20 October. A practical guide to the one festival where books are literally placed on the altar, and what to gift.",
+    content: [
+      {
+        type: "paragraph",
+        content:
+          "There is exactly one stretch of the Indian calendar where a book is not a thoughtful gift so much as a required object. Sharad Navratri begins with Ghatasthapana on Sunday, 11 October 2026 and closes with Vijayadashami on Tuesday, 20 October 2026. Somewhere in those nine nights, in a very large number of Indian homes, textbooks are dusted, notebooks are stacked, a child's first storybook is placed at the feet of Saraswati, and nobody opens any of them until the tenth day. Books are the ritual object. That is not a marketing angle. That is the festival.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Which makes Navratri the most underused gifting window in the Indian year. Rakhi gets sweets, Diwali gets dry fruit and diyas, and Dussehra somehow gets treated as a long weekend. Meanwhile the tradition itself is telling you, quite plainly, what to give: something to read. This guide covers the dates that actually matter, the four distinct book rituals inside the same ten days, and what to put in someone's hands for each one.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "Navratri and Dussehra 2026: the dates",
+        content:
+          "Sharad Navratri 2026 begins with Ghatasthapana on Sunday, 11 October and ends on Vijayadashami, Tuesday, 20 October. Durga Puja runs from Shashthi on Friday, 16 October to Vijaya Dashami on Tuesday, 20 October. Ashtami and Navami fall across 18 and 19 October, with the exact tithi cut-off varying between panchangs and cities. Vidyarambham is performed on the Vijayadashami morning, which Kerala panchangs place on 20 or 21 October depending on the tithi's end time. Check your local panchangam before fixing a muhurat.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The Four Book Rituals Hiding Inside Navratri",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Most people know one of these, depending on where they grew up. Very few people know all four exist, and that they are variations on the same idea.",
+      },
+      {
+        type: "list",
+        style: "ordered",
+        items: [
+          "<strong>Saraswati Puja (South India, last three nights).</strong> In Tamil Nadu, Karnataka, Andhra Pradesh and Kerala, the closing days of Navratri belong to Saraswati rather than Durga. Books, pens and musical instruments are gathered before the idol and formally worshipped.",
+          "<strong>Ayudha Puja (Mahanavami).</strong> The puja of tools. Traditionally weapons, then implements, then whatever a household actually works with: the sewing machine, the auto-rickshaw, the laptop, the ledger, and always the books. The premise is that the instrument of your livelihood deserves one day of gratitude a year.",
+          "<strong>Golu and Bombe Habba (all nine nights).</strong> In Tamil Nadu and Karnataka, tiered displays of dolls and figurines go up at home and visitors are received through the nine nights. Books are commonly arranged into the Saraswati tier, and returning guests are sent home with a small gift.",
+          "<strong>Vidyarambham (Vijayadashami morning, Kerala).</strong> The formal beginning of a child's education. A toddler is seated in an elder's lap and guided to trace their first letters, usually in a tray of rice, before being handed their first book. For millions of Malayalis this is the single most photographed morning of childhood.",
+        ],
+      },
+      {
+        type: "paragraph",
+        content:
+          "The through-line is that learning is treated as sacred, and the object that carries learning is treated as worth honouring. If you are choosing a gift for anyone observing any of these, a book is not a safe default. It is the correct answer.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "For Vidyarambham and the Very Young Reader",
+      },
+      {
+        type: "paragraph",
+        content:
+          "A first book has one job: to be finished. Not to be impressive, not to be educational in the way adults mean it, just to reach the last page and make the child want another one. Sudha Murty is unmatched here, and there is a reason her collections outsell almost everything else in Indian children's publishing. <a href=\"/books/grandma-s-bag-of-stories\" style=\"color:#fb8500;font-weight:600\">Grandma's Bag of Stories</a> is the standard starting point, and <a href=\"/books/grandparents-bag-of-stories\" style=\"color:#fb8500;font-weight:600\">Grandparents' Bag of Stories</a> follows it naturally. <a href=\"/books/how-i-taught-my-grandmother-to-read\" style=\"color:#fb8500;font-weight:600\">How I Taught My Grandmother to Read</a> is the one to pick if you want a child to understand, without being lectured, why literacy is worth having.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "For a Vidyarambham gift with an explicit festival link, <a href=\"/books/the-gita-for-children\" style=\"color:#fb8500;font-weight:600\">The Gita: For Children</a> by Roopa Pai does the genuinely difficult thing of explaining a philosophical text to a ten-year-old without either dumbing it down or turning it into homework. And <a href=\"/books/how-the-mango-got-its-magic\" style=\"color:#fb8500;font-weight:600\">How the Mango Got Its Magic</a> works for the younger end, where the point is simply that stories are fun.",
+      },
+      {
+        type: "callout",
+        style: "success",
+        title: "A note on what a first book costs",
+        content:
+          "Books on TheBookX start from ₹1, with free delivery across India and Cash on Delivery on every order. If you are buying for a Vidyarambham or a Golu return gift, that means you can put a real book in six children's hands for less than the cost of one box of sweets. Gift wrapping is available at +₹25 per book if it is going straight onto a puja tray.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "For the Saraswati Puja Shelf: Epics, Retold Well",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Dussehra commemorates Rama's victory over Ravana in most of North India, and Durga's over Mahishasura in the east. Either way, the source material is the epics, and the epics have never been better served in English than they are right now. Devdutt Pattanaik's <a href=\"/books/jaya-an-illustrated-retelling-of-the-mahabharata\" style=\"color:#fb8500;font-weight:600\">Jaya: An Illustrated Retelling of the Mahabharata</a> and its companion <a href=\"/books/sita-an-illustrated-retelling-of-the-ramayana\" style=\"color:#fb8500;font-weight:600\">Sita: An Illustrated Retelling of the Ramayana</a> are the two books to own if you want the whole structure, regional variants included, without wading through an unabridged translation.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "For a retelling that argues rather than narrates, Chitra Banerjee Divakaruni's <a href=\"/books/the-palace-of-illusions\" style=\"color:#fb8500;font-weight:600\">The Palace of Illusions</a> gives the Mahabharata to Draupadi and lets her be unsparing about the men in it. It is the book most likely to start a family argument over Dussehra lunch, which is a recommendation.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Amish Tripathi built the modern Indian mythological blockbuster, and the entry points are <a href=\"/books/the-immortals-of-meluha\" style=\"color:#fb8500;font-weight:600\">The Immortals of Meluha</a> for the Shiva sequence, or <a href=\"/books/ram-scion-of-ikshvaku\" style=\"color:#fb8500;font-weight:600\">Ram: Scion of Ikshvaku</a> and <a href=\"/books/sita-warrior-of-mithila\" style=\"color:#fb8500;font-weight:600\">Sita: Warrior of Mithila</a> for the Ram Chandra series, which is the more seasonally apt of the two. If you are gifting to someone who will finish all three in a fortnight, <a href=\"/books/the-shiva-trilogy-set\" style=\"color:#fb8500;font-weight:600\">The Shiva Trilogy Set</a> saves you a second order.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "And for the person who wants the philosophy rather than the plot, <a href=\"/books/the-bhagavad-gita\" style=\"color:#fb8500;font-weight:600\">The Bhagavad Gita</a> is the one text on this list that is genuinely placed on altars during Saraswati Puja, and <a href=\"/books/autobiography-of-a-yogi\" style=\"color:#fb8500;font-weight:600\">Autobiography of a Yogi</a> is the most widely gifted Indian spiritual memoir in the world for reasons that become obvious in the first fifty pages.",
+      },
+      {
+        type: "blockquote",
+        content:
+          "The instrument you use to earn your living deserves one day of gratitude a year. For most of us, that instrument stopped being a plough a long time ago. It is a book, a screen, and a mind.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "For Ayudha Puja: Books About Doing the Work Better",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Ayudha Puja is the one day in the year explicitly about your craft. If you are gifting to a working adult, a colleague, or the person in your family who has just started a first job, this is the slot for non-fiction that improves how someone thinks rather than what they know.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar belongs here more than anywhere else on this list: it is a book about cutting noise and deciding what actually deserves your attention, which is Ayudha Puja translated into a work week. <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> remains the most useful book ever written about small changes compounding, and <a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> is the one to give anyone who has just started earning and has not yet formed opinions about it.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books/ikigai\" style=\"color:#fb8500;font-weight:600\">Ikigai</a> is the gentler option for someone reassessing what they want their work to be for, and <a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> is the Indian classic on this shelf. Kalam's account of a boyhood in Rameswaram turning into a life in rocketry is still, three decades on, the book most often named by Indian readers as the one that changed what they thought was possible for them.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "For Golu Visitors and Bijoya Rounds: Small, Complete, Memorable",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Golu in the south and Bijoya visits in the east share a logistical problem: a lot of people come through the house over a few days, and you want to send each one home with something. A short book solves this better than a sweet box, because it survives the week.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> is the ideal object for this: R.K. Narayan's stories are short enough to read one per visitor, and there is no Indian reader they do not work on. <a href=\"/books/the-alchemist\" style=\"color:#fb8500;font-weight:600\">The Alchemist</a> is the international equivalent, endlessly gifted for the good reason that it can be finished in one sitting. <a href=\"/books/the-midnight-library\" style=\"color:#fb8500;font-weight:600\">The Midnight Library</a> works for a younger visitor who reads contemporary fiction, and <a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> is the serious literary gift for the one relative you know actually reads. Arundhati Roy's Booker winner is set in Kerala, which gives it a quiet appropriateness for the Vidyarambham end of the festival.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "How to Actually Plan This Without Panicking on 19 October",
+      },
+      {
+        type: "list",
+        style: "ordered",
+        items: [
+          "<strong>Count your heads now, in September.</strong> Golu and Bijoya visitor lists are predictable. Write down the number, add three, and you have your order quantity.",
+          "<strong>Order by the first week of October.</strong> Courier networks across India slow noticeably from Navratri onwards and do not recover until after Diwali. Ordering on 8 October is comfortable; ordering on 18 October is a gamble.",
+          "<strong>Separate the puja books from the gift books.</strong> Anything going on the altar should be a physical copy in good condition and should not be gift-wrapped shut. Anything going home with a visitor should be wrapped.",
+          "<strong>Match the book to the ritual, not the person's age.</strong> A Vidyarambham book is a first book. An Ayudha Puja book is a craft book. A Bijoya book is a short one. Get the category right and the specific title matters far less.",
+          "<strong>Write in it.</strong> One line and a date on the first page turns a paperback into the thing someone still has in fifteen years. This is the entire difference between a gift and a purchase.",
+        ],
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "One month out is the right time",
+        content:
+          "Ghatasthapana is on 11 October 2026, which as of today is about a month away. That is enough time to order, check what arrived, replace anything damaged, and still write in each copy before the festival begins. It is not enough time if you start in the second week of October.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Every other festival asks you to guess what someone wants. Navratri does not. For ten days in October the tradition points directly at a stack of books on a low table with a lamp beside it and says: this. The only decision left is which ones, and whether you got them in time.",
+      },
+    ],
+    coverImage: "/blogs/navratri-dussehra-2026-books-to-gift.jpeg",
+    images: [
+      {
+        url: "/blogs/navratri-dussehra-2026-books-to-gift.jpeg",
+        alt: "A small stack of books arranged on a low wooden table for Saraswati Puja during Navratri, with marigold flowers and a lit brass oil lamp beside them in warm evening light",
+        caption:
+          "During the closing nights of Navratri, books are placed before Saraswati and left unopened until Vijayadashami",
+        category: "Festivals & Gifting",
+      },
+    ],
+    keywords: [
+      "navratri 2026 books to gift",
+      "dussehra 2026 date",
+      "navratri 2026 dates october",
+      "saraswati puja 2026 books",
+      "ayudha puja 2026 books",
+      "vidyarambham 2026 first book gift",
+      "durga puja 2026 gift ideas",
+      "vijayadashami 2026 date",
+      "golu return gift ideas books",
+      "indian mythology books to gift",
+      "buy books online india festival offer",
+      "TheBookX",
+    ],
+    categories: ["Festivals & Gifting", "Gift Guides", "Indian Mythology"],
+    faqs: [
+      {
+        question: "What are the Navratri and Dussehra 2026 dates?",
+        answer:
+          "Sharad Navratri 2026 begins with Ghatasthapana on Sunday, 11 October 2026 and concludes with Vijayadashami, also called Dussehra, on Tuesday, 20 October 2026. Durga Puja runs from Shashthi on Friday, 16 October to Vijaya Dashami on 20 October. Ashtami and Navami fall across 18 and 19 October, with the exact cut-off varying between panchangs, so confirm with your local panchangam before fixing a puja muhurat.",
+      },
+      {
+        question: "Why are books worshipped during Navratri?",
+        answer:
+          "The last days of Navratri are dedicated to Saraswati, the goddess of learning, and in South India the festival is observed as Saraswati Puja rather than Durga Puja. On Mahanavami, Ayudha Puja extends worship to the tools of one's livelihood, which traditionally included books, pens and instruments alongside implements and vehicles. Books are placed before the deity and conventionally left unopened until the tenth day, Vijayadashami, when learning formally resumes.",
+      },
+      {
+        question: "What book should I gift for a child's Vidyarambham?",
+        answer:
+          "A first book should be short, illustrated and finishable, so the child associates reading with completion rather than effort. Sudha Murty's Grandma's Bag of Stories is the most reliable choice in Indian children's publishing, and Roopa Pai's The Gita: For Children works if you want something with an explicit link to the festival. Both are available in affordable Indian editions on TheBookX, with books starting from ₹1 and free delivery across India.",
+      },
+      {
+        question: "When should I order books so they arrive before Dussehra 2026?",
+        answer:
+          "Order by the first week of October 2026. Courier networks across India slow from Navratri onwards and stay congested through Diwali, so an order placed around 8 October leaves room to check the delivery and replace anything damaged before Ghatasthapana on 11 October. TheBookX offers free delivery across India and Cash on Delivery, plus gift wrapping at an extra ₹25 per book for festival gifting.",
+      },
+    ],
+  },
   "nobel-prize-literature-2026-books-to-read-before-october-8": {
     id: "blog-044",
     title:

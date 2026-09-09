@@ -122,6 +122,13 @@ export default function QuickReadsCheckout({
     : items.length * QUICKREAD_PRICE;
   const mobileValid = mobile.replace(/\D/g, "").length === 10;
   const canContinue = name.trim() && mobileValid;
+  // COD is only offered on QuickReads orders above ₹199.
+  const COD_MIN = 199;
+  const codAllowed = !isSub && amount > COD_MIN;
+  // If COD was selected but the order drops to/below the threshold, revert.
+  useEffect(() => {
+    if (paySel === "COD" && !codAllowed) setPaySel("UPI");
+  }, [codAllowed, paySel]);
 
   // CONFIRM = write the order to the sheet as "Paid (unverified)".
   // This is what "reaches the sheet" — it does not read anything back.
@@ -473,8 +480,11 @@ export default function QuickReadsCheckout({
 
                   <button
                     type="button"
-                    onClick={() => setPaySel("COD")}
-                    className={`pay-method${paySel === "COD" ? " selected" : ""}`}
+                    disabled={!codAllowed}
+                    onClick={() => codAllowed && setPaySel("COD")}
+                    className={`pay-method${paySel === "COD" ? " selected" : ""}${
+                      !codAllowed ? " pay-method-disabled" : ""
+                    }`}
                   >
                     <span className="pay-method-head">
                       <span className="pay-method-amt">
@@ -502,7 +512,9 @@ export default function QuickReadsCheckout({
                             Cash on Delivery
                           </span>
                           <span className="pay-method-desc">
-                            Access unlocks after we confirm
+                            {codAllowed
+                              ? "Access unlocks after we confirm"
+                              : `Available on orders above ₹${COD_MIN}`}
                           </span>
                         </span>
                       </span>

@@ -42771,6 +42771,14 @@ img[data-loaded="true"] {
   text-transform: uppercase;
   color: #6b7280;
 }
+.pay-method-disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.pay-method-disabled .pay-method-desc {
+  color: #b45309;
+  font-weight: 600;
+}
 .qrc-coddone {
   display: flex;
   flex-direction: column;

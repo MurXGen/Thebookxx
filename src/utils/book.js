@@ -1902,10 +1902,11 @@ export const books = [
     size: "Paperback",
     stock: 10,
     catalogue: ["thriller", "fiction", "set"],
-    originalPrice: calculateOriginalPrice(849),
-    discountedPrice: 849,
+    originalPrice: calculateOriginalPrice(1299),
+    discountedPrice: 1299,
     weight: 1200,
   },
+
   {
     id: "bk-111",
     name: "Dark Verse Series Set",

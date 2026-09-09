@@ -1208,7 +1208,11 @@ function buildIpAutofillJson(order, books = [], isCOD = false) {
   const bkCount = (books && books.length) || 1;
   const amtRaw = order["Total Amount"] || order.revenue || "";
   const gross = Number(String(amtRaw).replace(/[^\d.]/g, "")) || 0;
-  const codNet = Math.max(0, gross - Math.round(gross * 0.059));
+  // A ₹99 advance paid online is already collected — the courier collects only
+  // the balance. Deduct it before the 5.9% COD fee so the declared COD is net.
+  const advancePaid = /^\s*yes/i.test(String(order["Advance Paid"] || ""));
+  const codBase = isCOD && advancePaid ? Math.max(0, gross - 99) : gross;
+  const codNet = Math.max(0, codBase - Math.round(codBase * 0.059));
   const ch = ipChunks(order["Address"]);
   return JSON.stringify({
     v: "tbx-ip-1",
@@ -9469,9 +9473,20 @@ export default function ManageOrdersPage() {
                               <div className="mo-panel-left">
                               {(() => {
                                 const rev = Number(order.revenue) || 0;
-                                // 5.9% deduction applies to COD orders only.
-                                const fee = isCOD ? Math.round(rev * 0.059) : 0;
-                                const net = Math.round(rev - fee);
+                                // If a ₹99 advance was paid online, the courier
+                                // collects only the balance; the 5.9% COD fee
+                                // applies to that balance.
+                                const advancePaid = /^\s*yes/i.test(
+                                  String(order["Advance Paid"] || ""),
+                                );
+                                const codBase =
+                                  isCOD && advancePaid
+                                    ? Math.max(0, rev - 99)
+                                    : rev;
+                                const fee = isCOD
+                                  ? Math.round(codBase * 0.059)
+                                  : 0;
+                                const net = Math.round(codBase - fee);
                                 return (
                                   <button
                                     type="button"
@@ -9479,7 +9494,9 @@ export default function ManageOrdersPage() {
                                     onClick={() => setBillOrderId(orderId)}
                                     title={
                                       isCOD
-                                        ? `Net after 5.9% deduction (₹${rev.toLocaleString()} − ₹${fee}) · tap for bill`
+                                        ? advancePaid
+                                          ? `₹${rev.toLocaleString()} − ₹99 advance = ₹${codBase.toLocaleString()} COD, net after 5.9% (−₹${fee}) · tap for bill`
+                                          : `Net after 5.9% deduction (₹${rev.toLocaleString()} − ₹${fee}) · tap for bill`
                                         : `₹${rev.toLocaleString()} · tap for bill`
                                     }
                                   >
@@ -9489,6 +9506,12 @@ export default function ManageOrdersPage() {
                                     {isCOD && (
                                       <span className="mo-amount-fee">
                                         −₹{fee.toLocaleString()} (5.9%)
+                                      </span>
+                                    )}
+                                    {isCOD && advancePaid && (
+                                      <span className="mo-amount-cod">
+                                        Collect ₹{codBase.toLocaleString()} COD ·
+                                        ₹99 advance paid
                                       </span>
                                     )}
                                     {Number(order.pnl) < 0 && (

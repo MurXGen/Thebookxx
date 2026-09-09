@@ -42,6 +42,7 @@ export const getCategoryColor = (category) => {
     set: "#94a3b8",
     trending: "#f97316",
     bestseller: "#eab308",
+    hindi: "#ea580c",
   };
   return colorMap[category] || "#9ca3af";
 };
@@ -70,6 +71,7 @@ export const getCategoryEmoji = (category) => {
     set: "📦",
     trending: "📈",
     bestseller: "🏆",
+    hindi: "🇮🇳",
   };
   return emojiMap[category] || "📘";
 };
@@ -98,6 +100,7 @@ export const getCategoryLabel = (category) => {
     set: "Box Sets",
     trending: "Trending",
     bestseller: "Bestseller",
+    hindi: "Hindi Books",
   };
   return labelMap[category] || formatCategoryLabel(category);
 };

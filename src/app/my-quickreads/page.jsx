@@ -356,24 +356,29 @@ export default function MyQuickReadsPage() {
         </>
       )}
 
-      {/* Sticky checkout bar — appears when QuickReads are in the bag */}
+      {/* Sticky checkout bar — matches the main cart checkout bottom bar */}
       {qrCart.length > 0 && (
-        <div className="mqr-checkout-bar">
-          <div className="mqr-checkout-info">
-            <span className="mqr-checkout-total">
-              ₹{qrCart.length * QUICKREAD_PRICE}
-            </span>
-            <span className="mqr-checkout-count">
-              {qrCart.length} QuickRead{qrCart.length === 1 ? "" : "s"} in bag
-            </span>
+        <div className="cart-bar">
+          <div className="cart-bar-main flex flex-row gap-12">
+            <div className="flex flex-col width100 gap-4">
+              <div className="flex flex-row justify-between items-center">
+                <span className="font-14">Total amount</span>
+                <span className="final weight-600">
+                  ₹{qrCart.length * QUICKREAD_PRICE}
+                </span>
+              </div>
+              <span className="font-12 green weight-600">
+                {qrCart.length} QuickRead{qrCart.length === 1 ? "" : "s"} in bag
+              </span>
+            </div>
+            <button
+              type="button"
+              className="pri-big-btn"
+              onClick={() => router.push("/bag?tab=quickreads")}
+            >
+              <ShoppingCart size={16} /> Checkout
+            </button>
           </div>
-          <button
-            type="button"
-            className="mqr-checkout-btn"
-            onClick={() => router.push("/bag?tab=quickreads")}
-          >
-            <ShoppingCart size={16} /> Checkout
-          </button>
         </div>
       )}
 

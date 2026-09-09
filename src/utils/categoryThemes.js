@@ -28,6 +28,7 @@ const THEMES = {
   "science-tech": { a: "#0e7490", b: "#07303f", accent: "#22d3ee", icon: "FlaskConical", tagline: "How the world works" },
   bestseller: { a: "#b91c1c", b: "#450a0a", accent: "#f87171", icon: "Trophy", tagline: "What everyone's reading" },
   trending: { a: "#c2410c", b: "#451803", accent: "#fb923c", icon: "Flame", tagline: "Hot right now" },
+  hindi: { a: "#9a3412", b: "#3f1608", accent: "#fb923c", icon: "BookOpen", tagline: "बेहतरीन हिंदी किताबें" },
 };
 
 const DEFAULT = {

@@ -658,4 +658,22 @@ export const bookImages = {
   "nothing-like-the-movies": `${BOOK_IMAGE_BASE_PATH}/nothing-like-the-movies.jpeg`,
   "the-maidens": `${BOOK_IMAGE_BASE_PATH}/the-maidens.jpeg`,
   "psycho-cybernetics": `${BOOK_IMAGE_BASE_PATH}/psycho-cybernetics.jpeg`,
+  // ── New additions ──
+  powerful: `${BOOK_IMAGE_BASE_PATH}/powerful.jpeg`,
+  fearful: `${BOOK_IMAGE_BASE_PATH}/fearful.jpeg`,
+  "the-powerless-saga-5-book-set": `${BOOK_IMAGE_BASE_PATH}/the-powerless-saga-5-book-set.jpeg`,
+  "my-husbands-wife": `${BOOK_IMAGE_BASE_PATH}/my-husbands-wife.jpeg`,
+  "the-brothers-karamazov": `${BOOK_IMAGE_BASE_PATH}/the-brothers-karamazov.jpeg`,
+  "the-idiot": `${BOOK_IMAGE_BASE_PATH}/the-idiot.jpeg`,
+  "dostoevsky-set-of-3": `${BOOK_IMAGE_BASE_PATH}/dostoevsky-set-of-3.jpeg`,
+  "musafir-cafe": `${BOOK_IMAGE_BASE_PATH}/musafir-cafe.jpeg`,
+  "october-junction": `${BOOK_IMAGE_BASE_PATH}/october-junction.jpeg`,
+  "banaras-talkies": `${BOOK_IMAGE_BASE_PATH}/banaras-talkies.jpeg`,
+  "up-65": `${BOOK_IMAGE_BASE_PATH}/up-65.jpeg`,
+  "ibne-batuta-ka-joota": `${BOOK_IMAGE_BASE_PATH}/ibne-batuta-ka-joota.jpeg`,
+  chaurasi: `${BOOK_IMAGE_BASE_PATH}/chaurasi.jpeg`,
+  // Existing Powerless-trilogy singles were missing image keys — add them too:
+  powerless: `${BOOK_IMAGE_BASE_PATH}/powerless.jpeg`,
+  reckless: `${BOOK_IMAGE_BASE_PATH}/reckless.jpeg`,
+  fearless: `${BOOK_IMAGE_BASE_PATH}/fearless.jpeg`,
 };

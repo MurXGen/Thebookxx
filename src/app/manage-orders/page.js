@@ -1363,10 +1363,14 @@ function IndiaPostSheet({
         const books = (o.parsedBooks || []).length || 1;
         const isCOD = /cash|cod/i.test(o["Payment Type"] || "");
         const amount = o["Total Amount"] || o.revenue || "";
-        // India Post collects the NET amount = order value − 5.9%.
+        // India Post collects the NET amount = COD balance − 5.9%. A ₹99 advance
+        // paid online is already collected, so it's deducted before the fee.
         const grossCod = Number(String(amount).replace(/[^\d.]/g, "")) || 0;
-        const codFee = Math.round(grossCod * 0.059);
-        const codNet = Math.max(0, grossCod - codFee);
+        const advancePaid = /^\s*yes/i.test(String(o["Advance Paid"] || ""));
+        const codBase =
+          isCOD && advancePaid ? Math.max(0, grossCod - 99) : grossCod;
+        const codFee = Math.round(codBase * 0.059);
+        const codNet = Math.max(0, codBase - codFee);
         const chunks = ipChunks(o["Address"]);
         const name = ipSanitize(o["Customer Name"]).slice(0, 30);
         const line1 = chunks[0] || "";
@@ -1522,11 +1526,22 @@ function IndiaPostSheet({
                 <>
                   <IpField
                     label="Order value (₹)"
-                    hint={`₹${grossCod.toLocaleString()} − ₹${codFee.toLocaleString()} (5.9%)`}
+                    hint={
+                      advancePaid
+                        ? `₹${grossCod.toLocaleString()} − ₹99 advance = ₹${codBase.toLocaleString()} COD`
+                        : `₹${grossCod.toLocaleString()}`
+                    }
                   />
+                  {advancePaid && (
+                    <IpField
+                      label="Advance paid (online)"
+                      hint={`−₹99 · COD balance ₹${codBase.toLocaleString()}`}
+                    />
+                  )}
                   <IpField
                     label="COD Retail amount (₹) · net"
                     value={String(codNet)}
+                    hint={`₹${codBase.toLocaleString()} − ₹${codFee.toLocaleString()} (5.9%)`}
                     id={key("cod")}
                     copiedId={copiedId}
                     onCopy={copyToClipboard}

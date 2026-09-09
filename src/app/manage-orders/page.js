@@ -1177,7 +1177,15 @@ function ipSanitize(s) {
 }
 // Break a sanitised string into <=`size`-char chunks at word boundaries.
 function ipChunks(s, size = 30) {
-  const words = ipSanitize(s).split(" ").filter(Boolean);
+  // Never copy the Google-Maps pinned-location string (or any bare URL) into
+  // the India Post autofill — it's not part of the postal address.
+  const cleaned = String(s || "")
+    .replace(/,?\s*Pinned location:\s*https?:\/\/\S+/gi, "")
+    .replace(/https?:\/\/\S+/gi, "")
+    .replace(/\s{2,}/g, " ")
+    .replace(/^[\s,·-]+|[\s,·-]+$/g, "")
+    .trim();
+  const words = ipSanitize(cleaned).split(" ").filter(Boolean);
   const out = [];
   let cur = "";
   for (let w of words) {

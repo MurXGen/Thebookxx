@@ -672,6 +672,7 @@ export const bookImages = {
   "up-65": `${BOOK_IMAGE_BASE_PATH}/up-65.jpeg`,
   "ibne-batuta-ka-joota": `${BOOK_IMAGE_BASE_PATH}/ibne-batuta-ka-joota.jpeg`,
   chaurasi: `${BOOK_IMAGE_BASE_PATH}/chaurasi.jpeg`,
+  "think-faster-talk-smarter": `${BOOK_IMAGE_BASE_PATH}/think-faster-talk-smarter.jpeg`,
   // Existing Powerless-trilogy singles were missing image keys — add them too:
   powerless: `${BOOK_IMAGE_BASE_PATH}/powerless.jpeg`,
   reckless: `${BOOK_IMAGE_BASE_PATH}/reckless.jpeg`,

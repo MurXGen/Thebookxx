@@ -10377,4 +10377,21 @@ export const books = [
     discountedPrice: 199,
     weight: 260,
   },
+  {
+    id: "bk-690",
+    name: "Think Faster, Talk Smarter",
+    image: bookImages["think-faster-talk-smarter"],
+    description:
+      "Buy Think Faster, Talk Smarter by Matt Abrahams online at the lowest price on TheBookX.in. A practical, science-backed guide to speaking with confidence on the spot — nail Q&A, small talk, feedback, toasts and tough questions without freezing. A must-read for anyone who wants to master communication, public speaking and everyday conversations. An authentic, high-quality paperback delivered securely via Delhivery and Indian Post, with books starting at just ₹1 for a limited time. Cash on Delivery and free shipping across India — your trusted destination for bestselling self-help and business books.",
+    author: "Matt Abrahams",
+    authorSlug: "matt-abrahams",
+    pages: "240-300",
+    language: "English",
+    size: "Paperback",
+    stock: 24,
+    catalogue: ["self-help", "business", "non-fiction", "bestseller"],
+    originalPrice: calculateOriginalPrice(219),
+    discountedPrice: 219,
+    weight: 350,
+  },
 ];

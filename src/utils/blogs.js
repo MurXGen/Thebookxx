@@ -4,6 +4,221 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "agatha-christie-2026-reading-order-where-to-start": {
+    id: "blog-046",
+    title:
+      "Agatha Christie Turns 136 on 15 September 2026: The Best Order to Read Her Mysteries",
+    slug: "agatha-christie-2026-reading-order-where-to-start",
+    author: "TheBookX Editorial",
+    authorSlug: "murthy-thevar",
+    publishDate: "2026-09-10",
+    lastModified: "2026-09-10",
+    excerpt:
+      "Christie's 136th birthday falls on 15 September 2026, fifty years after her death. A six-book reading order, and the one title you must not read first.",
+    content: [
+      {
+        type: "paragraph",
+        content:
+          "Agatha Christie was born on 15 September 1890, which makes Tuesday, 15 September 2026 her 136th birthday. It is also the year her estate has quietly turned into a season: 2026 marks fifty years since her death on 12 January 1976, the year her final novel <em>Sleeping Murder</em> was published, and the year <em>The Murder of Roger Ackroyd</em> crossed a hundred. If you have been meaning to read her for two decades and never started, the calendar has run out of excuses.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The problem is that Christie wrote sixty-six detective novels and fourteen short story collections, and almost every list you find online sorts them by publication date. Publication order is the worst possible way to read Christie, because one of her most famous books only works if you have already learned to trust the form it breaks. This is a reading order built around that fact, along with what is actually happening in the Christie world this month and where to find legitimate Indian editions without paying import prices.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "The Christie calendar: September 2026",
+        content:
+          "15 September 2026 is Christie's 136th birthday. BritBox premieres <em>Agatha Christie's Tommy & Tuppence</em>, a six-part series and the first contemporary-set English-language television adaptation of her work, on that date, opening a month-long run of themed Christie programming. Netflix's three-part <em>Agatha Christie's Seven Dials</em>, written by Chris Chibnall and based on the 1929 novel <em>The Seven Dials Mystery</em>, has been streaming since 15 January 2026. The official Read Christie 2026 challenge is on the theme 'Biggest, Best and Beloved', and September's pick is <em>Endless Night</em>.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Why 2026 Is the Year to Finally Read Christie",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Anniversaries usually produce nothing but merchandise. This one has produced genuinely new work. BritBox's <em>Tommy & Tuppence</em> is the first time an English-language Christie series has been moved into the present day rather than dressed in the 1930s, which is a real creative gamble on characters who, unusually for Christie, aged in real time across their five books. Netflix's <em>Seven Dials</em>, with Mia McKenna-Bruce, Martin Freeman and Helena Bonham Carter, took one of her lighter country-house thrillers and gave it prestige-drama money. A new Poirot series titled <em>Hercule</em>, with Edward Bluemel reported in the lead, has also been discussed for the coming years.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "All of which means the same thing for a reader in India: a lot of people are about to talk about Christie plots, and spoilers travel faster than parcels. The books are short, cheap and finishable in a sitting. There is a real advantage to getting ahead of the conversation.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The Six-Book Christie On-Ramp, In This Exact Order",
+      },
+      {
+        type: "paragraph",
+        content:
+          "This sequence is designed so that each book teaches you the convention that the next book plays with. Read it in order and the famous twists land properly. Read it backwards and you will have spoiled the two best ones for yourself.",
+      },
+      {
+        type: "list",
+        style: "ordered",
+        items: [
+          "<strong><a href=\"/books/and-then-there-were-none\" style=\"color:#fb8500;font-weight:600\">And Then There Were None</a></strong> — Start here, not with Poirot. Ten strangers on an island, no detective, no interviews, no comfortable figure in an armchair explaining things. It is the purest piece of construction she ever built, and since her death it has been her bestselling novel. If this does not work for you, Christie is not for you, and you have lost one evening finding out.",
+          "<strong><a href=\"/books/murder-on-the-orient-express\" style=\"color:#fb8500;font-weight:600\">Murder on the Orient Express</a></strong> — Now meet Hercule Poirot, in the closed-circle setup Christie perfected: a snowbound train, a stabbed passenger, a carriage of suspects who cannot leave. The plot was partly inspired by the kidnapping of aviator Charles Lindbergh's infant son in 1932, a case still unsolved when she wrote it. The solution is famous enough that you should read it soon, before someone mentions it in passing.",
+          "<strong><a href=\"/books/the-murder-of-roger-ackroyd\" style=\"color:#fb8500;font-weight:600\">The Murder of Roger Ackroyd</a></strong> — Third, and never first. Published in June 1926 and now a hundred years old, this was only her third Poirot novel, and it broke a rule so cleanly that critics accused her of cheating. Dorothy L. Sayers publicly defended her with the line that she had played fair and fooled everyone anyway. It was her bestselling book for decades. It only works if you have read two conventional mysteries first.",
+          "<strong><a href=\"/books/a-murder-is-announced\" style=\"color:#fb8500;font-weight:600\">A Murder Is Announced</a></strong> — Switch detectives. Miss Marple is not a softer Poirot; she is a colder one, and this is the best Marple to start with. A classified advertisement in a village newspaper announces a murder for that evening, and the villagers turn up expecting a party game. Christie is much funnier here than her reputation suggests.",
+          "<strong><a href=\"/books/the-a-b-c-murders\" style=\"color:#fb8500;font-weight:600\">The A.B.C. Murders</a></strong> — The serial-killer novel, written decades before that was a genre. Every modern thriller with a taunting letter to the detective is standing on this book. Captain Hastings narrates, which is the best way to watch Poirot work.",
+          "<strong><a href=\"/books/death-on-the-nile\" style=\"color:#fb8500;font-weight:600\">Death on the Nile</a></strong> — Finish the on-ramp with the most atmospheric one: a steamer on the Nile, a honeymooning heiress, and a motive that is visible from the first chapter to everyone except the reader. By now you know the machinery well enough to try to beat her, and you still will not.",
+        ],
+      },
+      {
+        type: "paragraph",
+        content:
+          "Six books, six evenings. If you would rather not buy them one at a time, the <a href=\"/books/agatha-christie-classic-collection-set\" style=\"color:#fb8500;font-weight:600\">Agatha Christie Classic Collection Set</a> gathers the essentials in one box and is the cheaper route per title if you already suspect you are going to keep going.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "The One Rule: Do Not Let Anyone Hand You Roger Ackroyd First",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Well-meaning readers recommend <em>The Murder of Roger Ackroyd</em> to beginners because it is the cleverest one. That is exactly why it should not be first. Its effect depends entirely on an assumption you only hold if you have read a few ordinary detective novels and absorbed the unwritten contract between author and reader. Give it to someone who has never read a mystery and they will shrug, because they did not know there was a rule to break. Its centenary in 2026 has put it on every list this year. Put it third.",
+      },
+      {
+        type: "blockquote",
+        content:
+          "A Christie twist is not a surprise. It is a re-reading of everything you have already been told, in a different light. That is why the order you read her in changes how good she is.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Read Along With Read Christie 2026 This September",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The official Read Christie challenge picks one title a month, and 2026's overall theme is 'Biggest, Best and Beloved'. September's category is 'Best According to Agatha', and the chosen book is <em>Endless Night</em> — because when a Japanese translator once asked Christie to name a favourite among her own works, she called <em>Endless Night</em> 'my own favourite at present'. It is an outlier: no Poirot, no Marple, a twenty-two-year-old narrator, and a tone closer to gothic dread than to a country-house puzzle. She wrote it in her seventies and told an interviewer that writing a young man was not difficult, since you hear people like him talking all the time.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Earlier 2026 picks in the challenge included <em>The Body in the Library</em> in January, <em>Murder on the Orient Express</em> in March, <em>The Labours of Hercules</em> in May and <em>The Murder of Roger Ackroyd</em> for its centenary in June, so a good deal of the year's list overlaps with the on-ramp above.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "What to Read After Christie: The Modern Closed Circle",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Six Christies in and most readers want the same shape of story with a contemporary voice. Everything below is a direct descendant of the closed-circle mystery she standardised.",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<a href=\"/books/a-good-girl-s-guide-to-murder\" style=\"color:#fb8500;font-weight:600\">A Good Girl's Guide to Murder</a> — Holly Jackson's schoolgirl investigator reopens a closed case using podcasts, interview transcripts and maps. The most openly Christie-shaped bestseller of the last decade, and the easiest handover for a teenager who has just finished <em>And Then There Were None</em>.",
+          "<a href=\"/books/the-guest-list\" style=\"color:#fb8500;font-weight:600\">The Guest List</a> — Lucy Foley puts a wedding party on a remote Irish island and cuts the mainland off. If you enjoyed the island in <em>And Then There Were None</em>, this is the same trap with mobile phones.",
+          "<a href=\"/books/the-silent-patient\" style=\"color:#fb8500;font-weight:600\">The Silent Patient</a> — Alex Michaelides builds a twist that works on the Roger Ackroyd principle: the information was always in front of you. Read it after Christie and you will see the wiring.",
+          "<a href=\"/books/the-girl-on-the-train\" style=\"color:#fb8500;font-weight:600\">The Girl on the Train</a> — The unreliable narrator taken to its limit, and a commuter-train setting that owes something to the Orient Express even without the snow.",
+          "<a href=\"/books/gone-girl\" style=\"color:#fb8500;font-weight:600\">Gone Girl</a> — Gillian Flynn's structural trick is the modern high point of the form. Also the book that made 'unreliable narrator' a phrase ordinary readers use.",
+          "<a href=\"/books/the-da-vinci-code\" style=\"color:#fb8500;font-weight:600\">The Da Vinci Code</a> — Not a whodunnit, but the other thing Christie invented: the short-chapter, keep-turning thriller. Useful if you want pace rather than puzzle.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The Non-Fiction Shelf Behind the Fiction",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Two books worth keeping beside the mysteries, for different reasons. <a href=\"/books/talking-with-psychopaths\" style=\"color:#fb8500;font-weight:600\">Talking with Psychopaths</a> by Christopher Berry-Dee is the non-fiction counterweight to a genre that makes murder tidy: real interviews, no third-act reveal, and a useful reminder of how unlike a Christie villain an actual one is. Christie herself trained as an apothecary's dispenser during the First World War, which is why her poisonings are pharmacologically accurate and her motives are almost always domestic rather than exotic.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The second is about the writing rather than the crime. Christie's sentences are famously plain, and that plainness is the trick: she can hide a clue in an ordinary line because nothing in the paragraph draws attention to itself. If you want to work on that quality in your own writing or thinking, <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a practical treatment of the same discipline — saying one thing at a time, and saying it so it cannot be misread.",
+      },
+      {
+        type: "callout",
+        style: "success",
+        title: "What a Christie shelf should cost in India",
+        content:
+          "Christie's novels are out of copyright in several markets and printed in cheap, legitimate Indian editions, so there is no reason to pay imported-paperback prices. Books on TheBookX start from ₹1, with free delivery across India and Cash on Delivery on every order. The six-book on-ramp above is genuinely achievable for less than the price of one imported hardback, and gift wrapping is available at +₹25 per book if a Christie set is going to someone as a present.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Watch or Read First?",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Read first, in every case where the plot has a reveal. Adaptations of Christie are unusually faithful to their solutions, so a screen version genuinely destroys the book, in a way that a film of a literary novel does not. The exception is <em>Tommy & Tuppence</em>: because BritBox has moved the pair into the present day, the series is closer to a fresh story using her characters than an adaptation of a specific plot, so watching it will not spoil <em>The Secret Adversary</em> or <em>Partners in Crime</em>. For <em>Seven Dials</em> on Netflix, if you have not already watched it, read <em>The Seven Dials Mystery</em> this week instead.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Fifty years after her death, Christie still outsells nearly every novelist writing today, and the reason is not nostalgia. It is that a well-made puzzle is a rare object, and she made about sixty of them. Start with the island. Come back for the train. Save Roger Ackroyd for third.",
+      },
+    ],
+    coverImage: "/blogs/agatha-christie-2026-reading-order-where-to-start.jpeg",
+    images: [
+      {
+        url: "/blogs/agatha-christie-2026-reading-order-where-to-start.jpeg",
+        alt: "A young woman reading a vintage-style paperback mystery novel in an armchair beside a window, with a cup of tea and a small stack of unopened books on the side table in warm afternoon light",
+        caption:
+          "Christie's novels are short, cheap and finishable in an evening, which is why the order you read them in matters more than the pace",
+        category: "Reading Lists",
+      },
+    ],
+    keywords: [
+      "agatha christie reading order",
+      "agatha christie birthday 15 september",
+      "where to start reading agatha christie",
+      "best agatha christie books to read first",
+      "agatha christie 2026 anniversary",
+      "tommy and tuppence britbox 2026",
+      "agatha christie seven dials netflix",
+      "read christie 2026 endless night",
+      "murder of roger ackroyd 100 years",
+      "and then there were none bestselling christie",
+      "buy agatha christie books online india",
+      "TheBookX",
+    ],
+    categories: ["Literary News", "Reading Lists", "Book to Screen"],
+    faqs: [
+      {
+        question:
+          "When is Agatha Christie's birthday, and what is significant about 2026?",
+        answer:
+          "Agatha Christie was born on 15 September 1890, so 15 September 2026 marks her 136th birthday. 2026 is also the fiftieth year since her death on 12 January 1976, the year in which her final novel Sleeping Murder was published, and the centenary year of The Murder of Roger Ackroyd, which first appeared in June 1926.",
+      },
+      {
+        question: "What order should I read Agatha Christie's books in?",
+        answer:
+          "Not publication order. A better sequence for a new reader is And Then There Were None, then Murder on the Orient Express, then The Murder of Roger Ackroyd, then A Murder Is Announced, then The A.B.C. Murders, then Death on the Nile. This puts Roger Ackroyd third rather than first, because its famous twist only works once you have read a couple of conventional detective novels and absorbed the convention it breaks.",
+      },
+      {
+        question: "Which Agatha Christie novel is the bestselling one?",
+        answer:
+          "And Then There Were None. For decades that position belonged to The Murder of Roger Ackroyd, but after Christie's death in 1976 And Then There Were None took the lead and has held it since. It is also the best entry point, since it has no series detective and can be read with no prior knowledge of Poirot or Marple.",
+      },
+      {
+        question: "What is Read Christie 2026 and what is September's book?",
+        answer:
+          "Read Christie is the official annual reading challenge run by the Agatha Christie estate, which sets one book a month against a theme. The 2026 theme is 'Biggest, Best and Beloved'. September's category is 'Best According to Agatha' and the chosen title is Endless Night, a standalone with no Poirot or Marple, which Christie herself once described as 'my own favourite at present'.",
+      },
+    ],
+  },
   "navratri-dussehra-2026-books-to-gift": {
     id: "blog-045",
     title:

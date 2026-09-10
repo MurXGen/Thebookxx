@@ -41,11 +41,10 @@ export async function GET(request) {
 
     let confirmed = false;
     if (order) {
-      const nm = String(order["Customer Name"] ?? "");
+      // Confirmed = the order's status is anything other than "Unconfirmed"
+      // (the admin moved it to Processing etc. after verifying it).
       const st = String(order["Order Status"] ?? "");
-      if (!/unconfirmed/i.test(nm) || /received|confirmed|paid/i.test(st)) {
-        confirmed = true;
-      }
+      confirmed = st.trim() !== "" && !/unconfirmed/i.test(st);
     }
 
     // Enforce ownership when a phone number was supplied: never return another

@@ -696,10 +696,10 @@ export default function AddressModal({
           ? codFeeAmount
           : 0;
 
-      // Until the shopper reaches the final confirm step, the order is logged
-      // with a "(unconfirmed)" tag on the name so the dashboard can tell
-      // completed orders apart from drop-offs. Hidden from the customer profile.
-      const displayName = confirmed ? name : `${name} (unconfirmed)`;
+      // Names are always stored clean now. Whether an order is confirmed is
+      // tracked via the "Order Status" column ("Unconfirmed" → admin verifies →
+      // "Processing"), not by tagging the customer's name.
+      const displayName = name;
 
       trackOrderToGoogleForm({
         addressData: {
@@ -738,6 +738,7 @@ export default function AddressModal({
         codHandlingFee: feeForThisOrder,
         advancePaid: advance,
         orderComment: resellNote || "",
+        confirmed,
         cartBooks,
         quickReadItems,
         orderId,

@@ -699,6 +699,7 @@ const PILL_SPRING = { type: "spring", stiffness: 420, damping: 34, mass: 0.7 };
 // Status options for the Track & notify quick status editor (includes the
 // extra "Money received" state on top of the usual delivery stages).
 const TRACK_STATUS_OPTIONS = [
+  "Unconfirmed",
   "Pending",
   "Processing",
   "Getting Shipped",
@@ -713,6 +714,7 @@ const TRACK_STATUS_OPTIONS = [
 // Status → accent colour for the order-card status chip.
 function moStatusColor(status) {
   const s = String(status || "").toLowerCase();
+  if (/unconfirmed/.test(s)) return "#e11d48"; // rose — needs verification
   if (/cancel/.test(s)) return "#dc2626"; // red
   if (/delivered|money received/.test(s)) return "#16a34a"; // green
   if (/out for delivery/.test(s)) return "#4f46e5"; // indigo
@@ -4267,8 +4269,8 @@ export default function ManageOrdersPage() {
       (o) =>
         o["Order ID"] &&
         !set.has(o["Order ID"]) &&
-        // Skip drop-off rows — only surface confirmed orders as notifications
-        !/\(unconfirmed\)/i.test(o["Customer Name"] || ""),
+        // Skip unconfirmed / drop-off rows — surface confirmed orders only
+        !/unconfirmed/i.test(o["Order Status"] || ""),
     );
   }, [orders, seenIds]);
   const newOrderCount = newOrders.length;
@@ -4702,7 +4704,7 @@ export default function ManageOrdersPage() {
         const sl = s.toLowerCase();
         const hasTracking = String(order["Shipping ID"] || "").trim() !== "";
         const isUnconfirmed = /unconfirmed/i.test(
-          String(order["Customer Name"] || ""),
+          String(order["Order Status"] || ""),
         );
         // Status match (OR across the chosen statuses; "all"/none = any).
         const statusPass =
@@ -6162,6 +6164,7 @@ export default function ManageOrdersPage() {
 
   // Status breakdown for the chart / progress bars
   const STATUS_META = [
+    { key: "Unconfirmed", color: "#e11d48" },
     { key: "Pending", color: "#94a3b8" },
     { key: "Processing", color: "#fb8500" },
     { key: "Getting Shipped", color: "#f59e0b" },

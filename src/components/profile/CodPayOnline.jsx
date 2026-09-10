@@ -66,9 +66,7 @@ export default function CodPayOnline({
   const remaining = Math.max(0, onlineTotal - advanceAmt);
   const payAmount = mode === "advance" ? advanceAmt : onlineTotal;
 
-  const pendingVerify = /\(unconfirmed\)/i.test(
-    name || order?.["Customer Name"] || "",
-  );
+  const pendingVerify = /unconfirmed/i.test(order?.["Order Status"] || "");
 
   const openModal = () => {
     setStage("choose");
@@ -98,26 +96,21 @@ export default function CodPayOnline({
   const markPaid = async () => {
     if (busy) return;
     setBusy(true);
-    const baseName = String(name || order?.["Customer Name"] || "")
-      .replace(/\s*\(unconfirmed\)\s*/gi, "")
-      .trim();
-    const unconfirmedName = `${baseName} (unconfirmed)`;
-    // Full online → switch payment type; advance → keep COD but mark advance.
-    // Either way the COD fee is dropped from the total.
+    // Online payment made → flag the order "Unconfirmed" so the team verifies
+    // the payment, then moves it to "Processing". The name stays clean.
     const addonFields = {
+      "Order Status": "Unconfirmed",
       "Gift Wrap": giftWrap ? "Yes" : "No",
       "Gift Wrap Charge": String(giftAmt),
     };
     const fields =
       mode === "advance"
         ? {
-            "Customer Name": unconfirmedName,
             "Advance Paid": "Yes",
             "Total Amount": String(onlineTotal),
             ...addonFields,
           }
         : {
-            "Customer Name": unconfirmedName,
             "Payment Type": "UPI (Online)",
             "Total Amount": String(onlineTotal),
             ...addonFields,

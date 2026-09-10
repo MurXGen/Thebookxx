@@ -110,9 +110,9 @@ export default function OrdersListPage() {
         const all = Array.isArray(json.orders) ? json.orders : [];
         const real = all
           .filter((o) => {
-            const nm = o["Customer Name"] || "";
             const wa = /whatsapp/i.test(o["Payment Type"] || "");
-            return !/\(unconfirmed\)/i.test(nm) && !wa;
+            const unconfirmed = /unconfirmed/i.test(o["Order Status"] || "");
+            return !unconfirmed && !wa;
           })
           .map((o) => ({
             ...o,

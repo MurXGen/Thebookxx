@@ -342,6 +342,9 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
     advancePaid = false,
     // Reseller margin note ("Reseller: preferred final ₹X · margin ₹Y").
     orderComment = "",
+    // When true the order is a completed checkout (→ "Processing"); when false
+    // it is a draft / payment-pending write (→ "Unconfirmed", admin verifies).
+    confirmed = false,
   } = orderDetails;
 
   // Use the real charge the customer was shown; only fall back to the
@@ -418,7 +421,10 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
     ...(advancePaid ? { advancePaid: "Yes" } : {}),
     // Reseller's preferred final price, printed on the invoice.
     ...(orderComment ? { orderComment } : {}),
-    orderStatus: "Processing",
+    // Confirmation is tracked via status, NOT by tagging the name. A completed
+    // checkout is "Processing"; a draft / payment-pending write is
+    // "Unconfirmed" for the admin to verify and move to "Processing".
+    orderStatus: confirmed ? "Processing" : "Unconfirmed",
     // Wallet spent is now recorded in the dedicated Wallet tab (see the debit
     // write below), not on the order row.
     wallet: "",

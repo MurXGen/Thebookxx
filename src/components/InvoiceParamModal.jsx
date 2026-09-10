@@ -78,10 +78,10 @@ export default function InvoiceParamModal() {
   const subtotal = books.reduce((s, b) => s + b.discountedPrice * b.qty, 0);
   const payType = String(order["Payment Type"] || "");
   const isCOD = /cod|cash/i.test(payType);
-  // Online (UPI) orders are only "paid" once confirmed — the "(unconfirmed)"
-  // tag on the name means payment hasn't been verified yet.
+  // Online (UPI) orders are only "paid" once confirmed — an "Unconfirmed"
+  // order status means payment hasn't been verified yet.
   const isUnconfirmed = /unconfirmed/i.test(
-    String(order["Customer Name"] || ""),
+    String(order["Order Status"] || ""),
   );
   const paid = !isCOD && !isUnconfirmed;
   const delivered = /delivered/i.test(String(order["Order Status"] || ""));

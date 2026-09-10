@@ -41,7 +41,7 @@ export default function MerchantConfirmPage() {
   }, [orderId]);
 
   const alreadyConfirmed =
-    order && !/unconfirmed/i.test(String(order["Customer Name"] || ""));
+    order && !/unconfirmed/i.test(String(order["Order Status"] || ""));
 
   // Parse the "Books List" cell into line items.
   const parseBooks = (str) =>

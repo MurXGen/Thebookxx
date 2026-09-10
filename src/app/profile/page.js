@@ -873,7 +873,7 @@ export default function MyOrdersPage() {
         allOrders
           .filter(
             (o) =>
-              !/\(unconfirmed\)/i.test(o["Customer Name"] || "") &&
+              !/unconfirmed/i.test(o["Order Status"] || "") &&
               !/whatsapp/i.test(o["Payment Type"] || "") &&
               isRealRow(o),
           )
@@ -882,7 +882,7 @@ export default function MyOrdersPage() {
       );
       const pending = allOrders.filter((o) => {
         const awaiting =
-          /\(unconfirmed\)/i.test(o["Customer Name"] || "") ||
+          /unconfirmed/i.test(o["Order Status"] || "") ||
           /whatsapp/i.test(o["Payment Type"] || "");
         const cancelled = /cancel/i.test(o["Order Status"] || "");
         const oid = normId(o["Order ID"]);
@@ -896,10 +896,10 @@ export default function MyOrdersPage() {
       setPendingOrders(pending);
 
       const userOrders = allOrders.filter((order) => {
-        // Hide "(unconfirmed)" drop-off rows from the customer's history —
-        // only orders the customer actually confirmed should appear.
-        const isUnconfirmed = /\(unconfirmed\)/i.test(
-          order["Customer Name"] || "",
+        // Hide "Unconfirmed" orders from the customer's confirmed history —
+        // they surface in the pending section until the team confirms them.
+        const isUnconfirmed = /unconfirmed/i.test(
+          order["Order Status"] || "",
         );
         // Only UPI and COD orders belong in the profile — WhatsApp-button
         // orders are handled over chat and must not show here.
@@ -1888,10 +1888,9 @@ Please cancel this order. Thank you `;
             const codOrder = orders.find(
               (o) =>
                 /cash on delivery|cod/i.test(o["Payment Type"] || "") &&
-                !/in\s*transit|out\s*for\s*delivery|delivered|money received|cancel/i.test(
+                !/in\s*transit|out\s*for\s*delivery|delivered|money received|cancel|unconfirmed/i.test(
                   o["Order Status"] || "",
-                ) &&
-                !/\(unconfirmed\)/i.test(o["Customer Name"] || ""),
+                ),
             );
             if (!codOrder) return null;
             const oid = codOrder["Order ID"];

@@ -9854,6 +9854,23 @@ textarea.sec-mid-btn,
   width: 100%;
 }
 
+.admin-lock-remember {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--dark-50, #6b7280);
+  cursor: pointer;
+  user-select: none;
+}
+.admin-lock-remember input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--tertiary, #fb8500);
+  cursor: pointer;
+}
+
 .admin-lock-input-wrapper {
   position: relative;
   width: 100%;
@@ -23413,6 +23430,19 @@ img[data-loaded="true"] {
   cursor: text;
 }
 
+/* Orders search uses the app's standard input, sitting flush inside the search
+   bar (no double border/background from the wrapper). */
+.admin-search-input .mo-search-field {
+  flex: 1;
+  min-width: 0;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 4px 0 !important;
+  font-size: 14px;
+  outline: none;
+}
+
 /* ===== Book Picking toolbar + packing-sheet export button ===== */
 .pick-toolbar {
   display: flex;
@@ -23821,6 +23851,163 @@ img[data-loaded="true"] {
 }
 .mo-card-cancel-btn:hover {
   background: rgba(220, 38, 38, 0.14);
+}
+/* Delete (hard remove from sheet) — solid red, sits beside Cancel. */
+.mo-card-delete-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 30px;
+  padding: 0 11px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  background: #dc2626;
+  border: 1px solid #b91c1c;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.mo-card-delete-btn:hover {
+  background: #b91c1c;
+}
+/* Bordered, spaced action row (prices/covers above → buttons below). */
+.mo-card > .mo-card-json {
+  margin-top: 10px;
+  padding-top: 12px;
+  border-top: 1px solid var(--hairline, #ececec);
+}
+/* Session-dismiss X in the card's top-right. */
+.mo-card-dismiss {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.mo-card-dismiss:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: #4b5563;
+}
+/* Unconfirmed-orders header button + slide modal. */
+.mo-unconf-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 9px;
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+  color: #e11d48;
+  font-weight: 800;
+  font-size: 12px;
+  cursor: pointer;
+}
+.mo-unconf-btn:hover {
+  background: #fee2e2;
+}
+.mo-unconf-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #e11d48;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+}
+.mo-unconf-modal {
+  display: flex;
+  flex-direction: column;
+  max-height: 86vh;
+}
+.mo-unconf-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.mo-unconf-empty {
+  padding: 28px 12px;
+  text-align: center;
+  color: #6b7280;
+  font-weight: 600;
+}
+.mo-unconf-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border: 1px solid var(--hairline, #eef0f2);
+  border-radius: 12px;
+  background: #fff;
+}
+.mo-unconf-meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 2px;
+}
+.mo-unconf-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #111827;
+}
+.mo-unconf-sub {
+  font-size: 11.5px;
+  color: #6b7280;
+}
+.mo-unconf-books {
+  font-size: 11px;
+  color: #9ca3af;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 220px;
+}
+.mo-unconf-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.mo-unconf-wa,
+.mo-unconf-proc {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 9px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+.mo-unconf-wa {
+  color: #15803d;
+  background: #dcfce7;
+  border-color: #bbf7d0;
+}
+.mo-unconf-wa:hover {
+  background: #bbf7d0;
+}
+.mo-unconf-proc {
+  color: #fff;
+  background: var(--tertiary, #fb8500);
+}
+.mo-unconf-proc:hover {
+  filter: brightness(1.05);
 }
 .mo-card-json-btn {
   display: inline-flex;

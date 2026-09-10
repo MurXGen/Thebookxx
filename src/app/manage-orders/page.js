@@ -499,6 +499,7 @@ ALL_BOOKS.forEach((b) => {
 // as needed for parcels heavier than 4kg.
 const indiaPostDeliveryCost = (grams) => {
   const g = Number(grams) || 0;
+  if (g <= 0) return 0; // no parcel (empty / wallet-ledger rows) → no postage
   if (g <= 500) return 82;
   if (g <= 1200) return 126;
   if (g <= 2000) return 200;
@@ -3389,6 +3390,37 @@ export default function ManageOrdersPage() {
   const [orderPickFilter, setOrderPickFilter] = useState("all"); // all | picked | pending
   const [selectedIds, setSelectedIds] = useState([]); // bulk-selected order IDs (table)
   const [cardSelectMode, setCardSelectMode] = useState(false); // card-view multi-select
+  // Order IDs the admin dismissed for this session (persisted so a refresh keeps
+  // them hidden). Cleared with the "Reload cards" button.
+  const [dismissedIds, setDismissedIds] = useState([]);
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("mo_dismissed_cards");
+      if (raw) setDismissedIds(JSON.parse(raw) || []);
+    } catch {}
+  }, []);
+  const dismissCard = (orderId) => {
+    setDismissedIds((prev) => {
+      const next = prev.includes(orderId) ? prev : [...prev, orderId];
+      try {
+        localStorage.setItem("mo_dismissed_cards", JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+  };
+  const reloadCards = () => {
+    setDismissedIds([]);
+    try {
+      localStorage.removeItem("mo_dismissed_cards");
+    } catch {}
+  };
+
+  // Unconfirmed-orders confirmation flow. On page open (once orders load) a
+  // slide-up modal lists orders still "Unconfirmed" so the admin can WhatsApp
+  // the customer and move them to Processing — protecting conversion. A header
+  // icon reopens it; a skip button dismisses it for the session.
+  const [showUnconfirmed, setShowUnconfirmed] = useState(false);
+  const unconfirmedShownRef = useRef(false);
   const [cardBulkStatus, setCardBulkStatus] = useState("Getting Shipped");
   const [cardBulkBusy, setCardBulkBusy] = useState(false);
   // Queued per-card status edits waiting to be pushed to the sheet in one go
@@ -6045,26 +6077,26 @@ export default function ManageOrdersPage() {
   const maxRevenue = Math.max(1, ...filteredOrders.map((o) => o.revenue || 0));
 
   // Stats — cost/profit sourced from catalogue (book cost + India Post delivery)
-  const totalRevenue = analyticsOrders.reduce((sum, o) => sum + o.revenue, 0);
-  const totalBooksCost = analyticsOrders.reduce(
+  // Uses `anOrders` (real orders with an Order ID), NOT `analyticsOrders`, which
+  // also carries wallet-ledger rows (no books, no revenue) that would otherwise
+  // pollute the totals with phantom costs.
+  const totalRevenue = anOrders.reduce((sum, o) => sum + o.revenue, 0);
+  const totalBooksCost = anOrders.reduce(
     (sum, o) => sum + (o.booksCost || 0),
     0,
   );
-  const totalDeliveryCost = analyticsOrders.reduce(
+  const totalDeliveryCost = anOrders.reduce(
     (sum, o) => sum + (o.deliveryCost || 0),
     0,
   );
-  const totalWeight = analyticsOrders.reduce(
-    (sum, o) => sum + (o.weight || 0),
-    0,
-  );
-  const totalCost = analyticsOrders.reduce((sum, o) => sum + o.totalCost, 0);
+  const totalWeight = anOrders.reduce((sum, o) => sum + (o.weight || 0), 0);
+  const totalCost = anOrders.reduce((sum, o) => sum + o.totalCost, 0);
   const totalPnL = totalRevenue - totalCost;
   const marginPct =
     totalRevenue > 0 ? Math.round((totalPnL / totalRevenue) * 100) : 0;
   const avgDeliveryCost =
-    analyticsOrders.length > 0
-      ? Math.round(totalDeliveryCost / analyticsOrders.length)
+    anOrders.length > 0
+      ? Math.round(totalDeliveryCost / anOrders.length)
       : 0;
 
   // Per-book profitability — respects BOTH the analytics period (day/week/
@@ -6218,7 +6250,7 @@ export default function ManageOrdersPage() {
 
   // ── Cancelled orders — auto loss from forfeited postage ──
   const isCancelled = (o) => /cancel/i.test(String(o["Order Status"] || ""));
-  const cancelledOrders = analyticsOrders.filter(isCancelled); // period-scoped
+  const cancelledOrders = anOrders.filter(isCancelled); // period-scoped, real orders
   const cancelledValue = cancelledOrders.reduce(
     (s, o) => s + (o.revenue || 0),
     0,
@@ -6230,6 +6262,7 @@ export default function ManageOrdersPage() {
 
   // Orders shown in the list/table, optionally narrowed by pick status
   const listOrders = filteredOrders.filter((o) => {
+    if (dismissedIds.includes(o["Order ID"])) return false; // hidden this session
     if (orderPickFilter === "picked") return isOrderFullyPicked(o);
     if (orderPickFilter === "pending") return !isOrderFullyPicked(o);
     if (orderPickFilter === "noted")
@@ -6240,6 +6273,22 @@ export default function ManageOrdersPage() {
   // Load every order at once (no scroll-lazy pagination in the card view).
   const visibleOrders = listOrders;
   const hasMoreOrders = false;
+
+  // Orders still awaiting confirmation (real orders with an Order ID).
+  const unconfirmedOrders = orders.filter(
+    (o) => o["Order ID"] && /unconfirmed/i.test(o["Order Status"] || ""),
+  );
+  // Auto-open the confirmation modal once per visit when any exist.
+  useEffect(() => {
+    if (
+      !unconfirmedShownRef.current &&
+      !loading &&
+      unconfirmedOrders.length > 0
+    ) {
+      unconfirmedShownRef.current = true;
+      setShowUnconfirmed(true);
+    }
+  }, [loading, unconfirmedOrders.length]);
   const notedOrdersCount = filteredOrders.filter(
     (o) => !!(orderNotes[o["Order ID"]] || o["Comment"]),
   ).length;
@@ -7582,6 +7631,7 @@ export default function ManageOrdersPage() {
                       <Search size={16} />
                       <input
                         type="text"
+                        className="admin-input mo-search-field"
                         placeholder="Search by name, order ID, phone, or shipping ID..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
@@ -8719,6 +8769,31 @@ export default function ManageOrdersPage() {
                       </span>
                     </span>
                     <div className="orders-header-right mo-menu-wrap">
+                      {unconfirmedOrders.length > 0 && (
+                        <button
+                          type="button"
+                          className="mo-unconf-btn"
+                          onClick={() => setShowUnconfirmed(true)}
+                          title="Unconfirmed orders — confirm to protect conversion"
+                          aria-label="Unconfirmed orders"
+                        >
+                          <AlertCircle size={15} />
+                          <span className="mo-unconf-count">
+                            {unconfirmedOrders.length}
+                          </span>
+                        </button>
+                      )}
+                      {dismissedIds.length > 0 && (
+                        <button
+                          type="button"
+                          className="mo-view-btn"
+                          onClick={reloadCards}
+                          title={`Reload ${dismissedIds.length} hidden card${dismissedIds.length === 1 ? "" : "s"}`}
+                          aria-label="Reload hidden cards"
+                        >
+                          <RefreshCw size={16} />
+                        </button>
+                      )}
                       <div className="mo-view-toggle mo-view-icons">
                         <button
                           type="button"
@@ -9137,34 +9212,8 @@ export default function ManageOrdersPage() {
                   )}
 
                   {orderView === "cards" ? (
-                    <>
-                    {[
-                      { key: "cod", label: "COD orders", isCod: true },
-                      { key: "online", label: "Online orders", isCod: false },
-                    ].map((grp) => {
-                      const groupPairs = visibleOrders
-                        .map((order, idx) => ({ order, idx }))
-                        .filter(
-                          ({ order }) =>
-                            /cash|cod/i.test(order["Payment Type"] || "") ===
-                            grp.isCod,
-                        );
-                      if (!groupPairs.length) return null;
-                      return (
-                        <Accordion
-                          key={grp.key}
-                          id={grp.key}
-                          title={grp.label}
-                          open={accOpen[grp.key]}
-                          onToggle={toggleAcc}
-                          right={
-                            <span className="acc-count">
-                              {groupPairs.length}
-                            </span>
-                          }
-                        >
-                          <div className="admin-orders-grid">
-                            {groupPairs.map(({ order, idx }) => {
+                    <div className="admin-orders-grid">
+                      {visibleOrders.map((order, idx) => {
                         const orderId = order["Order ID"];
                         const books = order.parsedBooks || [];
                         const pnl = order.pnl;
@@ -9347,6 +9396,18 @@ export default function ManageOrdersPage() {
                                     >
                                       {isCOD ? "COD" : "UPI"}
                                     </span>
+                                    <button
+                                      type="button"
+                                      className="mo-card-dismiss"
+                                      title="Hide this card for now"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        dismissCard(orderId);
+                                      }}
+                                      aria-label="Hide this card"
+                                    >
+                                      <X size={14} />
+                                    </button>
                                   </div>
                                 </div>
                                 <div className="mo-idline">
@@ -9476,22 +9537,6 @@ export default function ManageOrdersPage() {
                                 ) : (
                                   <Truck size={15} />
                                 )}
-                              </button>
-                              <button
-                                type="button"
-                                className="mo-frame-ic"
-                                onClick={() =>
-                                  downloadFormsFor(
-                                    [order],
-                                    "pdf",
-                                    `address_label_${orderId || Date.now()}.pdf`,
-                                    true,
-                                  )
-                                }
-                                title="Download address label (PDF)"
-                                aria-label="Download address label"
-                              >
-                                <Download size={15} />
                               </button>
                               </div>
 
@@ -9746,6 +9791,14 @@ export default function ManageOrdersPage() {
                                 onClick={() => setCancelChoiceOrder(order)}
                               >
                                 <Trash2 size={14} /> Cancel
+                              </button>
+                              <button
+                                type="button"
+                                className="mo-card-delete-btn"
+                                title="Delete this order permanently from the sheet"
+                                onClick={() => deleteOrderRow(order)}
+                              >
+                                <Trash2 size={14} /> Delete
                               </button>
                               <button
                                 type="button"
@@ -10311,12 +10364,8 @@ export default function ManageOrdersPage() {
                               )}
                           </motion.div>
                         );
-                              })}
-                          </div>
-                        </Accordion>
-                      );
-                    })}
-                    </>
+                      })}
+                    </div>
                   ) : (
                     <div className="mo-table-wrap">
                       <table className="mo-table">
@@ -11399,6 +11448,120 @@ export default function ManageOrdersPage() {
                   <Send size={16} />
                 </button>
               </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ===== Unconfirmed orders — confirm to protect conversion (slide-up) ===== */}
+      <AnimatePresence>
+        {showUnconfirmed && (
+          <motion.div
+            className="bill-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowUnconfirmed(false)}
+          >
+            <motion.div
+              className="bill-modal mo-unconf-modal"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="bill-header">
+                <span className="weight-600 font-16 flex flex-col">
+                  <span className="flex flex-row gap-8 items-center">
+                    <AlertCircle size={18} /> Unconfirmed orders
+                  </span>
+                  <span className="font-12 dark-50">
+                    {unconfirmedOrders.length} awaiting confirmation · WhatsApp
+                    the customer, then mark Processing
+                  </span>
+                </span>
+                <span
+                  className="cursor-pointer"
+                  onClick={() => setShowUnconfirmed(false)}
+                >
+                  <X size={16} />
+                </span>
+              </div>
+
+              {unconfirmedOrders.length === 0 ? (
+                <div className="mo-unconf-empty">
+                  All caught up — no unconfirmed orders 🎉
+                </div>
+              ) : (
+                <div className="mo-unconf-list">
+                  {unconfirmedOrders.map((o) => {
+                    const oid = o["Order ID"];
+                    const isCOD = /cash|cod/i.test(o["Payment Type"] || "");
+                    const amt =
+                      parseFloat(o["Total Amount"]) || o.revenue || 0;
+                    const books = (o.parsedBooks || [])
+                      .map((b) => b.name)
+                      .join(", ");
+                    return (
+                      <div className="mo-unconf-item" key={oid}>
+                        <div className="mo-unconf-meta">
+                          <span className="mo-unconf-name">
+                            {o["Customer Name"] || "—"}
+                          </span>
+                          <span className="mo-unconf-sub">
+                            {oid} · {isCOD ? "COD" : "Prepaid"} · ₹{amt}
+                          </span>
+                          {books && (
+                            <span className="mo-unconf-books">{books}</span>
+                          )}
+                        </div>
+                        <div className="mo-unconf-actions">
+                          <button
+                            type="button"
+                            className="mo-unconf-wa"
+                            title="Send confirmation on WhatsApp"
+                            onClick={() => {
+                              const msg = waMessages(o).find(
+                                (m) => m.key === "confirm",
+                              );
+                              if (msg)
+                                openWhatsApp(o["Phone Number"], msg.text);
+                            }}
+                          >
+                            <FaWhatsapp size={15} /> Confirm
+                          </button>
+                          <button
+                            type="button"
+                            className="mo-unconf-proc"
+                            title="Mark this order Processing (confirmed) — saved to the sheet"
+                            onClick={() => {
+                              patchLocalOrder(oid, {
+                                "Order Status": "Processing",
+                                status: "Processing",
+                              });
+                              updateOrderRow(oid, {
+                                "Order Status": "Processing",
+                              }).then(() => setTimeout(fetchOrders, 1300));
+                            }}
+                          >
+                            <Check size={15} /> Processing
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              <button
+                type="button"
+                className="sec-big-btn width100"
+                style={{ marginTop: 12 }}
+                onClick={() => setShowUnconfirmed(false)}
+              >
+                Skip for now
+              </button>
             </motion.div>
           </motion.div>
         )}

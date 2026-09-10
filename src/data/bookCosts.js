@@ -616,6 +616,22 @@ export const COST_BY_ID = {
   "bk-673": 240,
   "bk-674": 150,
   "bk-675": 140,
+  "bk-676": 100,
+  // ── Recently added titles ──
+  "bk-677": 100, // Powerful
+  "bk-678": 100, // Fearful
+  "bk-679": 360, // Powerless Saga 5-book set
+  "bk-680": 90, // My Husband's Wife
+  "bk-681": 120, // The Brothers Karamazov
+  "bk-682": 110, // The Idiot
+  "bk-683": 300, // Dostoevsky Set of 3
+  "bk-684": 90, // Musafir Cafe
+  "bk-685": 90, // October Junction
+  "bk-686": 90, // Banaras Talkies
+  "bk-687": 90, // UP 65
+  "bk-688": 90, // Ibne Batuta Ka Joota
+  "bk-689": 90, // Chaurasi
+  "bk-690": 100, // Think Faster, Talk Smarter
 };
 
 export const getBookCost = (id) => COST_BY_ID[id] || 0;

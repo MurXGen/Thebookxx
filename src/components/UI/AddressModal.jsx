@@ -169,6 +169,10 @@ export default function AddressModal({
   // Which method is currently highlighted on the "Choose payment method" sheet.
   // Defaults to none — the shopper must pick, then confirm with the button below.
   const [paySel, setPaySel] = useState("UPI"); // online selected by default
+  // COD isn't offered with Faster delivery — flip back to Pay Online if chosen.
+  useEffect(() => {
+    if (fasterDelivery && paySel === "COD") setPaySel("UPI");
+  }, [fasterDelivery, paySel]);
   // Which delivery speed is highlighted in the chooser (tap to select).
   const [deliverySel, setDeliverySel] = useState("standard");
   const [tempPaymentMethod, setTempPaymentMethod] = useState(null);
@@ -1841,9 +1845,9 @@ export default function AddressModal({
                         </span>
                         <span className="pay-method-labels">
                           <span className="pay-method-name">Pay Online</span>
-                          <span className="pay-method-desc">
-                            Free bookmark + up to{" "}
-                            <strong>₹100 cashback</strong>
+                          <span className="pay-perks">
+                            <span className="pay-perk">Free bookmark</span>
+                            <span className="pay-perk">No COD fee</span>
                           </span>
                         </span>
                       </span>
@@ -1858,37 +1862,7 @@ export default function AddressModal({
                     </span>
                   </button>
 
-                  {/* When Pay Online is picked, choose a UPI app inline. */}
-                  {paySel === "UPI" && (
-                    <div className="pay-online-apps">
-                      {[
-                        { k: "Google Pay", c: "#1a73e8" },
-                        { k: "PhonePe", c: "#5f259f" },
-                        { k: "Paytm", c: "#00baf2" },
-                        { k: "Other UPI apps", c: "#fb8500" },
-                      ].map((app) => (
-                        <button
-                          key={app.k}
-                          type="button"
-                          className="poa"
-                          onClick={() => selectUpiAppInline(app.k)}
-                        >
-                          <span
-                            className="poa-ic"
-                            style={{ background: app.c }}
-                          >
-                            {app.k === "Other UPI apps" ? (
-                              <Smartphone size={16} />
-                            ) : (
-                              app.k[0]
-                            )}
-                          </span>
-                          <span className="poa-nm">{app.k}</span>
-                          <ChevronRight size={16} className="poa-chev" />
-                        </button>
-                      ))}
-                    </div>
-                  )}
+                  {/* UPI apps are chosen on the next step (after Continue). */}
 
                   {/* Pay in two parts — ₹99 online now + rest at delivery */}
                   <div
@@ -1949,17 +1923,20 @@ export default function AddressModal({
                         </span>
                       </div>
                     </div>
-                    <div className="pay-split-perks">
-                      <Check size={12} strokeWidth={3} /> Free bookmark &amp; COD
-                      fee waived
-                    </div>
+                    <span className="pay-perks pay-perks-split">
+                      <span className="pay-perk">Free bookmark</span>
+                      <span className="pay-perk">No COD fee</span>
+                    </span>
                   </div>
 
-                  {/* Cash on Delivery */}
+                  {/* Cash on Delivery — unavailable with Faster delivery */}
                   <button
                     type="button"
-                    onClick={() => setPaySel("COD")}
-                    className={`pay-method${paySel === "COD" ? " selected" : ""}`}
+                    disabled={fasterDelivery}
+                    onClick={() => !fasterDelivery && setPaySel("COD")}
+                    className={`pay-method${paySel === "COD" ? " selected" : ""}${
+                      fasterDelivery ? " pay-method-disabled" : ""
+                    }`}
                   >
                     <span className="pay-method-head">
                       <span className="pay-method-amt">
@@ -1988,10 +1965,16 @@ export default function AddressModal({
                           <span className="pay-method-name">
                             Cash on Delivery
                           </span>
-                          <span className="pay-method-desc pay-method-cod-fee">
-                            Includes <strong>+₹{codFeeAmount}</strong> handling
-                            fee
-                          </span>
+                          {fasterDelivery ? (
+                            <span className="pay-method-desc">
+                              Not available with Faster delivery
+                            </span>
+                          ) : (
+                            <span className="pay-method-desc pay-method-cod-fee">
+                              Includes <strong>+₹{codFeeAmount}</strong> handling
+                              fee
+                            </span>
+                          )}
                         </span>
                       </span>
                       <span

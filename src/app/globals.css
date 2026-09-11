@@ -43085,6 +43085,32 @@ img[data-loaded="true"] {
   opacity: 0.55;
   cursor: not-allowed;
 }
+/* Common perk chips on the Pay Online / Pay-in-two cards */
+.pay-perks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+.pay-perk {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #15803d;
+  background: #ecfdf3;
+}
+.pay-perk::before {
+  content: "✓";
+  font-size: 10px;
+  font-weight: 800;
+}
+.pay-perks-split {
+  padding: 10px 12px 0;
+}
 .pay-method-disabled .pay-method-desc {
   color: #b45309;
   font-weight: 600;

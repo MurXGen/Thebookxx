@@ -42029,8 +42029,8 @@ img[data-loaded="true"] {
 }
 /* Single-column add-on rows (compact, grouped by category). */
 .pa-list {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 8px;
   margin-top: 8px;
 }

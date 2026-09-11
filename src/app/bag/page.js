@@ -1313,8 +1313,10 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
                     </span>
                     <h2 className="or1-title">Read the key ideas in minutes</h2>
                     <p className="or1-sub">
-                      Bite-sized insights from bestsellers · ₹{QUICKREAD_PRICE}{" "}
-                      each
+                      QuickReads are a <strong>digital version</strong> of a
+                      book&apos;s key insights — read instantly online, not a
+                      printed copy. Bite-sized summaries of bestsellers, ₹
+                      {QUICKREAD_PRICE} each with instant access.
                     </p>
                   </div>
                 </div>

@@ -6260,9 +6260,19 @@ export default function ManageOrdersPage() {
   const cancelledLoss = Math.round(cancelledOrders.length * avgDeliveryCost);
   const netProfit = totalPnL - cancelledLoss;
 
+  // Unconfirmed orders (by status OR the legacy "(unconfirmed)" name tag) are
+  // hidden from the list unless the admin explicitly filters for them — they're
+  // handled through the unconfirmed-orders modal instead.
+  const wantUnconfirmed =
+    Array.isArray(statusFilter) && statusFilter.includes("unconfirmed");
+  const isUnconfirmedOrder = (o) =>
+    /unconfirmed/i.test(o["Order Status"] || "") ||
+    /\(unconfirmed\)/i.test(o["Customer Name"] || "");
+
   // Orders shown in the list/table, optionally narrowed by pick status
   const listOrders = filteredOrders.filter((o) => {
     if (dismissedIds.includes(o["Order ID"])) return false; // hidden this session
+    if (!wantUnconfirmed && isUnconfirmedOrder(o)) return false; // hidden unless filtered
     if (orderPickFilter === "picked") return isOrderFullyPicked(o);
     if (orderPickFilter === "pending") return !isOrderFullyPicked(o);
     if (orderPickFilter === "noted")
@@ -6274,9 +6284,9 @@ export default function ManageOrdersPage() {
   const visibleOrders = listOrders;
   const hasMoreOrders = false;
 
-  // Orders still awaiting confirmation (real orders with an Order ID).
+  // Orders still awaiting confirmation (by status OR legacy name tag).
   const unconfirmedOrders = orders.filter(
-    (o) => o["Order ID"] && /unconfirmed/i.test(o["Order Status"] || ""),
+    (o) => o["Order ID"] && isUnconfirmedOrder(o),
   );
   // Auto-open the confirmation modal once per visit when any exist.
   useEffect(() => {

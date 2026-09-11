@@ -1831,44 +1831,33 @@ export default function AddressModal({
                   <button
                     type="button"
                     onClick={() => setPaySel("UPI")}
-                    className={`pay-method${paySel === "UPI" ? " selected" : ""}`}
+                    className={`pay-method pm2${paySel === "UPI" ? " selected" : ""}`}
                   >
-                    <span className="pay-method-head">
-                      <span className="pay-method-amt">
-                        <span className="pay-method-strike">
-                          ₹{codTotalWithFee}
-                        </span>
-                        <span className="pay-method-price">
-                          ₹{upiTotalForFlow}
-                        </span>
-                        <span className="pay-method-save">
-                          Save ₹{codFeeAmount}
-                        </span>
-                      </span>
-                      <span className="pay-method-div" aria-hidden="true" />
-                      <span className="pay-method-body">
-                        <span className="pay-method-ic pay-ic-online">
-                          <svg width="22" height="22" viewBox="0 0 24 24">
+                    <span className="pm2-main">
+                      <span className="pm2-titlerow">
+                        <span className="pm2-upi">
+                          <svg width="18" height="18" viewBox="0 0 24 24">
                             <path d="M4 4 L13 12 L4 20 Z" fill="#ff8500" />
                             <path d="M9 4 L18 12 L9 20 Z" fill="#0a8f0c" />
                           </svg>
                         </span>
-                        <span className="pay-method-labels">
-                          <span className="pay-method-name">Pay Online</span>
-                          <span className="pay-perks">
-                            <span className="pay-perk">Free bookmark</span>
-                            <span className="pay-perk">No COD fee</span>
-                          </span>
-                        </span>
+                        <span className="pm2-title">Pay Online</span>
+                        <span className="pm2-badge">Save ₹{codFeeAmount}</span>
                       </span>
-                      <span
-                        className={`pay-method-radio${paySel === "UPI" ? " on" : ""}`}
-                        aria-hidden="true"
-                      >
-                        {paySel === "UPI" && (
-                          <Check size={13} strokeWidth={3} />
-                        )}
+                      <span className="pay-perks">
+                        <span className="pay-perk">Free bookmark</span>
+                        <span className="pay-perk">No COD fee</span>
                       </span>
+                    </span>
+                    <span className="pm2-pricecol">
+                      <span className="pm2-strike">₹{codTotalWithFee}</span>
+                      <span className="pm2-price">₹{upiTotalForFlow}</span>
+                    </span>
+                    <span
+                      className={`pay-method-radio${paySel === "UPI" ? " on" : ""}`}
+                      aria-hidden="true"
+                    >
+                      {paySel === "UPI" && <Check size={13} strokeWidth={3} />}
                     </span>
                   </button>
 
@@ -1880,33 +1869,38 @@ export default function AddressModal({
                   >
                     <button
                       type="button"
-                      className="pay-method-splittop"
+                      className="pay-method-splittop pm2"
                       onClick={() => setPaySel("ADV")}
                     >
-                      <span className="pay-method-amt">
-                        <span className="pay-method-strike">
-                          ₹{codTotalWithFee}
-                        </span>
-                        <span className="pay-method-price">
-                          ₹{advanceOrderTotal}
-                        </span>
-                        {codTotalWithFee > advanceOrderTotal && (
-                          <span className="pay-method-save">
-                            Save ₹{codTotalWithFee - advanceOrderTotal}
+                      <span className="pm2-main">
+                        <span className="pm2-titlerow">
+                          <span className="pm2-upi">
+                            <svg width="18" height="18" viewBox="0 0 24 24">
+                              <path d="M4 4 L13 12 L4 20 Z" fill="#ff8500" />
+                              <path d="M9 4 L18 12 L9 20 Z" fill="#0a8f0c" />
+                            </svg>
                           </span>
-                        )}
+                          <span className="pm2-title">Pay in two parts</span>
+                          {codTotalWithFee > advanceOrderTotal && (
+                            <span className="pm2-badge">
+                              Save ₹{codTotalWithFee - advanceOrderTotal}
+                            </span>
+                          )}
+                        </span>
+                        <span className="pay-perks">
+                          <span className="pay-perk">Free bookmark</span>
+                          <span className="pay-perk">No COD fee</span>
+                        </span>
                       </span>
-                      <span className="pay-method-div" aria-hidden="true" />
-                      <span className="pay-method-body">
-                        <span className="pay-method-name">Pay in two parts</span>
+                      <span className="pm2-pricecol">
+                        <span className="pm2-strike">₹{codTotalWithFee}</span>
+                        <span className="pm2-price">₹{advanceOrderTotal}</span>
                       </span>
                       <span
                         className={`pay-method-radio${paySel === "ADV" ? " on" : ""}`}
                         aria-hidden="true"
                       >
-                        {paySel === "ADV" && (
-                          <Check size={13} strokeWidth={3} />
-                        )}
+                        {paySel === "ADV" && <Check size={13} strokeWidth={3} />}
                       </span>
                     </button>
                     <div

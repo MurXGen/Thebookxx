@@ -21,7 +21,7 @@ import {
   notifyQuickReadTelegram,
 } from "@/lib/quickreads";
 import { QUICKREAD_PRICE, quickReadFrameCount } from "@/data/quickreadsMeta";
-import { Zap, BookOpen, Trash2, Minus, Plus } from "lucide-react";
+import { Zap, BookOpen, Trash2, Minus, Plus, Check } from "lucide-react";
 import { useStore } from "@/context/StoreContext";
 import { showToast } from "@/context/ToastContext";
 import { books } from "@/utils/book";
@@ -57,9 +57,24 @@ import { FcDocument } from "react-icons/fc";
 // Disclosed transparently after delivery selection via CODHandlingFeeModal.
 const COD_HANDLING_FEE = 29;
 
+const qrSlugify = (t) =>
+  String(t || "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+
 function BagContent() {
-  const { cart, addToCart, clearCart, qrCart, removeQuickRead, clearQrCart } =
-    useStore();
+  const {
+    cart,
+    addToCart,
+    clearCart,
+    qrCart,
+    addQuickRead,
+    isInQrCart,
+    removeQuickRead,
+    clearQrCart,
+  } = useStore();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [siteOrigin, setSiteOrigin] = useState("");
@@ -404,6 +419,21 @@ function BagContent() {
   const recQuick = books
     .filter((b) => quickReadFrameCount(b.id) > 0 && b.discountedPrice !== 1)
     .slice(0, 10);
+
+  // QuickReads rail (2-row scrollable, homepage style) shown above the
+  // recommendations in the bag.
+  const qrRailBooks = (() => {
+    const seen = new Set();
+    return books
+      .filter((b) => quickReadFrameCount(b.id) > 0 && b.image)
+      .filter((b) => {
+        const k = (b.name || "").trim().toLowerCase();
+        if (seen.has(k)) return false;
+        seen.add(k);
+        return true;
+      })
+      .slice(0, 16);
+  })();
 
   // QuickReads in the bag (separate slice)
   const qrItems = (qrCart || [])
@@ -1246,6 +1276,80 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
 
           {/* Wishlist — horizontal strip below the added books */}
           <WishlistStrip />
+
+          {/* QuickReads rail — 2-row scrollable, homepage card style */}
+          {qrRailBooks.length > 0 && (
+            <section className="or1-section">
+              <div className="section-1200 or1-inner">
+                <div className="or1-head">
+                  <div className="or1-head-left">
+                    <span className="or1-badge">
+                      <Zap size={13} /> QUICKREADS
+                    </span>
+                    <h2 className="or1-title">Read the key ideas in minutes</h2>
+                    <p className="or1-sub">
+                      Bite-sized insights from bestsellers · ₹{QUICKREAD_PRICE}{" "}
+                      each
+                    </p>
+                  </div>
+                </div>
+                <div className="or1-scroll">
+                  <div className="or1-grid">
+                    {qrRailBooks.map((b) => {
+                      const inBag = isInQrCart(b.id);
+                      const url = `/quickreads/${qrSlugify(b.name)}`;
+                      return (
+                        <div className="or1-card" key={b.id}>
+                          <div className="or1-cover">
+                            <Link
+                              href={url}
+                              className="or1-cover-link"
+                              aria-label={b.name}
+                            >
+                              <img src={b.image} alt={b.name} loading="lazy" />
+                            </Link>
+                            {inBag ? (
+                              <Link
+                                href="/bag?tab=quickreads"
+                                className="or1-add incart"
+                                aria-label="In bag"
+                              >
+                                <Check size={16} strokeWidth={3} />
+                              </Link>
+                            ) : (
+                              <button
+                                type="button"
+                                className="or1-add"
+                                onClick={() => {
+                                  addQuickRead(b.id);
+                                  showToast(
+                                    `Added to your bag 🎉 “${b.name}” QuickRead`,
+                                    "success",
+                                  );
+                                }}
+                                aria-label={`Add ${b.name} QuickRead`}
+                              >
+                                <Plus size={18} />
+                              </button>
+                            )}
+                          </div>
+                          <Link href={url} className="or1-name">
+                            {b.name}
+                          </Link>
+                          <div className="or1-price">
+                            <span className="or1-now">₹{QUICKREAD_PRICE}</span>
+                          </div>
+                          <span className="or1-save-tag">
+                            {quickReadFrameCount(b.id)} insights
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </section>
+          )}
 
           {recommendedBooks.length > 0 && (
             <div className="cart-sep">

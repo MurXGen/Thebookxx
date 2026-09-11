@@ -1927,10 +1927,6 @@ export default function AddressModal({
                         </span>
                       </div>
                     </div>
-                    <span className="pay-perks pay-perks-split">
-                      <span className="pay-perk">Free bookmark</span>
-                      <span className="pay-perk">No COD fee</span>
-                    </span>
                   </div>
 
                   {/* Cash on Delivery — unavailable with Faster delivery */}

@@ -17282,13 +17282,13 @@ img[data-loaded="true"] {
 /* Order card */
 .admin-order-card {
   border: 1px solid var(--hairline);
-  border-radius: 16px;
+  border-radius: 18px;
   box-shadow: var(--shadow-xs);
   padding: 14px 16px;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-bottom: 14px;
+  margin-bottom: 0;
 }
 /* Clearer separation between consecutive cards */
 .admin-order-card + .admin-order-card {
@@ -21037,8 +21037,9 @@ img[data-loaded="true"] {
 /* ===== Manage-orders — order grid + card + detail modal ===== */
 .admin-orders-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 14px;
+  align-items: stretch; /* equal-height tiles per row (bento) */
 }
 @media (max-width: 640px) {
   .admin-orders-grid {
@@ -21046,11 +21047,14 @@ img[data-loaded="true"] {
   }
 }
 .mo-card {
-  transition: border-color 0.18s ease, background 0.18s ease;
+  transition: border-color 0.18s ease, background 0.18s ease,
+    box-shadow 0.18s ease, transform 0.18s ease;
   min-width: 0;
+  height: 100%; /* fill the stretched grid track so footers bottom-align */
 }
 .mo-card:hover {
-  box-shadow: var(--shadow-xs);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px -12px rgba(0, 0, 0, 0.28);
 }
 /* ── Inline scratch-card banner (homepage, not-logged-in) ── */
 .scratch-banner {
@@ -23995,9 +23999,10 @@ img[data-loaded="true"] {
 .mo-card-delete-btn:hover {
   background: #b91c1c;
 }
-/* Bordered, spaced action row (prices/covers above → buttons below). */
+/* Bordered action row pinned to the card bottom so every card's Cancel /
+   Delete / Copy row lines up across the grid (bento alignment). */
 .mo-card > .mo-card-json {
-  margin-top: 10px;
+  margin-top: auto;
   padding-top: 12px;
   border-top: 1px solid var(--hairline, #ececec);
 }

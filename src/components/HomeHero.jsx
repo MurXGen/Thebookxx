@@ -48,9 +48,19 @@ export default function HomeHero() {
     "The Art of Clarity",
     "We Are There for Each Other",
   ];
-  const picks = pickNames
-    .map((n) => books.find((b) => b.name === n))
-    .filter(Boolean);
+  const picks = (() => {
+    const named = pickNames
+      .map((n) => books.find((b) => b.name === n))
+      .filter(Boolean);
+    if (named.length >= 3) return named.slice(0, 3);
+    // A named pick was removed — top up with other in-stock books (with covers)
+    // so all three podium stages always fill.
+    const have = new Set(named.map((b) => b.id));
+    const fill = books.filter(
+      (b) => b.image && !have.has(b.id) && b.discountedPrice !== 1,
+    );
+    return [...named, ...fill].slice(0, 3);
+  })();
 
   // Modals wired to the existing app flows.
   const [searchOpen, setSearchOpen] = useState(false);

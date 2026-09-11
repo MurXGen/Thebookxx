@@ -10848,6 +10848,8 @@ textarea.sec-mid-btn,
 }
 
 .bd-combo-img {
+  width: 60px;
+  height: 84px;
   border-radius: var(--px-6);
   box-shadow: 0 2px 8px var(--dark-10);
   object-fit: cover;

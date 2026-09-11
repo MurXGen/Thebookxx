@@ -4,6 +4,230 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "roald-dahl-story-day-2026-children-reading-habit-india": {
+    id: "blog-047",
+    title:
+      "Roald Dahl Story Day 2026 (13 September): How to Actually Get an Indian Child Hooked on Reading",
+    slug: "roald-dahl-story-day-2026-children-reading-habit-india",
+    author: "TheBookX Editorial",
+    authorSlug: "murthy-thevar",
+    publishDate: "2026-09-11",
+    lastModified: "2026-09-11",
+    excerpt:
+      "Roald Dahl Story Day falls on Sunday, 13 September 2026, his 110th birthday. A practical plan for building a child's reading habit, and the books that work in India.",
+    content: [
+      {
+        type: "paragraph",
+        content:
+          "Roald Dahl was born on 13 September 1916 in Llandaff, Wales, which makes Sunday, 13 September 2026 his 110th birthday and this year's Roald Dahl Story Day. Tens of thousands of schools mark it, usually on the nearest weekday, with costumes, read-alouds and fundraising for Roald Dahl's Marvellous Children's Charity. In India it lands in an unusually convenient week: for many families Monday, 14 September is a Ganesh Chaturthi holiday, so a long weekend arrives with children at home and nothing scheduled.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "That is the useful part of the day, and the reason to write about it. Dahl Day is not really about Dahl. It is an annual reminder that a child who reads for pleasure is made, not born, and that the making happens at home rather than in a syllabus. This is a practical guide to doing that, with the constraints Indian parents actually face: two languages at minimum, a school reading list that is mostly comprehension exercises, a phone in the house, and a budget.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "Roald Dahl Story Day 2026 at a glance",
+        content:
+          "Date: Sunday, 13 September 2026 — the 110th anniversary of Dahl's birth on 13 September 1916. Dahl died on 23 November 1990. The day is coordinated by the Roald Dahl Story Company with publishers, schools and charities, and raises funds for Roald Dahl's Marvellous Children's Charity, which supports seriously ill children. Because 13 September falls on a Sunday this year, most schools will observe it on Friday 11 or Monday 14 September.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Why This Matters More in India Than the Costumes Suggest",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The Annual Status of Education Report (ASER) 2024, Pratham's rural household survey, reached 649,491 children across 17,997 villages in 605 districts. It found that 23.4% of Class 3 children could read a Class 2 level text, up from 16.3% in 2022 and, for government schools, the highest level recorded since ASER began in 2005. Among Class 5 children in government schools, 44.8% could read a Class 2 text, recovering past the pre-pandemic 44.2% of 2018.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Read that carefully and two things are true at once. The recovery is real and it is being led by government schools, which is genuinely good news after the pandemic years. And more than half of Class 5 children still cannot fluently read a text meant for Class 2. Decoding is taught in school. Fluency is built by volume, and volume only comes from reading things a child wants to finish. That is the gap a home bookshelf closes, and no amount of worksheets will.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The Five Rules That Actually Build the Habit",
+      },
+      {
+        type: "list",
+        style: "ordered",
+        items: [
+          "<strong>Let them abandon books.</strong> The single most damaging rule in most households is that a started book must be finished. Adults do not obey it. A child who is allowed to quit at page thirty learns that books are optional pleasures rather than obligations, and will start ten more. Insisting on completion teaches the opposite lesson very efficiently.",
+          "<strong>Let the first hundred books be 'too easy'.</strong> Comics, cartoon-heavy diaries, picture books well below grade level — these build reading speed, which is what fluency is. A child who reads two hundred easy pages has practised more than a child who grinds through forty hard ones. Difficulty comes later and arrives on its own.",
+          "<strong>Read aloud past the age it seems necessary.</strong> Listening comprehension runs years ahead of reading ability, so reading aloud lets a child meet stories, vocabulary and sentence rhythms they cannot yet decode themselves. Stop at seven and you cut this off exactly when it becomes most useful. Nine, ten, eleven are fine.",
+          "<strong>Make the books visible and reachable.</strong> A low open shelf in the room a child already sits in beats a tall locked cupboard in the study. Books behind glass are furniture. Books at knee height are options.",
+          "<strong>Never use reading as punishment or reward.</strong> 'Finish one chapter and then you can play' converts a pleasure into a toll gate. Twenty minutes of anything voluntary beats an hour of anything compulsory, and the habit you are building has to survive the years when you are no longer in the room.",
+        ],
+      },
+      {
+        type: "blockquote",
+        content:
+          "A reading habit is not built by choosing the right book. It is built by making sure there is always a next one within arm's reach, and never making the child earn it.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The Funny Books That Convert Reluctant Readers",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Dahl's own appeal was never the moral. It was that he was on the child's side against the adults, and that he was funny about it. That is the quality to look for in a first chapter book, and these do it. Start here with a child of seven to eleven who says they hate reading.",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<a href=\"/books/diary-of-a-wimpy-kid\" style=\"color:#fb8500;font-weight:600\">Diary of a Wimpy Kid</a> — Jeff Kinney's Greg Heffley is the most reliable reluctant-reader conversion in print. Handwritten font, cartoons on every spread, short entries: a child who will not face a wall of text will finish this in two sittings and then ask for the next one. There are twenty of them, which is the point. The <a href=\"/books/diary-of-a-wimpy-kid-series-set\" style=\"color:#fb8500;font-weight:600\">Diary of a Wimpy Kid Series Set</a> removes the weekly negotiation entirely.",
+          "<a href=\"/books/tom-gates\" style=\"color:#fb8500;font-weight:600\">Tom Gates</a> — Liz Pichon's doodle-filled series is the closest British cousin to Wimpy Kid, and works particularly well for children who like drawing. The page design does half the work of holding attention.",
+          "<a href=\"/books/tintin\" style=\"color:#fb8500;font-weight:600\">Tintin</a> — Hergé's albums are the argument against treating comics as not-real-reading. The vocabulary is high, the plotting is tight, and the panels teach visual sequencing. For a child who has taken to one, the <a href=\"/books/tintin-set\" style=\"color:#fb8500;font-weight:600\">Tintin Set</a> is the cheaper route per album.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The Indian Shelf: Stories a Child Already Half-Knows",
+      },
+      {
+        type: "paragraph",
+        content:
+          "There is a specific advantage to books set in places a child recognises, with names they can pronounce and grandmothers who behave like theirs. Recognition lowers the cost of entry, which for a new reader is most of the battle. Sudha Murthy is the most widely read children's writer in the country for exactly this reason, and Ruskin Bond has been doing it for sixty years.",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<a href=\"/books/grandma-s-bag-of-stories\" style=\"color:#fb8500;font-weight:600\">Grandma's Bag of Stories</a> — Sudha Murthy's frame-narrative collection, short enough per story to be a single bedtime and structured so a child can pick any one. The natural first Indian chapter book, roughly ages six to ten.",
+          "<a href=\"/books/the-magic-drum\" style=\"color:#fb8500;font-weight:600\">The Magic Drum</a> — Folk tales retold plainly, with the moral left implicit rather than stamped at the end. Good read-aloud material for younger siblings listening in.",
+          "<a href=\"/books/how-i-taught-my-grandmother-to-read\" style=\"color:#fb8500;font-weight:600\">How I Taught My Grandmother to Read</a> — Autobiographical pieces about a twelve-year-old teaching her sixty-two-year-old grandmother the alphabet. The rare children's non-fiction that makes literacy itself the story, which makes it the right book for this particular week.",
+          "<a href=\"/books/the-blue-umbrella\" style=\"color:#fb8500;font-weight:600\">The Blue Umbrella</a> — Ruskin Bond's novella about a Garhwali girl, a bright blue umbrella and the shopkeeper who covets it. Short, unsentimental and genuinely well written, which matters because children can tell when prose is being written down to them.",
+          "<a href=\"/books/andaman-adventure\" style=\"color:#fb8500;font-weight:600\">Andaman Adventure</a> — Deepak Dalal's Indian adventure series, for the child who wants plot over feeling. Underrated, and the closest thing we have to a homegrown Enid Blyton with better geography.",
+          "<a href=\"/books/the-gita-for-children\" style=\"color:#fb8500;font-weight:600\">The Gita: For Children</a> — Roopa Pai's much-praised retelling, useful in a Ganesh Chaturthi week when a child is likely to ask a question no adult in the room wants to answer badly. It treats the text as an argument rather than an instruction.",
+          "<a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> — R.K. Narayan's stories are usually assigned at thirteen and enjoyed at thirty. Read two aloud at nine and the assignment later will feel like meeting an old acquaintance.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The Step Up: Where a Reader Goes Next",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Once a child finishes books without being asked, the job changes from conversion to supply. The risk at this stage is a gap: they run out, nothing replaces it, and the habit quietly lapses over a school term. Long series solve this better than individually chosen masterpieces.",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<a href=\"/books/harry-potter-set\" style=\"color:#fb8500;font-weight:600\">Harry Potter Set</a> — Still the most efficient way to take a child from short chapter books to six hundred pages, because the books grow up at roughly the pace the reader does. Book one reads at about nine, book seven at about thirteen.",
+          "<a href=\"/books/percy-jackson-ultimate-collection\" style=\"color:#fb8500;font-weight:600\">Percy Jackson Ultimate Collection</a> — Rick Riordan's Greek mythology series, and the standard recommendation for what to hand over the week Hogwarts ends. Faster and funnier, with a dyslexic protagonist, which some readers find quietly important.",
+          "<a href=\"/books/little-women\" style=\"color:#fb8500;font-weight:600\">Little Women</a> — The bridge from children's fiction to the adult shelf. Slower than anything above, and worth the adjustment; the March sisters argue about money, ambition and work in ways a twelve-year-old recognises immediately.",
+          "<a href=\"/books/the-diary-of-a-young-girl\" style=\"color:#fb8500;font-weight:600\">The Diary of a Young Girl</a> — Anne Frank was thirteen when she began writing it. For many readers this is the first book that is not an escape, and it belongs on the shelf a year before you think a child is ready for it.",
+          "<a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> — A.P.J. Abdul Kalam's autobiography is the most-gifted non-fiction book in Indian childhoods, and for once the consensus is right. Best given at eleven or twelve, when the newspaper-seller-to-scientist arc still reads as possible rather than as a moral.",
+        ],
+      },
+      {
+        type: "callout",
+        style: "success",
+        title: "What a full children's shelf should cost",
+        content:
+          "This is the part parents get wrong by overestimating. Children's paperbacks in Indian editions are cheap, and a shelf of fifteen titles costs less than one imported hardback. On TheBookX, books start from ₹1, delivery is free across India, and Cash on Delivery is available on every order, so nothing needs to be paid before the parcel is in your hands. If a set is going to a cousin or a classmate, gift wrapping is available at +₹25 per book.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "One Book for the Parent",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Two, if you want the honest list. <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear is the most useful thing to read alongside this project, not because a child needs a habit system, but because the parent does: the book's core point is that environment beats willpower, which is precisely the argument for the low open shelf over the reading chart on the fridge.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The second is about how you talk to a child about what they read. Comprehension questions kill enthusiasm faster than anything else; the skill is asking one real question instead of five test questions. <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a practical treatment of saying one thing at a time and saying it so it cannot be misread — a discipline that turns out to matter as much at a dinner table as in an office.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "A Plan for This Long Weekend",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Do not announce a reading programme. Put three books where the child sits, read your own book in the same room for twenty minutes, and say nothing about it. If they pick one up, do not ask what it is about. Repeat on Sunday for Dahl Day and on Monday for the holiday. Habits formed in a week that felt like a holiday survive the term that follows; habits announced on a Monday rarely reach Friday.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>",
+      },
+    ],
+    coverImage:
+      "/blogs/roald-dahl-story-day-2026-children-reading-habit-india.jpeg",
+    images: [
+      {
+        url: "/blogs/roald-dahl-story-day-2026-children-reading-habit-india.jpeg",
+        alt: "A young girl lying on the floor at home reading a paperback storybook, with a low open shelf of children's books beside her in warm afternoon light",
+        caption:
+          "A low open shelf in the room a child already sits in does more for a reading habit than any chart on the fridge",
+        category: "Children's Books",
+      },
+    ],
+    keywords: [
+      "roald dahl story day 2026",
+      "roald dahl day 13 september 2026",
+      "roald dahl 110th birthday",
+      "how to make children read books india",
+      "best children's books india 2026",
+      "reluctant reader books for kids",
+      "sudha murthy children's books",
+      "diary of a wimpy kid for kids india",
+      "aser 2024 reading levels india",
+      "reading habit for kids at home",
+      "buy children's books online india",
+      "TheBookX",
+    ],
+    categories: ["Children's Books", "Reading Habits", "Parenting"],
+    faqs: [
+      {
+        question: "When is Roald Dahl Story Day 2026?",
+        answer:
+          "Roald Dahl Story Day 2026 falls on Sunday, 13 September 2026, the anniversary of Roald Dahl's birth in Llandaff, Wales on 13 September 1916, which makes it his 110th birthday. Because the date is a Sunday this year, most schools will mark it on the nearest weekday, either Friday 11 or Monday 14 September. The day is coordinated by the Roald Dahl Story Company and raises funds for Roald Dahl's Marvellous Children's Charity.",
+      },
+      {
+        question:
+          "What is the best way to get a child who dislikes reading to start?",
+        answer:
+          "Start well below their grade level and prioritise pace over difficulty. Illustrated, funny, short-chapter books such as Diary of a Wimpy Kid, Tom Gates or Tintin convert reluctant readers far more reliably than age-appropriate literary fiction, because they build reading speed without demanding sustained effort. Allow the child to abandon any book they are not enjoying, keep books on a low open shelf rather than in a cupboard, and never use reading as a condition for screen time or play.",
+      },
+      {
+        question:
+          "What do ASER's findings say about children's reading levels in India?",
+        answer:
+          "ASER 2024, Pratham's rural household survey of 649,491 children across 17,997 villages in 605 districts, found that 23.4% of Class 3 children could read a Class 2 level text, up from 16.3% in 2022 and above the pre-pandemic 20.9% of 2018. Among Class 5 children in government schools the figure recovered to 44.8%, from 38.5% in 2022. The recovery is real and government-school-led, but it also means most children in Class 5 still cannot fluently read a Class 2 text, which is a fluency problem that reading volume at home addresses better than classroom instruction alone.",
+      },
+      {
+        question:
+          "Which Indian children's books work best as a first chapter book?",
+        answer:
+          "Sudha Murthy's Grandma's Bag of Stories is the most common starting point, because each story is short enough for one sitting and the frame narrative lets a child dip in anywhere. The Magic Drum and How I Taught My Grandmother to Read suit the same age band. Ruskin Bond's The Blue Umbrella is the step up for a confident reader at nine or ten, and Deepak Dalal's Andaman Adventure suits a child who prefers plot to character.",
+      },
+      {
+        question:
+          "How much does it cost to build a children's bookshelf on TheBookX?",
+        answer:
+          "Less than most parents expect. Indian editions of children's paperbacks are inexpensive, and books on TheBookX start from ₹1 with free delivery across India and Cash on Delivery available on every order. A fifteen-title shelf typically costs less than a single imported hardback. Gift wrapping is available at an additional ₹25 per book if the books are going to someone as a present.",
+      },
+    ],
+  },
   "agatha-christie-2026-reading-order-where-to-start": {
     id: "blog-046",
     title:

@@ -43142,7 +43142,9 @@ img[data-loaded="true"] {
 .pay-method.pm2,
 .pay-method-splittop.pm2 {
   display: flex;
+  flex-direction: row;
   align-items: center;
+  justify-content: space-between;
   gap: 12px;
   width: 100%;
   padding: 14px;

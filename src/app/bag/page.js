@@ -75,6 +75,9 @@ function BagContent() {
     removeQuickRead,
     clearQrCart,
   } = useStore();
+  // QuickReads rail lazy-load (reveal more as the rail scrolls).
+  const qrScrollRef = useRef(null);
+  const [qrVisible, setQrVisible] = useState(12);
   const router = useRouter();
   const searchParams = useSearchParams();
   const [siteOrigin, setSiteOrigin] = useState("");
@@ -431,9 +434,31 @@ function BagContent() {
         if (seen.has(k)) return false;
         seen.add(k);
         return true;
-      })
-      .slice(0, 16);
+      });
   })();
+  const qrRailShown = qrRailBooks.slice(0, qrVisible);
+  const qrHasMore = qrVisible < qrRailBooks.length;
+  // Reveal the next batch as the rail nears its right edge.
+  const onQrRailScroll = () => {
+    const el = qrScrollRef.current;
+    if (!el || !qrHasMore) return;
+    if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 240) {
+      setQrVisible((v) => Math.min(v + 12, qrRailBooks.length));
+    }
+  };
+  // On wide screens the first batch may not overflow — keep revealing until it
+  // does (so there's something to scroll), or all are shown.
+  useEffect(() => {
+    const el = qrScrollRef.current;
+    if (!el || !qrHasMore) return;
+    if (el.scrollWidth <= el.clientWidth + 40) {
+      const t = setTimeout(
+        () => setQrVisible((v) => Math.min(v + 12, qrRailBooks.length)),
+        180,
+      );
+      return () => clearTimeout(t);
+    }
+  }, [qrVisible, qrHasMore, qrRailBooks.length]);
 
   // QuickReads in the bag (separate slice)
   const qrItems = (qrCart || [])
@@ -1293,9 +1318,13 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
                     </p>
                   </div>
                 </div>
-                <div className="or1-scroll">
+                <div
+                  className="or1-scroll"
+                  ref={qrScrollRef}
+                  onScroll={onQrRailScroll}
+                >
                   <div className="or1-grid">
-                    {qrRailBooks.map((b) => {
+                    {qrRailShown.map((b) => {
                       const inBag = isInQrCart(b.id);
                       const url = `/quickreads/${qrSlugify(b.name)}`;
                       return (

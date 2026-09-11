@@ -6,6 +6,7 @@ import { Plus, Check, Loader2, Sparkles } from "lucide-react";
 import { books } from "@/utils/book";
 import { useStore } from "@/context/StoreContext";
 import { showToast } from "@/context/ToastContext";
+import BookCoverImg from "@/components/BookCoverImg";
 
 const slugify = (t) =>
   String(t || "")
@@ -70,7 +71,7 @@ export default function NewlyAddedGrid() {
                 <div className="or1-card" key={b.id}>
                   <div className="or1-cover">
                     <Link href={url} className="or1-cover-link" aria-label={b.name}>
-                      <img src={b.image} alt={b.name} loading="lazy" />
+                      <BookCoverImg src={b.image} name={b.name} author={b.author} />
                     </Link>
                     {loading ? (
                       <button type="button" className="or1-add loading" disabled aria-label="Adding">

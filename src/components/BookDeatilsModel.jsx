@@ -39,6 +39,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import Image from "next/image";
+import BookCoverImg, { coverFallbackVars } from "@/components/BookCoverImg";
 import { useRouter } from "next/navigation";
 import LoadingButton from "./UI/LoadingButton";
 import Script from "next/script";
@@ -130,12 +131,28 @@ function Accordion({ icon: Icon, title, defaultOpen = false, children }) {
 // Swipeable product gallery. Books have a single cover, so we render it
 // across two frames (same image) with pagination dots + arrows, matching
 // the e-commerce product-slider pattern the reference store uses.
-function BookGallery({ image, alt }) {
+function BookGallery({ image, alt, name = "", author = "" }) {
   const frames = [image, image];
   const [index, setIndex] = useState(0);
+  const [imgErr, setImgErr] = useState(false);
   const startX = useRef(null);
 
   const go = (i) => setIndex((i + frames.length) % frames.length);
+
+  // No image file (or it failed to load) → designed fallback cover.
+  if (!image || imgErr) {
+    const style = coverFallbackVars(name);
+    return (
+      <div className="bd-gallery pdp-cover">
+        <div className="book-cover-fallback" style={style} aria-label={name}>
+          <span className="bcf-brand">THE BOOKX</span>
+          <span className="bcf-rule" />
+          <span className="bcf-title">{name}</span>
+          {author && <span className="bcf-author">{author}</span>}
+        </div>
+      </div>
+    );
+  }
 
   const onTouchStart = (e) => {
     startX.current = e.touches[0].clientX;
@@ -167,6 +184,7 @@ function BookGallery({ image, alt }) {
                 height={420}
                 priority={i === 0}
                 className="bd-cover"
+                onError={() => setImgErr(true)}
                 {...(i === 0 ? { itemProp: "image" } : {})}
               />
             </div>
@@ -273,15 +291,12 @@ function FrequentlyBought({ book, companion, onAddBoth }) {
       <div className="bd-combo-inner">
         <div className="bd-combo-items">
           <div className="bd-combo-item">
-            {book.image && (
-              <Image
-                src={book.image}
-                alt={book.name}
-                width={60}
-                height={84}
-                className="bd-combo-img"
-              />
-            )}
+            <BookCoverImg
+              src={book.image}
+              name={book.name}
+              author={book.author}
+              className="bd-combo-img"
+            />
             <div className="bd-combo-meta">
               <span className="bd-combo-name">{book.name}</span>
               <span className="bd-combo-p">₹{book.discountedPrice}</span>
@@ -289,15 +304,12 @@ function FrequentlyBought({ book, companion, onAddBoth }) {
           </div>
           <Plus size={18} className="bd-combo-plus" />
           <div className="bd-combo-item">
-            {companion.image && (
-              <Image
-                src={companion.image}
-                alt={companion.name}
-                width={60}
-                height={84}
-                className="bd-combo-img"
-              />
-            )}
+            <BookCoverImg
+              src={companion.image}
+              name={companion.name}
+              author={companion.author}
+              className="bd-combo-img"
+            />
             <div className="bd-combo-meta">
               <span className="bd-combo-name">{companion.name}</span>
               <span className="bd-combo-p">₹{companion.discountedPrice}</span>
@@ -868,12 +880,13 @@ export default function BookDetailsModal({ book }) {
           {/* ===== Hero ===== */}
           <div ref={heroRef} className="bd-hero">
             <div className="bd-hero-image">
-              {book.image ? (
-                <BookGallery
-                  image={book.image}
-                  alt={`${book.name} book cover, Buy online at TheBookX, India's trusted bookstore`}
-                />
-              ) : (
+              <BookGallery
+                image={book.image}
+                name={book.name}
+                author={book.author}
+                alt={`${book.name} book cover, Buy online at TheBookX, India's trusted bookstore`}
+              />
+              {false && (
                 <div className="bd-cover-placeholder">
                   <BookOpen size={48} />
                 </div>

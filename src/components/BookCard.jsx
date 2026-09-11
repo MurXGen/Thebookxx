@@ -5,6 +5,7 @@ import { trackAddToCart } from "@/lib/ga";
 import { books } from "@/utils/book";
 import { Book, Minus, Plus, Share2, ShoppingCart, Bell, Heart } from "lucide-react";
 import Image from "next/image";
+import { coverFallbackVars } from "@/components/BookCoverImg";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { flyToCart } from "@/lib/flyToCart";
@@ -58,7 +59,12 @@ export default function BookCard({ book }) {
   const { cart, wishlist, addToCart, decreaseQty, toggleWishlist, cartTotal } =
     useStore();
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [imgError, setImgError] = useState(false);
   const [hasTrackedView, setHasTrackedView] = useState(false);
+
+  // Deterministic black/white cover derived from the title, so a book without
+  // an image file always gets the same designed cover.
+  const coverFallbackStyle = coverFallbackVars(book?.name || book?.id);
 
   const cartItem = cart.find((i) => i.id === book.id);
   const qty = cartItem?.qty || 0;
@@ -210,9 +216,11 @@ export default function BookCard({ book }) {
 
         {/* Image */}
         <div className="book-image-wrapper" ref={coverRef}>
-          {!imageLoaded && <div className="image-skeleton" />}
+          {book.image && !imgError && !imageLoaded && (
+            <div className="image-skeleton" />
+          )}
 
-          {book.image ? (
+          {book.image && !imgError ? (
             <Link
               href={bookUrl}
               onClick={handleBookClick}
@@ -225,18 +233,29 @@ export default function BookCard({ book }) {
                 height={240}
                 className={`book-image ${imageLoaded ? "loaded" : ""}`}
                 onLoadingComplete={() => setImageLoaded(true)}
+                onError={() => setImgError(true)}
                 sizes="(max-width: 768px) 40vw, 160px"
                 itemProp="image"
                 loading="lazy"
               />
             </Link>
           ) : (
-            <div
-              className="book-image-placeholder"
-              aria-label="Book cover placeholder"
+            // Designed fallback "cover" when no image file exists — title +
+            // author styled to read like a real book cover.
+            <Link
+              href={bookUrl}
+              onClick={handleBookClick}
+              className="book-cover-fallback"
+              style={coverFallbackStyle}
+              aria-label={`View details of ${book.name}`}
             >
-              <Book size={18} />
-            </div>
+              <span className="bcf-brand">THE BOOKX</span>
+              <span className="bcf-rule" />
+              <span className="bcf-title">{book.name}</span>
+              {book.author && (
+                <span className="bcf-author">{book.author}</span>
+              )}
+            </Link>
           )}
         </div>
 

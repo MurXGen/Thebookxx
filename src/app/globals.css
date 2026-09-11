@@ -1010,6 +1010,129 @@ button:hover {
   line-height: 0;
 }
 
+/* Designed fallback "cover" for books whose image file is missing — reads like
+   a real book cover (title + author on a deterministic colour). */
+.book-cover-fallback {
+  width: 160px;
+  max-width: 100%;
+  max-height: 100%;
+  aspect-ratio: 2 / 3;
+  border-radius: 6px;
+  box-shadow: 0 6px 18px -8px rgba(0, 0, 0, 0.45);
+  background: var(--cf-bg, #0a0a0a);
+  color: var(--cf-fg, #ffffff);
+  border: 1px solid var(--cf-bd, transparent);
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 14px;
+  text-align: center;
+  line-height: 1.25 !important;
+  overflow: hidden;
+  position: relative;
+}
+.book-cover-fallback::before {
+  /* subtle spine highlight on the left edge (adapts to black/white cover) */
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 6px;
+  bottom: 6px;
+  width: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  opacity: 0.18;
+}
+.bcf-brand {
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  opacity: 0.72;
+  text-transform: uppercase;
+}
+.bcf-rule {
+  width: 26px;
+  height: 2px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.5);
+}
+.bcf-title {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.22;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+.bcf-author {
+  margin-top: 2px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  opacity: 0.85;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+/* Context sizing — fill the container the cover normally lives in. */
+.book-image-wrapper .book-cover-fallback {
+  width: 160px;
+}
+/* Small square thumbnail contexts (New arrivals, bought-together): fit height,
+   derive width from the 2:3 ratio, and shrink the text to match. */
+.or1-cover-link .book-cover-fallback,
+.book-cover-fallback.bd-combo-img {
+  width: 60px;
+  height: auto;
+  padding: 8px 6px;
+  gap: 4px;
+}
+.or1-cover-link .book-cover-fallback {
+  width: auto;
+  height: 100%;
+}
+.or1-cover-link .book-cover-fallback .bcf-brand,
+.book-cover-fallback.bd-combo-img .bcf-brand {
+  font-size: 6px;
+  letter-spacing: 0.12em;
+}
+.or1-cover-link .book-cover-fallback .bcf-rule,
+.book-cover-fallback.bd-combo-img .bcf-rule {
+  width: 16px;
+  height: 1.5px;
+}
+.or1-cover-link .book-cover-fallback .bcf-title,
+.book-cover-fallback.bd-combo-img .bcf-title {
+  font-size: 9px;
+  -webkit-line-clamp: 4;
+}
+.or1-cover-link .book-cover-fallback .bcf-author,
+.book-cover-fallback.bd-combo-img .bcf-author {
+  font-size: 7px;
+}
+/* Product-page main cover: large, fills the frame. */
+.pdp-cover .book-cover-fallback {
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+}
+.pdp-cover .book-cover-fallback .bcf-title {
+  font-size: 26px;
+  -webkit-line-clamp: 6;
+}
+.pdp-cover .book-cover-fallback .bcf-author {
+  font-size: 15px;
+}
+.pdp-cover .book-cover-fallback .bcf-brand {
+  font-size: 11px;
+}
+
 .book-image {
   width: auto;
   height: 150px;

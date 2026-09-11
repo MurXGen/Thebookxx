@@ -1698,7 +1698,9 @@ export default function AddressModal({
                         className={`pa-row${!fasterDelivery ? " on" : ""}`}
                         onClick={() => setFasterDelivery(false)}
                       >
-                        <span className="pa-row-emoji">🚚</span>
+                        <span className="pa-row-ic">
+                          <Truck size={18} />
+                        </span>
                         <span className="pa-row-main">
                           <span className="pa-row-name">Standard delivery</span>
                           <span className="pa-row-sub">4–9 days</span>
@@ -1715,7 +1717,10 @@ export default function AddressModal({
                         className={`pa-row${fasterDelivery ? " on" : ""}`}
                         onClick={() => setFasterDelivery(true)}
                       >
-                        <span className="pa-row-emoji">⚡</span>
+                        <span className="pa-row-ic paid">
+                          <span className="pa-ripple" aria-hidden="true" />
+                          <Zap size={18} />
+                        </span>
                         <span className="pa-row-main">
                           <span className="pa-row-name">Faster delivery</span>
                           <span className="pa-row-sub">1–5 days</span>
@@ -1741,7 +1746,10 @@ export default function AddressModal({
                         className={`pa-row${giftWrap ? " on" : ""}`}
                         onClick={() => setGiftWrap((v) => !v)}
                       >
-                        <span className="pa-row-emoji">🎁</span>
+                        <span className="pa-row-ic paid">
+                          <span className="pa-ripple" aria-hidden="true" />
+                          <Gift size={18} />
+                        </span>
                         <span className="pa-row-main">
                           <span className="pa-row-name">Gift wrap</span>
                         </span>
@@ -1755,7 +1763,9 @@ export default function AddressModal({
                         className={`pa-row${bookmark ? " on" : ""}`}
                         onClick={() => setBookmark((v) => !v)}
                       >
-                        <span className="pa-row-emoji">🔖</span>
+                        <span className="pa-row-ic">
+                          <Bookmark size={18} />
+                        </span>
                         <span className="pa-row-main">
                           <span className="pa-row-name">Bookmark</span>
                           <span className="pa-row-sub free">

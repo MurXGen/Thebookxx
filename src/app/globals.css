@@ -42055,6 +42055,59 @@ img[data-loaded="true"] {
   font-size: 19px;
   line-height: 1;
 }
+/* Lucide icon tile — consistent size/alignment across delivery + add-ons. */
+.pa-row-ic {
+  flex: 0 0 auto;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  color: #6b7280;
+  background: #f4f4f5;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease;
+}
+.pa-row.on .pa-row-ic {
+  color: var(--tertiary, #fb8500);
+  background: rgba(251, 133, 0, 0.14);
+}
+.pa-row-ic.paid {
+  color: var(--tertiary, #fb8500);
+  background: rgba(251, 133, 0, 0.1);
+}
+/* Ripple pulse on paid upgrades (Faster delivery, Gift wrap) to draw the eye. */
+.pa-ripple {
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  border: 2px solid var(--tertiary, #fb8500);
+  pointer-events: none;
+  animation: paRipple 1.9s ease-out infinite;
+}
+.pa-row.on .pa-ripple {
+  animation: none;
+  opacity: 0;
+}
+@keyframes paRipple {
+  0% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  70%,
+  100% {
+    transform: scale(1.45);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pa-ripple {
+    display: none;
+  }
+}
 .pa-row-main {
   flex: 1 1 auto;
   min-width: 0;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X,
@@ -33,6 +33,7 @@ export default function CodPayOnline({
   name,
   bd = {},
   onPaid,
+  autoOpen = false,
 }) {
   const [open, setOpen] = useState(false);
   const [stage, setStage] = useState("choose"); // choose | qr | done
@@ -73,6 +74,17 @@ export default function CodPayOnline({
     setMode("");
     setOpen(true);
   };
+
+  // Shareable pay-link: open the pay flow automatically when arriving with the
+  // ?pay param (and the order is still eligible / not already verifying).
+  useEffect(() => {
+    if (autoOpen && !pendingVerify) {
+      setStage("choose");
+      setMode("");
+      setOpen(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoOpen]);
   const choose = (m) => {
     setMode(m);
     setStage("qr");
@@ -419,20 +431,38 @@ export default function CodPayOnline({
 
               {stage === "done" && (
                 <div className="cpo-done">
-                  <span className="cpo-done-ic">
-                    <Check size={26} strokeWidth={3} />
+                  <span className="cpo-waiting-ic">
+                    <Loader2 size={30} className="cpo-spin" />
                   </span>
-                  <h3>Thanks! Payment noted</h3>
+                  <h3>Waiting for payment confirmation…</h3>
                   <p>
-                    We&apos;re verifying your payment. Your order will be
-                    confirmed shortly and you&apos;ll see it update here.
+                    We&apos;ll confirm your payment shortly. Please send us the
+                    payment screenshot on WhatsApp so we can verify and confirm
+                    your order faster.
                   </p>
+                  <a
+                    className="pri-big-btn width100"
+                    href={`https://wa.me/${SUPPORT_WA}?text=${encodeURIComponent(
+                      `Hi TheBookX, I've paid ₹${payAmount} online for order ${orderId}. Sharing my payment screenshot — please confirm.`,
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 8,
+                      textDecoration: "none",
+                    }}
+                  >
+                    <FaWhatsapp size={17} /> Send screenshot on WhatsApp
+                  </a>
                   <button
                     type="button"
-                    className="pri-big-btn"
+                    className="cpo-waiting-close"
                     onClick={() => setOpen(false)}
                   >
-                    Done
+                    Close
                   </button>
                 </div>
               )}

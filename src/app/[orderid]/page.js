@@ -31,6 +31,26 @@ export default function MerchantConfirmPage() {
   const [done, setDone] = useState(false);
   // For WhatsApp orders the merchant picks the final payment method here.
   const [payMethod, setPayMethod] = useState("COD"); // "COD" | "UPI"
+  const [linkCopied, setLinkCopied] = useState(false);
+
+  // Shareable link for the customer to pay online (auto-opens the pay flow).
+  const copyPayLink = async () => {
+    const digits = String(order?.["Phone Number"] || "")
+      .replace(/\D/g, "")
+      .slice(-10);
+    const origin =
+      typeof window !== "undefined"
+        ? window.location.origin
+        : "https://www.thebookx.in";
+    const link = `${origin}/profile/${digits}/orders/${encodeURIComponent(
+      orderId,
+    )}?pay=online`;
+    try {
+      await navigator.clipboard.writeText(link);
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 2000);
+    } catch {}
+  };
 
   useEffect(() => {
     (async () => {
@@ -266,6 +286,17 @@ export default function MerchantConfirmPage() {
                     ? `COD handling fee ₹${convCodFee} is added — collect ₹${convTotal} on delivery.`
                     : `No COD fee — customer pays ₹${convTotal} online.`}
                 </p>
+                {payMethod === "UPI" && (
+                  <button
+                    type="button"
+                    className="mc-paylink-btn"
+                    onClick={copyPayLink}
+                  >
+                    {linkCopied
+                      ? "✓ Payment link copied — share on WhatsApp"
+                      : "Copy customer payment link"}
+                  </button>
+                )}
               </div>
             )}
 

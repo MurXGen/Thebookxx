@@ -30272,6 +30272,18 @@ img[data-loaded="true"] {
   line-height: 1.45;
   color: var(--gray-500, #6b7280);
 }
+.mc-paylink-btn {
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px solid #c7d2fe;
+  border-radius: 10px;
+  background: #eef2ff;
+  color: #3730a3;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
 .mc-item {
   display: flex;
   align-items: center;
@@ -42753,6 +42765,26 @@ img[data-loaded="true"] {
   color: #fff;
   background: #16a34a;
   margin-bottom: 4px;
+}
+.cpo-waiting-ic {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  color: #2563eb;
+  background: #eff6ff;
+  margin-bottom: 4px;
+}
+.cpo-waiting-close {
+  margin-top: 10px;
+  border: none;
+  background: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
 }
 .cpo-done h3 {
   margin: 0;

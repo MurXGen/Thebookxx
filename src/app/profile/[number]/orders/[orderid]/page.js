@@ -185,6 +185,14 @@ export default function OrderDetailPage() {
   const router = useRouter();
   const number = String(params?.number || "").replace(/\D/g, "").slice(-10);
   const orderId = decodeURIComponent(params?.orderid || "");
+  // Shareable pay-link: ?pay=online (or ?pay=1) auto-opens the pay flow. Read
+  // from window (avoids needing a Suspense boundary for useSearchParams).
+  const [payParam, setPayParam] = useState(false);
+  useEffect(() => {
+    try {
+      setPayParam(!!new URLSearchParams(window.location.search).get("pay"));
+    } catch {}
+  }, []);
 
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -1375,6 +1383,7 @@ export default function OrderDetailPage() {
             phone={number}
             name={custName}
             bd={bd}
+            autoOpen={payParam}
             onPaid={(fields) => setOrder((o) => ({ ...o, ...fields }))}
           />
         )}

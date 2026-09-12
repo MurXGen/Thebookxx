@@ -396,6 +396,7 @@ export default function MyOrdersPage() {
   // before we know whether a saved number exists — we show the skeleton instead.
   const [booting, setBooting] = useState(true);
   const [ordersOpen, setOrdersOpen] = useState(false); // orders history accordion
+  const [refGuide, setRefGuide] = useState(false); // one-time Refer & Earn guide
   const [qrCount, setQrCount] = useState(0); // QuickReads count (menu badge)
   const [showSupport, setShowSupport] = useState(false); // support templates sheet
   // ── Edit-profile modal (name / number / addresses) ──
@@ -533,6 +534,17 @@ export default function MyOrdersPage() {
     // flashes for a returning shopper.
     setBooting(false);
   }, []);
+
+  // Play the Refer & Earn guide animation once ever, the first time the profile
+  // card is shown for a logged-in shopper.
+  useEffect(() => {
+    if (showPhoneInput || loading || cardLoading || booting) return;
+    try {
+      if (localStorage.getItem("tbx_refearn_guide_seen")) return;
+      localStorage.setItem("tbx_refearn_guide_seen", "1");
+      setRefGuide(true);
+    } catch {}
+  }, [showPhoneInput, loading, cardLoading, booting]);
 
   // Cache the shopper's ordered books so the Reading Tracker can import them.
   useEffect(() => {
@@ -1899,7 +1911,7 @@ Please cancel this order. Thank you `;
 
         {/* Refer & Earn — right below the profile card (minimal, conversion-first). */}
         {!showPhoneInput && !loading && !cardLoading && !booting && (
-          <ReferAndEarn phone={phoneNumber} compact />
+          <ReferAndEarn phone={phoneNumber} compact guide={refGuide} />
         )}
 
         {error && !showPhoneInput && (

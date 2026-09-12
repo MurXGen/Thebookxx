@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Gift, Copy, Check, Loader2, Users, Lock } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import { showToast } from "@/context/ToastContext";
@@ -12,11 +13,30 @@ const REFEREE_REWARD = 30;
 // "Refer & Earn" card for the order-detail page. Enabling generates (or fetches)
 // the customer's 6-char code and a shareable /refer/{code} link. They earn ₹50
 // when a friend's first order is delivered; the friend gets ₹30.
-export default function ReferAndEarn({ phone, compact = false }) {
+export default function ReferAndEarn({ phone, compact = false, guide = false }) {
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
   const [copied, setCopied] = useState(false);
   const [locked, setLocked] = useState("");
+  // One-time onboarding guide: the button "taps" itself and a +₹50 coin floats
+  // up toward the wallet, showing what sharing earns.
+  const [guidePress, setGuidePress] = useState(false);
+  const [guideCoin, setGuideCoin] = useState(false);
+
+  useEffect(() => {
+    if (!guide) return;
+    const t1 = setTimeout(() => setGuidePress(true), 700);
+    const t2 = setTimeout(() => {
+      setGuidePress(false);
+      setGuideCoin(true);
+    }, 1150);
+    const t3 = setTimeout(() => setGuideCoin(false), 2600);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+    };
+  }, [guide]);
 
   const digits = String(phone || "").replace(/\D/g, "").slice(-10);
   const link = code ? `${SITE}/refer/${code}` : "";
@@ -75,7 +95,24 @@ export default function ReferAndEarn({ phone, compact = false }) {
   };
 
   return (
-    <div className={`refearn-card${compact ? " refearn-card--compact" : ""}`}>
+    <div
+      className={`refearn-card${compact ? " refearn-card--compact" : ""}`}
+      style={{ position: "relative" }}
+    >
+      {/* One-time guide: a +₹50 coin floats up toward the wallet card. */}
+      <AnimatePresence>
+        {guideCoin && (
+          <motion.div
+            className="refearn-coin"
+            initial={{ opacity: 0, y: 8, scale: 0.7 }}
+            animate={{ opacity: [0, 1, 1, 0], y: -150, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.45, ease: "easeOut", times: [0, 0.15, 0.7, 1] }}
+          >
+            +₹{REFERRER_REWARD} to your wallet
+          </motion.div>
+        )}
+      </AnimatePresence>
       <div className="refearn-head">
         <span className="refearn-ic">
           <Gift size={18} />
@@ -107,7 +144,7 @@ export default function ReferAndEarn({ phone, compact = false }) {
       ) : !code ? (
         <button
           type="button"
-          className="refearn-enable"
+          className={`refearn-enable${guidePress ? " refearn-enable--tap" : ""}`}
           onClick={enable}
           disabled={busy}
         >

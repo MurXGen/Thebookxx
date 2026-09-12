@@ -1099,18 +1099,7 @@ export default function OrderDetailPage() {
                 <span className="od-tc-courier">
                   {isFaster ? <Plane size={15} /> : <Train size={15} />}
                   {isFaster ? "Express delivery" : "Standard delivery"}
-                  {!delivered &&
-                    (upgradeExtra != null && !shippingId ? (
-                      <>
-                        {" · "}
-                        <s className="od-tc-strike">
-                          {etaMin}–{etaMax} days
-                        </s>{" "}
-                        <span className="od-tc-fast">1–5 days</span>
-                      </>
-                    ) : (
-                      ` · ${etaMin}–${etaMax} days`
-                    ))}
+                  {!delivered && ` · ${etaMin}–${etaMax} days`}
                 </span>
                 {inTransit && shippingId ? (
                   <button
@@ -1136,6 +1125,19 @@ export default function OrderDetailPage() {
                   )
                 )}
               </div>
+              {!delivered &&
+                !isFaster &&
+                upgradeExtra != null &&
+                !shippingId && (
+                  <div className="od-tc-planhint">
+                    <span className="od-tc-plan-badge">
+                      Current plan · Standard
+                    </span>
+                    <span className="od-tc-plan-up">
+                      Upgrade to Faster — get it in 1–5 days
+                    </span>
+                  </div>
+                )}
             </>
           )}
         </div>

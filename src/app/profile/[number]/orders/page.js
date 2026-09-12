@@ -110,18 +110,25 @@ export default function OrdersListPage() {
         const all = Array.isArray(json.orders) ? json.orders : [];
         const real = all
           .filter((o) => {
+            // Hide raw WhatsApp leads (not yet a real order); unconfirmed
+            // online/COD-converted orders still show, tagged "Unconfirmed".
             const wa = /whatsapp/i.test(o["Payment Type"] || "");
-            const unconfirmed = /unconfirmed/i.test(o["Order Status"] || "");
-            return !unconfirmed && !wa;
+            return !wa;
           })
-          .map((o) => ({
-            ...o,
-            _books: parseBooks(o["Books List"]),
-            _date: parseSheetDate(
-              o["Timestamp (D)"] || o["Timestamp"] || o["Timestamp(D)"],
-            ),
-            _status: o["Order Status"] || "Processing",
-          }))
+          .map((o) => {
+            const rawStatus = String(o["Order Status"] || "");
+            const isUnconfirmed =
+              /unconfirmed|pending/i.test(rawStatus) ||
+              /\(unconfirmed\)/i.test(o["Customer Name"] || "");
+            return {
+              ...o,
+              _books: parseBooks(o["Books List"]),
+              _date: parseSheetDate(
+                o["Timestamp (D)"] || o["Timestamp"] || o["Timestamp(D)"],
+              ),
+              _status: isUnconfirmed ? "Unconfirmed" : rawStatus || "Processing",
+            };
+          })
           // Keep only real orders — a row must have items or a non-zero total.
           // (Stray sheet rows that only carry an Order ID are skipped.)
           .filter(

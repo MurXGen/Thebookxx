@@ -13,6 +13,8 @@ import {
   Loader2,
   Wallet,
   Zap,
+  Package,
+  RefreshCw,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import { updateOrderRow } from "@/utils/googleFormOrder";
@@ -40,6 +42,11 @@ export default function CodPayOnline({
   const [mode, setMode] = useState(""); // full | advance
   const [busy, setBusy] = useState(false);
   const [copied, setCopied] = useState(false);
+  // UPI QR flow (mirrors the checkout modal): 2s "generating" loader, then the
+  // sharp QR + a live "verifying" countdown while we wait for the payment.
+  const [qrUnlocked, setQrUnlocked] = useState(false);
+  const [verifyPhase, setVerifyPhase] = useState("await"); // await | verifying | timeout
+  const [verifyCountdown, setVerifyCountdown] = useState(30);
 
   const codFee = Number(bd.codFee) || 0;
   const grand = Number(bd.grand) || 0;
@@ -88,6 +95,40 @@ export default function CodPayOnline({
   const choose = (m) => {
     setMode(m);
     setStage("qr");
+  };
+
+  // Entering the QR stage: blur the QR for ~2s ("generating secure QR"), then
+  // reveal the sharp code and start the live verification countdown.
+  useEffect(() => {
+    if (!open || stage !== "qr") return;
+    setQrUnlocked(false);
+    setVerifyPhase("await");
+    const t = setTimeout(() => {
+      setQrUnlocked(true);
+      setVerifyCountdown(30);
+      setVerifyPhase("verifying");
+    }, 1800);
+    return () => clearTimeout(t);
+  }, [open, stage]);
+
+  // Live "Verifying… Ns" countdown; falls back to a "Check again" state.
+  useEffect(() => {
+    if (verifyPhase !== "verifying") return;
+    const tick = setInterval(() => {
+      setVerifyCountdown((p) => (p <= 1 ? 0 : p - 1));
+    }, 1000);
+    const to = setTimeout(() => {
+      setVerifyPhase((ph) => (ph === "verifying" ? "timeout" : ph));
+    }, 30500);
+    return () => {
+      clearInterval(tick);
+      clearTimeout(to);
+    };
+  }, [verifyPhase]);
+
+  const checkAgain = () => {
+    setVerifyCountdown(30);
+    setVerifyPhase("verifying");
   };
   const copyUpi = () => {
     try {
@@ -206,7 +247,7 @@ export default function CodPayOnline({
       <AnimatePresence>
         {open && (
           <motion.div
-            className="bill-modal-overlay"
+            className={`bill-modal-overlay${stage === "qr" ? " upiv3-overlay" : ""}`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -214,7 +255,7 @@ export default function CodPayOnline({
             style={{ maxWidth: "980px", margin: "0 auto" }}
           >
             <motion.div
-              className="bill-modal cpo-modal"
+              className={`bill-modal ${stage === "qr" ? "upiv3-modal" : "cpo-modal"}`}
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
@@ -380,53 +421,157 @@ export default function CodPayOnline({
               )}
 
               {stage === "qr" && (
-                <div className="paynow-upi">
-                  <div className="paynow-upi-amt">
-                    Pay ₹{payAmount} to TheBookX
+                <>
+                  <div className="upiv3 upiv3-scroll">
+                    {/* Payee (merchant) card */}
+                    <div className="upiv3-payee">
+                      <span className="upiv3-payee-logo">TB</span>
+                      <div className="upiv3-payee-info">
+                        <span className="upiv3-payee-name">TheBookX</span>
+                        <span className="upiv3-payee-upi">{UPI_ID}</span>
+                      </div>
+                      <span className="upiv3-verified">
+                        <ShieldCheck size={11} /> Verified
+                      </span>
+                    </div>
+
+                    {/* QR shows immediately; a loader blurs it while it "generates" */}
+                    <motion.div
+                      className="upiv3-qr"
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <div className="upiv3-qr-card">
+                        <div className="upiv3-qr-top">
+                          <div className="upiv3-qr-top-l">
+                            <span className="upiv3-qr-payee-lbl">Paying to</span>
+                            <span className="upiv3-qr-payee">TheBookX</span>
+                          </div>
+                          <span className="upiv3-qr-amt">
+                            ₹{payAmount}
+                            {mode === "advance" && (
+                              <span className="upiv3-qr-adv">advance</span>
+                            )}
+                          </span>
+                        </div>
+
+                        <div
+                          className={`upiv3-qr-img${qrUnlocked ? " ready" : " loading"}`}
+                        >
+                          <span className="upiv3-corner tl" aria-hidden="true" />
+                          <span className="upiv3-corner tr" aria-hidden="true" />
+                          <span className="upiv3-corner bl" aria-hidden="true" />
+                          <span className="upiv3-corner br" aria-hidden="true" />
+                          <img
+                            src="/books/uskillbook.png"
+                            alt="UPI QR Code"
+                            width={300}
+                            height={360}
+                          />
+                          {qrUnlocked && (
+                            <span
+                              className="upiv3-scanline"
+                              aria-hidden="true"
+                            />
+                          )}
+                          {!qrUnlocked && (
+                            <div className="upiv3-qr-loader">
+                              <span className="upiv3-spin lg" />
+                              <span>Generating secure QR…</span>
+                            </div>
+                          )}
+                        </div>
+
+                        <span className="upiv3-qr-scan">
+                          {qrUnlocked
+                            ? "Scan with any UPI app to pay"
+                            : "Hang tight — preparing your QR"}
+                        </span>
+
+                        {qrUnlocked && (
+                          <span className="upiv3-status">
+                            <span className="upiv3-status-dot" />
+                            Waiting for your payment…
+                          </span>
+                        )}
+                      </div>
+                    </motion.div>
+
+                    {/* Works with — real UPI apps */}
+                    <div className="upiv3-apps" aria-hidden="true">
+                      <span className="upiv3-apps-lbl">Works with</span>
+                      <span className="upiv3-app-chip gpay">GPay</span>
+                      <span className="upiv3-app-chip phonepe">PhonePe</span>
+                      <span className="upiv3-app-chip paytm">Paytm</span>
+                      <span className="upiv3-app-chip bhim">BHIM</span>
+                      <span className="upiv3-apps-more">+ all UPI</span>
+                    </div>
+
+                    {/* Trust footer */}
+                    <div className="upiv3-trust">
+                      <span>
+                        <ShieldCheck size={13} /> 256-bit encrypted
+                      </span>
+                      <span>
+                        <Package size={13} /> Tracked end-to-end
+                      </span>
+                    </div>
                   </div>
-                  <img
-                    src="/books/uskillbook.png"
-                    alt="UPI QR code"
-                    className="paynow-qr"
-                  />
-                  <div className="paynow-upi-id-row">
-                    <span className="paynow-upi-id">{UPI_ID}</span>
-                    <button
-                      type="button"
-                      className="paynow-upi-copy"
-                      onClick={copyUpi}
-                    >
-                      {copied ? <Check size={14} /> : <Copy size={14} />}
-                      {copied ? "Copied" : "Copy"}
-                    </button>
-                  </div>
-                  <div className="paynow-upi-btns">
-                    <button
-                      type="button"
-                      className="sec-big-btn paynow-upi-save"
-                      onClick={saveQR}
-                    >
-                      <Download size={15} /> Save QR
-                    </button>
-                    <button
-                      type="button"
-                      className="pri-big-btn paynow-upi-done"
-                      disabled={busy}
-                      onClick={markPaid}
-                    >
-                      {busy ? (
-                        <Loader2 size={16} className="cpo-spin" />
+
+                  {/* Fixed footer — UPI id / Save QR + verify actions */}
+                  <div className="upiv3-footer">
+                    <div className="upiv3-id-row">
+                      <button
+                        type="button"
+                        className="upiv3-link"
+                        onClick={copyUpi}
+                      >
+                        {copied ? <Check size={14} /> : <Copy size={14} />}
+                        {copied ? "Copied!" : "Copy UPI ID"}
+                      </button>
+                      <span className="upiv3-link-sep">|</span>
+                      <button
+                        type="button"
+                        className="upiv3-link"
+                        onClick={saveQR}
+                        disabled={!qrUnlocked}
+                      >
+                        <Download size={14} /> Save QR
+                      </button>
+                    </div>
+
+                    <div className="upiv3-actions-row">
+                      {verifyPhase === "timeout" ? (
+                        <button
+                          type="button"
+                          className="sec-big-btn flex flex-row items-center justify-center gap-6"
+                          onClick={checkAgain}
+                        >
+                          <RefreshCw size={15} /> Check again
+                        </button>
                       ) : (
-                        <FaWhatsapp size={16} />
-                      )}{" "}
-                      I&apos;ve paid
-                    </button>
+                        <span className="sec-big-btn is-loading flex flex-row items-center justify-center gap-6">
+                          <span className="upiv3-spin dark" /> Verifying…{" "}
+                          {verifyCountdown}s
+                        </span>
+                      )}
+                      <button
+                        type="button"
+                        className="sec-big-btn flex flex-row items-center justify-center gap-6"
+                        disabled={busy}
+                        onClick={markPaid}
+                      >
+                        {busy ? (
+                          <span className="upiv3-spin dark" />
+                        ) : (
+                          <FaWhatsapp size={16} color="#25D366" />
+                        )}{" "}
+                        I&apos;ve paid
+                      </button>
+                    </div>
                   </div>
-                  <p className="paymeth-gift-fine">
-                    Scan in any UPI app to pay. Then tap “I&apos;ve paid” — we
-                    verify and confirm your order shortly.
-                  </p>
-                </div>
+                </>
               )}
 
               {stage === "done" && (

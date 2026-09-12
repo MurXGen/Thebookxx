@@ -177,6 +177,11 @@ function statusLabel(order) {
     return { title: "Shipped from Mumbai", sub: "Handed to the courier" };
   if (/cancel/.test(st))
     return { title: "Cancelled", sub: "This order was cancelled" };
+  if (/unconfirmed|pending/.test(st))
+    return {
+      title: "Unconfirmed",
+      sub: "We're confirming your order — this usually takes a few minutes",
+    };
   return { title: "Order confirmed", sub: "We've received your order" };
 }
 
@@ -1083,7 +1088,18 @@ export default function OrderDetailPage() {
                 <span className="od-tc-courier">
                   {isFaster ? <Plane size={15} /> : <Train size={15} />}
                   {isFaster ? "Express delivery" : "Standard delivery"}
-                  {!delivered ? ` · ${etaMin}–${etaMax} days` : ""}
+                  {!delivered &&
+                    (upgradeExtra != null && !shippingId ? (
+                      <>
+                        {" · "}
+                        <s className="od-tc-strike">
+                          {etaMin}–{etaMax} days
+                        </s>{" "}
+                        <span className="od-tc-fast">1–5 days</span>
+                      </>
+                    ) : (
+                      ` · ${etaMin}–${etaMax} days`
+                    ))}
                 </span>
                 {inTransit && shippingId ? (
                   <button
@@ -1094,7 +1110,8 @@ export default function OrderDetailPage() {
                     Track ↗
                   </button>
                 ) : (
-                  upgradeExtra != null && (
+                  upgradeExtra != null &&
+                  !shippingId && (
                     <button
                       type="button"
                       className="od-tc-upgrade"

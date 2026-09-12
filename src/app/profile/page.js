@@ -957,7 +957,20 @@ export default function MyOrdersPage() {
       };
       const realOrders = parsedOrders.filter(isRealOrder);
 
-      setOrders(realOrders);
+      // Orders still awaiting confirmation now appear in the list itself with an
+      // "Unconfirmed" status (instead of a separate banner card).
+      const pendingAsOrders = pending
+        .map((order) => ({
+          ...order,
+          parsedBooks: parseBooksList(order["Books List"]),
+          status: "Unconfirmed",
+          shippingId: "",
+          advancePaid: order["Advance Paid"] || "No",
+          comment: order["Comment for this order"] || order["Comment"] || "",
+        }))
+        .filter(isRealOrder);
+
+      setOrders([...pendingAsOrders, ...realOrders]);
 
       // Referral payout safety-net: if this shopper was referred and now has a
       // delivered order, settle the reward (₹50 to referrer, ₹30 to them). The
@@ -1956,7 +1969,7 @@ Please cancel this order. Thank you `;
           </div>
         )}
         {/* Order(s) still being confirmed by the team. */}
-        {searched && !loading && !error && pendingOrders.length > 0 && (
+        {false && pendingOrders.length > 0 && (
           <div className="order-pending-card">
             <span className="order-pending-ic">
               <Clock size={22} />

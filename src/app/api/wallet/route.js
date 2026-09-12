@@ -9,6 +9,7 @@ import {
   tableToObjects,
   findColumn,
   WALLET_SHEET_NAME,
+  ORDERS_SHEET_NAME,
 } from "@/lib/serverSheets";
 import { rateLimit, clientIp, tooMany } from "@/lib/rateLimit";
 
@@ -100,7 +101,60 @@ export async function GET(request) {
           !/unconfirmed/i.test(e.type) && !/unconfirmed/i.test(e.reason || ""),
       );
 
-    return Response.json({ entries });
+    // Refund wallet spends tied to CANCELLED orders. When a customer paid part
+    // of an order from their wallet (a debit tagged with that Order ID) and the
+    // order is later cancelled in the sheet, that debit must stop reducing the
+    // balance — i.e. the amount is returned to the wallet automatically.
+    // Safety: any failure reading the orders sheet leaves the balance untouched
+    // (we never refund on an incomplete/failed read, so a debit is only dropped
+    // when we positively confirm the order is cancelled).
+    const debitOrderIds = new Set(
+      entries
+        .filter((e) => e.amount < 0 && e.orderId)
+        .map((e) => String(e.orderId).trim()),
+    );
+    let cancelledIds = new Set();
+    if (debitOrderIds.size > 0) {
+      try {
+        const oMeta = await gvizQuery({
+          sheet: ORDERS_SHEET_NAME,
+          tq: "select * limit 0",
+        });
+        const oPhoneCol = findColumn(oMeta, "Phone Number");
+        let oWhere = "";
+        if (oPhoneCol) {
+          oWhere =
+            oPhoneCol.type === "number"
+              ? `where ${oPhoneCol.id} = ${digits}`
+              : `where ${oPhoneCol.id} = '${digits}'`;
+        }
+        const oTable = await gvizQuery({
+          sheet: ORDERS_SHEET_NAME,
+          tq: `select * ${oWhere}`.trim(),
+        });
+        tableToObjects(oTable).forEach((row) => {
+          const oid = String(row["Order ID"] ?? row["Order Id"] ?? "").trim();
+          const status = String(row["Order Status"] ?? "");
+          if (oid && /cancel/i.test(status)) cancelledIds.add(oid);
+        });
+      } catch {
+        cancelledIds = new Set(); // read failed → refund nothing (safe)
+      }
+    }
+
+    const finalEntries =
+      cancelledIds.size > 0
+        ? entries.filter(
+            (e) =>
+              !(
+                e.amount < 0 &&
+                e.orderId &&
+                cancelledIds.has(String(e.orderId).trim())
+              ),
+          )
+        : entries;
+
+    return Response.json({ entries: finalEntries });
   } catch (e) {
     return Response.json({ entries: [] }, { status: 200 });
   }

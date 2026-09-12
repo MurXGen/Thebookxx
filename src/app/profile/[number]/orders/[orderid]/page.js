@@ -862,6 +862,11 @@ export default function OrderDetailPage() {
   // (in transit / out for delivery). Before that we show the current stage.
   const eta = (() => {
     if (/cancel/i.test(order["Order Status"] || "")) return { done: "Cancelled" };
+    if (
+      /unconfirmed|pending/i.test(order["Order Status"] || "") ||
+      /\(unconfirmed\)/i.test(order["Customer Name"] || "")
+    )
+      return { done: "Unconfirmed" };
     if (delivered) return { done: "Delivered" };
     if (inTransit || outForDelivery)
       return isFaster

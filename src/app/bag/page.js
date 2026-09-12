@@ -1304,7 +1304,7 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
 
           {/* QuickReads rail — 2-row scrollable, homepage card style */}
           {qrRailBooks.length > 0 && (
-            <section className="or1-section">
+            <section className="or1-section or1-section-bag">
               <div className="section-1200 or1-inner">
                 <div className="or1-head">
                   <div className="or1-head-left">

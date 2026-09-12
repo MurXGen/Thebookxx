@@ -24859,6 +24859,12 @@ img[data-loaded="true"] {
 .or1-section {
   margin: 10px 0;
 }
+/* In the bag the section already sits inside the page gutter — drop the extra
+   .section-1200 side padding so QuickReads aligns with the cart card above. */
+.or1-section-bag .section-1200 {
+  padding-left: 0;
+  padding-right: 0;
+}
 .or1-inner {
   display: flex;
   flex-direction: column;
@@ -39571,10 +39577,10 @@ img[data-loaded="true"] {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 6px 12px;
+  padding: 7px 14px;
   border: none;
   border-radius: 999px;
-  background: linear-gradient(135deg, #fb8500, #ffb703);
+  background: #0a0a0a;
   color: #fff;
   font-size: var(--px-12);
   font-weight: 800;
@@ -39582,6 +39588,14 @@ img[data-loaded="true"] {
 }
 .od-tc-upgrade:disabled {
   opacity: 0.7;
+}
+.od-tc-strike {
+  color: var(--dark-50, #9ca3af);
+  text-decoration: line-through;
+}
+.od-tc-fast {
+  color: var(--success, #0a8f0c);
+  font-weight: 800;
 }
 /* Full-screen map */
 .od-map-full {

@@ -42579,8 +42579,8 @@ img[data-loaded="true"] {
   margin-top: 14px;
   padding: 16px;
   border-radius: 16px;
-  border: 1px solid #d7e3ff;
-  background: linear-gradient(160deg, #eef4ff 0%, #ffffff 72%);
+  border: 1px solid #fed7aa;
+  background: linear-gradient(160deg, #fff7ed 0%, #ffffff 72%);
 }
 .cpo-card-top {
   display: flex;
@@ -42596,7 +42596,7 @@ img[data-loaded="true"] {
   height: 38px;
   border-radius: 12px;
   color: #fff;
-  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  background: linear-gradient(135deg, #fb8500, #f97316);
 }
 .cpo-title {
   margin: 0;
@@ -42623,8 +42623,8 @@ img[data-loaded="true"] {
   border-radius: 999px;
   font-size: 12px;
   font-weight: 700;
-  color: #1d4ed8;
-  background: #e5edff;
+  color: #b45309;
+  background: #fff2e0;
 }
 .cpo-perk.save {
   color: #15803d;
@@ -42639,7 +42639,7 @@ img[data-loaded="true"] {
   font-size: 14.5px;
   font-weight: 800;
   color: #fff;
-  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  background: #0a0a0a;
   cursor: pointer;
 }
 .cpo-cta:active {
@@ -42669,7 +42669,7 @@ img[data-loaded="true"] {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding: 16px;
+  padding: 0;
 }
 .cpo-bill {
   border: 1px solid #eef0f2;
@@ -42722,8 +42722,8 @@ img[data-loaded="true"] {
     transform 0.1s ease;
 }
 .cpo-opt:hover {
-  border-color: #4f46e5;
-  box-shadow: 0 10px 24px -16px rgba(79, 70, 229, 0.7);
+  border-color: #fb8500;
+  box-shadow: 0 10px 24px -16px rgba(251, 133, 0, 0.6);
 }
 .cpo-opt:active {
   transform: scale(0.995);
@@ -42741,8 +42741,8 @@ img[data-loaded="true"] {
   width: 40px;
   height: 40px;
   border-radius: 11px;
-  color: #4f46e5;
-  background: #eef2ff;
+  color: #b45309;
+  background: #fff7ed;
 }
 .cpo-opt-ic.full {
   color: #b45309;
@@ -42812,8 +42812,8 @@ img[data-loaded="true"] {
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  color: #2563eb;
-  background: #eff6ff;
+  color: #b45309;
+  background: #fff7ed;
   margin-bottom: 4px;
 }
 .cpo-waiting-close {

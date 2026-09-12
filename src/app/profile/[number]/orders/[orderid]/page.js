@@ -1158,6 +1158,10 @@ export default function OrderDetailPage() {
         </div>
       )}
 
+      {/* Refer & earn — generate a shareable link, earn ₹50 on a friend's
+          first delivered order. Shown above the delivery details. */}
+      <ReferAndEarn phone={String(order["Phone Number"] || number)} />
+
       {/* Deliver-to (directly below the map) */}
       <section className="od-block">
         <div className="od-block-titlerow">
@@ -1437,10 +1441,6 @@ export default function OrderDetailPage() {
       >
         <Download size={16} /> Download bill
       </button>
-
-      {/* Refer & earn — generate a shareable link, earn ₹50 on a friend's
-          first delivered order. */}
-      <ReferAndEarn phone={String(order["Phone Number"] || number)} />
 
       {/* You might also be interested in */}
       {recos.length > 0 && (

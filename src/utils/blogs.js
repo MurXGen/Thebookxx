@@ -4,6 +4,213 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "engineers-day-2026-books-for-engineers-india": {
+    id: "blog-048",
+    title:
+      "Engineer's Day 2026 (15 September): The Best Books to Read and Gift an Engineer in India",
+    slug: "engineers-day-2026-books-for-engineers-india",
+    author: "TheBookX Editorial",
+    authorSlug: "murthy-thevar",
+    publishDate: "2026-09-12",
+    lastModified: "2026-09-12",
+    excerpt:
+      "Engineer's Day falls on Tuesday, 15 September 2026, Sir M. Visvesvaraya's birth anniversary. Seventeen books that actually help an Indian engineer, and what to gift.",
+    content: [
+      {
+        type: "paragraph",
+        content:
+          "India marks Engineer's Day on 15 September, the birth anniversary of Sir Mokshagundam Visvesvaraya, and in 2026 that falls on a Tuesday, the day after the Ganesh Chaturthi holiday. Colleges will hold quizzes, companies will send a group email, and somewhere a WhatsApp forward will call engineers the backbone of the nation. None of that is useful to an actual engineer. This is a list of books that are.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "India graduates more engineers than almost anywhere on earth, and the complaint from employers has been the same for two decades: the degree certifies that someone can pass examinations in a subject, not that they can define a problem, choose between imperfect options, explain a decision to a non-engineer, or say no to a bad specification. Those are readable skills. The books below are organised around them rather than around branch or syllabus, which is why a mechanical engineer and a backend developer will both find something here.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "Engineer's Day 2026 at a glance",
+        content:
+          "Date: Tuesday, 15 September 2026. India has observed National Engineer's Day on this date since 1968, marking the birth anniversary of Sir M. Visvesvaraya, civil engineer and the 19th Diwan of Mysore, who received the Bharat Ratna in 1955 and died on 14 April 1962 at over a hundred years of age. The theme announced for 2026 is smart engineering for a sustainable future through innovation and digitalisation. Engineer's Day is distinct from UNESCO's World Engineering Day for Sustainable Development, which is observed globally on 4 March.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "What Visvesvaraya Was Actually Famous For",
+      },
+      {
+        type: "paragraph",
+        content:
+          "It is worth being specific, because the popular version of him is a statue and a stamp. He designed and patented an automatic floodgate system, first installed at the Khadakvasla reservoir near Pune, that let a dam hold more water safely without raising its wall. He served as Chief Engineer of Mysore and then as Diwan, and oversaw the Krishna Raja Sagara dam across the Cauvery, which turned dryland districts around Mandya into irrigated farmland and still supplies drinking water to Mysuru and Bengaluru.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The part worth borrowing is not the dam. It is that almost everything he is remembered for was an administrative decision as much as a technical one: getting a state to fund a reservoir, founding institutions that would produce engineers after he was gone, arguing in writing for industrialisation when that was an unfashionable position. He was an engineer who learned to work in a world that was not made of steel and concrete, and that remains the hardest transition in an engineering career.",
+      },
+      {
+        type: "blockquote",
+        content:
+          "The degree teaches you to solve a problem someone else has already stated precisely. Everything after graduation is the other job: working out what the problem actually is, and persuading people to let you fix it.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The Indian Engineering Shelf",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Start with the books written from inside the Indian experience of engineering, because the gap between what the profession promises at eighteen and what it delivers at twenty-five is a specifically local story, and reading someone else describe it accurately is more useful than any amount of motivation.",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> — A.P.J. Abdul Kalam's autobiography, written with Arun Tiwari, remains the single most gifted book in Indian engineering households, and the consensus is right. The value is not the inspiration; it is the unusually detailed account of how large technical programmes actually run, including the failures. The SLV-3 chapter, where a launch he led went into the Bay of Bengal, is the most honest page on engineering responsibility in Indian non-fiction.",
+          "<a href=\"/books/ignited-minds-unleashing-the-power-within-india\" style=\"color:#fb8500;font-weight:600\">Ignited Minds: Unleashing the Power Within India</a> — Kalam's follow-up, built out of conversations with schoolchildren across the country. Lighter than Wings of Fire and more argumentative, and the better book to hand to a school student considering the entrance-exam years.",
+          "<a href=\"/books/five-point-someone\" style=\"color:#fb8500;font-weight:600\">Five Point Someone</a> — Chetan Bhagat's debut is the novel that named the thing: three IIT students who are bright, bored and being graded on the wrong axis. Two decades on it still reads as the most accurate fiction about what a competitive engineering campus does to people who are not built for it, which is most people.",
+          "<a href=\"/books/revolution-2020\" style=\"color:#fb8500;font-weight:600\">Revolution 2020</a> — The companion volume, set in Varanasi and about the coaching-and-college industry rather than the campus. Read the two together and you have a fairly complete picture of the pipeline an Indian engineer passes through before their first day of work.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "How Engineers Actually Think: Six Books on the Method",
+      },
+      {
+        type: "paragraph",
+        content:
+          "These are the ones that change how someone works rather than how they feel about working. Each teaches a specific habit of mind that engineering education tends to assume rather than teach.",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<a href=\"/books/the-design-of-everyday-things\" style=\"color:#fb8500;font-weight:600\">The Design of Everyday Things</a> — Don Norman's book on doors, stovetops and error is the closest thing the profession has to a required text. Its central claim, that blaming the user is almost always a design failure in disguise, transfers directly to APIs, dashboards, control panels and forms. If an engineer reads one book this year, this is the defensible choice.",
+          "<a href=\"/books/thinking-fast-and-slow\" style=\"color:#fb8500;font-weight:600\">Thinking, Fast and Slow</a> — Daniel Kahneman on the two systems and the biases that ride them. The chapter engineers remember is the one on the planning fallacy, which explains, with evidence, why every estimate you have ever given was optimistic and why adding buffer does not fix it. Dense. Worth the month it takes.",
+          "<a href=\"/books/the-lean-startup\" style=\"color:#fb8500;font-weight:600\">The Lean Startup</a> — Eric Ries took the build-measure-learn loop from manufacturing into software, and the useful residue is the discipline of asking what would have to be true before building the thing. Skip the startup vocabulary if it irritates you; keep the method.",
+          "<a href=\"/books/zero-to-one\" style=\"color:#fb8500;font-weight:600\">Zero to One</a> — Peter Thiel's notes on building something that did not exist, as against building a slightly better copy. Short, contrarian and deliberately provocative, which makes it a good book to disagree with in writing. Pair it with the previous entry; they contradict each other productively.",
+          "<a href=\"/books/deep-work\" style=\"color:#fb8500;font-weight:600\">Deep Work</a> — Cal Newport is a computer scientist writing about the one resource engineering work consumes fastest: uninterrupted concentration. The argument that the ability to focus is becoming both rarer and more valuable has aged well, and the scheduling practices are unusually concrete.",
+          "<a href=\"/books/project-hail-mary\" style=\"color:#fb8500;font-weight:600\">Project Hail Mary</a> — The fiction on this list, and the correct one. Andy Weir's novel is a sequence of engineering problems solved with observation, arithmetic and available materials, and it is genuinely funny. The rare book that makes the method itself feel like the plot.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "For the Engineer Who Now Runs Things",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Five to eight years in, most Indian engineers hit the same wall: the promotion is into management, the training for it is nil, and the skills that earned the promotion are not the skills the new job needs. These four are the standard reading for that transition.",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<a href=\"/books/the-hard-thing-about-hard-things\" style=\"color:#fb8500;font-weight:600\">The Hard Thing About Hard Things</a> — Ben Horowitz on the decisions with no good option, written by someone who made them badly first. The most honest management book in wide circulation, largely because it refuses to pretend the answers are clean.",
+          "<a href=\"/books/steve-jobs\" style=\"color:#fb8500;font-weight:600\">Steve Jobs</a> — Walter Isaacson's authorised biography is worth reading as a case study in the relationship between engineering and taste, and as a caution: the book does not hide how much of the method was cruelty, and a reader who takes the wrong lesson from it will be unpleasant to work with.",
+          "<a href=\"/books/elon-musk-tesla-spacex-and-the-quest-for-a-fantastic-future\" style=\"color:#fb8500;font-weight:600\">Elon Musk: Tesla, SpaceX, and the Quest for a Fantastic Future</a> — Ashlee Vance's 2015 biography, written with access and before the later controversies, is still the best available account of how first-principles reasoning was applied to rocket and battery cost structures. Read it for the engineering economics.",
+          "<a href=\"/books/the-almanack-of-naval-ravikant\" style=\"color:#fb8500;font-weight:600\">The Almanack of Naval Ravikant</a> — Eric Jorgenson's compilation, and the one entry here written by an Indian-origin engineer about leverage: why code and media scale without permission, and why specific knowledge beats credentials. Aphoristic, quick, and easy to argue with, which is the point.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The Skill No Engineering Degree Teaches",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Ask any engineering manager in India what limits the careers of their best technical people and the answer is rarely technical. It is that the design review runs forty minutes because nobody can state the recommendation in one sentence, that the status email buries the risk in paragraph four, and that the smartest person in the room loses the argument to the person who explained it better.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a practical treatment of exactly that: saying one thing at a time, leading with the conclusion, and writing so a sentence cannot be read two ways. Engineers tend to assume clear communication is a talent other people have. It is a method, and it is learnable in less time than a framework.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "Two More Gaps: Money and Habit",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The other reliable blind spot is personal finance, which arrives the month the first serious salary does and is handled almost entirely by rumour. <a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> by Morgan Housel is the right first book because it treats saving as a behaviour problem rather than a spreadsheet problem, which is the correction most technically minded people need. And <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear is the systems book for people who already think in systems: its core claim, that environment beats willpower, is an engineering argument about designing the conditions rather than exhorting the operator.",
+      },
+      {
+        type: "callout",
+        style: "success",
+        title: "Gifting an engineer on 15 September",
+        content:
+          "The safe gift is a book they would not buy for themselves. For a student, Wings of Fire or Five Point Someone. For someone two years into a job, The Design of Everyday Things or The Art of Clarity. For a newly promoted lead, The Hard Thing About Hard Things. On TheBookX books start from ₹1, delivery is free across India, and Cash on Delivery is available on every order, so nothing is paid before the parcel arrives. Gift wrapping is available at +₹25 per book if it is going to a colleague, a sibling or a junior.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "One Thing to Do on Engineer's Day",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Not a resolution. Pick the one book above that addresses the weakness you already know you have, and read twenty pages on Tuesday evening. Engineers are unusually good at learning from documentation and unusually bad at admitting which chapter they need. Visvesvaraya's actual habit, according to everyone who worked with him, was punctuality and finishing what he had scheduled for the day. That is a lower bar than inspiration and a considerably more useful one.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>",
+      },
+    ],
+    coverImage: "/blogs/engineers-day-2026-books-for-engineers-india.jpeg",
+    images: [
+      {
+        url: "/blogs/engineers-day-2026-books-for-engineers-india.jpeg",
+        alt: "A young Indian engineer at a desk with an open notebook of sketches, a hard hat and a small stack of books beside a cup of tea in warm morning light",
+        caption:
+          "Engineer's Day, 15 September: the skills that limit an engineering career are rarely the technical ones",
+        category: "Books for Engineers",
+      },
+    ],
+    keywords: [
+      "engineers day 2026",
+      "engineers day 15 september 2026",
+      "national engineers day india 2026",
+      "sir m visvesvaraya birth anniversary",
+      "best books for engineers india",
+      "books to gift an engineer",
+      "engineering students books india",
+      "wings of fire apj abdul kalam",
+      "five point someone chetan bhagat",
+      "the design of everyday things",
+      "buy books online india",
+      "TheBookX",
+    ],
+    categories: ["Books for Engineers", "Career & Skills", "Gifting"],
+    faqs: [
+      {
+        question: "When is Engineer's Day 2026 in India?",
+        answer:
+          "National Engineer's Day 2026 falls on Tuesday, 15 September 2026. India has observed the day on 15 September since 1968, marking the birth anniversary of Sir M. Visvesvaraya, the civil engineer and 19th Diwan of Mysore who was awarded the Bharat Ratna in 1955. It is a different observance from UNESCO's World Engineering Day for Sustainable Development, which falls on 4 March each year. The theme announced for Engineer's Day 2026 is smart engineering for a sustainable future through innovation and digitalisation.",
+      },
+      {
+        question: "Why is Engineer's Day celebrated on Sir M. Visvesvaraya's birthday?",
+        answer:
+          "Because his career is the template the profession in India was built on. Visvesvaraya patented an automatic floodgate system first installed at the Khadakvasla reservoir near Pune, served as Chief Engineer of Mysore and later as its Diwan, and oversaw the Krishna Raja Sagara dam on the Cauvery, which irrigated dryland districts around Mandya and still supplies drinking water to Mysuru and Bengaluru. He combined technical work with public administration and institution-building, and he died on 14 April 1962 at over a hundred years of age.",
+      },
+      {
+        question: "Which book should an engineering student read first?",
+        answer:
+          "The Design of Everyday Things by Don Norman is the most broadly useful, because its argument that user error is usually a design failure applies to every branch, from a control panel to an API. For an Indian student specifically, Wings of Fire by A.P.J. Abdul Kalam is the better starting point, since it describes how large technical programmes are actually run, including the failures. If the student is mid-degree and disillusioned, Five Point Someone will feel uncomfortably accurate and is worth reading for that reason.",
+      },
+      {
+        question: "What is a good Engineer's Day gift for a colleague or sibling?",
+        answer:
+          "Match the book to the career stage. Students respond to Wings of Fire, Ignited Minds or Five Point Someone. Engineers a couple of years into a job get the most from The Design of Everyday Things, Deep Work or The Art of Clarity. Someone newly promoted into management is best served by The Hard Thing About Hard Things. On TheBookX, prices start from ₹1 with free delivery across India and Cash on Delivery on every order, and gift wrapping can be added at ₹25 per book.",
+      },
+    ],
+  },
   "roald-dahl-story-day-2026-children-reading-habit-india": {
     id: "blog-047",
     title:

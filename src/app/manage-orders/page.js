@@ -9322,6 +9322,10 @@ export default function ManageOrdersPage() {
                               isExpanded ? " expanded" : ""
                             }${cardSelectMode ? " selectable" : ""}${
                               isSelected ? " selected" : ""
+                            }${
+                              pendingTracking[orderId]
+                                ? " mo-card-pending-push"
+                                : ""
                             }`}
                             onPointerDown={() => {
                               if (cardSelectMode) return;

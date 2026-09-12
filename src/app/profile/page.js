@@ -1915,8 +1915,8 @@ Please cancel this order. Thank you `;
             );
           })()}
 
-        {/* Log out — directly below the profile card */}
-        {!showPhoneInput && (
+        {/* Log out — only once the profile data is fetched & shown */}
+        {!showPhoneInput && !loading && !cardLoading && !booting && (
           <button
             type="button"
             className="profile-logout-btn"

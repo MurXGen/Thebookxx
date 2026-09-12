@@ -51,3 +51,6 @@ docs/sheet-edit-apps-script.gs
 /*-poster.png
 /*-poster.jpg
 /*-poster.jpeg
+
+# local build scratch (locked, cannot delete)
+tmp/

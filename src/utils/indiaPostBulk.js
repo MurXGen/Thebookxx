@@ -16,7 +16,7 @@
 //                   placeholder, but CODR/COD code is left blank so India Post
 //                   does NOT collect anything. Editable in the preview.
 
-import { ALL_BOOKS } from "./book";
+import { books as ALL_BOOKS } from "./book";
 
 // ── Exact template structure (captured from bulkdomesticone_28042026.xlsx) ──
 export const ARTICLE_HEADERS = [

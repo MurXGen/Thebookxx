@@ -63,6 +63,7 @@ import PageHeader from "@/components/UI/PageHeader";
 import InstallAppBar from "@/components/InstallAppBar";
 import RecommendationModal from "@/components/RecommendationModal";
 import ReferralCodeField from "@/components/profile/ReferralCodeField";
+import ReferAndEarn from "@/components/profile/ReferAndEarn";
 import { getVerifiedBookIdsForPhone } from "@/lib/quickreads";
 import { fetchWalletLedger } from "@/utils/walletLedger";
 import {
@@ -1897,17 +1898,6 @@ Please cancel this order. Thank you `;
         </div>
 
         {/* Log out — only once the profile data is fetched & shown */}
-        {!showPhoneInput && !loading && !cardLoading && !booting && (
-          <button
-            type="button"
-            className="profile-logout-btn"
-            onClick={handleNewSearch}
-          >
-            <LogOut size={16} />
-            Log out
-          </button>
-        )}
-
         {error && !showPhoneInput && (
           <div className="error-state">
             <div className="error-icon"></div>
@@ -2021,6 +2011,45 @@ Please cancel this order. Thank you `;
               <span className="ot-count">{orders.length}</span>
               <ChevronRight size={20} className="ot-chev" />
             </button>
+
+            {/* Recent order covers — small, horizontally scrollable; each order's
+                books grouped together. Tapping opens the full orders page. */}
+            {(() => {
+              const groups = orders
+                .map((o) => ({
+                  key: o["Order ID"] || Math.random(),
+                  covers: (o.parsedBooks || [])
+                    .map((b) => getBookImage(b.name))
+                    .filter(Boolean)
+                    .slice(0, 4),
+                }))
+                .filter((g) => g.covers.length > 0);
+              if (groups.length === 0) return null;
+              return (
+                <button
+                  type="button"
+                  className="ot-covers"
+                  onClick={() => router.push(`/profile/${phoneNumber}/orders`)}
+                  aria-label="View your orders"
+                >
+                  {groups.map((g, gi) => (
+                    <span className="ot-cov-group" key={g.key}>
+                      {g.covers.map((src, ci) => (
+                        <Image
+                          key={ci}
+                          src={src}
+                          alt=""
+                          width={34}
+                          height={46}
+                          className="ot-cov"
+                          style={{ zIndex: g.covers.length - ci }}
+                        />
+                      ))}
+                    </span>
+                  ))}
+                </button>
+              );
+            })()}
             <AnimatePresence initial={false}>
               {false && ordersOpen && (
                 <motion.div
@@ -2685,6 +2714,26 @@ Please cancel this order. Thank you `;
               <span className="pm-label">Shipping Policy</span>
               <ChevronRight size={18} className="pm-arrow" />
             </Link>
+
+            {/* Refer & Earn + Log out sit at the very bottom of the menu. */}
+            {!showPhoneInput && !loading && !cardLoading && !booting && (
+              <>
+                <div className="pm-section-title">Refer &amp; earn</div>
+                <ReferAndEarn phone={phoneNumber} />
+
+                <button
+                  type="button"
+                  className="pm-row pm-row-logout"
+                  onClick={handleNewSearch}
+                >
+                  <span className="pm-ic">
+                    <LogOut size={18} />
+                  </span>
+                  <span className="pm-label">Log out</span>
+                  <ChevronRight size={18} className="pm-arrow" />
+                </button>
+              </>
+            )}
 
           </div>
       </div>

@@ -1304,6 +1304,15 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
 
           {/* QuickReads rail — 2-row scrollable, homepage card style */}
           {qrRailBooks.length > 0 && (
+            <div className="cart-sep">
+              <span className="cart-sep-line" />
+              <span className="cart-sep-label">
+                <Zap size={13} /> Read while it ships
+              </span>
+              <span className="cart-sep-line" />
+            </div>
+          )}
+          {qrRailBooks.length > 0 && (
             <section className="or1-section or1-section-bag">
               <div className="section-1200 or1-inner">
                 <div className="or1-head">

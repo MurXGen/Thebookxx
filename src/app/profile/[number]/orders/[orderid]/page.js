@@ -935,6 +935,13 @@ export default function OrderDetailPage() {
       await updateOrderRow(orderId, fields);
       setOrder((o) => ({ ...o, ...fields }));
       setUpgradeUndo(prev);
+      // Let the team know so they prioritise dispatch for the faster delivery.
+      const msg = `Hi TheBookX, I've *upgraded to Faster delivery* (+₹${upgradeExtra}) for order ${orderId}. New total ₹${newTotal}. Please dispatch it faster. 🙏`;
+      window.open(
+        `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(msg)}`,
+        "_blank",
+        "noopener,noreferrer",
+      );
     } catch (e) {
       console.error("Faster upgrade failed", e);
       alert("Couldn't upgrade right now. Please try again.");
@@ -1078,7 +1085,7 @@ export default function OrderDetailPage() {
                   {isFaster ? "Express delivery" : "Standard delivery"}
                   {!delivered ? ` · ${etaMin}–${etaMax} days` : ""}
                 </span>
-                {inTransit && shippingId && (
+                {inTransit && shippingId ? (
                   <button
                     type="button"
                     className="od-tc-track"
@@ -1086,32 +1093,23 @@ export default function OrderDetailPage() {
                   >
                     Track ↗
                   </button>
+                ) : (
+                  upgradeExtra != null && (
+                    <button
+                      type="button"
+                      className="od-tc-upgrade"
+                      onClick={applyFasterUpgrade}
+                      disabled={upgrading}
+                      title={`Get it in 1–5 days instead of ${etaMin}–${etaMax}`}
+                    >
+                      <Zap size={13} />
+                      {upgrading ? "Upgrading…" : `Faster +₹${upgradeExtra}`}
+                    </button>
+                  )
                 )}
               </div>
             </>
           )}
-        </div>
-      )}
-
-      {/* Upgrade to faster delivery — only for an un-dispatched Standard order.
-          Extra cost mirrors the checkout delivery tiers. */}
-      {upgradeExtra != null && (
-        <div className="od-upgrade-cta">
-          <span className="od-upgrade-ic">
-            <Zap size={18} />
-          </span>
-          <div className="od-upgrade-txt">
-            <strong>Upgrade to faster delivery</strong>
-            <span>Arrives in 1–5 days instead of {etaMin}–{etaMax} days</span>
-          </div>
-          <button
-            type="button"
-            className="od-upgrade-btn"
-            onClick={applyFasterUpgrade}
-            disabled={upgrading}
-          >
-            {upgrading ? "Upgrading…" : `Upgrade +₹${upgradeExtra}`}
-          </button>
         </div>
       )}
 

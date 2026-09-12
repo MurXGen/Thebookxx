@@ -960,6 +960,8 @@ export default function MyOrdersPage() {
       // Orders still awaiting confirmation now appear in the list itself with an
       // "Unconfirmed" status (instead of a separate banner card).
       const pendingAsOrders = pending
+        // WhatsApp-button orders are handled over chat — never shown/counted here.
+        .filter((order) => !/whatsapp/i.test(order["Payment Type"] || ""))
         .map((order) => ({
           ...order,
           parsedBooks: parseBooksList(order["Books List"]),

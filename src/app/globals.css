@@ -24426,8 +24426,8 @@ img[data-loaded="true"] {
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+  justify-content: center;
+  gap: clamp(18px, 6vw, 44px);
   /* Full-bleed: cancel the hero's horizontal padding so it stretches edge-to-edge. */
   margin: 28px calc(-1 * var(--px-24)) 4px;
   padding: 22px var(--px-24);
@@ -24443,7 +24443,7 @@ img[data-loaded="true"] {
   justify-content: center;
   text-align: left;
   gap: 7px;
-  flex: 1;
+  flex: 0 1 auto;
   min-width: 0;
   z-index: 2;
 }

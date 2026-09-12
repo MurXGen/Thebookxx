@@ -12,7 +12,7 @@ const REFEREE_REWARD = 30;
 // "Refer & Earn" card for the order-detail page. Enabling generates (or fetches)
 // the customer's 6-char code and a shareable /refer/{code} link. They earn ₹50
 // when a friend's first order is delivered; the friend gets ₹30.
-export default function ReferAndEarn({ phone }) {
+export default function ReferAndEarn({ phone, compact = false }) {
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -75,7 +75,7 @@ export default function ReferAndEarn({ phone }) {
   };
 
   return (
-    <div className="refearn-card">
+    <div className={`refearn-card${compact ? " refearn-card--compact" : ""}`}>
       <div className="refearn-head">
         <span className="refearn-ic">
           <Gift size={18} />
@@ -83,8 +83,18 @@ export default function ReferAndEarn({ phone }) {
         <div className="refearn-head-txt">
           <h3 className="refearn-title">Refer &amp; Earn ₹{REFERRER_REWARD}</h3>
           <p className="refearn-sub">
-            Invite a friend — they get ₹{REFEREE_REWARD} off, you get ₹
-            {REFERRER_REWARD} in your wallet once their first order is delivered.
+            {compact ? (
+              <>
+                Your friend saves ₹{REFEREE_REWARD}, you earn ₹{REFERRER_REWARD} —
+                everyone wins. 🎁
+              </>
+            ) : (
+              <>
+                Invite a friend — they get ₹{REFEREE_REWARD} off, you get ₹
+                {REFERRER_REWARD} in your wallet once their first order is
+                delivered.
+              </>
+            )}
           </p>
         </div>
       </div>

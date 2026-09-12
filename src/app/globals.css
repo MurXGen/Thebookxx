@@ -42456,6 +42456,16 @@ img[data-loaded="true"] {
   border: 1px solid #ffe3c2;
   background: linear-gradient(160deg, #fff7ed 0%, #ffffff 70%);
 }
+/* Compact, conversion-first variant used right below the profile card. */
+.refearn-card--compact {
+  margin-top: 12px;
+  padding: 13px 14px;
+}
+.refearn-card--compact .refearn-enable {
+  margin-top: 11px;
+  padding: 10px 14px;
+  font-size: 13.5px;
+}
 .refearn-head {
   display: flex;
   gap: 12px;

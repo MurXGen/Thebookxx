@@ -1897,7 +1897,11 @@ Please cancel this order. Thank you `;
           </div>
         </div>
 
-        {/* Log out — only once the profile data is fetched & shown */}
+        {/* Refer & Earn — right below the profile card (minimal, conversion-first). */}
+        {!showPhoneInput && !loading && !cardLoading && !booting && (
+          <ReferAndEarn phone={phoneNumber} compact />
+        )}
+
         {error && !showPhoneInput && (
           <div className="error-state">
             <div className="error-icon"></div>
@@ -2715,24 +2719,19 @@ Please cancel this order. Thank you `;
               <ChevronRight size={18} className="pm-arrow" />
             </Link>
 
-            {/* Refer & Earn + Log out sit at the very bottom of the menu. */}
+            {/* Log out sits at the very bottom of the menu (menu-styled, red). */}
             {!showPhoneInput && !loading && !cardLoading && !booting && (
-              <>
-                <div className="pm-section-title">Refer &amp; earn</div>
-                <ReferAndEarn phone={phoneNumber} />
-
-                <button
-                  type="button"
-                  className="pm-row pm-row-logout"
-                  onClick={handleNewSearch}
-                >
-                  <span className="pm-ic">
-                    <LogOut size={18} />
-                  </span>
-                  <span className="pm-label">Log out</span>
-                  <ChevronRight size={18} className="pm-arrow" />
-                </button>
-              </>
+              <button
+                type="button"
+                className="pm-row pm-row-logout"
+                onClick={handleNewSearch}
+              >
+                <span className="pm-ic">
+                  <LogOut size={18} />
+                </span>
+                <span className="pm-label">Log out</span>
+                <ChevronRight size={18} className="pm-arrow" />
+              </button>
             )}
 
           </div>

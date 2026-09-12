@@ -81,6 +81,13 @@ import { getBookCost } from "@/data/bookCosts";
 import { creditWalletReward, appendWalletTx } from "@/utils/googleFormOrder";
 import { showToast } from "@/context/ToastContext";
 import { getDeliveryCharge } from "@/utils/cartOffers";
+import {
+  classifyOrderProduct,
+  buildPreviewRow,
+  downloadIpWorkbook,
+  loadSender,
+  saveSender,
+} from "@/utils/indiaPostBulk";
 
 // ---- Book cover lookup (order stores names; resolve to cover image) ----
 const BOOK_IMAGE_BY_NAME = (() => {
@@ -169,23 +176,23 @@ const booksUnavailableMessage = (order, names) => {
       ? `https://www.thebookx.in/profile/${ph10}/orders/${encodeURIComponent(oid)}`
       : PROFILE_URL;
   return [
+    `📦 *A quick update on your order*`,
+    "",
     `Hi ${nm} 👋`,
-    "",
-    "Thank you for your order with *TheBookX*! 📚",
-    "",
-    `Unfortunately, the following ${many ? "titles are" : "title is"} currently *out of stock*:`,
+    `The following ${many ? "titles are" : "title is"} *out of stock* right now:`,
     ...names.map((n) => `• ${n}`),
     "",
-    `*Order ID:* ${order["Order ID"] || "-"}`,
+    "Reply with a *number* and we'll sort it instantly:",
+    "1️⃣ *Swap* with a similar book",
+    "2️⃣ Pick an *alternative* yourself",
+    "3️⃣ Get our *recommendations*",
     "",
-    "We'd love to make it right — just reply with the *number* of what you'd prefer and we'll guide you:",
-    "1️⃣  *Swap* with a similar book we pick for you",
-    "2️⃣  Choose an *alternative* title yourself",
-    "3️⃣  Get a few *recommendations* from us to choose from",
+    "So sorry for the trouble 🙏",
     "",
-    "Reply with the number and we'll take it forward right away. So sorry for the inconvenience 🙏",
-    "",
-    `🔗 Your order: ${orderDetailUrl}`,
+    `━━━━━━━━━━━━━━`,
+    `📦 *Order ID:* ${order["Order ID"] || "-"}`,
+    `🔗 *Order:* ${orderDetailUrl}`,
+    `\n— Team *TheBookX* 📚`,
   ].join("\n");
 };
 
@@ -212,71 +219,87 @@ const waMessages = (order) => {
   const linkBlock =
     `\n\n━━━━━━━━━━━━━━` +
     (orderId ? `\n📦 *Order ID:* ${orderId}` : "") +
-    `\n🔗 *Order details:* ${orderDetailUrl}` +
-    `\n👤 *Your profile:* ${PROFILE_URL}` +
+    `\n🔗 *Order:* ${orderDetailUrl}` +
+    `\n👤 *Profile:* ${PROFILE_URL}` +
     (tracking
-      ? `\n🚚 *Tracking ID:* ${tracking}\n📍 Track: ${INDIA_POST_URL}`
+      ? `\n🚚 *Tracking ID:* ${tracking}\n📍 *Track:* ${INDIA_POST_URL}`
       : "") +
     `\n\n— Team *TheBookX* 📚`;
 
-  // Every message opens with an emoji *stage headline*, a short note, then the
-  // link block below.
+  // Reusable warning: parcels ship via India Post (from the post office), which
+  // customers often mistake for a scam and refuse — causing a Return-to-Sender.
+  // This line goes on every delivery-stage message so recipients accept it.
+  const postWarn =
+    `\n\n⚠️ *Important:* Your parcel comes from *India Post (post office)* — it is 100% genuine. ` +
+    `Please *accept & pay* (if COD) at delivery. *Do NOT refuse it* — refused parcels are sent back and prepaid refunds take *2–3 weeks*.`;
+
+  // Every message opens with an emoji *stage headline*, a short crisp note,
+  // then (where relevant) the post-office warning and the link block below.
   return [
     {
       key: "confirm",
       label: "Confirm order",
-      text: `✅ *Confirm your order*\n\n${hi}\n\nWe've received your order. Please reply *YES* to confirm so we can pack and ship it right away.${linkBlock}`,
+      text: `✅ *Confirm your order*\n\n${hi}\nReply *YES* to confirm and we'll pack & ship right away. 📚${linkBlock}`,
     },
     {
       key: "predelivery",
       label: "Pre-delivery check-in",
       text:
-        `🙏 *Quick check before we ship*\n\n${hi}\n\nJust 3 quick things so your order reaches you smoothly 📚\n\n` +
-        `1️⃣ Will you (or someone) be available to receive it on delivery day this week?\n` +
-        `2️⃣ If not, can a *neighbour/family member* collect it for you?\n` +
-        `3️⃣ Is your *address & phone number* correct?\n\n` +
-        `👉 Your order: ${orderDetailUrl}\n\n` +
-        `If all *YES*, just reply *YES* 👍\nIf any is *NO* or you'd like to *reschedule*, reply *NO* and we'll plan accordingly.${linkBlock}`,
+        `🙏 *Before we ship — 1 quick check*\n\n${hi}\n\n` +
+        `1️⃣ Someone available to receive it this week?\n` +
+        `2️⃣ Is your *address & phone* correct?\n\n` +
+        `All good? Reply *YES* 👍  Need changes? Reply *NO*.` +
+        postWarn +
+        linkBlock,
     },
     {
       key: "about",
       label: "About to ship",
-      text: `📦 *About to ship*\n\n${hi}\n\nYour TheBookX order is packed and about to ship. Tracking details will follow shortly.${linkBlock}`,
+      text: `📦 *Packed & about to ship*\n\n${hi}\nYour order is packed — tracking ID coming shortly.${linkBlock}`,
     },
     {
       key: "shipped",
       label: "Shipped",
-      text: `🚚 *Shipped*\n\n${hi}\n\nYour order is on its way! Expected delivery in *5–9 days* (slight delays possible in bad weather — thanks for your patience).${linkBlock}`,
+      text:
+        `🚚 *Shipped*\n\n${hi}\nOn its way! Expected in *5–9 days* (minor weather delays possible).` +
+        postWarn +
+        linkBlock,
     },
     {
       key: "transit",
       label: "In Transit",
-      text: `🛣️ *In transit*\n\n${hi}\n\nYour TheBookX order is in transit and will be reaching you within *4 to 9 working days*. Thank you for your patience!${linkBlock}`,
+      text:
+        `🛣️ *In transit*\n\n${hi}\nArriving in *4–9 working days*. Thanks for your patience!` +
+        postWarn +
+        linkBlock,
     },
     {
       key: "ofd",
       label: "Out for delivery",
-      text: `🛵 *Out for delivery*\n\n${hi}\n\nYour TheBookX order is out for delivery today. Please keep your phone reachable so our delivery partner can reach you.${linkBlock}`,
+      text:
+        `🛵 *Out for delivery today*\n\n${hi}\nKeep your phone reachable so the postman can deliver it.` +
+        postWarn +
+        linkBlock,
     },
     {
       key: "delivered",
       label: "Delivered",
-      text: `🎉 *Delivered*\n\n${hi}\n\nYour order has been delivered! We hope you love your books — a quick *review* would mean a lot to us. ⭐${linkBlock}`,
+      text: `🎉 *Delivered*\n\n${hi}\nHope you love your books! A quick ⭐ *review* would mean a lot.${linkBlock}`,
     },
     {
       key: "received",
       label: "Received order",
-      text: `🙏 *Order received*\n\n${hi}\n\nWe've received your order. It will be *shipped within 1–2 days* and your tracking ID will be shared here as soon as it's dispatched.${linkBlock}`,
+      text: `🙏 *Order received*\n\n${hi}\nShipping in *1–2 days* — your tracking ID will land here once dispatched.${linkBlock}`,
     },
     {
       key: "unable",
       label: "Unable to ship",
-      text: `⚠️ *Unable to ship*\n\n${hi}\n\nWe couldn't ship your order due to a mismatch in the *address or phone number*. Please share your *correct full address (with pincode) and a reachable phone number* so we can dispatch it right away.${linkBlock}`,
+      text: `⚠️ *Unable to ship*\n\n${hi}\nThere's a mismatch in your *address/phone*. Please share your *correct full address (with pincode) and a reachable number* so we can dispatch right away.${linkBlock}`,
     },
     {
       key: "verify",
       label: "Ask details checkup",
-      text: `🔎 *Please re-check your details*\n\n${hi}\n\nBefore we ship your order, kindly re-check your delivery details — the current address/number may not be enough for successful delivery.\n\nReply with your *complete address, landmark, pincode and active phone number*.${linkBlock}`,
+      text: `🔎 *Please re-check your details*\n\n${hi}\nYour current address/number may not be enough for delivery. Reply with your *complete address, landmark, pincode & active phone number*.${linkBlock}`,
     },
   ];
 };
@@ -3413,6 +3436,81 @@ export default function ManageOrdersPage() {
     try {
       localStorage.removeItem("mo_dismissed_cards");
     } catch {}
+  };
+
+  // ── India Post bulk .xlsx export (Speed / Contractual) ──
+  // Opens an editable preview built from ALL available (non-dismissed) cards of
+  // the chosen product type; the admin tweaks weights/dims/COD then downloads.
+  const [ipBulk, setIpBulk] = useState(null); // { product, rows }
+  const [ipSender, setIpSender] = useState(null);
+  const [ipSenderOpen, setIpSenderOpen] = useState(false);
+  useEffect(() => {
+    setIpSender(loadSender());
+  }, []);
+  const openIpBulkPreview = (product) => {
+    const pool = visibleOrders.filter(
+      (o) => classifyOrderProduct(o) === product,
+    );
+    if (pool.length === 0) {
+      showToast(`No ${product} orders available to export.`, "error");
+      return;
+    }
+    const rows = pool.map((o, i) => buildPreviewRow(o, i + 1));
+    setIpBulk({ product, rows });
+  };
+  const updateIpRow = (idx, key, value) => {
+    setIpBulk((prev) => {
+      if (!prev) return prev;
+      const rows = prev.rows.map((r, i) =>
+        i === idx ? { ...r, [key]: value } : r,
+      );
+      return { ...prev, rows };
+    });
+  };
+  const removeIpRow = (idx) => {
+    setIpBulk((prev) => {
+      if (!prev) return prev;
+      const rows = prev.rows
+        .filter((_, i) => i !== idx)
+        .map((r, i) => ({ ...r, serial: i + 1 }));
+      return { ...prev, rows };
+    });
+  };
+  const saveIpSender = () => {
+    saveSender(ipSender);
+    setIpSenderOpen(false);
+    showToast("Sender details saved.", "success");
+  };
+  const [ipDownloading, setIpDownloading] = useState(false);
+  const downloadIpBulk = async () => {
+    if (!ipBulk || ipBulk.rows.length === 0) return;
+    // Guard: warn if any receiver is missing name/pincode/mobile.
+    const bad = ipBulk.rows.filter(
+      (r) => !r.receiverName || !r.pincode || !r.mobile,
+    );
+    if (bad.length > 0) {
+      showToast(
+        `${bad.length} row(s) missing name/pincode/mobile — please complete them.`,
+        "error",
+      );
+      return;
+    }
+    setIpDownloading(true);
+    try {
+      const stamp = new Date().toISOString().slice(0, 10);
+      const fname = `indiapost-${ipBulk.product}-${stamp}.xlsx`;
+      await downloadIpWorkbook(fname, ipBulk.rows, ipSender);
+      showToast(
+        `${ipBulk.rows.length}-parcel ${ipBulk.product} file downloaded ✓`,
+        "success",
+      );
+      setIpBulk(null);
+    } catch (e) {
+      console.error("IP bulk export failed:", e);
+      showToast("Export failed — please try again.", "error");
+    } finally {
+      setIpDownloading(false);
+    }
   };
 
   // Unconfirmed-orders confirmation flow. On page open (once orders load) a
@@ -9073,6 +9171,38 @@ export default function ManageOrdersPage() {
                             : `Apply to ${selectedIds.length || ""}`}
                         </button>
                       </div>
+                      {(() => {
+                        // India Post bulk export — split ALL available (non-
+                        // dismissed) cards into Speed vs Contractual buckets.
+                        const pool = visibleOrders;
+                        const speedN = pool.filter(
+                          (o) => classifyOrderProduct(o) === "speed",
+                        ).length;
+                        const contractN = pool.length - speedN;
+                        return (
+                          <div className="mo-cardbulk-export">
+                            <span className="mo-cardbulk-lbl">
+                              India Post bulk (.xlsx)
+                            </span>
+                            <button
+                              type="button"
+                              className="mo-ipx-btn speed"
+                              disabled={speedN === 0}
+                              onClick={() => openIpBulkPreview("speed")}
+                            >
+                              <Truck size={14} /> Speed ({speedN})
+                            </button>
+                            <button
+                              type="button"
+                              className="mo-ipx-btn contract"
+                              disabled={contractN === 0}
+                              onClick={() => openIpBulkPreview("contractual")}
+                            >
+                              <Package size={14} /> Contractual ({contractN})
+                            </button>
+                          </div>
+                        );
+                      })()}
                     </div>
                   )}
 
@@ -11469,6 +11599,233 @@ export default function ManageOrdersPage() {
 
       {/* ===== Unconfirmed orders — confirm to protect conversion (slide-up) ===== */}
       <AnimatePresence>
+        {ipBulk && (
+          <motion.div
+            className="bill-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIpBulk(null)}
+          >
+            <motion.div
+              className="bill-modal ip-bulk-modal"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="bill-header">
+                <span className="weight-600 font-16 flex flex-col">
+                  <span className="flex flex-row gap-8 items-center">
+                    {ipBulk.product === "speed" ? (
+                      <Truck size={18} />
+                    ) : (
+                      <Package size={18} />
+                    )}
+                    India Post ·{" "}
+                    {ipBulk.product === "speed" ? "Speed Post" : "Contractual"}{" "}
+                    bulk file
+                  </span>
+                  <span className="font-12 dark-50">
+                    {ipBulk.rows.length} parcel
+                    {ipBulk.rows.length === 1 ? "" : "s"} · edit any field below,
+                    then download the .xlsx to upload on the portal
+                  </span>
+                </span>
+                <span className="cursor-pointer" onClick={() => setIpBulk(null)}>
+                  <X size={16} />
+                </span>
+              </div>
+
+              {/* Sender (posting) details — applied to every row */}
+              <div className="ip-bulk-sender">
+                <button
+                  type="button"
+                  className="ip-bulk-sender-toggle"
+                  onClick={() => setIpSenderOpen((v) => !v)}
+                >
+                  <MapPin size={14} />
+                  <span>
+                    From: <b>{ipSender?.name || "—"}</b>,{" "}
+                    {ipSender?.city || "—"} · Drop-off pin{" "}
+                    {ipSender?.dropPincode || "—"}
+                    {!ipSender?.mobile && (
+                      <em className="ip-bulk-warn"> · add sender mobile</em>
+                    )}
+                  </span>
+                  <ChevronDown
+                    size={14}
+                    className={ipSenderOpen ? "rot180" : ""}
+                  />
+                </button>
+                {ipSenderOpen && ipSender && (
+                  <div className="ip-bulk-sender-grid">
+                    {[
+                      ["name", "Sender name"],
+                      ["mobile", "Sender mobile"],
+                      ["add1", "Address line 1"],
+                      ["add2", "Address line 2"],
+                      ["city", "City"],
+                      ["state", "State"],
+                      ["pincode", "Sender pincode"],
+                      ["dropPincode", "Drop-off pincode"],
+                    ].map(([k, label]) => (
+                      <label key={k} className="ip-bulk-fld">
+                        <span>{label}</span>
+                        <input
+                          className="ip-bulk-input"
+                          value={ipSender[k] ?? ""}
+                          onChange={(e) =>
+                            setIpSender((s) => ({ ...s, [k]: e.target.value }))
+                          }
+                        />
+                      </label>
+                    ))}
+                    <button
+                      type="button"
+                      className="ip-bulk-sender-save"
+                      onClick={saveIpSender}
+                    >
+                      <Check size={14} /> Save sender
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <div className="ip-bulk-body">
+                {ipBulk.rows.map((r, idx) => (
+                  <div className="ip-parcel-card" key={r.orderId || idx}>
+                    <div className="ip-parcel-head">
+                      <span className="ip-parcel-sr">#{idx + 1}</span>
+                      <span className="ip-parcel-name">
+                        {r.receiverName || "Unnamed"}
+                      </span>
+                      <span
+                        className={`ip-parcel-tag ${r.isCOD ? "cod" : "prepaid"}`}
+                      >
+                        {r.isCOD ? "COD" : "Prepaid"}
+                      </span>
+                      <span className="ip-parcel-books">
+                        {r.books} book{r.books === 1 ? "" : "s"}
+                      </span>
+                      <button
+                        type="button"
+                        className="ip-parcel-del"
+                        title="Remove from this file"
+                        onClick={() => removeIpRow(idx)}
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+
+                    <div className="ip-parcel-grid">
+                      {[
+                        ["receiverName", "Receiver name", "text", "wide"],
+                        ["mobile", "Mobile", "tel", ""],
+                        ["add1", "Address line 1", "text", "wide"],
+                        ["add2", "Address line 2", "text", "wide"],
+                        ["city", "City", "text", ""],
+                        ["state", "State", "text", ""],
+                        ["pincode", "Pincode", "text", ""],
+                        ["weight", "Weight (g)", "number", ""],
+                        ["length", "Length", "number", "sm"],
+                        ["breadth", "Breadth", "number", "sm"],
+                        ["height", "Height", "number", "sm"],
+                      ].map(([k, label, type, cls]) => (
+                        <label
+                          key={k}
+                          className={`ip-bulk-fld ${cls}${
+                            k === "weight" && (r.weight === "" || r.weight == null)
+                              ? " needs"
+                              : ""
+                          }`}
+                        >
+                          <span>
+                            <Pencil size={10} /> {label}
+                          </span>
+                          <input
+                            className="ip-bulk-input"
+                            type={type}
+                            value={r[k] ?? ""}
+                            placeholder={
+                              k === "weight" ? "enter g" : undefined
+                            }
+                            onChange={(e) =>
+                              updateIpRow(idx, k, e.target.value)
+                            }
+                          />
+                        </label>
+                      ))}
+
+                      <label className="ip-bulk-fld">
+                        <span>
+                          <Pencil size={10} /> COD type
+                        </span>
+                        <select
+                          className="ip-bulk-input"
+                          value={r.codCode}
+                          onChange={(e) =>
+                            updateIpRow(idx, "codCode", e.target.value)
+                          }
+                        >
+                          <option value="">None (prepaid)</option>
+                          <option value="cod">COD</option>
+                          <option value="codr">COD Retail (VP)</option>
+                        </select>
+                      </label>
+                      <label
+                        className={`ip-bulk-fld${
+                          r.codCode ? "" : " ip-bulk-muted"
+                        }`}
+                      >
+                        <span>
+                          <Pencil size={10} /> COD value ₹
+                        </span>
+                        <input
+                          className="ip-bulk-input"
+                          type="number"
+                          value={r.codValue ?? ""}
+                          onChange={(e) =>
+                            updateIpRow(idx, "codValue", e.target.value)
+                          }
+                        />
+                      </label>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="ip-bulk-foot">
+                <span className="ip-bulk-foot-note">
+                  Weight & COD are absolute (no decimals). Prepaid rows won't
+                  collect anything unless you set a COD type.
+                </span>
+                <div className="ip-bulk-foot-btns">
+                  <button
+                    type="button"
+                    className="ip-bulk-cancel"
+                    onClick={() => setIpBulk(null)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="ip-bulk-download"
+                    disabled={ipDownloading || ipBulk.rows.length === 0}
+                    onClick={downloadIpBulk}
+                  >
+                    <Download size={15} />
+                    {ipDownloading
+                      ? "Preparing…"
+                      : `Download ${ipBulk.rows.length} .xlsx`}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+
         {showUnconfirmed && (
           <motion.div
             className="bill-modal-overlay"

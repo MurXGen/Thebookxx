@@ -61,6 +61,47 @@ import { showToast } from "@/context/ToastContext";
 
 const PINCODE_DATA_KEY = "user_pincode";
 
+// All Indian States & Union Territories — used for the checkout State dropdown
+// when the pincode lookup can't resolve a state automatically.
+const INDIAN_STATES = [
+  "Andhra Pradesh",
+  "Arunachal Pradesh",
+  "Assam",
+  "Bihar",
+  "Chhattisgarh",
+  "Goa",
+  "Gujarat",
+  "Haryana",
+  "Himachal Pradesh",
+  "Jharkhand",
+  "Karnataka",
+  "Kerala",
+  "Madhya Pradesh",
+  "Maharashtra",
+  "Manipur",
+  "Meghalaya",
+  "Mizoram",
+  "Nagaland",
+  "Odisha",
+  "Punjab",
+  "Rajasthan",
+  "Sikkim",
+  "Tamil Nadu",
+  "Telangana",
+  "Tripura",
+  "Uttar Pradesh",
+  "Uttarakhand",
+  "West Bengal",
+  "Andaman and Nicobar Islands",
+  "Chandigarh",
+  "Dadra and Nagar Haveli and Daman and Diu",
+  "Delhi",
+  "Jammu and Kashmir",
+  "Ladakh",
+  "Lakshadweep",
+  "Puducherry",
+];
+
 const CITIES = [
   "Mumbai",
   "Navi Mumbai",
@@ -157,6 +198,7 @@ export default function AddressModal({
   const [landmark, setLandmark] = useState("");
   const [district, setDistrict] = useState("");
   const [area, setArea] = useState("");
+  const [state, setState] = useState("");
   const [fasterDelivery, setFasterDelivery] = useState(false);
   const [billItemsOpen, setBillItemsOpen] = useState(false); // book summary accordion
   const [isValidPincode, setIsValidPincode] = useState(true);
@@ -378,6 +420,7 @@ export default function AddressModal({
       } else if (st) {
         put(setDistrict, st);
       }
+      if (st) put(setState, st);
       if (pin) put(setPincode, pin);
     } catch (e) {
       console.error("Prefill from orders failed:", e);
@@ -479,6 +522,9 @@ export default function AddressModal({
         setCity(postOffice.District);
         setDistrict(postOffice.District);
         setArea(postOffice.Name);
+        // Auto-fill State from the India Post lookup. If the API doesn't return
+        // one, leave it blank so the dropdown prompts the shopper to choose.
+        setState(postOffice.State || "");
         setIsValidPincode(true);
         setPincodeError("");
       } else {
@@ -585,6 +631,7 @@ export default function AddressModal({
       applySavedAddress(saved.address || "", true);
       setDistrict(saved.district || "");
       setArea(saved.area || "");
+      setState(saved.state || "");
       setFasterDelivery(saved.fasterDelivery || false);
     }
   }, []);
@@ -601,6 +648,7 @@ export default function AddressModal({
           address,
           district,
           area,
+          state,
           fasterDelivery,
         }),
       );
@@ -613,6 +661,7 @@ export default function AddressModal({
     address,
     district,
     area,
+    state,
     fasterDelivery,
     showContactFields,
   ]);
@@ -711,6 +760,7 @@ export default function AddressModal({
           phone,
           pincode,
           city,
+          state,
           address: fullAddress,
         },
         paymentType,
@@ -1491,6 +1541,34 @@ export default function AddressModal({
                 {city.trim().toLowerCase() === "mumbai" && (
                   <span className="mumbai-fast-note">
                     <Zap size={12} /> Orders within Mumbai delivered in 1–2 days
+                  </span>
+                )}
+              </div>
+              )}
+
+              {pincodeReady && (
+              <div className="input-group">
+                <label>State</label>
+                <select
+                  className={`sec-mid-btn width100 ${!state ? "error-border" : ""}`}
+                  value={state}
+                  onChange={(e) => setState(e.target.value)}
+                >
+                  <option value="">
+                    {isFetchingLocation ? "Fetching…" : "Select your state"}
+                  </option>
+                  {state && !INDIAN_STATES.includes(state) && (
+                    <option value={state}>{state}</option>
+                  )}
+                  {INDIAN_STATES.map((s) => (
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
+                  ))}
+                </select>
+                {!state && (
+                  <span className="addr-hint">
+                    Please select your state for smooth delivery.
                   </span>
                 )}
               </div>

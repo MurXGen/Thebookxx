@@ -129,18 +129,32 @@ export const INFORMATION_AOA = [
 
 // ── Our posting (sender) defaults. Editable in the preview and persisted to
 // localStorage so the mobile number etc. only has to be entered once. ──
-export const SENDER_STORAGE_KEY = "ip_bulk_sender_v1";
+export const SENDER_STORAGE_KEY = "ip_bulk_sender_v4";
 export const DEFAULT_SENDER = {
   name: "TheBookX",
   company: "",
-  add1: "Dharavi",
-  add2: "",
-  city: "Mumbai",
+  add1: "Near Shilpa Sarees, Opp Apollo Pharmacy",
+  add2: "Maheshwari Udyan",
+  city: "Matunga",
   state: "Maharashtra",
-  pincode: "400017",
+  pincode: "400019",
   email: "",
-  mobile: "",
-  dropPincode: "400017", // where we hand parcels over (Dharavi Road S.O)
+  mobile: "7977960242",
+  dropPincode: "400017", // where we hand parcels over (drop-off PO)
+};
+
+// India Post field limits (validated before download). The portal rejected
+// ReceiverAddrline2 > 50 chars; other caps are the portal's documented maxima.
+export const IP_LIMITS = {
+  receiverName: 50,
+  add1: 50,
+  add2: 50,
+  city: 30,
+  state: 30,
+  pincode: 6,
+  mobile: 10,
+  barcode: 20,
+  weightMax: 35000,
 };
 
 export function loadSender() {
@@ -168,18 +182,31 @@ const clean = (s) =>
     .replace(/^[\s,·-]+|[\s,·-]+$/g, "")
     .trim();
 
-// Split an address into two lines (line 1 ≈ first 45 chars at a word boundary).
-function splitAddress(address, size = 45) {
+// Split an address into two lines, each capped at India Post's 50-char limit.
+// Line 1 fills up to 50 chars at a word boundary, line 2 gets the next 50,
+// and anything beyond is dropped (the admin can tidy it in the preview).
+function splitAddress(address, size = IP_LIMITS.add1) {
   const words = clean(address).split(/\s+/).filter(Boolean);
-  const lines = ["", ""];
+  const line1 = [];
+  const line2 = [];
+  let l1 = "";
+  let l2 = "";
   let i = 0;
   for (; i < words.length; i++) {
-    const next = lines[0] ? lines[0] + " " + words[i] : words[i];
-    if (next.length <= size) lines[0] = next;
-    else break;
+    const next = l1 ? l1 + " " + words[i] : words[i];
+    if (next.length <= size) {
+      l1 = next;
+      line1.push(words[i]);
+    } else break;
   }
-  lines[1] = words.slice(i).join(" ");
-  return lines;
+  for (; i < words.length; i++) {
+    const next = l2 ? l2 + " " + words[i] : words[i];
+    if (next.length <= size) {
+      l2 = next;
+      line2.push(words[i]);
+    } else break;
+  }
+  return [l1.slice(0, size), l2.slice(0, size)];
 }
 
 // Fast catalogue lookup by (lowercased) name for weight/set detection.
@@ -191,9 +218,20 @@ const BY_NAME = {};
 const SET_RE =
   /\b(set|sets|collection|combo|bundle|box[\s-]?set|pack|duology|trilogy|quartet|volumes?|vol\.?|series)\b|set of|\d+\s*books?/i;
 
+// QuickReads are ₹19 digital-only titles — they never ship physically, so they
+// must be excluded from parcel counts, covers, weight and dimensions.
+const isQuickReadLine = (l) =>
+  /\bquick\s*reads?\b/i.test(String(l?.name || "")) || Number(l?.price) === 19;
+
+// Physical (shippable) book lines only — QuickReads stripped out.
+const physicalLines = (order) =>
+  (order?.parsedBooks || []).filter((l) => !isQuickReadLine(l));
+
 // Total number of physical books in an order + whether it's a set/collection.
+// QuickReads (₹19 digital) are ignored.
 export function orderBookMeta(order) {
-  const lines = order?.parsedBooks || [];
+  const all = order?.parsedBooks || [];
+  const lines = physicalLines(order);
   let qty = 0;
   let isSet = false;
   lines.forEach((l) => {
@@ -201,7 +239,8 @@ export function orderBookMeta(order) {
     qty += q;
     if (SET_RE.test(String(l.name || ""))) isSet = true;
   });
-  if (qty === 0) qty = 1;
+  // Only assume 1 when the order has no parsed lines at all (unknown data).
+  if (qty === 0 && all.length === 0) qty = 1;
   return { qty, lines: lines.length, isSet };
 }
 
@@ -214,20 +253,20 @@ export function classifyOrderProduct(order) {
   return "contractual";
 }
 
-// Best-guess parcel weight (g) from the catalogue; blank if nothing matched so
-// the admin fills it in the preview.
+// Best-guess parcel weight (g) from the catalogue. Weight is REQUIRED by the
+// portal and can't be blank, so unmatched books fall back to ~250 g each.
 export function estimateWeight(order) {
-  const lines = order?.parsedBooks || [];
+  const lines = physicalLines(order); // QuickReads carry no shipping weight
   let w = 0;
-  let matched = false;
+  let qty = 0;
   lines.forEach((l) => {
+    const q = Number(l.quantity) || 1;
+    qty += q;
     const b = BY_NAME[String(l.name || "").toLowerCase().trim()];
-    if (b && Number(b.weight)) {
-      matched = true;
-      w += Number(b.weight) * (Number(l.quantity) || 1);
-    }
+    w += (Number(b?.weight) || 250) * q; // fallback per-book weight
   });
-  return matched ? Math.round(w) : "";
+  if (qty === 0) return 250; // no physical items → sensible floor
+  return Math.round(w) || 250;
 }
 
 // COD math — NET = (total − ₹99 advance if paid) minus 5.9% commission.
@@ -241,22 +280,102 @@ export function codNetFor(order) {
   return { isCOD, gross, net };
 }
 
+const cap = (s, n) => String(s ?? "").slice(0, n);
+
+// Pincode → State, derived from India Post postal-circle prefixes. The pincode
+// is authoritative (India Post routes by it), so this is used to override stale
+// or wrong stored State values (e.g. legacy orders defaulted to "Maharashtra").
+// 3-digit overrides take priority over the 2-digit zone map.
+const PIN3_STATE = {
+  160: "Chandigarh",
+  194: "Ladakh",
+  403: "Goa",
+  490: "Chhattisgarh", 491: "Chhattisgarh", 492: "Chhattisgarh",
+  493: "Chhattisgarh", 494: "Chhattisgarh", 495: "Chhattisgarh",
+  496: "Chhattisgarh", 497: "Chhattisgarh",
+  605: "Puducherry",
+  737: "Sikkim",
+  744: "Andaman and Nicobar Islands",
+  790: "Arunachal Pradesh", 791: "Arunachal Pradesh", 792: "Arunachal Pradesh",
+  793: "Meghalaya", 794: "Meghalaya",
+  795: "Manipur", 796: "Mizoram",
+  797: "Nagaland", 798: "Nagaland",
+  799: "Tripura",
+  // Uttarakhand (carved out of UP's 24x/26x zones)
+  246: "Uttarakhand", 247: "Uttarakhand", 248: "Uttarakhand",
+  249: "Uttarakhand", 262: "Uttarakhand", 263: "Uttarakhand",
+  // Jharkhand (carved out of Bihar's 81x/82x/83x zones)
+  813: "Jharkhand", 814: "Jharkhand", 815: "Jharkhand", 816: "Jharkhand",
+  825: "Jharkhand", 826: "Jharkhand", 827: "Jharkhand", 828: "Jharkhand",
+  829: "Jharkhand", 831: "Jharkhand", 832: "Jharkhand", 833: "Jharkhand",
+  834: "Jharkhand", 835: "Jharkhand",
+};
+const PIN2_STATE = {
+  11: "Delhi",
+  12: "Haryana", 13: "Haryana",
+  14: "Punjab", 15: "Punjab", 16: "Punjab",
+  17: "Himachal Pradesh",
+  18: "Jammu and Kashmir", 19: "Jammu and Kashmir",
+  20: "Uttar Pradesh", 21: "Uttar Pradesh", 22: "Uttar Pradesh",
+  23: "Uttar Pradesh", 24: "Uttar Pradesh", 25: "Uttar Pradesh",
+  26: "Uttar Pradesh", 27: "Uttar Pradesh", 28: "Uttar Pradesh",
+  30: "Rajasthan", 31: "Rajasthan", 32: "Rajasthan", 33: "Rajasthan", 34: "Rajasthan",
+  36: "Gujarat", 37: "Gujarat", 38: "Gujarat", 39: "Gujarat",
+  40: "Maharashtra", 41: "Maharashtra", 42: "Maharashtra",
+  43: "Maharashtra", 44: "Maharashtra",
+  45: "Madhya Pradesh", 46: "Madhya Pradesh", 47: "Madhya Pradesh", 48: "Madhya Pradesh",
+  49: "Chhattisgarh",
+  50: "Telangana",
+  51: "Andhra Pradesh", 52: "Andhra Pradesh", 53: "Andhra Pradesh",
+  56: "Karnataka", 57: "Karnataka", 58: "Karnataka", 59: "Karnataka",
+  60: "Tamil Nadu", 61: "Tamil Nadu", 62: "Tamil Nadu", 63: "Tamil Nadu", 64: "Tamil Nadu",
+  67: "Kerala", 68: "Kerala", 69: "Kerala",
+  70: "West Bengal", 71: "West Bengal", 72: "West Bengal", 73: "West Bengal", 74: "West Bengal",
+  75: "Odisha", 76: "Odisha", 77: "Odisha",
+  78: "Assam",
+  80: "Bihar", 81: "Bihar", 84: "Bihar", 85: "Bihar",
+  82: "Jharkhand", 83: "Jharkhand",
+};
+export function stateFromPincode(pincode) {
+  const pin = String(pincode || "").replace(/\D/g, "");
+  if (pin.length < 6) return "";
+  return PIN3_STATE[pin.slice(0, 3)] || PIN2_STATE[pin.slice(0, 2)] || "";
+}
+
 // Build the lightweight, editable preview row for one order.
 export function buildPreviewRow(order, serial) {
   const { isCOD, net } = codNetFor(order);
   const { qty } = orderBookMeta(order);
+  // Reference-only: per-title cover + qty (resolved from the catalogue) so the
+  // admin can eyeball what's in each parcel while filling weights. QuickReads
+  // (₹19 digital) are excluded — they don't ship.
+  const covers = physicalLines(order).map((l) => {
+    const b = BY_NAME[String(l.name || "").toLowerCase().trim()];
+    return {
+      name: l.name || "",
+      image: b?.image || "",
+      qty: Number(l.quantity) || 1,
+    };
+  });
   const [add1, add2] = splitAddress(order?.["Address"]);
   const mobile = String(order?.["Phone Number"] || "").replace(/\D/g, "").slice(-10);
   return {
     serial,
     orderId: order?.["Order ID"] || "",
-    receiverName: clean(order?.["Customer Name"]) || "",
+    barcode: "", // India Post article/barcode number (from your allocated series)
+    receiverName: cap(clean(order?.["Customer Name"]), IP_LIMITS.receiverName),
     mobile,
-    add1,
-    add2,
-    city: order?.["City"] || "",
-    state: order?.["State"] || "",
-    pincode: String(order?.["Pincode"] || "").replace(/\D/g, ""),
+    add1: cap(add1, IP_LIMITS.add1),
+    add2: cap(add2, IP_LIMITS.add2),
+    city: cap(order?.["City"], IP_LIMITS.city),
+    // Trust the pincode for State (India Post routes by it) — this overrides
+    // stale/wrong stored values (legacy orders defaulted to "Maharashtra").
+    // Fall back to the stored State only when the pincode can't be resolved.
+    state: cap(
+      stateFromPincode(order?.["Pincode"]) || order?.["State"],
+      IP_LIMITS.state,
+    ),
+    pincode: String(order?.["Pincode"] || "").replace(/\D/g, "").slice(0, 6),
     // Dimensions — same logic as the Book-online modal: 22 × 13 × (book count).
     weight: estimateWeight(order),
     length: 22,
@@ -265,12 +384,54 @@ export function buildPreviewRow(order, serial) {
     shape: "NROL",
     delivery: "ND",
     books: qty,
+    covers,
     isCOD,
-    // COD orders collect the net amount; prepaid gets a harmless placeholder 10
-    // with a BLANK code (no collection). Both editable.
-    codCode: isCOD ? "cod" : "",
+    // This is a COD-enabled contract, so the portal requires VpCodTypeCD="COD"
+    // (uppercase) on every row. COD orders collect the net; prepaid collects a
+    // ₹10 token. All editable in the preview.
+    codCode: "COD",
     codValue: isCOD ? net : 10,
   };
+}
+
+// Validate one preview row against India Post's field rules. Returns an object
+// { field: "message" } of problems (empty object = valid).
+export function validateRow(row, sender) {
+  const e = {};
+  const s = sender || DEFAULT_SENDER;
+  const req = (v) => !String(v ?? "").trim();
+  const digits = (v) => String(v ?? "").replace(/\D/g, "");
+  if (req(row.barcode)) e.barcode = "Barcode / Article No is required";
+  else if (String(row.barcode).length > IP_LIMITS.barcode)
+    e.barcode = `Max ${IP_LIMITS.barcode} chars`;
+  if (req(row.receiverName)) e.receiverName = "Required";
+  else if (row.receiverName.length > IP_LIMITS.receiverName)
+    e.receiverName = `Max ${IP_LIMITS.receiverName} chars`;
+  if (req(row.add1)) e.add1 = "Required";
+  else if (row.add1.length > IP_LIMITS.add1) e.add1 = `Max ${IP_LIMITS.add1} chars`;
+  if (String(row.add2 || "").length > IP_LIMITS.add2)
+    e.add2 = `Max ${IP_LIMITS.add2} chars`;
+  if (req(row.city)) e.city = "Required";
+  else if (row.city.length > IP_LIMITS.city) e.city = `Max ${IP_LIMITS.city} chars`;
+  if (req(row.state)) e.state = "State is required";
+  else if (row.state.length > IP_LIMITS.state)
+    e.state = `Max ${IP_LIMITS.state} chars`;
+  if (digits(row.pincode).length !== 6) e.pincode = "6-digit pincode";
+  if (digits(row.mobile).length !== 10) e.mobile = "10-digit mobile";
+  const w = Math.round(Number(row.weight) || 0);
+  if (!w || w <= 0) e.weight = "Weight (g) required";
+  else if (w > IP_LIMITS.weightMax) e.weight = "Too heavy";
+  ["length", "breadth", "height"].forEach((k) => {
+    if (!(Math.round(Number(row[k]) || 0) > 0)) e[k] = "> 0";
+  });
+  const code = String(row.codCode || "").toUpperCase();
+  if (code && code !== "COD" && code !== "CODR")
+    e.codCode = "Must be COD or CODR";
+  if (code && !(Math.round(Number(row.codValue) || 0) > 0))
+    e.codValue = "COD value > 0";
+  if (req(s.mobile) || digits(s.mobile).length !== 10)
+    e.senderMobile = "Set a 10-digit sender mobile (top)";
+  return e;
 }
 
 const toInt = (v) => {
@@ -281,10 +442,10 @@ const toInt = (v) => {
 // Map an (edited) preview row → the full 48-column ArticleDetails object.
 export function previewRowToArticle(row, sender) {
   const s = sender || DEFAULT_SENDER;
-  const codCode = String(row.codCode || "").trim();
+  const codCode = String(row.codCode || "").trim().toUpperCase();
   return {
     "SERIAL NUMBER": row.serial,
-    "BARCODE NO": "",
+    "BARCODE NO": String(row.barcode || "").trim(),
     "PHYSICAL WEIGHT": row.weight === "" ? "" : toInt(row.weight),
     "SHAPE OF ARTICLE": row.shape || "NROL",
     "LENGTH ": toInt(row.length),
@@ -304,13 +465,13 @@ export function previewRowToArticle(row, sender) {
     "SENDER ALT CONTACT": "",
     "SENDER KYC": "",
     "SENDER TAX REFERENCE": "",
-    "RECEIVER NAME": row.receiverName || "",
+    "RECEIVER NAME": cap(row.receiverName, IP_LIMITS.receiverName),
     "RECEIVER COMPANY": "",
-    "RECEIVER ADD LINE 1": row.add1 || "",
-    "RECEIVER ADD LINE 2": row.add2 || "",
-    "RECEIVER CITY": row.city || "",
-    "RECEIVER STATE": row.state || "",
-    "RECEIVER PINCODE": row.pincode || "",
+    "RECEIVER ADD LINE 1": cap(row.add1, IP_LIMITS.add1),
+    "RECEIVER ADD LINE 2": cap(row.add2, IP_LIMITS.add2),
+    "RECEIVER CITY": cap(row.city, IP_LIMITS.city),
+    "RECEIVER STATE": cap(row.state, IP_LIMITS.state),
+    "RECEIVER PINCODE": String(row.pincode || "").replace(/\D/g, "").slice(0, 6),
     "RECEIVER EMAILID": "",
     "RECEIVER ALT CONTACT": "",
     "RECEIVER KYC": "",
@@ -335,11 +496,10 @@ export function previewRowToArticle(row, sender) {
   };
 }
 
-// Build + trigger download of the multi-sheet India Post .xlsx.
-export async function downloadIpWorkbook(filename, previewRows, sender) {
+// Assemble the multi-sheet India Post workbook (SheetJS book object).
+async function buildIpWorkbook(previewRows, sender) {
   const XLSX = await import("xlsx");
   const wb = XLSX.utils.book_new();
-
   const articleObjs = (previewRows || []).map((r, i) =>
     previewRowToArticle({ ...r, serial: i + 1 }, sender),
   );
@@ -367,6 +527,102 @@ export async function downloadIpWorkbook(filename, previewRows, sender) {
     XLSX.utils.aoa_to_sheet(INFORMATION_AOA),
     "Information",
   );
+  return { XLSX, wb };
+}
 
+// Build + trigger a browser download of the .xlsx.
+export async function downloadIpWorkbook(filename, previewRows, sender) {
+  const { XLSX, wb } = await buildIpWorkbook(previewRows, sender);
   XLSX.writeFile(wb, filename);
+}
+
+// Parse an uploaded India Post .xlsx back into editable preview rows (reverse of
+// previewRowToArticle). Reads the ArticleDetails sheet, matches columns by
+// header name (robust to reordering), and also returns any sender details found
+// on the first row so the "From" block can be prefilled too.
+export async function parseIpWorkbookFile(file) {
+  const XLSX = await import("xlsx");
+  const buf = await file.arrayBuffer();
+  const wb = XLSX.read(buf, { type: "array" });
+  const sheetName =
+    wb.SheetNames.find((n) => n.toLowerCase() === "articledetails") ||
+    wb.SheetNames[0];
+  const ws = wb.Sheets[sheetName];
+  if (!ws) throw new Error("No ArticleDetails sheet found in the file.");
+  const aoa = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
+  if (!aoa.length) throw new Error("The sheet is empty.");
+
+  const header = (aoa[0] || []).map((h) => String(h).trim());
+  const idx = (name) => header.indexOf(String(name).trim());
+  const get = (row, name) => {
+    const i = idx(name);
+    return i >= 0 ? row[i] : "";
+  };
+  const str = (v) => (v === undefined || v === null ? "" : String(v).trim());
+
+  const rows = [];
+  for (let r = 1; r < aoa.length; r++) {
+    const row = aoa[r] || [];
+    // Skip fully empty rows.
+    if (!row.some((c) => str(c) !== "")) continue;
+    const name = str(get(row, "RECEIVER NAME"));
+    const pin = str(get(row, "RECEIVER PINCODE"));
+    const mob = str(get(row, "RECEIVER MOBILE NO"));
+    // Ignore rows with nothing useful.
+    if (!name && !pin && !mob) continue;
+    const codCode = str(get(row, "CODR/COD")).toUpperCase();
+    const height = Number(str(get(row, "HEIGHT"))) || 1;
+    rows.push({
+      serial: rows.length + 1,
+      orderId: str(get(row, "BULK REFERENCE")),
+      barcode: str(get(row, "BARCODE NO")),
+      receiverName: name,
+      mobile: mob.replace(/\D/g, "").slice(-10),
+      add1: str(get(row, "RECEIVER ADD LINE 1")),
+      add2: str(get(row, "RECEIVER ADD LINE 2")),
+      city: str(get(row, "RECEIVER CITY")),
+      state: str(get(row, "RECEIVER STATE")),
+      pincode: pin.replace(/\D/g, "").slice(0, 6),
+      weight: str(get(row, "PHYSICAL WEIGHT")),
+      length: Number(str(get(row, "LENGTH "))) || Number(str(get(row, "LENGTH"))) || 22,
+      breadth: Number(str(get(row, "BREADTH/DIAMETER"))) || 13,
+      height,
+      shape: str(get(row, "SHAPE OF ARTICLE")) || "NROL",
+      delivery: str(get(row, "DELIVERY INSTRUCTION")) || "ND",
+      books: height,
+      covers: [],
+      isCOD: codCode === "COD" || codCode === "CODR",
+      codCode: codCode === "COD" || codCode === "CODR" ? codCode : "",
+      codValue: str(get(row, "VALUE FOR CODR/COD")) || (codCode ? 0 : 10),
+    });
+  }
+  if (!rows.length) throw new Error("No usable article rows found in the file.");
+
+  // Sender details (from the first data row's SENDER * columns), if present.
+  const first = aoa[1] || [];
+  const senderMobile = str(get(first, "SENDER MOBILE NO"));
+  const sender = senderMobile
+    ? {
+        name: str(get(first, "SENDER NAME")),
+        add1: str(get(first, "SENDER ADD LINE 1")),
+        add2: str(get(first, "SENDER ADD LINE 2")),
+        city: str(get(first, "SENDER CITY")),
+        state: str(get(first, "SENDER STATE")),
+        pincode: str(get(first, "SENDER PINCODE")),
+        email: str(get(first, "SENDER EMAILID")),
+        mobile: senderMobile.replace(/\D/g, "").slice(-10),
+        dropPincode: str(get(first, "DROP OFF PINCODE")),
+      }
+    : null;
+
+  return { rows, sender };
+}
+
+// Build the same workbook as an in-memory Blob (for API upload to India Post).
+export async function buildIpWorkbookBlob(previewRows, sender) {
+  const { XLSX, wb } = await buildIpWorkbook(previewRows, sender);
+  const out = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+  return new Blob([out], {
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  });
 }

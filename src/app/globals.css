@@ -21619,8 +21619,8 @@ img[data-loaded="true"] {
 .admin-orders-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 14px;
-  align-items: stretch; /* equal-height tiles per row (bento) */
+  gap: 16px;
+  align-items: stretch; /* equal-height tiles per row */
 }
 @media (max-width: 640px) {
   .admin-orders-grid {
@@ -21631,7 +21631,9 @@ img[data-loaded="true"] {
   transition: border-color 0.18s ease, background 0.18s ease,
     box-shadow 0.18s ease, transform 0.18s ease;
   min-width: 0;
-  height: 100%; /* fill the stretched grid track so footers bottom-align */
+  height: 100%; /* fill the stretched grid track (equal-height rows) */
+  display: flex;
+  flex-direction: column;
 }
 .mo-card:hover {
   transform: translateY(-2px);
@@ -21796,17 +21798,20 @@ img[data-loaded="true"] {
 .mo-unavail-btn:hover {
   background: rgba(239, 68, 68, 0.14);
 }
-/* Payment-type tint matches the pay badge: COD = blue, UPI/online = green. */
-.mo-card-cod {
-  background: rgba(37, 99, 235, 0.09);
-}
-.mo-card-online {
-  background: rgba(22, 163, 74, 0.09);
-}
-/* Prepaid = COD with ₹99 advance already paid — violet tint */
+/* Payment-type tints removed — payment is shown by the badge only. Status is
+   conveyed by a 3px left border (--card-accent) + the status pill label.
+   Cards are plain white (dark mode handled by .mo-dark .mo-card). */
+.mo-card-cod,
+.mo-card-online,
 .mo-card-prepaid {
-  background: rgba(124, 58, 237, 0.09);
+  background: #fff;
 }
+.mo-dark .mo-card-cod,
+.mo-dark .mo-card-online,
+.mo-dark .mo-card-prepaid {
+  background: #14171d;
+}
+/* (tints removed — see the transparent rule above) */
 .mo-card.packed {
   border-color: rgba(10, 143, 12, 0.45) !important;
   box-shadow: inset 0 0 0 1px rgba(10, 143, 12, 0.22);
@@ -23619,16 +23624,30 @@ img[data-loaded="true"] {
 /* ===== Manage-orders card: orange border, order-id highlight, pick badge,
    downloadable form buttons ===== */
 .admin-order-card.mo-card {
-  /* Flat card: no box or shadow — just a payment-type background tint
-     (see .mo-card-cod/online). Sections inside are edge-to-edge grid rows
-     with their own padding + dashed dividers between them. */
+  /* White card with a subtle, clearly-visible shadow; sections inside are
+     edge-to-edge rows with dashed dividers between them. */
   border: none;
-  border-radius: 12px;
-  box-shadow: none;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.08),
+    0 6px 16px -8px rgba(0, 0, 0, 0.16);
   padding: 0;
   gap: 0;
   overflow: hidden;
-  transition: background 0.2s ease;
+  transition: background 0.2s ease, box-shadow 0.18s ease;
+}
+/* Every card is plain white regardless of payment type / status (light mode
+   only — dark mode keeps its own surface via .mo-dark rules above). */
+.my-orders-page:not(.mo-dark) .mo-card.mo-card-cod,
+.my-orders-page:not(.mo-dark) .mo-card.mo-card-online,
+.my-orders-page:not(.mo-dark) .mo-card.mo-card-prepaid {
+  background: #fff;
+}
+/* Neutral hairline all round + a 3px status-coloured left border (accent). */
+.admin-order-card.mo-card {
+  border: 1px solid var(--hairline, #e5e7eb);
+  border-left: 3px solid var(--card-accent, var(--hairline, #e5e7eb));
 }
 /* Every section is a grid row divided by a dashed line (last row: none). */
 .mo-card > .mo-card-top,
@@ -24227,6 +24246,19 @@ img[data-loaded="true"] {
 .mo-amount-num {
   font-size: 22px;
   font-weight: 800;
+  color: var(--foreground); /* plain ink — colour is reserved for the margin */
+}
+/* One money rule: the only coloured money line. Green = profit, red = loss. */
+.mo-margin {
+  font-size: 11.5px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+.mo-margin.pos {
+  color: #15803d;
+}
+.mo-margin.neg {
+  color: #dc2626;
 }
 
 /* ── Order-bill modal (opens on price / card tap) ──────────────────── */
@@ -24404,13 +24436,178 @@ img[data-loaded="true"] {
 .mo-card > .mo-panel {
   padding: 0;
 }
+/* Exception reason chip (amber) at the top of a card that needs the operator. */
+.mo-exception-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  align-self: flex-start;
+  margin: 12px 16px 0;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #b45309;
+  background: rgba(245, 158, 11, 0.14);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  border-radius: 999px;
+}
+/* Bottom row: status pill + ONE primary action, pinned to the card bottom so
+   these line up across cards (equal-height grid). */
+.mo-card-foot {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-top: 1px dashed var(--hairline, #ececec);
+}
+.mo-card-foot .mo-status-badge-wrap {
+  flex: 0 0 auto;
+}
+.mo-track-inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.mo-primary-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  flex: 1 1 auto; /* fill the row beside the status pill */
+  min-height: 40px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--tertiary, #fb8500);
+  border: none;
+  border-radius: 10px;
+  padding: 9px 16px;
+  cursor: pointer;
+  text-decoration: none;
+}
+.mo-primary-btn:hover {
+  filter: brightness(0.96);
+}
+.mo-primary-btn:focus-visible {
+  outline: 2px solid var(--tertiary, #fb8500);
+  outline-offset: 2px;
+}
+/* Collapsed terminal (Delivered / Cancelled) summary row. */
+.mo-terminal-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+}
+.mo-terminal-amt {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--foreground);
+}
+.mo-terminal-status {
+  font-size: 12px;
+  font-weight: 800;
+  padding: 4px 12px;
+  border-radius: 999px;
+}
+.mo-terminal-status.delivered {
+  color: #047857;
+  background: rgba(16, 185, 129, 0.14);
+}
+.mo-terminal-status.cancelled {
+  color: #b91c1c;
+  background: rgba(220, 38, 38, 0.12);
+}
 .mo-panel-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  flex-wrap: wrap;
+  /* No wrap: the status pill + icons must stay on the amount's row and never
+     drop to a second line (which read as a duplicate control). */
+  flex-wrap: nowrap;
   padding: 10px 16px;
+}
+/* ── Per-card kebab (⋯) menu — Cancel / Copy JSON / Delete demoted here ── */
+.mo-kebab-wrap {
+  position: relative;
+  display: inline-flex;
+}
+.mo-kebab-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--dark-50, #6b7280);
+  cursor: pointer;
+}
+.mo-kebab-btn:hover {
+  background: var(--dark-10, rgba(0, 0, 0, 0.05));
+}
+.mo-kebab-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+}
+.mo-kebab-menu {
+  position: absolute;
+  top: 34px;
+  right: 0;
+  z-index: 41;
+  min-width: 190px;
+  padding: 6px;
+  background: var(--card-bg, #fff);
+  border: 1px solid var(--hairline, #e5e7eb);
+  border-radius: 12px;
+  box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.28);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.mo-kebab-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--foreground);
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+}
+.mo-kebab-item:hover {
+  background: var(--dark-10, rgba(0, 0, 0, 0.05));
+}
+.mo-kebab-item.danger {
+  color: #dc2626;
+}
+.mo-kebab-item.danger:hover {
+  background: rgba(220, 38, 38, 0.1);
+}
+.mo-kebab-group {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--dark-50, #9ca3af);
+  padding: 6px 10px 2px;
+}
+.mo-kebab-sep {
+  height: 1px;
+  background: var(--hairline, #e5e7eb);
+  margin: 4px 6px;
 }
 .mo-panel-left {
   order: 1;
@@ -24474,8 +24671,8 @@ img[data-loaded="true"] {
 }
 .mo-frame-ic {
   flex: 0 0 auto;
-  width: 34px;
-  height: 34px;
+  width: 40px;
+  height: 40px;
   border-radius: 9px;
   display: inline-flex;
   align-items: center;
@@ -24599,6 +24796,15 @@ img[data-loaded="true"] {
   margin-top: auto;
   padding-top: 12px;
   border-top: 1px solid var(--hairline, #ececec);
+}
+/* Keep the whole bottom group (tracking input + action buttons) pinned to the
+   card bottom so those rows line up across cards regardless of how much content
+   (covers, chips, "Collect ₹…" line) sits above them. */
+.mo-card > .mo-card-track {
+  margin-top: auto;
+}
+.mo-card > .mo-card-track + .mo-card-json {
+  margin-top: 0;
 }
 /* Session-dismiss X in the card's top-right. */
 .mo-card-dismiss {
@@ -25867,9 +26073,9 @@ img[data-loaded="true"] {
 }
 /* ₹99-advance prepaid — highlighted so ops collect only the balance. */
 .mo-addon-badge.mo-addon-adv {
-  color: #166534;
-  background: rgba(0, 143, 12, 0.12);
-  border-color: rgba(0, 143, 12, 0.35);
+  color: #b45309;
+  background: rgba(251, 146, 60, 0.16);
+  border-color: rgba(251, 146, 60, 0.4);
   font-weight: 800;
 }
 .mo-ctrls {
@@ -26149,9 +26355,9 @@ img[data-loaded="true"] {
   border-color: rgba(22, 163, 74, 0.28);
 }
 .mo-pay-pill.prepaid {
-  background: rgba(124, 58, 237, 0.12);
-  color: #6d28d9;
-  border-color: rgba(124, 58, 237, 0.28);
+  background: rgba(22, 163, 74, 0.1);
+  color: #16a34a;
+  border-color: rgba(22, 163, 74, 0.22);
 }
 
 /* ===== Orders view toggle (cards / table) ===== */
@@ -26397,6 +26603,13 @@ img[data-loaded="true"] {
   overflow: hidden;
   text-overflow: ellipsis;
   word-break: break-word;
+  /* Always reserve 2 lines so every cover item is the same height and the
+     names/prices line up across covers and cards. */
+  min-height: 24px;
+}
+/* Covers sit flush at the top of their row so titles/prices align. */
+.mo-cover-item {
+  align-self: flex-start;
 }
 .mo-cover-price {
   font-size: 10.5px;

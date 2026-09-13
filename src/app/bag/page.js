@@ -43,6 +43,7 @@ import {
   Share2,
   ShoppingCart,
   RotateCcw,
+  FileText,
   X,
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -1095,6 +1096,20 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
     setTimeout(() => setShowAddressModal(true), 60);
   };
 
+  // Swap a QuickRead (digital ₹19) for its printed book (delivered) — removes
+  // the QuickRead from the bag and adds the physical book. If it was the last
+  // QuickRead, continue straight to the address step.
+  const swapQrToBook = (b) => {
+    const wasLast = qrItems.length <= 1;
+    addToCart(b.id);
+    removeQuickRead(b.id);
+    showToast(`Switched to the printed book — “${b.name}” will be delivered`, "success");
+    if (wasLast) {
+      setShowQrConfirm(false);
+      setTimeout(() => setShowAddressModal(true), 80);
+    }
+  };
+
   const isCheckoutDisabled = !canCheckout || isShortening;
 
   if (!cartBooks.length && !qrItems.length && !libraryBooks.length) {
@@ -1564,16 +1579,55 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
               </div>
 
               <div className="qrc-body">
-                <p className="qrc-copy">
-                  QuickReads are the <b>digital version</b> — a book&apos;s key
-                  insights you read right inside TheBookX. They&apos;re{" "}
-                  <b>not printed books</b> and won&apos;t be shipped.
-                </p>
+                <div className="qrc-explain">
+                  <span className="qrc-explain-ic">
+                    <FileText size={16} />
+                  </span>
+                  <span>
+                    A <b>₹{QUICKREAD_PRICE} QuickRead</b> is a{" "}
+                    <b>digital PDF</b> of the book&apos;s key ideas — readable
+                    only inside TheBookX and <b>not delivered</b>. Want the real
+                    book instead? Swap it below.
+                  </span>
+                </div>
+
+                <div className="qrc-swaplist">
+                  {qrItems.map((b) => (
+                    <div className="qrs-item" key={b.id}>
+                      <img
+                        className="qrs-cover"
+                        src={b.image}
+                        alt={b.name}
+                      />
+                      <div className="qrs-body">
+                        <span className="qrs-name">{b.name}</span>
+                        <div className="qrs-choice">
+                          <span className="qrs-current">
+                            <Zap size={11} /> QuickRead · ₹{QUICKREAD_PRICE}
+                            <span className="qrs-current-sub">Digital PDF</span>
+                          </span>
+                          <button
+                            type="button"
+                            className="qrs-swap"
+                            onClick={() => swapQrToBook(b)}
+                          >
+                            <BookOpen size={13} /> Get the book · ₹
+                            {b.discountedPrice}
+                            <span className="qrs-swap-sub">
+                              Printed · delivered
+                            </span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
 
                 {cartBooks.length > 0 && (
                   <div className="qrc-group">
                     <span className="qrc-group-lbl">
-                      <BookOpen size={12} /> Books — shipped to you
+                      <BookOpen size={12} /> Also in your bag — printed &amp;
+                      delivered
                     </span>
                     <div className="qrc-covers">
                       {cartBooks.map((b) => (
@@ -1587,63 +1641,6 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
                     </div>
                   </div>
                 )}
-
-                <div className="qrc-group">
-                  <span className="qrc-group-lbl">
-                    <Zap size={12} /> QuickReads — digital, read in-app
-                  </span>
-                  <div className="qrc-list">
-                    {qrItems.map((b) => {
-                      const bookInCart = cart.some((i) => i.id === b.id);
-                      return (
-                        <div className="qrc-item" key={b.id}>
-                          <img
-                            className="qrc-item-cover"
-                            src={b.image}
-                            alt={b.name}
-                          />
-                          <div className="qrc-item-main">
-                            <span className="qrc-item-name">{b.name}</span>
-                            <span className="qrc-item-price">
-                              <b>₹{QUICKREAD_PRICE}</b> QuickRead
-                              <span className="qrc-item-bookp">
-                                {" "}
-                                · Book ₹{b.discountedPrice}
-                              </span>
-                            </span>
-                          </div>
-                          <button
-                            type="button"
-                            className="qrc-addbook"
-                            disabled={bookInCart}
-                            onClick={() => {
-                              addToCart(b.id);
-                              showToast(
-                                `Added “${b.name}” (book) to your cart`,
-                                "success",
-                              );
-                            }}
-                          >
-                            {bookInCart ? (
-                              <>
-                                <Check size={13} /> In cart
-                              </>
-                            ) : (
-                              <>
-                                <Plus size={13} /> Add book
-                              </>
-                            )}
-                          </button>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                <p className="qrc-hint">
-                  Want the full book instead? Add it above — QuickReads stay
-                  digital and start instantly after checkout.
-                </p>
               </div>
 
               <div className="qrc-actions">

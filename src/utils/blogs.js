@@ -4,6 +4,225 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "india-third-largest-book-market-2026-report-what-to-read": {
+    id: "blog-049",
+    title:
+      "India Is the World's Third-Largest Book Market: What the New FIP-NielsenIQ Report Means for Readers (2026)",
+    slug: "india-third-largest-book-market-2026-report-what-to-read",
+    author: "TheBookX Editorial",
+    authorSlug: "murthy-thevar",
+    publishDate: "2026-09-13",
+    lastModified: "2026-09-13",
+    excerpt:
+      "India's book market is projected to touch ₹2 lakh crore by 2030-31, with print growing at nearly 11% CAGR. What the new report says, and 15 books to start with.",
+    content: [
+      {
+        type: "paragraph",
+        content:
+          "On 3 September 2026 in New Delhi, the Federation of Indian Publishers and NielsenIQ BookData released the India Book Market Report 2026-2030, the first full update to the Federation's market study since 2022. The headline that travelled fastest was the projection: India's book publishing market is expected to reach ₹2 lakh crore by 2030-31, with the print book market growing at close to 11% compound annual growth. India is already the third-largest publishing market in the world, behind the United States and China.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Industry reports usually matter to people who sell books and to nobody else. This one is worth ten minutes of a reader's attention, because the numbers describe something readers have been feeling for a few years without being able to prove: that the Indian reading public is getting larger, younger, more multilingual and considerably less embarrassed about what it enjoys. The report is evidence for a shift that has mostly been anecdote until now.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "The India Book Market Report 2026-2030 at a glance",
+        content:
+          "Released 3 September 2026 in New Delhi by the Federation of Indian Publishers (FIP) in partnership with NielsenIQ BookData. Projects the Indian book publishing market at ₹2 lakh crore by 2030-31. Print book market growing at nearly 11% CAGR. More than 26,000 publishers operating in the country. India ranks third globally after the United States and China. The report covers print and digital, including e-books and audiobooks, across school, higher education, trade and scholarly publishing, and examines artificial intelligence, copyright, Indian-language markets and policy. It updates FIP's previous market report from 2022.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The Surprise Is That Print Is Growing, Not Shrinking",
+      },
+      {
+        type: "paragraph",
+        content:
+          "For fifteen years the assumed trajectory was that screens would eat paper, and in several Western markets print did flatten before recovering. India never followed that curve. A print market compounding at roughly 11% a year is not a market in managed decline; it is one where a large number of people are buying their first books rather than replacing books they already own. That is a different kind of growth, and it explains a lot about what sells here.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "First-time buyers do not begin with the literary canon. They begin with a book somebody they trust recommended, usually in a language they read comfortably, usually priced at a level that makes a mistake survivable. Which is why the fastest-moving categories in India are self-improvement, mythology retellings, campus and romance fiction, exam and skills material, and translated commercial fiction, in roughly that order. The report's segmentation of school, higher education, trade and scholarly publishing makes the same point in drier language: education is the engine, and trade publishing grows alongside it as readers made in classrooms keep reading afterwards.",
+      },
+      {
+        type: "blockquote",
+        content:
+          "India is the 3rd largest publishing industry in the world after China and USA with the potential to become the largest. — Sanjay Kumar, former Secretary of Education, Government of India, writing in the report",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Where the Growth Is Actually Coming From",
+      },
+      {
+        type: "list",
+        style: "ordered",
+        items: [
+          "<strong>Education.</strong> School and higher-education publishing remains the largest single block of the market, and it is the reason Indian publishing is structurally more stable than trade-only markets. Competitive-exam and skills titles sit at the edge of this segment and sell in volumes trade editors envy.",
+          "<strong>Indian-language publishing.</strong> The report treats regional-language markets as a growth story rather than a footnote, which is overdue. Hindi, Marathi, Bengali, Tamil, Malayalam and Kannada lists have expanded, and translation into English has stopped being a favour and started being a business.",
+          "<strong>Digital formats.</strong> E-books and audiobooks are counted properly here alongside print. Audiobooks in particular are being adopted by commuters in metros in a pattern closer to podcast listening than to book-buying.",
+          "<strong>Scholarly and research publishing.</strong> A large English-reading research population and deep publishing-services expertise give India an unusual position in academic publishing, and the report identifies capturing more of that value chain as the open opportunity.",
+          "<strong>Artificial intelligence and copyright.</strong> The new edition adds a section that the 2022 report did not need, on AI, creator rights and responsible technology adoption. The framing throughout is that expanding access and protecting authors' remuneration are complementary, not opposed.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The Books Behind the Numbers: Indian Fiction",
+      },
+      {
+        type: "paragraph",
+        content:
+          "If you want to understand the market by reading it rather than by reading about it, start here. These are the Indian titles that keep reappearing in sales data year after year, and they are a fair map of what the country reads.",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> — Arundhati Roy's Booker-winning debut, set in Ayemenem in Kerala, is still the book most often named when Indian readers are asked for one novel to represent the country's writing in English. The prose does things to English that had not been done before it, and the structure rewards a second reading more than a first.",
+          "<a href=\"/books/the-palace-of-illusions\" style=\"color:#fb8500;font-weight:600\">The Palace of Illusions</a> — Chitra Banerjee Divakaruni retells the Mahabharata from Draupadi's point of view, and in doing so opened the category that now dominates Indian commercial fiction. Almost every mythology retelling on a bestseller list today is downstream of this book.",
+          "<a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> — R.K. Narayan's stories from an invented South Indian town are the quietest entry on this list and the most durable. Good for readers who insist they have no time: each story is complete in fifteen minutes.",
+          "<a href=\"/books/the-guide\" style=\"color:#fb8500;font-weight:600\">The Guide</a> — Narayan's best novel, about a tour guide who becomes, more or less by accident, a holy man. Funny and unsentimental about exactly the kind of reinvention Indian public life still rewards.",
+          "<a href=\"/books/the-immortals-of-meluha\" style=\"color:#fb8500;font-weight:600\">The Immortals of Meluha</a> — Amish Tripathi's first novel proved that a self-published Indian author writing mythological fiction could outsell imported thrillers, and the industry has not been the same since. Follow it with <a href=\"/books/the-secret-of-the-nagas\" style=\"color:#fb8500;font-weight:600\">The Secret of the Nagas</a> and, for the Ramayana side of his work, <a href=\"/books/sita-warrior-of-mithila\" style=\"color:#fb8500;font-weight:600\">Sita: Warrior of Mithila</a> and <a href=\"/books/raavan-enemy-of-aryavarta\" style=\"color:#fb8500;font-weight:600\">Raavan: Enemy of Aryavarta</a>.",
+          "<a href=\"/books/jaya-an-illustrated-retelling-of-the-mahabharata\" style=\"color:#fb8500;font-weight:600\">Jaya: An Illustrated Retelling of the Mahabharata</a> — Devdutt Pattanaik's version is the one to give someone who wants the whole epic without committing a year to it, and the illustrations earn their place.",
+          "<a href=\"/books/five-point-someone\" style=\"color:#fb8500;font-weight:600\">Five Point Someone</a> — Chetan Bhagat's debut is included here as market history rather than literature. It brought a generation of non-readers into bookshops at a price point that made buying a book a casual decision, which is precisely the behaviour the new report is measuring.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The Non-Fiction That Drives Volume",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The self-improvement and popular-knowledge shelf is where a very large share of Indian book spending actually happens, and dismissing it has never helped anyone understand the market. A few of these titles genuinely deserve their sales.",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> — A.P.J. Abdul Kalam's autobiography, written with Arun Tiwari, is the most-gifted book in the country and remains the best available account of how large Indian technical programmes are actually run, failures included. Its companion <a href=\"/books/ignited-minds-unleashing-the-power-within-india\" style=\"color:#fb8500;font-weight:600\">Ignited Minds</a> is the better one for a school student.",
+          "<a href=\"/books/sapiens-a-brief-history-of-humankind\" style=\"color:#fb8500;font-weight:600\">Sapiens: A Brief History of Humankind</a> — Yuval Noah Harari's history is the standard gateway from not reading non-fiction to reading it. Argue with it as you go; that is the intended use.",
+          "<a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> — James Clear's central claim, that environment beats willpower, is the rare self-help argument with a mechanism behind it. Also the single most effective book for building a reading habit, which makes it oddly relevant here.",
+          "<a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> — Morgan Housel treats saving as a behaviour problem rather than a spreadsheet problem. For most Indian first-salary readers this is the correction that matters.",
+          "<a href=\"/books/word-power-made-easy\" style=\"color:#fb8500;font-weight:600\">Word Power Made Easy</a> — Norman Lewis's vocabulary course has been in continuous use in Indian homes and coaching centres for decades. It belongs on this list because it is a near-perfect illustration of the report's point that education titles are the backbone of the market.",
+          "<a href=\"/books/how-to-read-a-book\" style=\"color:#fb8500;font-weight:600\">How to Read a Book</a> — Mortimer Adler and Charles Van Doren on the four levels of reading. Dated in its examples and entirely correct in its method; useful for anyone who finishes books without retaining them.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "For Readers Who Want the Pleasure Back",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The other pattern in the data is that a lot of Indian adults describe themselves as former readers. If that is you, do not restart with something improving. Restart with something short and warm.",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<a href=\"/books/the-midnight-library\" style=\"color:#fb8500;font-weight:600\">The Midnight Library</a> — Matt Haig's novel about the lives you did not choose. Gentle, fast, and the book most often credited by people who say it ended a reading drought.",
+          "<a href=\"/books/days-at-the-morisaki-bookshop\" style=\"color:#fb8500;font-weight:600\">Days at the Morisaki Bookshop</a> — Satoshi Yagisawa's small Tokyo novel about a young woman who moves in above a second-hand bookshop. Under two hundred pages and almost entirely without conflict, which is the point.",
+          "<a href=\"/books/welcome-to-the-hyunam-dong-bookshop\" style=\"color:#fb8500;font-weight:600\">Welcome to the Hyunam-dong Bookshop</a> — Hwang Bo-reum's Korean bestseller, in the same register. Translated commercial fiction from East Asia has been one of the fastest-growing categories in Indian bookshops, and these two explain why.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The Skill the Report Assumes and Nobody Teaches",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Running through the whole document is an argument about the knowledge economy: that India's advantage is a large, educated, English-reading population able to produce and explain ideas. The producing part is well covered by the education system. The explaining part is not. Most professionals in this country write memos nobody finishes and give presentations that bury the recommendation on slide nine.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a direct treatment of that gap: saying one thing at a time, leading with the conclusion, and writing sentences that cannot be read two ways. It is the shortest distance between reading widely and being useful at work, and it is a method rather than a talent.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "What This Means If You Buy Books in India",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Three practical consequences. Availability is improving: more publishers and more titles mean the backlist you could not find five years ago is often in print now. Prices are staying low, because a market growing through first-time buyers cannot afford to price like a mature one. And regional-language and translated editions are getting real shelf space rather than a token rack, so the book you want may exist in the language you actually think in.",
+      },
+      {
+        type: "callout",
+        style: "success",
+        title: "Starting or restarting a reading habit",
+        content:
+          "Buy two books, not ten. One you are fairly sure you will enjoy, and one slightly harder than your last finished book. Read twenty pages before deciding anything. On TheBookX, books start from ₹1, delivery is free across India, and Cash on Delivery is available on every order, so nothing is paid before the parcel reaches you. Gift wrapping can be added at ₹25 per book if one of the two is for someone else.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The report's most quoted line came from Sanjay Kumar, the former Secretary of Education, and it is not about money at all: that India should embark on reading with comprehension, which is the heart of lifelong learning. A ₹2 lakh crore market is a fact about the economy. Whether the books get read is a separate question, and it is decided one evening at a time.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>",
+      },
+    ],
+    coverImage:
+      "/blogs/india-third-largest-book-market-2026-report-what-to-read.jpeg",
+    images: [
+      {
+        url: "/blogs/india-third-largest-book-market-2026-report-what-to-read.jpeg",
+        alt: "A young Indian woman browsing a crowded bookshop shelf with a book open in her hands, warm daylight from a window behind her",
+        caption:
+          "India is now the world's third-largest book market, with print growing at nearly 11% a year",
+        category: "Reading Culture",
+      },
+    ],
+    keywords: [
+      "india book market report 2026",
+      "india third largest book market",
+      "indian publishing industry 2026",
+      "federation of indian publishers nielseniq report",
+      "india book market 2 lakh crore 2030",
+      "indian print book market growth cagr",
+      "best indian books to read 2026",
+      "reading habits in india",
+      "buy books online india",
+      "TheBookX",
+    ],
+    categories: ["Reading Culture", "Book Industry", "Book Lists"],
+    faqs: [
+      {
+        question: "What is the India Book Market Report 2026-2030?",
+        answer:
+          "It is a market study of Indian book publishing released on 3 September 2026 in New Delhi by the Federation of Indian Publishers in partnership with NielsenIQ BookData. It updates the Federation's previous report from 2022 and covers print and digital publishing, including e-books and audiobooks, across school, higher education, trade and scholarly segments, along with sections on Indian-language publishing, artificial intelligence, copyright and policy. Copies are sold by NielsenIQ BookData and FIP rather than published free.",
+      },
+      {
+        question: "How big is India's book market and how fast is it growing?",
+        answer:
+          "The report projects India's book publishing market will reach ₹2 lakh crore by 2030-31, with the print book market growing at close to 11% compound annual growth rate. More than 26,000 publishers operate in the country. India is the third-largest publishing market in the world, behind the United States and China, and the report argues it has the foundations to grow further if quality, reach and sustainability are strengthened alongside scale.",
+      },
+      {
+        question: "Is print really still growing in India?",
+        answer:
+          "Yes. Unlike several Western markets where print flattened before recovering, India's print book market has kept compounding at close to 11% a year. The likeliest explanation is that a large share of Indian book buying comes from first-time buyers rather than from readers replacing books they already own, which is why low price points, education titles, mythology retellings and self-improvement books move the highest volumes.",
+      },
+      {
+        question: "Which books should I start with if I want to read more Indian writing?",
+        answer:
+          "For literary fiction, The God of Small Things by Arundhati Roy. For mythology, The Palace of Illusions by Chitra Banerjee Divakaruni or Jaya by Devdutt Pattanaik. For short and undemanding, Malgudi Days by R.K. Narayan, where each story finishes in fifteen minutes. For non-fiction, Wings of Fire by A.P.J. Abdul Kalam. On TheBookX these start from ₹1, with free delivery across India and Cash on Delivery on every order.",
+      },
+    ],
+  },
   "engineers-day-2026-books-for-engineers-india": {
     id: "blog-048",
     title:

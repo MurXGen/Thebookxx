@@ -21803,6 +21803,10 @@ img[data-loaded="true"] {
 .mo-card-online {
   background: rgba(22, 163, 74, 0.09);
 }
+/* Prepaid = COD with ₹99 advance already paid — violet tint */
+.mo-card-prepaid {
+  background: rgba(124, 58, 237, 0.09);
+}
 .mo-card.packed {
   border-color: rgba(10, 143, 12, 0.45) !important;
   box-shadow: inset 0 0 0 1px rgba(10, 143, 12, 0.22);
@@ -26143,6 +26147,11 @@ img[data-loaded="true"] {
   background: rgba(22, 163, 74, 0.12);
   color: #15803d;
   border-color: rgba(22, 163, 74, 0.28);
+}
+.mo-pay-pill.prepaid {
+  background: rgba(124, 58, 237, 0.12);
+  color: #6d28d9;
+  border-color: rgba(124, 58, 237, 0.28);
 }
 
 /* ===== Orders view toggle (cards / table) ===== */

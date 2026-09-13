@@ -7837,10 +7837,15 @@ export default function ManageOrdersPage() {
                 (s, o) => s + (Number(o.revenue) || 0),
                 0,
               );
-              const fCod = realOrders.filter((o) =>
+              const fCodAll = realOrders.filter((o) =>
                 /cod|cash/i.test(o["Payment Type"] || ""),
+              );
+              // Prepaid = COD orders whose ₹99 advance is already paid online.
+              const fPrepaid = fCodAll.filter((o) =>
+                /^\s*yes/i.test(String(o["Advance Paid"] || "")),
               ).length;
-              const fUpi = realOrders.length - fCod;
+              const fCod = fCodAll.length - fPrepaid; // pure COD (no advance)
+              const fUpi = realOrders.length - fCodAll.length;
               const fBooks = realOrders.reduce(
                 (s, o) =>
                   s +
@@ -7974,9 +7979,11 @@ export default function ManageOrdersPage() {
                           </div>
                           <div className="an2-stat-body">
                             <span className="an2-stat-val">
-                              {fCod} / {fUpi}
+                              {fCod} / {fUpi} / {fPrepaid}
                             </span>
-                            <span className="an2-stat-lbl">COD / UPI</span>
+                            <span className="an2-stat-lbl">
+                              COD / UPI / Prepaid
+                            </span>
                             <span className="an2-stat-x">payment split</span>
                           </div>
                         </div>
@@ -9542,6 +9549,13 @@ export default function ManageOrdersPage() {
                         const isCOD = /cash|cod/i.test(
                           order["Payment Type"] || "",
                         );
+                        // "Prepaid" = a COD order whose ₹99 advance is already
+                        // paid online (partial prepaid) — coloured distinctly
+                        // from plain COD and full-online (UPI) orders.
+                        const advancePaid = /^\s*yes/i.test(
+                          String(order["Advance Paid"] || ""),
+                        );
+                        const isPrepaid = isCOD && advancePaid;
                         const oidStr = String(orderId || "");
                         const formData = {
                           orderId,
@@ -9576,7 +9590,11 @@ export default function ManageOrdersPage() {
                               delay: Math.min((idx % ORDERS_BATCH) * 0.035, 0.32),
                             }}
                             className={`admin-order-card mo-card ${
-                              isCOD ? "mo-card-cod" : "mo-card-online"
+                              isPrepaid
+                                ? "mo-card-prepaid"
+                                : isCOD
+                                  ? "mo-card-cod"
+                                  : "mo-card-online"
                             }${isPacked ? " packed" : ""}${
                               isExpanded ? " expanded" : ""
                             }${cardSelectMode ? " selectable" : ""}${
@@ -9665,9 +9683,15 @@ export default function ManageOrdersPage() {
                                       </span>
                                     )}
                                     <span
-                                      className={`mo-pay-pill ${isCOD ? "cod" : "upi"}`}
+                                      className={`mo-pay-pill ${
+                                        isPrepaid
+                                          ? "prepaid"
+                                          : isCOD
+                                            ? "cod"
+                                            : "upi"
+                                      }`}
                                     >
-                                      {isCOD ? "COD" : "UPI"}
+                                      {isPrepaid ? "Prepaid" : isCOD ? "COD" : "UPI"}
                                     </span>
                                     <button
                                       type="button"

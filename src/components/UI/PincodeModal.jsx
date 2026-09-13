@@ -85,7 +85,14 @@ export default function PincodeModal() {
   const [scratchDone, setScratchDone] = useState(false);
 
   // Optional "where did you come from?" source (not required to submit).
-  const SOURCE_CHIPS = ["Google", "Instagram", "Facebook", "YouTube"];
+  const SOURCE_CHIPS = [
+    "Google",
+    "Instagram",
+    "Facebook",
+    "YouTube",
+    "ChatGPT",
+    "AI",
+  ];
   const [source, setSource] = useState("");
   const [otherSource, setOtherSource] = useState("");
   const [showOtherSource, setShowOtherSource] = useState(false);

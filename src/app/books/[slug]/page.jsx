@@ -2,6 +2,7 @@
 import { books } from "@/utils/book";
 import { notFound, redirect } from "next/navigation";
 import BookDetailsModal from "@/components/BookDeatilsModel";
+import BookAvailabilityGate from "@/components/BookAvailabilityGate";
 
 // Slugify function
 function slugify(text) {
@@ -131,5 +132,9 @@ export default async function BookDetailsPage({ params }) {
     notFound();
   }
 
-  return <BookDetailsModal book={book} />;
+  return (
+    <BookAvailabilityGate slug={slugify(book.name)}>
+      <BookDetailsModal book={book} />
+    </BookAvailabilityGate>
+  );
 }

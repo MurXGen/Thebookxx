@@ -324,6 +324,67 @@ const SHEET_API_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/t
 const WALLET_SHEET_NAME = "Wallet";
 const WALLET_SHEET_API_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(WALLET_SHEET_NAME)}`;
 
+// First-visit lead-capture responses (pincode/number/source). Published-to-web
+// CSV of the "C-Pincodes (Responses)" sheet — same source the /c-responses page
+// reads. Columns: Timestamp | Pincode | City | State | Phone Number |
+// Submission Type | userAgent | referrer | Source
+const LEADS_CSV_URL =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vRWmFx8QrlHdwPa4QQ_iPLiq-jq9WmEZtz8i9dJha2TvgNmWnoTqhoRdt257iBGlv9_deHpUzxB0dCb/pub?output=csv";
+
+// Minimal CSV parser (handles quoted fields with embedded commas/newlines).
+function parseLeadsCSV(text) {
+  const rows = [];
+  let field = "";
+  let row = [];
+  let inQ = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inQ) {
+      if (c === '"') {
+        if (text[i + 1] === '"') {
+          field += '"';
+          i++;
+        } else inQ = false;
+      } else field += c;
+    } else if (c === '"') inQ = true;
+    else if (c === ",") {
+      row.push(field);
+      field = "";
+    } else if (c === "\n") {
+      row.push(field);
+      rows.push(row);
+      row = [];
+      field = "";
+    } else if (c !== "\r") field += c;
+  }
+  if (field.length || row.length) {
+    row.push(field);
+    rows.push(row);
+  }
+  return rows;
+}
+
+// Fall back to a source derived from the referrer when the explicit Source
+// column is blank.
+function leadSourceFromReferrer(ref) {
+  const r = (ref || "").toLowerCase();
+  if (!r) return "Direct";
+  if (r.includes("chatgpt") || r.includes("openai")) return "ChatGPT";
+  if (r.includes("instagram")) return "Instagram";
+  if (r.includes("facebook") || r.includes("fb.")) return "Facebook";
+  if (r.includes("google")) return "Google";
+  if (r.includes("youtube")) return "YouTube";
+  if (r.includes("whatsapp")) return "WhatsApp";
+  if (r.includes("t.co") || r.includes("twitter") || r.includes("x.com"))
+    return "Twitter / X";
+  if (r.includes("thebookx")) return "Direct";
+  try {
+    return new URL(ref).hostname.replace(/^www\./, "");
+  } catch {
+    return "Other";
+  }
+}
+
 // Google Forms submit URL
 const FORM_SUBMIT_URL =
   "https://docs.google.com/forms/d/e/1FAIpQLSc3dUHr_S01ODuvQpok_8n0tG0ezfUPD5NLK0M_tyms25I-eQ/formResponse";
@@ -2899,6 +2960,55 @@ export default function ManageOrdersPage() {
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  // First-visit lead-capture rows (phone + source), for the conversion section.
+  const [leads, setLeads] = useState([]);
+  const [leadsLoading, setLeadsLoading] = useState(true);
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const res = await fetch(LEADS_CSV_URL, { cache: "no-store" });
+        const text = await res.text();
+        const m = parseLeadsCSV(text);
+        const header = m[0] || [];
+        const idx = (name) =>
+          header.findIndex(
+            (h) => String(h).trim().toLowerCase() === name.toLowerCase(),
+          );
+        const iPhone = idx("Phone Number");
+        const iType = idx("Submission Type");
+        const iRef = idx("referrer");
+        const iSrc = idx("Source");
+        const parsed = m
+          .slice(1)
+          .filter((r) => r.length > 1)
+          .map((r) => {
+            const phone = String((iPhone >= 0 && r[iPhone]) || "").replace(
+              /\D/g,
+              "",
+            );
+            const explicit = String((iSrc >= 0 && r[iSrc]) || "").trim();
+            return {
+              phone10: phone.slice(-10),
+              hasPhone: phone.length >= 10,
+              type: String((iType >= 0 && r[iType]) || "")
+                .trim()
+                .toLowerCase(),
+              source: explicit || leadSourceFromReferrer(r[iRef]),
+            };
+          });
+        if (alive) setLeads(parsed);
+      } catch (e) {
+        console.error("Leads CSV fetch failed:", e);
+        if (alive) setLeads([]);
+      } finally {
+        if (alive) setLeadsLoading(false);
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
   const fetchedRef = useRef(false); // orders fetch completed (success or error)
   const [searchQuery, setSearchQuery] = useState("");
   // Users tab — filter to customers holding a wallet balance for ≥ N days.
@@ -3707,6 +3817,7 @@ export default function ManageOrdersPage() {
   const [merging, setMerging] = useState(false); // merge write in progress
   const [mergeStatusDrafts, setMergeStatusDrafts] = useState({}); // per-order status edits in merge modal
   const [waPick, setWaPick] = useState(""); // dropdown-selected stage (not yet triggered)
+  const [bpShowAll, setBpShowAll] = useState(false); // Book profitability: show all vs top 10
 
   const [accOpen, setAccOpen] = useState({
     analytics: true,
@@ -5292,6 +5403,54 @@ export default function ManageOrdersPage() {
     [analyticsOrders],
   );
 
+  // Lead-source attribution + conversion: cross-reference the first-visit
+  // capture rows (phone + source) against phones that actually placed an order.
+  const leadInsights = useMemo(() => {
+    const norm = (p) => String(p || "").replace(/\D/g, "").slice(-10);
+    // Phones that have ordered (any real order, all time).
+    const orderPhones = new Set();
+    orders.forEach((o) => {
+      if (o["Order ID"]) {
+        const p = norm(o["Phone Number"]);
+        if (p.length === 10) orderPhones.add(p);
+      }
+    });
+    // Unique leads that submitted a phone; keep the first source seen.
+    const byPhone = new Map();
+    leads.forEach((l) => {
+      if (!l.hasPhone || l.phone10.length !== 10) return;
+      if (l.type && l.type !== "submit") return; // only real number submissions
+      if (!byPhone.has(l.phone10))
+        byPhone.set(l.phone10, l.source || "Direct");
+    });
+    const bySource = {};
+    let ordered = 0;
+    byPhone.forEach((source, phone) => {
+      const s = source || "Direct";
+      if (!bySource[s]) bySource[s] = { source: s, leads: 0, ordered: 0 };
+      bySource[s].leads += 1;
+      if (orderPhones.has(phone)) {
+        bySource[s].ordered += 1;
+        ordered += 1;
+      }
+    });
+    const totalLeads = byPhone.size;
+    const sources = Object.values(bySource)
+      .map((r) => ({
+        ...r,
+        rate: r.leads ? Math.round((r.ordered / r.leads) * 100) : 0,
+      }))
+      .sort((a, b) => b.leads - a.leads);
+    return {
+      totalLeads,
+      ordered,
+      notOrdered: Math.max(0, totalLeads - ordered),
+      rate: totalLeads ? Math.round((ordered / totalLeads) * 100) : 0,
+      sources,
+      orderPhonesCount: orderPhones.size,
+    };
+  }, [leads, orders]);
+
   // 1 — Top overview stats for the selected period.
   const overview = useMemo(() => {
     const n = anOrders.length;
@@ -5496,7 +5655,7 @@ export default function ManageOrdersPage() {
             name,
             qty: 0,
             revenue: 0,
-            unitCost: b ? Number(b.cost) || 0 : 0,
+            unitCost: b ? Number(getBookCost(b.id)) || 0 : 0,
             matched: !!b,
           };
         map[name].qty += qty;
@@ -6378,7 +6537,7 @@ export default function ManageOrdersPage() {
             name,
             qty: 0,
             revenue: 0,
-            unitCost: b ? Number(b.cost) || 0 : 0,
+            unitCost: b ? Number(getBookCost(b.id)) || 0 : 0,
             matched: !!b,
           };
         }
@@ -7664,7 +7823,10 @@ export default function ManageOrdersPage() {
                         </td>
                       </tr>
                     )}
-                    {bookStats.rows.map((r) => (
+                    {(bpShowAll
+                      ? bookStats.rows
+                      : bookStats.rows.slice(0, 10)
+                    ).map((r) => (
                       <tr key={r.name}>
                         <td>
                           <span className="an2-bp-name">{r.name}</span>
@@ -7695,6 +7857,17 @@ export default function ManageOrdersPage() {
                   </tbody>
                 </table>
               </div>
+              {bookStats.rows.length > 10 && (
+                <button
+                  type="button"
+                  className="an2-bp-more"
+                  onClick={() => setBpShowAll((v) => !v)}
+                >
+                  {bpShowAll
+                    ? "Show top 10"
+                    : `Load ${bookStats.rows.length - 10} more`}
+                </button>
+              )}
             </An2Section>
 
             {/* Payment mix + customers */}
@@ -7792,6 +7965,59 @@ export default function ManageOrdersPage() {
                 }))}
                 accent="#0ea5e9"
               />
+            </An2Section>
+
+            <An2Section
+              title="Lead sources & conversion"
+              sub="Numbers captured on first visit → who placed an order"
+            >
+              {leadsLoading ? (
+                <div className="sv-empty">Loading leads…</div>
+              ) : leadInsights.totalLeads === 0 ? (
+                <div className="sv-empty">
+                  No captured numbers found (check the leads sheet is published).
+                </div>
+              ) : (
+                <>
+                  <div className="lead-kpis">
+                    <div className="lead-kpi">
+                      <span className="lead-kpi-val">
+                        {leadInsights.totalLeads.toLocaleString()}
+                      </span>
+                      <span className="lead-kpi-lbl">Numbers captured</span>
+                    </div>
+                    <div className="lead-kpi">
+                      <span className="lead-kpi-val pos">
+                        {leadInsights.ordered.toLocaleString()}
+                      </span>
+                      <span className="lead-kpi-lbl">Ordered</span>
+                    </div>
+                    <div className="lead-kpi">
+                      <span className="lead-kpi-val muted">
+                        {leadInsights.notOrdered.toLocaleString()}
+                      </span>
+                      <span className="lead-kpi-lbl">Not ordered</span>
+                    </div>
+                    <div className="lead-kpi">
+                      <span className="lead-kpi-val accent">
+                        {leadInsights.rate}%
+                      </span>
+                      <span className="lead-kpi-lbl">Conversion</span>
+                    </div>
+                  </div>
+                  <div className="lead-src-head">
+                    By source · ordered / captured · conversion
+                  </div>
+                  <HBars
+                    items={leadInsights.sources.map((s) => ({
+                      label: s.source,
+                      value: s.leads,
+                      display: `${s.ordered}/${s.leads} · ${s.rate}%`,
+                    }))}
+                    accent="#7c3aed"
+                  />
+                </>
+              )}
             </An2Section>
           </div>
         )}

@@ -6596,23 +6596,40 @@ export const books = [
     discountedPrice: 249,
     weight: 500,
   },
-  // Removed in response to a DMCA takedown notice (Vercel, dmca@vercel.com).
-  // {
-  //   id: "bk-447",
-  //   name: "Technical Analysis of Financial Markets",
-  //   image: bookImages["technical-analysis-of-financial-markets"],
-  //   description:
-  //     "Master technical trading with John J. Murphy's definitive 'Technical Analysis of Financial Markets' at TheBookX.in. The complete guide to charting, indicators, and market analysis for serious traders. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
-  //   author: "John J. Murphy",
-  //   pages: "576",
-  //   language: "English",
-  //   size: "Paperback",
-  //   stock: 20,
-  //   catalogue: ["non-fiction", "finance"],
-  //   originalPrice: calculateOriginalPrice(369),
-  //   discountedPrice: 369,
-  //   weight: 600,
-  // },
+  // Relisted with rights-holder permission; shown only within the permitted
+  // display window (see BookAvailabilityGate).
+  {
+    id: "bk-447",
+    name: "Technical Analysis of Financial Markets",
+    image: bookImages["technical-analysis-of-financial-markets"],
+    description:
+      "Master technical trading with John J. Murphy's definitive 'Technical Analysis of Financial Markets' at TheBookX.in. The complete guide to charting, indicators, and market analysis for serious traders. TheBookX ensures authentic books in pristine condition, securely shipped via Delhivery and Indian Post. Books starting at just ₹1.",
+    author: "John J. Murphy",
+    pages: "576",
+    language: "English",
+    size: "Paperback",
+    stock: 20,
+    catalogue: ["non-fiction", "finance"],
+    originalPrice: calculateOriginalPrice(369),
+    discountedPrice: 369,
+    weight: 600,
+  },
+  {
+    id: "bk-026",
+    name: "We Are There for Each Other",
+    image: bookImages["we-are-there-for-each-other"],
+    description:
+      "Sagar Chudesara's national bestselling debut 'We Are There for Each Other' — an intense love story of four friends on a road trip of a lifetime, a heartfelt journey of romance, friendship and fighting for love. One of India's fastest-selling debut novels, now at TheBookX.in. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
+    author: "Sagar Chudesara",
+    pages: "280",
+    language: "English",
+    size: "Paperback",
+    stock: 20,
+    catalogue: ["fiction", "romance", "bestseller"],
+    originalPrice: calculateOriginalPrice(199),
+    discountedPrice: 199,
+    weight: 250,
+  },
   {
     id: "bk-450",
     name: "The Bane Chronicles",

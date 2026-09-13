@@ -1580,45 +1580,35 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
 
               <div className="qrc-body">
                 <div className="qrc-explain">
-                  <span className="qrc-explain-ic">
-                    <FileText size={16} />
-                  </span>
+                  <FileText size={15} />
                   <span>
-                    A <b>₹{QUICKREAD_PRICE} QuickRead</b> is a{" "}
-                    <b>digital PDF</b> of the book&apos;s key ideas — readable
-                    only inside TheBookX and <b>not delivered</b>. Want the real
-                    book instead? Swap it below.
+                    <b>₹{QUICKREAD_PRICE} QuickReads</b> are a{" "}
+                    <b>digital PDF</b> of the book&apos;s key ideas — read only
+                    in TheBookX, not delivered. Prefer the paperback? Swap below.
                   </span>
                 </div>
 
                 <div className="qrc-swaplist">
                   {qrItems.map((b) => (
                     <div className="qrs-item" key={b.id}>
-                      <img
-                        className="qrs-cover"
-                        src={b.image}
-                        alt={b.name}
-                      />
-                      <div className="qrs-body">
+                      <img className="qrs-cover" src={b.image} alt={b.name} />
+                      <div className="qrs-info">
                         <span className="qrs-name">{b.name}</span>
-                        <div className="qrs-choice">
-                          <span className="qrs-current">
-                            <Zap size={11} /> QuickRead · ₹{QUICKREAD_PRICE}
-                            <span className="qrs-current-sub">Digital PDF</span>
-                          </span>
-                          <button
-                            type="button"
-                            className="qrs-swap"
-                            onClick={() => swapQrToBook(b)}
-                          >
-                            <BookOpen size={13} /> Get the book · ₹
-                            {b.discountedPrice}
-                            <span className="qrs-swap-sub">
-                              Printed · delivered
-                            </span>
-                          </button>
-                        </div>
+                        <span className="qrs-tag">
+                          <Zap size={11} /> QuickRead · ₹{QUICKREAD_PRICE} ·
+                          digital PDF
+                        </span>
                       </div>
+                      <button
+                        type="button"
+                        className="qrs-swap"
+                        onClick={() => swapQrToBook(b)}
+                      >
+                        <span className="qrs-swap-top">
+                          Paperback ₹{b.discountedPrice}
+                        </span>
+                        <span className="qrs-swap-sub">Physical copy</span>
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -1626,8 +1616,7 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
                 {cartBooks.length > 0 && (
                   <div className="qrc-group">
                     <span className="qrc-group-lbl">
-                      <BookOpen size={12} /> Also in your bag — printed &amp;
-                      delivered
+                      <BookOpen size={12} /> Paperbacks in your bag
                     </span>
                     <div className="qrc-covers">
                       {cartBooks.map((b) => (

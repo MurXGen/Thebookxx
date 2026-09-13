@@ -42845,6 +42845,88 @@ img[data-loaded="true"] {
   border: 1px solid #ffe3c2;
   background: linear-gradient(160deg, #fff7ed 0%, #ffffff 70%);
 }
+/* QuickReads pre-checkout confirmation modal */
+.qrc-modal {
+  padding-bottom: 16px;
+}
+.qrc-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 4px 0 14px;
+}
+.qrc-copy {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: #374151;
+}
+.qrc-covers {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 2px 0 4px;
+  scrollbar-width: none;
+}
+.qrc-covers::-webkit-scrollbar {
+  display: none;
+}
+.qrc-cover {
+  position: relative;
+  flex-shrink: 0;
+  width: 74px;
+}
+.qrc-cover img {
+  width: 74px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #eef0f2;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: block;
+}
+.qrc-cover-badge {
+  position: absolute;
+  left: 50%;
+  bottom: 6px;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  white-space: nowrap;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-size: 9.5px;
+  font-weight: 800;
+  color: #fff;
+  background: linear-gradient(135deg, #fb8500, #ffb703);
+  box-shadow: 0 2px 6px rgba(251, 133, 0, 0.5);
+}
+.qrc-hint {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--tertiary, #fb8500);
+}
+.qrc-actions {
+  display: flex;
+  gap: 10px;
+}
+.qrc-preview {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+.qrc-confirm {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+
 /* Compact, conversion-first variant used right below the profile card. */
 .refearn-card--compact {
   margin-top: 12px;

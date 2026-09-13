@@ -90,6 +90,7 @@ function BagContent() {
   const [upsellAccepted, setUpsellAccepted] = useState(false);
   const [showRecommendationModal, setShowRecommendationModal] = useState(false);
   const [showFreeShippingNudge, setShowFreeShippingNudge] = useState(false);
+  const [showQrConfirm, setShowQrConfirm] = useState(false);
   const [sharedBooks, setSharedBooks] = useState([]); // [{ book, qty }]
   const [showSharedModal, setShowSharedModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false); // review-before-share
@@ -1060,13 +1061,23 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
       return;
     }
 
-    setShowAddressModal(true);
+    proceedToCheckout();
+  };
+
+  // If the bag has QuickReads, remind the shopper they're digital-only BEFORE
+  // the address step; otherwise go straight to the address modal.
+  const proceedToCheckout = () => {
+    if (qrItems.length > 0) {
+      setShowQrConfirm(true);
+    } else {
+      setShowAddressModal(true);
+    }
   };
 
   const handleSkipNudge = () => {
     setHasAcceptedShipping(true);
     setShowFreeShippingNudge(false);
-    setTimeout(() => setShowAddressModal(true), 100);
+    setTimeout(() => proceedToCheckout(), 100);
   };
 
   const handleNudgeClose = () => {
@@ -1075,7 +1086,13 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
 
   const handleProceedAfterUnlock = () => {
     setShowFreeShippingNudge(false);
-    setTimeout(() => setShowAddressModal(true), 100);
+    setTimeout(() => proceedToCheckout(), 100);
+  };
+
+  // QuickReads confirmation → proceed to the address modal.
+  const handleQrConfirm = () => {
+    setShowQrConfirm(false);
+    setTimeout(() => setShowAddressModal(true), 60);
   };
 
   const isCheckoutDisabled = !canCheckout || isShortening;
@@ -1513,6 +1530,88 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
         cartBooks={cartBooks}
         totalDiscounted={totalDiscounted}
       />
+
+      {/* QuickReads awareness — shown before the address step when the bag has
+          any QuickReads, so shoppers know they're digital-only. */}
+      <AnimatePresence>
+        {showQrConfirm && qrItems.length > 0 && (
+          <motion.div
+            className="bill-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowQrConfirm(false)}
+            style={{ maxWidth: "980px", margin: "0 auto" }}
+          >
+            <motion.div
+              className="bill-modal qrc-modal"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="bill-header">
+                <span className="weight-600 font-16 flex items-center gap-8">
+                  <Zap size={17} /> Your bag has QuickReads
+                </span>
+                <span
+                  className="cursor-pointer"
+                  onClick={() => setShowQrConfirm(false)}
+                >
+                  <X size={18} />
+                </span>
+              </div>
+
+              <div className="qrc-body">
+                <p className="qrc-copy">
+                  QuickReads are the <b>digital version</b> — a book&apos;s key
+                  insights you read right inside TheBookX. They&apos;re{" "}
+                  <b>not printed books</b> and won&apos;t be shipped.
+                </p>
+
+                <div className="qrc-covers">
+                  {qrItems.map((b) => (
+                    <div className="qrc-cover" key={b.id}>
+                      <img src={b.image} alt={b.name} />
+                      <span className="qrc-cover-badge">
+                        <Zap size={10} /> QuickRead
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                <p className="qrc-hint">
+                  Start reading instantly after checkout — no delivery needed.
+                </p>
+              </div>
+
+              <div className="qrc-actions">
+                <button
+                  type="button"
+                  className="sec-big-btn qrc-preview"
+                  onClick={() =>
+                    window.open(
+                      `/quickreads/${qrSlugify(qrItems[0].name)}`,
+                      "_blank",
+                      "noopener,noreferrer",
+                    )
+                  }
+                >
+                  <BookOpen size={16} /> Preview
+                </button>
+                <button
+                  type="button"
+                  className="pri-big-btn qrc-confirm"
+                  onClick={handleQrConfirm}
+                >
+                  <Check size={16} /> Yes, confirm order
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <AddressModal
         open={showAddressModal}

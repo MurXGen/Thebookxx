@@ -1579,6 +1579,9 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
                       {cartBooks.map((b) => (
                         <div className="qrc-cover" key={b.id}>
                           <img src={b.image} alt={b.name} />
+                          <span className="qrc-cover-cap">
+                            ₹{b.discountedPrice}
+                          </span>
                         </div>
                       ))}
                     </div>
@@ -1589,21 +1592,57 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
                   <span className="qrc-group-lbl">
                     <Zap size={12} /> QuickReads — digital, read in-app
                   </span>
-                  <div className="qrc-covers">
-                    {qrItems.map((b) => (
-                      <div className="qrc-cover" key={b.id}>
-                        <img src={b.image} alt={b.name} />
-                        <span className="qrc-cover-badge">
-                          <Zap size={10} /> QuickRead
-                        </span>
-                      </div>
-                    ))}
+                  <div className="qrc-list">
+                    {qrItems.map((b) => {
+                      const bookInCart = cart.some((i) => i.id === b.id);
+                      return (
+                        <div className="qrc-item" key={b.id}>
+                          <img
+                            className="qrc-item-cover"
+                            src={b.image}
+                            alt={b.name}
+                          />
+                          <div className="qrc-item-main">
+                            <span className="qrc-item-name">{b.name}</span>
+                            <span className="qrc-item-price">
+                              <b>₹{QUICKREAD_PRICE}</b> QuickRead
+                              <span className="qrc-item-bookp">
+                                {" "}
+                                · Book ₹{b.discountedPrice}
+                              </span>
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            className="qrc-addbook"
+                            disabled={bookInCart}
+                            onClick={() => {
+                              addToCart(b.id);
+                              showToast(
+                                `Added “${b.name}” (book) to your cart`,
+                                "success",
+                              );
+                            }}
+                          >
+                            {bookInCart ? (
+                              <>
+                                <Check size={13} /> In cart
+                              </>
+                            ) : (
+                              <>
+                                <Plus size={13} /> Add book
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
 
                 <p className="qrc-hint">
-                  Start reading QuickReads instantly after checkout — no delivery
-                  needed.
+                  Want the full book instead? Add it above — QuickReads stay
+                  digital and start instantly after checkout.
                 </p>
               </div>
 

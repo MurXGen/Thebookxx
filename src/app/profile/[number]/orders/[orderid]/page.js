@@ -225,7 +225,7 @@ export default function OrderDetailPage() {
   const [noteSaving, setNoteSaving] = useState(false);
   // Faster-delivery upgrade (applied to the sheet) + undo snapshot.
   const [upgrading, setUpgrading] = useState(false);
-  const [upgradeUndo, setUpgradeUndo] = useState(null);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   const mapRef = useRef(null);
   const mapObj = useRef(null);
@@ -930,11 +930,6 @@ export default function OrderDetailPage() {
   const applyFasterUpgrade = async () => {
     if (upgrading || upgradeExtra == null) return;
     setUpgrading(true);
-    const prev = {
-      type: order["Delivery Type"] || "",
-      total: order["Total Amount"] || "",
-      charge: order["Delivery Charge"] || "",
-    };
     const orderValue = bd.sub || 0;
     const hasOneRupee = books.some(
       (b) => Number(b.price) === 1 || Number(b.total) === 1,
@@ -950,9 +945,9 @@ export default function OrderDetailPage() {
     try {
       await updateOrderRow(orderId, fields);
       setOrder((o) => ({ ...o, ...fields }));
-      setUpgradeUndo(prev);
+      setShowUpgradeModal(false);
       // Let the team know so they prioritise dispatch for the faster delivery.
-      const msg = `Hi TheBookX, I've *upgraded to Faster delivery* (+₹${upgradeExtra}) for order ${orderId}. New total ₹${newTotal}. Please dispatch it faster. 🙏`;
+      const msg = `Hi TheBookX, I've *upgraded to Faster delivery* (+₹${upgradeExtra}) for order ${orderId}. New total ₹${newTotal}. Please dispatch it faster by air. 🙏`;
       window.open(
         `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(msg)}`,
         "_blank",
@@ -966,21 +961,39 @@ export default function OrderDetailPage() {
     }
   };
 
-  const undoFasterUpgrade = async () => {
-    if (!upgradeUndo || upgrading) return;
+  // Revert a Faster order back to Standard delivery — works even after reload
+  // (recomputes charges from the order value), updates the sheet and pings us.
+  const revertToStandard = async () => {
+    if (upgrading || !isFaster) return;
     setUpgrading(true);
+    const orderValue = bd.sub || 0;
+    const hasOneRupee = books.some(
+      (b) => Number(b.price) === 1 || Number(b.total) === 1,
+    );
+    const standardCharge = getDeliveryCharge(orderValue, false, hasOneRupee);
+    const fasterCharge = getDeliveryCharge(orderValue, true, hasOneRupee);
+    const diff = Math.max(0, fasterCharge - standardCharge);
+    const newTotal = Math.max(
+      0,
+      (parseFloat(order["Total Amount"]) || bd.grand) - diff,
+    );
     const fields = {
-      "Delivery Type": upgradeUndo.type,
-      "Total Amount": String(upgradeUndo.total),
-      "Delivery Charge": String(upgradeUndo.charge),
+      "Delivery Type": "Standard Delivery",
+      "Total Amount": String(newTotal),
+      "Delivery Charge": String(standardCharge),
     };
     try {
       await updateOrderRow(orderId, fields);
       setOrder((o) => ({ ...o, ...fields }));
-      setUpgradeUndo(null);
+      const msg = `Hi TheBookX, I've switched order ${orderId} *back to Standard delivery* (−₹${diff}). New total ₹${newTotal}. Please dispatch it as standard. 🙏`;
+      window.open(
+        `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(msg)}`,
+        "_blank",
+        "noopener,noreferrer",
+      );
     } catch (e) {
-      console.error("Undo upgrade failed", e);
-      alert("Couldn't undo right now. Please try again.");
+      console.error("Revert to standard failed", e);
+      alert("Couldn't switch back right now. Please try again.");
     } finally {
       setUpgrading(false);
     }
@@ -1109,56 +1122,153 @@ export default function OrderDetailPage() {
                   >
                     Track ↗
                   </button>
+                ) : !delivered && isFaster && !shippingId ? (
+                  <button
+                    type="button"
+                    className="od-tc-revert"
+                    onClick={revertToStandard}
+                    disabled={upgrading}
+                    title="Switch back to standard delivery"
+                  >
+                    {upgrading ? "Switching…" : "Go with standard delivery"}
+                  </button>
                 ) : (
                   upgradeExtra != null &&
                   !shippingId && (
                     <button
                       type="button"
                       className="od-tc-upgrade"
-                      onClick={applyFasterUpgrade}
+                      onClick={() => setShowUpgradeModal(true)}
                       disabled={upgrading}
                       title={`Get it in 1–5 days instead of ${etaMin}–${etaMax}`}
                     >
                       <Zap size={13} />
-                      {upgrading ? "Upgrading…" : `Faster +₹${upgradeExtra}`}
+                      {`Faster +₹${upgradeExtra}`}
                     </button>
                   )
                 )}
               </div>
-              {!delivered &&
-                !isFaster &&
-                upgradeExtra != null &&
-                !shippingId && (
-                  <div className="od-tc-planhint">
-                    <span className="od-tc-plan-badge">
-                      Current plan · Standard
-                    </span>
+              {!delivered && !shippingId && (
+                <div className="od-tc-planhint">
+                  <span className="od-tc-plan-badge">
+                    Current plan · {isFaster ? "Faster" : "Standard"}
+                  </span>
+                  {isFaster ? (
                     <span className="od-tc-plan-up">
-                      Upgrade to Faster — get it in 1–5 days
+                      Priority air dispatch · arriving in 1–5 days
                     </span>
-                  </div>
-                )}
+                  ) : (
+                    upgradeExtra != null && (
+                      <span className="od-tc-plan-up">
+                        Upgrade to Faster — get it in 1–5 days
+                      </span>
+                    )
+                  )}
+                </div>
+              )}
             </>
           )}
         </div>
       )}
 
-      {/* Fixed undo bar after a faster-delivery upgrade */}
-      {upgradeUndo && (
-        <div className="od-undo-bar">
-          <span className="od-undo-txt">
-            <Check size={15} /> Upgraded to faster delivery
-          </span>
-          <button
-            type="button"
-            className="od-undo-btn"
-            onClick={undoFasterUpgrade}
-            disabled={upgrading}
+      {/* Faster-delivery upgrade — confirmation modal (benefits + air mode) */}
+      <AnimatePresence>
+        {showUpgradeModal && upgradeExtra != null && (
+          <motion.div
+            className="bill-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => !upgrading && setShowUpgradeModal(false)}
+            style={{ maxWidth: "980px", margin: "0 auto" }}
           >
-            Undo
-          </button>
-        </div>
-      )}
+            <motion.div
+              className="bill-modal fdu-modal"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.32, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="bill-header">
+                <span className="weight-600 font-16 flex items-center gap-8">
+                  <Plane size={17} /> Upgrade to Faster delivery
+                </span>
+                <span
+                  className="cursor-pointer"
+                  onClick={() => !upgrading && setShowUpgradeModal(false)}
+                >
+                  <X size={18} />
+                </span>
+              </div>
+
+              <div className="fdu-body">
+                <div className="fdu-hero">
+                  <span className="fdu-hero-ic">
+                    <Plane size={22} />
+                  </span>
+                  <div className="fdu-hero-txt">
+                    <strong>Air mode dispatch</strong>
+                    <span>
+                      Your parcel ships by <b>air</b> on priority — arriving in{" "}
+                      <b>1–5 days</b> instead of {etaMin}–{etaMax} days.
+                    </span>
+                  </div>
+                </div>
+
+                <div className="fdu-benefits">
+                  <div className="fdu-benefit">
+                    <Zap size={15} /> Priority air dispatch — packed & shipped
+                    first
+                  </div>
+                  <div className="fdu-benefit">
+                    <Truck size={15} /> Faster transit: 1–5 days delivery window
+                  </div>
+                  <div className="fdu-benefit">
+                    <ShieldCheck size={15} /> Same safe, tracked handling — end to
+                    end
+                  </div>
+                </div>
+
+                <div className="fdu-bill">
+                  <div className="fdu-bill-row">
+                    <span>Faster delivery upgrade</span>
+                    <span>+₹{upgradeExtra}</span>
+                  </div>
+                  <div className="fdu-bill-row fdu-bill-total">
+                    <span>New order total</span>
+                    <span>
+                      ₹
+                      {(parseFloat(order["Total Amount"]) || bd.grand) +
+                        upgradeExtra}
+                    </span>
+                  </div>
+                </div>
+
+                <p className="fdu-note">
+                  The extra ₹{upgradeExtra} is added to your order total. You can
+                  switch back to standard delivery anytime before dispatch.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                className="pri-big-btn width100 fdu-confirm"
+                onClick={applyFasterUpgrade}
+                disabled={upgrading}
+              >
+                {upgrading ? (
+                  <>
+                    <Loader2 size={16} className="lb-spinner" /> Upgrading…
+                  </>
+                ) : (
+                  "Okay, I got it — confirm upgrade"
+                )}
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Refer & earn — generate a shareable link, earn ₹50 on a friend's
           first delivered order. Shown above the delivery details. */}

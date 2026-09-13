@@ -39928,6 +39928,111 @@ img[data-loaded="true"] {
 .od-tc-upgrade:disabled {
   opacity: 0.7;
 }
+/* "Go with standard delivery" — subtle revert control for a Faster order */
+.od-tc-revert {
+  flex-shrink: 0;
+  border: 1px solid var(--hairline, #e5e7eb);
+  background: #fff;
+  color: #4b5563;
+  padding: 7px 13px;
+  border-radius: 999px;
+  font-size: var(--px-12);
+  font-weight: 700;
+  cursor: pointer;
+}
+.od-tc-revert:disabled {
+  opacity: 0.7;
+}
+/* Faster-delivery upgrade confirmation modal */
+.fdu-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 4px 0 14px;
+}
+.fdu-hero {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid #fed7aa;
+  background: linear-gradient(160deg, #fff7ed 0%, #ffffff 75%);
+}
+.fdu-hero-ic {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  color: #fff;
+  background: linear-gradient(135deg, #fb8500, #ffb703);
+}
+.fdu-hero-txt {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.fdu-hero-txt strong {
+  font-size: 14.5px;
+  font-weight: 800;
+  color: #0a0a0a;
+}
+.fdu-hero-txt span {
+  font-size: 12.5px;
+  color: #6b7280;
+  line-height: 1.5;
+}
+.fdu-benefits {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.fdu-benefit {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+.fdu-benefit svg {
+  flex-shrink: 0;
+  color: var(--tertiary, #fb8500);
+}
+.fdu-bill {
+  border: 1px solid #eef0f2;
+  border-radius: 14px;
+  padding: 12px 14px;
+  background: #fafafa;
+}
+.fdu-bill-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13.5px;
+  padding: 3px 0;
+  color: #374151;
+}
+.fdu-bill-total {
+  margin-top: 6px;
+  padding-top: 9px;
+  border-top: 1px dashed #e5e7eb;
+  font-size: 15px;
+  font-weight: 800;
+  color: #0a0a0a;
+}
+.fdu-note {
+  margin: 0;
+  font-size: 12px;
+  color: #6b7280;
+  line-height: 1.5;
+}
+.fdu-confirm {
+  margin-top: 2px;
+}
 .od-tc-strike {
   color: var(--dark-50, #9ca3af);
   text-decoration: line-through;

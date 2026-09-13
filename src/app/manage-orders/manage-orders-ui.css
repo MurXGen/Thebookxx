@@ -545,15 +545,17 @@
 
 .mo-glass .mo-topbar {
   position: sticky;
-  top: 12px;
+  top: 0;
   z-index: 30;
   display: flex;
   align-items: center;
   gap: 14px;
   flex-wrap: wrap;
   padding: 12px 16px;
+  margin-bottom: 12px;
   border-radius: var(--g-r-lg);
-  background: var(--g-surface-2);
+  /* Opaque so cards don't show THROUGH the sticky bar while scrolling. */
+  background: rgba(255, 255, 255, 0.98);
   -webkit-backdrop-filter: blur(var(--g-blur-lg)) saturate(180%);
   backdrop-filter: blur(var(--g-blur-lg)) saturate(180%);
   border: 1px solid var(--g-hairline);
@@ -563,6 +565,9 @@
 .mo-glass.mo-dark .mo-topbar,
 .mo-glass.mo-dark .mo-rail {
   border-color: var(--g-edge);
+}
+.mo-glass.mo-dark .mo-topbar {
+  background: rgba(26, 22, 19, 0.98);
 }
 
 /* Dark: the rail and its chrome are hardcoded white in the light theme,
@@ -1113,22 +1118,27 @@
   border-radius: var(--g-r-lg);
 }
 
-/* Order card override: flat, no glass box — dashed outline + payment tint.
-   Wins over the shared glass-surface rule via higher specificity. */
+/* Order card: solid WHITE surface with a subtle, clearly-visible shadow — no
+   glass blur, no payment-type tint (payment is shown by the badge only). This
+   single rule is the source of truth, so COD / online / prepaid all look the
+   same. Dark mode gets its own dark surface below. */
 .mo-glass .admin-order-card.mo-card {
-  background: transparent;
-  border: none;
-  border-radius: 12px;
-  box-shadow: none;
+  background: #fff;
+  border: 1px solid var(--hairline, #e5e7eb);
+  border-radius: 14px;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.08),
+    0 6px 16px -8px rgba(0, 0, 0, 0.16);
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
   padding: 0;
 }
-.mo-glass .admin-order-card.mo-card.mo-card-cod {
-  background: rgba(37, 99, 235, 0.09);
-}
-.mo-glass .admin-order-card.mo-card.mo-card-online {
-  background: rgba(22, 163, 74, 0.09);
+.mo-glass.mo-dark .admin-order-card.mo-card {
+  background: #14171d;
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.4),
+    0 6px 16px -8px rgba(0, 0, 0, 0.55);
 }
 /* No left accent seam on the flat cards. */
 .mo-glass .admin-order-card.mo-card::before {

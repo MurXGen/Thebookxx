@@ -129,18 +129,32 @@ export const INFORMATION_AOA = [
 
 // ── Our posting (sender) defaults. Editable in the preview and persisted to
 // localStorage so the mobile number etc. only has to be entered once. ──
-export const SENDER_STORAGE_KEY = "ip_bulk_sender_v1";
+export const SENDER_STORAGE_KEY = "ip_bulk_sender_v2";
 export const DEFAULT_SENDER = {
   name: "TheBookX",
   company: "",
-  add1: "Dharavi",
-  add2: "",
-  city: "Mumbai",
+  add1: "Near Shilpa Sarees, Opp Apollo Pharmacy",
+  add2: "Maheshwari Udyan",
+  city: "Matunga",
   state: "Maharashtra",
-  pincode: "400017",
+  pincode: "400019",
   email: "",
   mobile: "",
-  dropPincode: "400017", // where we hand parcels over (Dharavi Road S.O)
+  dropPincode: "400019", // where we hand parcels over (Matunga PO)
+};
+
+// India Post field limits (validated before download). The portal rejected
+// ReceiverAddrline2 > 50 chars; other caps are the portal's documented maxima.
+export const IP_LIMITS = {
+  receiverName: 50,
+  add1: 50,
+  add2: 50,
+  city: 30,
+  state: 30,
+  pincode: 6,
+  mobile: 10,
+  barcode: 20,
+  weightMax: 35000,
 };
 
 export function loadSender() {
@@ -168,18 +182,31 @@ const clean = (s) =>
     .replace(/^[\s,·-]+|[\s,·-]+$/g, "")
     .trim();
 
-// Split an address into two lines (line 1 ≈ first 45 chars at a word boundary).
-function splitAddress(address, size = 45) {
+// Split an address into two lines, each capped at India Post's 50-char limit.
+// Line 1 fills up to 50 chars at a word boundary, line 2 gets the next 50,
+// and anything beyond is dropped (the admin can tidy it in the preview).
+function splitAddress(address, size = IP_LIMITS.add1) {
   const words = clean(address).split(/\s+/).filter(Boolean);
-  const lines = ["", ""];
+  const line1 = [];
+  const line2 = [];
+  let l1 = "";
+  let l2 = "";
   let i = 0;
   for (; i < words.length; i++) {
-    const next = lines[0] ? lines[0] + " " + words[i] : words[i];
-    if (next.length <= size) lines[0] = next;
-    else break;
+    const next = l1 ? l1 + " " + words[i] : words[i];
+    if (next.length <= size) {
+      l1 = next;
+      line1.push(words[i]);
+    } else break;
   }
-  lines[1] = words.slice(i).join(" ");
-  return lines;
+  for (; i < words.length; i++) {
+    const next = l2 ? l2 + " " + words[i] : words[i];
+    if (next.length <= size) {
+      l2 = next;
+      line2.push(words[i]);
+    } else break;
+  }
+  return [l1.slice(0, size), l2.slice(0, size)];
 }
 
 // Fast catalogue lookup by (lowercased) name for weight/set detection.
@@ -214,20 +241,26 @@ export function classifyOrderProduct(order) {
   return "contractual";
 }
 
-// Best-guess parcel weight (g) from the catalogue; blank if nothing matched so
-// the admin fills it in the preview.
+// Best-guess parcel weight (g) from the catalogue. Weight is REQUIRED by the
+// portal and can't be blank, so unmatched books fall back to ~250 g each.
 export function estimateWeight(order) {
   const lines = order?.parsedBooks || [];
   let w = 0;
   let matched = false;
+  let qty = 0;
   lines.forEach((l) => {
+    const q = Number(l.quantity) || 1;
+    qty += q;
     const b = BY_NAME[String(l.name || "").toLowerCase().trim()];
     if (b && Number(b.weight)) {
       matched = true;
-      w += Number(b.weight) * (Number(l.quantity) || 1);
+      w += Number(b.weight) * q;
+    } else {
+      w += 250 * q; // fallback per-book weight for unmatched titles
     }
   });
-  return matched ? Math.round(w) : "";
+  if (qty === 0) return 250;
+  return Math.round(w) || 250;
 }
 
 // COD math — NET = (total − ₹99 advance if paid) minus 5.9% commission.
@@ -241,6 +274,8 @@ export function codNetFor(order) {
   return { isCOD, gross, net };
 }
 
+const cap = (s, n) => String(s ?? "").slice(0, n);
+
 // Build the lightweight, editable preview row for one order.
 export function buildPreviewRow(order, serial) {
   const { isCOD, net } = codNetFor(order);
@@ -250,13 +285,14 @@ export function buildPreviewRow(order, serial) {
   return {
     serial,
     orderId: order?.["Order ID"] || "",
-    receiverName: clean(order?.["Customer Name"]) || "",
+    barcode: "", // India Post article/barcode number (from your allocated series)
+    receiverName: cap(clean(order?.["Customer Name"]), IP_LIMITS.receiverName),
     mobile,
-    add1,
-    add2,
-    city: order?.["City"] || "",
-    state: order?.["State"] || "",
-    pincode: String(order?.["Pincode"] || "").replace(/\D/g, ""),
+    add1: cap(add1, IP_LIMITS.add1),
+    add2: cap(add2, IP_LIMITS.add2),
+    city: cap(order?.["City"], IP_LIMITS.city),
+    state: cap(order?.["State"], IP_LIMITS.state),
+    pincode: String(order?.["Pincode"] || "").replace(/\D/g, "").slice(0, 6),
     // Dimensions — same logic as the Book-online modal: 22 × 13 × (book count).
     weight: estimateWeight(order),
     length: 22,
@@ -266,11 +302,52 @@ export function buildPreviewRow(order, serial) {
     delivery: "ND",
     books: qty,
     isCOD,
-    // COD orders collect the net amount; prepaid gets a harmless placeholder 10
-    // with a BLANK code (no collection). Both editable.
-    codCode: isCOD ? "cod" : "",
+    // This is a COD-enabled contract, so the portal requires VpCodTypeCD="COD"
+    // (uppercase) on every row. COD orders collect the net; prepaid collects a
+    // ₹10 token. All editable in the preview.
+    codCode: "COD",
     codValue: isCOD ? net : 10,
   };
+}
+
+// Validate one preview row against India Post's field rules. Returns an object
+// { field: "message" } of problems (empty object = valid).
+export function validateRow(row, sender) {
+  const e = {};
+  const s = sender || DEFAULT_SENDER;
+  const req = (v) => !String(v ?? "").trim();
+  const digits = (v) => String(v ?? "").replace(/\D/g, "");
+  if (req(row.barcode)) e.barcode = "Barcode / Article No is required";
+  else if (String(row.barcode).length > IP_LIMITS.barcode)
+    e.barcode = `Max ${IP_LIMITS.barcode} chars`;
+  if (req(row.receiverName)) e.receiverName = "Required";
+  else if (row.receiverName.length > IP_LIMITS.receiverName)
+    e.receiverName = `Max ${IP_LIMITS.receiverName} chars`;
+  if (req(row.add1)) e.add1 = "Required";
+  else if (row.add1.length > IP_LIMITS.add1) e.add1 = `Max ${IP_LIMITS.add1} chars`;
+  if (String(row.add2 || "").length > IP_LIMITS.add2)
+    e.add2 = `Max ${IP_LIMITS.add2} chars`;
+  if (req(row.city)) e.city = "Required";
+  else if (row.city.length > IP_LIMITS.city) e.city = `Max ${IP_LIMITS.city} chars`;
+  if (req(row.state)) e.state = "State is required";
+  else if (row.state.length > IP_LIMITS.state)
+    e.state = `Max ${IP_LIMITS.state} chars`;
+  if (digits(row.pincode).length !== 6) e.pincode = "6-digit pincode";
+  if (digits(row.mobile).length !== 10) e.mobile = "10-digit mobile";
+  const w = Math.round(Number(row.weight) || 0);
+  if (!w || w <= 0) e.weight = "Weight (g) required";
+  else if (w > IP_LIMITS.weightMax) e.weight = "Too heavy";
+  ["length", "breadth", "height"].forEach((k) => {
+    if (!(Math.round(Number(row[k]) || 0) > 0)) e[k] = "> 0";
+  });
+  const code = String(row.codCode || "").toUpperCase();
+  if (code && code !== "COD" && code !== "CODR")
+    e.codCode = "Must be COD or CODR";
+  if (code && !(Math.round(Number(row.codValue) || 0) > 0))
+    e.codValue = "COD value > 0";
+  if (req(s.mobile) || digits(s.mobile).length !== 10)
+    e.senderMobile = "Set a 10-digit sender mobile (top)";
+  return e;
 }
 
 const toInt = (v) => {
@@ -281,10 +358,10 @@ const toInt = (v) => {
 // Map an (edited) preview row → the full 48-column ArticleDetails object.
 export function previewRowToArticle(row, sender) {
   const s = sender || DEFAULT_SENDER;
-  const codCode = String(row.codCode || "").trim();
+  const codCode = String(row.codCode || "").trim().toUpperCase();
   return {
     "SERIAL NUMBER": row.serial,
-    "BARCODE NO": "",
+    "BARCODE NO": String(row.barcode || "").trim(),
     "PHYSICAL WEIGHT": row.weight === "" ? "" : toInt(row.weight),
     "SHAPE OF ARTICLE": row.shape || "NROL",
     "LENGTH ": toInt(row.length),
@@ -304,13 +381,13 @@ export function previewRowToArticle(row, sender) {
     "SENDER ALT CONTACT": "",
     "SENDER KYC": "",
     "SENDER TAX REFERENCE": "",
-    "RECEIVER NAME": row.receiverName || "",
+    "RECEIVER NAME": cap(row.receiverName, IP_LIMITS.receiverName),
     "RECEIVER COMPANY": "",
-    "RECEIVER ADD LINE 1": row.add1 || "",
-    "RECEIVER ADD LINE 2": row.add2 || "",
-    "RECEIVER CITY": row.city || "",
-    "RECEIVER STATE": row.state || "",
-    "RECEIVER PINCODE": row.pincode || "",
+    "RECEIVER ADD LINE 1": cap(row.add1, IP_LIMITS.add1),
+    "RECEIVER ADD LINE 2": cap(row.add2, IP_LIMITS.add2),
+    "RECEIVER CITY": cap(row.city, IP_LIMITS.city),
+    "RECEIVER STATE": cap(row.state, IP_LIMITS.state),
+    "RECEIVER PINCODE": String(row.pincode || "").replace(/\D/g, "").slice(0, 6),
     "RECEIVER EMAILID": "",
     "RECEIVER ALT CONTACT": "",
     "RECEIVER KYC": "",

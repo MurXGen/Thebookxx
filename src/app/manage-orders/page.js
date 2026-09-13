@@ -87,6 +87,8 @@ import {
   downloadIpWorkbook,
   loadSender,
   saveSender,
+  validateRow,
+  IP_LIMITS,
 } from "@/utils/indiaPostBulk";
 
 // ---- Book cover lookup (order stores names; resolve to cover image) ----
@@ -3447,12 +3449,26 @@ export default function ManageOrdersPage() {
   useEffect(() => {
     setIpSender(loadSender());
   }, []);
+  // Scope: if any cards are checkbox-selected, export from those; otherwise use
+  // all available (non-dismissed) cards.
+  const ipExportPool = () => {
+    if (selectedIds.length > 0) {
+      const set = new Set(selectedIds);
+      return visibleOrders.filter((o) => set.has(o["Order ID"]));
+    }
+    return visibleOrders;
+  };
+  const ipCounts = () => {
+    const pool = ipExportPool();
+    const speed = pool.filter((o) => classifyOrderProduct(o) === "speed").length;
+    return { speed, contract: pool.length - speed, scoped: selectedIds.length > 0 };
+  };
   const openIpBulkPreview = (product) => {
-    const pool = visibleOrders.filter(
+    const pool = ipExportPool().filter(
       (o) => classifyOrderProduct(o) === product,
     );
     if (pool.length === 0) {
-      showToast(`No ${product} orders available to export.`, "error");
+      showToast(`No ${product} orders in the current selection.`, "error");
       return;
     }
     const rows = pool.map((o, i) => buildPreviewRow(o, i + 1));
@@ -3484,13 +3500,16 @@ export default function ManageOrdersPage() {
   const [ipDownloading, setIpDownloading] = useState(false);
   const downloadIpBulk = async () => {
     if (!ipBulk || ipBulk.rows.length === 0) return;
-    // Guard: warn if any receiver is missing name/pincode/mobile.
+    // Guard: validate every row against India Post's field rules.
     const bad = ipBulk.rows.filter(
-      (r) => !r.receiverName || !r.pincode || !r.mobile,
+      (r) => Object.keys(validateRow(r, ipSender)).length > 0,
     );
     if (bad.length > 0) {
+      const senderBad = ipBulk.rows.some((r) => validateRow(r, ipSender).senderMobile);
       showToast(
-        `${bad.length} row(s) missing name/pincode/mobile — please complete them.`,
+        senderBad
+          ? "Add a 10-digit sender mobile at the top, then fix the highlighted cells."
+          : `${bad.length} row(s) have errors — fix the highlighted red cells.`,
         "error",
       );
       return;
@@ -9172,17 +9191,16 @@ export default function ManageOrdersPage() {
                         </button>
                       </div>
                       {(() => {
-                        // India Post bulk export — split ALL available (non-
-                        // dismissed) cards into Speed vs Contractual buckets.
-                        const pool = visibleOrders;
-                        const speedN = pool.filter(
-                          (o) => classifyOrderProduct(o) === "speed",
-                        ).length;
-                        const contractN = pool.length - speedN;
+                        // India Post bulk export — split into Speed vs
+                        // Contractual. Scope = selected cards if any are
+                        // ticked, else all available (non-dismissed).
+                        const { speed: speedN, contract: contractN, scoped } =
+                          ipCounts();
                         return (
                           <div className="mo-cardbulk-export">
                             <span className="mo-cardbulk-lbl">
-                              India Post bulk (.xlsx)
+                              India Post bulk (.xlsx) ·{" "}
+                              {scoped ? "selected" : "all available"}
                             </span>
                             <button
                               type="button"
@@ -11672,9 +11690,23 @@ export default function ManageOrdersPage() {
                       ["dropPincode", "Drop-off pincode"],
                     ].map(([k, label]) => (
                       <label key={k} className="ip-bulk-fld">
-                        <span>{label}</span>
+                        <span>
+                          {label}
+                          {k === "mobile" && " *"}
+                        </span>
                         <input
-                          className="ip-bulk-input"
+                          className={`ip-bulk-input${
+                            k === "mobile" &&
+                            String(ipSender[k] || "").replace(/\D/g, "").length !==
+                              10
+                              ? " invalid"
+                              : ""
+                          }`}
+                          inputMode={
+                            k === "mobile" || k.includes("pincode")
+                              ? "numeric"
+                              : undefined
+                          }
                           value={ipSender[k] ?? ""}
                           onChange={(e) =>
                             setIpSender((s) => ({ ...s, [k]: e.target.value }))
@@ -11693,108 +11725,125 @@ export default function ManageOrdersPage() {
                 )}
               </div>
 
-              <div className="ip-bulk-body">
-                {ipBulk.rows.map((r, idx) => (
-                  <div className="ip-parcel-card" key={r.orderId || idx}>
-                    <div className="ip-parcel-head">
-                      <span className="ip-parcel-sr">#{idx + 1}</span>
-                      <span className="ip-parcel-name">
-                        {r.receiverName || "Unnamed"}
-                      </span>
-                      <span
-                        className={`ip-parcel-tag ${r.isCOD ? "cod" : "prepaid"}`}
-                      >
-                        {r.isCOD ? "COD" : "Prepaid"}
-                      </span>
-                      <span className="ip-parcel-books">
-                        {r.books} book{r.books === 1 ? "" : "s"}
-                      </span>
-                      <button
-                        type="button"
-                        className="ip-parcel-del"
-                        title="Remove from this file"
-                        onClick={() => removeIpRow(idx)}
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                    </div>
-
-                    <div className="ip-parcel-grid">
-                      {[
-                        ["receiverName", "Receiver name", "text", "wide"],
-                        ["mobile", "Mobile", "tel", ""],
-                        ["add1", "Address line 1", "text", "wide"],
-                        ["add2", "Address line 2", "text", "wide"],
-                        ["city", "City", "text", ""],
-                        ["state", "State", "text", ""],
-                        ["pincode", "Pincode", "text", ""],
-                        ["weight", "Weight (g)", "number", ""],
-                        ["length", "Length", "number", "sm"],
-                        ["breadth", "Breadth", "number", "sm"],
-                        ["height", "Height", "number", "sm"],
-                      ].map(([k, label, type, cls]) => (
-                        <label
-                          key={k}
-                          className={`ip-bulk-fld ${cls}${
-                            k === "weight" && (r.weight === "" || r.weight == null)
-                              ? " needs"
-                              : ""
-                          }`}
-                        >
-                          <span>
-                            <Pencil size={10} /> {label}
-                          </span>
-                          <input
-                            className="ip-bulk-input"
-                            type={type}
-                            value={r[k] ?? ""}
-                            placeholder={
-                              k === "weight" ? "enter g" : undefined
-                            }
-                            onChange={(e) =>
-                              updateIpRow(idx, k, e.target.value)
-                            }
-                          />
-                        </label>
-                      ))}
-
-                      <label className="ip-bulk-fld">
-                        <span>
-                          <Pencil size={10} /> COD type
-                        </span>
-                        <select
-                          className="ip-bulk-input"
-                          value={r.codCode}
-                          onChange={(e) =>
-                            updateIpRow(idx, "codCode", e.target.value)
-                          }
-                        >
-                          <option value="">None (prepaid)</option>
-                          <option value="cod">COD</option>
-                          <option value="codr">COD Retail (VP)</option>
-                        </select>
-                      </label>
-                      <label
-                        className={`ip-bulk-fld${
-                          r.codCode ? "" : " ip-bulk-muted"
-                        }`}
-                      >
-                        <span>
-                          <Pencil size={10} /> COD value ₹
-                        </span>
-                        <input
-                          className="ip-bulk-input"
-                          type="number"
-                          value={r.codValue ?? ""}
-                          onChange={(e) =>
-                            updateIpRow(idx, "codValue", e.target.value)
-                          }
-                        />
-                      </label>
+              {(() => {
+                // Editable spreadsheet-style columns (order = table columns).
+                const cols = [
+                  { k: "barcode", label: "Barcode / Article No", w: 160, max: IP_LIMITS.barcode },
+                  { k: "receiverName", label: "Receiver name", w: 160, max: IP_LIMITS.receiverName },
+                  { k: "mobile", label: "Mobile", w: 120, max: 10, num: true },
+                  { k: "add1", label: "Address 1", w: 210, max: IP_LIMITS.add1, count: true },
+                  { k: "add2", label: "Address 2", w: 210, max: IP_LIMITS.add2, count: true },
+                  { k: "city", label: "City", w: 120, max: IP_LIMITS.city },
+                  { k: "state", label: "State", w: 120, max: IP_LIMITS.state },
+                  { k: "pincode", label: "Pincode", w: 92, max: 6, num: true },
+                  { k: "weight", label: "Wt (g)", w: 78, num: true },
+                  { k: "length", label: "L", w: 52, num: true },
+                  { k: "breadth", label: "B", w: 52, num: true },
+                  { k: "height", label: "H", w: 52, num: true },
+                ];
+                return (
+                  <div className="ip-bulk-body">
+                    <div className="ip-tbl-scroll">
+                      <table className="ip-tbl">
+                        <thead>
+                          <tr>
+                            <th className="ip-tbl-sticky ip-tbl-srh">#</th>
+                            {cols.map((c) => (
+                              <th key={c.k} style={{ minWidth: c.w }}>
+                                {c.label}
+                              </th>
+                            ))}
+                            <th style={{ minWidth: 96 }}>COD type</th>
+                            <th style={{ minWidth: 84 }}>COD ₹</th>
+                            <th className="ip-tbl-delh">Remove</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {ipBulk.rows.map((r, idx) => {
+                            const errs = validateRow(r, ipSender);
+                            return (
+                              <tr key={r.orderId || idx}>
+                                <td className="ip-tbl-sticky ip-tbl-sr">
+                                  <span className="ip-tbl-srnum">{idx + 1}</span>
+                                  <span
+                                    className={`ip-tbl-tag ${r.isCOD ? "cod" : "prepaid"}`}
+                                    title={`${r.books} book${r.books === 1 ? "" : "s"}`}
+                                  >
+                                    {r.isCOD ? "COD" : "PP"}
+                                  </span>
+                                </td>
+                                {cols.map((c) => (
+                                  <td key={c.k}>
+                                    <div className="ip-cell">
+                                      <input
+                                        className={`ip-cell-input${errs[c.k] ? " invalid" : ""}${c.num ? " num" : ""}`}
+                                        type={c.num ? "number" : "text"}
+                                        inputMode={c.num ? "numeric" : undefined}
+                                        maxLength={c.max}
+                                        title={errs[c.k] || undefined}
+                                        value={r[c.k] ?? ""}
+                                        onChange={(e) =>
+                                          updateIpRow(idx, c.k, e.target.value)
+                                        }
+                                      />
+                                      {c.count && (
+                                        <span
+                                          className={`ip-cell-count${
+                                            String(r[c.k] || "").length > c.max
+                                              ? " over"
+                                              : ""
+                                          }`}
+                                        >
+                                          {String(r[c.k] || "").length}/{c.max}
+                                        </span>
+                                      )}
+                                    </div>
+                                  </td>
+                                ))}
+                                <td>
+                                  <select
+                                    className="ip-cell-input"
+                                    value={r.codCode}
+                                    onChange={(e) =>
+                                      updateIpRow(idx, "codCode", e.target.value)
+                                    }
+                                  >
+                                    <option value="COD">COD</option>
+                                    <option value="CODR">CODR</option>
+                                    <option value="">None</option>
+                                  </select>
+                                </td>
+                                <td>
+                                  <input
+                                    className={`ip-cell-input num${errs.codValue ? " invalid" : ""}`}
+                                    type="number"
+                                    inputMode="numeric"
+                                    title={errs.codValue || undefined}
+                                    value={r.codValue ?? ""}
+                                    onChange={(e) =>
+                                      updateIpRow(idx, "codValue", e.target.value)
+                                    }
+                                  />
+                                </td>
+                                <td className="ip-tbl-delc">
+                                  <button
+                                    type="button"
+                                    className="ip-parcel-del"
+                                    title="Remove from this file"
+                                    onClick={() => removeIpRow(idx)}
+                                  >
+                                    <Trash2 size={14} />
+                                  </button>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
                     </div>
                   </div>
-                ))}
-              </div>
+                );
+              })()}
 
               <div className="ip-bulk-foot">
                 <span className="ip-bulk-foot-note">

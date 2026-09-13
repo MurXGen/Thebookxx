@@ -1153,16 +1153,10 @@ export default function OrderDetailPage() {
                   <span className="od-tc-plan-badge">
                     Current plan · {isFaster ? "Faster" : "Standard"}
                   </span>
-                  {isFaster ? (
+                  {isFaster && (
                     <span className="od-tc-plan-up">
                       Priority air dispatch · arriving in 1–5 days
                     </span>
-                  ) : (
-                    upgradeExtra != null && (
-                      <span className="od-tc-plan-up">
-                        Upgrade to Faster — get it in 1–5 days
-                      </span>
-                    )
                   )}
                 </div>
               )}

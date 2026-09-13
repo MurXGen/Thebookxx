@@ -83,6 +83,7 @@ import {
   useTransform,
 } from "framer-motion";
 import Link from "next/link";
+import BookCoverImg from "@/components/BookCoverImg";
 import { books as ALL_BOOKS } from "@/utils/book";
 import { getBookCost } from "@/data/bookCosts";
 import { creditWalletReward, appendWalletTx } from "@/utils/googleFormOrder";
@@ -3425,6 +3426,20 @@ export default function ManageOrdersPage() {
   const [orderPickFilter, setOrderPickFilter] = useState("all"); // all | picked | pending
   const [selectedIds, setSelectedIds] = useState([]); // bulk-selected order IDs (table)
   const [cardSelectMode, setCardSelectMode] = useState(false); // card-view multi-select
+  const [cardMenuId, setCardMenuId] = useState(null); // per-card kebab menu open
+  // Delete with a confirm that names the customer (destructive = confirmed).
+  const confirmDeleteOrder = (order) => {
+    setCardMenuId(null);
+    const nm = String(order?.["Customer Name"] || "").trim() || "this customer";
+    const oid = order?.["Order ID"] || "";
+    if (
+      window.confirm(
+        `Delete ${nm}'s order (${oid}) permanently from the sheet?\n\nThis also removes any wallet reward credited for it. This cannot be undone.`,
+      )
+    ) {
+      deleteOrderRow(order, { skipConfirm: true });
+    }
+  };
   // Order IDs the admin dismissed for this session (persisted so a refresh keeps
   // them hidden). Cleared with the "Reload cards" button.
   const [dismissedIds, setDismissedIds] = useState([]);
@@ -4300,6 +4315,17 @@ export default function ManageOrdersPage() {
       const next = { ...prev };
       if (next[k]) delete next[k];
       else next[k] = true;
+      return next;
+    });
+  };
+  const markAllPicked = (order) => {
+    const oid = order["Order ID"] || order._rowIndex;
+    const books = order.parsedBooks || [];
+    setPickChecked((prev) => {
+      const next = { ...prev };
+      books.forEach((_b, i) => {
+        next[bookKey(oid, i)] = true;
+      });
       return next;
     });
   };
@@ -6026,7 +6052,7 @@ export default function ManageOrdersPage() {
   };
 
   // Permanently remove a row (user-triggered, confirmed).
-  const deleteOrderRow = async (order) => {
+  const deleteOrderRow = async (order, { skipConfirm = false } = {}) => {
     const orderId = order["Order ID"];
     if (!SHEET_EDIT_API_URL) {
       alert(
@@ -6035,6 +6061,7 @@ export default function ManageOrdersPage() {
       return;
     }
     if (
+      !skipConfirm &&
       !window.confirm(
         `Delete order ${orderId} permanently from the sheet?\n\nThis also removes any wallet reward credited for this order. This cannot be undone.`,
       )
@@ -7982,7 +8009,7 @@ export default function ManageOrdersPage() {
                               {fCod} / {fUpi} / {fPrepaid}
                             </span>
                             <span className="an2-stat-lbl">
-                              COD / UPI / Prepaid
+                              COD / UPI / ₹99
                             </span>
                             <span className="an2-stat-x">payment split</span>
                           </div>
@@ -9496,6 +9523,7 @@ export default function ManageOrdersPage() {
                         const hasTracking =
                           order.shippingId &&
                           String(order.shippingId).trim() !== "";
+                        const fullyPicked = isOrderFullyPicked(order);
                         const tinyUrl = order["TinyURL"];
                         const hasTinyUrl =
                           tinyUrl && String(tinyUrl).trim() !== "";
@@ -9556,6 +9584,22 @@ export default function ManageOrdersPage() {
                           String(order["Advance Paid"] || ""),
                         );
                         const isPrepaid = isCOD && advancePaid;
+                        // Terminal orders (Delivered / Cancelled) collapse to a
+                        // 2-line summary — no covers, tracking or actions needed.
+                        const isTerminal = /delivered|cancel/i.test(
+                          String(order.status || order["Order Status"] || ""),
+                        );
+                        // Exception flags — a card that needs the operator gets
+                        // an amber left border + one reason chip. Order matters:
+                        // the first true reason wins.
+                        const exReason = isTerminal
+                          ? null
+                          : isUnconfirmedOrder(order)
+                            ? "Unconfirmed"
+                            : isCOD && Number(order.revenue) > 2000
+                              ? "COD over ₹2000"
+                              : null;
+                        const isException = !!exReason;
                         const oidStr = String(orderId || "");
                         const formData = {
                           orderId,
@@ -9604,6 +9648,11 @@ export default function ManageOrdersPage() {
                                 ? " mo-card-pending-push"
                                 : ""
                             }`}
+                            style={{
+                              "--card-accent": isException
+                                ? "#f59e0b"
+                                : moStatusColor(order.status),
+                            }}
                             onPointerDown={() => {
                               if (cardSelectMode) return;
                               longPressRef.current = false;
@@ -9629,6 +9678,12 @@ export default function ManageOrdersPage() {
                               clearTimeout(lpTimer.current)
                             }
                           >
+                            {/* Exception flag — amber reason chip at the top. */}
+                            {isException && (
+                              <div className="mo-exception-chip">
+                                <AlertCircle size={12} /> {exReason}
+                              </div>
+                            )}
                             {/* Top — serial · name · payment pill. */}
                             <div
                               className="mo-card-top mo-card-top-toggle"
@@ -9691,8 +9746,91 @@ export default function ManageOrdersPage() {
                                             : "upi"
                                       }`}
                                     >
-                                      {isPrepaid ? "Prepaid" : isCOD ? "COD" : "UPI"}
+                                      {isPrepaid
+                                        ? "₹99 paid"
+                                        : isCOD
+                                          ? "COD"
+                                          : "UPI"}
                                     </span>
+                                    <div className="mo-kebab-wrap">
+                                      <button
+                                        type="button"
+                                        className="mo-kebab-btn"
+                                        title="More actions"
+                                        aria-label="More actions"
+                                        aria-haspopup="menu"
+                                        aria-expanded={cardMenuId === orderId}
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setCardMenuId((p) =>
+                                            p === orderId ? null : orderId,
+                                          );
+                                        }}
+                                      >
+                                        <MoreVertical size={15} />
+                                      </button>
+                                      {cardMenuId === orderId && (
+                                        <>
+                                          <div
+                                            className="mo-kebab-backdrop"
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              setCardMenuId(null);
+                                            }}
+                                          />
+                                          <div
+                                            className="mo-kebab-menu"
+                                            role="menu"
+                                            onClick={(e) => e.stopPropagation()}
+                                          >
+                                            <button
+                                              type="button"
+                                              role="menuitem"
+                                              className="mo-kebab-item"
+                                              onClick={() => {
+                                                setCancelChoiceOrder(order);
+                                                setCardMenuId(null);
+                                              }}
+                                            >
+                                              <X size={14} /> Cancel order
+                                            </button>
+                                            <div className="mo-kebab-group">
+                                              Advanced
+                                            </div>
+                                            <button
+                                              type="button"
+                                              role="menuitem"
+                                              className="mo-kebab-item"
+                                              onClick={() => {
+                                                copyToClipboard(
+                                                  buildIpAutofillJson(
+                                                    order,
+                                                    books,
+                                                    isCOD,
+                                                  ),
+                                                  `cardjson-${orderId}`,
+                                                );
+                                                setCardMenuId(null);
+                                              }}
+                                            >
+                                              <Copy size={14} /> Copy JSON
+                                            </button>
+                                            <div className="mo-kebab-sep" />
+                                            <button
+                                              type="button"
+                                              role="menuitem"
+                                              className="mo-kebab-item danger"
+                                              onClick={() =>
+                                                confirmDeleteOrder(order)
+                                              }
+                                            >
+                                              <Trash2 size={14} /> Delete
+                                              permanently
+                                            </button>
+                                          </div>
+                                        </>
+                                      )}
+                                    </div>
                                     <button
                                       type="button"
                                       className="mo-card-dismiss"
@@ -9750,6 +9888,28 @@ export default function ManageOrdersPage() {
                               </div>
                             </div>
 
+                            {/* Terminal (Delivered / Cancelled) → compact
+                                2-line summary. */}
+                            {isTerminal && (
+                              <div className="mo-terminal-row">
+                                <span className="mo-terminal-amt">
+                                  ₹
+                                  {Number(order.revenue || 0).toLocaleString()}
+                                </span>
+                                <span
+                                  className={`mo-terminal-status ${
+                                    /cancel/i.test(order.status || "")
+                                      ? "cancelled"
+                                      : "delivered"
+                                  }`}
+                                >
+                                  {order.status}
+                                </span>
+                              </div>
+                            )}
+
+                            {!isTerminal && (
+                              <>
                             {/* Panel — price on the left, status badge +
                                 WhatsApp + redirect grouped on the right. */}
                             <div
@@ -9758,39 +9918,6 @@ export default function ManageOrdersPage() {
                             >
                               <div className="mo-panel-row">
                               <div className="mo-panel-actions">
-                              <div
-                                className="mo-status-badge-wrap"
-                                style={{
-                                  "--st-color": moStatusColor(order.status),
-                                }}
-                              >
-                                <select
-                                  className={`mo-status-badge${pendingStatus[orderId] ? " dirty" : ""}`}
-                                  value={order.status || "Processing"}
-                                  title="Change status (queued — push to save)"
-                                  onChange={(e) => {
-                                    const val = e.target.value;
-                                    patchLocalOrder(orderId, {
-                                      "Order Status": val,
-                                      status: val,
-                                    });
-                                    setPendingStatus((prev) => ({
-                                      ...prev,
-                                      [orderId]: val,
-                                    }));
-                                  }}
-                                >
-                                  {TRACK_STATUS_OPTIONS.map((s) => (
-                                    <option key={s} value={s}>
-                                      {s}
-                                    </option>
-                                  ))}
-                                </select>
-                                <ChevronDown
-                                  size={15}
-                                  className="mo-status-chev"
-                                />
-                              </div>
                               <button
                                 type="button"
                                 className="mo-frame-ic mo-frame-wa"
@@ -9814,6 +9941,7 @@ export default function ManageOrdersPage() {
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   title="Open customer order page"
+                                  aria-label="Open customer order page"
                                 >
                                   <ExternalLink size={15} />
                                 </a>
@@ -9840,10 +9968,14 @@ export default function ManageOrdersPage() {
                               {/* Book total + benefit badges (add-ons / savings). */}
                               <div className="mo-panel-left">
                               {(() => {
+                                // Big number = what the customer pays (order
+                                // total). One coloured line below = margin
+                                // (profit), sign-driven. Operational detail
+                                // (COD collect, India Post fee) is in the title
+                                // and the bill modal.
                                 const rev = Number(order.revenue) || 0;
-                                // If a ₹99 advance was paid online, the courier
-                                // collects only the balance; the 5.9% COD fee
-                                // applies to that balance.
+                                const pnl = Number(order.pnl) || 0;
+                                const pct = rev > 0 ? (pnl / rev) * 100 : 0;
                                 const advancePaid = /^\s*yes/i.test(
                                   String(order["Advance Paid"] || ""),
                                 );
@@ -9854,7 +9986,7 @@ export default function ManageOrdersPage() {
                                 const fee = isCOD
                                   ? Math.round(codBase * 0.059)
                                   : 0;
-                                const net = Math.round(codBase - fee);
+                                const sign = pnl >= 0 ? "+" : "−";
                                 return (
                                   <button
                                     type="button"
@@ -9862,34 +9994,22 @@ export default function ManageOrdersPage() {
                                     onClick={() => setBillOrderId(orderId)}
                                     title={
                                       isCOD
-                                        ? advancePaid
-                                          ? `₹${rev.toLocaleString()} − ₹99 advance = ₹${codBase.toLocaleString()} COD, net after 5.9% (−₹${fee}) · tap for bill`
-                                          : `Net after 5.9% deduction (₹${rev.toLocaleString()} − ₹${fee}) · tap for bill`
-                                        : `₹${rev.toLocaleString()} · tap for bill`
+                                        ? `Collect ₹${codBase.toLocaleString()} COD${advancePaid ? " (₹99 paid online)" : ""} · India Post fee −₹${fee} · tap for bill`
+                                        : `Prepaid ₹${rev.toLocaleString()} · tap for bill`
                                     }
                                   >
                                     <span className="mo-amount-num">
-                                      ₹{net.toLocaleString()}
+                                      ₹{rev.toLocaleString()}
                                     </span>
-                                    {isCOD && (
-                                      <span className="mo-amount-fee">
-                                        −₹{fee.toLocaleString()} (5.9%)
-                                      </span>
-                                    )}
-                                    {isCOD && advancePaid && (
-                                      <span className="mo-amount-cod">
-                                        Collect ₹{codBase.toLocaleString()} COD ·
-                                        ₹99 advance paid
-                                      </span>
-                                    )}
-                                    {Number(order.pnl) < 0 && (
-                                      <span className="mo-loss-flag">
-                                        <AlertCircle size={11} /> Loss ₹
-                                        {Math.abs(
-                                          Math.round(Number(order.pnl)),
-                                        ).toLocaleString()}
-                                      </span>
-                                    )}
+                                    <span
+                                      className={`mo-margin ${pnl >= 0 ? "pos" : "neg"}`}
+                                    >
+                                      Margin {sign}₹
+                                      {Math.abs(
+                                        Math.round(pnl),
+                                      ).toLocaleString()}{" "}
+                                      · {Math.abs(pct).toFixed(1)}%
+                                    </span>
                                   </button>
                                 );
                               })()}
@@ -9925,17 +10045,12 @@ export default function ManageOrdersPage() {
                                         }}
                                         title={b.name}
                                       >
-                                        {img ? (
-                                          <img
-                                            src={img}
-                                            alt={b.name}
-                                            loading="lazy"
-                                          />
-                                        ) : (
-                                          <div className="mo-cover-ph">
-                                            <Package size={18} />
-                                          </div>
-                                        )}
+                                        <BookCoverImg
+                                          src={img}
+                                          name={b.name}
+                                          author={b.author}
+                                          loading="lazy"
+                                        />
                                         {b.quantity > 1 && (
                                           <span className="mo-cover-qty">
                                             ×{b.quantity}
@@ -10008,11 +10123,8 @@ export default function ManageOrdersPage() {
                               if (giftOn) badges.push({ e: "🎁", t: "Gift wrap" });
                               if (bookmarkOn)
                                 badges.push({ e: "🔖", t: "Bookmark" });
-                              if (discB > 0)
-                                badges.push({
-                                  e: "🏷️",
-                                  t: `Saved ₹${Math.round(discB).toLocaleString()}`,
-                                });
+                              // "Saved ₹X" chip removed — that's the customer's
+                              // discount, not an operator concern (one money rule).
                               if (!badges.length) return null;
                               return (
                                 <div className="mo-card-chips">
@@ -10037,88 +10149,106 @@ export default function ManageOrdersPage() {
                               </div>
                             )}
 
-                            {/* Quick add-tracking — only when the order has no
-                                tracking ID yet. Saves to the push queue. */}
-                            {!hasTracking && (
-                              <div
-                                className="mo-card-track"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                <input
-                                  className="mo-card-track-input"
-                                  placeholder="Add tracking ID (e.g. CX…IN)"
-                                  value={trackDrafts[orderId] ?? ""}
-                                  onChange={(e) =>
-                                    setTrackDrafts((p) => ({
-                                      ...p,
-                                      [orderId]: e.target.value,
-                                    }))
-                                  }
-                                  onKeyDown={(e) => {
-                                    if (e.key === "Enter")
-                                      queueTracking(order, trackDrafts[orderId]);
-                                  }}
-                                />
-                                <button
-                                  type="button"
-                                  className="mo-card-track-save"
-                                  disabled={
-                                    !String(trackDrafts[orderId] || "").trim()
-                                  }
-                                  onClick={() =>
-                                    queueTracking(order, trackDrafts[orderId])
-                                  }
-                                >
-                                  <Check size={14} /> Save
-                                </button>
-                              </div>
-                            )}
-
-                            {/* Copy the India Post autofill JSON straight from
-                                the card (same payload as the slide-up bill's
-                                Shipping section) — no need to open the detail. */}
+                            {/* Bottom row: status + ONE state-driven action.
+                                • not picked        → Mark picked
+                                • picked, no track  → tracking input + Save
+                                • has tracking      → Track shipment            */}
                             <div
-                              className="mo-card-json"
+                              className="mo-card-foot"
                               onClick={(e) => e.stopPropagation()}
                             >
-                              <button
-                                type="button"
-                                className="mo-card-cancel-btn"
-                                title="Cancel this order"
-                                onClick={() => setCancelChoiceOrder(order)}
+                              <div
+                                className="mo-status-badge-wrap"
+                                style={{
+                                  "--st-color": moStatusColor(order.status),
+                                }}
                               >
-                                <Trash2 size={14} /> Cancel
-                              </button>
-                              <button
-                                type="button"
-                                className="mo-card-delete-btn"
-                                title="Delete this order permanently from the sheet"
-                                onClick={() => deleteOrderRow(order)}
-                              >
-                                <Trash2 size={14} /> Delete
-                              </button>
-                              <button
-                                type="button"
-                                className="mo-card-json-btn"
-                                title="Copy India Post autofill JSON"
-                                onClick={() =>
-                                  copyToClipboard(
-                                    buildIpAutofillJson(order, books, isCOD),
-                                    `cardjson-${orderId}`,
-                                  )
-                                }
-                              >
-                                {copiedId === `cardjson-${orderId}` ? (
-                                  <>
-                                    <Check size={13} /> Copied
-                                  </>
-                                ) : (
-                                  <>
-                                    <Copy size={13} /> Copy JSON
-                                  </>
-                                )}
-                              </button>
+                                <select
+                                  className={`mo-status-badge${pendingStatus[orderId] ? " dirty" : ""}`}
+                                  value={order.status || "Processing"}
+                                  title="Change status (queued — push to save)"
+                                  onChange={(e) => {
+                                    const val = e.target.value;
+                                    patchLocalOrder(orderId, {
+                                      "Order Status": val,
+                                      status: val,
+                                    });
+                                    setPendingStatus((prev) => ({
+                                      ...prev,
+                                      [orderId]: val,
+                                    }));
+                                  }}
+                                >
+                                  {TRACK_STATUS_OPTIONS.map((s) => (
+                                    <option key={s} value={s}>
+                                      {s}
+                                    </option>
+                                  ))}
+                                </select>
+                                <ChevronDown
+                                  size={15}
+                                  className="mo-status-chev"
+                                />
+                              </div>
+                              {!fullyPicked ? (
+                                <button
+                                  type="button"
+                                  className="mo-primary-btn"
+                                  onClick={() => markAllPicked(order)}
+                                >
+                                  <Check size={15} /> Mark picked
+                                </button>
+                              ) : !hasTracking ? (
+                                <div className="mo-track-inline">
+                                  <input
+                                    className="mo-card-track-input"
+                                    placeholder="Add tracking ID (e.g. CX…IN)"
+                                    aria-label="Tracking ID"
+                                    value={trackDrafts[orderId] ?? ""}
+                                    onChange={(e) =>
+                                      setTrackDrafts((p) => ({
+                                        ...p,
+                                        [orderId]: e.target.value,
+                                      }))
+                                    }
+                                    onKeyDown={(e) => {
+                                      if (e.key === "Enter")
+                                        queueTracking(
+                                          order,
+                                          trackDrafts[orderId],
+                                        );
+                                    }}
+                                  />
+                                  <button
+                                    type="button"
+                                    className="mo-card-track-save"
+                                    disabled={
+                                      !String(trackDrafts[orderId] || "").trim()
+                                    }
+                                    onClick={() =>
+                                      queueTracking(order, trackDrafts[orderId])
+                                    }
+                                  >
+                                    <Check size={14} /> Save
+                                  </button>
+                                </div>
+                              ) : (
+                                <a
+                                  className="mo-primary-btn"
+                                  href={INDIA_POST_URL}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  title={`Track ${String(order.shippingId).trim()} on India Post`}
+                                >
+                                  <Truck size={15} /> Track shipment
+                                </a>
+                              )}
                             </div>
+                              </>
+                            )}
+
+                            {/* Cancel / Delete / Copy JSON demoted into the
+                                header kebab (⋯) — see .mo-card-menu. */}
 
                             {/* Comment + Book online moved into the bill modal. */}
 

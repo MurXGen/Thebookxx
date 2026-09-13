@@ -26541,6 +26541,40 @@ img[data-loaded="true"] {
   justify-content: center;
   color: var(--dark-50);
 }
+/* No cover image → reuse the homepage designed B/W "cover" (title + brand),
+   scaled to fit the small order-card thumbnail. */
+.mo-cover .book-cover-fallback {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 6px 4px;
+  gap: 3px;
+}
+.mo-cover .book-cover-fallback::before {
+  left: 3px;
+  top: 4px;
+  bottom: 4px;
+}
+.mo-cover .bcf-brand {
+  font-size: 5px;
+  letter-spacing: 0.12em;
+}
+.mo-cover .bcf-rule {
+  width: 14px;
+  height: 1px;
+}
+.mo-cover .bcf-title {
+  font-size: 8px;
+  line-height: 1.14;
+  -webkit-line-clamp: 5;
+  text-shadow: none;
+}
+.mo-cover .bcf-author {
+  font-size: 6px;
+  -webkit-line-clamp: 1;
+}
 .mo-cover-check {
   position: absolute;
   inset: 0;

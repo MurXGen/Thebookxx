@@ -1,7 +1,14 @@
 // app/manage-orders/page.js
 "use client";
 
-import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+  Fragment,
+} from "react";
 import { createPortal } from "react-dom";
 import {
   downloadCombinedFormPNG,
@@ -85,6 +92,8 @@ import {
   classifyOrderProduct,
   buildPreviewRow,
   downloadIpWorkbook,
+  buildIpWorkbookBlob,
+  parseIpWorkbookFile,
   loadSender,
   saveSender,
   validateRow,
@@ -2889,6 +2898,7 @@ export default function ManageOrdersPage() {
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const fetchedRef = useRef(false); // orders fetch completed (success or error)
   const [searchQuery, setSearchQuery] = useState("");
   // Users tab — filter to customers holding a wallet balance for ≥ N days.
   const [walletHoldFilter, setWalletHoldFilter] = useState(0);
@@ -3446,32 +3456,72 @@ export default function ManageOrdersPage() {
   const [ipBulk, setIpBulk] = useState(null); // { product, rows }
   const [ipSender, setIpSender] = useState(null);
   const [ipSenderOpen, setIpSenderOpen] = useState(false);
+  const openIpImport = () => {
+    const inp = document.createElement("input");
+    inp.type = "file";
+    inp.accept =
+      ".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+    inp.onchange = (e) => handleImportIp(e);
+    inp.click();
+  };
+  const handleImportIp = async (e) => {
+    const file = e?.target?.files?.[0];
+    if (!file) return;
+    try {
+      const { rows, sender } = await parseIpWorkbookFile(file);
+      if (sender) {
+        setIpSender((prev) => {
+          const merged = { ...(prev || {}), ...sender };
+          saveSender(merged);
+          return merged;
+        });
+      }
+      setIpPushResult(null);
+      setIpBulk((prev) => ({ product: prev?.product || "imported", rows }));
+      showToast(`Imported ${rows.length} parcel(s) from file ✓`, "success");
+    } catch (err) {
+      console.error("IP import failed:", err);
+      showToast(
+        `Import failed: ${err?.message || "unreadable file"}`,
+        "error",
+      );
+    }
+  };
   useEffect(() => {
     setIpSender(loadSender());
   }, []);
-  // Scope: if any cards are checkbox-selected, export from those; otherwise use
-  // all available (non-dismissed) cards.
-  const ipExportPool = () => {
-    if (selectedIds.length > 0) {
-      const set = new Set(selectedIds);
-      return visibleOrders.filter((o) => set.has(o["Order ID"]));
-    }
-    return visibleOrders;
-  };
+  // Counts for the two buttons:
+  //  • With a manual selection → you choose the product; ALL selected go into
+  //    whichever file you click, so both buttons show the selected total.
+  //  • With no selection → auto-classify all available into Speed vs Contractual.
   const ipCounts = () => {
-    const pool = ipExportPool();
+    if (selectedIds.length > 0) {
+      return {
+        speed: selectedIds.length,
+        contract: selectedIds.length,
+        scoped: true,
+      };
+    }
+    const pool = visibleOrders;
     const speed = pool.filter((o) => classifyOrderProduct(o) === "speed").length;
-    return { speed, contract: pool.length - speed, scoped: selectedIds.length > 0 };
+    return { speed, contract: pool.length - speed, scoped: false };
   };
   const openIpBulkPreview = (product) => {
-    const pool = ipExportPool().filter(
-      (o) => classifyOrderProduct(o) === product,
-    );
+    let pool;
+    if (selectedIds.length > 0) {
+      // Manual selection: push ALL selected into the chosen product file.
+      const set = new Set(selectedIds);
+      pool = visibleOrders.filter((o) => set.has(o["Order ID"]));
+    } else {
+      // No selection: auto-classified bucket.
+      pool = visibleOrders.filter((o) => classifyOrderProduct(o) === product);
+    }
     if (pool.length === 0) {
-      showToast(`No ${product} orders in the current selection.`, "error");
+      showToast(`No ${product} orders to export.`, "error");
       return;
     }
     const rows = pool.map((o, i) => buildPreviewRow(o, i + 1));
+    setIpPushResult(null);
     setIpBulk({ product, rows });
   };
   const updateIpRow = (idx, key, value) => {
@@ -3529,6 +3579,55 @@ export default function ManageOrdersPage() {
       showToast("Export failed — please try again.", "error");
     } finally {
       setIpDownloading(false);
+    }
+  };
+
+  // Push the batch straight to the India Post portal via our server route
+  // (AUTH01 login + BBD01 file upload). Result/errors are shown in the modal.
+  const [ipPushing, setIpPushing] = useState(false);
+  const [ipPushResult, setIpPushResult] = useState(null);
+  const pushIpBulk = async () => {
+    if (!ipBulk || ipBulk.rows.length === 0) return;
+    const bad = ipBulk.rows.filter(
+      (r) => Object.keys(validateRow(r, ipSender)).length > 0,
+    );
+    if (bad.length > 0) {
+      showToast(`${bad.length} row(s) have errors — fix the red cells first.`, "error");
+      return;
+    }
+    if (
+      !window.confirm(
+        `Book ${ipBulk.rows.length} ${ipBulk.product} parcel(s) on India Post now?\n\nThis submits the batch to the Department of Posts portal.`,
+      )
+    )
+      return;
+    setIpPushing(true);
+    setIpPushResult(null);
+    try {
+      const blob = await buildIpWorkbookBlob(ipBulk.rows, ipSender);
+      const fd = new FormData();
+      const stamp = new Date().toISOString().slice(0, 10);
+      fd.append("file", blob, `indiapost-${ipBulk.product}-${stamp}.xlsx`);
+      fd.append("product", ipBulk.product);
+      const res = await fetch("/api/india-post/bulk-book", {
+        method: "POST",
+        body: fd,
+      });
+      const json = await res.json().catch(() => ({}));
+      setIpPushResult({ httpOk: res.ok, ...json });
+      if (json.ok) {
+        showToast(`Batch pushed to India Post ✓`, "success");
+      } else if (json.stage === "config") {
+        showToast("India Post API isn't configured yet — see the note below.", "error");
+      } else {
+        showToast("India Post rejected the batch — see details below.", "error");
+      }
+    } catch (e) {
+      console.error("IP push failed:", e);
+      setIpPushResult({ httpOk: false, error: String(e?.message || e) });
+      showToast("Could not reach the portal — try again.", "error");
+    } finally {
+      setIpPushing(false);
     }
   };
 
@@ -4309,7 +4408,11 @@ export default function ManageOrdersPage() {
       const sorted = sortByDateDesc(named);
 
       setOrders(sorted);
-      setFilteredOrders(sorted);
+      fetchedRef.current = true;
+      // Note: we intentionally DON'T seed filteredOrders with the full list —
+      // the filter effect below runs immediately and populates it per the
+      // active filter. Seeding here caused a flash where the unfiltered list
+      // (and the merge strip) briefly rendered, then collapsed to the filter.
 
       // Cache a lightweight, de-duplicated customer list for the money
       // manager's @-mention feature (keyed by name, latest order kept).
@@ -4337,9 +4440,12 @@ export default function ManageOrdersPage() {
       } catch {}
     } catch (error) {
       console.error("Error fetching orders:", error);
-    } finally {
+      // On failure, stop the loader so the empty/error state can show.
+      fetchedRef.current = true;
       setLoading(false);
     }
+    // On success we leave `loading` true — the filter effect turns it off once
+    // the first filtered result is ready, so the list appears already filtered.
   }, []);
 
   useEffect(() => {
@@ -4916,6 +5022,9 @@ export default function ManageOrdersPage() {
     }
 
     setFilteredOrders(sortByDate(filtered, sortOrder));
+    // First filtered result after the fetch is ready — now reveal the list
+    // (this keeps the loader up until content is already filtered, no flash).
+    if (fetchedRef.current) setLoading(false);
   }, [
     searchQuery,
     orders,
@@ -9218,6 +9327,18 @@ export default function ManageOrdersPage() {
                             >
                               <Package size={14} /> Contractual ({contractN})
                             </button>
+                            <button
+                              type="button"
+                              className="mo-ipx-btn import"
+                              onClick={openIpImport}
+                              title="Import a filled India Post .xlsx"
+                            >
+                              <Download
+                                size={14}
+                                style={{ transform: "rotate(180deg)" }}
+                              />{" "}
+                              Import .xlsx
+                            </button>
                           </div>
                         );
                       })()}
@@ -11642,7 +11763,11 @@ export default function ManageOrdersPage() {
                       <Package size={18} />
                     )}
                     India Post ·{" "}
-                    {ipBulk.product === "speed" ? "Speed Post" : "Contractual"}{" "}
+                    {ipBulk.product === "speed"
+                      ? "Speed Post"
+                      : ipBulk.product === "imported"
+                        ? "Imported"
+                        : "Contractual"}{" "}
                     bulk file
                   </span>
                   <span className="font-12 dark-50">
@@ -11651,9 +11776,23 @@ export default function ManageOrdersPage() {
                     then download the .xlsx to upload on the portal
                   </span>
                 </span>
-                <span className="cursor-pointer" onClick={() => setIpBulk(null)}>
-                  <X size={16} />
-                </span>
+                <div className="flex flex-row gap-8 items-center">
+                  <button
+                    type="button"
+                    className="ip-import-btn"
+                    onClick={openIpImport}
+                    title="Import a filled .xlsx to prefill this table"
+                  >
+                    <Download size={13} style={{ transform: "rotate(180deg)" }} />{" "}
+                    Import .xlsx
+                  </button>
+                  <span
+                    className="cursor-pointer"
+                    onClick={() => setIpBulk(null)}
+                  >
+                    <X size={16} />
+                  </span>
+                </div>
               </div>
 
               {/* Sender (posting) details — applied to every row */}
@@ -11749,9 +11888,12 @@ export default function ManageOrdersPage() {
                           <tr>
                             <th className="ip-tbl-sticky ip-tbl-srh">#</th>
                             {cols.map((c) => (
-                              <th key={c.k} style={{ minWidth: c.w }}>
-                                {c.label}
-                              </th>
+                              <Fragment key={c.k}>
+                                {c.k === "weight" && (
+                                  <th style={{ minWidth: 200 }}>Books</th>
+                                )}
+                                <th style={{ minWidth: c.w }}>{c.label}</th>
+                              </Fragment>
                             ))}
                             <th style={{ minWidth: 96 }}>COD type</th>
                             <th style={{ minWidth: 84 }}>COD ₹</th>
@@ -11773,32 +11915,92 @@ export default function ManageOrdersPage() {
                                   </span>
                                 </td>
                                 {cols.map((c) => (
-                                  <td key={c.k}>
-                                    <div className="ip-cell">
-                                      <input
-                                        className={`ip-cell-input${errs[c.k] ? " invalid" : ""}${c.num ? " num" : ""}`}
-                                        type={c.num ? "number" : "text"}
-                                        inputMode={c.num ? "numeric" : undefined}
-                                        maxLength={c.max}
-                                        title={errs[c.k] || undefined}
-                                        value={r[c.k] ?? ""}
-                                        onChange={(e) =>
-                                          updateIpRow(idx, c.k, e.target.value)
-                                        }
-                                      />
-                                      {c.count && (
-                                        <span
-                                          className={`ip-cell-count${
-                                            String(r[c.k] || "").length > c.max
-                                              ? " over"
-                                              : ""
-                                          }`}
+                                  <Fragment key={c.k}>
+                                    {c.k === "weight" && (
+                                      <td className="ip-books-cell">
+                                        <div
+                                          className="ip-books-ref"
+                                          title={(r.covers || [])
+                                            .map(
+                                              (b) =>
+                                                `${b.name}${b.qty > 1 ? ` ×${b.qty}` : ""}`,
+                                            )
+                                            .join(", ")}
                                         >
-                                          {String(r[c.k] || "").length}/{c.max}
-                                        </span>
-                                      )}
-                                    </div>
-                                  </td>
+                                          <div className="ip-books-top">
+                                            {(r.covers || []).length > 0 && (
+                                              <div className="ip-books-thumbs">
+                                                {(r.covers || [])
+                                                  .slice(0, 3)
+                                                  .map((b, bi) =>
+                                                    b.image ? (
+                                                      <img
+                                                        key={bi}
+                                                        src={b.image}
+                                                        alt=""
+                                                        className="ip-book-thumb"
+                                                        loading="lazy"
+                                                        onError={(e) => {
+                                                          e.currentTarget.style.display =
+                                                            "none";
+                                                        }}
+                                                      />
+                                                    ) : (
+                                                      <span
+                                                        key={bi}
+                                                        className="ip-book-thumb ip-book-thumb-ph"
+                                                      >
+                                                        <ShoppingBag size={12} />
+                                                      </span>
+                                                    ),
+                                                  )}
+                                              </div>
+                                            )}
+                                            <span className="ip-books-count">
+                                              {r.books} book
+                                              {r.books === 1 ? "" : "s"}
+                                            </span>
+                                          </div>
+                                          {(r.covers || []).length > 0 && (
+                                            <div className="ip-books-names">
+                                              {(r.covers || [])
+                                                .map(
+                                                  (b) =>
+                                                    `${b.name}${b.qty > 1 ? ` ×${b.qty}` : ""}`,
+                                                )
+                                                .join(", ")}
+                                            </div>
+                                          )}
+                                        </div>
+                                      </td>
+                                    )}
+                                    <td>
+                                      <div className="ip-cell">
+                                        <input
+                                          className={`ip-cell-input${errs[c.k] ? " invalid" : ""}${c.num ? " num" : ""}`}
+                                          type={c.num ? "number" : "text"}
+                                          inputMode={c.num ? "numeric" : undefined}
+                                          maxLength={c.max}
+                                          title={errs[c.k] || undefined}
+                                          value={r[c.k] ?? ""}
+                                          onChange={(e) =>
+                                            updateIpRow(idx, c.k, e.target.value)
+                                          }
+                                        />
+                                        {c.count && (
+                                          <span
+                                            className={`ip-cell-count${
+                                              String(r[c.k] || "").length > c.max
+                                                ? " over"
+                                                : ""
+                                            }`}
+                                          >
+                                            {String(r[c.k] || "").length}/{c.max}
+                                          </span>
+                                        )}
+                                      </div>
+                                    </td>
+                                  </Fragment>
                                 ))}
                                 <td>
                                   <select
@@ -11845,6 +12047,39 @@ export default function ManageOrdersPage() {
                 );
               })()}
 
+              {ipPushResult && (
+                <div
+                  className={`ip-bulk-result ${
+                    ipPushResult.ok ? "ok" : "err"
+                  }`}
+                >
+                  <div className="ip-bulk-result-head">
+                    {ipPushResult.ok ? (
+                      <>
+                        <CheckCircle size={15} /> Booked on India Post
+                      </>
+                    ) : (
+                      <>
+                        <AlertCircle size={15} />{" "}
+                        {ipPushResult.stage === "config"
+                          ? "API not configured"
+                          : ipPushResult.stage === "auth"
+                            ? "Login failed"
+                            : "Portal rejected the batch"}
+                      </>
+                    )}
+                  </div>
+                  <pre className="ip-bulk-result-body">
+                    {ipPushResult.error ||
+                      JSON.stringify(
+                        ipPushResult.response ?? ipPushResult,
+                        null,
+                        2,
+                      )}
+                  </pre>
+                </div>
+              )}
+
               <div className="ip-bulk-foot">
                 <span className="ip-bulk-foot-note">
                   Weight & COD are absolute (no decimals). Prepaid rows won't
@@ -11868,6 +12103,18 @@ export default function ManageOrdersPage() {
                     {ipDownloading
                       ? "Preparing…"
                       : `Download ${ipBulk.rows.length} .xlsx`}
+                  </button>
+                  <button
+                    type="button"
+                    className="ip-bulk-push"
+                    disabled={ipPushing || ipBulk.rows.length === 0}
+                    onClick={pushIpBulk}
+                    title="Book directly on the India Post portal via API"
+                  >
+                    <Send size={15} />
+                    {ipPushing
+                      ? "Pushing…"
+                      : `Push ${ipBulk.rows.length} to portal`}
                   </button>
                 </div>
               </div>

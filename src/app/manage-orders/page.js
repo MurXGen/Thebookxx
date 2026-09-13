@@ -3636,7 +3636,6 @@ export default function ManageOrdersPage() {
   // the customer and move them to Processing — protecting conversion. A header
   // icon reopens it; a skip button dismisses it for the session.
   const [showUnconfirmed, setShowUnconfirmed] = useState(false);
-  const unconfirmedShownRef = useRef(false);
   const [cardBulkStatus, setCardBulkStatus] = useState("Getting Shipped");
   const [cardBulkBusy, setCardBulkBusy] = useState(false);
   // Queued per-card status edits waiting to be pushed to the sheet in one go
@@ -6514,17 +6513,8 @@ export default function ManageOrdersPage() {
   const unconfirmedOrders = orders.filter(
     (o) => o["Order ID"] && isUnconfirmedOrder(o),
   );
-  // Auto-open the confirmation modal once per visit when any exist.
-  useEffect(() => {
-    if (
-      !unconfirmedShownRef.current &&
-      !loading &&
-      unconfirmedOrders.length > 0
-    ) {
-      unconfirmedShownRef.current = true;
-      setShowUnconfirmed(true);
-    }
-  }, [loading, unconfirmedOrders.length]);
+  // The unconfirmed-orders panel is opened manually via its badge/button — we
+  // no longer auto-pop it on every visit.
   const notedOrdersCount = filteredOrders.filter(
     (o) => !!(orderNotes[o["Order ID"]] || o["Comment"]),
   ).length;

@@ -1570,19 +1570,40 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
                   <b>not printed books</b> and won&apos;t be shipped.
                 </p>
 
-                <div className="qrc-covers">
-                  {qrItems.map((b) => (
-                    <div className="qrc-cover" key={b.id}>
-                      <img src={b.image} alt={b.name} />
-                      <span className="qrc-cover-badge">
-                        <Zap size={10} /> QuickRead
-                      </span>
+                {cartBooks.length > 0 && (
+                  <div className="qrc-group">
+                    <span className="qrc-group-lbl">
+                      <BookOpen size={12} /> Books — shipped to you
+                    </span>
+                    <div className="qrc-covers">
+                      {cartBooks.map((b) => (
+                        <div className="qrc-cover" key={b.id}>
+                          <img src={b.image} alt={b.name} />
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  </div>
+                )}
+
+                <div className="qrc-group">
+                  <span className="qrc-group-lbl">
+                    <Zap size={12} /> QuickReads — digital, read in-app
+                  </span>
+                  <div className="qrc-covers">
+                    {qrItems.map((b) => (
+                      <div className="qrc-cover" key={b.id}>
+                        <img src={b.image} alt={b.name} />
+                        <span className="qrc-cover-badge">
+                          <Zap size={10} /> QuickRead
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
                 <p className="qrc-hint">
-                  Start reading instantly after checkout — no delivery needed.
+                  Start reading QuickReads instantly after checkout — no delivery
+                  needed.
                 </p>
               </div>
 

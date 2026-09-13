@@ -43115,6 +43115,24 @@ img[data-loaded="true"] {
   line-height: 1.55;
   color: #374151;
 }
+.qrc-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.qrc-group-lbl {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #6b7280;
+}
+.qrc-group-lbl svg {
+  color: var(--tertiary, #fb8500);
+}
 .qrc-covers {
   display: flex;
   gap: 12px;

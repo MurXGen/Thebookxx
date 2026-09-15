@@ -1412,9 +1412,9 @@ label.sec-mid-btn {
   z-index: -1;
   background: linear-gradient(
     to top,
-    var(--background, #ffffff) 42%,
-    rgba(255, 255, 255, 0.82) 68%,
-    rgba(255, 255, 255, 0) 100%
+    rgba(28, 24, 20, 0.18) 0%,
+    rgba(28, 24, 20, 0.1) 48%,
+    rgba(28, 24, 20, 0) 100%
   );
 }
 .mo-dark .cart-bar::before {
@@ -13255,13 +13255,13 @@ img[data-loaded="true"] {
   gap: 8px;
   padding: 10px 14px;
   border-radius: 999px;
-  border: 1px solid #0a0a0a;
-  background: #0a0a0a;
-  color: #ffffff;
+  border: 1px solid var(--dark-50, #6b7280);
+  background: #ffffff;
+  color: var(--foreground, #0a0a0a);
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 8px 20px -12px rgba(0, 0, 0, 0.55);
+  box-shadow: 0 8px 20px -12px rgba(0, 0, 0, 0.4);
   transition: transform 0.12s ease, box-shadow 0.15s ease;
 }
 .cos-social-pill:hover {

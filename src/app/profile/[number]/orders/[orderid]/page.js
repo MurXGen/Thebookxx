@@ -1159,11 +1159,16 @@ export default function OrderDetailPage() {
               </div>
               <div className="od-tc-divider" />
               <div className="od-tc-foot">
-                <span className="od-tc-courier">
-                  {isFaster ? <Plane size={15} /> : <Train size={15} />}
-                  {isFaster ? "Express delivery" : "Standard delivery"}
-                  {!delivered && ` · ${etaMin}–${etaMax} days`}
-                </span>
+                <div className="od-tc-courier-col">
+                  <span className="od-tc-courier">
+                    {isFaster ? <Plane size={15} /> : <Train size={15} />}
+                    {isFaster ? "Express delivery" : "Standard delivery"}
+                    {!delivered && ` · ${etaMin}–${etaMax} days`}
+                  </span>
+                  {!delivered && isFaster && !shippingId && (
+                    <span className="od-tc-airnote">Priority air dispatch</span>
+                  )}
+                </div>
                 {inTransit && shippingId ? (
                   <button
                     type="button"
@@ -1175,7 +1180,7 @@ export default function OrderDetailPage() {
                 ) : !delivered && isFaster && !shippingId ? (
                   <button
                     type="button"
-                    className="od-tc-revert"
+                    className="sec-mid-btn od-tc-revert"
                     onClick={revertToStandard}
                     disabled={upgrading}
                     title="Switch back to standard delivery"
@@ -1198,18 +1203,6 @@ export default function OrderDetailPage() {
                   )
                 )}
               </div>
-              {!delivered && !shippingId && (
-                <div className="od-tc-planhint">
-                  <span className="od-tc-plan-badge">
-                    Current plan · {isFaster ? "Faster" : "Standard"}
-                  </span>
-                  {isFaster && (
-                    <span className="od-tc-plan-up">
-                      Priority air dispatch · arriving in 1–5 days
-                    </span>
-                  )}
-                </div>
-              )}
             </>
           )}
         </div>

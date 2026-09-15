@@ -40622,19 +40622,32 @@ img[data-loaded="true"] {
   opacity: 0.7;
 }
 /* "Go with standard delivery" — subtle revert control for a Faster order */
+/* Revert button reuses .sec-mid-btn (darker border); we just keep it compact. */
 .od-tc-revert {
   flex-shrink: 0;
-  border: 1px solid var(--hairline, #e5e7eb);
-  background: #fff;
-  color: #4b5563;
-  padding: 7px 13px;
+  white-space: nowrap;
+  padding: 8px 14px;
   border-radius: 999px;
-  font-size: var(--px-12);
   font-weight: 700;
   cursor: pointer;
 }
 .od-tc-revert:disabled {
   opacity: 0.7;
+}
+/* Delivery row left column: express line + small green priority note */
+.od-tc-courier-col {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.od-tc-airnote {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--success, #16a34a);
+  letter-spacing: 0.01em;
 }
 /* Faster-delivery upgrade confirmation modal */
 .fdu-body {
@@ -40828,31 +40841,6 @@ img[data-loaded="true"] {
   color: #6b7280;
 }
 /* "You're on Standard — upgrade to Faster" hint under the delivery row */
-.od-tc-planhint {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 10px;
-}
-.od-tc-plan-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 3px 10px;
-  border-radius: 999px;
-  background: #f3f4f6;
-  color: #4b5563;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.01em;
-}
-.od-tc-plan-up {
-  display: inline-flex;
-  align-items: center;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--tertiary, #fb8500);
-}
 /* Full-screen map */
 .od-map-full {
   position: fixed;
@@ -43900,6 +43888,121 @@ img[data-loaded="true"] {
   color: #6b7280;
   line-height: 1.5;
 }
+/* Decorative floating coins (top-right) — makes the card feel important. */
+.refearn-card {
+  position: relative;
+  overflow: hidden;
+}
+.refearn-deco {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 120px;
+  height: 120px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.9;
+}
+.refearn-card > .refearn-head,
+.refearn-card > .refearn-proof,
+.refearn-card > .refearn-meter,
+.refearn-card .refearn-enable,
+.refearn-card .refearn-linkrow,
+.refearn-card .refearn-share,
+.refearn-card .refearn-locked,
+.refearn-card .refearn-foot {
+  position: relative;
+  z-index: 1;
+}
+.refearn-deco-c1 {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: refFloatA 3.6s ease-in-out infinite;
+}
+.refearn-deco-c2 {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: refFloatB 4.2s ease-in-out infinite;
+}
+.refearn-deco-c3 {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: refFloatA 3s ease-in-out infinite reverse;
+}
+@keyframes refFloatA {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-5px) rotate(-8deg); }
+}
+@keyframes refFloatB {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(4px) rotate(7deg); }
+}
+/* Social-proof row */
+.refearn-proof {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 11px;
+}
+.refearn-proof-faces {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+.refearn-proof-faces img {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+  margin-left: -8px;
+  box-shadow: 0 1px 4px -1px rgba(0, 0, 0, 0.3);
+}
+.refearn-proof-faces img:first-child {
+  margin-left: 0;
+}
+.refearn-proof-txt {
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: #6b7280;
+}
+.refearn-proof-txt b {
+  color: #b45309;
+  font-weight: 800;
+}
+/* SVG "earnings filling" meter */
+.refearn-meter {
+  margin-top: 9px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.refearn-meter svg {
+  display: block;
+  width: 100%;
+  height: 8px;
+}
+.refearn-meter-fill {
+  transform-box: fill-box;
+  transform-origin: left center;
+  animation: refMeterFill 2.8s ease-in-out infinite;
+}
+@keyframes refMeterFill {
+  0% { transform: scaleX(0.12); opacity: 0.85; }
+  60% { transform: scaleX(0.92); opacity: 1; }
+  100% { transform: scaleX(0.12); opacity: 0.85; }
+}
+.refearn-meter-lbl {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #c2803c;
+}
+@media (prefers-reduced-motion: reduce) {
+  .refearn-deco-c1, .refearn-deco-c2, .refearn-deco-c3, .refearn-meter-fill {
+    animation: none;
+  }
+  .refearn-meter-fill { transform: scaleX(0.7); }
+}
 .refearn-enable {
   display: flex;
   align-items: center;
@@ -45076,4 +45179,49 @@ img[data-loaded="true"] {
 }
 .refapply-done.ok .refapply-done-ic {
   color: #10b981;
+}
+
+/* =====================================================================
+   Button loaders — always spin. Placed last so it wins on source order,
+   uses a class selector (beats the `*` reduced-motion reset) and re-declares
+   the keyframe here so it survives even aggressive CSS purging. Applies to
+   every in-button spinner (Loader2) and standalone spinner elements.
+   ===================================================================== */
+@keyframes tbx-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.lb-spinner,
+.loader-spinner,
+.loading-spinner,
+.spinner,
+.refer-capture-spin,
+.mo-spin,
+[data-spin] {
+  animation-name: tbx-spin !important;
+  animation-duration: 0.7s !important;
+  animation-timing-function: linear !important;
+  animation-iteration-count: infinite !important;
+  transform-origin: center center;
+  will-change: transform;
+}
+/* Keep spinners spinning even when the OS requests reduced motion — a loading
+   indicator that doesn't move reads as "stuck". */
+@media (prefers-reduced-motion: reduce) {
+  .lb-spinner,
+  .loader-spinner,
+  .loading-spinner,
+  .spinner,
+  .refer-capture-spin,
+  .mo-spin,
+  [data-spin] {
+    animation-name: tbx-spin !important;
+    animation-duration: 0.7s !important;
+    animation-timing-function: linear !important;
+    animation-iteration-count: infinite !important;
+  }
 }

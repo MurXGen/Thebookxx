@@ -10,6 +10,14 @@ const SITE = "https://www.thebookx.in";
 const REFERRER_REWARD = 50;
 const REFEREE_REWARD = 30;
 
+// Social-proof faces (reuses the community member avatars).
+const PROOF_AVATARS = [
+  "/review/promotions/member-1.jpeg",
+  "/review/promotions/member-2.jpeg",
+  "/review/promotions/member-3.jpeg",
+  "/review/promotions/member-4.jpeg",
+];
+
 // "Refer & Earn" card for the order-detail page. Enabling generates (or fetches)
 // the customer's 6-char code and a shareable /refer/{code} link. They earn ₹50
 // when a friend's first order is delivered; the friend gets ₹30.
@@ -113,6 +121,23 @@ export default function ReferAndEarn({ phone, compact = false, guide = false }) 
           </motion.div>
         )}
       </AnimatePresence>
+      {/* Decorative floating coins — makes the card feel valuable/important. */}
+      <span className="refearn-deco" aria-hidden="true">
+        <svg viewBox="0 0 120 120" width="120" height="120">
+          <g className="refearn-deco-c1">
+            <circle cx="26" cy="24" r="13" fill="#ffb703" opacity="0.9" />
+            <text x="26" y="29" text-anchor="middle" font-size="14" font-weight="800" fill="#fff">₹</text>
+          </g>
+          <g className="refearn-deco-c2">
+            <circle cx="92" cy="40" r="10" fill="#fb8500" opacity="0.85" />
+            <text x="92" y="44.5" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">₹</text>
+          </g>
+          <g className="refearn-deco-c3">
+            <circle cx="70" cy="14" r="7" fill="#ffd166" opacity="0.8" />
+          </g>
+        </svg>
+      </span>
+
       <div className="refearn-head">
         <span className="refearn-ic">
           <Gift size={18} />
@@ -122,18 +147,52 @@ export default function ReferAndEarn({ phone, compact = false, guide = false }) 
           <p className="refearn-sub">
             {compact ? (
               <>
-                Your friend saves ₹{REFEREE_REWARD}, you earn ₹{REFERRER_REWARD} —
-                everyone wins. 🎁
+                Your friend saves ₹{REFEREE_REWARD}, you earn ₹{REFERRER_REWARD}.
+                Everyone wins.
               </>
             ) : (
               <>
-                Invite a friend — they get ₹{REFEREE_REWARD} off, you get ₹
+                Invite a friend. They get ₹{REFEREE_REWARD} off, you get ₹
                 {REFERRER_REWARD} in your wallet once their first order is
                 delivered.
               </>
             )}
           </p>
         </div>
+      </div>
+
+      {/* Social proof + an SVG "earnings filling" meter to build momentum. */}
+      <div className="refearn-proof">
+        <span className="refearn-proof-faces">
+          {PROOF_AVATARS.map((src) => (
+            <img key={src} src={src} alt="" loading="lazy" />
+          ))}
+        </span>
+        <span className="refearn-proof-txt">
+          <b>10.3k+ readers</b> are referring friends, earning rewards &amp;
+          growing their bookshelf.
+        </span>
+      </div>
+      <div className="refearn-meter" aria-hidden="true">
+        <svg viewBox="0 0 300 8" preserveAspectRatio="none" width="100%" height="8">
+          <rect x="0" y="0" width="300" height="8" rx="4" fill="#f1e6d4" />
+          <rect
+            className="refearn-meter-fill"
+            x="0"
+            y="0"
+            width="300"
+            height="8"
+            rx="4"
+            fill="url(#refGrad)"
+          />
+          <defs>
+            <linearGradient id="refGrad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#fb8500" />
+              <stop offset="1" stop-color="#ffb703" />
+            </linearGradient>
+          </defs>
+        </svg>
+        <span className="refearn-meter-lbl">More readers earning every day</span>
       </div>
 
       {locked ? (

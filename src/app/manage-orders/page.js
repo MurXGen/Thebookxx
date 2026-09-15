@@ -3872,11 +3872,16 @@ export default function ManageOrdersPage() {
     try {
       drafts = JSON.parse(localStorage.getItem("ip_track_drafts") || "{}") || {};
     } catch {}
+    // Prefer a saved ("Save as booked") tracking ID, then any unsaved draft.
     const enriched = bookMatchedOrders
-      .map((o) => ({
-        orderId: o["Order ID"],
-        trackingId: String(drafts[o["Order ID"]] || "").trim(),
-      }))
+      .map((o) => {
+        const oid = o["Order ID"];
+        const booked = bookedInfo(oid);
+        const trackingId = String(
+          (booked && booked.tracking) || drafts[oid] || "",
+        ).trim();
+        return { orderId: oid, trackingId };
+      })
       .filter((r) => r.orderId && r.trackingId);
     if (enriched.length === 0) {
       showToast("No tracking IDs entered in the cards yet.", "error");

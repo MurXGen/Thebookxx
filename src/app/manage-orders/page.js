@@ -6730,7 +6730,13 @@ export default function ManageOrdersPage() {
   // Per-status breakdown: count, total ₹ value, and UPI vs COD split.
   // (Non-COD orders are treated as UPI / prepaid.)
   const statusBreakdown = STATUS_META.map((s) => {
-    const rows = analyticsOrders.filter((o) => o["Order Status"] === s.key);
+    const rows = analyticsOrders.filter((o) => {
+      if (o["Order Status"] !== s.key) return false;
+      // Cancelled card counts only shipped-then-cancelled (has a tracking ID).
+      if (s.key === "Cancelled")
+        return String(o["Shipping ID"] || o.shippingId || "").trim() !== "";
+      return true;
+    });
     const codRows = rows.filter(isCODOrder);
     const upiRows = rows.filter((o) => !isCODOrder(o));
     const sumRev = (list) => list.reduce((sum, o) => sum + (o.revenue || 0), 0);
@@ -6758,8 +6764,14 @@ export default function ManageOrdersPage() {
   );
 
   // ── Cancelled orders — auto loss from forfeited postage ──
+  // Only cancelled orders that actually shipped (have a tracking / Shipping ID)
+  // count here: an unshipped cancellation forfeits no postage.
   const isCancelled = (o) => /cancel/i.test(String(o["Order Status"] || ""));
-  const cancelledOrders = anOrders.filter(isCancelled); // period-scoped, real orders
+  const hasShippingId = (o) =>
+    String(o["Shipping ID"] || o.shippingId || "").trim() !== "";
+  const cancelledOrders = anOrders.filter(
+    (o) => isCancelled(o) && hasShippingId(o),
+  ); // period-scoped, real, shipped-then-cancelled orders
   const cancelledValue = cancelledOrders.reduce(
     (s, o) => s + (o.revenue || 0),
     0,

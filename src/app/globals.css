@@ -5261,6 +5261,16 @@ textarea.sec-mid-btn,
   gap: 10px;
   margin-bottom: 4px;
 }
+/* City / District + State side by side */
+.addr-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  align-items: start;
+}
+.addr-two-col .input-group {
+  min-width: 0;
+}
 .addr-pin-btn {
   display: inline-flex;
   align-items: center;

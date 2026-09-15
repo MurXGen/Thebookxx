@@ -1524,6 +1524,7 @@ export default function AddressModal({
               </div>
 
               {pincodeReady && (
+              <div className="addr-two-col">
               <div className="input-group">
                 <label>City / District</label>
                 <input
@@ -1544,9 +1545,7 @@ export default function AddressModal({
                   </span>
                 )}
               </div>
-              )}
 
-              {pincodeReady && (
               <div className="input-group">
                 <label>State</label>
                 <select
@@ -1571,6 +1570,7 @@ export default function AddressModal({
                     Please select your state for smooth delivery.
                   </span>
                 )}
+              </div>
               </div>
               )}
 

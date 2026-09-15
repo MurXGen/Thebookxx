@@ -32,6 +32,7 @@ import {
   ChevronRight,
   Check,
   Star,
+  Copy,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import {
@@ -44,6 +45,7 @@ import SupportSheet from "@/components/profile/SupportSheet";
 import OrderScratchCard from "@/components/profile/OrderScratchCard";
 import ReferAndEarn from "@/components/profile/ReferAndEarn";
 import CodPayOnline from "@/components/profile/CodPayOnline";
+import CommunityJoin from "@/components/CommunityJoin";
 import BookCard from "@/components/BookCard";
 import { updateOrderRow } from "@/utils/googleFormOrder";
 import { getDeliveryCharge } from "@/utils/cartOffers";
@@ -232,6 +234,10 @@ export default function OrderDetailPage() {
   // Faster-delivery upgrade (applied to the sheet) + undo snapshot.
   const [upgrading, setUpgrading] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  // Prepaid-order upgrade: pay the surplus, then verify + merchant-approve on WA.
+  const [prepaidStage, setPrepaidStage] = useState(false);
+  const [surplusVerified, setSurplusVerified] = useState(false);
+  const [surplusCopied, setSurplusCopied] = useState(false);
   // Order/service review (posts to the shared book-store review sheet).
   const [revRating, setRevRating] = useState(0);
   const [revHover, setRevHover] = useState(0);
@@ -974,6 +980,54 @@ export default function OrderDetailPage() {
     }
   };
 
+  // ── Prepaid upgrade (order already paid online / advance paid) ──
+  // Rather than silently editing the sheet, the shopper pays only the surplus
+  // and we route everything through WhatsApp: an intent message, then a verify
+  // message that carries the merchant approval link (opens the merchant page).
+  const isPrepaidOrder =
+    /upi|online|prepaid|paytm|razorpay|gpay|phonepe/i.test(
+      String(order?.["Payment Type"] || ""),
+    ) || /^\s*yes/i.test(String(order?.["Advance Paid"] || ""));
+  const UPI_ID = "7977960242-1@okbizaxis";
+  const merchantUpgradeLink = () => {
+    const origin =
+      typeof window !== "undefined"
+        ? window.location.origin
+        : "https://www.thebookx.in";
+    return `${origin}/${encodeURIComponent(orderId)}?upgrade=faster`;
+  };
+  const startPrepaidSurplus = () => {
+    setPrepaidStage(true);
+    const msg = `Hi TheBookX, I'd like to *upgrade order ${orderId} to Faster delivery* (+₹${upgradeExtra}). I've already paid online, so I'll pay just the ₹${upgradeExtra} surplus now and share the confirmation. 🙏`;
+    window.open(
+      `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(msg)}`,
+      "_blank",
+      "noopener,noreferrer",
+    );
+  };
+  const copySurplusUpi = () => {
+    try {
+      navigator.clipboard.writeText(UPI_ID);
+      setSurplusCopied(true);
+      setTimeout(() => setSurplusCopied(false), 1500);
+    } catch {}
+  };
+  const verifyPrepaidUpgrade = () => {
+    const link = merchantUpgradeLink();
+    const msg = [
+      `Hi TheBookX, I've *paid the ₹${upgradeExtra} surplus* to upgrade order ${orderId} to Faster delivery. Please approve. 🙏`,
+      "",
+      "——— Merchant only (tap to approve the upgrade):",
+      link,
+    ].join("\n");
+    window.open(
+      `https://wa.me/${SUPPORT_WHATSAPP}?text=${encodeURIComponent(msg)}`,
+      "_blank",
+      "noopener,noreferrer",
+    );
+    setSurplusVerified(true);
+  };
+
   // Revert a Faster order back to Standard delivery — works even after reload
   // (recomputes charges from the order value), updates the sheet and pings us.
   const revertToStandard = async () => {
@@ -1216,7 +1270,12 @@ export default function OrderDetailPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => !upgrading && setShowUpgradeModal(false)}
+            onClick={() => {
+              if (upgrading) return;
+              setShowUpgradeModal(false);
+              setPrepaidStage(false);
+              setSurplusVerified(false);
+            }}
             style={{ maxWidth: "980px", margin: "0 auto" }}
           >
             <motion.div
@@ -1233,7 +1292,12 @@ export default function OrderDetailPage() {
                 </span>
                 <span
                   className="cursor-pointer"
-                  onClick={() => !upgrading && setShowUpgradeModal(false)}
+                  onClick={() => {
+                    if (upgrading) return;
+                    setShowUpgradeModal(false);
+                    setPrepaidStage(false);
+                    setSurplusVerified(false);
+                  }}
                 >
                   <X size={18} />
                 </span>
@@ -1282,26 +1346,80 @@ export default function OrderDetailPage() {
                   </div>
                 </div>
 
-                <p className="fdu-note">
-                  The extra ₹{upgradeExtra} is added to your order total. You can
-                  switch back to standard delivery anytime before dispatch.
-                </p>
+                {isPrepaidOrder ? (
+                  <p className="fdu-note">
+                    You&apos;ve already paid online, so you only pay the ₹
+                    {upgradeExtra} difference to upgrade.
+                  </p>
+                ) : (
+                  <p className="fdu-note">
+                    The extra ₹{upgradeExtra} is added to your order total. You
+                    can switch back to standard delivery anytime before dispatch.
+                  </p>
+                )}
+
+                {isPrepaidOrder && prepaidStage && (
+                  <div className="fdu-prepaid">
+                    <span className="fdu-prepaid-amt">
+                      Pay ₹{upgradeExtra} surplus
+                    </span>
+                    <img
+                      src="/books/uskillbook.png"
+                      alt="UPI QR code"
+                      className="fdu-qr"
+                    />
+                    <button
+                      type="button"
+                      className="fdu-upi"
+                      onClick={copySurplusUpi}
+                    >
+                      {surplusCopied ? (
+                        <>
+                          <Check size={14} /> Copied
+                        </>
+                      ) : (
+                        <>
+                          <Copy size={14} /> {UPI_ID}
+                        </>
+                      )}
+                    </button>
+                    {surplusVerified ? (
+                      <div className="fdu-verified">
+                        <Check size={16} strokeWidth={3} /> Sent for approval —
+                        we&apos;ll upgrade your order shortly.
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        className="pri-big-btn width100"
+                        onClick={verifyPrepaidUpgrade}
+                      >
+                        <FaWhatsapp size={16} /> I&apos;ve paid — verify on
+                        WhatsApp
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
 
-              <button
-                type="button"
-                className="pri-big-btn width100 fdu-confirm"
-                onClick={applyFasterUpgrade}
-                disabled={upgrading}
-              >
-                {upgrading ? (
-                  <>
-                    <Loader2 size={16} className="lb-spinner" /> Upgrading…
-                  </>
-                ) : (
-                  "Okay, I got it — confirm upgrade"
-                )}
-              </button>
+              {!(isPrepaidOrder && prepaidStage) && (
+                <button
+                  type="button"
+                  className="pri-big-btn width100 fdu-confirm"
+                  onClick={isPrepaidOrder ? startPrepaidSurplus : applyFasterUpgrade}
+                  disabled={upgrading}
+                >
+                  {upgrading ? (
+                    <>
+                      <Loader2 size={16} className="lb-spinner" /> Upgrading…
+                    </>
+                  ) : isPrepaidOrder ? (
+                    `Pay ₹${upgradeExtra} difference to upgrade`
+                  ) : (
+                    "Okay, I got it — confirm upgrade"
+                  )}
+                </button>
+              )}
             </motion.div>
           </motion.div>
         )}
@@ -1668,6 +1786,9 @@ export default function OrderDetailPage() {
       >
         <Download size={16} /> Download bill
       </button>
+
+      {/* Join our community — WhatsApp group + Instagram */}
+      <CommunityJoin variant="card" />
 
       {/* You might also be interested in */}
       {recos.length > 0 && (

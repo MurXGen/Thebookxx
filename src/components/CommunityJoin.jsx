@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Users } from "lucide-react";
+import { X, Users, ChevronRight, Heart } from "lucide-react";
 import { FaWhatsapp, FaInstagram } from "react-icons/fa";
 
 const INSTAGRAM_URL = "https://www.instagram.com/thebookx.in/";
@@ -20,22 +20,53 @@ const COMMUNITY_AVATARS = [
 
 // Icon-only trigger that opens a bottom sheet to join the community on
 // Instagram or the WhatsApp group. Reuses the existing .community-* styles.
-export default function CommunityJoin({ className = "" }) {
+export default function CommunityJoin({ className = "", variant = "icon" }) {
   const [open, setOpen] = useState(false);
   const [broken, setBroken] = useState({});
   const avatars = COMMUNITY_AVATARS.filter((s) => !broken[s]);
 
   return (
     <>
-      <button
-        type="button"
-        className={`community-icon-btn ${className}`}
-        onClick={() => setOpen(true)}
-        aria-label="Join our community"
-        title="Join our community"
-      >
-        <Users size={18} />
-      </button>
+      {variant === "card" ? (
+        <button
+          type="button"
+          className={`community-card-trigger ${className}`}
+          onClick={() => setOpen(true)}
+          aria-label="Join our community"
+        >
+          <span className="cct-ic">
+            <Heart size={18} fill="currentColor" stroke="none" />
+          </span>
+          <span className="cct-txt">
+            <strong>Join our community</strong>
+            <small>Book drops, offers &amp; bookish chat on WhatsApp &amp; Instagram</small>
+          </span>
+          <span className="cct-faces">
+            {avatars.slice(0, 3).map((src) => (
+              <img
+                key={src}
+                src={src}
+                alt=""
+                loading="lazy"
+                onError={() =>
+                  setBroken((prev) => ({ ...prev, [src]: true }))
+                }
+              />
+            ))}
+          </span>
+          <ChevronRight size={18} className="cct-arrow" />
+        </button>
+      ) : (
+        <button
+          type="button"
+          className={`community-icon-btn ${className}`}
+          onClick={() => setOpen(true)}
+          aria-label="Join our community"
+          title="Join our community"
+        >
+          <Users size={18} />
+        </button>
+      )}
 
       <AnimatePresence>
         {open && (

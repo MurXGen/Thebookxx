@@ -10,8 +10,13 @@ import {
   Banknote,
   Smartphone,
 } from "lucide-react";
-import { fetchOrderById, submitConfirmedOrder } from "@/utils/googleFormOrder";
+import {
+  fetchOrderById,
+  submitConfirmedOrder,
+  updateOrderRow,
+} from "@/utils/googleFormOrder";
 import { getDeliveryCharge } from "@/utils/cartOffers";
+import { Plane } from "lucide-react";
 
 const MERCHANT_PASSWORD = "987321";
 // Matches the checkout flow: flat COD handling fee (see bag/page.js).
@@ -118,6 +123,34 @@ export default function MerchantConfirmPage() {
     ? payMethod === "COD"
     : order && /cash|cod/i.test(String(order["Payment Type"] || ""));
 
+  // Faster-delivery upgrade approval (customer paid the surplus, merchant
+  // approves via the ?upgrade=faster link shared on WhatsApp).
+  const upgradeReq = search.get("upgrade") === "faster";
+  const approveUpgrade = async () => {
+    if (pwd !== MERCHANT_PASSWORD) {
+      setErr("Incorrect merchant password.");
+      return;
+    }
+    setErr("");
+    setSubmitting(true);
+    const standard = getDeliveryCharge(subtotal, false, hasOneRupee);
+    const faster = getDeliveryCharge(subtotal, true, hasOneRupee);
+    const diff = Math.max(0, faster - standard);
+    const newTotal = num(order["Total Amount"]) + diff;
+    try {
+      await updateOrderRow(orderId, {
+        "Delivery Type": "Faster Delivery",
+        "Delivery Charge": String(faster),
+        "Total Amount": String(newTotal),
+      });
+      setDone(true);
+    } catch (e) {
+      setErr("Could not approve the upgrade. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const handleConfirm = async () => {
     if (pwd !== MERCHANT_PASSWORD) {
       setErr("Incorrect merchant password.");
@@ -163,13 +196,82 @@ export default function MerchantConfirmPage() {
             <div className="mc-success-ic">
               <CheckCircle2 size={40} />
             </div>
-            <h1>Order confirmed</h1>
+            <h1>{upgradeReq ? "Upgrade approved" : "Order confirmed"}</h1>
             <p>
-              The order has been confirmed
-              {walletUsed > 0 ? ` and ₹${walletUsed} was debited from the customer's wallet.` : "."}
+              {upgradeReq
+                ? "The order is now marked as Faster (air) delivery."
+                : `The order has been confirmed${
+                    walletUsed > 0
+                      ? ` and ₹${walletUsed} was debited from the customer's wallet.`
+                      : "."
+                  }`}
             </p>
             <span className="mc-oid">Order {orderId}</span>
           </div>
+        ) : upgradeReq ? (
+          <>
+            <div className="mc-head">
+              <Plane size={22} />
+              <span>Approve Faster upgrade</span>
+            </div>
+            <div className="mc-summary">
+              <Row label="Order ID" value={orderId} />
+              <Row
+                label="Customer"
+                value={String(order["Customer Name"] || "").replace(
+                  /\s*\(unconfirmed\)\s*/i,
+                  "",
+                )}
+              />
+              <Row label="Phone" value={order["Phone Number"]} />
+              <Row
+                label="Current delivery"
+                value={order["Delivery Type"] || "Standard"}
+              />
+              <Row
+                label="Surplus to apply"
+                value={`+₹${Math.max(
+                  0,
+                  getDeliveryCharge(subtotal, true, hasOneRupee) -
+                    getDeliveryCharge(subtotal, false, hasOneRupee),
+                )}`}
+                highlight
+              />
+            </div>
+            <div className="mc-note">
+              Approve only after confirming the customer paid the surplus. This
+              sets the order to <b>Faster Delivery</b> and adds the difference to
+              the total.
+            </div>
+            <label className="mc-label">
+              <Lock size={14} /> Merchant password
+            </label>
+            <input
+              type="password"
+              className="sec-mid-btn mc-input"
+              placeholder="Enter merchant password"
+              value={pwd}
+              onChange={(e) => setPwd(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && approveUpgrade()}
+              inputMode="numeric"
+              autoComplete="off"
+            />
+            {err && <span className="mc-err">{err}</span>}
+            <button
+              type="button"
+              className="pri-big-btn width100 mc-btn"
+              onClick={approveUpgrade}
+              disabled={submitting || !pwd}
+            >
+              {submitting ? (
+                <>
+                  <Loader2 size={16} className="lb-spinner" /> Approving…
+                </>
+              ) : (
+                "Approve Faster upgrade"
+              )}
+            </button>
+          </>
         ) : (
           <>
             <div className="mc-head">

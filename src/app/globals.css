@@ -13215,6 +13215,97 @@ img[data-loaded="true"] {
   transform: translateY(-1px);
   box-shadow: 0 10px 22px -12px rgba(0, 0, 0, 0.4);
 }
+/* Homepage social dock — community + share, fixed bottom-left */
+.home-social-dock {
+  position: fixed;
+  left: 14px;
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.home-social-dock .hsd-btn {
+  width: 46px;
+  height: 46px;
+  box-shadow: 0 10px 26px -10px rgba(0, 0, 0, 0.4);
+}
+.home-social-dock .community-icon-btn {
+  background: linear-gradient(135deg, #ffffff 0%, #fff7ef 100%);
+}
+.home-social-dock .hsd-share {
+  color: #16a34a;
+}
+@media (max-width: 720px) {
+  .home-social-dock {
+    left: 12px;
+    bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  }
+}
+/* Community card trigger (order-detail page) */
+.community-card-trigger {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid #ffe3c2;
+  background: linear-gradient(160deg, #fff7ed 0%, #ffffff 72%);
+  cursor: pointer;
+  text-align: left;
+}
+.community-card-trigger:active {
+  transform: scale(0.995);
+}
+.cct-ic {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  color: #fff;
+  background: linear-gradient(135deg, #fb8500, #ffb703);
+}
+.cct-txt {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.cct-txt strong {
+  font-size: 14.5px;
+  font-weight: 800;
+  color: #0a0a0a;
+}
+.cct-txt small {
+  font-size: 12px;
+  color: #6b7280;
+  line-height: 1.4;
+}
+.cct-faces {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+.cct-faces img {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+  margin-left: -9px;
+}
+.cct-faces img:first-child {
+  margin-left: 0;
+}
+.cct-arrow {
+  flex-shrink: 0;
+  color: #b45309;
+}
 .community-sub {
   font-size: 13.5px;
   color: var(--dark-50);
@@ -40748,6 +40839,59 @@ img[data-loaded="true"] {
 }
 .fdu-confirm {
   margin-top: 2px;
+}
+/* Prepaid surplus pay view inside the upgrade modal */
+.fdu-prepaid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid #fed7aa;
+  background: #fff7ed;
+}
+.fdu-prepaid-amt {
+  font-size: 15px;
+  font-weight: 800;
+  color: #b45309;
+}
+.fdu-qr {
+  width: 180px;
+  height: 180px;
+  object-fit: contain;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid #eef0f2;
+}
+.fdu-upi {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #374151;
+  cursor: pointer;
+}
+.fdu-prepaid .pri-big-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.fdu-verified {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--success, #16a34a);
+  text-align: center;
+  line-height: 1.4;
 }
 .od-tc-strike {
   color: var(--dark-50, #9ca3af);

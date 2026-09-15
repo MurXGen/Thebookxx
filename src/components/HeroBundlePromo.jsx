@@ -12,7 +12,7 @@ import { showToast } from "@/context/ToastContext";
 const RANKED = [
   { id: "bk-005", rank: 1 }, // Atomic Habits
   { id: "bk-002", rank: 2 }, // The Art of Clarity
-  { id: "bk-391", rank: 3 }, // Ikigai
+  { id: "bk-655", rank: 3 }, // Did You Ever Love Me?
 ];
 // Visual podium order: 2nd, 1st (centre, tallest), 3rd.
 const PODIUM_ORDER = [2, 1, 3];

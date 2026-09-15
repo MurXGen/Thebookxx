@@ -13255,7 +13255,7 @@ img[data-loaded="true"] {
   gap: 8px;
   padding: 10px 14px;
   border-radius: 999px;
-  border: 1px solid var(--hairline, #ececec);
+  border: 1px solid var(--dark-50, #6b7280);
   background: #fff;
   color: var(--foreground, #0a0a0a);
   font-size: 13px;

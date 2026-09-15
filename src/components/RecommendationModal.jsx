@@ -11,6 +11,7 @@ import {
   ArrowLeft,
   ShoppingCart,
   Heart,
+  Loader2,
 } from "lucide-react";
 import { books } from "@/utils/book";
 import { useRouter } from "next/navigation";
@@ -581,10 +582,19 @@ export default function RecommendationModal({
                     <button
                       className="pri-big-btn width100 flex flex-row items-center justify-center gap-4"
                       onClick={handleSubmit}
-                      disabled={!formData.preference}
+                      disabled={!formData.preference || isLoading}
                     >
-                      Submit
-                      <ArrowRight size={16} />
+                      {isLoading ? (
+                        <>
+                          <Loader2 size={16} className="lb-spinner" />
+                          Finding your books…
+                        </>
+                      ) : (
+                        <>
+                          Submit
+                          <ArrowRight size={16} />
+                        </>
+                      )}
                     </button>
                   </div>
                 </motion.div>

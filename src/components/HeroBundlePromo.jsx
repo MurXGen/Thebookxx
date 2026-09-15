@@ -11,8 +11,8 @@ import { showToast } from "@/context/ToastContext";
 // framed around the "pay online, get up to ₹100 cashback" hook.
 const RANKED = [
   { id: "bk-005", rank: 1 }, // Atomic Habits
-  { id: "bk-655", rank: 2 }, // Did You Ever Love Me?
-  { id: "bk-026", rank: 3 }, // We Are There for Each Other
+  { id: "bk-002", rank: 2 }, // The Art of Clarity
+  { id: "bk-655", rank: 3 }, // Did You Ever Love Me? (was We Are There for Each Other)
 ];
 // Visual podium order: 2nd, 1st (centre, tallest), 3rd.
 const PODIUM_ORDER = [2, 1, 3];

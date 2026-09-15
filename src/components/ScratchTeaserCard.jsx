@@ -68,7 +68,7 @@ export default function ScratchTeaserCard({
         }
         .st-stage {
           position: relative;
-          width: 170px;
+          width: 120px;
           height: 116px;
         }
         .st-card {

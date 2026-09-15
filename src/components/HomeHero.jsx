@@ -46,7 +46,7 @@ export default function HomeHero() {
   const pickNames = [
     "Atomic Habits",
     "The Art of Clarity",
-    "We Are There for Each Other",
+    "Did You Ever Love Me?",
   ];
   const picks = (() => {
     const named = pickNames

@@ -1399,6 +1399,32 @@ label.sec-mid-btn {
   transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
   will-change: transform;
 }
+/* Soft fade behind the bar so the floating community/share buttons stay legible
+   over whatever page content is scrolling underneath. */
+.cart-bar::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: -46px;
+  pointer-events: none;
+  z-index: -1;
+  background: linear-gradient(
+    to top,
+    var(--background, #ffffff) 42%,
+    rgba(255, 255, 255, 0.82) 68%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+.mo-dark .cart-bar::before {
+  background: linear-gradient(
+    to top,
+    #0a0a0a 42%,
+    rgba(10, 10, 10, 0.82) 68%,
+    rgba(10, 10, 10, 0) 100%
+  );
+}
 /* Slide fully out of view (bar + floating FAB) when scrolling down */
 .cart-bar.cart-bar-hidden {
   transform: translateY(135%);
@@ -13215,11 +13241,11 @@ img[data-loaded="true"] {
   transform: translateY(-1px);
   box-shadow: 0 10px 22px -12px rgba(0, 0, 0, 0.4);
 }
-/* Community + Share row above the cart offer strip */
+/* Community + Share row above the cart offer strip (always visible) */
 .cos-social-row {
   display: flex;
   gap: 12px;
-  margin-bottom: 10px;
+  margin: 0 12px 10px;
 }
 .cos-social-pill {
   flex: 1;

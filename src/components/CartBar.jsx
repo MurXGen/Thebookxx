@@ -20,7 +20,12 @@ import {
   Search,
   Check,
   X,
+  Share2,
 } from "lucide-react";
+import CommunityJoin from "@/components/CommunityJoin";
+import { showToast } from "@/context/ToastContext";
+
+const SITE_URL = "https://www.thebookx.in";
 import SearchOverlay from "./SearchOverlay";
 import RecommendationModal from "./RecommendationModal";
 import { getRemainingOfferTime, getOneRupeeOfferData } from "@/utils/book";
@@ -310,11 +315,36 @@ export default function CartBar({ tab = "books" }) {
 
   const shouldShowUnlockMessage = !hasNeverUnlocked;
 
+  /* Copy the site link so shoppers can share it on any social platform. */
+  const shareSite = async () => {
+    try {
+      await navigator.clipboard.writeText(SITE_URL);
+      showToast("Link copied — share it on your socials 🎉", "success");
+    } catch (_) {
+      try {
+        if (navigator.share) await navigator.share({ url: SITE_URL });
+      } catch {}
+    }
+  };
+
   return (
     <div
       className={`cart-bar${barHidden ? " cart-bar-hidden" : ""}`}
       style={{ maxWidth: "680px", margin: "0 auto" }}
     >
+      {/* Community + share — always visible, above the offer strip / cart CTA. */}
+      <div className="cos-social-row">
+        <CommunityJoin variant="pill" />
+        <button
+          type="button"
+          className="cos-social-pill cos-share"
+          onClick={shareSite}
+          aria-label="Share TheBookX"
+        >
+          <Share2 size={16} />
+          <span>Share</span>
+        </button>
+      </div>
       {/* Suggest strip ("Not sure what to read next?") — hidden for now.
       <button
         type="button"

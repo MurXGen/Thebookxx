@@ -4,6 +4,254 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "booker-prize-2026-shortlist-what-to-read-india": {
+    id: "blog-050",
+    title:
+      "Booker Prize 2026 Shortlist: Six Books Named on 22 September — The Full Longlist, the Judges, and What to Read Now",
+    slug: "booker-prize-2026-shortlist-what-to-read-india",
+    author: "TheBookX Editorial",
+    authorSlug: "murthy-thevar",
+    publishDate: "2026-09-14",
+    lastModified: "2026-09-14",
+    excerpt:
+      "The Booker Prize 2026 shortlist lands on 22 September at London's Southbank Centre. Here are the 13 longlisted novels, the judges deciding, and what to read while you wait.",
+    content: [
+      {
+        type: "paragraph",
+        content:
+          "On Tuesday, 22 September 2026, five judges will walk on stage at the Southbank Centre in London and cut thirteen novels down to six. That is the Booker Prize 2026 shortlist, and for the next seven weeks those six books will be the most argued-about fiction in the English language. The winner is announced on Monday, 9 November 2026, at Old Billingsgate in London.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "If you have never followed a literary prize in real time, this is the week to start. A shortlist is a smaller, sharper object than a longlist: thirteen books is a browsing list, six is a reading plan. And unlike most awards, the Booker has a habit of putting genuinely difficult, genuinely strange books in front of an enormous audience and daring them to keep up.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "Booker Prize 2026: the dates that matter",
+        content:
+          "Longlist of 13 novels announced 28 July 2026, chosen from 163 submissions. Shortlist of 6 announced Tuesday, 22 September 2026 at a public event at the Southbank Centre, London, with all five judges in conversation; the announcement is livestreamed. Winner announced Monday, 9 November 2026 at Old Billingsgate, London. The winner receives GBP 50,000; each shortlisted author receives GBP 2,500 and a specially bound edition of their book. Eligible books were written in English by authors of any nationality and published in the UK and/or Ireland between 1 October 2025 and 30 September 2026.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The 13 Novels on the Booker Prize 2026 Longlist",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The longlist covers seven countries and three continents. Two former winners are on it — Marlon James, who won in 2015, and Douglas Stuart, who won in 2020 — alongside Elizabeth Strout, previously shortlisted, and ten authors longlisted for the first time, three of them debut novelists.",
+      },
+      {
+        type: "list",
+        style: "ordered",
+        items: [
+          "The Shadow of the Object — Chloe Aridjis",
+          "Switzy — Emma Cline",
+          "Helen of Nowhere — Makenna Goodman",
+          "The End of Everything — M. John Harrison",
+          "The Disappearers — Marlon James",
+          "Black Bag — Luke Kennard",
+          "The Renovation — Kenan Orhan",
+          "May We Feed the King — Rebecca Perry",
+          "The Palm House — Gwendoline Riley",
+          "The Things We Never Say — Elizabeth Strout",
+          "John of John — Douglas Stuart",
+          "All Them Dogs — Djamel White",
+          "The Vivisectors — Missouri Williams",
+        ],
+      },
+      {
+        type: "paragraph",
+        content:
+          "The settings alone tell you how wide the net was thrown this year: a hospital in Mexico City, the Kent seaside in a post-apocalyptic Britain, an assisted-suicide clinic in Zurich, the hillsides of the Outer Hebrides, the criminal badlands of West Dublin, Kingston in the late 1980s, an unnamed medieval court, and a prison cell that defies explanation. There are fresh takes on dystopian science fiction, royal history, the crime thriller and the campus novel.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Who Is Deciding, and Why It Changes the Answer",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Every Booker year is really a portrait of its jury, so it is worth knowing who is in the room. The 2026 panel is chaired by the classicist and broadcaster Mary Beard, joined by the poet and educator Raymond Antrobus, the musician and broadcaster Jarvis Cocker, the critic and Guardian editor Rebecca Liu, and the novelist and poet Patricia Lockwood, herself shortlisted for the Booker in 2021 for No One Is Talking About This.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "That is an unusually unclubbable jury: a Cambridge classicist, a deaf British-Jamaican poet, the frontman of Pulp, a critic who grew up between Wuhan, Auckland and Hong Kong, and a writer whose prose is famous for being funny in ways that are hard to defend in committee. Panels like this rarely converge on the safest book. Beard has said the aim was a list with something for everyone, and that great books are not cosy.",
+      },
+      {
+        type: "blockquote",
+        content:
+          "Every writer on our longlist brilliantly musters the power of words on the page to take the reader to new places, to see old places from new angles, to change minds. — Mary Beard, Chair of the Booker Prize 2026 judges",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Beard has also described the sheer volume of the job: five judges, 163 books each, roughly a book a day for seven months including re-reads. Whatever six titles are named on 22 September will have survived a year of that.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "What a Shortlisting Actually Does to a Book",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Prize money is the least interesting part. What a shortlisting buys an author is distribution and time. Bookshops build tables around the six. Publishers rush reprints, which in India often means an affordable local edition appears where previously there was only an expensive import. Translation rights sell. Book clubs pick the titles up. A novel that sold in the low thousands can find six-figure readership inside a quarter, and the author gets the thing that matters most — a second and third book that publishers are willing to fund.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "For readers, the shortlist works as a filter you did not have to build yourself. You are outsourcing seven months of reading to five people with very different tastes who had to agree. That is not the same as being told what is good, but it is a far better starting point than an algorithm that has noticed you like thrillers.",
+      },
+      {
+        type: "callout",
+        style: "success",
+        title: "How to read along without waiting for Indian editions",
+        content:
+          "Longlisted titles often reach Indian shelves months after the UK announcement, and imports are expensive. The practical move is to spend the wait on prize-winning fiction that is already here and already cheap. On TheBookX, books start from ₹1, delivery is free across India, and Cash on Delivery is available on every order, so you can build a shortlist-season stack now and add the 2026 titles when the local editions land.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Booker-Calibre Fiction You Can Start Reading Today",
+      },
+      {
+        type: "paragraph",
+        content:
+          "If the point of following a prize is to read better fiction, the fastest route is backwards through the winners and nominees who are already in print here. Start with <a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a>, Arundhati Roy's 1997 Booker winner and still the most-read Indian novel in English of the last thirty years. Roy's first memoir, <a href=\"/books/mother-mary-comes-to-me\" style=\"color:#fb8500;font-weight:600\">Mother Mary Comes to Me</a>, is the natural companion to it — the same voice turned on her own mother rather than a fictional family.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "For the kind of ambitious, structurally daring novel the Booker keeps rewarding, <a href=\"/books/sacred-games\" style=\"color:#fb8500;font-weight:600\">Sacred Games</a> by Vikram Chandra is a nine-hundred-page Bombay epic that earns every page. Kazuo Ishiguro is the cleanest demonstration of what prize fiction can do at two very different registers: <a href=\"/books/never-let-me-go\" style=\"color:#fb8500;font-weight:600\">Never Let Me Go</a>, shortlisted in 2005, is quiet devastation, while <a href=\"/books/klara-and-the-sun\" style=\"color:#fb8500;font-weight:600\">Klara and the Sun</a> is his most approachable book and a good place to begin if literary fiction usually loses you by page fifty.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Han Kang's <a href=\"/books/the-vegetarian\" style=\"color:#fb8500;font-weight:600\">The Vegetarian</a> won the International Booker in 2016 and remains the sharpest short novel on this list — under two hundred pages and impossible to shake off. Sally Rooney was longlisted for the Booker for <a href=\"/books/normal-people\" style=\"color:#fb8500;font-weight:600\">Normal People</a>, and her most recent novel <a href=\"/books/intermezzo\" style=\"color:#fb8500;font-weight:600\">Intermezzo</a> is her most technically ambitious. Hanya Yanagihara's <a href=\"/books/a-little-life\" style=\"color:#fb8500;font-weight:600\">A Little Life</a>, shortlisted in 2015, is the one to attempt only when you have the emotional room for it.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "For something newer and closer to the campus-novel and translation themes running through this year's longlist, R.F. Kuang's <a href=\"/books/babel\" style=\"color:#fb8500;font-weight:600\">Babel</a> builds an entire magic system out of what gets lost between languages. And if you want an on-ramp rather than a summit, Matt Haig's <a href=\"/books/the-midnight-library\" style=\"color:#fb8500;font-weight:600\">The Midnight Library</a> is a literary-adjacent novel that almost nobody abandons halfway.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "Three Non-Fiction Books for Reading Better, Not Just More",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Prize season tends to expose a gap between the books people buy and the books people finish. Mortimer Adler's <a href=\"/books/how-to-read-a-book\" style=\"color:#fb8500;font-weight:600\">How to Read a Book</a> is the least fashionable and most useful cure — it is genuinely a manual for reading difficult prose without giving up. Yuval Noah Harari's <a href=\"/books/sapiens-a-brief-history-of-humankind\" style=\"color:#fb8500;font-weight:600\">Sapiens: A Brief History of Humankind</a> is the non-fiction equivalent of a Booker longlist: broad, argumentative, and worth disagreeing with.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "And on the writing side of the equation, <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is about the discipline underneath every good sentence, prize-winning or otherwise: knowing what you mean before you say it. If you would rather build the habit than the taste first, <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear is still the most practical book on making twenty pages a night automatic, and <a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> by Morgan Housel is the rare bestseller that rewards a second reading.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "India Has Lost Its Own Big Fiction Prize — Which Makes This One Matter More",
+      },
+      {
+        type: "paragraph",
+        content:
+          "There is a reason Indian readers should care about a London announcement more than they did five years ago. The JCB Prize for Literature, established in 2018 and worth ₹25 lakh, was India's richest literary award and the single most reliable annual list of new Indian fiction, including translations from Indian languages. The JCB Literature Foundation discontinued it in 2025, with no further cycles after the 2024 edition.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "That leaves a hole. The Booker does not fill it — it rewards fiction published in the UK or Ireland, which is a different pipeline from Indian-language publishing. But it does mean that for now, prize seasons abroad carry more of the weight of directing serious Indian readers towards serious new fiction than they should have to. The practical response is not to wait for a jury at all: read the winners you missed, buy the translated novel with no prize sticker on it, and keep the habit going between announcements.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "How to Follow the Shortlist Announcement from India",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "The 22 September event at the Southbank Centre is livestreamed on the Southbank Centre's website — worth watching for the judges' conversation rather than just the six names.",
+          "Read one longlisted title before the announcement if you can get it, so you have a stake in the outcome. Any one will do.",
+          "Pick the shortlisted book that sounds least like what you normally read. This is the single best use of a prize list.",
+          "Do not buy all six. Buy two, finish them, then decide. Six unread hardbacks is how prize season turns into guilt.",
+          "Give yourself until 9 November. Seven weeks is enough for two literary novels if you read twenty pages a night.",
+        ],
+      },
+      {
+        type: "paragraph",
+        content:
+          "Books make unusually good gifts during prize season, because the recommendation comes with a reason attached rather than a guess about taste. Gift wrapping can be added at ₹25 per book if you are sending one on.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Mary Beard's summary of this year's thirteen was that the judges hope the books are dynamite. Six of them survive next Tuesday. The other seven are still on the list, still in print, and still better than most of what you were going to read instead.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>",
+      },
+    ],
+    coverImage: "/blogs/booker-prize-2026-shortlist-what-to-read-india.jpeg",
+    images: [
+      {
+        url: "/blogs/booker-prize-2026-shortlist-what-to-read-india.jpeg",
+        alt: "A young woman reading a hardback literary novel in an armchair beside a stack of unmarked books and a cup of tea, warm afternoon light from a window",
+        caption:
+          "The Booker Prize 2026 shortlist is announced on 22 September, with the winner named on 9 November",
+        category: "Book Awards",
+      },
+    ],
+    keywords: [
+      "booker prize 2026 shortlist",
+      "booker prize 2026 shortlist date",
+      "booker prize 2026 longlist books",
+      "booker prize 2026 judges mary beard",
+      "booker prize 2026 winner announcement",
+      "booker prize winning books to read",
+      "literary fiction books india",
+      "jcb prize for literature discontinued",
+      "buy award winning books online india",
+      "TheBookX",
+    ],
+    categories: ["Book Awards", "Book Lists", "Reading Culture"],
+    faqs: [
+      {
+        question: "When is the Booker Prize 2026 shortlist announced?",
+        answer:
+          "The Booker Prize 2026 shortlist is announced on Tuesday, 22 September 2026, at a public event at the Southbank Centre in London featuring all five judges in conversation. The announcement is livestreamed on the Southbank Centre's website. Six books will be selected from the longlist of 13. The winner is announced later, on Monday, 9 November 2026, at Old Billingsgate in London.",
+      },
+      {
+        question: "Which books are on the Booker Prize 2026 longlist?",
+        answer:
+          "The 13 longlisted novels are The Shadow of the Object by Chloe Aridjis, Switzy by Emma Cline, Helen of Nowhere by Makenna Goodman, The End of Everything by M. John Harrison, The Disappearers by Marlon James, Black Bag by Luke Kennard, The Renovation by Kenan Orhan, May We Feed the King by Rebecca Perry, The Palm House by Gwendoline Riley, The Things We Never Say by Elizabeth Strout, John of John by Douglas Stuart, All Them Dogs by Djamel White, and The Vivisectors by Missouri Williams. They were chosen from 163 submissions and represent seven countries and three continents.",
+      },
+      {
+        question: "Who are the Booker Prize 2026 judges?",
+        answer:
+          "The 2026 panel is chaired by the classicist, writer and broadcaster Mary Beard. She is joined by the poet, writer and educator Raymond Antrobus; the musician, writer and broadcaster Jarvis Cocker; the journalist, editor and critic Rebecca Liu; and the novelist, poet and essayist Patricia Lockwood, who was herself shortlisted for the Booker Prize in 2021 for No One Is Talking About This.",
+      },
+      {
+        question: "How much does the Booker Prize winner receive?",
+        answer:
+          "The winner of the Booker Prize receives GBP 50,000. Each of the six shortlisted authors receives GBP 2,500 and a specially bound edition of their book. The larger commercial effect is usually the sales and translation rights that follow a shortlisting rather than the prize money itself.",
+      },
+      {
+        question: "Which Booker Prize-winning books can I buy in India right now?",
+        answer:
+          "Several are widely available and inexpensive here, including The God of Small Things by Arundhati Roy, Never Let Me Go and Klara and the Sun by Kazuo Ishiguro, The Vegetarian by Han Kang, and A Little Life by Hanya Yanagihara. On TheBookX these start from ₹1, with free delivery across India and Cash on Delivery available on every order. Gift wrapping can be added at ₹25 per book.",
+      },
+    ],
+  },
   "india-third-largest-book-market-2026-report-what-to-read": {
     id: "blog-049",
     title:

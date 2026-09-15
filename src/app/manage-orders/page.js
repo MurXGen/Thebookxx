@@ -772,6 +772,7 @@ function WalletModal({ user, busy, onClose, onApply }) {
 const SECTION_TABS = [
   { key: "analytics", label: "Analytics", short: "Stats", Icon: LayoutDashboard },
   { key: "orders", label: "Orders", short: "Orders", Icon: ShoppingBag },
+  { key: "book", label: "Book", short: "Book", Icon: Package },
   { key: "users", label: "Users", short: "Users", Icon: Users },
   { key: "track", label: "Track orders", short: "Track", Icon: Radar },
   { key: "tracking", label: "Tracking", short: "IDs", Icon: MapPin },
@@ -3818,6 +3819,8 @@ export default function ManageOrdersPage() {
   const [mergeStatusDrafts, setMergeStatusDrafts] = useState({}); // per-order status edits in merge modal
   const [waPick, setWaPick] = useState(""); // dropdown-selected stage (not yet triggered)
   const [bpShowAll, setBpShowAll] = useState(false); // Book profitability: show all vs top 10
+  // Book tab — paste order IDs, show only those as inline booking cards.
+  const [bookIdsRaw, setBookIdsRaw] = useState("");
 
   const [accOpen, setAccOpen] = useState({
     analytics: true,
@@ -6693,6 +6696,30 @@ export default function ManageOrdersPage() {
   // Lazy-render the list in batches of 10 (infinite scroll).
   // Load every order at once (no scroll-lazy pagination in the card view).
   const visibleOrders = listOrders;
+
+  // Book tab — resolve the pasted order IDs to actual orders (match by full ID
+  // or the last digits, case-insensitive), preserving paste order.
+  const bookMatchedOrders = (() => {
+    const tokens = String(bookIdsRaw || "")
+      .split(/[\s,;\n\r]+/)
+      .map((t) => t.trim().toLowerCase())
+      .filter(Boolean);
+    if (!tokens.length) return [];
+    const seen = new Set();
+    const out = [];
+    tokens.forEach((tok) => {
+      const hit = orders.find((o) => {
+        const id = String(o["Order ID"] || "").toLowerCase();
+        if (!id) return false;
+        return id === tok || id.endsWith(tok) || tok.endsWith(id);
+      });
+      if (hit && !seen.has(hit["Order ID"])) {
+        seen.add(hit["Order ID"]);
+        out.push(hit);
+      }
+    });
+    return out;
+  })();
   const hasMoreOrders = false;
 
   // Orders still awaiting confirmation (by status OR legacy name tag).
@@ -8409,6 +8436,70 @@ export default function ManageOrdersPage() {
                 </>
               );
             })()}
+          </div>
+        )}
+
+        {/* ===== Book (paste order IDs → inline India Post booking) ===== */}
+        {activeTab === "book" && (
+          <div className="mo-book-tab">
+            <div className="mo-book-head">
+              <label className="mo-book-label" htmlFor="mo-book-ids">
+                Paste order IDs to book
+              </label>
+              <span className="mo-book-hint">
+                One per line or comma-separated. Only matching orders show below —
+                book each and paste its tracking ID inline.
+              </span>
+              <textarea
+                id="mo-book-ids"
+                className="mo-book-textarea"
+                placeholder={"ORD1789…\nORD1790…\nORD1791…"}
+                value={bookIdsRaw}
+                onChange={(e) => setBookIdsRaw(e.target.value)}
+                rows={4}
+              />
+              <div className="mo-book-meta">
+                <span>
+                  {bookMatchedOrders.length} matched
+                  {bookIdsRaw.trim() &&
+                    ` · ${
+                      String(bookIdsRaw)
+                        .split(/[\s,;\n\r]+/)
+                        .filter(Boolean).length
+                    } pasted`}
+                </span>
+                {bookIdsRaw.trim() && (
+                  <button
+                    type="button"
+                    className="mo-book-clear"
+                    onClick={() => setBookIdsRaw("")}
+                  >
+                    <X size={13} /> Clear
+                  </button>
+                )}
+              </div>
+            </div>
+            {bookMatchedOrders.length === 0 ? (
+              <div className="mo-book-empty">
+                {bookIdsRaw.trim()
+                  ? "No orders matched those IDs."
+                  : "Paste order IDs above to start booking."}
+              </div>
+            ) : (
+              <IndiaPostSheet
+                orders={bookMatchedOrders}
+                copyToClipboard={copyToClipboard}
+                copiedId={copiedId}
+                bypassFilter
+                orderNotes={orderNotes}
+                bookedOrders={bookedOrders}
+                onBook={markOrderBooked}
+                onUnbook={unmarkOrderBooked}
+                showBooking
+                pickChecked={pickChecked}
+                bookKey={bookKey}
+              />
+            )}
           </div>
         )}
 

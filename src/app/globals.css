@@ -13181,6 +13181,30 @@ img[data-loaded="true"] {
   font-weight: 600;
   color: var(--dark-50, #6b7280);
 }
+/* Icon-only community trigger (bag, above the offer strip) */
+.bag-community-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: -4px;
+}
+.community-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--hairline, #ececec);
+  background: #fff;
+  color: var(--tertiary, #fb8500);
+  cursor: pointer;
+  box-shadow: 0 6px 16px -10px rgba(0, 0, 0, 0.35);
+  transition: transform 0.12s ease, box-shadow 0.15s ease;
+}
+.community-icon-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px -12px rgba(0, 0, 0, 0.4);
+}
 .community-sub {
   font-size: 13.5px;
   color: var(--dark-50);
@@ -40709,6 +40733,99 @@ img[data-loaded="true"] {
 .od-tc-fast {
   color: var(--success, #0a8f0c);
   font-weight: 800;
+}
+/* Rate-your-experience card on the order-detail page */
+.od-review {
+  margin-top: 14px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid var(--hairline, #ececec);
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.od-review-head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.od-review-title {
+  font-size: 15.5px;
+  font-weight: 800;
+  color: #0a0a0a;
+}
+.od-review-sub {
+  font-size: 12.5px;
+  color: #6b7280;
+}
+.od-review-stars {
+  display: flex;
+  gap: 6px;
+}
+.od-star {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  line-height: 0;
+}
+.od-star-on {
+  color: #f59e0b;
+}
+.od-star-off {
+  color: #d1d5db;
+}
+.od-review-input {
+  width: 100%;
+  border: 1px solid var(--hairline, #e5e7eb);
+  border-radius: 12px;
+  padding: 11px 13px;
+  font-size: 13.5px;
+  font-family: inherit;
+  color: #0a0a0a;
+  background: #fafafa;
+  resize: vertical;
+}
+.od-review-input:focus {
+  outline: none;
+  border-color: var(--tertiary, #fb8500);
+  background: #fff;
+}
+.od-review-err {
+  font-size: 12px;
+  color: #dc2626;
+  font-weight: 600;
+}
+.od-review-submit {
+  margin-top: 2px;
+}
+.od-review-done {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.od-review-done-ic {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: #fff;
+  background: var(--success, #16a34a);
+}
+.od-review-done strong {
+  font-size: 14.5px;
+  font-weight: 800;
+  color: #0a0a0a;
+}
+.od-review-done p {
+  margin: 2px 0 0;
+  font-size: 12.5px;
+  color: #6b7280;
 }
 /* "You're on Standard — upgrade to Faster" hint under the delivery row */
 .od-tc-planhint {

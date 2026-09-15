@@ -9,6 +9,7 @@ import RecommendationModal from "@/components/RecommendationModal";
 import AddressModal from "@/components/UI/AddressModal";
 import BillModal from "@/components/UI/BillModal";
 import CartOfferStrip from "@/components/UI/CartOfferStrip";
+import CommunityJoin from "@/components/CommunityJoin";
 import FreeShippingNudgeModal from "@/components/UI/FreeShippingNudgeModal";
 import HorizontalScroll from "@/components/UI/HorizontalScroll";
 import WishlistStrip from "@/components/WishlistStrip";
@@ -1251,6 +1252,11 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
 
       {(cartBooks.length > 0 || qrItems.length > 0) && (
         <>
+          {cartBooks.length > 0 && (
+            <div className="bag-community-row">
+              <CommunityJoin />
+            </div>
+          )}
           {cartBooks.length > 0 && (
             <CartOfferStrip discountedAmount={totalDiscounted} />
           )}

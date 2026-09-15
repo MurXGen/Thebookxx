@@ -31,8 +31,14 @@ import {
   Zap,
   ChevronRight,
   Check,
+  Star,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
+import {
+  submitReviewToSheet,
+  isReviewRateLimited,
+  recordReviewSubmission,
+} from "@/utils/reviewForm";
 import TrackSheet from "@/components/profile/TrackSheet";
 import SupportSheet from "@/components/profile/SupportSheet";
 import OrderScratchCard from "@/components/profile/OrderScratchCard";
@@ -226,6 +232,13 @@ export default function OrderDetailPage() {
   // Faster-delivery upgrade (applied to the sheet) + undo snapshot.
   const [upgrading, setUpgrading] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  // Order/service review (posts to the shared book-store review sheet).
+  const [revRating, setRevRating] = useState(0);
+  const [revHover, setRevHover] = useState(0);
+  const [revText, setRevText] = useState("");
+  const [revBusy, setRevBusy] = useState(false);
+  const [revDone, setRevDone] = useState(false);
+  const [revErr, setRevErr] = useState("");
 
   const mapRef = useRef(null);
   const mapObj = useRef(null);
@@ -999,6 +1012,43 @@ export default function OrderDetailPage() {
     }
   };
 
+  // Submit an order/service review to the shared book-store review sheet.
+  const submitOrderReview = async () => {
+    if (revBusy || revDone) return;
+    if (revRating === 0) {
+      setRevErr("Please tap a star to rate.");
+      return;
+    }
+    if (!revText.trim()) {
+      setRevErr("Please write a line about your experience.");
+      return;
+    }
+    if (isReviewRateLimited()) {
+      setRevErr("Too many reviews from this device. Please try later.");
+      return;
+    }
+    setRevErr("");
+    setRevBusy(true);
+    try {
+      await submitReviewToSheet({
+        type: "Store",
+        bookName: books[0]?.name || "",
+        rating: revRating,
+        review: revText.trim(),
+        phone: String(order["Phone Number"] || number || ""),
+        timestamp: new Date().toISOString(),
+        userAgent:
+          typeof navigator !== "undefined" ? navigator.userAgent : "",
+      });
+      recordReviewSubmission();
+      setRevDone(true);
+    } catch (e) {
+      setRevErr("Couldn't submit right now. Please try again.");
+    } finally {
+      setRevBusy(false);
+    }
+  };
+
   // Recommendations — a few books not already in this order, always featuring
   // "The Art of Clarity" first.
   const inOrder = new Set(books.map((b) => normName(b.name)));
@@ -1531,6 +1581,84 @@ export default function OrderDetailPage() {
         orderValue={bd.grand}
         cancelled={cancelled}
       />
+
+      {/* Rate your experience — posts to the shared store-review sheet */}
+      <section className="od-review">
+        {revDone ? (
+          <div className="od-review-done">
+            <span className="od-review-done-ic">
+              <Check size={20} strokeWidth={3} />
+            </span>
+            <div>
+              <strong>Thanks for the review! 🙏</strong>
+              <p>Your feedback helps other readers trust TheBookX.</p>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="od-review-head">
+              <span className="od-review-title">Rate your experience</span>
+              <span className="od-review-sub">
+                How was your order &amp; our service?
+              </span>
+            </div>
+            <div
+              className="od-review-stars"
+              onMouseLeave={() => setRevHover(0)}
+            >
+              {[1, 2, 3, 4, 5].map((n) => (
+                <button
+                  key={n}
+                  type="button"
+                  className="od-star"
+                  aria-label={`${n} star${n > 1 ? "s" : ""}`}
+                  onMouseEnter={() => setRevHover(n)}
+                  onClick={() => {
+                    setRevRating(n);
+                    setRevErr("");
+                  }}
+                >
+                  <Star
+                    size={30}
+                    strokeWidth={1.5}
+                    className={
+                      (revHover || revRating) >= n ? "od-star-on" : "od-star-off"
+                    }
+                    fill={
+                      (revHover || revRating) >= n ? "currentColor" : "none"
+                    }
+                  />
+                </button>
+              ))}
+            </div>
+            <textarea
+              className="od-review-input"
+              rows={3}
+              placeholder="Tell us what you loved (or what we can improve)…"
+              value={revText}
+              onChange={(e) => {
+                setRevText(e.target.value);
+                setRevErr("");
+              }}
+            />
+            {revErr && <span className="od-review-err">{revErr}</span>}
+            <button
+              type="button"
+              className="pri-big-btn width100 od-review-submit"
+              onClick={submitOrderReview}
+              disabled={revBusy}
+            >
+              {revBusy ? (
+                <>
+                  <Loader2 size={16} className="lb-spinner" /> Submitting…
+                </>
+              ) : (
+                "Submit review"
+              )}
+            </button>
+          </>
+        )}
+      </section>
 
       {/* Ask about this order — opens the support topic sheet */}
       <button

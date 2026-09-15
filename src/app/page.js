@@ -4,7 +4,6 @@ import { lazy, Suspense, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import AllBooks from "@/components/AllBooks";
 import CartBar from "@/components/CartBar";
-import HomeSocialDock from "@/components/HomeSocialDock";
 import Navbar from "@/components/Navbar";
 import PincodeModal from "@/components/UI/PincodeModal";
 import CountdownTimer from "@/components/UI/CountDownTimer";
@@ -232,8 +231,6 @@ export default function HomePage() {
       {/* Critical Components - Always Visible */}
 
       <AllBooks />
-
-      <HomeSocialDock />
 
       <CartBar tab="books" />
 

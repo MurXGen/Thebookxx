@@ -6,8 +6,12 @@ import { motion, animate, AnimatePresence } from "framer-motion";
 import { useStore } from "@/context/StoreContext";
 import { books } from "@/utils/book"; // needed to map id image
 import Link from "next/link";
-import { ArrowRight, Check, Lock, Gift, X } from "lucide-react";
+import { ArrowRight, Check, Lock, Gift, X, Share2 } from "lucide-react";
 import { usePathname } from "next/navigation";
+import CommunityJoin from "@/components/CommunityJoin";
+import { showToast } from "@/context/ToastContext";
+
+const SITE_URL = "https://www.thebookx.in";
 
 export default function CartOfferStrip({ discountedAmount }) {
   const { cart } = useStore(); // FIX: real cart connection
@@ -202,8 +206,34 @@ export default function CartOfferStrip({ discountedAmount }) {
     </>
   );
 
+  /* Copy the site link so shoppers can share it on any social platform. */
+  const shareSite = async () => {
+    try {
+      await navigator.clipboard.writeText(SITE_URL);
+      showToast("Link copied — share it on your socials 🎉", "success");
+    } catch (_) {
+      try {
+        if (navigator.share) await navigator.share({ url: SITE_URL });
+      } catch {}
+    }
+  };
+
   return (
     <>
+      {/* Community + share — sit just above the offer strip. */}
+      <div className="cos-social-row">
+        <CommunityJoin variant="pill" />
+        <button
+          type="button"
+          className="cos-social-pill cos-share"
+          onClick={shareSite}
+          aria-label="Share TheBookX"
+        >
+          <Share2 size={16} />
+          <span>Share</span>
+        </button>
+      </div>
+
       <div
         className="offer-strip"
         role="button"

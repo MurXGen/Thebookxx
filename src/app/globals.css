@@ -13215,32 +13215,38 @@ img[data-loaded="true"] {
   transform: translateY(-1px);
   box-shadow: 0 10px 22px -12px rgba(0, 0, 0, 0.4);
 }
-/* Homepage social dock — community + share, fixed bottom-left */
-.home-social-dock {
-  position: fixed;
-  left: 14px;
-  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
-  z-index: 40;
+/* Community + Share row above the cart offer strip */
+.cos-social-row {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  gap: 12px;
+  margin-bottom: 10px;
 }
-.home-social-dock .hsd-btn {
-  width: 46px;
-  height: 46px;
-  box-shadow: 0 10px 26px -10px rgba(0, 0, 0, 0.4);
+.cos-social-pill {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--hairline, #ececec);
+  background: #fff;
+  color: var(--foreground, #0a0a0a);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 16px -12px rgba(0, 0, 0, 0.35);
+  transition: transform 0.12s ease, box-shadow 0.15s ease;
 }
-.home-social-dock .community-icon-btn {
-  background: linear-gradient(135deg, #ffffff 0%, #fff7ef 100%);
+.cos-social-pill:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px -12px rgba(0, 0, 0, 0.4);
 }
-.home-social-dock .hsd-share {
+.cos-social-pill svg {
+  color: var(--tertiary, #fb8500);
+}
+.cos-share svg {
   color: #16a34a;
-}
-@media (max-width: 720px) {
-  .home-social-dock {
-    left: 12px;
-    bottom: calc(96px + env(safe-area-inset-bottom, 0px));
-  }
 }
 /* Community card trigger (order-detail page) */
 .community-card-trigger {

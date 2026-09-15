@@ -24514,6 +24514,30 @@ img[data-loaded="true"] {
   padding: 3px 10px;
   cursor: pointer;
 }
+.mo-book-push {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 10px;
+  min-height: 42px;
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #fff;
+  background: #1d4ed8;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+.mo-book-push:hover:not(:disabled) {
+  background: #1e40af;
+}
+.mo-book-push:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
 .mo-book-empty {
   padding: 28px 16px;
   text-align: center;

@@ -4,6 +4,247 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "neev-literature-festival-2026-indian-childrens-books": {
+    id: "blog-051",
+    title:
+      "Neev Literature Festival 2026 in Bengaluru (26-27 September): The ₹3 Lakh Neev Book Award and Why Indian Children Need Indian Books",
+    slug: "neev-literature-festival-2026-indian-childrens-books",
+    author: "TheBookX Editorial",
+    authorSlug: "murthy-thevar",
+    publishDate: "2026-09-15",
+    lastModified: "2026-09-15",
+    excerpt:
+      "India's biggest children's literature festival returns to Bengaluru on 26-27 September 2026. The dates, the Neev Book Award, and what to put in a child's hands.",
+    content: [
+      {
+        type: "paragraph",
+        content:
+          "On Saturday 26 and Sunday 27 September 2026, the Neev Literature Festival returns to Neev Academy in Yemalur, Bengaluru, for two days built entirely around children and books. Not children as a side track at an adult literature festival. Children as the whole point: author interactions, illustration and storytelling workshops, performances, and the announcement of the Neev Book Award, which at ₹3 lakh is India's most valuable prize for children's literature.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Last year's edition drew more than five thousand readers across two days, with around eighty authors, over 130 sessions and roughly two thousand books on the floor. That is a serious festival by any measure. What makes it worth writing about from outside Bengaluru is the argument underneath it, which applies to every Indian household with a child in it: Indian children are reading, but they are mostly reading books set somewhere else.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "Neev Literature Festival 2026: the details",
+        content:
+          "Dates: Saturday 26 and Sunday 27 September 2026. Venue: Neev Academy, Yemalur - Kempapura Main Road, Yemalur, Bengaluru 560037. Format: author interactions, creative workshops and performances for young readers, older children and families, featuring Indian and international children's authors. Registration is handled through the festival's own website. The Neev Book Award winner is honoured at the festival. The festival also runs the NLF Reading Challenge through the year and offers Fellowships of ₹6 lakh to children's book creators writing and illustrating stories that authentically mirror Indian lives.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The Number That Explains Indian Children's Publishing",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The festival's own research report on children's literature in India put the size of the entire Indian children's trade book market at roughly ₹720 crore, against a population of about 43 crore people under the age of eighteen. Divide one by the other and you get somewhere near ₹17 of children's books bought per Indian child per year. That is less than a single paperback, spread across a childhood.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Textbooks are not in that figure, and that is the whole problem in one line. India spends enormous sums on what children are made to read and almost nothing on what they choose to read. The gap matters because reading for pleasure, not reading for marks, is what actually builds vocabulary, attention span and the habit of finishing things. A child who only ever meets books as homework learns that books are homework.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Why 'Indian Stories' Is Not a Sentimental Requirement",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The Neev Book Award's stated aim is to recognise writing that leads to a fuller understanding of India, Indian lives and Indian stories, so that Indian children see aspects of themselves and their world reflected in what they read. It is easy to read that as flag-waving. It is not. It is a comprehension argument.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "A seven-year-old in Coimbatore reading about a snowy Christmas, a boarding school in Yorkshire and a trip to the corner drugstore is doing two jobs at once: decoding the sentence, and reconstructing a world she has never seen. Give the same child a story set in a town with a temple tank, a power cut, a grandmother who tells stories through the afternoon, and one of those jobs disappears. Fluency comes faster because the background is already loaded. That is also why the best imported books still work brilliantly once a child is fluent, and why they are the wrong place to start.",
+      },
+      {
+        type: "blockquote",
+        content:
+          "Children's publishing in India is key to human development and cultural advancement. However, the spend on children's trade books in India is miniscule compared to other developing and developed nations. — The NLF Report on Children's Literature in India",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "How the Neev Book Award Actually Works",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The award was instituted in 2018 and originally split across four age bands — Early Years, Emerging Readers, Junior Readers and Young Adult. From 2024 it changed shape: a single shortlist across all ages, with an age recommendation attached to each title, and one winner.",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "The winner receives ₹3 lakh, a trophy and a certificate, presented at the festival.",
+          "Every shortlisted title receives ₹1 lakh, of which ₹50,000 goes to the awardee and the rest funds a book promotion tour for that title.",
+          "The shortlist is deliberately built so that any title on it is a genuine contender, which makes the shortlist itself a usable reading list rather than a set of runners-up.",
+          "Recent winners include The Henna Start-Up by Andaleeb Wajid in 2024 and Baloo's Big Win in 2025. Earlier winners include The People of the Indus, Misfit Madhu, The Sweet Shop Wars and My Street.",
+          "Separately, the NLF Fellowships put ₹6 lakh behind writers and illustrators to produce ambitious, research-heavy children's books rooted in Indian life.",
+        ],
+      },
+      {
+        type: "paragraph",
+        content:
+          "That last point is the unusual one. Most literary prizes reward books that already exist. A fellowship pays for the eighteen months an illustrated non-fiction book about the Indus Valley actually takes, which is the real reason such books are rare here.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Indian Children's Books to Start With",
+      },
+      {
+        type: "paragraph",
+        content:
+          "If you cannot get to Bengaluru on 26 September, the useful version of attending is buying a child a book set in a place they recognise. Sudha Murty is the obvious entry point and the reason is craft, not fame: her sentences are short, her settings are small-town Indian, and her plots resolve. <a href=\"/books/grandma-s-bag-of-stories\" style=\"color:#fb8500;font-weight:600\">Grandma's Bag of Stories</a> is the standard first gift for a six-to-ten-year-old, and <a href=\"/books/the-magic-of-the-lost-temple\" style=\"color:#fb8500;font-weight:600\">The Magic of the Lost Temple</a> is the one that converts reluctant readers, because a city child goes to a village for the summer and finds a genuine mystery.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books/how-i-taught-my-grandmother-to-read\" style=\"color:#fb8500;font-weight:600\">How I Taught My Grandmother to Read</a> is a short-story collection that works for slightly older readers and doubles as an argument for literacy that no adult has to deliver out loud. <a href=\"/books/the-gopi-diaries-set-of-3\" style=\"color:#fb8500;font-weight:600\">The Gopi Diaries (Set of 3)</a> is narrated by a dog and is the safest bet for a child who has decided, aged eight, that they do not like books. For folk tales with a lighter touch, <a href=\"/books/the-magic-drum\" style=\"color:#fb8500;font-weight:600\">The Magic Drum</a> is built for reading aloud, one story a night.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Ruskin Bond is the other pillar, and <a href=\"/books/the-blue-umbrella\" style=\"color:#fb8500;font-weight:600\">The Blue Umbrella</a> is the cleanest short novel in Indian children's writing — a hundred-odd pages set in a Garhwal village, about envy and forgiveness, finishable in one sitting by a nine-year-old. For a slightly older reader who wants plot, Deepak Dalal's <a href=\"/books/andaman-adventure\" style=\"color:#fb8500;font-weight:600\">Andaman Adventure</a> does what Indian adventure writing rarely does: real geography, real wildlife, actual peril.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "Mythology That Does Not Talk Down",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Retellings are where Indian children's publishing is strongest, partly because the source material is inexhaustible. <a href=\"/books/the-serpent-s-revenge\" style=\"color:#fb8500;font-weight:600\">The Serpent's Revenge</a> and <a href=\"/books/the-upside-down-king\" style=\"color:#fb8500;font-weight:600\">The Upside-Down King</a> collect the strange, lesser-known corners of the Mahabharata and Ramayana rather than the episodes every child has already heard four times. Roopa Pai's <a href=\"/books/the-gita-for-children\" style=\"color:#fb8500;font-weight:600\">The Gita: For Children</a> is the rare book that treats a philosophical text as something a twelve-year-old can argue with, which is exactly the right register.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "For teenagers moving past retellings into literary fiction, R.K. Narayan's <a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> remains the bridge. The stories are short enough to read between classes and good enough to reread at thirty.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "The Imported Books Worth Buying Anyway",
+      },
+      {
+        type: "paragraph",
+        content:
+          "None of this is an argument against Harry Potter. A child who is already fluent should read whatever keeps them turning pages, and the <a href=\"/books/harry-potter-series-set-books-1-7\" style=\"color:#fb8500;font-weight:600\">Harry Potter Series Set (Books 1-7)</a> is still the most reliable engine for turning a reader into a heavy reader. <a href=\"/books/diary-of-a-wimpy-kid\" style=\"color:#fb8500;font-weight:600\">Diary of a Wimpy Kid</a> earns its place for a different reason: heavily illustrated, low barrier to entry, and children actually finish it.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Rick Riordan's <a href=\"/books/percy-jackson-ultimate-collection\" style=\"color:#fb8500;font-weight:600\">Percy Jackson Ultimate Collection</a> is the natural next step for a child who liked the Indian mythology retellings, since it runs the same trick on Greek myth. The order that works best is Indian first, imported second, and no guilt about either.",
+      },
+      {
+        type: "callout",
+        style: "success",
+        title: "Building a child's shelf without spending much",
+        content:
+          "A children's book bought and abandoned is cheaper than a children's book never attempted, so buy three and expect one to land. On TheBookX, books start from ₹1, delivery is free anywhere in India and Cash on Delivery is available on every order, which makes trial-and-error affordable. Gift wrapping can be added at ₹25 per book if the stack is heading to a birthday party or a cousin's house.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "What Parents Can Take From a Festival They Cannot Attend",
+      },
+      {
+        type: "list",
+        style: "ordered",
+        items: [
+          "Let the child choose. A festival floor works because a child picks a book off a table for reasons an adult would not endorse. Reproduce that: give a budget, not a list.",
+          "Read aloud past the age it feels necessary. Listening comprehension runs years ahead of reading comprehension, so reading aloud is how you introduce harder books early.",
+          "Buy one book set within two hundred kilometres of where the child lives. The fluency gain from a familiar setting is real and immediate.",
+          "Do not finish bad books. Abandoning a book you dislike is a reading skill, not a failure, and it protects the habit.",
+          "Meet an author if you ever get the chance. A child who has seen a writer be an ordinary person in a room stops treating books as objects that simply exist.",
+          "Track it lightly. Something like the NLF Reading Challenge works because it asks children to talk about what they read, not to hit a page count.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "For the Adults in the House",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The single strongest predictor of whether a child reads is whether they see an adult reading. If your own shelf has gone quiet, the fix is not ambitious. <a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> by A.P.J. Abdul Kalam is the book most Indian parents can finish and most Indian teenagers will borrow off the table afterwards.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "If the problem is that you start books and never finish them, <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear is the practical answer, and <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is the one to read if you want to explain things to a child — or to anyone — without losing them halfway through the sentence. Clear thinking and clear speech are the same skill, and children detect the absence of both instantly.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The Neev Literature Festival takes place on 26 and 27 September 2026 in Bengaluru. The Neev Book Award will hand ₹3 lakh to one Indian children's book. Both of those are good news. The part that is actually in your control is smaller and happens at home: one book, chosen by a child, set somewhere they recognise, finished because they wanted to.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>",
+      },
+    ],
+    coverImage: "/blogs/neev-literature-festival-2026-indian-childrens-books.jpeg",
+    images: [
+      {
+        url: "/blogs/neev-literature-festival-2026-indian-childrens-books.jpeg",
+        alt: "An Indian mother and her young daughter sitting on the floor reading a picture book together beside a low stack of unmarked children's books in warm afternoon light",
+        caption:
+          "The Neev Literature Festival 2026 runs on 26 and 27 September at Neev Academy, Bengaluru",
+        category: "Children's Books",
+      },
+    ],
+    keywords: [
+      "neev literature festival 2026",
+      "neev literature festival bengaluru dates",
+      "neev book award 2026",
+      "indian children's books",
+      "best children's books india 2026",
+      "children's literature festival india",
+      "sudha murty books for children",
+      "ruskin bond books for kids",
+      "buy children's books online india",
+      "TheBookX",
+    ],
+    categories: ["Children's Books", "Book Awards", "Reading Culture"],
+    faqs: [
+      {
+        question: "When and where is the Neev Literature Festival 2026?",
+        answer:
+          "The Neev Literature Festival 2026 takes place on Saturday 26 and Sunday 27 September 2026 at Neev Academy, Yemalur - Kempapura Main Road, Yemalur, Bengaluru 560037. It is a two-day children's literature festival featuring author interactions, creative workshops and performances with Indian and international children's authors, and is open to young readers, older children and families. Registration is handled through the festival's own website.",
+      },
+      {
+        question: "What is the Neev Book Award and how much is the prize?",
+        answer:
+          "The Neev Book Award is India's most valuable prize for children's literature. It was instituted in 2018 to recognise outstanding writing that leads to a fuller understanding of India, Indian lives and Indian stories. The winner receives ₹3 lakh, a trophy and a certificate, presented at the Neev Literature Festival. Every shortlisted title also receives ₹1 lakh, of which ₹50,000 goes to the awardee and the remainder funds a book promotion tour. From 2024 onwards the award has been given to a single title across all age categories rather than one per age band.",
+      },
+      {
+        question: "Who won the Neev Book Award recently?",
+        answer:
+          "The 2025 Neev Book Award went to Baloo's Big Win, and the 2024 award went to The Henna Start-Up by Andaleeb Wajid, whose earlier novel Asmara's Summer was adapted into an Amazon Original series. Earlier winners include The People of the Indus, Misfit Madhu, The Sweet Shop Wars, My Street, Rain Must Fall and Jamlo Walks.",
+      },
+      {
+        question: "Why do Indian children's books matter more than imported ones for young readers?",
+        answer:
+          "It is a comprehension argument rather than a patriotic one. A child reading a story set in an unfamiliar country is decoding the language and reconstructing an unknown world at the same time. When the setting is familiar - a small Indian town, a grandmother's house, a temple tank - that second task disappears and fluency comes faster. Imported books work extremely well once a child is already fluent, which is why they are better as the next step than the first one.",
+      },
+      {
+        question: "Which Indian children's books should I buy first?",
+        answer:
+          "For six to ten year olds, Grandma's Bag of Stories and The Magic of the Lost Temple by Sudha Murty are the most reliable starting points, along with The Blue Umbrella by Ruskin Bond. For slightly older readers try How I Taught My Grandmother to Read, Andaman Adventure by Deepak Dalal, and The Gita: For Children by Roopa Pai. On TheBookX these start from ₹1, with free delivery across India and Cash on Delivery on every order. Gift wrapping can be added at ₹25 per book.",
+      },
+    ],
+  },
   "booker-prize-2026-shortlist-what-to-read-india": {
     id: "blog-050",
     title:

@@ -1425,8 +1425,21 @@ function IndiaPostSheet({
   bookKey = (id, idx) => `${id}::${idx}`,
   weightByOrderId = {},
 }) {
-  // Per-order tracking-ID drafts, keyed by order id.
-  const [trackDraft, setTrackDraft] = useState({});
+  // Per-order tracking-ID drafts, keyed by order id — persisted to
+  // localStorage so entries survive reloads and can be bulk-pushed.
+  const [trackDraft, setTrackDraft] = useState(() => {
+    if (typeof window === "undefined") return {};
+    try {
+      return JSON.parse(localStorage.getItem("ip_track_drafts") || "{}") || {};
+    } catch {
+      return {};
+    }
+  });
+  useEffect(() => {
+    try {
+      localStorage.setItem("ip_track_drafts", JSON.stringify(trackDraft));
+    } catch {}
+  }, [trackDraft]);
   const shippingAll = bypassFilter
     ? orders || []
     : (orders || []).filter((o) =>
@@ -3850,6 +3863,53 @@ export default function ManageOrdersPage() {
       }
     };
     inp.click();
+  };
+  // Push every tracking ID entered in the Book cards to its order's Shipping ID
+  // column in the sheet (reads the localStorage-persisted drafts).
+  const [bookPushBusy, setBookPushBusy] = useState(false);
+  const pushBookTracking = async () => {
+    let drafts = {};
+    try {
+      drafts = JSON.parse(localStorage.getItem("ip_track_drafts") || "{}") || {};
+    } catch {}
+    const enriched = bookMatchedOrders
+      .map((o) => ({
+        orderId: o["Order ID"],
+        trackingId: String(drafts[o["Order ID"]] || "").trim(),
+      }))
+      .filter((r) => r.orderId && r.trackingId);
+    if (enriched.length === 0) {
+      showToast("No tracking IDs entered in the cards yet.", "error");
+      return;
+    }
+    if (!SHEET_EDIT_API_URL) {
+      showToast("Sheet edit endpoint isn't configured.", "error");
+      return;
+    }
+    setBookPushBusy(true);
+    try {
+      const body = new URLSearchParams({
+        action: "trackingBulk",
+        data: JSON.stringify(enriched),
+      });
+      await fetch(SHEET_EDIT_API_URL, { method: "POST", mode: "no-cors", body });
+      enriched.forEach((r) =>
+        patchLocalOrder(r.orderId, {
+          "Shipping ID": r.trackingId,
+          shippingId: r.trackingId,
+        }),
+      );
+      showToast(
+        `Pushed ${enriched.length} tracking ID(s) to the sheet ✓`,
+        "success",
+      );
+      setTimeout(fetchOrders, 1400);
+    } catch (e) {
+      console.error("Book tracking push failed:", e);
+      showToast("Push failed — please try again.", "error");
+    } finally {
+      setBookPushBusy(false);
+    }
   };
 
   const [accOpen, setAccOpen] = useState({
@@ -8533,6 +8593,20 @@ export default function ManageOrdersPage() {
                   )}
                 </div>
               </div>
+              {bookMatchedOrders.length > 0 && (
+                <button
+                  type="button"
+                  className="mo-book-push"
+                  disabled={bookPushBusy}
+                  onClick={pushBookTracking}
+                  title="Write every tracking ID entered below to its order's Shipping ID column in the sheet"
+                >
+                  <Send size={15} />
+                  {bookPushBusy
+                    ? "Pushing…"
+                    : "Push all tracking IDs to sheet"}
+                </button>
+              )}
             </div>
             {bookMatchedOrders.length === 0 ? (
               <div className="mo-book-empty">

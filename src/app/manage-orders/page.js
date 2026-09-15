@@ -95,6 +95,7 @@ import {
   downloadIpWorkbook,
   buildIpWorkbookBlob,
   parseIpWorkbookFile,
+  parseWeightsFile,
   loadSender,
   saveSender,
   validateRow,
@@ -1422,6 +1423,7 @@ function IndiaPostSheet({
   showBooking = false,
   pickChecked = {},
   bookKey = (id, idx) => `${id}::${idx}`,
+  weightByOrderId = {},
 }) {
   // Per-order tracking-ID drafts, keyed by order id.
   const [trackDraft, setTrackDraft] = useState({});
@@ -1493,6 +1495,8 @@ function IndiaPostSheet({
         // pincode office-picker popup and the Mail Shape / Delivery Type
         // dropdowns for the admin to complete manually.
         const cap30 = (s) => String(s ?? "").slice(0, 30);
+        // Per-order weight (grams): use an uploaded override if present, else 500.
+        const wtG = String(weightByOrderId[o["Order ID"]] || 500);
         const autofillPayload = JSON.stringify({
           v: "tbx-ip-1",
           orderId: o["Order ID"] || "",
@@ -1501,7 +1505,7 @@ function IndiaPostSheet({
           codAmount: isCOD ? String(codNet) : "",
           mailShape: "Box Type (Non Roll Form)",
           deliveryType: "Normal Delivery",
-          weight: "500",
+          weight: wtG,
           length: "22",
           width: "13",
           height: String(books),
@@ -1602,7 +1606,7 @@ function IndiaPostSheet({
               />
               <IpField
                 label="Physical Weight (gms)"
-                value="500"
+                value={wtG}
                 id={key("wt")}
                 copiedId={copiedId}
                 onCopy={copyToClipboard}
@@ -3821,6 +3825,32 @@ export default function ManageOrdersPage() {
   const [bpShowAll, setBpShowAll] = useState(false); // Book profitability: show all vs top 10
   // Book tab — paste order IDs, show only those as inline booking cards.
   const [bookIdsRaw, setBookIdsRaw] = useState("");
+  // Uploaded { orderId: weightGrams } overrides applied to booking cards.
+  const [bookWeights, setBookWeights] = useState({});
+  const importBookWeights = () => {
+    const inp = document.createElement("input");
+    inp.type = "file";
+    inp.accept =
+      ".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+    inp.onchange = async (e) => {
+      const file = e?.target?.files?.[0];
+      if (!file) return;
+      try {
+        const map = await parseWeightsFile(file);
+        const n = Object.keys(map).length;
+        if (!n) {
+          showToast("No order-id + weight rows found in that sheet.", "error");
+          return;
+        }
+        setBookWeights((prev) => ({ ...prev, ...map }));
+        showToast(`Assigned weights to ${n} order(s) ✓`, "success");
+      } catch (err) {
+        console.error("Weights import failed:", err);
+        showToast(`Import failed: ${err?.message || "unreadable file"}`, "error");
+      }
+    };
+    inp.click();
+  };
 
   const [accOpen, setAccOpen] = useState({
     analytics: true,
@@ -8467,16 +8497,41 @@ export default function ManageOrdersPage() {
                         .split(/[\s,;\n\r]+/)
                         .filter(Boolean).length
                     } pasted`}
+                  {Object.keys(bookWeights).length > 0 &&
+                    ` · ${Object.keys(bookWeights).length} weights assigned`}
                 </span>
-                {bookIdsRaw.trim() && (
+                <div className="mo-book-meta-btns">
                   <button
                     type="button"
-                    className="mo-book-clear"
-                    onClick={() => setBookIdsRaw("")}
+                    className="mo-book-weights"
+                    onClick={importBookWeights}
+                    title="Upload a sheet with BULK REFERENCE (order id) + PHYSICAL WEIGHT to assign weights"
                   >
-                    <X size={13} /> Clear
+                    <Download
+                      size={13}
+                      style={{ transform: "rotate(180deg)" }}
+                    />{" "}
+                    Upload weights (.xlsx)
                   </button>
-                )}
+                  {Object.keys(bookWeights).length > 0 && (
+                    <button
+                      type="button"
+                      className="mo-book-clear"
+                      onClick={() => setBookWeights({})}
+                    >
+                      <X size={13} /> Clear weights
+                    </button>
+                  )}
+                  {bookIdsRaw.trim() && (
+                    <button
+                      type="button"
+                      className="mo-book-clear"
+                      onClick={() => setBookIdsRaw("")}
+                    >
+                      <X size={13} /> Clear IDs
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
             {bookMatchedOrders.length === 0 ? (
@@ -8498,6 +8553,7 @@ export default function ManageOrdersPage() {
                 showBooking
                 pickChecked={pickChecked}
                 bookKey={bookKey}
+                weightByOrderId={bookWeights}
               />
             )}
           </div>

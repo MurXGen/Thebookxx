@@ -618,6 +618,39 @@ export async function parseIpWorkbookFile(file) {
   return { rows, sender };
 }
 
+// Parse an uploaded India Post sheet into an { orderId: weightGrams } map,
+// reading BULK REFERENCE (order id) + PHYSICAL WEIGHT. Used to bulk-assign
+// weights back onto orders before booking.
+export async function parseWeightsFile(file) {
+  const XLSX = await import("xlsx");
+  const wb = XLSX.read(await file.arrayBuffer(), { type: "array" });
+  const sheetName =
+    wb.SheetNames.find((n) => n.toLowerCase() === "articledetails") ||
+    wb.SheetNames[0];
+  const ws = wb.Sheets[sheetName];
+  if (!ws) throw new Error("No ArticleDetails sheet in the file.");
+  const aoa = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
+  const header = (aoa[0] || []).map((h) => String(h).trim());
+  const idx = (name) =>
+    header.findIndex((h) => h.toLowerCase() === String(name).toLowerCase());
+  const iRef = idx("BULK REFERENCE");
+  const iWt = idx("PHYSICAL WEIGHT");
+  if (iRef < 0 || iWt < 0)
+    throw new Error(
+      "Sheet needs 'BULK REFERENCE' (order id) and 'PHYSICAL WEIGHT' columns.",
+    );
+  const map = {};
+  for (let r = 1; r < aoa.length; r++) {
+    const row = aoa[r] || [];
+    const id = String(row[iRef] ?? "").trim();
+    const wt = Math.round(
+      Number(String(row[iWt] ?? "").replace(/[^\d.]/g, "")) || 0,
+    );
+    if (id && wt > 0) map[id] = wt;
+  }
+  return map;
+}
+
 // Build the same workbook as an in-memory Blob (for API upload to India Post).
 export async function buildIpWorkbookBlob(previewRows, sender) {
   const { XLSX, wb } = await buildIpWorkbook(previewRows, sender);

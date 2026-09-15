@@ -24479,6 +24479,28 @@ img[data-loaded="true"] {
   font-weight: 700;
   color: var(--gray-500, #6b7280);
 }
+.mo-book-meta-btns {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.mo-book-weights {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--tertiary, #fb8500);
+  background: rgba(251, 133, 0, 0.1);
+  border: 1px solid rgba(251, 133, 0, 0.28);
+  border-radius: 999px;
+  padding: 4px 12px;
+  cursor: pointer;
+}
+.mo-book-weights:hover {
+  background: rgba(251, 133, 0, 0.16);
+}
 .mo-book-clear {
   display: inline-flex;
   align-items: center;

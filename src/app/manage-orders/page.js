@@ -117,6 +117,15 @@ const getBookImage = (name) =>
       .toLowerCase()
   ] || null;
 
+// Extract order-id-like tokens (ORD…, TBX…, or any 2–4 letter prefix + 6+
+// digits) from pasted text — works for comma/space/newline lists AND full
+// shareable links (…?batch=ORD1,ORD2).
+const extractOrderIds = (text) => {
+  const str = String(text || "");
+  const m = str.match(/\b[A-Za-z]{2,4}\d{6,}\b/g) || [];
+  return [...new Set(m.map((s) => s.trim().toUpperCase()))];
+};
+
 // ---- WhatsApp quick-message helpers ----
 // Opens WhatsApp chat with the customer, pre-filled with a stage message.
 const openWhatsApp = (phone, text) => {
@@ -4178,6 +4187,21 @@ export default function ManageOrdersPage() {
   // Batch-labels tab: paste order IDs → show only those orders + bulk labels.
   const [batchInput, setBatchInput] = useState("");
   const [batchSelected, setBatchSelected] = useState([]);
+  const [batchDetail, setBatchDetail] = useState(null); // order shown in slide-up
+  const [batchLinkCopied, setBatchLinkCopied] = useState(false);
+  // Prefill from a shared link (…/manage-orders?batch=ORD1,ORD2), open the tab.
+  useEffect(() => {
+    try {
+      const p = new URLSearchParams(window.location.search).get("batch");
+      if (p) {
+        const ids = extractOrderIds(decodeURIComponent(p));
+        if (ids.length) {
+          setBatchInput(ids.join("\n"));
+          setActiveTab("batch");
+        }
+      }
+    } catch {}
+  }, []);
   useEffect(() => {
     try {
       const t = localStorage.getItem("mo_active_tab");
@@ -11402,15 +11426,57 @@ export default function ManageOrdersPage() {
             <textarea
               className="mo-batch-input"
               rows={4}
-              placeholder="ORD1789…, ORD1789…  or one per line"
+              placeholder="ORD1789…, ORD1789…  — one per line, or paste a shared link"
               value={batchInput}
               onChange={(e) => setBatchInput(e.target.value)}
             />
+            <div className="mo-batch-actions">
+              <button
+                type="button"
+                className="sec-mid-btn mo-batch-share"
+                disabled={extractOrderIds(batchInput).length === 0}
+                onClick={() => {
+                  const list = extractOrderIds(batchInput);
+                  if (!list.length) return;
+                  const origin =
+                    typeof window !== "undefined"
+                      ? window.location.origin
+                      : "https://www.thebookx.in";
+                  const link = `${origin}/manage-orders?batch=${encodeURIComponent(
+                    list.join(","),
+                  )}`;
+                  try {
+                    navigator.clipboard.writeText(link);
+                    setBatchLinkCopied(true);
+                    setTimeout(() => setBatchLinkCopied(false), 1800);
+                  } catch {}
+                }}
+              >
+                {batchLinkCopied ? (
+                  <>
+                    <Check size={15} /> Link copied
+                  </>
+                ) : (
+                  <>
+                    <ExternalLink size={15} /> Copy shareable link
+                  </>
+                )}
+              </button>
+              {batchInput.trim() && (
+                <button
+                  type="button"
+                  className="sec-mid-btn"
+                  onClick={() => {
+                    setBatchInput("");
+                    setBatchSelected([]);
+                  }}
+                >
+                  Reset
+                </button>
+              )}
+            </div>
             {(() => {
-              const ids = batchInput
-                .split(/[\s,]+/)
-                .map((s) => s.trim().toUpperCase())
-                .filter(Boolean);
+              const ids = extractOrderIds(batchInput);
               const byId = new Map(
                 orders.map((o) => [
                   String(o["Order ID"] || "").trim().toUpperCase(),
@@ -11519,21 +11585,32 @@ export default function ManageOrdersPage() {
                         String(o["Advance Paid"] || ""),
                       );
                       return (
-                        <button
-                          type="button"
+                        <div
+                          role="button"
+                          tabIndex={0}
                           key={oid}
                           className={`mo-batch-card${sel ? " sel" : ""}`}
-                          onClick={() =>
-                            setBatchSelected((prev) =>
-                              prev.includes(oid)
-                                ? prev.filter((x) => x !== oid)
-                                : [...prev, oid],
-                            )
+                          onClick={() => setBatchDetail(o)}
+                          onKeyDown={(e) =>
+                            (e.key === "Enter" || e.key === " ") &&
+                            setBatchDetail(o)
                           }
                         >
-                          <span className={`mo-batch-cb${sel ? " on" : ""}`}>
+                          <button
+                            type="button"
+                            className={`mo-batch-cb${sel ? " on" : ""}`}
+                            aria-label="Select order"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setBatchSelected((prev) =>
+                                prev.includes(oid)
+                                  ? prev.filter((x) => x !== oid)
+                                  : [...prev, oid],
+                              );
+                            }}
+                          >
                             {sel && <Check size={13} strokeWidth={3} />}
-                          </span>
+                          </button>
                           <span className="mo-batch-covers">
                             {covers.length ? (
                               covers.map((src, i) => (
@@ -11569,7 +11646,7 @@ export default function ManageOrdersPage() {
                             </span>
                           </span>
                           <span className="mo-batch-amt">₹{o.revenue}</span>
-                        </button>
+                        </div>
                       );
                     })}
                   </div>
@@ -11582,6 +11659,164 @@ export default function ManageOrdersPage() {
                 </>
               );
             })()}
+
+            {/* Full order detail — slide-up (tap a card, not the checkbox) */}
+            <AnimatePresence>
+              {batchDetail &&
+                (() => {
+                  const o = batchDetail;
+                  const oid = o["Order ID"];
+                  const bk = o.parsedBooks || [];
+                  const isCOD = /cash|cod/i.test(o["Payment Type"] || "");
+                  const advPaid = /^\s*yes/i.test(
+                    String(o["Advance Paid"] || ""),
+                  );
+                  const rev = Number(o.revenue) || 0;
+                  const codBase = isCOD && advPaid ? Math.max(0, rev - 99) : rev;
+                  const codNet = isCOD
+                    ? Math.max(0, codBase - Math.round(codBase * 0.059))
+                    : rev;
+                  const phone = o["Phone Number"];
+                  const digits = String(phone || "")
+                    .replace(/\D/g, "")
+                    .slice(-10);
+                  const addr = [o["Address"], o["City"], o["State"]]
+                    .filter(Boolean)
+                    .join(", ");
+                  return (
+                    <motion.div
+                      className="bill-modal-overlay"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      onClick={() => setBatchDetail(null)}
+                      style={{ zIndex: 3000 }}
+                    >
+                      <motion.div
+                        className="bill-modal mo-bd-sheet"
+                        initial={{ y: "100%" }}
+                        animate={{ y: 0 }}
+                        exit={{ y: "100%" }}
+                        transition={{ duration: 0.32, ease: "easeOut" }}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <div className="bill-header">
+                          <span className="weight-600 font-16">
+                            {o["Customer Name"] || "Order"}
+                          </span>
+                          <span
+                            className="cursor-pointer"
+                            onClick={() => setBatchDetail(null)}
+                          >
+                            <X size={18} />
+                          </span>
+                        </div>
+
+                        <div className="mo-bd-body">
+                          <div className="mo-bd-topline">
+                            <span className="mo-batch-badges">
+                              {isCOD ? (
+                                <span className="mo-bb mo-bb-cod">COD</span>
+                              ) : (
+                                <span className="mo-bb mo-bb-upi">UPI</span>
+                              )}
+                              {isCOD && advPaid && (
+                                <span className="mo-bb mo-bb-adv">₹99 paid</span>
+                              )}
+                              <span className="mo-batch-status">
+                                {o["Order Status"] || "—"}
+                              </span>
+                            </span>
+                            <span className="mo-bd-amt">₹{rev}</span>
+                          </div>
+                          <div className="mo-bd-oid">
+                            {oid} · +91 {phone}
+                          </div>
+
+                          {isCOD && (
+                            <div className="mo-bd-cod">
+                              <span>Collect on delivery</span>
+                              <b>
+                                ₹{codNet}
+                                {advPaid ? " (₹99 already paid)" : ""}
+                              </b>
+                            </div>
+                          )}
+
+                          <div className="mo-bd-sec-t">Items ({bk.length})</div>
+                          <div className="mo-bd-items">
+                            {bk.map((b, i) => {
+                              const img = getBookImage(b.name);
+                              return (
+                                <div className="mo-bd-item" key={i}>
+                                  {img ? (
+                                    <img src={img} alt="" loading="lazy" />
+                                  ) : (
+                                    <span className="mo-batch-cover-ph">
+                                      <Package size={16} />
+                                    </span>
+                                  )}
+                                  <span className="mo-bd-item-nm">
+                                    {b.name}
+                                    {b.qty > 1 ? ` ×${b.qty}` : ""}
+                                  </span>
+                                  <span className="mo-bd-item-pr">
+                                    ₹{b.total || b.price || 0}
+                                  </span>
+                                </div>
+                              );
+                            })}
+                          </div>
+
+                          <div className="mo-bd-sec-t">Deliver to</div>
+                          <div className="mo-bd-addr">
+                            <div>{o["Customer Name"]}</div>
+                            <div>{addr}</div>
+                            {o["Pincode"] && <div>PIN {o["Pincode"]}</div>}
+                          </div>
+
+                          <div className="mo-bd-actions">
+                            <button
+                              type="button"
+                              className="sec-mid-btn"
+                              onClick={() =>
+                                openWhatsApp(
+                                  phone,
+                                  `Hi ${o["Customer Name"] || ""}, regarding your TheBookX order ${oid}.`,
+                                )
+                              }
+                            >
+                              <MessageCircle size={15} /> WhatsApp
+                            </button>
+                            <a
+                              className="sec-mid-btn"
+                              href={`/profile/${digits}/orders/${encodeURIComponent(oid)}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <ExternalLink size={15} /> Open order page
+                            </a>
+                            <button
+                              type="button"
+                              className="pri-big-btn mo-bd-label"
+                              onClick={() =>
+                                downloadFormsFor(
+                                  [o],
+                                  "pdf",
+                                  `address-${oid}.pdf`,
+                                  true,
+                                )
+                              }
+                            >
+                              <Download size={15} /> Address label
+                            </button>
+                          </div>
+                        </div>
+                      </motion.div>
+                    </motion.div>
+                  );
+                })()}
+            </AnimatePresence>
           </div>
         )}
         </motion.div>

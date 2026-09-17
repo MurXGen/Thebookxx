@@ -11515,6 +11515,9 @@ export default function ManageOrdersPage() {
                         .filter(Boolean)
                         .slice(0, 4);
                       const isCOD = /cash|cod/i.test(o["Payment Type"] || "");
+                      const advPaid = /^\s*yes/i.test(
+                        String(o["Advance Paid"] || ""),
+                      );
                       return (
                         <button
                           type="button"
@@ -11549,9 +11552,20 @@ export default function ManageOrdersPage() {
                             <span className="mo-batch-meta2">
                               {oid} · +91 {o["Phone Number"]}
                             </span>
-                            <span className="mo-batch-meta2">
-                              {isCOD ? "COD" : "Prepaid"} ·{" "}
-                              {o["Order Status"] || "—"}
+                            <span className="mo-batch-badges">
+                              {isCOD ? (
+                                <span className="mo-bb mo-bb-cod">COD</span>
+                              ) : (
+                                <span className="mo-bb mo-bb-upi">UPI</span>
+                              )}
+                              {isCOD && advPaid && (
+                                <span className="mo-bb mo-bb-adv">
+                                  ₹99 paid
+                                </span>
+                              )}
+                              <span className="mo-batch-status">
+                                {o["Order Status"] || "—"}
+                              </span>
                             </span>
                           </span>
                           <span className="mo-batch-amt">₹{o.revenue}</span>

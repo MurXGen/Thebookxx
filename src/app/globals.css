@@ -13398,6 +13398,37 @@ img[data-loaded="true"] {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.mo-batch-badges {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 1px;
+}
+.mo-bb {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  padding: 2px 7px;
+  border-radius: 999px;
+}
+.mo-bb-cod {
+  color: #1d4ed8;
+  background: rgba(37, 99, 235, 0.1);
+}
+.mo-bb-upi {
+  color: #15803d;
+  background: rgba(22, 163, 74, 0.12);
+}
+.mo-bb-adv {
+  color: #b45309;
+  background: #fff2e0;
+}
+.mo-batch-status {
+  font-size: 11px;
+  font-weight: 600;
+  color: #6b7280;
+}
 .mo-batch-amt {
   flex-shrink: 0;
   font-size: 15px;

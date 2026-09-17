@@ -11660,10 +11660,13 @@ export default function ManageOrdersPage() {
               );
             })()}
 
-            {/* Full order detail — slide-up (tap a card, not the checkbox) */}
-            <AnimatePresence>
-              {batchDetail &&
-                (() => {
+            {/* Full order detail — slide-up (tap a card, not the checkbox).
+                Portaled to <body> so it's fixed to the screen, no blur. */}
+            {typeof document !== "undefined" &&
+              createPortal(
+                <AnimatePresence>
+                  {batchDetail &&
+                    (() => {
                   const o = batchDetail;
                   const oid = o["Order ID"];
                   const bk = o.parsedBooks || [];
@@ -11685,15 +11688,14 @@ export default function ManageOrdersPage() {
                     .join(", ");
                   return (
                     <motion.div
-                      className="bill-modal-overlay"
+                      className="mo-bd-overlay"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                       onClick={() => setBatchDetail(null)}
-                      style={{ zIndex: 3000 }}
                     >
                       <motion.div
-                        className="bill-modal mo-bd-sheet"
+                        className="mo-bd-sheet"
                         initial={{ y: "100%" }}
                         animate={{ y: 0 }}
                         exit={{ y: "100%" }}
@@ -11816,7 +11818,9 @@ export default function ManageOrdersPage() {
                     </motion.div>
                   );
                 })()}
-            </AnimatePresence>
+                </AnimatePresence>,
+                document.body,
+              )}
           </div>
         )}
         </motion.div>

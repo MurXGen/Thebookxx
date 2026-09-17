@@ -773,6 +773,7 @@ function WalletModal({ user, busy, onClose, onApply }) {
 const SECTION_TABS = [
   { key: "analytics", label: "Analytics", short: "Stats", Icon: LayoutDashboard },
   { key: "orders", label: "Orders", short: "Orders", Icon: ShoppingBag },
+  { key: "batch", label: "Batch labels", short: "Batch", Icon: Download },
   { key: "book", label: "Book", short: "Book", Icon: Package },
   { key: "users", label: "Users", short: "Users", Icon: Users },
   { key: "track", label: "Track orders", short: "Track", Icon: Radar },
@@ -4174,6 +4175,9 @@ export default function ManageOrdersPage() {
 
   // Scrollable section tabs — jump to a section, remembered across sessions.
   const [activeTab, setActiveTab] = useState("analytics");
+  // Batch-labels tab: paste order IDs → show only those orders + bulk labels.
+  const [batchInput, setBatchInput] = useState("");
+  const [batchSelected, setBatchSelected] = useState([]);
   useEffect(() => {
     try {
       const t = localStorage.getItem("mo_active_tab");
@@ -11383,6 +11387,188 @@ export default function ManageOrdersPage() {
                 </div>
               )}
           </>
+        )}
+
+        {activeTab === "batch" && (
+          <div className="mo-batch">
+            <div className="mo-batch-head">
+              <h2 className="mo-batch-title">Batch address labels</h2>
+              <p className="mo-batch-sub">
+                Paste order IDs (comma, space or new line separated). Matching
+                orders load below — select any and download their address labels
+                together.
+              </p>
+            </div>
+            <textarea
+              className="mo-batch-input"
+              rows={4}
+              placeholder="ORD1789…, ORD1789…  or one per line"
+              value={batchInput}
+              onChange={(e) => setBatchInput(e.target.value)}
+            />
+            {(() => {
+              const ids = batchInput
+                .split(/[\s,]+/)
+                .map((s) => s.trim().toUpperCase())
+                .filter(Boolean);
+              const byId = new Map(
+                orders.map((o) => [
+                  String(o["Order ID"] || "").trim().toUpperCase(),
+                  o,
+                ]),
+              );
+              const seen = new Set();
+              const batchOrders = ids
+                .map((id) => byId.get(id))
+                .filter((o) => {
+                  if (!o) return false;
+                  const k = o["Order ID"];
+                  if (seen.has(k)) return false;
+                  seen.add(k);
+                  return true;
+                });
+              const notFound = ids.filter((id) => !byId.has(id));
+              const selectedOrders = batchOrders.filter((o) =>
+                batchSelected.includes(o["Order ID"]),
+              );
+              if (!batchInput.trim()) {
+                return (
+                  <div className="mo-batch-empty">
+                    Paste order IDs above to load them here.
+                  </div>
+                );
+              }
+              return (
+                <>
+                  <div className="mo-batch-meta">
+                    <span>
+                      {batchOrders.length} found
+                      {notFound.length ? ` · ${notFound.length} not found` : ""}
+                    </span>
+                    {batchOrders.length > 0 && (
+                      <span className="mo-batch-selrow">
+                        <button
+                          type="button"
+                          className="mo-view-btn"
+                          onClick={() =>
+                            setBatchSelected(batchOrders.map((o) => o["Order ID"]))
+                          }
+                        >
+                          Select all
+                        </button>
+                        <button
+                          type="button"
+                          className="mo-view-btn"
+                          onClick={() => setBatchSelected([])}
+                        >
+                          Clear
+                        </button>
+                      </span>
+                    )}
+                  </div>
+
+                  {selectedOrders.length > 0 && (
+                    <div className="mo-batch-bulk">
+                      <span className="mo-batch-bulk-lbl">
+                        {selectedOrders.length} selected · Address labels
+                      </span>
+                      <span className="mo-batch-bulk-btns">
+                        <button
+                          type="button"
+                          className="sec-mid-btn"
+                          onClick={() =>
+                            downloadFormsFor(
+                              selectedOrders,
+                              "pdf",
+                              "address-labels.pdf",
+                              true,
+                            )
+                          }
+                        >
+                          PDF
+                        </button>
+                        <button
+                          type="button"
+                          className="sec-mid-btn"
+                          onClick={() =>
+                            downloadFormsFor(
+                              selectedOrders,
+                              "png",
+                              "address-labels",
+                              true,
+                            )
+                          }
+                        >
+                          PNG
+                        </button>
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="mo-batch-list">
+                    {batchOrders.map((o) => {
+                      const oid = o["Order ID"];
+                      const sel = batchSelected.includes(oid);
+                      const bk = o.parsedBooks || [];
+                      const covers = bk
+                        .map((b) => getBookImage(b.name))
+                        .filter(Boolean)
+                        .slice(0, 4);
+                      const isCOD = /cash|cod/i.test(o["Payment Type"] || "");
+                      return (
+                        <button
+                          type="button"
+                          key={oid}
+                          className={`mo-batch-card${sel ? " sel" : ""}`}
+                          onClick={() =>
+                            setBatchSelected((prev) =>
+                              prev.includes(oid)
+                                ? prev.filter((x) => x !== oid)
+                                : [...prev, oid],
+                            )
+                          }
+                        >
+                          <span className={`mo-batch-cb${sel ? " on" : ""}`}>
+                            {sel && <Check size={13} strokeWidth={3} />}
+                          </span>
+                          <span className="mo-batch-covers">
+                            {covers.length ? (
+                              covers.map((src, i) => (
+                                <img key={i} src={src} alt="" loading="lazy" />
+                              ))
+                            ) : (
+                              <span className="mo-batch-cover-ph">
+                                <Package size={16} />
+                              </span>
+                            )}
+                          </span>
+                          <span className="mo-batch-info">
+                            <span className="mo-batch-name">
+                              {o["Customer Name"]}
+                            </span>
+                            <span className="mo-batch-meta2">
+                              {oid} · +91 {o["Phone Number"]}
+                            </span>
+                            <span className="mo-batch-meta2">
+                              {isCOD ? "COD" : "Prepaid"} ·{" "}
+                              {o["Order Status"] || "—"}
+                            </span>
+                          </span>
+                          <span className="mo-batch-amt">₹{o.revenue}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {notFound.length > 0 && (
+                    <div className="mo-batch-notfound">
+                      Not found: {notFound.join(", ")}
+                    </div>
+                  )}
+                </>
+              );
+            })()}
+          </div>
         )}
         </motion.div>
         </div>

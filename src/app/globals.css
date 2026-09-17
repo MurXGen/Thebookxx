@@ -13241,6 +13241,179 @@ img[data-loaded="true"] {
   transform: translateY(-1px);
   box-shadow: 0 10px 22px -12px rgba(0, 0, 0, 0.4);
 }
+/* ===== Manage-orders: Batch address-labels tab ===== */
+.mo-batch {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.mo-batch-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+}
+.mo-batch-sub {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.5;
+}
+.mo-batch-input {
+  width: 100%;
+  border: 1px solid var(--hairline, #e5e7eb);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 13.5px;
+  font-family: inherit;
+  background: #fff;
+  resize: vertical;
+}
+.mo-batch-input:focus {
+  outline: none;
+  border-color: var(--tertiary, #fb8500);
+}
+.mo-batch-empty {
+  padding: 22px;
+  text-align: center;
+  font-size: 13px;
+  color: #9ca3af;
+}
+.mo-batch-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #6b7280;
+}
+.mo-batch-selrow {
+  display: inline-flex;
+  gap: 8px;
+}
+.mo-batch-bulk {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid #fed7aa;
+  background: #fff7ed;
+}
+.mo-batch-bulk-lbl {
+  font-size: 13px;
+  font-weight: 800;
+  color: #b45309;
+}
+.mo-batch-bulk-btns {
+  display: inline-flex;
+  gap: 8px;
+}
+.mo-batch-bulk-btns .sec-mid-btn {
+  min-width: 64px;
+}
+.mo-batch-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.mo-batch-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  border: 1px solid var(--hairline, #e5e7eb);
+  border-radius: 14px;
+  background: #fff;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+}
+.mo-batch-card.sel {
+  border-color: var(--tertiary, #fb8500);
+  box-shadow: 0 0 0 2px rgba(251, 133, 0, 0.25);
+}
+.mo-batch-cb {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  border: 2px solid #d6d3ce;
+  display: grid;
+  place-items: center;
+  color: #fff;
+}
+.mo-batch-cb.on {
+  background: var(--tertiary, #fb8500);
+  border-color: var(--tertiary, #fb8500);
+}
+.mo-batch-covers {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+.mo-batch-covers img {
+  width: 30px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 5px;
+  border: 2px solid #fff;
+  margin-left: -10px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.14);
+}
+.mo-batch-covers img:first-child {
+  margin-left: 0;
+}
+.mo-batch-cover-ph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 40px;
+  border-radius: 5px;
+  background: #f3f4f6;
+  color: #9ca3af;
+}
+.mo-batch-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.mo-batch-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0a0a0a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mo-batch-meta2 {
+  font-size: 11.5px;
+  color: #6b7280;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mo-batch-amt {
+  flex-shrink: 0;
+  font-size: 15px;
+  font-weight: 800;
+  color: #0a0a0a;
+}
+.mo-batch-notfound {
+  font-size: 12px;
+  color: #b42318;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  padding: 9px 12px;
+  word-break: break-word;
+}
+
 /* Community + Share row above the cart offer strip (always visible) */
 .cos-social-row {
   display: flex;

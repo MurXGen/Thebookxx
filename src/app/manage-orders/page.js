@@ -20,6 +20,7 @@ import {
 import {
   Search,
   Download,
+  Loader2,
   Plus,
   Edit,
   X,
@@ -121,7 +122,14 @@ const getBookImage = (name) =>
 // digits) from pasted text — works for comma/space/newline lists AND full
 // shareable links (…?batch=ORD1,ORD2).
 const extractOrderIds = (text) => {
-  const str = String(text || "");
+  let str = String(text || "");
+  // Decode pasted links first — %2C (comma) / + must become separators, else a
+  // token like "…%2CTBX…" gets read as "CTBX…" and never matches an order.
+  try {
+    str = decodeURIComponent(str.replace(/\+/g, " "));
+  } catch {
+    /* malformed encoding — fall back to the raw text */
+  }
   const m = str.match(/\b[A-Za-z]{2,4}\d{6,}\b/g) || [];
   return [...new Set(m.map((s) => s.trim().toUpperCase()))];
 };
@@ -4189,6 +4197,7 @@ export default function ManageOrdersPage() {
   const [batchSelected, setBatchSelected] = useState([]);
   const [batchDetail, setBatchDetail] = useState(null); // order shown in slide-up
   const [batchLinkCopied, setBatchLinkCopied] = useState(false);
+  const [batchSharing, setBatchSharing] = useState(false);
   // Prefill from a shared link (…/manage-orders?batch=ORD1,ORD2), open the tab.
   useEffect(() => {
     try {
@@ -11434,31 +11443,52 @@ export default function ManageOrdersPage() {
               <button
                 type="button"
                 className="sec-mid-btn mo-batch-share"
-                disabled={extractOrderIds(batchInput).length === 0}
-                onClick={() => {
+                disabled={
+                  batchSharing || extractOrderIds(batchInput).length === 0
+                }
+                onClick={async () => {
                   const list = extractOrderIds(batchInput);
                   if (!list.length) return;
                   const origin =
                     typeof window !== "undefined"
                       ? window.location.origin
                       : "https://www.thebookx.in";
-                  const link = `${origin}/manage-orders?batch=${encodeURIComponent(
+                  const longUrl = `${origin}/manage-orders?batch=${encodeURIComponent(
                     list.join(","),
                   )}`;
+                  setBatchSharing(true);
+                  let link = longUrl;
                   try {
-                    navigator.clipboard.writeText(link);
+                    const res = await fetch(
+                      `https://tinyurl.com/api-create.php?url=${encodeURIComponent(
+                        longUrl,
+                      )}`,
+                    );
+                    const tiny = (await res.text()).trim();
+                    if (tiny && /^https?:\/\//i.test(tiny)) link = tiny;
+                  } catch {
+                    /* shortener unavailable — copy the full link */
+                  }
+                  try {
+                    await navigator.clipboard.writeText(link);
                     setBatchLinkCopied(true);
                     setTimeout(() => setBatchLinkCopied(false), 1800);
                   } catch {}
+                  setBatchSharing(false);
                 }}
               >
-                {batchLinkCopied ? (
+                {batchSharing ? (
+                  <>
+                    <Loader2 size={15} className="lb-spinner" /> Creating link…
+                  </>
+                ) : batchLinkCopied ? (
                   <>
                     <Check size={15} /> Link copied
                   </>
                 ) : (
                   <>
-                    <ExternalLink size={15} /> Copy shareable link
+                    <ExternalLink size={15} /> Copy shareable link (
+                    {extractOrderIds(batchInput).length})
                   </>
                 )}
               </button>

@@ -4848,8 +4848,14 @@ export default function ManageOrdersPage() {
   const orderFormData = (o) => {
     const rev = Number(o.revenue) || 0;
     const isCOD = /cash|cod/i.test(o["Payment Type"] || "");
-    // COD orders collect the NET amount (order value − 5.9%); non-COD unchanged.
-    const codAmount = isCOD ? Math.round(rev - Math.round(rev * 0.059)) : rev;
+    // If the ₹99 advance is already paid online, deduct it BEFORE the COD fee so
+    // the label shows only the remaining cash to collect (matches the card + JSON).
+    const advancePaid = /^\s*yes/i.test(String(o["Advance Paid"] || ""));
+    const codBase = isCOD && advancePaid ? Math.max(0, rev - 99) : rev;
+    // COD orders collect the NET amount (base − 5.9%); non-COD unchanged.
+    const codAmount = isCOD
+      ? Math.max(0, codBase - Math.round(codBase * 0.059))
+      : rev;
     // Order note: packer's comment (local edits win) or the customer's note.
     const note =
       String(orderNotes[o["Order ID"]] ?? o["Comment"] ?? "").trim() ||

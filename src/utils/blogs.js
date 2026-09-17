@@ -4,6 +4,245 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "national-book-award-2026-translated-literature-longlist": {
+    id: "blog-052",
+    title:
+      "National Book Award 2026 Translated Literature Longlist: 10 Books, 7 Languages, and Why Translated Fiction Belongs on Every Indian Shelf",
+    slug: "national-book-award-2026-translated-literature-longlist",
+    author: "TheBookX Editorial",
+    authorSlug: "murthy-thevar",
+    publishDate: "2026-09-16",
+    lastModified: "2026-09-16",
+    excerpt:
+      "The 2026 National Book Award longlist for Translated Literature is out: 10 books from 159 submissions, 7 languages, and a first for Indonesian fiction.",
+    content: [
+      {
+        type: "paragraph",
+        content:
+          "On 15 September 2026, the National Book Foundation announced the longlist for the 2026 National Book Award for Translated Literature. Ten titles, picked from 159 books submitted by their publishers, carried into English from seven different languages. It is the first stage of a rollout that continues through 17 September across Fiction, Nonfiction, Poetry and Young People's Literature, with finalists named on 6 October and winners announced at the 77th National Book Awards ceremony on 18 November.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "An American prize list is not, on the face of it, an Indian reading story. But translated literature is the one category where Indian readers have an unusual amount of skin in the game, and where the last few years have gone remarkably well for us. This piece covers what is actually on the list, what the category is quietly telling you about global publishing, and what to read if you want to build the translation habit without starting on a 700-page Norwegian autofiction cycle.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "National Book Awards 2026: the calendar",
+        content:
+          "Longlists announced across 15-17 September 2026 in five categories: Fiction, Nonfiction, Poetry, Translated Literature and Young People's Literature, ten books in each. The Translated Literature longlist was released on 15 September from 159 submitted titles. Finalists in all categories are announced on Tuesday, 6 October 2026. Winners are revealed at the 77th National Book Awards ceremony on 18 November 2026. The Translated Literature judging panel is chaired by Christopher Merrill, with Shelley Fairweather-Vega, Javier Garcia del Moral, John Keene and Azareen Van der Vliet Oloomi.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The 2026 Translated Literature Longlist",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The award splits its prize money between author and translator, which is the detail that matters most about it. Ten books made the cut:",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "My Dreadful Body by Egana Djabbarova, translated from the Russian by Lisa C. Hayden (New Vessel Press)",
+          "Now I Surrender by Alvaro Enrigue, translated from the Spanish by Natasha Wimmer (Riverhead Books)",
+          "Eden at Dawn by Karim Kattan, translated from the French by Jeffrey Zuckerman (Restless Books)",
+          "The School of Night by Karl Ove Knausgaard, translated from the Norwegian by Martin Aitken (Penguin Press)",
+          "To the East of the East by Ping Lu, translated from the Chinese by Jeremy Tiang (World Editions)",
+          "Centroeuropa by Vicente Luis Mora, translated from the Spanish by Rahul Bery (Bellevue Literary Press)",
+          "Night of a Thousand Hells by Intan Paramaditha, translated from the Indonesian by Stephen Epstein and Tiffany Tsao (Europa Editions)",
+          "Pure Men by Mohamed Mbougar Sarr, translated from the French by Lara Vergnaud (Other Press)",
+          "The Disappearing Act by Maria Stepanova, translated from the Russian by Sasha Dugdale (New Directions)",
+          "Your Presence Is a Danger to Your Life: Voices of Survival and Witness in Gaza by Samar Yazbek, translated from the Arabic by Leri Price (Other Press)",
+        ],
+      },
+      {
+        type: "paragraph",
+        content:
+          "Seven source languages: Russian, Spanish, French, Norwegian, Chinese, Indonesian and Arabic. Intan Paramaditha's novel is the first book published in Indonesian and translated into English ever to reach this longlist, which is worth sitting with for a second. Indonesia is the fourth most populous country on earth. It took until 2026 for one of its novels to appear here.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "What This Has To Do With Indian Readers",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Quite a lot, as it turns out. In May 2025, Banu Mushtaq's Heart Lamp, translated from Kannada by Deepa Bhasthi, won the International Booker Prize. It was the first short story collection to win that award, the first book translated from Kannada to win it, and the first time an Indian translator took the honour. Three years earlier, Geetanjali Shree's Tomb of Sand, translated from Hindi by Daisy Rockwell, had become the first book from any Indian language to win.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Two Indian-language wins in four years is not luck. It is the visible tip of a translation ecosystem that has been building quietly for two decades, and it has changed what is commercially possible. A Kannada short story collection is now a book a publisher in London will bid on. That matters more for what gets translated next than any single prize.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The uncomfortable half of that story is that most of us, in a country with twenty-two scheduled languages, read almost nothing translated from the language spoken three states over. We will read a Japanese novel about a cafe and a Norwegian novel about weather and skip Perumal Murugan entirely. The National Book Award list is a useful annual nudge in the other direction.",
+      },
+      {
+        type: "callout",
+        style: "success",
+        title: "The translator's name is part of the book",
+        content:
+          "A translated novel is a collaboration, not a transcription. When Deepa Bhasthi described her approach to Heart Lamp as translating with an accent, she meant that she deliberately let Kannada rhythms survive into the English rather than sanding them smooth. Two translations of the same Dostoevsky can read like different authors. If you tried a classic in translation once and bounced off it, the honest possibility is that you met the wrong translator, not the wrong book. Check the name on the title page before you buy.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "How To Start Reading Translated Fiction Without Bouncing Off It",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The most common failure mode is starting at the deep end. Somebody decides to read more translated literature, buys <a href=\"/books/the-brothers-karamazov\" style=\"color:#fb8500;font-weight:600\">The Brothers Karamazov</a>, reaches page ninety, and quietly stops reading anything for two months. A better ladder exists.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "Step one: short, warm, contemporary",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Contemporary Japanese fiction is the gentlest possible entry point, because the books are short, the prose survives translation unusually well, and almost none of them demand prior knowledge. <a href=\"/books/before-the-coffee-gets-cold\" style=\"color:#fb8500;font-weight:600\">Before the Coffee Gets Cold</a> by Toshikazu Kawaguchi is four linked stories in a Tokyo cafe where you can travel back in time, with rules that make the time travel useless for changing anything and devastating for understanding it. Its follow-up <a href=\"/books/before-we-say-goodbye\" style=\"color:#fb8500;font-weight:600\">Before We Say Goodbye</a> does the same thing again, and you will not mind. <a href=\"/books/days-at-the-morisaki-bookshop\" style=\"color:#fb8500;font-weight:600\">Days at the Morisaki Bookshop</a> by Satoshi Yagisawa is a young woman moving into the room above her uncle's secondhand bookshop in Jimbocho and slowly recovering. These are hundred-and-fifty-page books. You can finish one in a weekend and have genuinely read a translated novel.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "Step two: contemporary with teeth",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Once the habit exists, go somewhere harder. <a href=\"/books/the-vegetarian\" style=\"color:#fb8500;font-weight:600\">The Vegetarian</a> by Han Kang, translated from the Korean by Deborah Smith, won the International Booker in 2016 and its author took the Nobel Prize in Literature in 2024; it is a short, disturbing book about a woman who stops eating meat and the family that will not let her alone. <a href=\"/books/butter\" style=\"color:#fb8500;font-weight:600\">Butter</a> by Asako Yuzuki, based loosely on a real Japanese criminal case, is a novel about food, misogyny and appetite that is far stranger than its cover suggests. <a href=\"/books/kafka-on-the-shore\" style=\"color:#fb8500;font-weight:600\">Kafka on the Shore</a> and <a href=\"/books/norwegian-wood\" style=\"color:#fb8500;font-weight:600\">Norwegian Wood</a> by Haruki Murakami are the two ends of the Murakami spectrum, one surreal and one painfully realist, and either works as a first.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "Step three: the classics, chosen carefully",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Now the big ones are approachable. <a href=\"/books/the-metamorphosis\" style=\"color:#fb8500;font-weight:600\">The Metamorphosis</a> by Franz Kafka is under a hundred pages and is the single most efficient classic in translation you can read. <a href=\"/books/crime-and-punishment\" style=\"color:#fb8500;font-weight:600\">Crime and Punishment</a> is a thriller before it is a philosophy seminar, which is the thing nobody tells you. <a href=\"/books/anna-karenina\" style=\"color:#fb8500;font-weight:600\">Anna Karenina</a> is more readable than <a href=\"/books/war-and-peace\" style=\"color:#fb8500;font-weight:600\">War and Peace</a> and should come first. <a href=\"/books/the-alchemist\" style=\"color:#fb8500;font-weight:600\">The Alchemist</a>, translated from Paulo Coelho's Portuguese, has sold in the tens of millions precisely because it survives translation into anything.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "Step four: the ones you did not realise were translated",
+      },
+      {
+        type: "paragraph",
+        content:
+          "A surprising share of the non-fiction on Indian bestseller tables arrived in English from somewhere else. <a href=\"/books/man-s-search-for-meaning\" style=\"color:#fb8500;font-weight:600\">Man's Search for Meaning</a> was written in German in nine days. <a href=\"/books/sapiens-a-brief-history-of-humankind\" style=\"color:#fb8500;font-weight:600\">Sapiens: A Brief History of Humankind</a> was first published in Hebrew. <a href=\"/books/the-courage-to-be-disliked\" style=\"color:#fb8500;font-weight:600\">The Courage to Be Disliked</a> and <a href=\"/books/ikigai\" style=\"color:#fb8500;font-weight:600\">Ikigai</a> both came through Japanese. And every English <a href=\"/books/the-bhagavad-gita\" style=\"color:#fb8500;font-weight:600\">Bhagavad Gita</a> on your shelf is a translation decision somebody made on your behalf, which is exactly why two editions can feel like different texts.",
+      },
+      {
+        type: "blockquote",
+        content:
+          "Translation is not about finding the same word in another language. It is about finding the same silence.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The Indian Shelf Next To It",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Reading across languages should not mean reading past your own. <a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> by R.K. Narayan is the short-story collection most Indian readers meet in school and then never revisit as adults, which is a waste of a very good book. <a href=\"/books/the-palace-of-illusions\" style=\"color:#fb8500;font-weight:600\">The Palace of Illusions</a> by Chitra Banerjee Divakaruni retells the Mahabharata through Draupadi, and <a href=\"/books/jaya-an-illustrated-retelling-of-the-mahabharata\" style=\"color:#fb8500;font-weight:600\">Jaya: An Illustrated Retelling of the Mahabharata</a> by Devdutt Pattanaik is the clearest single-volume map of that epic in print. <a href=\"/books/the-kite-runner\" style=\"color:#fb8500;font-weight:600\">The Kite Runner</a> sits close by as a reminder that the subcontinent's neighbours have their own literatures we barely touch.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "If the reading itself feels harder than it should lately, that is usually attention rather than ability. <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is about exactly that problem: clearing enough mental noise to hold a difficult page for more than four minutes. It pairs unexpectedly well with a translated novel, because translated prose asks you to slow down and notice the seams. <a href=\"/books/the-midnight-library\" style=\"color:#fb8500;font-weight:600\">The Midnight Library</a> makes a decent palate cleanser between heavier books.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Five Rules For Reading a Prize Longlist",
+      },
+      {
+        type: "list",
+        style: "ordered",
+        items: [
+          "Do not treat a longlist as a shopping list. Ten books is a menu, not an order.",
+          "Pick by source language, not by blurb. Choose the language you have read least from, which for most Indian readers is Arabic or Indonesian rather than French.",
+          "Check the translator before the publisher. A translator whose previous work you liked is a far better predictor than a jacket quote.",
+          "Wait for the finalists on 6 October if you only want one. Five weeks of patience saves nine books you were not going to finish.",
+          "Read one thing translated from an Indian language for every international title you pick up. This is the rule that actually changes what gets published next.",
+        ],
+      },
+      {
+        type: "paragraph",
+        content:
+          "Cost is the reason most people give for not experimenting, and it is the easiest one to remove. On TheBookX, books start from ₹1, delivery is free across India, and Cash on Delivery is available on every order, so trying a translated novel you are unsure about costs roughly nothing. Gift wrapping can be added at ₹25 per book if you are sending one to someone who has been meaning to read more.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The finalists arrive on 6 October and the winners on 18 November. Between now and then is about eight weeks, which is enough time to read three short translated novels and find out whether the category is for you. Start with the hundred-and-fifty-page one.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>",
+      },
+    ],
+    coverImage: "/blogs/national-book-award-2026-translated-literature-longlist.jpeg",
+    images: [
+      {
+        url: "/blogs/national-book-award-2026-translated-literature-longlist.jpeg",
+        alt: "A young woman reading a paperback novel at a wooden table beside a small stack of unmarked books and a glass cup of tea, soft natural window light",
+        caption:
+          "The 2026 National Book Award longlist for Translated Literature brings ten books from seven languages into English",
+        category: "Book Awards",
+      },
+    ],
+    keywords: [
+      "national book award 2026 translated literature longlist",
+      "national book awards 2026 longlist",
+      "best translated fiction 2026",
+      "translated literature books to read",
+      "international booker prize indian authors",
+      "heart lamp banu mushtaq translation",
+      "japanese translated novels india",
+      "buy translated fiction online india",
+      "books in translation for beginners",
+      "TheBookX",
+    ],
+    categories: ["Book Awards", "Book Lists", "Reading Culture"],
+    faqs: [
+      {
+        question:
+          "When was the 2026 National Book Award longlist for Translated Literature announced?",
+        answer:
+          "The National Book Foundation announced the 2026 Translated Literature longlist on Monday, 15 September 2026, as part of a rollout of all five category longlists between 15 and 17 September 2026. Ten titles were selected from 159 books submitted by publishers. Finalists in every category are announced on 6 October 2026, and the winners are revealed at the 77th National Book Awards ceremony on 18 November 2026.",
+      },
+      {
+        question:
+          "Which books are on the 2026 National Book Award Translated Literature longlist?",
+        answer:
+          "The ten longlisted titles are My Dreadful Body by Egana Djabbarova (Russian), Now I Surrender by Alvaro Enrigue (Spanish), Eden at Dawn by Karim Kattan (French), The School of Night by Karl Ove Knausgaard (Norwegian), To the East of the East by Ping Lu (Chinese), Centroeuropa by Vicente Luis Mora (Spanish), Night of a Thousand Hells by Intan Paramaditha (Indonesian), Pure Men by Mohamed Mbougar Sarr (French), The Disappearing Act by Maria Stepanova (Russian), and Your Presence Is a Danger to Your Life by Samar Yazbek (Arabic). Paramaditha's novel is the first book translated from Indonesian to reach this longlist.",
+      },
+      {
+        question:
+          "Have Indian books won major translated literature prizes recently?",
+        answer:
+          "Yes. Banu Mushtaq's Heart Lamp, translated from Kannada by Deepa Bhasthi, won the International Booker Prize in May 2025, making it the first short story collection and the first Kannada work to take the award, and Bhasthi the first Indian translator to win it. In 2022, Geetanjali Shree's Tomb of Sand, translated from Hindi by Daisy Rockwell, became the first book originally written in any Indian language to win the prize.",
+      },
+      {
+        question:
+          "Which translated books should a beginner start with in India?",
+        answer:
+          "Start short and contemporary. Before the Coffee Gets Cold by Toshikazu Kawaguchi and Days at the Morisaki Bookshop by Satoshi Yagisawa are both under two hundred pages and easy to finish in a weekend. Move to The Vegetarian by Han Kang or Butter by Asako Yuzuki, then to classics such as The Metamorphosis or Crime and Punishment. On TheBookX these start from ₹1, with free delivery across India and Cash on Delivery on every order, so experimenting costs very little.",
+      },
+    ],
+  },
   "neev-literature-festival-2026-indian-childrens-books": {
     id: "blog-051",
     title:

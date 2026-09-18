@@ -4,6 +4,233 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "banned-books-week-2026-freedom-to-read-india": {
+    id: "blog-054",
+    title:
+      "Banned Books Week 2026: The Freedom to Read, India's Own Censorship Record, and 16 Challenged Books Worth Owning",
+    slug: "banned-books-week-2026-freedom-to-read-india",
+    author: "TheBookX Editorial",
+    authorSlug: "murthy-thevar",
+    publishDate: "2026-09-18",
+    lastModified: "2026-09-18",
+    excerpt:
+      "Banned Books Week 2026 runs 4 to 10 October under the theme Let Books Be. Here is what the challenge data shows, how India's own record compares, and what to read.",
+    content: [
+      {
+        type: "paragraph",
+        content:
+          "Banned Books Week 2026 runs from 4 to 10 October, organised by the coalition of American library, publishing, bookselling and free-expression bodies that has run it since 1982. This year's theme is Let Books Be — Protect the Freedom to Read, and the campaign artwork, unveiled in April by illustrators Hyesu Lee, Loveis Wise and Mikey Burton, leans deliberately towards joy rather than alarm: reading as something worth defending because it is good, not only because it is threatened.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The instinct in India is to file this under American problems. That instinct is understandable and, for a reader here, mostly wrong. The titles being pulled from school shelves in Texas and Florida are the same titles sitting in Indian online carts, often the same editions. And India has a censorship record of its own that is older, stranger, and considerably less discussed than anything happening in an American school district.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "Banned Books Week 2026 at a glance",
+        content:
+          "Dates: 4 to 10 October 2026. Theme: Let Books Be — Protect the Freedom to Read. Artwork by Hyesu Lee, Loveis Wise and Mikey Burton, unveiled April 2026. The American Library Association's Office for Intellectual Freedom documented 4,235 unique titles challenged in 2025, the second-highest figure it has ever recorded, behind 4,240 in 2023. The week is observed by libraries, bookshops and publishers, and needs no institutional permission to join: reading a challenged book is the entire participation requirement.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The numbers behind the 2026 campaign",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The ALA's 2025 tally, published in April 2026 as part of its State of America's Libraries report, is the data most of this year's campaign rests on. Of the 4,235 unique titles challenged, the ALA classified 1,671 of them, about 40 percent, as books representing the lived experiences of LGBTQIA+ people and people of colour. That concentration is what the organisation points to when it argues the pattern is not random.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The more striking shift is in who is filing. By the ALA's count, 92 percent of challenges in 2025 were initiated by pressure groups, government officials and other decision-makers, up from 72 percent the previous year, while fewer than 3 percent came from individual parents. Sarah Lamdan, who heads the ALA's Office for Intellectual Freedom, described this as an organised and well-funded campaign rather than a groundswell of parental concern.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "It is worth being precise about what is and is not in dispute here. The counting method is the ALA's own, and the framing is the ALA's own; people who support removing particular titles from particular school collections tend to argue that a school library curating for a specific age group is not the same act as banning a book, and that a title absent from a Grade 7 shelf remains fully purchasable. That is a real distinction and a serious argument. What it does not explain is a documented shift from individual parents to organised campaigns, or why the same few hundred titles recur across thousands of separate filings in states that have never shared a school board.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "What was actually challenged in 2025",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The ALA's list of the most challenged books of 2025 ran to eleven titles rather than the usual ten, because of ties. Patricia McCormick's Sold, a verse novel about a Nepali girl trafficked into a Kolkata brothel, topped it with 36 documented challenges. Stephen Chbosky's The Perks of Being a Wallflower came second and Maia Kobabe's graphic memoir Gender Queer third.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Then the list takes a turn that should interest anyone who runs a bookshop. Sarah J. Maas placed fourth with Empire of Storms and seventh with A Court of Thorns and Roses. Malinda Lo's Last Night at the Telegraph Club and Ellen Hopkins's Tricks tied for fifth. In other words, the single most commercially successful category in publishing right now — the romantasy that BookTok turned into a global engine — is also, simultaneously, one of the most frequently challenged. Maas's <a href=\"/books/a-court-of-thorns-and-roses-box-set-5-books\" style=\"color:#fb8500;font-weight:600\">A Court of Thorns and Roses Box Set</a> and <a href=\"/books/throne-of-glass\" style=\"color:#fb8500;font-weight:600\">Throne of Glass</a> sit on bestseller tables and challenge lists in the same week. Rebecca Yarros's <a href=\"/books/fourth-wing\" style=\"color:#fb8500;font-weight:600\">Fourth Wing</a> and Colleen Hoover's <a href=\"/books/it-ends-with-us\" style=\"color:#fb8500;font-weight:600\">It Ends with Us</a> occupy exactly the same awkward position.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "India's own record is stranger than most readers realise",
+      },
+      {
+        type: "paragraph",
+        content:
+          "India does not do school-board removals at scale. What it does instead is import bans, obscenity complaints under Section 292 of the Indian Penal Code, defamation suits, and out-of-court settlements in which a publisher quietly agrees to pulp a print run. The mechanism is different; the effect on what reaches a reader is not.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The clearest illustration is what happened to Salman Rushdie's The Satanic Verses. India was the first country in the world to restrict it, banning its import in October 1988, weeks after publication. In November 2024 the Delhi High Court, hearing a petition filed in 2019 challenging that restriction, was told by the government that the original 1988 notification could not be traced. A bench of Justices Rekha Palli and Saurabh Banerjee recorded that it had no option except to presume that no such notification existed, and closed the proceedings. A thirty-six-year ban ended not on principle but on paperwork.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The second illustration is closer to home for anyone who has read Indian fiction in English. In 1997, months after <a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> was published, a Kerala lawyer named Sabu Thomas filed a private criminal complaint against Arundhati Roy alleging obscenity under Section 292, based on the sexual content of the final chapter and specifically the encounter between Ammu and Velutha across caste lines. He submitted photocopies of the last few pages and sought the deletion of the chapter. The charges were eventually dropped. The novel won the Booker Prize that same year and has since become the most widely read Indian novel in English of the last three decades.",
+      },
+      {
+        type: "blockquote",
+        content:
+          "Let Books Be — Protect the Freedom to Read. The 2026 Banned Books Week theme, chosen deliberately to frame reading as an ordinary pleasure worth leaving alone rather than a battlefield worth entering.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Sixteen challenged and banned books you can read freely in India",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "The political classics",
+      },
+      {
+        type: "paragraph",
+        content:
+          "George Orwell's <a href=\"/books/1984\" style=\"color:#fb8500;font-weight:600\">1984</a> and <a href=\"/books/animal-farm\" style=\"color:#fb8500;font-weight:600\">Animal Farm</a> hold the rare distinction of having been suppressed by governments of opposite ideologies — Animal Farm was refused publication in wartime Britain, banned across the Soviet bloc for decades, and is still restricted in North Korea, while 1984 has been challenged in American schools on grounds ranging from sexual content to, memorably, being pro-communist. Aldous Huxley's <a href=\"/books/brave-new-world\" style=\"color:#fb8500;font-weight:600\">Brave New World</a> was banned in Ireland the year it appeared, in 1932, and has been a fixture of American challenge lists ever since. Franz Kafka's <a href=\"/books/the-metamorphosis\" style=\"color:#fb8500;font-weight:600\">The Metamorphosis</a> was burned by the Nazis and suppressed in Czechoslovakia under Communist rule, in the author's own country and language.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "The school-library perennials",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Harper Lee's <a href=\"/books/to-kill-a-mockingbird\" style=\"color:#fb8500;font-weight:600\">To Kill a Mockingbird</a> has been challenged continuously for more than sixty years, first for its depiction of rape and racial injustice and more recently for its racial slurs and its white-saviour framing — an unusually clean example of a book attacked from opposite directions in different decades. J. D. Salinger's <a href=\"/books/the-catcher-in-the-rye\" style=\"color:#fb8500;font-weight:600\">The Catcher in the Rye</a> was the most-banned book in American schools through much of the 1960s and 1970s. And Anne Frank's <a href=\"/books/the-diary-of-a-young-girl\" style=\"color:#fb8500;font-weight:600\">The Diary of a Young Girl</a> — a book whose existence is an argument against censorship — has been challenged repeatedly over passages about the author's own body, and was pulled from some American school lists as recently as the last few years.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "Contemporary fiction that keeps getting pulled",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Khaled Hosseini's <a href=\"/books/the-kite-runner\" style=\"color:#fb8500;font-weight:600\">The Kite Runner</a> is one of the most frequently challenged novels of the past twenty years, almost always over a single assault scene that is also the moral hinge of the entire book. Its companion, <a href=\"/books/a-thousand-splendid-suns\" style=\"color:#fb8500;font-weight:600\">A Thousand Splendid Suns</a>, follows it onto the lists for depicting domestic violence in Afghanistan honestly. John Green's <a href=\"/books/the-fault-in-our-stars\" style=\"color:#fb8500;font-weight:600\">The Fault in Our Stars</a> has been challenged for a book about teenagers with terminal cancer being, in the judgement of some committees, too sad for teenagers.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "Fantasy, romantasy and the current front line",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The <a href=\"/books/harry-potter-series-set-books-1-7\" style=\"color:#fb8500;font-weight:600\">Harry Potter Series Set</a> was the most challenged book series in the United States between 1999 and 2001, on religious grounds, and it is worth remembering how completely that panic has since evaporated. The romantasy titles in the paragraphs above are the 2026 version of the same argument, with the same near-certain outcome: the books outlast the objection. Sarah J. Maas's <a href=\"/books/a-court-of-thorns-and-roses-box-set-5-books\" style=\"color:#fb8500;font-weight:600\">A Court of Thorns and Roses Box Set</a> is the single best place to see what the fuss is about.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "How to mark the week without being smug about it",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The failure mode of Banned Books Week is performance: buying a challenged book, photographing it, and never opening it. A few ways to do better.",
+      },
+      {
+        type: "list",
+        style: "ordered",
+        items: [
+          "Read one you have been avoiding, not one you already agree with. The point is not to collect a badge for owning 1984. Pick the book whose contents you suspect you would find uncomfortable.",
+          "Read the actual objection before you dismiss it. Most challenge filings are public. Some are frivolous. A few are serious arguments about what belongs on a Grade 6 shelf, and a reader who cannot distinguish between those two things is not defending anything, just cheering.",
+          "Finish it before you have an opinion on it. The most reliable marker of a bad-faith book ban is that the person filing it has read three photocopied pages, which is exactly what happened to Arundhati Roy in 1997.",
+          "Give one away. A challenged book on your own shelf changes nothing. The same book in the hands of a sixteen-year-old who would not have found it otherwise is the whole argument in miniature.",
+          "Support a library. India's public and circulating libraries are thinning fast, and a library that no longer stocks difficult books has achieved the outcome of a ban without anyone having to file one.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "What this means for Indian readers",
+      },
+      {
+        type: "paragraph",
+        content:
+          "India's reader has an odd advantage in 2026. Almost every title on the American challenge lists is legally and cheaply available here, and the Satanic Verses import restriction — our most famous one — quietly lapsed in 2024. The constraint on what Indians read is not a school board. It is price, distribution and the fact that a serious paperback outside the metros is often simply not on sale anywhere nearby.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "That is the gap an India-first online bookstore exists to close. On TheBookX, books start from ₹1, delivery is free anywhere in India, and Cash on Delivery is available on every order, so nobody has to own a credit card to read Orwell. Gift wrapping can be added at ₹25 per book, which is the cheapest possible way to act on the fourth item in the list above.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "One more, unbanned and quieter than the rest: <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is about thinking precisely in an environment engineered to prevent it. Nobody has tried to challenge it, which is arguably the more interesting problem. The books that get banned are the ones somebody thought were dangerous enough to matter.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>",
+      },
+    ],
+    coverImage: "/blogs/banned-books-week-2026-freedom-to-read-india.jpeg",
+    images: [
+      {
+        url: "/blogs/banned-books-week-2026-freedom-to-read-india.jpeg",
+        alt: "A young woman sitting cross-legged on a wooden floor reading a paperback, a small stack of plain unmarked hardbacks beside her and warm afternoon light falling across the pages",
+        caption:
+          "Banned Books Week 2026 runs 4 to 10 October under the theme Let Books Be — Protect the Freedom to Read",
+        category: "Reading Culture",
+      },
+    ],
+    keywords: [
+      "banned books week 2026",
+      "banned books week 2026 theme let books be",
+      "most challenged books 2025 ALA",
+      "banned books list India",
+      "books banned in India",
+      "satanic verses ban india lifted",
+      "freedom to read",
+      "censored classics to read",
+      "buy banned books online india",
+      "TheBookX",
+    ],
+    categories: ["Reading Culture", "Book Lists", "Books in the News"],
+    faqs: [
+      {
+        question: "When is Banned Books Week 2026 and what is the theme?",
+        answer:
+          "Banned Books Week 2026 runs from 4 to 10 October 2026. The theme is Let Books Be — Protect the Freedom to Read, with campaign artwork by illustrators Hyesu Lee, Loveis Wise and Mikey Burton, unveiled in April 2026. The week has been observed annually since 1982 by a coalition of library, publishing, bookselling and free-expression organisations, and participation requires nothing more than reading a challenged book.",
+      },
+      {
+        question: "How many books were challenged in 2025?",
+        answer:
+          "The American Library Association's Office for Intellectual Freedom documented 4,235 unique titles challenged in 2025, the second-highest figure it has recorded, behind 4,240 in 2023. The ALA classified 1,671 of those titles, roughly 40 percent, as representing the lived experiences of LGBTQIA+ people and people of colour. By the ALA's count, 92 percent of challenges were initiated by pressure groups, government officials and decision-makers rather than individual parents, up from 72 percent in 2024. Patricia McCormick's Sold topped the 2025 list with 36 documented challenges.",
+      },
+      {
+        question: "Is The Satanic Verses banned in India?",
+        answer:
+          "No longer, in practical terms. India banned the import of Salman Rushdie's The Satanic Verses in October 1988, the first country in the world to restrict it. In November 2024, hearing a petition filed in 2019, the Delhi High Court was told that the original 1988 notification could not be traced by any of the government respondents. A bench of Justices Rekha Palli and Saurabh Banerjee recorded that it had no option except to presume no such notification existed and closed the proceedings, which ended the legal basis for the import restriction after thirty-six years.",
+      },
+      {
+        question: "Which banned or challenged books can I buy in India?",
+        answer:
+          "Almost all of them. 1984, Animal Farm, Brave New World, The Metamorphosis, To Kill a Mockingbird, The Catcher in the Rye, The Diary of a Young Girl, The Kite Runner, A Thousand Splendid Suns, The Fault in Our Stars, It Ends with Us, Fourth Wing, Throne of Glass, the A Court of Thorns and Roses box set, the Harry Potter series set and The God of Small Things are all legally and freely sold in India. On TheBookX they start from ₹1 with free delivery nationwide and Cash on Delivery on every order.",
+      },
+    ],
+  },
   "readsg-singapore-paid-to-read-15-minute-reading-habit": {
     id: "blog-053",
     title:

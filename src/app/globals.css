@@ -5287,12 +5287,11 @@ textarea.sec-mid-btn,
   gap: 10px;
   margin-bottom: 4px;
 }
-/* City / District + State side by side */
+/* City / District + State stacked (State below City) */
 .addr-two-col {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 12px;
-  align-items: start;
 }
 .addr-two-col .input-group {
   min-width: 0;

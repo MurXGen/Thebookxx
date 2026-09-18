@@ -6591,9 +6591,16 @@ export default function ManageOrdersPage() {
       "Book Titles",
       "Order Date",
     ];
-    const shipping = orders.filter((o) =>
-      /getting shipped/i.test(o["Order Status"] || ""),
-    );
+    // If orders are selected, export exactly those (in the selected order);
+    // otherwise fall back to every "Getting Shipped" order.
+    const shipping =
+      selectedIds.length > 0
+        ? selectedIds
+            .map((id) => orders.find((o) => o["Order ID"] === id))
+            .filter(Boolean)
+        : orders.filter((o) =>
+            /getting shipped/i.test(o["Order Status"] || ""),
+          );
     const rows = shipping.map((o, i) => [
       i + 1,
       o["Order ID"] || "",
@@ -6620,7 +6627,9 @@ export default function ManageOrdersPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `getting-shipped_${new Date().toISOString().split("T")[0]}.csv`;
+    a.download = `${
+      selectedIds.length > 0 ? "selected-orders" : "getting-shipped"
+    }_${new Date().toISOString().split("T")[0]}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };

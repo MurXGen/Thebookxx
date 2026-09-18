@@ -332,17 +332,17 @@ export default function CartBar({ tab = "books" }) {
       className={`cart-bar${barHidden ? " cart-bar-hidden" : ""}`}
       style={{ maxWidth: "680px", margin: "0 auto" }}
     >
-      {/* Community + share — always visible, above the offer strip / cart CTA. */}
+      {/* Community + share — icon-only, pinned to the right, always visible. */}
       <div className="cos-social-row">
-        <CommunityJoin variant="pill" />
+        <CommunityJoin variant="icon" />
         <button
           type="button"
-          className="cos-social-pill cos-share"
+          className="community-icon-btn cos-share"
           onClick={shareSite}
           aria-label="Share TheBookX"
+          title="Share TheBookX"
         >
-          <Share2 size={16} />
-          <span>Share</span>
+          <Share2 size={18} />
         </button>
       </div>
       {/* Suggest strip ("Not sure what to read next?") — hidden for now.

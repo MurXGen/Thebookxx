@@ -4553,7 +4553,16 @@ export default function ManageOrdersPage() {
     setDelivBusy(true);
     try {
       const rows = await parseTrackingStatusFile(file);
-      const delivered = rows.filter((r) => /deliver/i.test(r.status));
+      // Only true "Delivered" — exclude "Not Delivered" / "Undelivered" /
+      // "Item Delivered (Returned to Sender)" etc. which also contain "deliver".
+      const isDelivered = (s) => {
+        const t = String(s || "")
+          .trim()
+          .toLowerCase();
+        if (/not\s*deliver|un\s*deliver|return/i.test(t)) return false;
+        return /deliver/i.test(t);
+      };
+      const delivered = rows.filter((r) => isDelivered(r.status));
       let unmatched = 0;
       let already = 0;
       const seen = new Set();

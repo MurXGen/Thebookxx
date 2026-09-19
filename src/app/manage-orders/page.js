@@ -10197,19 +10197,30 @@ export default function ManageOrdersPage() {
                           (s, b) => s + (b.total || 0),
                           0,
                         );
-                        // Relative age of the order ("2 days ago") for the card badge
+                        // Relative age of the order for the card badge.
+                        // Counted in CALENDAR days (not rolling 24h): an order
+                        // placed at 1:21 PM is "Today" until midnight, then
+                        // becomes 1 day old at 12:00 AM the next calendar day.
                         const orderDate = getOrderDate(order);
+                        const startOfDay = (dt) => {
+                          const x = new Date(dt);
+                          x.setHours(0, 0, 0, 0);
+                          return x.getTime();
+                        };
+                        const calDaysAgo = orderDate
+                          ? Math.round(
+                              (startOfDay(new Date()) - startOfDay(orderDate)) /
+                                86400000,
+                            )
+                          : 0;
                         let agoLabel = "";
                         if (orderDate) {
-                          const days = Math.floor(
-                            (Date.now() - orderDate.getTime()) / 86400000,
-                          );
                           agoLabel =
-                            days <= 0
+                            calDaysAgo <= 0
                               ? "Today"
-                              : days === 1
-                                ? "Yesterday"
-                                : `${days} days ago`;
+                              : calDaysAgo === 1
+                                ? "1 day"
+                                : `${calDaysAgo} days`;
                         }
                         const isCOD = /cash|cod/i.test(
                           order["Payment Type"] || "",
@@ -10226,16 +10237,30 @@ export default function ManageOrdersPage() {
                         const isTerminal = /delivered|cancel/i.test(
                           String(order.status || order["Order Status"] || ""),
                         );
+                        // Urgency — an order must not sit "In Transit" WITHOUT a
+                        // tracking ID for more than a calendar day. Once it does,
+                        // it turns into a red high-priority card so the operator
+                        // adds the tracking ID immediately.
+                        const inTransit = /in\s*transit/i.test(
+                          String(order.status || order["Order Status"] || ""),
+                        );
+                        const isUrgentNoTrack =
+                          !isTerminal &&
+                          inTransit &&
+                          !hasTracking &&
+                          calDaysAgo >= 1;
                         // Exception flags — a card that needs the operator gets
                         // an amber left border + one reason chip. Order matters:
-                        // the first true reason wins.
+                        // the first true reason wins. Urgency outranks the rest.
                         const exReason = isTerminal
                           ? null
-                          : isUnconfirmedOrder(order)
-                            ? "Unconfirmed"
-                            : isCOD && Number(order.revenue) > 2000
-                              ? "COD over ₹2000"
-                              : null;
+                          : isUrgentNoTrack
+                            ? `In transit · no tracking · ${calDaysAgo}d`
+                            : isUnconfirmedOrder(order)
+                              ? "Unconfirmed"
+                              : isCOD && Number(order.revenue) > 2000
+                                ? "COD over ₹2000"
+                                : null;
                         const isException = !!exReason;
                         const oidStr = String(orderId || "");
                         const formData = {
@@ -10286,9 +10311,11 @@ export default function ManageOrdersPage() {
                                 : ""
                             }`}
                             style={{
-                              "--card-accent": isException
-                                ? "#f59e0b"
-                                : moStatusColor(order.status),
+                              "--card-accent": isUrgentNoTrack
+                                ? "#dc2626"
+                                : isException
+                                  ? "#f59e0b"
+                                  : moStatusColor(order.status),
                             }}
                             onPointerDown={() => {
                               if (cardSelectMode) return;
@@ -10315,9 +10342,13 @@ export default function ManageOrdersPage() {
                               clearTimeout(lpTimer.current)
                             }
                           >
-                            {/* Exception flag — amber reason chip at the top. */}
+                            {/* Exception flag — amber reason chip at the top;
+                                red + pulsing when it's the urgent no-tracking
+                                case. */}
                             {isException && (
-                              <div className="mo-exception-chip">
+                              <div
+                                className={`mo-exception-chip${isUrgentNoTrack ? " urgent" : ""}`}
+                              >
                                 <AlertCircle size={12} /> {exReason}
                               </div>
                             )}
@@ -10502,8 +10533,7 @@ export default function ManageOrdersPage() {
                                       </span>
                                     )}
                                   </button>
-                                  {/* Date only, right-aligned (time lives in
-                                      the bill modal). */}
+                                  {/* Date + time, right-aligned. */}
                                   <span
                                     className="mo-idline-when"
                                     title={
@@ -10520,6 +10550,15 @@ export default function ManageOrdersPage() {
                                           year: "numeric",
                                         })
                                       : "—"}
+                                    {orderDate && (
+                                      <span className="mo-idline-time">
+                                        {orderDate.toLocaleTimeString("en-IN", {
+                                          hour: "numeric",
+                                          minute: "2-digit",
+                                          hour12: true,
+                                        })}
+                                      </span>
+                                    )}
                                   </span>
                                 </div>
                               </div>

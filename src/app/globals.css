@@ -24455,6 +24455,20 @@ img[data-loaded="true"] {
   color: var(--dark-50, #6b7280);
   white-space: nowrap;
 }
+/* Order time, shown after the date on the id line. */
+.mo-idline-time {
+  display: inline-flex;
+  align-items: center;
+  padding-left: 6px;
+  margin-left: 2px;
+  border-left: 1px solid var(--hairline, #e5e7eb);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--tertiary, #fb8500);
+}
+.mo-dark .mo-idline-time {
+  border-left-color: rgba(255, 255, 255, 0.14);
+}
 /* Relative-age pill next to the payment badge. */
 .mo-age-pill {
   display: inline-flex;
@@ -25393,6 +25407,27 @@ img[data-loaded="true"] {
   background: rgba(245, 158, 11, 0.14);
   border: 1px solid rgba(245, 158, 11, 0.4);
   border-radius: 999px;
+}
+/* Urgent: an order stuck In Transit with no tracking ID past a day. */
+.mo-exception-chip.urgent {
+  color: #dc2626;
+  background: rgba(220, 38, 38, 0.12);
+  border-color: rgba(220, 38, 38, 0.45);
+  animation: mo-urgent-pulse 1.6s ease-in-out infinite;
+}
+@keyframes mo-urgent-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(220, 38, 38, 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mo-exception-chip.urgent {
+    animation: none;
+  }
 }
 /* Bottom row: status pill + ONE primary action, pinned to the card bottom so
    these line up across cards (equal-height grid). */

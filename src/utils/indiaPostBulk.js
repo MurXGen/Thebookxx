@@ -651,6 +651,47 @@ export async function parseWeightsFile(file) {
   return map;
 }
 
+// Parse an India Post "Bulk Articles Tracking" export into a list of
+// { article, status, lastEvent } rows. Reads the "Article Number" + "Status"
+// columns (the file the customer downloads from the bulk-tracking portal).
+export async function parseTrackingStatusFile(file) {
+  const XLSX = await import("xlsx");
+  const wb = XLSX.read(await file.arrayBuffer(), { type: "array" });
+  // Prefer an "Articles" sheet, else the first sheet.
+  const sheetName =
+    wb.SheetNames.find((n) => /article/i.test(n)) || wb.SheetNames[0];
+  const ws = wb.Sheets[sheetName];
+  if (!ws) throw new Error("No sheet found in the file.");
+  const aoa = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
+  const header = (aoa[0] || []).map((h) => String(h).trim());
+  const idx = (...names) =>
+    header.findIndex((h) =>
+      names.some((n) => h.toLowerCase() === String(n).toLowerCase()),
+    );
+  const iArt = idx("Article Number", "Article No", "Tracking ID", "Article");
+  const iStat = idx("Status", "Current Status");
+  const iEvent = idx("Last Event", "Event", "Remarks");
+  if (iArt < 0 || iStat < 0)
+    throw new Error(
+      "File needs 'Article Number' and 'Status' columns (India Post bulk tracking export).",
+    );
+  const out = [];
+  for (let r = 1; r < aoa.length; r++) {
+    const row = aoa[r] || [];
+    const article = String(row[iArt] ?? "")
+      .trim()
+      .toUpperCase();
+    const status = String(row[iStat] ?? "").trim();
+    if (!article) continue;
+    out.push({
+      article,
+      status,
+      lastEvent: iEvent >= 0 ? String(row[iEvent] ?? "").trim() : "",
+    });
+  }
+  return out;
+}
+
 // Build the same workbook as an in-memory Blob (for API upload to India Post).
 export async function buildIpWorkbookBlob(previewRows, sender) {
   const { XLSX, wb } = await buildIpWorkbook(previewRows, sender);

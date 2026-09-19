@@ -20,6 +20,7 @@ import {
 import {
   Search,
   Download,
+  UploadCloud,
   Loader2,
   Plus,
   Edit,
@@ -96,6 +97,7 @@ import {
   downloadIpWorkbook,
   buildIpWorkbookBlob,
   parseIpWorkbookFile,
+  parseTrackingStatusFile,
   parseWeightsFile,
   loadSender,
   saveSender,
@@ -4246,6 +4248,19 @@ export default function ManageOrdersPage() {
   // sheet one by one; a single top button pushes them all at once.
   const [trackStatusDrafts, setTrackStatusDrafts] = useState({});
   const [trackPushBusy, setTrackPushBusy] = useState(false);
+  // ── Delivered reconcile (India Post bulk-articles-tracking upload) ──
+  // Upload the India Post bulk-tracking .xlsx; every article the file marks
+  // "Delivered" is matched to an order by Shipping ID. COD orders are proposed
+  // as "Money Received", online-paid orders as "Delivered". Review → push.
+  const [delivMatches, setDelivMatches] = useState([]); // [{ order, article, ... }]
+  const [delivSel, setDelivSel] = useState([]); // selected Order IDs
+  const [delivBusy, setDelivBusy] = useState(false);
+  const [delivFileName, setDelivFileName] = useState("");
+  const [delivSkipped, setDelivSkipped] = useState({
+    unmatched: 0,
+    already: 0,
+    notDelivered: 0,
+  });
   useEffect(() => {
     try {
       const raw = localStorage.getItem("mo_track_notify");
@@ -4517,6 +4532,131 @@ export default function ManageOrdersPage() {
       setTrackSel([]);
       setTrackSelectMode(false);
       setTimeout(fetchOrders, 1300);
+    }
+  };
+
+  // Open a file picker for the India Post bulk-articles-tracking export.
+  const openDelivReconcile = () => {
+    const inp = document.createElement("input");
+    inp.type = "file";
+    inp.accept =
+      ".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+    inp.onchange = (e) => handleDelivFile(e);
+    inp.click();
+  };
+  const isCodOrder = (o) => /cash|cod/i.test(String(o?.["Payment Type"] || ""));
+  // COD delivered → Money Received; online-paid delivered → Delivered.
+  const targetDeliveredStatus = (o) =>
+    isCodOrder(o) ? "Money Received" : "Delivered";
+  const handleDelivFile = async (e) => {
+    const file = e?.target?.files?.[0];
+    if (!file) return;
+    setDelivBusy(true);
+    try {
+      const rows = await parseTrackingStatusFile(file);
+      const delivered = rows.filter((r) => /deliver/i.test(r.status));
+      let unmatched = 0;
+      let already = 0;
+      const seen = new Set();
+      const matches = [];
+      delivered.forEach((r) => {
+        const o = orders.find(
+          (ord) => sidUp(ord["Shipping ID"]) === sidUp(r.article),
+        );
+        if (!o) {
+          unmatched += 1;
+          return;
+        }
+        const oid = o["Order ID"];
+        if (!oid || seen.has(oid)) return;
+        const newStatus = targetDeliveredStatus(o);
+        const cur = String(o["Order Status"] || "").trim();
+        if (cur.toLowerCase() === newStatus.toLowerCase()) {
+          already += 1;
+          return;
+        }
+        seen.add(oid);
+        matches.push({
+          order: o,
+          article: r.article,
+          isCOD: isCodOrder(o),
+          newStatus,
+          currentStatus: cur || "—",
+          lastEvent: r.lastEvent,
+        });
+      });
+      setDelivMatches(matches);
+      setDelivSel(matches.map((m) => m.order["Order ID"]));
+      setDelivFileName(file.name);
+      setDelivSkipped({
+        unmatched,
+        already,
+        notDelivered: rows.length - delivered.length,
+      });
+      if (!matches.length) {
+        showToast(
+          delivered.length
+            ? "All delivered parcels are already up to date ✓"
+            : "No delivered parcels found in the file",
+          "info",
+        );
+      } else {
+        showToast(
+          `${matches.length} delivered order(s) ready to update`,
+          "success",
+        );
+      }
+    } catch (err) {
+      console.error("Delivered reconcile failed:", err);
+      showToast(`Import failed: ${err?.message || "unreadable file"}`, "error");
+    } finally {
+      setDelivBusy(false);
+    }
+  };
+  const toggleDelivSel = (oid) =>
+    setDelivSel((prev) =>
+      prev.includes(oid) ? prev.filter((x) => x !== oid) : [...prev, oid],
+    );
+  const clearDeliv = () => {
+    setDelivMatches([]);
+    setDelivSel([]);
+    setDelivFileName("");
+    setDelivSkipped({ unmatched: 0, already: 0, notDelivered: 0 });
+  };
+  // Push every selected delivered-status change to the sheet in one batch.
+  const pushDelivUpdates = async () => {
+    const picked = delivMatches.filter((m) =>
+      delivSel.includes(m.order["Order ID"]),
+    );
+    if (!picked.length) return;
+    setDelivBusy(true);
+    setOrders((prev) =>
+      prev.map((o) => {
+        const m = picked.find((x) => x.order["Order ID"] === o["Order ID"]);
+        return m
+          ? { ...o, "Order Status": m.newStatus, status: m.newStatus }
+          : o;
+      }),
+    );
+    try {
+      await Promise.all(
+        picked.map((m) =>
+          updateOrderRow(m.order["Order ID"], {
+            "Order Status": m.newStatus,
+          }).catch((err) =>
+            console.error("Delivered push failed:", m.order["Order ID"], err),
+          ),
+        ),
+      );
+      const pickedIds = new Set(picked.map((m) => m.order["Order ID"]));
+      setDelivMatches((prev) =>
+        prev.filter((m) => !pickedIds.has(m.order["Order ID"])),
+      );
+      setDelivSel([]);
+      showToast(`${picked.length} status update(s) pushed ✓`, "success");
+      setTimeout(fetchOrders, 1300);
+    } finally {
+      setDelivBusy(false);
     }
   };
 
@@ -8971,6 +9111,148 @@ export default function ManageOrdersPage() {
         {/* ===== Track orders ===== */}
         {activeTab === "track" && (
           <div className="mo-track-notify mo-track-plain">
+            {/* Delivered reconcile — upload India Post bulk-tracking file */}
+            <div className="mo-deliv">
+              <div className="mo-deliv-head">
+                <div className="mo-deliv-head-txt">
+                  <span className="mo-deliv-title">
+                    <CheckCircle size={16} /> Mark delivered from India Post file
+                  </span>
+                  <span className="mo-deliv-sub">
+                    Upload the bulk-articles-tracking export. Delivered parcels
+                    become <b>Money Received</b> (COD) or <b>Delivered</b>{" "}
+                    (online paid).
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className="mo-deliv-upload"
+                  onClick={openDelivReconcile}
+                  disabled={delivBusy}
+                >
+                  {delivBusy ? (
+                    <Loader2 size={15} className="mo-spin" />
+                  ) : (
+                    <UploadCloud size={15} />
+                  )}
+                  {delivMatches.length ? "Upload another" : "Upload file"}
+                </button>
+              </div>
+
+              {delivFileName && (
+                <div className="mo-deliv-meta">
+                  <span className="mo-deliv-file">{delivFileName}</span>
+                  {delivSkipped.notDelivered > 0 && (
+                    <span className="mo-deliv-chip">
+                      {delivSkipped.notDelivered} not delivered yet
+                    </span>
+                  )}
+                  {delivSkipped.already > 0 && (
+                    <span className="mo-deliv-chip">
+                      {delivSkipped.already} already updated
+                    </span>
+                  )}
+                  {delivSkipped.unmatched > 0 && (
+                    <span className="mo-deliv-chip warn">
+                      <AlertCircle size={12} /> {delivSkipped.unmatched} no
+                      matching order
+                    </span>
+                  )}
+                </div>
+              )}
+
+              {delivMatches.length > 0 && (
+                <>
+                  <div className="mo-deliv-bar">
+                    <label className="mo-deliv-all">
+                      <input
+                        type="checkbox"
+                        checked={delivSel.length === delivMatches.length}
+                        onChange={(e) =>
+                          setDelivSel(
+                            e.target.checked
+                              ? delivMatches.map((m) => m.order["Order ID"])
+                              : [],
+                          )
+                        }
+                      />
+                      Select all ({delivSel.length}/{delivMatches.length})
+                    </label>
+                    <div className="mo-deliv-bar-actions">
+                      <button
+                        type="button"
+                        className="mo-deliv-clear"
+                        onClick={clearDeliv}
+                        disabled={delivBusy}
+                      >
+                        Clear
+                      </button>
+                      <button
+                        type="button"
+                        className="mo-deliv-push"
+                        onClick={pushDelivUpdates}
+                        disabled={delivBusy || delivSel.length === 0}
+                      >
+                        {delivBusy ? (
+                          <Loader2 size={15} className="mo-spin" />
+                        ) : (
+                          <Check size={15} />
+                        )}
+                        Push {delivSel.length} update
+                        {delivSel.length === 1 ? "" : "s"}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="mo-deliv-list">
+                    {delivMatches.map((m) => {
+                      const oid = m.order["Order ID"];
+                      const on = delivSel.includes(oid);
+                      return (
+                        <div
+                          key={oid}
+                          className={`mo-deliv-row${on ? " on" : ""}`}
+                          onClick={() => toggleDelivSel(oid)}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={on}
+                            onChange={() => toggleDelivSel(oid)}
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                          <div className="mo-deliv-row-main">
+                            <span className="mo-deliv-row-name">
+                              {m.order["Customer Name"] || "—"}
+                              <span className="mo-deliv-row-oid">{oid}</span>
+                            </span>
+                            <span className="mo-deliv-row-art">
+                              {m.article}
+                            </span>
+                          </div>
+                          <div className="mo-deliv-row-flow">
+                            <span className="mo-deliv-cur">
+                              {m.currentStatus}
+                            </span>
+                            <ArrowRight size={13} />
+                            <span
+                              className={`mo-deliv-new${m.isCOD ? " cod" : " paid"}`}
+                            >
+                              {m.isCOD ? (
+                                <IndianRupee size={11} />
+                              ) : (
+                                <Truck size={11} />
+                              )}
+                              {m.newStatus}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
+            </div>
+
             <div className="mo-track-paste">
               <textarea
                 className="admin-input mo-track-textarea"

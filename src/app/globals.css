@@ -35551,6 +35551,9 @@ img[data-loaded="true"] {
 .an2-dot.d-upi {
   background: #16a34a;
 }
+.an2-dot.d-adv {
+  background: #fb8500;
+}
 .an2-pnl-right {
   display: flex;
   align-items: center;
@@ -35821,6 +35824,9 @@ img[data-loaded="true"] {
 }
 .an2-mix-seg.seg-upi {
   background: #16a34a;
+}
+.an2-mix-seg.seg-adv {
+  background: #fb8500;
 }
 .an2-mix-legend {
   display: flex;

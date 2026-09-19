@@ -5605,6 +5605,12 @@ export default function ManageOrdersPage() {
     const codN = anOrders.filter((o) =>
       /cash|cod/i.test(String(o["Payment Type"] || "")),
     ).length;
+    // COD orders whose ₹99 advance is already paid online.
+    const advN = anOrders.filter(
+      (o) =>
+        /cash|cod/i.test(String(o["Payment Type"] || "")) &&
+        /^\s*yes/i.test(String(o["Advance Paid"] || "")),
+    ).length;
     const units = anOrders.reduce(
       (s, o) =>
         s +
@@ -5626,6 +5632,7 @@ export default function ManageOrdersPage() {
       delivered,
       cancelled,
       codN,
+      advN,
       upiN: n - codN,
     };
   }, [anOrders]);
@@ -8055,30 +8062,41 @@ export default function ManageOrdersPage() {
 
             {/* Payment mix + customers */}
             <div className="an2-grid2">
-              <An2Section title="Payment mix" sub="COD vs online (UPI)">
+              <An2Section title="Payment mix" sub="COD · ₹99 paid · online (UPI)">
                 {(() => {
-                  const tot = overview.codN + overview.upiN || 1;
-                  const codPct = Math.round((overview.codN / tot) * 100);
+                  const codPure = Math.max(0, overview.codN - overview.advN);
+                  const adv = overview.advN;
+                  const upi = overview.upiN;
+                  const tot = codPure + adv + upi || 1;
+                  const pct = (x) => Math.round((x / tot) * 100);
                   return (
                     <>
                       <div className="an2-mix-bar">
                         <div
                           className="an2-mix-seg seg-cod"
-                          style={{ width: `${codPct}%` }}
+                          style={{ width: `${pct(codPure)}%` }}
+                        />
+                        <div
+                          className="an2-mix-seg seg-adv"
+                          style={{ width: `${pct(adv)}%` }}
                         />
                         <div
                           className="an2-mix-seg seg-upi"
-                          style={{ width: `${100 - codPct}%` }}
+                          style={{ width: `${pct(upi)}%` }}
                         />
                       </div>
                       <div className="an2-mix-legend">
                         <span className="an2-leg">
-                          <i className="an2-dot d-cod" /> COD · {overview.codN}{" "}
-                          ({codPct}%)
+                          <i className="an2-dot d-cod" /> COD · {codPure} (
+                          {pct(codPure)}%)
                         </span>
                         <span className="an2-leg">
-                          <i className="an2-dot d-upi" /> UPI · {overview.upiN}{" "}
-                          ({100 - codPct}%)
+                          <i className="an2-dot d-adv" /> ₹99 paid · {adv} (
+                          {pct(adv)}%)
+                        </span>
+                        <span className="an2-leg">
+                          <i className="an2-dot d-upi" /> UPI · {upi} ({pct(upi)}
+                          %)
                         </span>
                       </div>
                     </>

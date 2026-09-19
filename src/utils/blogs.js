@@ -4,6 +4,241 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "international-translation-day-2026-books-in-translation-india": {
+    id: "blog-055",
+    title:
+      "International Translation Day 2026: Why Translated Books Are Quietly Taking Over Indian Shelves, and 18 to Start With",
+    slug: "international-translation-day-2026-books-in-translation-india",
+    author: "TheBookX Editorial",
+    authorSlug: "murthy-thevar",
+    publishDate: "2026-09-19",
+    lastModified: "2026-09-19",
+    excerpt:
+      "International Translation Day falls on 30 September 2026. Here is why translated fiction is booming in India, how to judge a translation, and 18 books to start with.",
+    content: [
+      {
+        type: "paragraph",
+        content:
+          "International Translation Day falls on Wednesday, 30 September 2026. It is the least glamorous date on the reading calendar and arguably the most consequential one, because a startling share of what Indian readers actually buy was written in a language none of us can read. If you have finished a Murakami novel, cried over a Korean bookshop story, argued about Dostoevsky, read Sapiens on a flight, or worked through a manga volume on the metro, you have been reading a translator. Almost certainly without knowing their name.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "This year's theme makes the point sharper than usual. The International Federation of Translators has framed International Translation Day 2026 around linguistic diversity and language rights, with the subtitle the power of being understood, and its stated concern is the growing gap between high-resource languages that machine systems handle fluently and low-resource languages that they handle badly or not at all. That is not an abstract European problem. India has twenty-two scheduled languages and hundreds of others, and most of them sit firmly on the wrong side of that gap.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "International Translation Day 2026 at a glance",
+        content:
+          "Date: Wednesday, 30 September 2026. Established by United Nations General Assembly Resolution 71/288, adopted on 24 May 2017, which recognised the role of language professionals in connecting nations and fostering peace, understanding and development. The date marks the feast of St Jerome, who translated much of the Bible into Latin and is the patron saint of translators. The 2026 theme from the International Federation of Translators is Linguistic Diversity and Language Rights, arguing that translation, interpreting and terminology sit at the heart of linguistic inclusion. No ticket, no venue, no institution required: reading one translated book is the whole observance.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The prize that changed the economics of translation",
+      },
+      {
+        type: "paragraph",
+        content:
+          "If you want a single reason translated fiction has moved from the back shelf to the front table in Indian bookshops, it is money going to the right people. The International Booker Prize awards £100,000 and splits it equally between author and translator. That fifty-fifty split is unusual, and it changed how publishers, agents and readers talk about the person who did the rendering.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The 2026 award went to Taiwan Travelogue by Yáng Shuāng-zǐ, translated by Lin King, announced at Tate Modern in London on 19 May 2026. It is the first book translated from Taiwanese Mandarin to win, and the novel is itself a joke about translation: it poses as a rediscovered Japanese travel memoir, complete with a fictional translator's apparatus, and follows two women eating their way across 1930s Japan-controlled Taiwan while colonial power quietly organises everything they taste.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "For Indian readers the landmark year was 2022, when Geetanjali Shree's Tomb of Sand, translated from Hindi by Daisy Rockwell, became the first book from any Indian language to win the prize. What followed was not a sudden national appetite for experimental Hindi fiction so much as a permission slip: translated books stopped being homework. Han Kang, whose The Vegetarian won the same prize in 2016 in Deborah Smith's translation, went on to take the Nobel Prize in Literature in 2024, and her books now sit on the same tables as the romantasy.",
+      },
+      {
+        type: "blockquote",
+        content:
+          "A translation is not a copy of a book. It is a second performance of the same score, by a different musician, on a different instrument, for an audience that was not in the original room.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "How to tell a good translation from a bad one",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Most readers assume they cannot judge a translation without knowing the source language. You can, and the tests are surprisingly practical.",
+      },
+      {
+        type: "list",
+        style: "ordered",
+        items: [
+          "Find the translator's name. If it is on the cover, or at least on the title page and the copyright page, the publisher took the work seriously. If you have to hunt for it, that tells you something about the budget.",
+          "Read three pages aloud. Bad translation announces itself through rhythm before meaning. Sentences that stall in odd places, adverbs stacked where the original probably had one verb, dialogue nobody could say out loud.",
+          "Watch what happens to food, kinship terms and swearing. These are the hardest things to carry across. A translator who leaves some words untranslated and trusts you to cope is usually more confident than one who flattens everything into the nearest English equivalent.",
+          "Check whether there is a translator's note. Not every book needs one, but when it exists it is often the most interesting four pages in the volume, and it tells you what the translator chose to sacrifice.",
+          "Compare two editions of a classic if you can. Public-domain Russian and German novels exist in many versions, and reading the same paragraph in two of them is the fastest education in what translation actually is.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Eighteen translated books worth starting with",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "East Asian fiction, the current centre of gravity",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Japanese and Korean fiction in English translation has done more to normalise reading translated work in India than any campaign. Start with <a href=\"/books/before-the-coffee-gets-cold\" style=\"color:#fb8500;font-weight:600\">Before the Coffee Gets Cold</a> by Toshikazu Kawaguchi, translated by Geoffrey Trousselot, four linked stories set in a Tokyo café where you may travel in time on the condition that nothing you do will change the present. It is short, it is sentimental, and it converts non-readers reliably. <a href=\"/books/days-at-the-morisaki-bookshop\" style=\"color:#fb8500;font-weight:600\">Days at the Morisaki Bookshop</a> by Satoshi Yagisawa, translated by Eric Ozawa, and <a href=\"/books/welcome-to-the-hyunam-dong-bookshop\" style=\"color:#fb8500;font-weight:600\">Welcome to the Hyunam-dong Bookshop</a> by Hwang Bo-reum, translated by Shanna Tan, belong to the same low-stakes healing-fiction wave, and both are about people repairing themselves in the company of shelves.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "For something with teeth, <a href=\"/books/the-vegetarian\" style=\"color:#fb8500;font-weight:600\">The Vegetarian</a> by Han Kang is the Nobel laureate's most argued-about novel and a genuinely unsettling book about a woman who simply stops eating meat and will not explain herself. <a href=\"/books/butter\" style=\"color:#fb8500;font-weight:600\">Butter</a> by Asako Yuzuki, translated by Polly Barton, takes a real Japanese criminal case and turns it into a novel about appetite, misogyny and cooking that is far stranger than its premise suggests. <a href=\"/books/i-want-to-die-but-i-want-to-eat-tteokbokki\" style=\"color:#fb8500;font-weight:600\">I Want to Die but I Want to Eat Tteokbokki</a> by Baek Sehee, translated by Anton Hur, is a transcript-style account of therapy sessions that reads like nothing else on the shelf.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "And then Murakami, who is the reason a generation of Indian readers first noticed a translator's name at all. <a href=\"/books/kafka-on-the-shore\" style=\"color:#fb8500;font-weight:600\">Kafka on the Shore</a> in Philip Gabriel's translation is the strange one, talking cats and all; <a href=\"/books/norwegian-wood\" style=\"color:#fb8500;font-weight:600\">Norwegian Wood</a> in Jay Rubin's is the plain, sad, realist one and the better entry point.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "The Russians and the Central Europeans",
+      },
+      {
+        type: "paragraph",
+        content:
+          "These are the books where the translation question is most visible, because you can buy five different English versions of the same novel. <a href=\"/books/crime-and-punishment\" style=\"color:#fb8500;font-weight:600\">Crime and Punishment</a> is the obvious start, a murder in the first hundred pages followed by four hundred pages of a man failing to live with it. <a href=\"/books/the-brothers-karamazov\" style=\"color:#fb8500;font-weight:600\">The Brothers Karamazov</a> is the larger, slower, better one. <a href=\"/books/anna-karenina\" style=\"color:#fb8500;font-weight:600\">Anna Karenina</a> is the most modern-feeling nineteenth-century novel ever written and deserves its reputation; <a href=\"/books/war-and-peace\" style=\"color:#fb8500;font-weight:600\">War and Peace</a> deserves its reputation too, including the part about the length.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "From the German, <a href=\"/books/the-metamorphosis\" style=\"color:#fb8500;font-weight:600\">The Metamorphosis</a> is a hundred-odd pages and the single most efficient demonstration of what translation choices do: the famous first sentence has been rendered a dozen ways, and each one produces a slightly different insect. <a href=\"/books/the-trial\" style=\"color:#fb8500;font-weight:600\">The Trial</a> is the one to read next, and anyone who has dealt with an Indian government office will recognise the mood instantly.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "Books you did not know were translated",
+      },
+      {
+        type: "paragraph",
+        content:
+          "This is the category that surprises people. <a href=\"/books/sapiens-a-brief-history-of-humankind\" style=\"color:#fb8500;font-weight:600\">Sapiens: A Brief History of Humankind</a> was written in Hebrew and reached the world in English translation. <a href=\"/books/man-s-search-for-meaning\" style=\"color:#fb8500;font-weight:600\">Man's Search for Meaning</a> was written in German in nine days. <a href=\"/books/the-diary-of-a-young-girl\" style=\"color:#fb8500;font-weight:600\">The Diary of a Young Girl</a> was written in Dutch by a teenager who was also, in her final months, editing herself for a future reader. <a href=\"/books/the-alchemist\" style=\"color:#fb8500;font-weight:600\">The Alchemist</a> was written in Portuguese, and <a href=\"/books/ikigai\" style=\"color:#fb8500;font-weight:600\">Ikigai</a>, the book most people assume is Japanese, was written in Spanish by two authors living in Japan. <a href=\"/books/the-forty-rules-of-love\" style=\"color:#fb8500;font-weight:600\">The Forty Rules of Love</a> runs the other way: Elif Shafak writes in English, and the Turkish editions of her novels are the translations.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "If translation itself is the thing that interests you, <a href=\"/books/babel\" style=\"color:#fb8500;font-weight:600\">Babel</a> by R. F. Kuang is a novel about Oxford translators whose work literally powers an empire, and it is the rare fantasy novel with a bibliography's worth of argument inside it.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "Indian languages, in and out",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The translation traffic runs both ways here, and the outbound lane gets all the attention. Worth remembering that the inbound one matters too: most Indians read at least one language that has a rich body of work never rendered into English at all. If Hindi is one of yours, read it in the original while you can. <a href=\"/books/musafir-cafe\" style=\"color:#fb8500;font-weight:600\">Musafir Cafe</a> by Divya Prakash Dubey and <a href=\"/books/banaras-talkies\" style=\"color:#fb8500;font-weight:600\">Banaras Talkies</a> by Satya Vyas are both contemporary Hindi novels that lose something real in summary, let alone in English.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "And for the classics of Indian writing that need no translator, <a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> and <a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> are the two ends of the spectrum: one written in deliberately plain English about a town that never existed, the other written in English bent so far out of shape that it had to invent its own grammar for Kerala.",
+      },
+      {
+        type: "callout",
+        style: "success",
+        title: "Reading a translation costs less than you think",
+        content:
+          "Translated fiction has a reputation for being expensive, mostly because imported editions are. On TheBookX, books start from ₹1, delivery is free anywhere in India, and Cash on Delivery is available on every order, so trying a translated novel you are unsure about costs roughly what a cup of tea does. Gift wrapping is available at ₹25 if you are sending one to somebody who claims they do not read.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Manga counts, and it is the biggest translation story in India",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Any honest account of translated reading in India has to admit that the largest single category of translated pages consumed by young Indian readers is manga. <a href=\"/books/one-piece\" style=\"color:#fb8500;font-weight:600\">One Piece</a>, <a href=\"/books/death-note\" style=\"color:#fb8500;font-weight:600\">Death Note</a> and <a href=\"/books/demon-slayer-kimetsu-no-yaiba\" style=\"color:#fb8500;font-weight:600\">Demon Slayer: Kimetsu no Yaiba</a> involve a translation problem that prose never faces: the text has to fit inside a speech bubble drawn years earlier, in a language with a completely different word length, while sound effects hand-drawn into the artwork have to be handled or left alone. Manga localisation is one of the hardest jobs in the field and among the least credited.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "One more, on the other side of the problem",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Translation is a discipline of saying the same thing in fewer wrong ways, which is also a decent description of thinking clearly in your own language. <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar works on that problem directly: how to strip an idea down to what it actually means before you send it anywhere. Read alongside a translated novel it does something useful, which is to make you notice how much of what you read is a choice somebody made.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "If you do only one thing for International Translation Day this year, do this: open the book you are currently reading, find the translator's name, and look up what else they have translated. It is usually the fastest route to your next three books.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>",
+      },
+    ],
+    coverImage:
+      "/blogs/international-translation-day-2026-books-in-translation-india.jpeg",
+    images: [
+      {
+        url: "/blogs/international-translation-day-2026-books-in-translation-india.jpeg",
+        alt: "A young woman reading a paperback at a wooden table beside a glass of chai, with a small stack of plain unmarked hardbacks and a notebook in warm morning light",
+        caption:
+          "International Translation Day falls on 30 September 2026, with linguistic diversity and language rights as this year's theme",
+        category: "Reading Culture",
+      },
+    ],
+    keywords: [
+      "international translation day 2026",
+      "international translation day 30 september",
+      "best translated books to read",
+      "translated fiction india",
+      "korean and japanese books in translation",
+      "international booker prize 2026 winner",
+      "taiwan travelogue lin king",
+      "tomb of sand geetanjali shree translation",
+      "buy translated books online india",
+      "TheBookX",
+    ],
+    categories: ["Reading Culture", "Book Lists", "Books in the News"],
+    faqs: [
+      {
+        question: "When is International Translation Day 2026 and why 30 September?",
+        answer:
+          "International Translation Day 2026 falls on Wednesday, 30 September. The date was formally established by United Nations General Assembly Resolution 71/288, adopted on 24 May 2017, which recognised the role of language professionals in connecting nations and fostering peace, understanding and development. The 30 September date marks the feast of St Jerome, who translated much of the Bible into Latin and is regarded as the patron saint of translators. The 2026 theme set by the International Federation of Translators is Linguistic Diversity and Language Rights, focused on the gap between languages that technology handles well and those it does not.",
+      },
+      {
+        question: "Which book won the International Booker Prize 2026?",
+        answer:
+          "Taiwan Travelogue by Yáng Shuāng-zǐ, translated by Lin King, won the International Booker Prize 2026 at a ceremony at Tate Modern in London on 19 May 2026. It is the first book translated from Taiwanese Mandarin to win the prize. The novel is structured as a fictional translation of a rediscovered Japanese travel memoir and follows two women on a culinary journey across 1930s Japan-controlled Taiwan. The prize carries £100,000, split equally between author and translator, which is the reason it has done more than any other award to raise the standing of literary translators.",
+      },
+      {
+        question: "Has an Indian language book ever won the International Booker Prize?",
+        answer:
+          "Yes. Tomb of Sand by Geetanjali Shree, translated from Hindi by Daisy Rockwell, won the International Booker Prize in 2022. It was the first book originally written in any Indian language to win the prize, and it is widely credited with changing how Indian publishers commission and market translations from Hindi, Malayalam, Tamil, Bengali and other languages.",
+      },
+      {
+        question: "Which translated books should a first-time reader start with?",
+        answer:
+          "Start short and contemporary rather than long and classical. Before the Coffee Gets Cold, Days at the Morisaki Bookshop and Welcome to the Hyunam-dong Bookshop are gentle, quick and widely loved. If you want something more demanding, The Vegetarian by Nobel laureate Han Kang or Butter by Asako Yuzuki will hold you. Norwegian Wood is the best Murakami entry point, and The Metamorphosis is only about a hundred pages. On TheBookX these start from ₹1 with free delivery across India and Cash on Delivery on every order.",
+      },
+      {
+        question: "How can I tell whether a translation is any good?",
+        answer:
+          "Four practical checks. First, see whether the translator is credited on the cover, which signals how seriously the publisher treated the work. Second, read two or three pages aloud, because a weak translation reveals itself through rhythm before meaning. Third, notice how food, kinship terms and swearing are handled, since these are the hardest elements to carry across languages. Fourth, look for a translator's note, which usually explains what was sacrificed and why. For public-domain classics you can also compare two editions of the same paragraph, which is the quickest way to understand what translation actually involves.",
+      },
+    ],
+  },
   "banned-books-week-2026-freedom-to-read-india": {
     id: "blog-054",
     title:

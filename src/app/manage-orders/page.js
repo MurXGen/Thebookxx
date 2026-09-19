@@ -607,15 +607,16 @@ ALL_BOOKS.forEach((b) => {
 });
 
 // India Post weight-slab delivery charge (grams ₹). Extend the top slab
-// as needed for parcels heavier than 4kg.
+// as needed for parcels heavier than 2.5kg.
 const indiaPostDeliveryCost = (grams) => {
   const g = Number(grams) || 0;
   if (g <= 0) return 0; // no parcel (empty / wallet-ledger rows) → no postage
-  if (g <= 500) return 82;
-  if (g <= 1200) return 126;
-  if (g <= 2000) return 200;
-  if (g <= 4000) return 300;
-  return 300; // >4kg — adjust if you add heavier slabs
+  if (g <= 500) return 45;
+  if (g <= 1000) return 70;
+  if (g <= 1500) return 120;
+  if (g <= 2000) return 180;
+  if (g <= 2500) return 220;
+  return 220; // >2.5kg — adjust if you add heavier slabs
 };
 
 // Derive real economics for an order from its parsed book lines, sourcing
@@ -6725,10 +6726,11 @@ export default function ManageOrdersPage() {
 
   // Weight-slab distribution for the delivery-cost card
   const deliverySlabs = [
-    { label: "0–500g", rate: 82, max: 500 },
-    { label: "500g–1.2kg", rate: 126, max: 1200 },
-    { label: "1.2–2kg", rate: 200, max: 2000 },
-    { label: "2–4kg", rate: 300, max: 4000 },
+    { label: "0–500g", rate: 45, max: 500 },
+    { label: "500g–1kg", rate: 70, max: 1000 },
+    { label: "1–1.5kg", rate: 120, max: 1500 },
+    { label: "1.5–2kg", rate: 180, max: 2000 },
+    { label: "2–2.5kg", rate: 220, max: 2500 },
   ].map((s) => ({ ...s, count: 0, amount: 0 }));
   analyticsOrders.forEach((o) => {
     const g = o.weight || 0;

@@ -5242,11 +5242,15 @@ export default function ManageOrdersPage() {
             ? true
             : statusOnly.some((f) => {
                 if (f === "active") {
+                  // Active = Getting Shipped OR Processing OR Confirmed
+                  // OR In Transit without a tracking ID — and never
+                  // includes unconfirmed rows (confirmed only).
                   return (
-                    !sl ||
-                    sl.includes("pending") ||
-                    sl.includes("processing") ||
-                    sl.includes("getting shipped")
+                    !isUnconfirmed &&
+                    (sl.includes("processing") ||
+                      sl.includes("getting shipped") ||
+                      sl.includes("confirmed") ||
+                      (s === "In Transit" && !hasTracking))
                   );
                 }
                 if (f === "intransit-notrack") {
@@ -8503,7 +8507,7 @@ export default function ManageOrdersPage() {
                                 {
                                   value: "active",
                                   label:
-                                    "Active (Pending + Processing + Getting Shipped)",
+                                    "Active (Processing + Getting Shipped + In Transit no ID + Confirmed)",
                                 },
                                 { value: "all", label: "All Statuses" },
                                 ...distinctStatuses.map((s) => ({

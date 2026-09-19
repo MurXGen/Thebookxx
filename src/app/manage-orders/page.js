@@ -256,12 +256,12 @@ const waMessages = (order) => {
       : "") +
     `\n\n— Team *TheBookX* 📚`;
 
-  // Reusable warning: parcels ship via India Post (from the post office), which
-  // customers often mistake for a scam and refuse — causing a Return-to-Sender.
-  // This line goes on every delivery-stage message so recipients accept it.
+  // Out-for-delivery note only: parcels arrive via India Post (post office).
+  // Friendly reassurance + be-available + how to pay. Kept to the OFD message.
   const postWarn =
-    `\n\n⚠️ *Important:* Your parcel comes from *India Post (post office)* — it is 100% genuine. ` +
-    `Please *accept & pay* (if COD) at delivery. *Do NOT refuse it* — refused parcels are sent back and prepaid refunds take *2–3 weeks*.`;
+    `\n\n📮 Your parcel is from *India Post* — 100% genuine. ` +
+    `Please *be available* to receive it today. Can't be home? Ask a family member or neighbour to collect it for you. ` +
+    `You can pay the postman by *cash or online (UPI)* on delivery. 🙏`;
 
   // Every message opens with an emoji *stage headline*, a short crisp note,
   // then (where relevant) the post-office warning and the link block below.
@@ -279,7 +279,6 @@ const waMessages = (order) => {
         `1️⃣ Someone available to receive it this week?\n` +
         `2️⃣ Is your *address & phone* correct?\n\n` +
         `All good? Reply *YES* 👍  Need changes? Reply *NO*.` +
-        postWarn +
         linkBlock,
     },
     {
@@ -292,7 +291,6 @@ const waMessages = (order) => {
       label: "Shipped",
       text:
         `🚚 *Shipped*\n\n${hi}\nOn its way! Expected in *5–9 days* (minor weather delays possible).` +
-        postWarn +
         linkBlock,
     },
     {
@@ -300,7 +298,6 @@ const waMessages = (order) => {
       label: "In Transit",
       text:
         `🛣️ *In transit*\n\n${hi}\nArriving in *4–9 working days*. Thanks for your patience!` +
-        postWarn +
         linkBlock,
     },
     {

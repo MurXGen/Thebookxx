@@ -1399,32 +1399,6 @@ label.sec-mid-btn {
   transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
   will-change: transform;
 }
-/* Soft fade behind the bar so the floating community/share buttons stay legible
-   over whatever page content is scrolling underneath. */
-.cart-bar::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  top: -46px;
-  pointer-events: none;
-  z-index: -1;
-  background: linear-gradient(
-    to top,
-    rgba(28, 24, 20, 0.18) 0%,
-    rgba(28, 24, 20, 0.1) 48%,
-    rgba(28, 24, 20, 0) 100%
-  );
-}
-.mo-dark .cart-bar::before {
-  background: linear-gradient(
-    to top,
-    #0a0a0a 42%,
-    rgba(10, 10, 10, 0.82) 68%,
-    rgba(10, 10, 10, 0) 100%
-  );
-}
 /* Slide fully out of view (bar + floating FAB) when scrolling down */
 .cart-bar.cart-bar-hidden {
   transform: translateY(135%);

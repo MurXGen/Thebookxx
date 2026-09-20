@@ -425,9 +425,10 @@ export function buildPreviewRow(order, serial) {
     books: qty,
     covers,
     isCOD,
-    // COD orders collect the net; PREPAID orders carry NO COD — type "None" and
-    // a blank value (not 0) so the portal collects nothing. Editable in preview.
-    codCode: isCOD ? "COD" : "None",
+    // COD orders collect the net; PREPAID orders carry NO COD — the COD TYPE
+    // dropdown's "None" option has an empty value, so use "" here (not "None")
+    // so the select shows None with a blank amount. Editable in preview.
+    codCode: isCOD ? "COD" : "",
     codValue: isCOD ? net : "",
   };
 }

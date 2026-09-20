@@ -8,6 +8,7 @@ import { ArrowLeft, Package, ChevronRight, Clock, MessageCircle } from "lucide-r
 import { AnimatePresence } from "framer-motion";
 import { books as ALL_BOOKS } from "@/utils/book";
 import SupportSheet from "@/components/profile/SupportSheet";
+import PwaInstallPromo from "@/components/PwaInstallPromo";
 
 const SUPPORT_WHATSAPP = "917710892108";
 
@@ -319,6 +320,8 @@ export default function OrdersListPage() {
           <SupportSheet phone={number} onClose={() => setShowSupport(false)} />
         )}
       </AnimatePresence>
+
+      <PwaInstallPromo variant="bar" />
     </main>
   );
 }

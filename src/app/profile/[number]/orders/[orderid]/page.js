@@ -46,6 +46,7 @@ import OrderScratchCard from "@/components/profile/OrderScratchCard";
 import ReferAndEarn from "@/components/profile/ReferAndEarn";
 import CodPayOnline from "@/components/profile/CodPayOnline";
 import CommunityJoin from "@/components/CommunityJoin";
+import PwaInstallPromo from "@/components/PwaInstallPromo";
 import BookCard from "@/components/BookCard";
 import { updateOrderRow } from "@/utils/googleFormOrder";
 import { getDeliveryCharge } from "@/utils/cartOffers";
@@ -1261,6 +1262,9 @@ export default function OrderDetailPage() {
           )}
         </div>
       )}
+
+      {/* Install-app promo — directly below the map + arrival card. */}
+      <PwaInstallPromo variant="card" />
 
       {/* Faster-delivery upgrade — confirmation modal (benefits + air mode) */}
       <AnimatePresence>

@@ -98,6 +98,7 @@ import {
   buildIpWorkbookBlob,
   parseIpWorkbookFile,
   parseTrackingStatusFile,
+  parseBookedTrackingFile,
   parseWeightsFile,
   loadSender,
   saveSender,
@@ -3899,6 +3900,62 @@ export default function ManageOrdersPage() {
       } catch (err) {
         console.error("Weights import failed:", err);
         showToast(`Import failed: ${err?.message || "unreadable file"}`, "error");
+      }
+    };
+    inp.click();
+  };
+  // Upload a BOOKED India Post .xlsx → map its Order ID (BULK REFERENCE) to the
+  // allocated tracking (BARCODE NO), write each to the order's Shipping ID and
+  // flip the status to "In Transit". One batch, then refetch.
+  const [bookedImporting, setBookedImporting] = useState(false);
+  const importBookedTracking = () => {
+    const inp = document.createElement("input");
+    inp.type = "file";
+    inp.accept =
+      ".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+    inp.onchange = async (e) => {
+      const file = e?.target?.files?.[0];
+      if (!file) return;
+      setBookedImporting(true);
+      try {
+        const map = await parseBookedTrackingFile(file);
+        const entries = Object.entries(map);
+        if (!entries.length) {
+          showToast(
+            "No order-id + tracking rows found in that booked file.",
+            "error",
+          );
+          return;
+        }
+        // Optimistic local update.
+        entries.forEach(([oid, tid]) =>
+          patchLocalOrder(oid, {
+            "Shipping ID": tid,
+            shippingId: tid,
+            "Order Status": "In Transit",
+            status: "In Transit",
+          }),
+        );
+        await Promise.all(
+          entries.map(([oid, tid]) =>
+            updateOrderRow(oid, {
+              "Shipping ID": tid,
+              "Order Status": "In Transit",
+            }).catch((err) =>
+              console.error("Booked tracking push failed:", oid, err),
+            ),
+          ),
+        );
+        showToast(
+          `${entries.length} order(s) marked In Transit with tracking ✓`,
+          "success",
+        );
+        setTimeout(fetchOrders, 1400);
+      } catch (err) {
+        console.error("Booked import failed:", err);
+        showToast(`Import failed: ${err?.message || "unreadable file"}`, "error");
+      } finally {
+        setBookedImporting(false);
       }
     };
     inp.click();
@@ -8884,6 +8941,20 @@ export default function ManageOrdersPage() {
                       style={{ transform: "rotate(180deg)" }}
                     />{" "}
                     Upload weights (.xlsx)
+                  </button>
+                  <button
+                    type="button"
+                    className="mo-book-weights"
+                    onClick={importBookedTracking}
+                    disabled={bookedImporting}
+                    title="Upload the booked India Post .xlsx — pushes each order's tracking ID and marks it In Transit"
+                  >
+                    {bookedImporting ? (
+                      <Loader2 size={13} className="mo-spin" />
+                    ) : (
+                      <Truck size={13} />
+                    )}{" "}
+                    Upload booked (.xlsx)
                   </button>
                   {Object.keys(bookWeights).length > 0 && (
                     <button

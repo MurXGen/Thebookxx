@@ -734,6 +734,43 @@ export async function parseTrackingStatusFile(file) {
   return out;
 }
 
+// Parse a BOOKED India Post bulk file (the one you download after allocating
+// barcodes on the portal) into { orderId: trackingId } pairs. Reads the
+// ArticleDetails sheet's "BULK REFERENCE" (our Order ID) + "BARCODE NO"
+// (the allocated India Post article / tracking number).
+export async function parseBookedTrackingFile(file) {
+  const XLSX = await import("xlsx");
+  const wb = XLSX.read(await file.arrayBuffer(), { type: "array" });
+  const sheetName =
+    wb.SheetNames.find((n) => n.toLowerCase() === "articledetails") ||
+    wb.SheetNames[0];
+  const ws = wb.Sheets[sheetName];
+  if (!ws) throw new Error("No ArticleDetails sheet in the file.");
+  const aoa = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
+  const header = (aoa[0] || []).map((h) => String(h).trim());
+  const idx = (...names) =>
+    header.findIndex((h) =>
+      names.some((n) => h.toLowerCase() === String(n).toLowerCase()),
+    );
+  const iRef = idx("BULK REFERENCE", "Order ID");
+  const iBar = idx("BARCODE NO", "Barcode No", "Article Number");
+  if (iRef < 0 || iBar < 0)
+    throw new Error(
+      "Sheet needs 'BULK REFERENCE' (order id) and 'BARCODE NO' (tracking) columns.",
+    );
+  const map = {};
+  for (let r = 1; r < aoa.length; r++) {
+    const row = aoa[r] || [];
+    const oid = String(row[iRef] ?? "").trim();
+    const tracking = String(row[iBar] ?? "")
+      .trim()
+      .toUpperCase();
+    // Only real, allocated tracking numbers (e.g. CX…IN) — skip blank barcodes.
+    if (oid && /^[A-Z]{2}\d{9}IN$/.test(tracking)) map[oid] = tracking;
+  }
+  return map;
+}
+
 // Build the same workbook as an in-memory Blob (for API upload to India Post).
 export async function buildIpWorkbookBlob(previewRows, sender) {
   const { XLSX, wb } = await buildIpWorkbook(previewRows, sender);

@@ -816,6 +816,7 @@ export function downloadAddressLabelForm(data) {
     customerCity: data.customerCity,
     customerPincode: data.customerPincode,
     customerPhone: data.customerPhone,
+    customerAltPhone: data.customerAltPhone,
     isCOD,
     codAmount: data.codAmount,
   });
@@ -881,6 +882,7 @@ export function buildCombinedForm(data) {
     customerCity: data.customerCity,
     customerPincode: data.customerPincode,
     customerPhone: data.customerPhone,
+    customerAltPhone: data.customerAltPhone,
     isCOD,
     codAmount: data.codAmount,
     isFaster: data.isFaster,
@@ -1273,11 +1275,18 @@ function drawBigAddressLabel(c, startY, data) {
   });
   ctx.font = "bold 20px Poppins, sans-serif";
   const labelW = ctx.measureText("CALL ON THIS NUMBER FOR DELIVERY:").width;
-  c.text(`+91 ${data.customerPhone || ""}`, innerX + 70 + labelW + 14, midY, {
-    font: "bold 31px Poppins, sans-serif",
-    color: INK,
-    baseline: "middle",
-  });
+  c.text(
+    `+91 ${data.customerPhone || ""}${
+      data.customerAltPhone ? ` / ${data.customerAltPhone}` : ""
+    }`,
+    innerX + 70 + labelW + 14,
+    midY,
+    {
+      font: "bold 31px Poppins, sans-serif",
+      color: INK,
+      baseline: "middle",
+    },
+  );
   y += cbH + 26;
 
   // ===== FROM (compact) =====

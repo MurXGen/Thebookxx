@@ -12,6 +12,7 @@ const SHEET_HEADERS = {
   orderId: "Order ID",
   customerName: "Customer Name",
   phone: "Phone Number",
+  altPhone: "Alternate number",
   pincode: "Pincode",
   city: "City",
   state: "State",
@@ -384,6 +385,8 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
     orderId,
     customerName: addressData.name || "",
     phone: addressData.phone || "",
+    // Optional alternate contact → its own "Alternate number" column.
+    ...(addressData.altPhone ? { altPhone: addressData.altPhone } : {}),
     pincode: addressData.pincode || "",
     city: addressData.city || "",
     state: addressData.state || "",

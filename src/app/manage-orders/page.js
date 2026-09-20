@@ -5063,6 +5063,9 @@ export default function ManageOrdersPage() {
       customerState: o["State"],
       customerPincode: o["Pincode"],
       customerPhone: o["Phone Number"],
+      customerAltPhone: String(o["Alternate number"] || "")
+        .replace(/\D/g, "")
+        .slice(-10),
       totalValueRs: rev,
       isCOD,
       codAmount,

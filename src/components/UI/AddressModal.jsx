@@ -157,6 +157,10 @@ export default function AddressModal({
 }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  // Optional alternate contact number → saved to its own "Alternate number"
+  // sheet column (revealed only when the shopper taps "Add alternate number").
+  const [altPhone, setAltPhone] = useState("");
+  const [showAltPhone, setShowAltPhone] = useState(false);
   // Wallet balance (looked up by the phone entered below)
   const [walletBalance, setWalletBalance] = useState(0);
   const [walletChecked, setWalletChecked] = useState(false);
@@ -758,6 +762,7 @@ export default function AddressModal({
         addressData: {
           name: displayName,
           phone,
+          altPhone: altPhone && altPhone.length === 10 ? altPhone : "",
           pincode,
           city,
           state,
@@ -1666,6 +1671,50 @@ export default function AddressModal({
                         />
                         {phoneError && (
                           <span className="font-10 red mt-4">{phoneError}</span>
+                        )}
+                        {/* Optional alternate number — hidden behind a link so
+                            the form stays short; saved to "Alternate number". */}
+                        {!showAltPhone ? (
+                          <button
+                            type="button"
+                            className="addr-altlink"
+                            onClick={() => setShowAltPhone(true)}
+                          >
+                            <Phone size={12} /> Add alternate number
+                          </button>
+                        ) : (
+                          <div className="addr-alt-wrap">
+                            <input
+                              className="sec-mid-btn width100"
+                              placeholder="Alternate 10-digit number"
+                              value={altPhone}
+                              maxLength={15}
+                              inputMode="tel"
+                              onChange={(e) =>
+                                setAltPhone(normalizePhone(e.target.value))
+                              }
+                              onPaste={(e) => {
+                                e.preventDefault();
+                                setAltPhone(
+                                  normalizePhone(
+                                    e.clipboardData.getData("text"),
+                                  ),
+                                );
+                              }}
+                              autoFocus
+                            />
+                            <button
+                              type="button"
+                              className="addr-alt-remove"
+                              title="Remove alternate number"
+                              onClick={() => {
+                                setAltPhone("");
+                                setShowAltPhone(false);
+                              }}
+                            >
+                              <X size={14} />
+                            </button>
+                          </div>
                         )}
                       </div>
                     </div>

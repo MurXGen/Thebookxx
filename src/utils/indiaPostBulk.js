@@ -359,6 +359,9 @@ export function buildPreviewRow(order, serial) {
   });
   const [add1, add2] = splitAddress(order?.["Address"]);
   const mobile = String(order?.["Phone Number"] || "").replace(/\D/g, "").slice(-10);
+  const altMobile = String(order?.["Alternate number"] || "")
+    .replace(/\D/g, "")
+    .slice(-10);
   // Operator-entered weight (g) + sizes ("LxBxH") saved on the order row take
   // priority over the catalogue estimate / default dimensions.
   const savedWeight = parseInt(
@@ -393,6 +396,7 @@ export function buildPreviewRow(order, serial) {
       IP_LIMITS.state,
     ),
     pincode: String(order?.["Pincode"] || "").replace(/\D/g, "").slice(0, 6),
+    altMobile,
     // Weight + dimensions — use the saved values when present, else fall back to
     // the catalogue estimate and the default 22 × 13 × (book count).
     weight:
@@ -496,7 +500,7 @@ export function previewRowToArticle(row, sender) {
     "RECEIVER STATE": cap(row.state, IP_LIMITS.state),
     "RECEIVER PINCODE": String(row.pincode || "").replace(/\D/g, "").slice(0, 6),
     "RECEIVER EMAILID": "",
-    "RECEIVER ALT CONTACT": "",
+    "RECEIVER ALT CONTACT": row.altMobile || "",
     "RECEIVER KYC": "",
     "RECEIVER TAX REFERENCE": "",
     "ALT ADDRESS FLAG": false,

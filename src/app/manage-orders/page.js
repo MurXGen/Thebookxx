@@ -3710,10 +3710,14 @@ export default function ManageOrdersPage() {
   const [ipDownloading, setIpDownloading] = useState(false);
   const downloadIpBulk = async () => {
     if (!ipBulk || ipBulk.rows.length === 0) return;
-    // Guard: validate every row against India Post's field rules.
-    const bad = ipBulk.rows.filter(
-      (r) => Object.keys(validateRow(r, ipSender)).length > 0,
-    );
+    // Guard: validate every row against India Post's field rules. The barcode /
+    // article number is NOT required to download the file (you often fill those
+    // in later on the portal) — only the Push-to-portal path enforces it.
+    const bad = ipBulk.rows.filter((r) => {
+      const errs = validateRow(r, ipSender);
+      delete errs.barcode;
+      return Object.keys(errs).length > 0;
+    });
     if (bad.length > 0) {
       const senderBad = ipBulk.rows.some((r) => validateRow(r, ipSender).senderMobile);
       showToast(
@@ -4247,6 +4251,14 @@ export default function ManageOrdersPage() {
   // sheet one by one; a single top button pushes them all at once.
   const [trackStatusDrafts, setTrackStatusDrafts] = useState({});
   const [trackPushBusy, setTrackPushBusy] = useState(false);
+  // ── Weight & sizes entry (per-order, feeds the India Post bulk file) ──
+  // Saved to the sheet as Weight(gm) (e.g. "400") and Sizes(Lxbxh) ("22x13x2").
+  const [wsOrder, setWsOrder] = useState(null);
+  const [wsWeight, setWsWeight] = useState("");
+  const [wsL, setWsL] = useState("");
+  const [wsB, setWsB] = useState("");
+  const [wsH, setWsH] = useState("");
+  const [wsSaving, setWsSaving] = useState(false);
   // ── Delivered reconcile (India Post bulk-articles-tracking upload) ──
   // Upload the India Post bulk-tracking .xlsx; every article the file marks
   // "Delivered" is matched to an order by Shipping ID. COD orders are proposed
@@ -6416,6 +6428,47 @@ export default function ManageOrdersPage() {
         (o) => String(o["Order ID"]) === String(orderId),
       );
       fireReferralPayout(ord?.["Phone Number"] || ord?.["Phone"] || "", orderId);
+    }
+  };
+
+  // Open the weight & sizes sheet for an order, prefilling saved values.
+  const openWeightSize = (order) => {
+    setWsOrder(order);
+    setWsWeight(
+      String(order["Weight(gm)"] || order["Weight (gm)"] || "").replace(
+        /[^\d]/g,
+        "",
+      ),
+    );
+    const sizes = String(
+      order["Sizes(Lxbxh)"] || order["Sizes (Lxbxh)"] || "",
+    ).trim();
+    const [l, b, h] = sizes
+      ? sizes.split(/[xX×*]/).map((s) => s.replace(/[^\d]/g, ""))
+      : [];
+    setWsL(l || "");
+    setWsB(b || "");
+    setWsH(h || "");
+  };
+  const closeWeightSize = () => setWsOrder(null);
+  const saveWeightSize = async () => {
+    if (!wsOrder) return;
+    const oid = wsOrder["Order ID"];
+    const w = String(wsWeight).replace(/[^\d]/g, "");
+    const dims = [wsL, wsB, wsH].map((s) => String(s).replace(/[^\d]/g, ""));
+    // Only store sizes when all three dimensions are present.
+    const sizes = dims.every((d) => d) ? dims.join("x") : "";
+    setWsSaving(true);
+    patchLocalOrder(oid, { "Weight(gm)": w, "Sizes(Lxbxh)": sizes });
+    try {
+      await updateOrderRow(oid, { "Weight(gm)": w, "Sizes(Lxbxh)": sizes });
+      showToast("Weight & sizes saved ✓", "success");
+      setWsOrder(null);
+    } catch (e) {
+      console.error("Weight/sizes save failed:", e);
+      showToast("Save failed — please try again.", "error");
+    } finally {
+      setWsSaving(false);
     }
   };
 
@@ -10825,10 +10878,44 @@ export default function ManageOrdersPage() {
                               </div>
                             )}
 
+                            {/* Weight & sizes entry — feeds the India Post bulk
+                                file (WT g + L×B×H). Shows saved values, else a
+                                prompt to add them. */}
+                            {!isTerminal && (
+                              <button
+                                type="button"
+                                className={`mo-ws-btn${
+                                  String(order["Weight(gm)"] || "").trim() ||
+                                  String(order["Sizes(Lxbxh)"] || "").trim()
+                                    ? " filled"
+                                    : ""
+                                }`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  openWeightSize(order);
+                                }}
+                              >
+                                <Package size={14} />
+                                <span className="mo-ws-btn-txt">
+                                  {(() => {
+                                    const w = String(
+                                      order["Weight(gm)"] || "",
+                                    ).replace(/[^\d]/g, "");
+                                    const sz = String(order["Sizes(Lxbxh)"] || "")
+                                      .trim()
+                                      .replace(/[xX×*]/g, "×");
+                                    if (w || sz)
+                                      return `${w ? w + " g" : ""}${w && sz ? " · " : ""}${sz}`;
+                                    return "Add weight & sizes";
+                                  })()}
+                                </span>
+                                <Pencil size={12} className="mo-ws-edit" />
+                              </button>
+                            )}
+
                             {/* Bottom row: status + ONE state-driven action.
-                                • not picked        → Mark picked
-                                • picked, no track  → tracking input + Save
-                                • has tracking      → Track shipment            */}
+                                • no tracking  → tracking input + Save
+                                • has tracking → Track shipment            */}
                             <div
                               className="mo-card-foot"
                               onClick={(e) => e.stopPropagation()}
@@ -10866,15 +10953,7 @@ export default function ManageOrdersPage() {
                                   className="mo-status-chev"
                                 />
                               </div>
-                              {!fullyPicked ? (
-                                <button
-                                  type="button"
-                                  className="mo-primary-btn"
-                                  onClick={() => markAllPicked(order)}
-                                >
-                                  <Check size={15} /> Mark picked
-                                </button>
-                              ) : !hasTracking ? (
+                              {!hasTracking ? (
                                 <div className="mo-track-inline">
                                   <input
                                     className="mo-card-track-input"
@@ -12025,6 +12104,127 @@ export default function ManageOrdersPage() {
         </motion.div>
         </div>
         {/* ===== /mo-main ===== */}
+
+        {/* Weight & sizes entry — slide-up sheet (portaled, no blur). */}
+        {typeof document !== "undefined" &&
+          createPortal(
+            <AnimatePresence>
+              {wsOrder && (
+                <motion.div
+                  className="mo-bd-overlay"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={closeWeightSize}
+                >
+                  <motion.div
+                    className="mo-bd-sheet mo-ws-sheet"
+                    initial={{ y: "100%" }}
+                    animate={{ y: 0 }}
+                    exit={{ y: "100%" }}
+                    transition={{ duration: 0.32, ease: "easeOut" }}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="mo-ws-head">
+                      <div className="mo-ws-head-txt">
+                        <span className="mo-ws-title">
+                          <Package size={16} /> Weight &amp; sizes
+                        </span>
+                        <span className="mo-ws-sub">
+                          {wsOrder["Customer Name"] || wsOrder["Order ID"]}
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        className="mo-ws-close"
+                        onClick={closeWeightSize}
+                        aria-label="Close"
+                      >
+                        <X size={18} />
+                      </button>
+                    </div>
+
+                    <div className="mo-ws-body">
+                      <label className="mo-ws-field">
+                        <span className="mo-ws-label">Weight (grams)</span>
+                        <input
+                          type="number"
+                          inputMode="numeric"
+                          className="mo-ws-input"
+                          placeholder="e.g. 400"
+                          value={wsWeight}
+                          onChange={(e) => setWsWeight(e.target.value)}
+                          autoFocus
+                        />
+                      </label>
+
+                      <div className="mo-ws-field">
+                        <span className="mo-ws-label">Sizes (L × B × H, cm)</span>
+                        <div className="mo-ws-dims">
+                          <input
+                            type="number"
+                            inputMode="numeric"
+                            className="mo-ws-input"
+                            placeholder="L"
+                            value={wsL}
+                            onChange={(e) => setWsL(e.target.value)}
+                          />
+                          <span className="mo-ws-x">×</span>
+                          <input
+                            type="number"
+                            inputMode="numeric"
+                            className="mo-ws-input"
+                            placeholder="B"
+                            value={wsB}
+                            onChange={(e) => setWsB(e.target.value)}
+                          />
+                          <span className="mo-ws-x">×</span>
+                          <input
+                            type="number"
+                            inputMode="numeric"
+                            className="mo-ws-input"
+                            placeholder="H"
+                            value={wsH}
+                            onChange={(e) => setWsH(e.target.value)}
+                          />
+                        </div>
+                      </div>
+                      <p className="mo-ws-note">
+                        Saved to the order and auto-filled into the India Post
+                        bulk file. Weight is stored in grams; sizes as{" "}
+                        <b>L×B×H</b>.
+                      </p>
+                    </div>
+
+                    <div className="mo-ws-foot">
+                      <button
+                        type="button"
+                        className="mo-ws-cancel"
+                        onClick={closeWeightSize}
+                        disabled={wsSaving}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        className="mo-ws-save"
+                        onClick={saveWeightSize}
+                        disabled={wsSaving}
+                      >
+                        {wsSaving ? (
+                          <Loader2 size={15} className="mo-spin" />
+                        ) : (
+                          <Check size={15} />
+                        )}
+                        Save
+                      </button>
+                    </div>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>,
+            document.body,
+          )}
 
         {/* ===== Mobile bottom navigation ===== */}
         <nav className="mo-bottomnav" aria-label="Dashboard sections">

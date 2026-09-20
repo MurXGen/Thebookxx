@@ -359,6 +359,23 @@ export function buildPreviewRow(order, serial) {
   });
   const [add1, add2] = splitAddress(order?.["Address"]);
   const mobile = String(order?.["Phone Number"] || "").replace(/\D/g, "").slice(-10);
+  // Operator-entered weight (g) + sizes ("LxBxH") saved on the order row take
+  // priority over the catalogue estimate / default dimensions.
+  const savedWeight = parseInt(
+    String(order?.["Weight(gm)"] ?? order?.["Weight (gm)"] ?? "").replace(
+      /[^\d]/g,
+      "",
+    ),
+    10,
+  );
+  const savedSizes = String(
+    order?.["Sizes(Lxbxh)"] ?? order?.["Sizes (Lxbxh)"] ?? "",
+  ).trim();
+  const [sL, sB, sH] = savedSizes
+    ? savedSizes
+        .split(/[xX×*]/)
+        .map((n) => parseInt(String(n).replace(/[^\d]/g, ""), 10))
+    : [];
   return {
     serial,
     orderId: order?.["Order ID"] || "",
@@ -376,21 +393,24 @@ export function buildPreviewRow(order, serial) {
       IP_LIMITS.state,
     ),
     pincode: String(order?.["Pincode"] || "").replace(/\D/g, "").slice(0, 6),
-    // Dimensions — same logic as the Book-online modal: 22 × 13 × (book count).
-    weight: estimateWeight(order),
-    length: 22,
-    breadth: 13,
-    height: Math.max(1, qty),
+    // Weight + dimensions — use the saved values when present, else fall back to
+    // the catalogue estimate and the default 22 × 13 × (book count).
+    weight:
+      Number.isFinite(savedWeight) && savedWeight > 0
+        ? savedWeight
+        : estimateWeight(order),
+    length: sL > 0 ? sL : 22,
+    breadth: sB > 0 ? sB : 13,
+    height: sH > 0 ? sH : Math.max(1, qty),
     shape: "NROL",
     delivery: "ND",
     books: qty,
     covers,
     isCOD,
-    // This is a COD-enabled contract, so the portal requires VpCodTypeCD="COD"
-    // (uppercase) on every row. COD orders collect the net; prepaid collects a
-    // ₹10 token. All editable in the preview.
-    codCode: "COD",
-    codValue: isCOD ? net : 10,
+    // COD orders collect the net; PREPAID orders carry NO COD — type "None" and
+    // a blank value (not 0) so the portal collects nothing. Editable in preview.
+    codCode: isCOD ? "COD" : "None",
+    codValue: isCOD ? net : "",
   };
 }
 
@@ -442,7 +462,10 @@ const toInt = (v) => {
 // Map an (edited) preview row → the full 48-column ArticleDetails object.
 export function previewRowToArticle(row, sender) {
   const s = sender || DEFAULT_SENDER;
-  const codCode = String(row.codCode || "").trim().toUpperCase();
+  const codCodeRaw = String(row.codCode || "").trim().toUpperCase();
+  // "None" (or blank) = no COD: leave both the code and value blank in the file.
+  const codCode =
+    codCodeRaw && codCodeRaw !== "NONE" && codCodeRaw !== "PP" ? codCodeRaw : "";
   return {
     "SERIAL NUMBER": row.serial,
     "BARCODE NO": String(row.barcode || "").trim(),

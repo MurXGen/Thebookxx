@@ -25429,6 +25429,218 @@ img[data-loaded="true"] {
     animation: none;
   }
 }
+/* Weight & sizes entry button on the card (feeds the India Post bulk file). */
+.mo-ws-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: calc(100% - 32px);
+  margin: 0 16px 10px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  border: 1px dashed var(--hairline, #d1d5db);
+  background: transparent;
+  color: var(--dark-50, #6b7280);
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    background 0.15s,
+    color 0.15s;
+}
+.mo-ws-btn:hover {
+  border-color: var(--tertiary, #fb8500);
+  color: var(--tertiary, #fb8500);
+}
+.mo-ws-btn.filled {
+  border-style: solid;
+  border-color: rgba(251, 133, 0, 0.35);
+  background: rgba(251, 133, 0, 0.06);
+  color: var(--text, #1c1814);
+}
+.mo-ws-btn-txt {
+  flex: 1 1 auto;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mo-ws-edit {
+  flex: 0 0 auto;
+  opacity: 0.55;
+}
+.mo-dark .mo-ws-btn {
+  border-color: rgba(255, 255, 255, 0.16);
+  color: #cbd5e1;
+}
+.mo-dark .mo-ws-btn.filled {
+  background: rgba(251, 133, 0, 0.1);
+  color: #f3f4f6;
+}
+/* Weight & sizes slide-up sheet. */
+.mo-ws-sheet {
+  max-width: 460px;
+  margin: 0 auto;
+}
+.mo-ws-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 18px 12px;
+  border-bottom: 1px solid var(--hairline, #eee);
+}
+.mo-dark .mo-ws-head {
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+.mo-ws-head-txt {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.mo-ws-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text, #1c1814);
+}
+.mo-ws-title svg {
+  color: var(--tertiary, #fb8500);
+}
+.mo-dark .mo-ws-title {
+  color: #f3f4f6;
+}
+.mo-ws-sub {
+  font-size: 12.5px;
+  color: var(--muted, #6b7280);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mo-ws-close {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--muted, #6b7280);
+  cursor: pointer;
+}
+.mo-dark .mo-ws-close {
+  background: rgba(255, 255, 255, 0.08);
+  color: #cbd5e1;
+}
+.mo-ws-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 18px;
+}
+.mo-ws-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.mo-ws-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted, #6b7280);
+}
+.mo-ws-input {
+  height: 46px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid var(--hairline, #d1d5db);
+  background: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text, #1c1814);
+  width: 100%;
+}
+.mo-ws-input:focus {
+  outline: none;
+  border-color: var(--tertiary, #fb8500);
+  box-shadow: 0 0 0 3px rgba(251, 133, 0, 0.15);
+}
+.mo-dark .mo-ws-input {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.16);
+  color: #f3f4f6;
+}
+.mo-ws-dims {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.mo-ws-dims .mo-ws-input {
+  text-align: center;
+  padding: 0 6px;
+}
+.mo-ws-x {
+  flex: 0 0 auto;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--muted, #9ca3af);
+}
+.mo-ws-note {
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--muted, #9ca3af);
+  margin: 0;
+}
+.mo-ws-foot {
+  display: flex;
+  gap: 10px;
+  padding: 14px 18px 20px;
+  border-top: 1px solid var(--hairline, #eee);
+}
+.mo-dark .mo-ws-foot {
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+.mo-ws-cancel {
+  flex: 0 0 auto;
+  height: 46px;
+  padding: 0 20px;
+  border-radius: 10px;
+  border: 1px solid var(--hairline, #d1d5db);
+  background: transparent;
+  color: var(--muted, #6b7280);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.mo-dark .mo-ws-cancel {
+  border-color: rgba(255, 255, 255, 0.16);
+  color: #cbd5e1;
+}
+.mo-ws-save {
+  flex: 1 1 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 46px;
+  border-radius: 10px;
+  border: none;
+  background: var(--tertiary, #fb8500);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.mo-ws-save:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* Bottom row: status pill + ONE primary action, pinned to the card bottom so
    these line up across cards (equal-height grid). */
 .mo-card-foot {

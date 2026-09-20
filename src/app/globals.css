@@ -27714,11 +27714,6 @@ img[data-loaded="true"] {
 }
 
 /* ===== Order card: scrollable checkable book covers ===== */
-/* Wraps the covers row so the big faint Faster / Bookmark marks can float over
-   its right edge. */
-.mo-covers-wrap {
-  position: relative;
-}
 .mo-covers {
   display: flex;
   gap: 8px;
@@ -27727,29 +27722,6 @@ img[data-loaded="true"] {
   margin-top: 0;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
-}
-/* Large, faint benefit watermarks pinned to the right of the covers. */
-.mo-covers-marks {
-  position: absolute;
-  top: 50%;
-  right: 4px;
-  transform: translateY(-50%);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  pointer-events: none;
-  opacity: 0.2;
-}
-.mo-mark {
-  width: 58px;
-  height: 58px;
-  flex: 0 0 auto;
-}
-.mo-mark-faster {
-  color: var(--tertiary, #fb8500);
-}
-.mo-mark-bookmark {
-  color: #2563eb;
 }
 .mo-cover {
   position: relative;

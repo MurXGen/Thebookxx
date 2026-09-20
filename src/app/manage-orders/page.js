@@ -3654,30 +3654,48 @@ export default function ManageOrdersPage() {
   //  • With a manual selection → you choose the product; ALL selected go into
   //    whichever file you click, so both buttons show the selected total.
   //  • With no selection → auto-classify all available into Speed vs Contractual.
+  // Only orders with an operator-entered weight AND sizes qualify for the India
+  // Post files — everything else is left out of both Speed and Contractual.
+  const ipHasWeightSizes = (o) => {
+    const w = parseInt(
+      String(o["Weight(gm)"] ?? o["Weight (gm)"] ?? "").replace(/[^\d]/g, ""),
+      10,
+    );
+    const sz = String(o["Sizes(Lxbxh)"] ?? o["Sizes (Lxbxh)"] ?? "").trim();
+    return Number.isFinite(w) && w > 0 && sz.length > 0;
+  };
   const ipCounts = () => {
     if (selectedIds.length > 0) {
-      return {
-        speed: selectedIds.length,
-        contract: selectedIds.length,
-        scoped: true,
-      };
+      const set = new Set(selectedIds);
+      const sel = visibleOrders.filter(
+        (o) => set.has(o["Order ID"]) && ipHasWeightSizes(o),
+      );
+      return { speed: sel.length, contract: sel.length, scoped: true };
     }
-    const pool = visibleOrders;
+    const pool = visibleOrders.filter(ipHasWeightSizes);
     const speed = pool.filter((o) => classifyOrderProduct(o) === "speed").length;
     return { speed, contract: pool.length - speed, scoped: false };
   };
   const openIpBulkPreview = (product) => {
     let pool;
     if (selectedIds.length > 0) {
-      // Manual selection: push ALL selected into the chosen product file.
+      // Manual selection: push ALL selected into the chosen product file — but
+      // still only those with weight & sizes entered.
       const set = new Set(selectedIds);
-      pool = visibleOrders.filter((o) => set.has(o["Order ID"]));
+      pool = visibleOrders.filter(
+        (o) => set.has(o["Order ID"]) && ipHasWeightSizes(o),
+      );
     } else {
-      // No selection: auto-classified bucket.
-      pool = visibleOrders.filter((o) => classifyOrderProduct(o) === product);
+      // No selection: auto-classified bucket (weighted orders only).
+      pool = visibleOrders.filter(
+        (o) => ipHasWeightSizes(o) && classifyOrderProduct(o) === product,
+      );
     }
     if (pool.length === 0) {
-      showToast(`No ${product} orders to export.`, "error");
+      showToast(
+        `No ${product} orders with weight & sizes to export.`,
+        "error",
+      );
       return;
     }
     const rows = pool.map((o, i) => buildPreviewRow(o, i + 1));

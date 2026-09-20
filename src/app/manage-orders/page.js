@@ -10750,12 +10750,27 @@ export default function ManageOrdersPage() {
                             </div>
 
                             {/* Book covers — scrollable row with name + price,
-                            tap the cover to mark it picked. */}
-                            {books.length > 0 && (
-                              <div
-                                className="mo-covers"
-                                onClick={(e) => e.stopPropagation()}
-                              >
+                            tap the cover to mark it picked. Big faint Faster /
+                            Bookmark marks float over the right of the covers so
+                            they're readable at a glance. */}
+                            {books.length > 0 &&
+                              (() => {
+                                const delivT = String(
+                                  order["Delivery Type"] || "",
+                                );
+                                const gwF = String(order["Gift Wrap"] || "");
+                                const fasterMark =
+                                  /faster|express/i.test(delivT) ||
+                                  /^e/i.test(
+                                    String(order.shippingId || "").trim(),
+                                  );
+                                const bookmarkMark = /bookmark/i.test(gwF);
+                                return (
+                                  <div className="mo-covers-wrap">
+                                    <div
+                                      className="mo-covers"
+                                      onClick={(e) => e.stopPropagation()}
+                                    >
                                 {books.map((b, ci) => {
                                   const img = getBookImage(b.name);
                                   const checked =
@@ -10804,8 +10819,41 @@ export default function ManageOrdersPage() {
                                     </div>
                                   );
                                 })}
-                              </div>
-                            )}
+                                    </div>
+                                    {(fasterMark || bookmarkMark) && (
+                                      <div
+                                        className="mo-covers-marks"
+                                        aria-hidden="true"
+                                      >
+                                        {fasterMark && (
+                                          <svg
+                                            className="mo-mark mo-mark-faster"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                          >
+                                            <path
+                                              d="M13 2 4.5 13.2c-.4.5 0 1.3.7 1.3H11l-1 7.5 8.5-11.2c.4-.5 0-1.3-.7-1.3H12l1-7.5Z"
+                                              fill="currentColor"
+                                            />
+                                          </svg>
+                                        )}
+                                        {bookmarkMark && (
+                                          <svg
+                                            className="mo-mark mo-mark-bookmark"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                          >
+                                            <path
+                                              d="M6 3h12a1 1 0 0 1 1 1v17l-7-4.2L5 21V4a1 1 0 0 1 1-1Z"
+                                              fill="currentColor"
+                                            />
+                                          </svg>
+                                        )}
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              })()}
 
                             {/* Add-on / benefit chips — shown at the end of the
                                 card (kept out of the one-row price section). */}
@@ -10849,12 +10897,12 @@ export default function ManageOrdersPage() {
                                   t: "₹99 advance paid",
                                   cls: "adv",
                                 });
-                              if (fasterD) badges.push({ e: "⚡", t: "Faster" });
+                              // Faster + Bookmark now render as big faint SVG
+                              // watermarks over the covers (see .mo-covers-marks),
+                              // so they're intentionally left out of the chips.
                               if (freeD)
                                 badges.push({ e: "🚚", t: "Free delivery" });
                               if (giftOn) badges.push({ e: "🎁", t: "Gift wrap" });
-                              if (bookmarkOn)
-                                badges.push({ e: "🔖", t: "Bookmark" });
                               // "Saved ₹X" chip removed — that's the customer's
                               // discount, not an operator concern (one money rule).
                               if (!badges.length) return null;

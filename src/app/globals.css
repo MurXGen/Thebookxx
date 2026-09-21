@@ -41413,7 +41413,7 @@ img[data-loaded="true"] {
 }
 .od-map {
   width: 100%;
-  height: 380px;
+  height: 300px;
   /* Trap Leaflet's internal pane z-indexes so the overlay card/button sit on top. */
   position: relative;
   z-index: 0;
@@ -41900,15 +41900,16 @@ img[data-loaded="true"] {
 }
 /* Rate-your-experience card on the order-detail page */
 .od-review {
-  margin-top: 14px;
-  padding: 16px;
-  border-radius: 16px;
+  margin-top: 0;
+  margin-bottom: 12px;
+  padding: 13px;
+  border-radius: 14px;
   border: 1px solid var(--hairline, #ececec);
   background: #fff;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 .od-review-head {
   display: flex;
@@ -42211,8 +42212,8 @@ img[data-loaded="true"] {
 .od-block {
   border: 1px solid var(--dark-20, #82828250);
   border-radius: 14px;
-  padding: 14px;
-  margin-bottom: 14px;
+  padding: 13px;
+  margin-bottom: 12px;
 }
 .od-block-title {
   font-size: var(--px-12);
@@ -42405,6 +42406,19 @@ img[data-loaded="true"] {
 }
 
 /* ---- Order detail: Flipkart-style additions ---- */
+/* Compact 2-up action row (Ask + Download). */
+.od-actions-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.od-actions-row > button {
+  flex: 1 1 0;
+  width: auto;
+  margin-bottom: 0;
+  padding: 12px 10px;
+  white-space: nowrap;
+}
 .od-help-btn {
   width: 100%;
   display: inline-flex;

@@ -46,6 +46,7 @@ import OrderScratchCard from "@/components/profile/OrderScratchCard";
 import ReferAndEarn from "@/components/profile/ReferAndEarn";
 import CodPayOnline from "@/components/profile/CodPayOnline";
 import CommunityJoin from "@/components/CommunityJoin";
+import PwaInstallPromo from "@/components/PwaInstallPromo";
 import BookCard from "@/components/BookCard";
 import { updateOrderRow } from "@/utils/googleFormOrder";
 import { getDeliveryCharge } from "@/utils/cartOffers";
@@ -1425,10 +1426,6 @@ export default function OrderDetailPage() {
         )}
       </AnimatePresence>
 
-      {/* Refer & earn — generate a shareable link, earn ₹50 on a friend's
-          first delivered order. Shown above the delivery details. */}
-      <ReferAndEarn phone={String(order["Phone Number"] || number)} />
-
       {/* Deliver-to (directly below the map) */}
       <section className="od-block">
         <div className="od-block-titlerow">
@@ -1771,24 +1768,26 @@ export default function OrderDetailPage() {
         )}
       </section>
 
-      {/* Ask about this order — opens the support topic sheet */}
-      <button
-        type="button"
-        className="od-help-btn"
-        onClick={() => setShowSupport(true)}
-      >
-        <FaWhatsapp size={16} /> Ask about this order
-      </button>
-      <button
-        type="button"
-        className="od-bill-btn od-bill-full"
-        onClick={downloadBill}
-      >
-        <Download size={16} /> Download bill
-      </button>
+      {/* Refer & earn — promo moved below the transactional + review sections
+          so the important order info sits at the top. */}
+      <ReferAndEarn phone={String(order["Phone Number"] || number)} />
 
       {/* Join our community — WhatsApp group + Instagram */}
       <CommunityJoin variant="card" />
+
+      {/* Ask + Download — compact 2-up action row */}
+      <div className="od-actions-row">
+        <button
+          type="button"
+          className="od-help-btn"
+          onClick={() => setShowSupport(true)}
+        >
+          <FaWhatsapp size={16} /> Ask about order
+        </button>
+        <button type="button" className="od-bill-btn" onClick={downloadBill}>
+          <Download size={16} /> Download bill
+        </button>
+      </div>
 
       {/* You might also be interested in */}
       {recos.length > 0 && (
@@ -1943,6 +1942,9 @@ export default function OrderDetailPage() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Fixed install-app bar (hidden when already installed). */}
+      <PwaInstallPromo variant="bar" />
     </main>
   );
 }

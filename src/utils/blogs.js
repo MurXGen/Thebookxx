@@ -4,6 +4,252 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "international-day-of-peace-2026-books-to-read": {
+    id: "blog-057",
+    title:
+      "International Day of Peace 2026: The Invest in Peace Theme, and 15 Books That Explain How Conflict Actually Ends",
+    slug: "international-day-of-peace-2026-books-to-read",
+    author: "TheBookX Editorial",
+    authorSlug: "murthy-thevar",
+    publishDate: "2026-09-21",
+    lastModified: "2026-09-21",
+    excerpt:
+      "International Day of Peace falls on 21 September 2026 with the theme Invest in Peace. The date, what it means, and 15 books on conflict, kindness and repair.",
+    content: [
+      {
+        type: "paragraph",
+        content:
+          "The International Day of Peace falls on Monday, 21 September 2026, and this year the United Nations has given it a theme that is unusually practical: Invest in Peace: For Everyone, Everywhere, Every Day. The framing matters. It moves the day away from the language of summits and communiques and towards what the UN calls the everyday architects of peace, the people doing local work in neighbourhoods, classrooms and workplaces that never makes the news.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "That shift is also what makes the day readable. If peace were purely a matter of treaties, a bookshop would have nothing useful to say about it. But if peace is partly a skill, something built from how people handle disagreement, fear, grievance and the temptation to dehumanise the other side, then books are one of the few tools ordinary people actually have. This piece covers what the day is, what it is not, and 15 books worth your evening, spanning testimony from inside conflict, novels that do the quiet work, and non-fiction on why people fight at all.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "International Day of Peace 2026 at a glance",
+        content:
+          "Date: Monday, 21 September 2026. Theme: Invest in Peace: For Everyone, Everywhere, Every Day, honouring the everyday architects of peace. Hashtag: #InvestInPeace. History: the Day was established by the United Nations General Assembly in 1981 through resolution A/RES/36/67; in 2001 the Assembly unanimously adopted resolution A/RES/55/282, fixing the date at 21 September and designating it a period of global ceasefire and non-violence. Not to be confused with the International Day of Non-Violence, which falls on 2 October, Mahatma Gandhi's birthday, and was established by the General Assembly in 2007.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "What Invest in Peace actually asks of a reader",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The UN's own framing this year is that peace is more than the absence of war. It describes peace as the lived experience of safety, dignity, opportunity and cooperation in daily life, which is a definition most Indian readers will recognise immediately, because it covers things far closer to home than any border: whether a woman can walk to the bus stop after dark, whether a dispute between neighbours becomes a court case or a conversation, whether a classroom argument ends in a shrug or a grudge that lasts a decade.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The word invest is doing real work in the theme. An investment is something you put in before you see the return, usually in small amounts, repeatedly, when nothing appears to be happening. That is an accurate description of how conflicts are actually prevented, and it is also, not coincidentally, an accurate description of reading. Neither one produces a visible result on the day you do it.",
+      },
+      {
+        type: "blockquote",
+        content:
+          "Wars are loud and fast. Peace is slow and largely invisible, which is why it is so easy to stop paying for it.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Books written from inside conflict",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Testimony is the category that does the most work, because it removes the abstraction. Statistics about displacement are forgettable; one person's account of the week they stopped being able to go outside is not. Start with <a href=\"/books/the-diary-of-a-young-girl\" style=\"color:#fb8500;font-weight:600\">The Diary of a Young Girl</a>, Anne Frank's record of twenty-five months in a concealed annexe in Amsterdam, first published in 1947 by her father Otto, the only member of the group to survive. What makes it permanently unsettling is how much of it is ordinary: boredom, irritation with adults, a first crush, plans for a career.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Pair it with <a href=\"/books/man-s-search-for-meaning\" style=\"color:#fb8500;font-weight:600\">Man's Search for Meaning</a>, in which the psychiatrist Viktor Frankl describes his years in Nazi camps and then builds an entire therapeutic method out of what he observed there. The argument at its centre, that the last human freedom is the choice of one's attitude in any given set of circumstances, has been quoted into cliche, but the book itself is spare, clinical and far tougher than its reputation suggests.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Then <a href=\"/books/i-am-malala\" style=\"color:#fb8500;font-weight:600\">I Am Malala</a>, which is often filed as an inspirational memoir and is in fact a precise account of how a valley becomes unsafe gradually, then all at once. Malala Yousafzai shared the 2014 Nobel Peace Prize with the Indian campaigner Kailash Satyarthi, and at seventeen she remains the youngest laureate in the prize's history. Read alongside it <a href=\"/books/the-kite-runner\" style=\"color:#fb8500;font-weight:600\">The Kite Runner</a>, Khaled Hosseini's 2003 novel about Afghanistan, betrayal and the long arithmetic of guilt, which more than any policy paper explains why people leave a country they love.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The novels that do the quiet work",
+      },
+      {
+        type: "paragraph",
+        content:
+          "There is reasonable evidence that reading literary fiction improves performance on tests of understanding other people's mental states, and while the effect sizes are argued about and some replications have been weak, the intuition survives: spending three hundred pages inside a stranger's head is practice at a skill that peace depends on entirely.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books/to-kill-a-mockingbird\" style=\"color:#fb8500;font-weight:600\">To Kill a Mockingbird</a> remains the clearest demonstration in English of how prejudice operates as a social machine rather than an individual failing, and Harper Lee won the Pulitzer Prize for it in 1961. <a href=\"/books/animal-farm\" style=\"color:#fb8500;font-weight:600\">Animal Farm</a> and <a href=\"/books/1984\" style=\"color:#fb8500;font-weight:600\">1984</a> are the two books to read when you want to understand how a language of liberation becomes a language of control; Orwell published them in 1945 and 1949 respectively, and the second is worth rereading specifically for its appendix on Newspeak, which almost nobody remembers.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "For something gentler, <a href=\"/books/before-we-forget-kindness\" style=\"color:#fb8500;font-weight:600\">Before We Forget Kindness</a> by Toshikazu Kawaguchi works on a much smaller scale, four linked stories in a Tokyo cafe about people given a brief chance to say the thing they did not say. It is a quiet argument that most of the damage between people is caused by omission rather than malice. And <a href=\"/books/tuesdays-with-morrie\" style=\"color:#fb8500;font-weight:600\">Tuesdays with Morrie</a> is the shortest route to the same realisation, told as a series of conversations with a dying teacher.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Non-fiction on why people fight at all",
+      },
+      {
+        type: "paragraph",
+        content:
+          "If the testimony books show you what conflict feels like, this shelf tries to explain the mechanism. <a href=\"/books/sapiens-a-brief-history-of-humankind\" style=\"color:#fb8500;font-weight:600\">Sapiens: A Brief History of Humankind</a> is the widest lens: Yuval Noah Harari's central claim is that humans cooperate in enormous numbers because they believe in shared fictions, which is simultaneously the reason large-scale peace is possible and the reason large-scale violence is.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books/talking-to-strangers\" style=\"color:#fb8500;font-weight:600\">Talking to Strangers</a> is narrower and more immediately useful. Malcolm Gladwell's argument is that we are systematically bad at reading people we do not know, that we default to believing them, and that most catastrophic misjudgements between strangers, including between citizens and police, follow from this. <a href=\"/books/the-laws-of-human-nature\" style=\"color:#fb8500;font-weight:600\">The Laws of Human Nature</a> by Robert Greene covers similar ground far less charitably, and is best read as a map of the behaviour you want to avoid in yourself.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Then the two oldest books here, both frequently misread. <a href=\"/books/the-art-of-war\" style=\"color:#fb8500;font-weight:600\">The Art of War</a> is quoted in boardrooms as though it were a manual for aggression; it is closer to the opposite, a sustained argument that the highest skill is winning without fighting and that prolonged war benefits nobody. <a href=\"/books/meditations\" style=\"color:#fb8500;font-weight:600\">Meditations</a> was written by Marcus Aurelius as a private notebook while he was on campaign, and much of it is a Roman emperor talking himself out of anger, which is a more relevant exercise than it sounds.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books/war-and-peace\" style=\"color:#fb8500;font-weight:600\">War and Peace</a> belongs in both categories. Tolstoy serialised it between 1865 and 1869, and buried inside the family drama is a genuine theory of history: that generals and emperors control far less than they believe, and that events are produced by the accumulated small decisions of thousands of ordinary people. It is a long book, and it is the most direct literary statement of this year's UN theme ever written.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The Indian shelf: the oldest argument about war",
+      },
+      {
+        type: "paragraph",
+        content:
+          "India's contribution to this conversation begins in the worst possible place, a battlefield with the armies already drawn up. <a href=\"/books/the-bhagavad-gita\" style=\"color:#fb8500;font-weight:600\">The Bhagavad Gita</a> opens with Arjuna refusing to fight because the people opposite him are his own family, and everything that follows is an argument about duty, consequence and detachment that Indians have been disagreeing about for two thousand years. Gandhi read it as a text about non-violence and inner conflict; others have read it as a justification for action. That the same 700 verses support both readings is precisely what makes it worth reading yourself rather than accepting a summary.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "For younger readers, <a href=\"/books/the-gita-for-children\" style=\"color:#fb8500;font-weight:600\">The Gita: For Children</a> by Roopa Pai does the rare thing of treating children as capable of philosophy, and it is the version to buy if a child in the house asks what the Gita actually says. <a href=\"/books/how-i-taught-my-grandmother-to-read\" style=\"color:#fb8500;font-weight:600\">How I Taught My Grandmother to Read</a> by Sudha Murty is a set of short true stories that teach fairness and dignity without once announcing that it is teaching anything, which is why it works.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "And <a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a>, A.P.J. Abdul Kalam's autobiography, is the book to hand a teenager on a day like this. Kalam spent his career building missiles and spent his later years talking almost exclusively to schoolchildren about peace, and the tension between those two facts is the honest, unresolved thing at the centre of the book.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Peace at the scale you can actually control",
+      },
+      {
+        type: "paragraph",
+        content:
+          "There is a risk in a day like this, which is that the scale of the problem makes personal action feel absurd. The UN's theme is a deliberate answer to that. Most people will never influence a ceasefire, but almost everyone runs a small system, a family, a team, a classroom, a WhatsApp group, in which conflict either escalates or does not depending on how they behave.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Three books on that scale. <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is about the thinking that precedes speech, and the practical claim behind it is one most arguments prove: a large share of ordinary conflict is not disagreement at all but two people defending positions neither has stated clearly, including to themselves. <a href=\"/books/how-to-win-friends-and-influence-people\" style=\"color:#fb8500;font-weight:600\">How to Win Friends and Influence People</a> has survived since 1936 because its core instruction, that criticism almost never changes behaviour, is inconvenient and correct. And <a href=\"/books/ikigai\" style=\"color:#fb8500;font-weight:600\">Ikigai</a> is the least confrontational of the three, a short book about having enough purpose in your own life that you stop needing to win small fights in other people's.",
+      },
+      {
+        type: "list",
+        style: "ordered",
+        items: [
+          "If you have one evening: The Diary of a Young Girl, or Before We Forget Kindness if you want something lighter.",
+          "If you want the argument, not the emotion: Talking to Strangers, then The Art of War.",
+          "If you have a teenager at home: Wings of Fire and I Am Malala, in that order.",
+          "If you have a child under twelve: The Gita: For Children and How I Taught My Grandmother to Read.",
+          "If you have a month: War and Peace. Read fifty pages a day and skip nothing, including the essays.",
+          "If the conflict you are thinking about is one of your own: The Art of Clarity, then Meditations.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "What the day actually involves",
+      },
+      {
+        type: "paragraph",
+        content:
+          "At United Nations Headquarters in New York the Day is traditionally marked by the ringing of the Peace Bell, cast from coins donated by people in dozens of countries, followed by a minute of silence. Schools and community groups worldwide hold their own observances, and the UN encourages small, specific actions rather than statements: giving time to someone, hosting an intergenerational conversation, using your own platform to tell a story of peace.",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "Observe the minute of silence at noon, wherever you are.",
+          "Give one book away today, ideally to someone who cannot easily buy one.",
+          "Have the conversation you have been avoiding, with the aim of understanding rather than winning.",
+          "Read one account of a conflict you have opinions about but no direct experience of.",
+          "Note that the International Day of Non-Violence follows on 2 October, Gandhi Jayanti, if you want to extend the reading.",
+        ],
+      },
+      {
+        type: "callout",
+        style: "success",
+        title: "Building this shelf without spending much",
+        content:
+          "Every title in this article is on TheBookX, with books starting from ₹1 and free delivery across India. Cash on Delivery is available on every order, so you can pay when the books reach you. Gift wrapping is available for ₹25 if you are sending a book to someone today rather than keeping it, which is arguably the more appropriate action on the International Day of Peace.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>",
+      },
+      {
+        type: "paragraph",
+        content:
+          "One last note on expectations. No book on this list has prevented a war, and none will. What they do is smaller and slower: they make it marginally harder to believe that the people on the other side of any dispute are a simpler kind of human than you are. That belief is the raw material every conflict runs on, and it is the one thing an individual reader can genuinely deplete. That is what investing in peace looks like from a chair.",
+      },
+    ],
+    coverImage: "/blogs/international-day-of-peace-2026-books-to-read.jpeg",
+    images: [
+      {
+        url: "/blogs/international-day-of-peace-2026-books-to-read.jpeg",
+        alt: "A young woman reading a plain unmarked paperback by a window in soft morning light, with a cup of tea and a small stack of blank-covered books on the table beside her",
+        caption:
+          "The International Day of Peace falls on 21 September 2026, with Invest in Peace: For Everyone, Everywhere, Every Day as this year's UN theme",
+        category: "Reading Culture",
+      },
+    ],
+    keywords: [
+      "international day of peace 2026",
+      "international day of peace theme 2026",
+      "invest in peace theme",
+      "world peace day 21 september",
+      "books about peace and conflict",
+      "books on non violence india",
+      "international day of non violence 2 october",
+      "best books to read on peace day",
+      "buy books online india free delivery",
+      "TheBookX",
+    ],
+    categories: ["Reading Culture", "Book Lists", "Books in the News"],
+    faqs: [
+      {
+        question: "When is the International Day of Peace 2026 and what is the theme?",
+        answer:
+          "The International Day of Peace falls on Monday, 21 September 2026. The United Nations theme for 2026 is Invest in Peace: For Everyone, Everywhere, Every Day, which honours what the UN calls the everyday architects of peace, meaning people driving local action in their own communities, schools and workplaces rather than only heads of state and negotiators. The associated hashtag is #InvestInPeace, and the UN encourages small concrete actions such as giving your time to someone, hosting an intergenerational conversation, or using your own platform to tell a story of peace.",
+      },
+      {
+        question: "Why is the International Day of Peace held on 21 September?",
+        answer:
+          "The Day was established by the United Nations General Assembly in 1981 through resolution A/RES/36/67, but for its first two decades it was tied to the opening of the General Assembly's annual session, so the date moved. In 2001 the Assembly unanimously adopted resolution A/RES/55/282, which fixed the observance on 21 September every year and designated it a period of global ceasefire and non-violence. At UN Headquarters in New York the Day is traditionally marked by the ringing of the Peace Bell and a minute of silence.",
+      },
+      {
+        question: "What is the difference between the International Day of Peace and the International Day of Non-Violence?",
+        answer:
+          "They are two separate observances. The International Day of Peace falls on 21 September and focuses broadly on ceasefire, conflict prevention and the conditions that make peace possible. The International Day of Non-Violence falls on 2 October, the birthday of Mahatma Gandhi, and was established by the General Assembly in 2007 to promote non-violence specifically as a method of social and political change. In India the second date is also observed as Gandhi Jayanti, a national holiday, which makes the two weeks between them a natural window for reading on this theme.",
+      },
+      {
+        question: "Which single book should I read if I only have one evening?",
+        answer:
+          "The Diary of a Young Girl by Anne Frank, because it does in a few hours what argument cannot do at all: it makes an abstract catastrophe specific and ordinary. If you want something gentler, Before We Forget Kindness by Toshikazu Kawaguchi is four short linked stories about people who get one chance to say what they did not say, and it makes the same point about omission and repair on a domestic scale. Both are available on TheBookX with free delivery across India and Cash on Delivery.",
+      },
+    ],
+  },
   "world-alzheimers-day-2026-reading-brain-health-books": {
     id: "blog-056",
     title:

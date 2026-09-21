@@ -89,7 +89,6 @@ import BookCoverImg from "@/components/BookCoverImg";
 import { books as ALL_BOOKS } from "@/utils/book";
 import { getBookCost } from "@/data/bookCosts";
 import { creditWalletReward, appendWalletTx } from "@/utils/googleFormOrder";
-import { recomputeOrderBill, effectiveAdvance } from "@/utils/orderBill";
 import { showToast } from "@/context/ToastContext";
 import { getDeliveryCharge } from "@/utils/cartOffers";
 import {
@@ -1339,10 +1338,7 @@ function buildIpAutofillJson(order, books = [], isCOD = false) {
   // A ₹99 advance paid online is already collected — the courier collects only
   // the balance. Deduct it before the 5.9% COD fee so the declared COD is net.
   const advancePaid = /^\s*yes/i.test(String(order["Advance Paid"] || ""));
-  const codBase =
-    isCOD && advancePaid
-      ? Math.max(0, gross - effectiveAdvance(order))
-      : gross;
+  const codBase = isCOD && advancePaid ? Math.max(0, gross - 99) : gross;
   const codNet = Math.max(0, codBase - Math.round(codBase * 0.059));
   const ch = ipChunks(order["Address"]);
   return JSON.stringify({
@@ -1513,9 +1509,7 @@ function IndiaPostSheet({
         const grossCod = Number(String(amount).replace(/[^\d.]/g, "")) || 0;
         const advancePaid = /^\s*yes/i.test(String(o["Advance Paid"] || ""));
         const codBase =
-          isCOD && advancePaid
-            ? Math.max(0, grossCod - effectiveAdvance(o))
-            : grossCod;
+          isCOD && advancePaid ? Math.max(0, grossCod - 99) : grossCod;
         const codFee = Math.round(codBase * 0.059);
         const codNet = Math.max(0, codBase - codFee);
         const chunks = ipChunks(o["Address"]);
@@ -4340,14 +4334,6 @@ export default function ManageOrdersPage() {
   const [wsB, setWsB] = useState("");
   const [wsH, setWsH] = useState("");
   const [wsSaving, setWsSaving] = useState(false);
-  // ── Replace-a-book flow ──
-  const [rbOrder, setRbOrder] = useState(null);
-  const [rbStep, setRbStep] = useState("pick"); // pick | search | review
-  const [rbBooks, setRbBooks] = useState([]); // working [{name, qty, price}]
-  const [rbLineIdx, setRbLineIdx] = useState(-1);
-  const [rbQuery, setRbQuery] = useState("");
-  const [rbBusy, setRbBusy] = useState(false);
-  const [rbSettled, setRbSettled] = useState(""); // "" | wallet | cod | paylink
   // ── Delivered reconcile (India Post bulk-articles-tracking upload) ──
   // Upload the India Post bulk-tracking .xlsx; every article the file marks
   // "Delivered" is matched to an order by Shipping ID. COD orders are proposed
@@ -5135,8 +5121,7 @@ export default function ManageOrdersPage() {
     // If the ₹99 advance is already paid online, deduct it BEFORE the COD fee so
     // the label shows only the remaining cash to collect (matches the card + JSON).
     const advancePaid = /^\s*yes/i.test(String(o["Advance Paid"] || ""));
-    const codBase =
-      isCOD && advancePaid ? Math.max(0, rev - effectiveAdvance(o)) : rev;
+    const codBase = isCOD && advancePaid ? Math.max(0, rev - 99) : rev;
     // COD orders collect the NET amount (base − 5.9%); non-COD unchanged.
     const codAmount = isCOD
       ? Math.max(0, codBase - Math.round(codBase * 0.059))
@@ -6563,252 +6548,6 @@ export default function ManageOrdersPage() {
     } finally {
       setWsSaving(false);
     }
-  };
-
-  // ── Replace-a-book: swap any book on an order for another from the catalogue,
-  // re-evaluate the whole bill, then settle the difference by payment type. ──
-  const rbBookPrice = (b) => Math.round(Number(b?.discountedPrice) || 0);
-  const openReplaceBook = (order) => {
-    const lines = (order.parsedBooks || []).map((b) => ({
-      name: b.name,
-      qty: Number(b.quantity) || Number(b.qty) || 1,
-      price: Math.round(Number(b.total) / (Number(b.quantity) || 1)) ||
-        Math.round(Number(b.price) || 0),
-    }));
-    setRbOrder(order);
-    setRbBooks(lines);
-    setRbLineIdx(-1);
-    setRbQuery("");
-    setRbSettled("");
-    setRbStep(lines.length === 1 ? "search" : "pick");
-    if (lines.length === 1) setRbLineIdx(0);
-  };
-  const closeReplaceBook = () => {
-    setRbOrder(null);
-    setRbBooks([]);
-    setRbLineIdx(-1);
-    setRbQuery("");
-    setRbSettled("");
-    setRbStep("pick");
-  };
-  const rbPickLine = (idx) => {
-    setRbLineIdx(idx);
-    setRbQuery("");
-    setRbStep("search");
-  };
-  const rbChooseBook = (book) => {
-    setRbBooks((prev) =>
-      prev.map((l, i) =>
-        i === rbLineIdx
-          ? { ...l, name: book.name, price: rbBookPrice(book) }
-          : l,
-      ),
-    );
-    setRbStep("review");
-  };
-  // Live bill + difference for the review step.
-  const rbBill = rbOrder ? recomputeOrderBill(rbOrder, rbBooks) : null;
-  const rbOldGrand = rbOrder
-    ? Math.round(Number(rbOrder["Total Amount"]) || Number(rbOrder.revenue) || 0)
-    : 0;
-  const rbDiff = rbBill ? rbBill.grand - rbOldGrand : 0;
-  // Alternate bill with the ₹399 (₹1-cart) free-delivery threshold WAIVED —
-  // used by the "just replace, ignore the ₹399 threshold" option.
-  const rbBillNT = rbOrder
-    ? recomputeOrderBill(rbOrder, rbBooks, { ignoreOneRupeeThreshold: true })
-    : null;
-  const rbDiffNT = rbBillNT ? rbBillNT.grand - rbOldGrand : 0;
-  const rbIsCOD = rbOrder
-    ? /cash on delivery|cod/i.test(String(rbOrder["Payment Type"] || ""))
-    : false;
-  const rbPhone = rbOrder ? rbOrder["Phone Number"] || "" : "";
-  const rbOid = rbOrder ? rbOrder["Order ID"] : "";
-  const rbSwappedName =
-    rbLineIdx >= 0 && rbBooks[rbLineIdx] ? rbBooks[rbLineIdx].name : "";
-  // Write the new books + recomputed totals to the sheet (+ optional extra fields).
-  const rbWriteOrder = async (extra = {}) => {
-    const fields = {
-      "Books List": rbBill.booksList,
-      "Total Amount": String(rbBill.grand),
-      "Delivery Charge": String(rbBill.delivery),
-      ...extra,
-    };
-    patchLocalOrder(rbOid, {
-      ...fields,
-      revenue: rbBill.grand,
-      parsedBooks: rbBooks.map((b) => ({
-        name: b.name,
-        quantity: b.qty,
-        price: b.price,
-        total: b.price * b.qty,
-      })),
-    });
-    await updateOrderRow(rbOid, fields);
-  };
-  // COD order (or diff == 0): just update — new total collected at delivery.
-  const rbUpdateCodOrDirect = async () => {
-    setRbBusy(true);
-    try {
-      await rbWriteOrder();
-      showToast("Order updated with the new book & total ✓", "success");
-      setTimeout(fetchOrders, 1300);
-      closeReplaceBook();
-    } finally {
-      setRbBusy(false);
-    }
-  };
-  // Online-paid + cheaper: refund the surplus to the customer's wallet.
-  const rbRefundToWallet = async () => {
-    setRbBusy(true);
-    try {
-      const refund = Math.abs(rbDiff);
-      await rbWriteOrder();
-      if (refund > 0) {
-        await creditWalletReward(
-          rbPhone,
-          refund,
-          rbOid,
-          "Book replacement refund",
-        );
-      }
-      setRbSettled("wallet");
-      showToast(`₹${refund} credited to the customer's wallet ✓`, "success");
-      setTimeout(fetchOrders, 1300);
-    } finally {
-      setRbBusy(false);
-    }
-  };
-  const rbWhatsAppWalletMsg = () => {
-    const refund = Math.abs(rbDiff);
-    const msg = `Hi ${String(rbOrder["Customer Name"] || "").replace(/\(unconfirmed\)/i, "").trim()} 👋\n\nWe've updated your order ${rbOid} — the book was swapped to *${rbSwappedName}*. Since the new total is lower, we've added *₹${refund} to your TheBookX wallet* 💰. You can use it on your next order.\n\nHappy reading! 📚`;
-    openWhatsApp(rbPhone, msg);
-  };
-  // Online-paid + dearer → keep the paid amount as an advance, mark COD balance.
-  const rbConvertToCod = async () => {
-    setRbBusy(true);
-    try {
-      await rbWriteOrder({
-        "Payment Type": "Cash on Delivery",
-        "Advance Paid": "Yes",
-        "Advance Amount": String(rbOldGrand),
-        "Order Comment": `Book swap → ${rbSwappedName}. ₹${rbOldGrand} paid online; collect balance ₹${rbDiff} as COD.`,
-      });
-      setRbSettled("cod");
-      showToast(
-        `Marked COD — collect ₹${rbDiff} balance at delivery.`,
-        "success",
-      );
-      setTimeout(fetchOrders, 1300);
-    } finally {
-      setRbBusy(false);
-    }
-    const phone10c = String(rbPhone).replace(/\D/g, "").slice(-10);
-    const originC =
-      typeof window !== "undefined" ? window.location.origin : "https://thebookx.in";
-    const payLink = `${originC}/profile/${phone10c}/orders/${encodeURIComponent(rbOid)}?pay=1`;
-    const msg = `Hi ${String(rbOrder["Customer Name"] || "").replace(/\(unconfirmed\)/i, "").trim()} 👋\n\nWe swapped a book on your order ${rbOid} to *${rbSwappedName}*. The new total is a little higher, so there's a small balance of *₹${rbDiff}* to pay. Are you okay to pay this *₹${rbDiff} as Cash on Delivery*? Just reply *YES* and we'll proceed. 🙏\n\nPrefer to pay online instead? Tap here to pay ₹${rbDiff} securely:\n${payLink}`;
-    openWhatsApp(rbPhone, msg);
-  };
-  // "Just replace, ignore the ₹399 threshold" — recompute the bill with the
-  // ₹1-cart free-delivery threshold waived (everything else — offers, COD — is
-  // recalculated normally). If it nets lower, refund to wallet; if higher,
-  // collect the balance as COD.
-  const rbAdjustNoThreshold = async () => {
-    if (!rbBillNT) return;
-    setRbBusy(true);
-    const nt = rbBillNT.grand;
-    const diffNT = nt - rbOldGrand;
-    try {
-      const fields = {
-        "Books List": rbBillNT.booksList,
-        "Total Amount": String(nt),
-        "Delivery Charge": String(rbBillNT.delivery),
-      };
-      if (diffNT > 0) {
-        // Still a balance after waiving the threshold → collect as COD.
-        fields["Payment Type"] = "Cash on Delivery";
-        fields["Advance Paid"] = "Yes";
-        fields["Advance Amount"] = String(rbOldGrand);
-        fields["Order Comment"] = `Book swap → ${rbSwappedName} (₹399 threshold waived). ₹${rbOldGrand} paid online; collect ₹${diffNT} as COD.`;
-      }
-      patchLocalOrder(rbOid, {
-        ...fields,
-        revenue: nt,
-        parsedBooks: rbBooks.map((b) => ({
-          name: b.name,
-          quantity: b.qty,
-          price: b.price,
-          total: b.price * b.qty,
-        })),
-      });
-      await updateOrderRow(rbOid, fields);
-      if (diffNT < 0) {
-        await creditWalletReward(
-          rbPhone,
-          Math.abs(diffNT),
-          rbOid,
-          "Book replacement refund",
-        );
-        setRbSettled("wallet-nt");
-        showToast(
-          `₹${Math.abs(diffNT)} credited to wallet (₹399 threshold waived) ✓`,
-          "success",
-        );
-      } else if (diffNT > 0) {
-        setRbSettled("cod-nt");
-        showToast(`Marked COD — collect ₹${diffNT} at delivery.`, "success");
-      } else {
-        showToast("Order updated (no bill change) ✓", "success");
-        setTimeout(fetchOrders, 1300);
-        closeReplaceBook();
-        setRbBusy(false);
-        return;
-      }
-      setTimeout(fetchOrders, 1300);
-    } finally {
-      setRbBusy(false);
-    }
-    // WhatsApp follow-up.
-    const nm = String(rbOrder["Customer Name"] || "")
-      .replace(/\(unconfirmed\)/i, "")
-      .trim();
-    if (diffNT > 0) {
-      const phone10 = String(rbPhone).replace(/\D/g, "").slice(-10);
-      const origin =
-        typeof window !== "undefined"
-          ? window.location.origin
-          : "https://thebookx.in";
-      const payLink = `${origin}/profile/${phone10}/orders/${encodeURIComponent(rbOid)}?pay=1`;
-      const msg = `Hi ${nm} 👋\n\nWe swapped a book on your order ${rbOid} to *${rbSwappedName}*. There's a small balance of *₹${diffNT}* — okay to pay it as *Cash on Delivery*? Reply *YES* and we'll proceed. 🙏\n\nPrefer to pay online? Tap here:\n${payLink}`;
-      openWhatsApp(rbPhone, msg);
-    } else if (diffNT < 0) {
-      const msg = `Hi ${nm} 👋\n\nWe swapped a book on your order ${rbOid} to *${rbSwappedName}*. We've added *₹${Math.abs(diffNT)} to your TheBookX wallet* 💰 for the difference. Happy reading! 📚`;
-      openWhatsApp(rbPhone, msg);
-    }
-  };
-  // Online-paid + dearer → send an online pay-link for the balance (opens the
-  // pay modal on their order-detail page for exactly the balance amount).
-  const rbSendPayLink = async () => {
-    setRbBusy(true);
-    try {
-      await rbWriteOrder({
-        "Payment Type": "Cash on Delivery",
-        "Advance Paid": "Yes",
-        "Advance Amount": String(rbOldGrand),
-        "Order Comment": `Book swap → ${rbSwappedName}. ₹${rbOldGrand} paid online; ₹${rbDiff} balance due.`,
-      });
-      setRbSettled("paylink");
-      showToast("Balance set — pay link ready to send.", "success");
-      setTimeout(fetchOrders, 1300);
-    } finally {
-      setRbBusy(false);
-    }
-    const phone10 = String(rbPhone).replace(/\D/g, "").slice(-10);
-    const origin =
-      typeof window !== "undefined" ? window.location.origin : "https://thebookx.in";
-    const link = `${origin}/profile/${phone10}/orders/${encodeURIComponent(rbOid)}?pay=1`;
-    const msg = `Hi ${String(rbOrder["Customer Name"] || "").replace(/\(unconfirmed\)/i, "").trim()} 👋\n\nWe swapped a book on your order ${rbOid} to *${rbSwappedName}*. A small balance of *₹${rbDiff}* remains. You can pay it online here:\n${link}\n\nThanks! 📚`;
-    openWhatsApp(rbPhone, msg);
   };
 
   // Append a NEW order row via the Apps Script (action=append). `fields` is
@@ -10868,18 +10607,6 @@ export default function ManageOrdersPage() {
                                             >
                                               <X size={14} /> Cancel order
                                             </button>
-                                            <button
-                                              type="button"
-                                              role="menuitem"
-                                              className="mo-kebab-item"
-                                              onClick={() => {
-                                                openReplaceBook(order);
-                                                setCardMenuId(null);
-                                              }}
-                                            >
-                                              <RefreshCw size={14} /> Replace a
-                                              book
-                                            </button>
                                             <div className="mo-kebab-group">
                                               Advanced
                                             </div>
@@ -11075,7 +10802,7 @@ export default function ManageOrdersPage() {
                                 );
                                 const codBase =
                                   isCOD && advancePaid
-                                    ? Math.max(0, rev - effectiveAdvance(order))
+                                    ? Math.max(0, rev - 99)
                                     : rev;
                                 const fee = isCOD
                                   ? Math.round(codBase * 0.059)
@@ -12318,10 +12045,7 @@ export default function ManageOrdersPage() {
                     String(o["Advance Paid"] || ""),
                   );
                   const rev = Number(o.revenue) || 0;
-                  const codBase =
-                    isCOD && advPaid
-                      ? Math.max(0, rev - effectiveAdvance(o))
-                      : rev;
+                  const codBase = isCOD && advPaid ? Math.max(0, rev - 99) : rev;
                   const codNet = isCOD
                     ? Math.max(0, codBase - Math.round(codBase * 0.059))
                     : rev;
@@ -12586,334 +12310,6 @@ export default function ManageOrdersPage() {
                         )}
                         Save
                       </button>
-                    </div>
-                  </motion.div>
-                </motion.div>
-              )}
-            </AnimatePresence>,
-            document.body,
-          )}
-
-        {/* Replace-a-book — slide-up sheet (portaled, no blur). */}
-        {typeof document !== "undefined" &&
-          createPortal(
-            <AnimatePresence>
-              {rbOrder && (
-                <motion.div
-                  className="mo-bd-overlay"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  onClick={closeReplaceBook}
-                >
-                  <motion.div
-                    className="mo-bd-sheet mo-rb-sheet"
-                    initial={{ y: "100%" }}
-                    animate={{ y: 0 }}
-                    exit={{ y: "100%" }}
-                    transition={{ duration: 0.32, ease: "easeOut" }}
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <div className="mo-ws-head">
-                      <div className="mo-ws-head-txt">
-                        <span className="mo-ws-title">
-                          <RefreshCw size={16} /> Replace a book
-                        </span>
-                        <span className="mo-ws-sub">
-                          {rbOrder["Customer Name"]} · {rbOid}
-                        </span>
-                      </div>
-                      <button
-                        type="button"
-                        className="mo-ws-close"
-                        onClick={closeReplaceBook}
-                        aria-label="Close"
-                      >
-                        <X size={18} />
-                      </button>
-                    </div>
-
-                    <div className="mo-rb-body">
-                      {/* Step 1 — pick which book to replace */}
-                      {rbStep === "pick" && (
-                        <div className="mo-rb-lines">
-                          <p className="mo-rb-hint">
-                            Which book do you want to replace?
-                          </p>
-                          {rbBooks.map((l, i) => (
-                            <button
-                              key={i}
-                              type="button"
-                              className="mo-rb-line"
-                              onClick={() => rbPickLine(i)}
-                            >
-                              <span className="mo-rb-line-cover">
-                                <BookCoverImg
-                                  src={getBookImage(l.name)}
-                                  name={l.name}
-                                />
-                              </span>
-                              <span className="mo-rb-line-info">
-                                <span className="mo-rb-line-name">{l.name}</span>
-                                <span className="mo-rb-line-meta">
-                                  Qty {l.qty} · ₹{l.price}
-                                </span>
-                              </span>
-                              <ChevronRight size={16} />
-                            </button>
-                          ))}
-                        </div>
-                      )}
-
-                      {/* Step 2 — search a replacement book */}
-                      {rbStep === "search" && (
-                        <div className="mo-rb-search">
-                          <div className="mo-rb-search-bar">
-                            <Search size={15} />
-                            <input
-                              className="mo-rb-search-input"
-                              placeholder="Search a book to swap in…"
-                              value={rbQuery}
-                              onChange={(e) => setRbQuery(e.target.value)}
-                              autoFocus
-                            />
-                          </div>
-                          <div className="mo-rb-results">
-                            {ALL_BOOKS.filter((b) => {
-                              const q = rbQuery.trim().toLowerCase();
-                              if (!q) return true;
-                              return (
-                                String(b.name).toLowerCase().includes(q) ||
-                                String(b.author || "")
-                                  .toLowerCase()
-                                  .includes(q)
-                              );
-                            })
-                              .slice(0, 40)
-                              .map((b) => (
-                                <button
-                                  key={b.id}
-                                  type="button"
-                                  className="mo-rb-result"
-                                  onClick={() => rbChooseBook(b)}
-                                >
-                                  <span className="mo-rb-line-cover">
-                                    <BookCoverImg
-                                      src={b.image}
-                                      name={b.name}
-                                      author={b.author}
-                                    />
-                                  </span>
-                                  <span className="mo-rb-line-info">
-                                    <span className="mo-rb-line-name">
-                                      {b.name}
-                                    </span>
-                                    <span className="mo-rb-line-meta">
-                                      ₹{rbBookPrice(b)}
-                                    </span>
-                                  </span>
-                                </button>
-                              ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Step 3 — review new bill + settle by payment type */}
-                      {rbStep === "review" && rbBill && (
-                        <div className="mo-rb-review">
-                          <div className="mo-rb-swap">
-                            Swapping in <b>{rbSwappedName}</b>
-                          </div>
-                          <div className="mo-rb-bill">
-                            <div className="mo-rb-brow">
-                              <span>Books subtotal</span>
-                              <span>₹{rbBill.sub}</span>
-                            </div>
-                            <div className="mo-rb-brow">
-                              <span>Delivery</span>
-                              <span>
-                                {rbBill.delivery === 0
-                                  ? "FREE"
-                                  : `₹${rbBill.delivery}`}
-                              </span>
-                            </div>
-                            {rbBill.offer > 0 && (
-                              <div className="mo-rb-brow save">
-                                <span>Offer</span>
-                                <span>−₹{rbBill.offer}</span>
-                              </div>
-                            )}
-                            {rbBill.giftFee > 0 && (
-                              <div className="mo-rb-brow">
-                                <span>Gift wrap</span>
-                                <span>₹{rbBill.giftFee}</span>
-                              </div>
-                            )}
-                            {rbBill.codFee > 0 && (
-                              <div className="mo-rb-brow">
-                                <span>COD fee</span>
-                                <span>₹{rbBill.codFee}</span>
-                              </div>
-                            )}
-                            <div className="mo-rb-brow total">
-                              <span>New total</span>
-                              <span>₹{rbBill.grand}</span>
-                            </div>
-                            <div className="mo-rb-brow was">
-                              <span>Was</span>
-                              <span>₹{rbOldGrand}</span>
-                            </div>
-                            <div
-                              className={`mo-rb-diff${rbDiff < 0 ? " down" : rbDiff > 0 ? " up" : ""}`}
-                            >
-                              {rbDiff === 0
-                                ? "No change in total"
-                                : rbDiff < 0
-                                  ? `₹${Math.abs(rbDiff)} to refund`
-                                  : `₹${rbDiff} extra to collect`}
-                            </div>
-                          </div>
-
-                          {/* Settlement actions by payment type + direction */}
-                          <div className="mo-rb-actions">
-                            {rbIsCOD || rbDiff === 0 ? (
-                              <button
-                                type="button"
-                                className="mo-ws-save"
-                                onClick={rbUpdateCodOrDirect}
-                                disabled={rbBusy}
-                              >
-                                {rbBusy ? (
-                                  <Loader2 size={15} className="mo-spin" />
-                                ) : (
-                                  <Check size={15} />
-                                )}
-                                {rbIsCOD
-                                  ? "Update order (collect new total at delivery)"
-                                  : "Update order"}
-                              </button>
-                            ) : rbDiff < 0 ? (
-                              <>
-                                {rbSettled !== "wallet" ? (
-                                  <button
-                                    type="button"
-                                    className="mo-ws-save"
-                                    onClick={rbRefundToWallet}
-                                    disabled={rbBusy}
-                                  >
-                                    {rbBusy ? (
-                                      <Loader2 size={15} className="mo-spin" />
-                                    ) : (
-                                      <Wallet size={15} />
-                                    )}
-                                    Refund ₹{Math.abs(rbDiff)} to wallet &amp;
-                                    update
-                                  </button>
-                                ) : (
-                                  <>
-                                    <div className="mo-rb-done">
-                                      <Check size={14} /> ₹{Math.abs(rbDiff)}{" "}
-                                      credited to wallet
-                                    </div>
-                                    <button
-                                      type="button"
-                                      className="mo-ws-save mo-rb-wa"
-                                      onClick={rbWhatsAppWalletMsg}
-                                    >
-                                      <FaWhatsapp size={15} /> Tell customer on
-                                      WhatsApp
-                                    </button>
-                                    <button
-                                      type="button"
-                                      className="mo-ws-cancel"
-                                      onClick={closeReplaceBook}
-                                    >
-                                      Done
-                                    </button>
-                                  </>
-                                )}
-                              </>
-                            ) : (
-                              <>
-                                <p className="mo-rb-hint">
-                                  Customer owes ₹{rbDiff} more — choose how to
-                                  collect:
-                                </p>
-                                <button
-                                  type="button"
-                                  className="mo-ws-save mo-rb-wa"
-                                  onClick={rbSendPayLink}
-                                  disabled={rbBusy}
-                                >
-                                  <FaWhatsapp size={15} /> Send UPI pay link (₹
-                                  {rbDiff})
-                                </button>
-                                <button
-                                  type="button"
-                                  className="mo-ws-save mo-rb-cod"
-                                  onClick={rbConvertToCod}
-                                  disabled={rbBusy}
-                                >
-                                  <Truck size={15} /> Convert balance to COD
-                                </button>
-                                <button
-                                  type="button"
-                                  className="mo-rb-nothresh"
-                                  onClick={rbAdjustNoThreshold}
-                                  disabled={rbBusy}
-                                  title="Replace ignoring the ₹399 free-delivery threshold — everything else (offers, COD) is recalculated"
-                                >
-                                  {rbDiffNT < 0
-                                    ? `Ignore ₹399 threshold · refund ₹${Math.abs(rbDiffNT)} to wallet`
-                                    : rbDiffNT > 0
-                                      ? `Ignore ₹399 threshold · collect ₹${rbDiffNT}`
-                                      : "Ignore ₹399 threshold (no bill change)"}
-                                </button>
-                                {rbSettled === "cod" && (
-                                  <div className="mo-rb-done">
-                                    <Check size={14} /> Marked COD · collect ₹
-                                    {rbDiff} at delivery
-                                  </div>
-                                )}
-                                {rbSettled === "paylink" && (
-                                  <div className="mo-rb-done">
-                                    <Check size={14} /> Balance set · pay link
-                                    sent
-                                  </div>
-                                )}
-                                {rbSettled === "wallet-nt" && (
-                                  <div className="mo-rb-done">
-                                    <Check size={14} /> ₹{Math.abs(rbDiffNT)}{" "}
-                                    refunded to wallet (₹399 threshold waived)
-                                  </div>
-                                )}
-                                {rbSettled === "cod-nt" && (
-                                  <div className="mo-rb-done">
-                                    <Check size={14} /> Marked COD · collect ₹
-                                    {rbDiffNT} at delivery
-                                  </div>
-                                )}
-                                <button
-                                  type="button"
-                                  className="mo-ws-cancel"
-                                  onClick={closeReplaceBook}
-                                >
-                                  {rbSettled ? "Done" : "Cancel"}
-                                </button>
-                              </>
-                            )}
-                          </div>
-                          {rbStep === "review" && rbBooks.length > 1 && (
-                            <button
-                              type="button"
-                              className="mo-rb-back"
-                              onClick={() => setRbStep("pick")}
-                            >
-                              ← Pick a different book
-                            </button>
-                          )}
-                        </div>
-                      )}
                     </div>
                   </motion.div>
                 </motion.div>

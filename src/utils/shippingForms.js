@@ -1378,6 +1378,7 @@ export function buildAddressLabelCanvas(data) {
     customerCity: data.customerCity,
     customerPincode: data.customerPincode,
     customerPhone: data.customerPhone,
+    customerAltPhone: data.customerAltPhone,
     isCOD,
     codAmount: data.codAmount,
     note: data.note,

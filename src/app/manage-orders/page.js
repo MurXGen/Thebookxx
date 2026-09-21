@@ -6708,7 +6708,6 @@ export default function ManageOrdersPage() {
         "Payment Type": "Cash on Delivery",
         "Advance Paid": "No",
         "Total Amount": String(due),
-        "Order Comment": `Book swapped: ${c.oldName} → ${c.newName}. ₹${c.oldTotalPaid} paid online; collecting ₹${due} balance (order value ₹${c.newTotal}).`,
       });
       const link = rbOrderLink();
       const msg =

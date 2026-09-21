@@ -25735,6 +25735,244 @@ img[data-loaded="true"] {
   cursor: not-allowed;
 }
 
+/* ── Replace-a-book sheet ── */
+.mo-rb-sheet {
+  max-width: 500px;
+  margin: 0 auto;
+}
+.mo-rb-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 18px;
+  max-height: 62vh;
+  overflow-y: auto;
+}
+.mo-rb-section-label {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted, #6b7280);
+}
+.mo-rb-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.mo-rb-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--hairline, #e5e7eb);
+  border-radius: 10px;
+  background: #fff;
+  cursor: pointer;
+  text-align: left;
+}
+.mo-rb-line.on {
+  border-color: var(--tertiary, #fb8500);
+  background: rgba(251, 133, 0, 0.06);
+}
+.mo-dark .mo-rb-line {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+.mo-rb-line-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text, #1c1814);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mo-dark .mo-rb-line-name {
+  color: #f3f4f6;
+}
+.mo-rb-line-meta {
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted, #6b7280);
+}
+.mo-rb-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  height: 44px;
+  border: 1px solid var(--hairline, #d1d5db);
+  border-radius: 10px;
+  color: var(--muted, #9ca3af);
+}
+.mo-rb-search-input {
+  flex: 1 1 auto;
+  border: none;
+  background: none;
+  outline: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text, #1c1814);
+}
+.mo-dark .mo-rb-search-input {
+  color: #f3f4f6;
+}
+.mo-rb-results {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+.mo-rb-result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 12px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: rgba(0, 0, 0, 0.03);
+  cursor: pointer;
+  text-align: left;
+}
+.mo-rb-result:hover {
+  border-color: var(--tertiary, #fb8500);
+}
+.mo-dark .mo-rb-result {
+  background: rgba(255, 255, 255, 0.05);
+}
+.mo-rb-result-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text, #1c1814);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mo-dark .mo-rb-result-name {
+  color: #e5e7eb;
+}
+.mo-rb-result-price {
+  flex: 0 0 auto;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--tertiary, #fb8500);
+}
+.mo-rb-picked {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(22, 163, 74, 0.1);
+  color: #15803d;
+  font-size: 13px;
+  font-weight: 700;
+}
+.mo-rb-picked button {
+  margin-left: auto;
+  border: none;
+  background: none;
+  color: var(--tertiary, #fb8500);
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.mo-rb-toggle {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  cursor: pointer;
+}
+.mo-rb-toggle input {
+  margin-top: 2px;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--tertiary, #fb8500);
+}
+.mo-rb-toggle span {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text, #1c1814);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.mo-rb-toggle em {
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted, #9ca3af);
+}
+.mo-dark .mo-rb-toggle span {
+  color: #e5e7eb;
+}
+.mo-rb-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px dashed var(--hairline, #d1d5db);
+}
+.mo-dark .mo-rb-preview {
+  border-color: rgba(255, 255, 255, 0.16);
+}
+.mo-rb-prow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted, #6b7280);
+}
+.mo-rb-delta {
+  padding-top: 6px;
+  border-top: 1px solid var(--hairline, #e5e7eb);
+  font-weight: 800;
+  color: var(--text, #1c1814);
+}
+.mo-rb-delta.down span:last-child {
+  color: #16a34a;
+}
+.mo-rb-delta.up span:last-child {
+  color: #dc2626;
+}
+.mo-dark .mo-rb-delta {
+  border-top-color: rgba(255, 255, 255, 0.12);
+  color: #f3f4f6;
+}
+.mo-rb-foot {
+  gap: 10px;
+}
+.mo-rb-costlier-btns {
+  flex: 1 1 auto;
+  display: flex;
+  gap: 8px;
+}
+.mo-rb-online-btn {
+  flex: 1 1 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 46px;
+  border-radius: 10px;
+  border: 1px solid #1c1814;
+  background: #fff;
+  color: #1c1814;
+  font-size: 13.5px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.mo-rb-costlier-btns .mo-ws-save {
+  flex: 1 1 0;
+}
+
 /* Bottom row: status pill + ONE primary action, pinned to the card bottom so
    these line up across cards (equal-height grid). */
 .mo-card-foot {

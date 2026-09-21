@@ -35,7 +35,7 @@ export function formatBooksListLines(books) {
 //   books: [{ name, qty, price }]  (price = selling / discounted price)
 // Returns absolute rupee amounts + the flags used, so the UI can show a clear
 // old-vs-new breakdown before the operator confirms.
-export function recomputeOrderBill(order, books) {
+export function recomputeOrderBill(order, books, opts = {}) {
   const list = (books || []).map((b) => ({
     name: b.name,
     qty: Number(b.qty) || 1,
@@ -43,15 +43,19 @@ export function recomputeOrderBill(order, books) {
   }));
   const sub = list.reduce((s, b) => s + b.price * b.qty, 0);
   const hasOneRupee = list.some((b) => b.price === 1);
+  // When `ignoreOneRupeeThreshold` is set, the cart is priced as a NORMAL cart
+  // (free delivery from ₹199) — i.e. the ₹1-book ₹399 free-delivery threshold
+  // is waived so a swap never adds the below-₹399 ₹100 handling fee.
+  const effOneRupee = opts.ignoreOneRupeeThreshold ? false : hasOneRupee;
   const isFaster = /faster|express/i.test(String(order?.["Delivery Type"] || ""));
   const isCOD = /cash on delivery|cod/i.test(
     String(order?.["Payment Type"] || ""),
   );
 
-  const delivery = getDeliveryCharge(sub, isFaster, hasOneRupee);
+  const delivery = getDeliveryCharge(sub, isFaster, effOneRupee);
 
   // Best flat offer whose target the new subtotal reaches.
-  const offers = getCartOffers(hasOneRupee).filter((o) => o.type === "flat");
+  const offers = getCartOffers(effOneRupee).filter((o) => o.type === "flat");
   const bestOffer = [...offers]
     .sort((a, b) => b.target - a.target)
     .find((o) => sub >= o.target);

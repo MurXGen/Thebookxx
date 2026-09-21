@@ -25921,6 +25921,30 @@ img[data-loaded="true"] {
   font-weight: 700;
   cursor: pointer;
 }
+.mo-rb-nothresh {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 42px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid var(--hairline, #d1d5db);
+  background: #fff;
+  color: var(--text, #1c1814);
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.mo-rb-nothresh:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.mo-dark .mo-rb-nothresh {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.16);
+  color: #e5e7eb;
+}
 
 /* Bottom row: status pill + ONE primary action, pinned to the card bottom so
    these line up across cards (equal-height grid). */

@@ -4344,6 +4344,7 @@ export default function ManageOrdersPage() {
   const [rbOrder, setRbOrder] = useState(null);
   const [rbStep, setRbStep] = useState("pick"); // pick | search | review
   const [rbBooks, setRbBooks] = useState([]); // working [{name, qty, price}]
+  const [rbOrigBooks, setRbOrigBooks] = useState([]); // snapshot at open
   const [rbLineIdx, setRbLineIdx] = useState(-1);
   const [rbQuery, setRbQuery] = useState("");
   const [rbBusy, setRbBusy] = useState(false);
@@ -6577,6 +6578,7 @@ export default function ManageOrdersPage() {
     }));
     setRbOrder(order);
     setRbBooks(lines);
+    setRbOrigBooks(lines.map((l) => ({ ...l })));
     setRbLineIdx(-1);
     setRbQuery("");
     setRbSettled("");
@@ -6586,6 +6588,7 @@ export default function ManageOrdersPage() {
   const closeReplaceBook = () => {
     setRbOrder(null);
     setRbBooks([]);
+    setRbOrigBooks([]);
     setRbLineIdx(-1);
     setRbQuery("");
     setRbSettled("");
@@ -6612,6 +6615,14 @@ export default function ManageOrdersPage() {
     ? Math.round(Number(rbOrder["Total Amount"]) || Number(rbOrder.revenue) || 0)
     : 0;
   const rbDiff = rbBill ? rbBill.grand - rbOldGrand : 0;
+  // Book-price-only difference (ignores any delivery-threshold re-tier) — used
+  // by the "adjust without threshold" option.
+  const rbLineTotal = (arr) =>
+    (arr || []).reduce(
+      (s, b) => s + Math.round(Number(b.price) || 0) * (Number(b.qty) || 1),
+      0,
+    );
+  const rbBookDelta = rbLineTotal(rbBooks) - rbLineTotal(rbOrigBooks);
   const rbIsCOD = rbOrder
     ? /cash on delivery|cod/i.test(String(rbOrder["Payment Type"] || ""))
     : false;
@@ -6696,8 +6707,77 @@ export default function ManageOrdersPage() {
     } finally {
       setRbBusy(false);
     }
-    const msg = `Hi ${String(rbOrder["Customer Name"] || "").replace(/\(unconfirmed\)/i, "").trim()} 👋\n\nWe swapped a book on your order ${rbOid} to *${rbSwappedName}*. The new total is a little higher, so there's a small balance of *₹${rbDiff}* to pay. Are you okay to pay this *₹${rbDiff} as Cash on Delivery*? Just reply *YES* and we'll proceed. 🙏`;
+    const phone10c = String(rbPhone).replace(/\D/g, "").slice(-10);
+    const originC =
+      typeof window !== "undefined" ? window.location.origin : "https://thebookx.in";
+    const payLink = `${originC}/profile/${phone10c}/orders/${encodeURIComponent(rbOid)}?pay=1`;
+    const msg = `Hi ${String(rbOrder["Customer Name"] || "").replace(/\(unconfirmed\)/i, "").trim()} 👋\n\nWe swapped a book on your order ${rbOid} to *${rbSwappedName}*. The new total is a little higher, so there's a small balance of *₹${rbDiff}* to pay. Are you okay to pay this *₹${rbDiff} as Cash on Delivery*? Just reply *YES* and we'll proceed. 🙏\n\nPrefer to pay online instead? Tap here to pay ₹${rbDiff} securely:\n${payLink}`;
     openWhatsApp(rbPhone, msg);
+  };
+  // Adjust by book price only — ignore the delivery-threshold re-tier. Keeps the
+  // originally-charged delivery/fees; a cheaper book then refunds to wallet, a
+  // dearer book collects just the book difference as COD.
+  const rbAdjustNoThreshold = async () => {
+    setRbBusy(true);
+    const noThreshTotal = rbOldGrand + rbBookDelta;
+    try {
+      const fields = {
+        "Books List": rbBill.booksList,
+        "Total Amount": String(noThreshTotal),
+        // Delivery Charge intentionally left unchanged.
+      };
+      if (rbBookDelta > 0) {
+        // Book genuinely dearer → collect the book difference as a COD balance.
+        fields["Payment Type"] = "Cash on Delivery";
+        fields["Advance Paid"] = "Yes";
+        fields["Advance Amount"] = String(rbOldGrand);
+        fields["Order Comment"] = `Book swap → ${rbSwappedName} (no threshold change). ₹${rbOldGrand} paid online; collect ₹${rbBookDelta} as COD.`;
+      }
+      patchLocalOrder(rbOid, {
+        ...fields,
+        revenue: noThreshTotal,
+        parsedBooks: rbBooks.map((b) => ({
+          name: b.name,
+          quantity: b.qty,
+          price: b.price,
+          total: b.price * b.qty,
+        })),
+      });
+      await updateOrderRow(rbOid, fields);
+      if (rbBookDelta < 0) {
+        await creditWalletReward(
+          rbPhone,
+          Math.abs(rbBookDelta),
+          rbOid,
+          "Book replacement refund",
+        );
+        setRbSettled("wallet-nt");
+        showToast(
+          `₹${Math.abs(rbBookDelta)} credited to wallet (no threshold change) ✓`,
+          "success",
+        );
+      } else if (rbBookDelta > 0) {
+        setRbSettled("cod-nt");
+        showToast(`Marked COD — collect ₹${rbBookDelta} at delivery.`, "success");
+      } else {
+        showToast("Order updated (no bill change) ✓", "success");
+        setTimeout(fetchOrders, 1300);
+        closeReplaceBook();
+        setRbBusy(false);
+        return;
+      }
+      setTimeout(fetchOrders, 1300);
+    } finally {
+      setRbBusy(false);
+    }
+    // WhatsApp follow-up message.
+    if (rbBookDelta > 0) {
+      const msg = `Hi ${String(rbOrder["Customer Name"] || "").replace(/\(unconfirmed\)/i, "").trim()} 👋\n\nWe swapped a book on your order ${rbOid} to *${rbSwappedName}*. There's a small balance of *₹${rbBookDelta}* — okay to pay it as *Cash on Delivery*? Reply *YES* and we'll proceed. 🙏`;
+      openWhatsApp(rbPhone, msg);
+    } else if (rbBookDelta < 0) {
+      const msg = `Hi ${String(rbOrder["Customer Name"] || "").replace(/\(unconfirmed\)/i, "").trim()} 👋\n\nWe swapped a book on your order ${rbOid} to *${rbSwappedName}*. We've added *₹${Math.abs(rbBookDelta)} to your TheBookX wallet* 💰 for the difference. Happy reading! 📚`;
+      openWhatsApp(rbPhone, msg);
+    }
   };
   // Online-paid + dearer → send an online pay-link for the balance (opens the
   // pay modal on their order-detail page for exactly the balance amount).
@@ -12769,6 +12849,19 @@ export default function ManageOrdersPage() {
                                 >
                                   <Truck size={15} /> Convert balance to COD
                                 </button>
+                                <button
+                                  type="button"
+                                  className="mo-rb-nothresh"
+                                  onClick={rbAdjustNoThreshold}
+                                  disabled={rbBusy}
+                                  title="Swap by book price only — keep the original delivery/fees (ignore the free-delivery threshold)"
+                                >
+                                  {rbBookDelta < 0
+                                    ? `Adjust without threshold · refund ₹${Math.abs(rbBookDelta)} to wallet`
+                                    : rbBookDelta > 0
+                                      ? `Adjust without threshold · collect ₹${rbBookDelta}`
+                                      : "Adjust without threshold (no bill change)"}
+                                </button>
                                 {rbSettled === "cod" && (
                                   <div className="mo-rb-done">
                                     <Check size={14} /> Marked COD · collect ₹
@@ -12779,6 +12872,18 @@ export default function ManageOrdersPage() {
                                   <div className="mo-rb-done">
                                     <Check size={14} /> Balance set · pay link
                                     sent
+                                  </div>
+                                )}
+                                {rbSettled === "wallet-nt" && (
+                                  <div className="mo-rb-done">
+                                    <Check size={14} /> ₹{Math.abs(rbBookDelta)}{" "}
+                                    refunded to wallet (no threshold change)
+                                  </div>
+                                )}
+                                {rbSettled === "cod-nt" && (
+                                  <div className="mo-rb-done">
+                                    <Check size={14} /> Marked COD · collect ₹
+                                    {rbBookDelta} at delivery
                                   </div>
                                 )}
                                 <button

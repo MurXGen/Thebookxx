@@ -289,7 +289,12 @@ export function codNetFor(order) {
   const gross =
     Number(String(order?.["Total Amount"] || order?.revenue || "").replace(/[^\d.]/g, "")) || 0;
   const advancePaid = /^\s*yes/i.test(String(order?.["Advance Paid"] || ""));
-  const base = isCOD && advancePaid ? Math.max(0, gross - 99) : gross;
+  // Explicit "Advance Amount" (e.g. from a book swap) wins over the legacy ₹99.
+  const explicitAdv = Math.round(
+    Number(String(order?.["Advance Amount"] ?? "").replace(/[^\d.]/g, "")) || 0,
+  );
+  const adv = explicitAdv > 0 ? explicitAdv : 99;
+  const base = isCOD && advancePaid ? Math.max(0, gross - adv) : gross;
   const net = Math.max(0, base - Math.round(base * 0.059));
   return { isCOD, gross, net };
 }

@@ -72,7 +72,18 @@ export default function CodPayOnline({
   );
   const advanceAmt = 99;
   const remaining = Math.max(0, onlineTotal - advanceAmt);
-  const payAmount = mode === "advance" ? advanceAmt : onlineTotal;
+  // An explicit "Advance Amount" (e.g. a book-swap balance) means part is
+  // already paid online — the customer now pays only the remaining balance.
+  const alreadyPaid = Math.round(
+    Number(String(order?.["Advance Amount"] ?? "").replace(/[^\d.]/g, "")) || 0,
+  );
+  const hasBalance = alreadyPaid > 0;
+  const balanceDue = Math.max(0, onlineTotal - alreadyPaid);
+  const payAmount = hasBalance
+    ? balanceDue
+    : mode === "advance"
+      ? advanceAmt
+      : onlineTotal;
 
   const pendingVerify = /unconfirmed/i.test(order?.["Order Status"] || "");
 
@@ -156,8 +167,16 @@ export default function CodPayOnline({
       "Gift Wrap": giftWrap ? "Yes" : "No",
       "Gift Wrap Charge": String(giftAmt),
     };
-    const fields =
-      mode === "advance"
+    const fields = hasBalance
+      ? {
+          // Balance paid online → order is now fully prepaid.
+          "Payment Type": "UPI (Online)",
+          "Total Amount": String(alreadyPaid + balanceDue),
+          "Advance Paid": "No",
+          "Advance Amount": "",
+          ...addonFields,
+        }
+      : mode === "advance"
         ? {
             "Advance Paid": "Yes",
             "Total Amount": String(onlineTotal),
@@ -365,7 +384,9 @@ export default function CodPayOnline({
                     </div>
                   </div>
 
-                  <span className="cpo-choose-head">Choose how to pay</span>
+                  <span className="cpo-choose-head">
+                    {hasBalance ? "Pay the balance" : "Choose how to pay"}
+                  </span>
                   <button
                     type="button"
                     className="cpo-opt"
@@ -376,10 +397,18 @@ export default function CodPayOnline({
                         <Zap size={18} />
                       </span>
                       <div className="cpo-opt-t">
-                        <strong>Pay online (full)</strong>
-                        <small>Pay now · nothing at delivery</small>
+                        <strong>
+                          {hasBalance ? "Pay balance online" : "Pay online (full)"}
+                        </strong>
+                        <small>
+                          {hasBalance
+                            ? `₹${alreadyPaid} already paid · ₹${balanceDue} due`
+                            : "Pay now · nothing at delivery"}
+                        </small>
                       </div>
-                      <span className="cpo-opt-amt">₹{onlineTotal}</span>
+                      <span className="cpo-opt-amt">
+                        ₹{hasBalance ? balanceDue : onlineTotal}
+                      </span>
                     </div>
                     <div className="cpo-opt-perks">
                       <span>
@@ -391,32 +420,34 @@ export default function CodPayOnline({
                     </div>
                   </button>
 
-                  <button
-                    type="button"
-                    className="cpo-opt"
-                    onClick={() => choose("advance")}
-                  >
-                    <div className="cpo-opt-head">
-                      <span className="cpo-opt-ic">
-                        <Wallet size={18} />
-                      </span>
-                      <div className="cpo-opt-t">
-                        <strong>Pay in two parts</strong>
-                        <small>
-                          ₹{advanceAmt} now · ₹{remaining} at delivery
-                        </small>
+                  {!hasBalance && (
+                    <button
+                      type="button"
+                      className="cpo-opt"
+                      onClick={() => choose("advance")}
+                    >
+                      <div className="cpo-opt-head">
+                        <span className="cpo-opt-ic">
+                          <Wallet size={18} />
+                        </span>
+                        <div className="cpo-opt-t">
+                          <strong>Pay in two parts</strong>
+                          <small>
+                            ₹{advanceAmt} now · ₹{remaining} at delivery
+                          </small>
+                        </div>
+                        <span className="cpo-opt-amt">₹{advanceAmt}</span>
                       </div>
-                      <span className="cpo-opt-amt">₹{advanceAmt}</span>
-                    </div>
-                    <div className="cpo-opt-perks">
-                      <span>
-                        <Gift size={12} /> Free bookmark
-                      </span>
-                      <span>
-                        <ShieldCheck size={12} /> No COD fee
-                      </span>
-                    </div>
-                  </button>
+                      <div className="cpo-opt-perks">
+                        <span>
+                          <Gift size={12} /> Free bookmark
+                        </span>
+                        <span>
+                          <ShieldCheck size={12} /> No COD fee
+                        </span>
+                      </div>
+                    </button>
+                  )}
                 </div>
               )}
 

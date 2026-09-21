@@ -25871,6 +25871,11 @@ img[data-loaded="true"] {
 .mo-rb-brow.was span:last-child {
   text-decoration: line-through;
 }
+.mo-rb-was-inline {
+  color: var(--muted, #9ca3af);
+  text-decoration: line-through;
+  margin-right: 4px;
+}
 .mo-rb-diff {
   margin-top: 4px;
   font-size: 13px;

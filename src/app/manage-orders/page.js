@@ -89,7 +89,7 @@ import BookCoverImg from "@/components/BookCoverImg";
 import { books as ALL_BOOKS } from "@/utils/book";
 import { getBookCost } from "@/data/bookCosts";
 import { creditWalletReward, appendWalletTx } from "@/utils/googleFormOrder";
-import { recomputeOrderBill, effectiveAdvance } from "@/utils/orderBill";
+import { effectiveAdvance, formatBooksListLines } from "@/utils/orderBill";
 import { showToast } from "@/context/ToastContext";
 import { getDeliveryCharge } from "@/utils/cartOffers";
 import {
@@ -4344,6 +4344,7 @@ export default function ManageOrdersPage() {
   const [rbOrder, setRbOrder] = useState(null);
   const [rbStep, setRbStep] = useState("pick"); // pick | search | review
   const [rbBooks, setRbBooks] = useState([]); // working [{name, qty, price}]
+  const [rbOrigBooks, setRbOrigBooks] = useState([]); // snapshot at open
   const [rbLineIdx, setRbLineIdx] = useState(-1);
   const [rbQuery, setRbQuery] = useState("");
   const [rbBusy, setRbBusy] = useState(false);
@@ -6577,6 +6578,7 @@ export default function ManageOrdersPage() {
     }));
     setRbOrder(order);
     setRbBooks(lines);
+    setRbOrigBooks(lines.map((l) => ({ ...l })));
     setRbLineIdx(-1);
     setRbQuery("");
     setRbSettled("");
@@ -6606,12 +6608,23 @@ export default function ManageOrdersPage() {
     );
     setRbStep("review");
   };
-  // Live bill + difference for the review step.
-  const rbBill = rbOrder ? recomputeOrderBill(rbOrder, rbBooks) : null;
+  // Settlement is driven by the BOOK price difference only — delivery, offers
+  // and fees stay exactly as the customer originally paid. This way a cheaper
+  // swap always refunds (never re-charges because a threshold shifted), and a
+  // dearer swap collects just the book difference.
+  const rbLineTotal = (arr) =>
+    (arr || []).reduce(
+      (s, b) => s + Math.round(Number(b.price) || 0) * (Number(b.qty) || 1),
+      0,
+    );
+  const rbNewSub = rbLineTotal(rbBooks);
+  const rbOldSub = rbLineTotal(rbOrigBooks);
   const rbOldGrand = rbOrder
     ? Math.round(Number(rbOrder["Total Amount"]) || Number(rbOrder.revenue) || 0)
     : 0;
-  const rbDiff = rbBill ? rbBill.grand - rbOldGrand : 0;
+  const rbDiff = rbNewSub - rbOldSub; // + = customer owes, − = refund
+  const rbNewGrand = rbOldGrand + rbDiff;
+  const rbBooksListStr = formatBooksListLines(rbBooks);
   const rbIsCOD = rbOrder
     ? /cash on delivery|cod/i.test(String(rbOrder["Payment Type"] || ""))
     : false;
@@ -6622,14 +6635,13 @@ export default function ManageOrdersPage() {
   // Write the new books + recomputed totals to the sheet (+ optional extra fields).
   const rbWriteOrder = async (extra = {}) => {
     const fields = {
-      "Books List": rbBill.booksList,
-      "Total Amount": String(rbBill.grand),
-      "Delivery Charge": String(rbBill.delivery),
+      "Books List": rbBooksListStr,
+      "Total Amount": String(rbNewGrand),
       ...extra,
     };
     patchLocalOrder(rbOid, {
       ...fields,
-      revenue: rbBill.grand,
+      revenue: rbNewGrand,
       parsedBooks: rbBooks.map((b) => ({
         name: b.name,
         quantity: b.qty,
@@ -12632,7 +12644,7 @@ export default function ManageOrdersPage() {
                       )}
 
                       {/* Step 3 — review new bill + settle by payment type */}
-                      {rbStep === "review" && rbBill && (
+                      {rbStep === "review" && rbOrder && (
                         <div className="mo-rb-review">
                           <div className="mo-rb-swap">
                             Swapping in <b>{rbSwappedName}</b>
@@ -12640,37 +12652,20 @@ export default function ManageOrdersPage() {
                           <div className="mo-rb-bill">
                             <div className="mo-rb-brow">
                               <span>Books subtotal</span>
-                              <span>₹{rbBill.sub}</span>
-                            </div>
-                            <div className="mo-rb-brow">
-                              <span>Delivery</span>
                               <span>
-                                {rbBill.delivery === 0
-                                  ? "FREE"
-                                  : `₹${rbBill.delivery}`}
+                                <span className="mo-rb-was-inline">
+                                  ₹{rbOldSub}
+                                </span>{" "}
+                                ₹{rbNewSub}
                               </span>
                             </div>
-                            {rbBill.offer > 0 && (
-                              <div className="mo-rb-brow save">
-                                <span>Offer</span>
-                                <span>−₹{rbBill.offer}</span>
-                              </div>
-                            )}
-                            {rbBill.giftFee > 0 && (
-                              <div className="mo-rb-brow">
-                                <span>Gift wrap</span>
-                                <span>₹{rbBill.giftFee}</span>
-                              </div>
-                            )}
-                            {rbBill.codFee > 0 && (
-                              <div className="mo-rb-brow">
-                                <span>COD fee</span>
-                                <span>₹{rbBill.codFee}</span>
-                              </div>
-                            )}
+                            <div className="mo-rb-brow">
+                              <span>Delivery &amp; fees</span>
+                              <span>unchanged</span>
+                            </div>
                             <div className="mo-rb-brow total">
                               <span>New total</span>
-                              <span>₹{rbBill.grand}</span>
+                              <span>₹{rbNewGrand}</span>
                             </div>
                             <div className="mo-rb-brow was">
                               <span>Was</span>
@@ -12682,7 +12677,7 @@ export default function ManageOrdersPage() {
                               {rbDiff === 0
                                 ? "No change in total"
                                 : rbDiff < 0
-                                  ? `₹${Math.abs(rbDiff)} to refund`
+                                  ? `₹${Math.abs(rbDiff)} to refund to wallet`
                                   : `₹${rbDiff} extra to collect`}
                             </div>
                           </div>

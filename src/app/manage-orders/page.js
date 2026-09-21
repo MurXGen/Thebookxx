@@ -89,7 +89,11 @@ import BookCoverImg from "@/components/BookCoverImg";
 import { books as ALL_BOOKS } from "@/utils/book";
 import { getBookCost } from "@/data/bookCosts";
 import { creditWalletReward, appendWalletTx } from "@/utils/googleFormOrder";
-import { effectiveAdvance, formatBooksListLines } from "@/utils/orderBill";
+import {
+  recomputeOrderBill,
+  effectiveAdvance,
+  formatBooksListLines,
+} from "@/utils/orderBill";
 import { showToast } from "@/context/ToastContext";
 import { getDeliveryCharge } from "@/utils/cartOffers";
 import {
@@ -6608,26 +6612,30 @@ export default function ManageOrdersPage() {
     );
     setRbStep("review");
   };
-  // Settlement is driven by the BOOK price difference only — delivery, offers
-  // and fees stay exactly as the customer originally paid. This way a cheaper
-  // swap always refunds (never re-charges because a threshold shifted), and a
-  // dearer swap collects just the book difference.
+  // Full bill re-evaluation (delivery re-tiers per the ₹1 / normal thresholds).
   const rbLineTotal = (arr) =>
     (arr || []).reduce(
       (s, b) => s + Math.round(Number(b.price) || 0) * (Number(b.qty) || 1),
       0,
     );
+  const rbBill = rbOrder ? recomputeOrderBill(rbOrder, rbBooks) : null;
   const rbNewSub = rbLineTotal(rbBooks);
   const rbOldSub = rbLineTotal(rbOrigBooks);
+  const rbBookDelta = rbNewSub - rbOldSub; // < 0 = cheaper book chosen
   const rbOldGrand = rbOrder
     ? Math.round(Number(rbOrder["Total Amount"]) || Number(rbOrder.revenue) || 0)
     : 0;
-  const rbDiff = rbNewSub - rbOldSub; // + = customer owes, − = refund
-  const rbNewGrand = rbOldGrand + rbDiff;
-  const rbBooksListStr = formatBooksListLines(rbBooks);
+  const rbNewGrand = rbBill ? rbBill.grand : rbOldGrand;
+  const rbNetDiff = rbNewGrand - rbOldGrand;
   const rbIsCOD = rbOrder
     ? /cash on delivery|cod/i.test(String(rbOrder["Payment Type"] || ""))
     : false;
+  // A cheaper book (or same) is never asked to pay more — even if a threshold
+  // pushed the recomputed total up. It only ever refunds the net drop (if any).
+  const rbCollect = !rbIsCOD && rbBookDelta > 0 && rbNetDiff > 0;
+  const rbOwed = rbCollect ? rbNetDiff : 0;
+  const rbRefundAmt = !rbCollect && rbNetDiff < 0 ? Math.abs(rbNetDiff) : 0;
+  const rbBooksListStr = rbBill ? rbBill.booksList : formatBooksListLines(rbBooks);
   const rbPhone = rbOrder ? rbOrder["Phone Number"] || "" : "";
   const rbOid = rbOrder ? rbOrder["Order ID"] : "";
   const rbSwappedName =
@@ -6637,6 +6645,7 @@ export default function ManageOrdersPage() {
     const fields = {
       "Books List": rbBooksListStr,
       "Total Amount": String(rbNewGrand),
+      ...(rbBill ? { "Delivery Charge": String(rbBill.delivery) } : {}),
       ...extra,
     };
     patchLocalOrder(rbOid, {
@@ -6667,7 +6676,7 @@ export default function ManageOrdersPage() {
   const rbRefundToWallet = async () => {
     setRbBusy(true);
     try {
-      const refund = Math.abs(rbDiff);
+      const refund = rbRefundAmt;
       await rbWriteOrder();
       if (refund > 0) {
         await creditWalletReward(
@@ -6685,7 +6694,7 @@ export default function ManageOrdersPage() {
     }
   };
   const rbWhatsAppWalletMsg = () => {
-    const refund = Math.abs(rbDiff);
+    const refund = rbRefundAmt;
     const msg = `Hi ${String(rbOrder["Customer Name"] || "").replace(/\(unconfirmed\)/i, "").trim()} 👋\n\nWe've updated your order ${rbOid} — the book was swapped to *${rbSwappedName}*. Since the new total is lower, we've added *₹${refund} to your TheBookX wallet* 💰. You can use it on your next order.\n\nHappy reading! 📚`;
     openWhatsApp(rbPhone, msg);
   };
@@ -6697,18 +6706,18 @@ export default function ManageOrdersPage() {
         "Payment Type": "Cash on Delivery",
         "Advance Paid": "Yes",
         "Advance Amount": String(rbOldGrand),
-        "Order Comment": `Book swap → ${rbSwappedName}. ₹${rbOldGrand} paid online; collect balance ₹${rbDiff} as COD.`,
+        "Order Comment": `Book swap → ${rbSwappedName}. ₹${rbOldGrand} paid online; collect balance ₹${rbOwed} as COD.`,
       });
       setRbSettled("cod");
       showToast(
-        `Marked COD — collect ₹${rbDiff} balance at delivery.`,
+        `Marked COD — collect ₹${rbOwed} balance at delivery.`,
         "success",
       );
       setTimeout(fetchOrders, 1300);
     } finally {
       setRbBusy(false);
     }
-    const msg = `Hi ${String(rbOrder["Customer Name"] || "").replace(/\(unconfirmed\)/i, "").trim()} 👋\n\nWe swapped a book on your order ${rbOid} to *${rbSwappedName}*. The new total is a little higher, so there's a small balance of *₹${rbDiff}* to pay. Are you okay to pay this *₹${rbDiff} as Cash on Delivery*? Just reply *YES* and we'll proceed. 🙏`;
+    const msg = `Hi ${String(rbOrder["Customer Name"] || "").replace(/\(unconfirmed\)/i, "").trim()} 👋\n\nWe swapped a book on your order ${rbOid} to *${rbSwappedName}*. The new total is a little higher, so there's a small balance of *₹${rbOwed}* to pay. Are you okay to pay this *₹${rbOwed} as Cash on Delivery*? Just reply *YES* and we'll proceed. 🙏`;
     openWhatsApp(rbPhone, msg);
   };
   // Online-paid + dearer → send an online pay-link for the balance (opens the
@@ -6720,7 +6729,7 @@ export default function ManageOrdersPage() {
         "Payment Type": "Cash on Delivery",
         "Advance Paid": "Yes",
         "Advance Amount": String(rbOldGrand),
-        "Order Comment": `Book swap → ${rbSwappedName}. ₹${rbOldGrand} paid online; ₹${rbDiff} balance due.`,
+        "Order Comment": `Book swap → ${rbSwappedName}. ₹${rbOldGrand} paid online; ₹${rbOwed} balance due.`,
       });
       setRbSettled("paylink");
       showToast("Balance set — pay link ready to send.", "success");
@@ -6732,7 +6741,7 @@ export default function ManageOrdersPage() {
     const origin =
       typeof window !== "undefined" ? window.location.origin : "https://thebookx.in";
     const link = `${origin}/profile/${phone10}/orders/${encodeURIComponent(rbOid)}?pay=1`;
-    const msg = `Hi ${String(rbOrder["Customer Name"] || "").replace(/\(unconfirmed\)/i, "").trim()} 👋\n\nWe swapped a book on your order ${rbOid} to *${rbSwappedName}*. A small balance of *₹${rbDiff}* remains. You can pay it online here:\n${link}\n\nThanks! 📚`;
+    const msg = `Hi ${String(rbOrder["Customer Name"] || "").replace(/\(unconfirmed\)/i, "").trim()} 👋\n\nWe swapped a book on your order ${rbOid} to *${rbSwappedName}*. A small balance of *₹${rbOwed}* remains. You can pay it online here:\n${link}\n\nThanks! 📚`;
     openWhatsApp(rbPhone, msg);
   };
 
@@ -12659,10 +12668,34 @@ export default function ManageOrdersPage() {
                                 ₹{rbNewSub}
                               </span>
                             </div>
-                            <div className="mo-rb-brow">
-                              <span>Delivery &amp; fees</span>
-                              <span>unchanged</span>
-                            </div>
+                            {rbBill && (
+                              <div className="mo-rb-brow">
+                                <span>Delivery</span>
+                                <span>
+                                  {rbBill.delivery === 0
+                                    ? "FREE"
+                                    : `₹${rbBill.delivery}`}
+                                </span>
+                              </div>
+                            )}
+                            {rbBill && rbBill.offer > 0 && (
+                              <div className="mo-rb-brow save">
+                                <span>Offer</span>
+                                <span>−₹{rbBill.offer}</span>
+                              </div>
+                            )}
+                            {rbBill && rbBill.giftFee > 0 && (
+                              <div className="mo-rb-brow">
+                                <span>Gift wrap</span>
+                                <span>₹{rbBill.giftFee}</span>
+                              </div>
+                            )}
+                            {rbBill && rbBill.codFee > 0 && (
+                              <div className="mo-rb-brow">
+                                <span>COD fee</span>
+                                <span>₹{rbBill.codFee}</span>
+                              </div>
+                            )}
                             <div className="mo-rb-brow total">
                               <span>New total</span>
                               <span>₹{rbNewGrand}</span>
@@ -12672,19 +12705,25 @@ export default function ManageOrdersPage() {
                               <span>₹{rbOldGrand}</span>
                             </div>
                             <div
-                              className={`mo-rb-diff${rbDiff < 0 ? " down" : rbDiff > 0 ? " up" : ""}`}
+                              className={`mo-rb-diff${rbRefundAmt > 0 ? " down" : rbOwed > 0 ? " up" : ""}`}
                             >
-                              {rbDiff === 0
-                                ? "No change in total"
-                                : rbDiff < 0
-                                  ? `₹${Math.abs(rbDiff)} to refund to wallet`
-                                  : `₹${rbDiff} extra to collect`}
+                              {rbIsCOD
+                                ? rbNetDiff === 0
+                                  ? "No change — collect same at delivery"
+                                  : rbNetDiff < 0
+                                    ? `New COD total ₹${rbNewGrand} (₹${Math.abs(rbNetDiff)} less)`
+                                    : `New COD total ₹${rbNewGrand} (₹${rbNetDiff} more)`
+                                : rbRefundAmt > 0
+                                  ? `₹${rbRefundAmt} to refund to wallet`
+                                  : rbOwed > 0
+                                    ? `₹${rbOwed} extra to collect`
+                                    : "Cheaper book — nothing to collect"}
                             </div>
                           </div>
 
                           {/* Settlement actions by payment type + direction */}
                           <div className="mo-rb-actions">
-                            {rbIsCOD || rbDiff === 0 ? (
+                            {rbIsCOD || (!rbCollect && rbRefundAmt === 0) ? (
                               <button
                                 type="button"
                                 className="mo-ws-save"
@@ -12700,7 +12739,7 @@ export default function ManageOrdersPage() {
                                   ? "Update order (collect new total at delivery)"
                                   : "Update order"}
                               </button>
-                            ) : rbDiff < 0 ? (
+                            ) : rbRefundAmt > 0 ? (
                               <>
                                 {rbSettled !== "wallet" ? (
                                   <button
@@ -12714,14 +12753,13 @@ export default function ManageOrdersPage() {
                                     ) : (
                                       <Wallet size={15} />
                                     )}
-                                    Refund ₹{Math.abs(rbDiff)} to wallet &amp;
-                                    update
+                                    Refund ₹{rbRefundAmt} to wallet &amp; update
                                   </button>
                                 ) : (
                                   <>
                                     <div className="mo-rb-done">
-                                      <Check size={14} /> ₹{Math.abs(rbDiff)}{" "}
-                                      credited to wallet
+                                      <Check size={14} /> ₹{rbRefundAmt} credited
+                                      to wallet
                                     </div>
                                     <button
                                       type="button"
@@ -12744,7 +12782,7 @@ export default function ManageOrdersPage() {
                             ) : (
                               <>
                                 <p className="mo-rb-hint">
-                                  Customer owes ₹{rbDiff} more — choose how to
+                                  Customer owes ₹{rbOwed} more — choose how to
                                   collect:
                                 </p>
                                 <button
@@ -12754,7 +12792,7 @@ export default function ManageOrdersPage() {
                                   disabled={rbBusy}
                                 >
                                   <FaWhatsapp size={15} /> Send UPI pay link (₹
-                                  {rbDiff})
+                                  {rbOwed})
                                 </button>
                                 <button
                                   type="button"
@@ -12767,7 +12805,7 @@ export default function ManageOrdersPage() {
                                 {rbSettled === "cod" && (
                                   <div className="mo-rb-done">
                                     <Check size={14} /> Marked COD · collect ₹
-                                    {rbDiff} at delivery
+                                    {rbOwed} at delivery
                                   </div>
                                 )}
                                 {rbSettled === "paylink" && (

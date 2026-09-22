@@ -21,7 +21,12 @@ const PROOF_AVATARS = [
 // "Refer & Earn" card for the order-detail page. Enabling generates (or fetches)
 // the customer's 6-char code and a shareable /refer/{code} link. They earn ₹50
 // when a friend's first order is delivered; the friend gets ₹30.
-export default function ReferAndEarn({ phone, compact = false, guide = false }) {
+export default function ReferAndEarn({
+  phone,
+  compact = false,
+  minimal = false,
+  guide = false,
+}) {
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -101,6 +106,69 @@ export default function ReferAndEarn({ phone, compact = false, guide = false }) 
       `Happy reading! 🎁`;
     window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, "_blank");
   };
+
+  // Minimal variant: no container/faces/meter — just a dashed-top separator
+  // with the earning line and the CTA, tucked inside the profile card.
+  if (minimal) {
+    return (
+      <div className="refearn-mini">
+        <div className="refearn-mini-txt">
+          <strong>Refer &amp; Earn ₹{REFERRER_REWARD}</strong>
+          <span>
+            Your friend saves ₹{REFEREE_REWARD}, you earn ₹{REFERRER_REWARD} once
+            their first order is delivered.
+          </span>
+        </div>
+        {locked ? (
+          <div className="refearn-locked refearn-mini-locked">
+            <Lock size={14} />
+            <span>{locked}</span>
+          </div>
+        ) : !code ? (
+          <button
+            type="button"
+            className="refearn-mini-cta"
+            onClick={enable}
+            disabled={busy}
+          >
+            {busy ? (
+              <Loader2 size={15} className="refearn-spin" />
+            ) : (
+              <Users size={15} />
+            )}
+            Get my referral link
+          </button>
+        ) : (
+          <>
+            <div className="refearn-linkrow refearn-mini-linkrow">
+              <span className="refearn-link" title={link}>
+                {link.replace(/^https?:\/\//, "")}
+              </span>
+              <button
+                type="button"
+                className="refearn-copy"
+                onClick={copy}
+                aria-label="Copy link"
+              >
+                {copied ? (
+                  <Check size={15} strokeWidth={3} />
+                ) : (
+                  <Copy size={15} />
+                )}
+              </button>
+            </div>
+            <button
+              type="button"
+              className="refearn-mini-cta"
+              onClick={share}
+            >
+              <FaWhatsapp size={16} /> Share on WhatsApp
+            </button>
+          </>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div

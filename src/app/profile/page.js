@@ -1904,15 +1904,14 @@ Please cancel this order. Thank you `;
                     </Link>
                   </motion.div>
                 )}
+                {/* Refer & Earn — minimal, tucked inside the profile card. */}
+                {!cardLoading && !booting && (
+                  <ReferAndEarn phone={phoneNumber} minimal guide={refGuide} />
+                )}
               </>
             )}
           </div>
         </div>
-
-        {/* Refer & Earn — right below the profile card (minimal, conversion-first). */}
-        {!showPhoneInput && !loading && !cardLoading && !booting && (
-          <ReferAndEarn phone={phoneNumber} compact guide={refGuide} />
-        )}
 
         {error && !showPhoneInput && (
           <div className="error-state">

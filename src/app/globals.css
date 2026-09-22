@@ -45895,6 +45895,54 @@ img[data-loaded="true"] {
   /* Static fill — no looping animation. */
   transform: scaleX(0.72);
 }
+/* Minimal Refer & Earn — sits inside the profile card with a dashed separator. */
+.refearn-mini {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--dark-20, #d1d5db);
+}
+.refearn-mini-txt {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.refearn-mini-txt strong {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text, #1c1814);
+}
+.refearn-mini-txt span {
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--muted, #6b7280);
+}
+.refearn-mini-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 42px;
+  border-radius: 12px;
+  border: none;
+  background: #0a0a0a;
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.refearn-mini-cta:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.refearn-mini-linkrow {
+  margin: 0;
+}
+.refearn-mini-locked {
+  margin: 0;
+}
 .refearn-meter-lbl {
   font-size: 10.5px;
   font-weight: 700;

@@ -17,7 +17,15 @@ const normName = (s) =>
 // Add-more-before-packing upsell — shown on the order-detail page while the
 // order is still packable. Adds ride at a flat 20% off; the customer confirms
 // on WhatsApp with a merchant approve link that appends them to this order.
+const CATEGORIES = [
+  { key: "all", label: "All" },
+  { key: "bestseller", label: "Bestseller" },
+  { key: "fiction", label: "Fiction" },
+  { key: "non-fiction", label: "Non-Fiction" },
+];
+
 export default function AddBeforePacking({ order, orderId, phone }) {
+  const [cat, setCat] = useState("all");
   const storeKey = `tbx_addpack_${orderId}`;
   // Load any previously-added books from localStorage on first render (this
   // component only renders client-side once the order has loaded).
@@ -52,22 +60,21 @@ export default function AddBeforePacking({ order, orderId, phone }) {
   const disc = (b) =>
     Math.max(1, Math.round((b.discountedPrice ?? 0) * (1 - ADDON_DISCOUNT)));
 
-  // Trending pool: catalogue-tagged trending/bestseller, with a cover, not
-  // already in the order, priced sensibly.
+  // The full catalogue (with a cover, priced, not already in the order/added),
+  // filtered by the selected category tab.
   const pool = useMemo(() => {
     const addedIds = new Set(added.map((a) => a.id));
     return ALL_BOOKS.filter((b) => {
       if (!b.image || !b.id) return false;
       if (inOrder.has(normName(b.name))) return false;
       if (addedIds.has(b.id)) return false;
-      const tags = (b.catalogue || []).map((t) => String(t).toLowerCase());
       const price = b.discountedPrice ?? 0;
-      return (
-        price > 1 &&
-        (tags.includes("trending") || tags.includes("bestseller"))
-      );
-    }).slice(0, 8);
-  }, [inOrder, added]);
+      if (price <= 1) return false;
+      if (cat === "all") return true;
+      const tags = (b.catalogue || []).map((t) => String(t).toLowerCase());
+      return tags.includes(cat);
+    });
+  }, [inOrder, added, cat]);
 
   const addBook = (b) => {
     if (added.some((x) => x.id === b.id)) return;
@@ -120,7 +127,21 @@ export default function AddBeforePacking({ order, orderId, phone }) {
     );
   };
 
-  if (!pool.length && !added.length) return null;
+  // Availability regardless of the active category (so the section stays even
+  // when the current tab has no matches).
+  const hasAny = useMemo(() => {
+    const addedIds = new Set(added.map((a) => a.id));
+    return ALL_BOOKS.some(
+      (b) =>
+        b.image &&
+        b.id &&
+        (b.discountedPrice ?? 0) > 1 &&
+        !inOrder.has(normName(b.name)) &&
+        !addedIds.has(b.id),
+    );
+  }, [inOrder, added]);
+
+  if (!hasAny && !added.length) return null;
 
   return (
     <section className="abp">
@@ -173,8 +194,22 @@ export default function AddBeforePacking({ order, orderId, phone }) {
         </span>
       </div>
 
-      {/* Trending grid */}
-      <div className="abp-grid">
+      {/* Category tabs */}
+      <div className="abp-cats">
+        {CATEGORIES.map((c) => (
+          <button
+            key={c.key}
+            type="button"
+            className={`abp-cat${cat === c.key ? " on" : ""}`}
+            onClick={() => setCat(c.key)}
+          >
+            {c.label}
+          </button>
+        ))}
+      </div>
+
+      {/* 2-row horizontal-scroll rail */}
+      <div className="abp-rail">
         {pool.map((b) => {
           const price = disc(b);
           const orig = b.discountedPrice ?? 0;

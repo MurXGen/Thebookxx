@@ -1314,19 +1314,17 @@ export default function OrderDetailPage() {
 
       {/* Quick actions — minimal buttons that open slide-up sheets. */}
       <div className="od-quick">
-        {showOrderNote && (
-          <button
-            type="button"
-            className="od-quick-btn"
-            onClick={() => {
-              setNoteDraft(orderNote);
-              setShowNoteSheet(true);
-            }}
-          >
-            <Pencil size={15} />
-            {orderNote ? "Edit note" : "Add note"}
-          </button>
-        )}
+        <button
+          type="button"
+          className="od-quick-btn"
+          onClick={() => {
+            setNoteDraft(orderNote);
+            setShowNoteSheet(true);
+          }}
+        >
+          <Pencil size={15} />
+          {orderNote ? "Edit note" : "Add note"}
+        </button>
         <button
           type="button"
           className="od-quick-btn"

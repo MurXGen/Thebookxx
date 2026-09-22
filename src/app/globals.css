@@ -41953,7 +41953,7 @@ img[data-loaded="true"] {
   border: 1px solid var(--dark-20, #82828250);
   border-radius: 16px;
   overflow: hidden;
-  margin-bottom: 0;
+  margin-bottom: 12px;
 }
 .od-map {
   width: 100%;

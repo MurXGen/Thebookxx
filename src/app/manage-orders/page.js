@@ -1336,10 +1336,10 @@ function buildIpAutofillJson(order, books = [], isCOD = false) {
   const amtRaw = order["Total Amount"] || order.revenue || "";
   const gross = Number(String(amtRaw).replace(/[^\d.]/g, "")) || 0;
   // A ₹99 advance paid online is already collected — the courier collects only
-  // the balance. Deduct it before the 5.9% COD fee so the declared COD is net.
+  // the balance. Deduct it before the 1.5% COD commission so the declared COD is net.
   const advancePaid = /^\s*yes/i.test(String(order["Advance Paid"] || ""));
   const codBase = isCOD && advancePaid ? Math.max(0, gross - 99) : gross;
-  const codNet = Math.max(0, codBase - Math.round(codBase * 0.059));
+  const codNet = Math.max(0, codBase - Math.round(codBase * 0.015));
   const ch = ipChunks(order["Address"]);
   return JSON.stringify({
     v: "tbx-ip-1",
@@ -1504,13 +1504,13 @@ function IndiaPostSheet({
         const books = (o.parsedBooks || []).length || 1;
         const isCOD = /cash|cod/i.test(o["Payment Type"] || "");
         const amount = o["Total Amount"] || o.revenue || "";
-        // India Post collects the NET amount = COD balance − 5.9%. A ₹99 advance
+        // India Post collects the NET amount = COD balance − 1.5%. A ₹99 advance
         // paid online is already collected, so it's deducted before the fee.
         const grossCod = Number(String(amount).replace(/[^\d.]/g, "")) || 0;
         const advancePaid = /^\s*yes/i.test(String(o["Advance Paid"] || ""));
         const codBase =
           isCOD && advancePaid ? Math.max(0, grossCod - 99) : grossCod;
-        const codFee = Math.round(codBase * 0.059);
+        const codFee = Math.round(codBase * 0.015);
         const codNet = Math.max(0, codBase - codFee);
         const chunks = ipChunks(o["Address"]);
         const name = ipSanitize(o["Customer Name"]).slice(0, 30);
@@ -1684,7 +1684,7 @@ function IndiaPostSheet({
                   <IpField
                     label="COD Retail amount (₹) · net"
                     value={String(codNet)}
-                    hint={`₹${codBase.toLocaleString()} − ₹${codFee.toLocaleString()} (5.9%)`}
+                    hint={`₹${codBase.toLocaleString()} − ₹${codFee.toLocaleString()} (1.5%)`}
                     id={key("cod")}
                     copiedId={copiedId}
                     onCopy={copyToClipboard}
@@ -3273,7 +3273,7 @@ export default function ManageOrdersPage() {
             String(o["Total Amount"] || o.revenue || "").replace(/[^\d.]/g, ""),
           ) || 0;
         const isCOD = /cash|cod/i.test(o["Payment Type"] || "");
-        const codNet = isCOD ? Math.max(0, gross - Math.round(gross * 0.059)) : 0;
+        const codNet = isCOD ? Math.max(0, gross - Math.round(gross * 0.015)) : 0;
         return [
           i + 1,
           o["Order ID"] || "",
@@ -5207,9 +5207,9 @@ export default function ManageOrdersPage() {
     // the label shows only the remaining cash to collect (matches the card + JSON).
     const advancePaid = /^\s*yes/i.test(String(o["Advance Paid"] || ""));
     const codBase = isCOD && advancePaid ? Math.max(0, rev - 99) : rev;
-    // COD orders collect the NET amount (base − 5.9%); non-COD unchanged.
+    // COD orders collect the NET amount (base − 1.5%); non-COD unchanged.
     const codAmount = isCOD
-      ? Math.max(0, codBase - Math.round(codBase * 0.059))
+      ? Math.max(0, codBase - Math.round(codBase * 0.015))
       : rev;
     // Order note: packer's comment (local edits win) or the customer's note.
     const note =
@@ -11342,7 +11342,7 @@ export default function ManageOrdersPage() {
                                     ? Math.max(0, rev - 99)
                                     : rev;
                                 const fee = isCOD
-                                  ? Math.round(codBase * 0.059)
+                                  ? Math.round(codBase * 0.015)
                                   : 0;
                                 const sign = pnl >= 0 ? "+" : "−";
                                 return (
@@ -11721,7 +11721,7 @@ export default function ManageOrdersPage() {
                                       {(() => {
                                         const rev = Number(order.revenue) || 0;
                                         const fee = isCOD
-                                          ? Math.round(rev * 0.059)
+                                          ? Math.round(rev * 0.015)
                                           : 0;
                                         const net = Math.round(rev - fee);
                                         return (
@@ -11737,7 +11737,7 @@ export default function ManageOrdersPage() {
                                               {isCOD && (
                                                 <>
                                                   <div className="mo-bill-row muted">
-                                                    <span>COD fee · 5.9%</span>
+                                                    <span>COD commission · 1.5%</span>
                                                     <b>−₹{fee.toLocaleString()}</b>
                                                   </div>
                                                   <div className="mo-bill-row">
@@ -12584,7 +12584,7 @@ export default function ManageOrdersPage() {
                   const rev = Number(o.revenue) || 0;
                   const codBase = isCOD && advPaid ? Math.max(0, rev - 99) : rev;
                   const codNet = isCOD
-                    ? Math.max(0, codBase - Math.round(codBase * 0.059))
+                    ? Math.max(0, codBase - Math.round(codBase * 0.015))
                     : rev;
                   const phone = o["Phone Number"];
                   const digits = String(phone || "")

@@ -10,7 +10,7 @@
 //   • contractual  → 2+ books, or any set / collection / combo
 //
 // COD rule (per business):
-//   • COD orders  → collect NET = order total − 5.9% commission (₹99 online
+//   • COD orders  → collect NET = order total − 1.5% commission (₹99 online
 //                   advance, if any, is deducted first).
 //   • Prepaid     → nothing to collect; VALUE FOR CODR/COD defaults to 10 as a
 //                   placeholder, but CODR/COD code is left blank so India Post
@@ -283,14 +283,14 @@ export function estimateWeight(order) {
   return Math.round(w) || 250;
 }
 
-// COD math — NET = (total − ₹99 advance if paid) minus 5.9% commission.
+// COD math — NET = (total − ₹99 advance if paid) minus 1.5% commission.
 export function codNetFor(order) {
   const isCOD = /cash|cod/i.test(order?.["Payment Type"] || "");
   const gross =
     Number(String(order?.["Total Amount"] || order?.revenue || "").replace(/[^\d.]/g, "")) || 0;
   const advancePaid = /^\s*yes/i.test(String(order?.["Advance Paid"] || ""));
   const base = isCOD && advancePaid ? Math.max(0, gross - 99) : gross;
-  const net = Math.max(0, base - Math.round(base * 0.059));
+  const net = Math.max(0, base - Math.round(base * 0.015));
   return { isCOD, gross, net };
 }
 

@@ -4361,6 +4361,10 @@ export default function ManageOrdersPage() {
     already: 0,
     notDelivered: 0,
   });
+  // Reverse-reconcile: file says NOT delivered but the order is wrongly marked
+  // Delivered / Money Received → offer to move it back to "In Transit".
+  const [revertMatches, setRevertMatches] = useState([]);
+  const [revertSel, setRevertSel] = useState([]);
   useEffect(() => {
     try {
       const raw = localStorage.getItem("mo_track_notify");
@@ -4694,15 +4698,41 @@ export default function ManageOrdersPage() {
           lastEvent: r.lastEvent,
         });
       });
+      // Reverse case: file NOT delivered, but order marked Delivered / Money
+      // Received → propose reverting to "In Transit".
+      const revSeen = new Set();
+      const reverts = [];
+      rows
+        .filter((r) => !isDelivered(r.status))
+        .forEach((r) => {
+          const o = orders.find(
+            (ord) => sidUp(ord["Shipping ID"]) === sidUp(r.article),
+          );
+          if (!o) return;
+          const oid = o["Order ID"];
+          if (!oid || revSeen.has(oid)) return;
+          const cur = String(o["Order Status"] || "").trim();
+          if (!/deliver|money\s*received/i.test(cur)) return;
+          revSeen.add(oid);
+          reverts.push({
+            order: o,
+            article: r.article,
+            currentStatus: cur,
+            fileStatus: r.status || "Not delivered",
+          });
+        });
+
       setDelivMatches(matches);
       setDelivSel(matches.map((m) => m.order["Order ID"]));
+      setRevertMatches(reverts);
+      setRevertSel(reverts.map((m) => m.order["Order ID"]));
       setDelivFileName(file.name);
       setDelivSkipped({
         unmatched,
         already,
         notDelivered: rows.length - delivered.length,
       });
-      if (!matches.length) {
+      if (!matches.length && !reverts.length) {
         showToast(
           delivered.length
             ? "All delivered parcels are already up to date ✓"
@@ -4710,10 +4740,10 @@ export default function ManageOrdersPage() {
           "info",
         );
       } else {
-        showToast(
-          `${matches.length} delivered order(s) ready to update`,
-          "success",
-        );
+        const parts = [];
+        if (matches.length) parts.push(`${matches.length} to mark delivered`);
+        if (reverts.length) parts.push(`${reverts.length} to revert`);
+        showToast(`${parts.join(" · ")} ready`, "success");
       }
     } catch (err) {
       console.error("Delivered reconcile failed:", err);
@@ -4729,8 +4759,49 @@ export default function ManageOrdersPage() {
   const clearDeliv = () => {
     setDelivMatches([]);
     setDelivSel([]);
+    setRevertMatches([]);
+    setRevertSel([]);
     setDelivFileName("");
     setDelivSkipped({ unmatched: 0, already: 0, notDelivered: 0 });
+  };
+  const toggleRevertSel = (oid) =>
+    setRevertSel((prev) =>
+      prev.includes(oid) ? prev.filter((x) => x !== oid) : [...prev, oid],
+    );
+  // Push the selected reverts → "In Transit".
+  const pushRevertUpdates = async () => {
+    const picked = revertMatches.filter((m) =>
+      revertSel.includes(m.order["Order ID"]),
+    );
+    if (!picked.length) return;
+    setDelivBusy(true);
+    setOrders((prev) =>
+      prev.map((o) =>
+        picked.some((x) => x.order["Order ID"] === o["Order ID"])
+          ? { ...o, "Order Status": "In Transit", status: "In Transit" }
+          : o,
+      ),
+    );
+    try {
+      await Promise.all(
+        picked.map((m) =>
+          updateOrderRow(m.order["Order ID"], {
+            "Order Status": "In Transit",
+          }).catch((err) =>
+            console.error("Revert push failed:", m.order["Order ID"], err),
+          ),
+        ),
+      );
+      const ids = new Set(picked.map((m) => m.order["Order ID"]));
+      setRevertMatches((prev) =>
+        prev.filter((m) => !ids.has(m.order["Order ID"])),
+      );
+      setRevertSel([]);
+      showToast(`${picked.length} order(s) moved to In Transit ✓`, "success");
+      setTimeout(fetchOrders, 1300);
+    } finally {
+      setDelivBusy(false);
+    }
   };
   // Push every selected delivered-status change to the sheet in one batch.
   const pushDelivUpdates = async () => {
@@ -9664,7 +9735,9 @@ export default function ManageOrdersPage() {
                   ) : (
                     <UploadCloud size={15} />
                   )}
-                  {delivMatches.length ? "Upload another" : "Upload file"}
+                  {delivMatches.length || revertMatches.length
+                    ? "Upload another"
+                    : "Upload file"}
                 </button>
               </div>
 
@@ -9772,6 +9845,82 @@ export default function ManageOrdersPage() {
                                 <Truck size={11} />
                               )}
                               {m.newStatus}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
+
+              {/* Reverse-reconcile — file says NOT delivered but order is marked
+                  Delivered / Money Received → move back to In Transit. */}
+              {revertMatches.length > 0 && (
+                <>
+                  <div className="mo-deliv-bar mo-deliv-bar-revert">
+                    <label className="mo-deliv-all">
+                      <input
+                        type="checkbox"
+                        checked={revertSel.length === revertMatches.length}
+                        onChange={(e) =>
+                          setRevertSel(
+                            e.target.checked
+                              ? revertMatches.map((m) => m.order["Order ID"])
+                              : [],
+                          )
+                        }
+                      />
+                      Wrongly delivered — revert ({revertSel.length}/
+                      {revertMatches.length})
+                    </label>
+                    <button
+                      type="button"
+                      className="mo-deliv-revert-push"
+                      onClick={pushRevertUpdates}
+                      disabled={delivBusy || revertSel.length === 0}
+                    >
+                      {delivBusy ? (
+                        <Loader2 size={15} className="mo-spin" />
+                      ) : (
+                        <Truck size={15} />
+                      )}
+                      Move {revertSel.length} to In Transit
+                    </button>
+                  </div>
+                  <div className="mo-deliv-list">
+                    {revertMatches.map((m) => {
+                      const oid = m.order["Order ID"];
+                      const on = revertSel.includes(oid);
+                      return (
+                        <div
+                          key={oid}
+                          className={`mo-deliv-row${on ? " on" : ""}`}
+                          onClick={() => toggleRevertSel(oid)}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={on}
+                            onChange={() => toggleRevertSel(oid)}
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                          <div className="mo-deliv-row-main">
+                            <span className="mo-deliv-row-name">
+                              {m.order["Customer Name"] || "—"}
+                              <span className="mo-deliv-row-oid">{oid}</span>
+                            </span>
+                            <span className="mo-deliv-row-art">
+                              {m.article} · file: {m.fileStatus}
+                            </span>
+                          </div>
+                          <div className="mo-deliv-row-flow">
+                            <span className="mo-deliv-cur">
+                              {m.currentStatus}
+                            </span>
+                            <ArrowRight size={13} />
+                            <span className="mo-deliv-new revert">
+                              <Truck size={11} />
+                              In Transit
                             </span>
                           </div>
                         </div>

@@ -17016,6 +17016,38 @@ img[data-loaded="true"] {
   background: rgba(59, 130, 246, 0.18);
   color: #60a5fa;
 }
+.mo-deliv-new.revert {
+  background: rgba(245, 158, 11, 0.14);
+  color: #b45309;
+}
+.mo-dark .mo-deliv-new.revert {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+}
+/* Revert bar — separated from the delivered bar with a dashed rule. */
+.mo-deliv-bar-revert {
+  margin-top: 6px;
+  padding-top: 12px;
+  border-top: 1px dashed rgba(245, 158, 11, 0.5);
+}
+.mo-deliv-revert-push {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: none;
+  background: #f59e0b;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.mo-deliv-revert-push:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
 
 .mo-track-add {
   flex: 0 0 auto;

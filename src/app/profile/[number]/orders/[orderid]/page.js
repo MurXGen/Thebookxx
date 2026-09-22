@@ -190,13 +190,8 @@ function statusLabel(order) {
   if (/cancel/.test(st))
     return { title: "Cancelled", sub: "This order was cancelled" };
   if (/unconfirmed|pending/.test(st)) {
-    // Show the actual Order Status value from the sheet as the title.
-    const raw = String(order["Order Status"] || "").trim();
-    const title = raw
-      ? raw.charAt(0).toUpperCase() + raw.slice(1)
-      : "Unconfirmed";
     return {
-      title,
+      title: "Order status",
       sub: "We're confirming your order — this usually takes a few minutes",
     };
   }

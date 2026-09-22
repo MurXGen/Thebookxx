@@ -41644,10 +41644,11 @@ img[data-loaded="true"] {
      the track-shipment modal (bill-modal-overlay) always sits above the map. */
   isolation: isolate;
   z-index: 0;
-  border: 1px solid var(--dark-20, #82828250);
-  border-radius: 16px;
+  border: none;
+  border-radius: 20px;
   overflow: hidden;
   margin-bottom: 0;
+  box-shadow: 0 10px 30px -14px rgba(28, 24, 20, 0.28);
 }
 .od-map {
   width: 100%;
@@ -41807,57 +41808,60 @@ img[data-loaded="true"] {
 .od-tc-main {
   display: flex;
   align-items: center;
-  gap: 11px;
+  gap: 14px;
 }
-.od-tc-ic {
+/* Big Zepto-style ETA badge on the left. */
+.od-tc-badge {
   flex-shrink: 0;
-  width: 38px;
-  height: 38px;
-  border-radius: 12px;
+  width: 66px;
+  height: 66px;
+  border-radius: 18px;
   display: inline-flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: #fff3e6;
-  color: var(--tertiary, #fb8500);
+  line-height: 1.05;
+  color: #fff;
+  background: linear-gradient(150deg, #ffb703, #fb8500);
+  box-shadow: 0 8px 20px -8px rgba(251, 133, 0, 0.6);
+}
+.od-tc-badge.done {
+  background: linear-gradient(150deg, #22c55e, #16a34a);
+  box-shadow: 0 8px 20px -8px rgba(22, 163, 74, 0.55);
+}
+.od-tc-badge.cancelled {
+  background: linear-gradient(150deg, #f87171, #dc2626);
+  box-shadow: none;
+}
+.od-tc-badge-num {
+  font-size: 24px;
+  font-weight: 800;
+}
+.od-tc-badge-unit {
+  font-size: 11px;
+  font-weight: 700;
+  opacity: 0.9;
+}
+.od-tc-badge-done {
+  font-size: 13px;
+  font-weight: 800;
 }
 .od-tc-txt {
   flex: 1 1 auto;
   min-width: 0;
   display: flex;
   flex-direction: column;
+  gap: 3px;
 }
 .od-tc-txt strong {
-  font-size: var(--px-14);
+  font-size: 16px;
+  font-weight: 800;
   color: #111827;
 }
 .od-tc-txt span {
-  font-size: var(--px-12);
+  font-size: 13px;
+  line-height: 1.4;
   color: var(--gray-500, #6b7280);
-}
-.od-tc-eta {
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-width: 58px;
-  padding: 6px 10px;
-  border-radius: 12px;
-  background: #0a0a0a;
-  color: #fff;
-  line-height: 1.1;
-}
-.od-tc-eta-num {
-  font-size: var(--px-16);
-  font-weight: 800;
-}
-.od-tc-eta-unit {
-  font-size: 9.5px;
-  opacity: 0.85;
-}
-.od-tc-eta-done {
-  font-size: var(--px-12);
-  font-weight: 800;
 }
 .od-tc-bar {
   margin-top: 12px;
@@ -42937,9 +42941,114 @@ img[data-loaded="true"] {
   color: #111827;
 }
 
-/* Price details */
+/* Savings ribbon (Zepto-style) — light-blue with notched green corners. */
+.od-saved-ribbon {
+  position: relative;
+  margin: 0 6px 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #eaf3ff, #dcebff);
+  color: #1d4ed8;
+  font-size: 14px;
+  font-weight: 800;
+  text-align: center;
+  letter-spacing: 0.01em;
+}
+.od-saved-ribbon b {
+  font-weight: 900;
+}
+.od-saved-corner {
+  position: absolute;
+  top: 50%;
+  width: 0;
+  height: 0;
+  transform: translateY(-50%);
+  border-top: 11px solid transparent;
+  border-bottom: 11px solid transparent;
+}
+.od-saved-corner.left {
+  left: -6px;
+  border-right: 10px solid #8bc34a;
+  border-radius: 2px;
+}
+.od-saved-corner.right {
+  right: -6px;
+  border-left: 10px solid #8bc34a;
+  border-radius: 2px;
+}
+
+/* Delivery-to card (Zepto-style: chip + name/address, phone below a divider). */
+.od-deliver-card {
+  position: relative;
+  padding: 4px 4px;
+}
+.od-deliver-edit {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+}
+.od-deliver-row2 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+}
+.od-deliver-chip {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-2, #f4f4f5);
+  color: #4b5563;
+}
+.od-deliver-txt {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.od-deliver-txt strong {
+  font-size: 14px;
+  font-weight: 800;
+  color: #111827;
+}
+.od-deliver-txt span {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--gray-500, #6b7280);
+}
+.od-deliver-sep {
+  height: 1px;
+  margin: 0 12px;
+  background: repeating-linear-gradient(
+    to right,
+    var(--hairline, #e5e7eb) 0,
+    var(--hairline, #e5e7eb) 5px,
+    transparent 5px,
+    transparent 10px
+  );
+}
+.od-approx-row2 {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px 4px;
+  font-size: 11.5px;
+  color: var(--gray-500, #9ca3af);
+}
+
+/* Price details — soft grey card block (Zepto-style). */
 .od-price-block {
   padding: 14px;
+  background: var(--surface-2, #f7f7f8);
+  border: none;
+}
+.mo-dark .od-price-block {
+  background: rgba(255, 255, 255, 0.04);
 }
 .od-price-row {
   display: flex;

@@ -33,6 +33,7 @@ import {
   Check,
   Star,
   Copy,
+  Phone,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import {
@@ -1186,22 +1187,25 @@ export default function OrderDetailPage() {
           }`}
         >
           <div className="od-tc-main">
-            <span className="od-tc-ic">
-              {delivered ? <Home size={18} /> : <Truck size={18} />}
+            <span
+              className={`od-tc-badge${delivered ? " done" : ""}${cancelled ? " cancelled" : ""}`}
+            >
+              {cancelled ? (
+                <X size={26} />
+              ) : delivered ? (
+                <Home size={26} />
+              ) : eta.done ? (
+                <span className="od-tc-badge-done">{eta.done}</span>
+              ) : (
+                <>
+                  <span className="od-tc-badge-num">{eta.num}</span>
+                  <span className="od-tc-badge-unit">{eta.unit}</span>
+                </>
+              )}
             </span>
             <div className="od-tc-txt">
               <strong>{stLabel.title}</strong>
               <span>{stLabel.sub}</span>
-            </div>
-            <div className="od-tc-eta">
-              {eta.done ? (
-                <span className="od-tc-eta-done">{eta.done}</span>
-              ) : (
-                <>
-                  <span className="od-tc-eta-num">{eta.num}</span>
-                  <span className="od-tc-eta-unit">{eta.unit}</span>
-                </>
-              )}
             </div>
           </div>
           {!cancelled && (
@@ -1426,46 +1430,52 @@ export default function OrderDetailPage() {
         )}
       </AnimatePresence>
 
-      {/* Deliver-to (directly below the map) */}
-      <section className="od-block">
-        <div className="od-block-titlerow">
-          <div className="od-block-title">Delivery details</div>
-          {canEditAddress && (
-            <button
-              type="button"
-              className="od-edit-btn"
-              onClick={openAddrEdit}
-            >
-              <Pencil size={13} /> Edit
-            </button>
-          )}
+      {/* Savings ribbon (Zepto-style) — prominent, just under the status. */}
+      {bd.savings > 0 && (
+        <div className="od-saved-ribbon">
+          <span className="od-saved-corner left" />
+          You saved <b>₹{bd.savings}</b> on this order
+          <span className="od-saved-corner right" />
         </div>
-        <div className="od-deliver-row">
-          <span className="od-deliver-ic">
-            <User size={15} />
+      )}
+
+      {/* Deliver-to (Zepto-style: address row + phone row) */}
+      <section className="od-block od-deliver-card">
+        {canEditAddress && (
+          <button
+            type="button"
+            className="od-edit-btn od-deliver-edit"
+            onClick={openAddrEdit}
+          >
+            <Pencil size={13} /> Edit
+          </button>
+        )}
+        <div className="od-deliver-row2">
+          <span className="od-deliver-chip">
+            <MapPin size={17} />
           </span>
-          <span>
-            {custName || "—"} · +91 {order["Phone Number"] || number}
-          </span>
+          <div className="od-deliver-txt">
+            <strong>Delivery to Home</strong>
+            <span>
+              {addr}
+              {order["Pincode"] ? ` - ${order["Pincode"]}` : ""}
+            </span>
+          </div>
         </div>
-        <div className="od-deliver-row">
-          <span className="od-deliver-ic">
-            <Home size={15} />
+        <div className="od-deliver-sep" />
+        <div className="od-deliver-row2">
+          <span className="od-deliver-chip">
+            <Phone size={16} />
           </span>
-          <span>
-            {addr}
-            {order["Pincode"] ? ` - ${order["Pincode"]}` : ""}
-          </span>
+          <div className="od-deliver-txt">
+            <strong>{custName || "—"}</strong>
+            <span>+91 {order["Phone Number"] || number}</span>
+          </div>
         </div>
         {receiver?.approx && (
-          <div className="od-deliver-row od-approx-row">
-            <span className="od-deliver-ic">
-              <MapPin size={15} />
-            </span>
-            <span className="od-approx-txt">
-              Map showing the approximate area for pincode{" "}
-              <strong>{order["Pincode"]}</strong>
-            </span>
+          <div className="od-approx-row2">
+            <MapPin size={12} /> Approximate area for pincode{" "}
+            <strong>&nbsp;{order["Pincode"]}</strong>
           </div>
         )}
       </section>
@@ -1658,11 +1668,6 @@ export default function OrderDetailPage() {
           </span>
           <span className="od-paid-mode">{order["Payment Type"] || "—"}</span>
         </div>
-        {bd.savings > 0 && (
-          <div className="od-save-banner">
-            <ShieldCheck size={15} /> You saved ₹{bd.savings} on this order
-          </div>
-        )}
       </section>
 
       {/* COD → pay-online upgrade (only before the parcel is moving) */}

@@ -1252,7 +1252,10 @@ export default function OrderDetailPage() {
                   </button>
                 ) : (
                   upgradeExtra != null &&
-                  !shippingId && (
+                  !shippingId &&
+                  /processing|getting shipped/i.test(
+                    order["Order Status"] || "",
+                  ) && (
                     <button
                       type="button"
                       className="od-tc-upgrade"

@@ -41674,19 +41674,17 @@ img[data-loaded="true"] {
   cursor: pointer;
   box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.25);
 }
-/* Floating arrival card (Flipkart-style, overlaps map bottom) */
+/* Arrival card — full-width, sits just below the map (Zepto-style). */
 .od-track-card {
   position: relative;
   z-index: 6;
-  /* Pull up so it overlaps the map bottom, then normal flow for what follows. */
-  margin: -48px 16px 16px;
+  margin: 12px 0;
   background: #fff;
   border: 1px solid var(--dark-20, #82828250);
-  border-radius: 14px;
-  padding: 14px 16px;
-  box-shadow: 0 10px 28px -12px rgba(0, 0, 0, 0.35);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 8px 24px -14px rgba(0, 0, 0, 0.28);
 }
-/* When the map didn't load, the card sits in normal flow (no overlap pull-up). */
 .od-track-card.od-track-card-flat {
   margin-top: 12px;
 }

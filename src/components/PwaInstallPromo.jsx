@@ -10,7 +10,11 @@ import { trackEvent } from "@/lib/ga";
 // offer one it shows a short "Add to Home screen" hint. UI mirrors the checkout
 // sheet (white card, rounded, dark CTA).
 export default function PwaInstallPromo({ variant = "bar" }) {
-  const [deferred, setDeferred] = useState(null);
+  // Prefer a globally-captured prompt (RegisterSW stashes it the instant Chrome
+  // fires beforeinstallprompt — which can happen before this mounts).
+  const [deferred, setDeferred] = useState(
+    typeof window !== "undefined" ? window.__bipEvent || null : null,
+  );
   // Already running as an installed app? Then hide the promo entirely. Computed
   // lazily (not in an effect) so it's decided before first paint.
   const [installed, setInstalled] = useState(() => {
@@ -23,14 +27,21 @@ export default function PwaInstallPromo({ variant = "bar" }) {
   const [hint, setHint] = useState(false);
 
   useEffect(() => {
+    const onReady = () => setDeferred(window.__bipEvent || null);
     const onPrompt = (e) => {
       e.preventDefault();
+      window.__bipEvent = e;
       setDeferred(e);
     };
-    const onInstalled = () => setInstalled(true);
+    const onInstalled = () => {
+      window.__bipEvent = null;
+      setInstalled(true);
+    };
+    window.addEventListener("bip-ready", onReady);
     window.addEventListener("beforeinstallprompt", onPrompt);
     window.addEventListener("appinstalled", onInstalled);
     return () => {
+      window.removeEventListener("bip-ready", onReady);
       window.removeEventListener("beforeinstallprompt", onPrompt);
       window.removeEventListener("appinstalled", onInstalled);
     };
@@ -38,12 +49,14 @@ export default function PwaInstallPromo({ variant = "bar" }) {
 
   const handleInstall = async () => {
     trackEvent("pwa_install_clicked", { source: `orders_${variant}` });
-    if (deferred) {
-      deferred.prompt();
+    const prompt = deferred || (typeof window !== "undefined" && window.__bipEvent);
+    if (prompt) {
+      prompt.prompt();
       try {
-        const choice = await deferred.userChoice;
+        const choice = await prompt.userChoice;
         if (choice?.outcome === "accepted") setInstalled(true);
       } catch (_) {}
+      window.__bipEvent = null;
       setDeferred(null);
       return;
     }

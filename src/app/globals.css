@@ -3051,7 +3051,8 @@ button:disabled {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.4);
-  z-index: 200;
+  /* Above the fixed install bar (1200) and community FAB (1250). */
+  z-index: 2000;
   /* min-width: 375px;
   max-width: 600px; */
 }
@@ -41788,7 +41789,8 @@ img[data-loaded="true"] {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  padding: 16px 18px 22px;
+  /* The .bill-modal wrapper already provides 16px padding — don't double it. */
+  padding: 4px 0 2px;
 }
 
 /* Floating community FAB + sliding label (bottom-right, above install bar). */

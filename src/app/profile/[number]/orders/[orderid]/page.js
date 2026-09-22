@@ -1181,96 +1181,32 @@ export default function OrderDetailPage() {
         </button>
       </header>
 
-      {/* User profile + compact status — identity left, order status right. */}
+      {/* User profile — bold name, number, address. */}
       {order && (
         <section className="od-profile-card">
-          <div className="od-profile-left">
-            <div className="od-profile-head">
-              <div>
-                <strong className="od-profile-name">{custName || "—"}</strong>
-                <span className="od-profile-phone">
-                  +91 {order["Phone Number"] || number}
-                </span>
-              </div>
-              {canEditAddress && (
-                <button
-                  type="button"
-                  className="od-edit-btn"
-                  onClick={openAddrEdit}
-                >
-                  <Pencil size={13} /> Edit
-                </button>
-              )}
-            </div>
-            <div className="od-profile-addr">
-              <MapPin size={15} />
-              <span>
-                {addr}
-                {order["Pincode"] ? ` - ${order["Pincode"]}` : ""}
+          <div className="od-profile-head">
+            <div>
+              <strong className="od-profile-name">{custName || "—"}</strong>
+              <span className="od-profile-phone">
+                +91 {order["Phone Number"] || number}
               </span>
             </div>
-          </div>
-
-          {/* Compact status on the right (progress + delivery + faster). */}
-          <div className="od-profile-status">
-            <div className="od-ps-top">
-              <span className="od-ps-label">{stLabel.title}</span>
-              <span
-                className={`od-ps-badge${delivered ? " done" : ""}${cancelled ? " cancelled" : ""}`}
+            {canEditAddress && (
+              <button
+                type="button"
+                className="od-edit-btn"
+                onClick={openAddrEdit}
               >
-                {psBadge}
-              </span>
-            </div>
-            {!cancelled && (
-              <div className="od-ps-bar" aria-hidden="true">
-                <span style={{ width: `${progressPct}%` }} />
-              </div>
+                <Pencil size={13} /> Edit
+              </button>
             )}
-            <div className="od-ps-foot">
-              <span className="od-ps-deliv">
-                {delivered ? (
-                  <>
-                    <Home size={13} /> Delivered
-                  </>
-                ) : (
-                  <>
-                    {isFaster ? <Plane size={13} /> : <Train size={13} />}
-                    {isFaster ? "Express" : "Standard"}
-                    {` · ${etaMin}–${etaMax}d`}
-                  </>
-                )}
-              </span>
-              {delivered ? (
-                <button
-                  type="button"
-                  className="od-ps-faster"
-                  onClick={() => setShowRateSheet(true)}
-                >
-                  <Star size={12} /> Review us
-                </button>
-              ) : inTransit && shippingId ? (
-                <button
-                  type="button"
-                  className="od-ps-track"
-                  onClick={() => setShowTrack(true)}
-                >
-                  Track ↗
-                </button>
-              ) : upgradeExtra != null &&
-                !shippingId &&
-                /processing|getting shipped/i.test(
-                  order["Order Status"] || "",
-                ) ? (
-                <button
-                  type="button"
-                  className="od-ps-faster"
-                  onClick={() => setShowUpgradeModal(true)}
-                  disabled={upgrading}
-                >
-                  <Zap size={12} /> Faster +₹{upgradeExtra}
-                </button>
-              ) : null}
-            </div>
+          </div>
+          <div className="od-profile-addr">
+            <MapPin size={15} />
+            <span>
+              {addr}
+              {order["Pincode"] ? ` - ${order["Pincode"]}` : ""}
+            </span>
           </div>
         </section>
       )}
@@ -1290,44 +1226,6 @@ export default function OrderDetailPage() {
             >
               {mapFull ? <Minimize2 size={17} /> : <Maximize2 size={17} />}
             </button>
-            {/* Floating status + ETA overlay — answers "where is it / when
-                will it reach me" right on the map. */}
-            <div className="od-map-eta">
-              <span
-                className={`od-map-eta-dot${delivered ? " done" : cancelled ? " off" : ""}`}
-              />
-              <div className="od-map-eta-txt">
-                <strong>
-                  {cancelled
-                    ? "Order cancelled"
-                    : delivered
-                      ? "Delivered"
-                      : outForDelivery
-                        ? "Out for delivery"
-                        : inTransit
-                          ? "In transit"
-                          : "Preparing your parcel"}
-                </strong>
-                <span>
-                  {cancelled
-                    ? "This order was cancelled"
-                    : delivered
-                      ? "Your books have arrived — enjoy!"
-                      : outForDelivery
-                        ? "Arriving today — keep your phone handy"
-                        : `Reaching you in ${etaMin}–${etaMax} days`}
-                </span>
-              </div>
-              {!delivered && !cancelled && shippingId && (
-                <button
-                  type="button"
-                  className="od-map-eta-btn"
-                  onClick={() => setShowTrack(true)}
-                >
-                  Track
-                </button>
-              )}
-            </div>
           </>
         ) : geoState === "loading" ? (
           <div className="od-map-locating">
@@ -1346,6 +1244,84 @@ export default function OrderDetailPage() {
             <span>
               We couldn't locate the delivery area for this order right now.
             </span>
+          </div>
+        )}
+
+        {/* Floating status card — full status, progress, ETA + action, right on
+            the map (single source of truth; shown over any map state). */}
+        {order && (
+          <div className="od-map-eta">
+            <div className="od-map-eta-row">
+              <span
+                className={`od-map-eta-dot${delivered ? " done" : cancelled ? " off" : ""}`}
+              />
+              <div className="od-map-eta-txt">
+                <strong>{stLabel.title}</strong>
+                <span>
+                  {cancelled
+                    ? "This order was cancelled"
+                    : delivered
+                      ? "Your books have arrived — enjoy!"
+                      : outForDelivery
+                        ? "Arriving today — keep your phone handy"
+                        : `Reaching you in ${etaMin}–${etaMax} days`}
+                </span>
+              </div>
+              <span
+                className={`od-map-eta-badge${delivered ? " done" : ""}${cancelled ? " cancelled" : ""}`}
+              >
+                {psBadge}
+              </span>
+            </div>
+            {!cancelled && (
+              <div className="od-map-eta-bar" aria-hidden="true">
+                <span style={{ width: `${progressPct}%` }} />
+              </div>
+            )}
+            <div className="od-map-eta-foot">
+              <span className="od-map-eta-deliv">
+                {delivered ? (
+                  <>
+                    <Home size={13} /> Delivered
+                  </>
+                ) : (
+                  <>
+                    {isFaster ? <Plane size={13} /> : <Train size={13} />}
+                    {isFaster ? "Express delivery" : "Standard delivery"}
+                  </>
+                )}
+              </span>
+              {delivered ? (
+                <button
+                  type="button"
+                  className="od-map-eta-btn"
+                  onClick={() => setShowRateSheet(true)}
+                >
+                  <Star size={12} /> Review us
+                </button>
+              ) : inTransit && shippingId ? (
+                <button
+                  type="button"
+                  className="od-map-eta-btn"
+                  onClick={() => setShowTrack(true)}
+                >
+                  Track ↗
+                </button>
+              ) : upgradeExtra != null &&
+                !shippingId &&
+                /processing|getting shipped/i.test(
+                  order["Order Status"] || "",
+                ) ? (
+                <button
+                  type="button"
+                  className="od-map-eta-btn"
+                  onClick={() => setShowUpgradeModal(true)}
+                  disabled={upgrading}
+                >
+                  <Zap size={12} /> Faster +₹{upgradeExtra}
+                </button>
+              ) : null}
+            </div>
           </div>
         )}
       </section>

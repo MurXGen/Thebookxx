@@ -41955,7 +41955,7 @@ img[data-loaded="true"] {
   overflow: hidden;
   margin-bottom: 12px;
 }
-/* Floating status + ETA overlay on the tracking map. */
+/* Floating status card on the tracking map — full status + progress + action. */
 .od-map-eta {
   position: absolute;
   left: 12px;
@@ -41963,13 +41963,63 @@ img[data-loaded="true"] {
   bottom: 12px;
   z-index: 6;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 10px;
-  padding: 11px 13px;
+  padding: 12px 13px;
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(8px);
   box-shadow: 0 8px 24px -10px rgba(0, 0, 0, 0.35);
+}
+.od-map-eta-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.od-map-eta-badge {
+  flex: 0 0 auto;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #0a0a0a;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.od-map-eta-badge.done {
+  background: #16a34a;
+}
+.od-map-eta-badge.cancelled {
+  background: #dc2626;
+}
+.od-map-eta-bar {
+  height: 5px;
+  border-radius: 999px;
+  background: #eef0f2;
+  overflow: hidden;
+}
+.od-map-eta-bar > span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ffb703, #fb8500);
+}
+.od-map-eta-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.od-map-eta-deliv {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gray-500, #6b7280);
+}
+.od-map-eta-deliv svg {
+  color: var(--tertiary, #fb8500);
 }
 .od-map-eta-dot {
   flex: 0 0 auto;
@@ -42446,13 +42496,6 @@ img[data-loaded="true"] {
   border-radius: 14px;
   padding: 14px;
   margin-bottom: 12px;
-  display: flex;
-  align-items: stretch;
-  gap: 16px;
-}
-.od-profile-left {
-  flex: 1 1 55%;
-  min-width: 0;
 }
 /* Compact status on the right of the profile card. */
 .od-profile-status {

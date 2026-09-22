@@ -41792,6 +41792,14 @@ img[data-loaded="true"] {
   /* The .bill-modal wrapper already provides 16px padding — don't double it. */
   padding: 4px 0 2px;
 }
+/* Refer sheet: the modal already gives padding, so strip the ReferAndEarn
+   card's own container (border/bg/padding) and let its content go full width. */
+.od-sheet-body--refer .refearn-card {
+  padding: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+}
 
 /* Floating community FAB + sliding label (bottom-right, above install bar). */
 .od-community-fab {

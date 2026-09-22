@@ -1143,6 +1143,36 @@ export default function OrderDetailPage() {
         </button>
       </header>
 
+      {/* User profile — bold name, number, address (above the map). */}
+      {order && (
+        <section className="od-profile-card">
+          <div className="od-profile-head">
+            <div>
+              <strong className="od-profile-name">{custName || "—"}</strong>
+              <span className="od-profile-phone">
+                +91 {order["Phone Number"] || number}
+              </span>
+            </div>
+            {canEditAddress && (
+              <button
+                type="button"
+                className="od-edit-btn"
+                onClick={openAddrEdit}
+              >
+                <Pencil size={13} /> Edit
+              </button>
+            )}
+          </div>
+          <div className="od-profile-addr">
+            <MapPin size={15} />
+            <span>
+              {addr}
+              {order["Pincode"] ? ` - ${order["Pincode"]}` : ""}
+            </span>
+          </div>
+        </section>
+      )}
+
       {/* Map + floating arrival card (Flipkart-style) */}
       <section
         className={`od-map-card${mapFull ? " od-map-full" : ""}`}
@@ -1297,34 +1327,6 @@ export default function OrderDetailPage() {
           <Gift size={15} /> Refer &amp; win ₹50
         </button>
       </div>
-
-      {/* Delivery-to / user profile — bold name, number, address. */}
-      <section className="od-profile-card">
-        <div className="od-profile-head">
-          <div>
-            <strong className="od-profile-name">{custName || "—"}</strong>
-            <span className="od-profile-phone">
-              +91 {order?.["Phone Number"] || number}
-            </span>
-          </div>
-          {canEditAddress && (
-            <button
-              type="button"
-              className="od-edit-btn"
-              onClick={openAddrEdit}
-            >
-              <Pencil size={13} /> Edit
-            </button>
-          )}
-        </div>
-        <div className="od-profile-addr">
-          <MapPin size={15} />
-          <span>
-            {addr}
-            {order?.["Pincode"] ? ` - ${order["Pincode"]}` : ""}
-          </span>
-        </div>
-      </section>
 
       {/* Faster-delivery upgrade — confirmation modal (benefits + air mode) */}
       <AnimatePresence>
@@ -2009,7 +2011,7 @@ export default function OrderDetailPage() {
                   <X size={16} />
                 </span>
               </div>
-              <div className="od-sheet-body">
+              <div className="od-sheet-body od-sheet-body--refer">
                 <ReferAndEarn
                   phone={String(order["Phone Number"] || number)}
                 />

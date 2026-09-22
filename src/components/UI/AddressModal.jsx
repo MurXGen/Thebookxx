@@ -753,10 +753,15 @@ export default function AddressModal({
           ? codFeeAmount
           : 0;
 
-      // Names are always stored clean now. Whether an order is confirmed is
-      // tracked via the "Order Status" column ("Unconfirmed" → admin verifies →
-      // "Processing"), not by tagging the customer's name.
-      const displayName = name;
+      // Names are always stored clean + Title-Cased (each word capitalised) so
+      // the order page and shipping labels show them consistently regardless of
+      // how the customer typed it (e.g. "testing" → "Testing").
+      const displayName = String(name || "")
+        .trim()
+        .replace(/\s+/g, " ")
+        .replace(/\b\p{L}[\p{L}'’-]*/gu, (w) =>
+          w.charAt(0).toUpperCase() + w.slice(1).toLowerCase(),
+        );
 
       trackOrderToGoogleForm({
         addressData: {

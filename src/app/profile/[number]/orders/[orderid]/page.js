@@ -1144,32 +1144,84 @@ export default function OrderDetailPage() {
         </button>
       </header>
 
-      {/* User profile — bold name, number, address (above the map). */}
+      {/* User profile + compact status — identity left, order status right. */}
       {order && (
         <section className="od-profile-card">
-          <div className="od-profile-head">
-            <div>
-              <strong className="od-profile-name">{custName || "—"}</strong>
-              <span className="od-profile-phone">
-                +91 {order["Phone Number"] || number}
+          <div className="od-profile-left">
+            <div className="od-profile-head">
+              <div>
+                <strong className="od-profile-name">{custName || "—"}</strong>
+                <span className="od-profile-phone">
+                  +91 {order["Phone Number"] || number}
+                </span>
+              </div>
+              {canEditAddress && (
+                <button
+                  type="button"
+                  className="od-edit-btn"
+                  onClick={openAddrEdit}
+                >
+                  <Pencil size={13} /> Edit
+                </button>
+              )}
+            </div>
+            <div className="od-profile-addr">
+              <MapPin size={15} />
+              <span>
+                {addr}
+                {order["Pincode"] ? ` - ${order["Pincode"]}` : ""}
               </span>
             </div>
-            {canEditAddress && (
-              <button
-                type="button"
-                className="od-edit-btn"
-                onClick={openAddrEdit}
-              >
-                <Pencil size={13} /> Edit
-              </button>
-            )}
           </div>
-          <div className="od-profile-addr">
-            <MapPin size={15} />
-            <span>
-              {addr}
-              {order["Pincode"] ? ` - ${order["Pincode"]}` : ""}
-            </span>
+
+          {/* Compact status on the right (progress + delivery + faster). */}
+          <div className="od-profile-status">
+            <div className="od-ps-top">
+              <span className="od-ps-label">{stLabel.title}</span>
+              <span
+                className={`od-ps-badge${delivered ? " done" : ""}${cancelled ? " cancelled" : ""}`}
+              >
+                {cancelled
+                  ? "Cancelled"
+                  : delivered
+                    ? "Delivered"
+                    : eta.done || `${eta.num} ${eta.unit}`}
+              </span>
+            </div>
+            {!cancelled && (
+              <div className="od-ps-bar" aria-hidden="true">
+                <span style={{ width: `${progressPct}%` }} />
+              </div>
+            )}
+            <div className="od-ps-foot">
+              <span className="od-ps-deliv">
+                {isFaster ? <Plane size={13} /> : <Train size={13} />}
+                {isFaster ? "Express" : "Standard"}
+                {!delivered && ` · ${etaMin}–${etaMax}d`}
+              </span>
+              {inTransit && shippingId ? (
+                <button
+                  type="button"
+                  className="od-ps-track"
+                  onClick={() => setShowTrack(true)}
+                >
+                  Track ↗
+                </button>
+              ) : upgradeExtra != null &&
+                !shippingId &&
+                /processing|getting shipped/i.test(
+                  order["Order Status"] || "",
+                ) ? (
+                <button
+                  type="button"
+                  className="od-ps-faster"
+                  onClick={() => setShowUpgradeModal(true)}
+                  disabled={upgrading}
+                >
+                  <Zap size={12} /> Faster +₹{upgradeExtra}
+                </button>
+              ) : null}
+            </div>
           </div>
         </section>
       )}
@@ -1210,93 +1262,6 @@ export default function OrderDetailPage() {
           </div>
         )}
       </section>
-
-      {/* Arrival card — pulled up to overlap the map bottom (Flipkart-style).
-          Shown regardless of the map: if the map can't load (bad pincode /
-          geocode error) the status card must still appear, just not overlapping. */}
-      {order && (
-        <div
-          className={`od-track-card${
-            geoState === "ok" && receiver ? "" : " od-track-card-flat"
-          }`}
-        >
-          <div className="od-tc-main">
-            <span className="od-tc-ic">
-              {delivered ? <Home size={18} /> : <Truck size={18} />}
-            </span>
-            <div className="od-tc-txt">
-              <strong>{stLabel.title}</strong>
-              <span>{stLabel.sub}</span>
-            </div>
-            <div className="od-tc-eta">
-              {eta.done ? (
-                <span className="od-tc-eta-done">{eta.done}</span>
-              ) : (
-                <>
-                  <span className="od-tc-eta-num">{eta.num}</span>
-                  <span className="od-tc-eta-unit">{eta.unit}</span>
-                </>
-              )}
-            </div>
-          </div>
-          {!cancelled && (
-            <>
-              <div className="od-tc-bar" aria-hidden="true">
-                <span
-                  className="od-tc-bar-fill"
-                  style={{ width: `${progressPct}%` }}
-                />
-              </div>
-              <div className="od-tc-divider" />
-              <div className="od-tc-foot">
-                <div className="od-tc-courier-col">
-                  <span className="od-tc-courier">
-                    {isFaster ? <Plane size={15} /> : <Train size={15} />}
-                    {isFaster ? "Express delivery" : "Standard delivery"}
-                    {!delivered && ` · ${etaMin}–${etaMax} days`}
-                  </span>
-                  {!delivered && isFaster && !shippingId && (
-                    <span className="od-tc-airnote">Priority air dispatch</span>
-                  )}
-                </div>
-                {inTransit && shippingId ? (
-                  <button
-                    type="button"
-                    className="od-tc-track"
-                    onClick={() => setShowTrack(true)}
-                  >
-                    Track ↗
-                  </button>
-                ) : !delivered && isFaster && !shippingId ? (
-                  <button
-                    type="button"
-                    className="sec-mid-btn od-tc-revert"
-                    onClick={revertToStandard}
-                    disabled={upgrading}
-                    title="Switch back to standard delivery"
-                  >
-                    {upgrading ? "Switching…" : "Go with standard delivery"}
-                  </button>
-                ) : (
-                  upgradeExtra != null &&
-                  !shippingId && (
-                    <button
-                      type="button"
-                      className="od-tc-upgrade"
-                      onClick={() => setShowUpgradeModal(true)}
-                      disabled={upgrading}
-                      title={`Get it in 1–5 days instead of ${etaMin}–${etaMax}`}
-                    >
-                      <Zap size={13} />
-                      {`Faster +₹${upgradeExtra}`}
-                    </button>
-                  )
-                )}
-              </div>
-            </>
-          )}
-        </div>
-      )}
 
       {/* Quick actions — minimal buttons that open slide-up sheets. */}
       <div className="od-quick">

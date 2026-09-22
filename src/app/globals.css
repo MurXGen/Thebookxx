@@ -42144,6 +42144,13 @@ img[data-loaded="true"] {
   background: #16a34a;
   color: #fff;
 }
+/* Keep the rail inside the .abp card — the homepage rail uses negative side
+   margins to bleed edge-to-edge, which overflows this padded container. */
+.abp .or1-scroll {
+  margin: 0;
+  padding: 2px 0 6px;
+  max-width: 100%;
+}
 .abp-tabbar {
   margin-top: 4px;
 }
@@ -42319,6 +42326,111 @@ img[data-loaded="true"] {
   border-radius: 14px;
   padding: 14px;
   margin-bottom: 12px;
+  display: flex;
+  align-items: stretch;
+  gap: 16px;
+}
+.od-profile-left {
+  flex: 1 1 55%;
+  min-width: 0;
+}
+/* Compact status on the right of the profile card. */
+.od-profile-status {
+  flex: 1 1 45%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  padding-left: 16px;
+  border-left: 1px dashed var(--hairline, #e5e7eb);
+}
+.od-ps-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.od-ps-label {
+  font-size: 13px;
+  font-weight: 800;
+  color: #111827;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.od-ps-badge {
+  flex: 0 0 auto;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: #0a0a0a;
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.od-ps-badge.done {
+  background: #16a34a;
+}
+.od-ps-badge.cancelled {
+  background: #dc2626;
+}
+.od-ps-bar {
+  height: 5px;
+  border-radius: 999px;
+  background: #eef0f2;
+  overflow: hidden;
+}
+.od-ps-bar > span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ffb703, #fb8500);
+}
+.od-ps-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.od-ps-deliv {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--gray-500, #6b7280);
+}
+.od-ps-deliv svg {
+  color: var(--tertiary, #fb8500);
+}
+.od-ps-track,
+.od-ps-faster {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 11px;
+  border-radius: 999px;
+  border: none;
+  background: #0a0a0a;
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 800;
+  cursor: pointer;
+}
+/* Stack on narrow screens. */
+@media (max-width: 560px) {
+  .od-profile-card {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .od-profile-status {
+    padding-left: 0;
+    padding-top: 12px;
+    border-left: none;
+    border-top: 1px dashed var(--hairline, #e5e7eb);
+  }
 }
 .od-profile-head {
   display: flex;

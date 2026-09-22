@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { Plus, Check, TrendingUp, X, Package } from "lucide-react";
 import { books as ALL_BOOKS } from "@/utils/book";
@@ -9,7 +9,7 @@ import { FaWhatsapp } from "react-icons/fa";
 
 const ADDON_DISCOUNT = 0.2; // flat 20% off add-ons
 const MERCHANT_WA = "917710892108";
-const BATCH = 10; // lazy-load step
+const BATCH = 14; // lazy-load step
 
 const normName = (s) =>
   String(s || "")
@@ -79,6 +79,21 @@ export default function AddBeforePacking({ order, orderId, phone }) {
   }, [active, inOrder]);
   const shown = full.slice(0, visible);
   const hasMore = visible < full.length;
+
+  // On wide screens the first batch may not overflow the rail (nothing to
+  // scroll) — keep revealing batches until it overflows or all are shown, so
+  // lazy loading actually kicks in everywhere.
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el || !hasMore) return;
+    if (el.scrollWidth <= el.clientWidth + 40) {
+      const t = setTimeout(
+        () => setVisible((v) => Math.min(v + BATCH, full.length)),
+        160,
+      );
+      return () => clearTimeout(t);
+    }
+  }, [visible, full.length, active, hasMore]);
 
   const onRailScroll = () => {
     const el = scrollRef.current;

@@ -1298,20 +1298,6 @@ export default function OrderDetailPage() {
         </div>
       )}
 
-      {/* Add more before packing — flat 20% off, only while still packable. */}
-      {order &&
-        !inTransit &&
-        !outForDelivery &&
-        !delivered &&
-        !cancelled &&
-        !shippingId && (
-          <AddBeforePacking
-            order={order}
-            orderId={orderId}
-            phone={order["Phone Number"] || number}
-          />
-        )}
-
       {/* Quick actions — minimal buttons that open slide-up sheets. */}
       <div className="od-quick">
         <button
@@ -1685,6 +1671,20 @@ export default function OrderDetailPage() {
         orderValue={bd.grand}
         cancelled={cancelled}
       />
+
+      {/* Add more before packing — at the bottom, only while still packable. */}
+      {order &&
+        !inTransit &&
+        !outForDelivery &&
+        !delivered &&
+        !cancelled &&
+        !shippingId && (
+          <AddBeforePacking
+            order={order}
+            orderId={orderId}
+            phone={order["Phone Number"] || number}
+          />
+        )}
 
       {/* Good to know — cancellation notice, at the bottom */}
       {!delivered && !cancelled && (

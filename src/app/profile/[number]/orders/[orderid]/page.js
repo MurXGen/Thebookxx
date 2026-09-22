@@ -409,32 +409,61 @@ export default function OrderDetailPage() {
           iconSize: [size, size],
           iconAnchor: [size / 2, size / 2],
         });
-      // Full route as a dashed grey base; the orange "travelled" line grows
-      // over it as the vehicle animates from source to the current point.
+      // Soft orange "glow" underlay, a subtle dotted base, then the orange
+      // "travelled" line that grows as the vehicle animates to the current point.
       L.polyline(path, {
-        color: "#64748b",
-        weight: 4,
-        dashArray: "6 8",
+        color: "#fb8500",
+        weight: 11,
+        opacity: 0.12,
+        lineCap: "round",
+        lineJoin: "round",
+      }).addTo(map);
+      L.polyline(path, {
+        color: "#94a3b8",
+        weight: 3.5,
+        opacity: 0.7,
+        dashArray: "1 10",
+        lineCap: "round",
       }).addTo(map);
       const travelledLine = L.polyline([path[0]], {
         color: "#fb8500",
         weight: 5,
+        lineCap: "round",
+        lineJoin: "round",
       }).addTo(map);
 
-      L.marker(A, { icon: dot("#111827", ICON_BOOK) }).addTo(map);
-      L.marker(B, { icon: dot("#c0223b", ICON_HOME) }).addTo(map);
-      // Vehicle travelling the route — ✈️ for express (Shipping ID starts "E"),
-      // 🚆 for standard. Rendered as an emoji marker.
+      const aM = L.marker(A, { icon: dot("#111827", ICON_BOOK) }).addTo(map);
+      aM.bindTooltip("Dispatched from Mumbai", {
+        direction: "top",
+        offset: [0, -16],
+        className: "od-pin-tip",
+      });
+      const bM = L.marker(B, { icon: dot("#c0223b", ICON_HOME) }).addTo(map);
+      bM.bindTooltip("Delivery address", {
+        direction: "top",
+        offset: [0, -16],
+        className: "od-pin-tip",
+      });
+      // Vehicle travelling the route — ✈️ for express, 🚆 for standard — inside
+      // a white badge with a live pulse, plus a "your order is here" tooltip.
       const vehicleEmoji = isExpressOrder(order) ? "✈️" : "🚆";
       const vehicle = L.marker(path[0], {
         icon: L.divIcon({
           className: "od-vehicle",
-          html: `<span style="font-size:26px;line-height:1;filter:drop-shadow(0 3px 4px rgba(0,0,0,.4))">${vehicleEmoji}</span>`,
-          iconSize: [30, 30],
-          iconAnchor: [15, 15],
+          html: `<span class="od-veh-badge"><span class="od-veh-pulse"></span><span class="od-veh-emoji">${vehicleEmoji}</span></span>`,
+          iconSize: [42, 42],
+          iconAnchor: [21, 21],
         }),
         zIndexOffset: 1000,
       }).addTo(map);
+      if (!delivered && !cancelled) {
+        vehicle.bindTooltip("Your order is here", {
+          permanent: true,
+          direction: "top",
+          offset: [0, -20],
+          className: "od-veh-tip",
+        });
+      }
 
       map.fitBounds(path, { padding: [36, 36] });
       setTimeout(() => {
@@ -1261,6 +1290,44 @@ export default function OrderDetailPage() {
             >
               {mapFull ? <Minimize2 size={17} /> : <Maximize2 size={17} />}
             </button>
+            {/* Floating status + ETA overlay — answers "where is it / when
+                will it reach me" right on the map. */}
+            <div className="od-map-eta">
+              <span
+                className={`od-map-eta-dot${delivered ? " done" : cancelled ? " off" : ""}`}
+              />
+              <div className="od-map-eta-txt">
+                <strong>
+                  {cancelled
+                    ? "Order cancelled"
+                    : delivered
+                      ? "Delivered"
+                      : outForDelivery
+                        ? "Out for delivery"
+                        : inTransit
+                          ? "In transit"
+                          : "Preparing your parcel"}
+                </strong>
+                <span>
+                  {cancelled
+                    ? "This order was cancelled"
+                    : delivered
+                      ? "Your books have arrived — enjoy!"
+                      : outForDelivery
+                        ? "Arriving today — keep your phone handy"
+                        : `Reaching you in ${etaMin}–${etaMax} days`}
+                </span>
+              </div>
+              {!delivered && !cancelled && shippingId && (
+                <button
+                  type="button"
+                  className="od-map-eta-btn"
+                  onClick={() => setShowTrack(true)}
+                >
+                  Track
+                </button>
+              )}
+            </div>
           </>
         ) : geoState === "loading" ? (
           <div className="od-map-locating">

@@ -46,6 +46,7 @@ import OrderScratchCard from "@/components/profile/OrderScratchCard";
 import ReferAndEarn from "@/components/profile/ReferAndEarn";
 import CodPayOnline from "@/components/profile/CodPayOnline";
 import CommunityJoin from "@/components/CommunityJoin";
+import PwaInstallPromo from "@/components/PwaInstallPromo";
 import BookCard from "@/components/BookCard";
 import { updateOrderRow } from "@/utils/googleFormOrder";
 import { getDeliveryCharge } from "@/utils/cartOffers";
@@ -245,6 +246,10 @@ export default function OrderDetailPage() {
   const [revBusy, setRevBusy] = useState(false);
   const [revDone, setRevDone] = useState(false);
   const [revErr, setRevErr] = useState("");
+  // Quick-action slide-up sheets (note / rate / refer).
+  const [showNoteSheet, setShowNoteSheet] = useState(false);
+  const [showRateSheet, setShowRateSheet] = useState(false);
+  const [showReferSheet, setShowReferSheet] = useState(false);
 
   const mapRef = useRef(null);
   const mapObj = useRef(null);
@@ -1262,6 +1267,65 @@ export default function OrderDetailPage() {
         </div>
       )}
 
+      {/* Quick actions — minimal buttons that open slide-up sheets. */}
+      <div className="od-quick">
+        {showOrderNote && (
+          <button
+            type="button"
+            className="od-quick-btn"
+            onClick={() => {
+              setNoteDraft(orderNote);
+              setShowNoteSheet(true);
+            }}
+          >
+            <Pencil size={15} />
+            {orderNote ? "Edit note" : "Add note"}
+          </button>
+        )}
+        <button
+          type="button"
+          className="od-quick-btn"
+          onClick={() => setShowRateSheet(true)}
+        >
+          <Star size={15} /> Rate us
+        </button>
+        <button
+          type="button"
+          className="od-quick-btn od-quick-refer"
+          onClick={() => setShowReferSheet(true)}
+        >
+          <Gift size={15} /> Refer &amp; win ₹50
+        </button>
+      </div>
+
+      {/* Delivery-to / user profile — bold name, number, address. */}
+      <section className="od-profile-card">
+        <div className="od-profile-head">
+          <div>
+            <strong className="od-profile-name">{custName || "—"}</strong>
+            <span className="od-profile-phone">
+              +91 {order?.["Phone Number"] || number}
+            </span>
+          </div>
+          {canEditAddress && (
+            <button
+              type="button"
+              className="od-edit-btn"
+              onClick={openAddrEdit}
+            >
+              <Pencil size={13} /> Edit
+            </button>
+          )}
+        </div>
+        <div className="od-profile-addr">
+          <MapPin size={15} />
+          <span>
+            {addr}
+            {order?.["Pincode"] ? ` - ${order["Pincode"]}` : ""}
+          </span>
+        </div>
+      </section>
+
       {/* Faster-delivery upgrade — confirmation modal (benefits + air mode) */}
       <AnimatePresence>
         {showUpgradeModal && upgradeExtra != null && (
@@ -1425,109 +1489,6 @@ export default function OrderDetailPage() {
         )}
       </AnimatePresence>
 
-      {/* Refer & earn — generate a shareable link, earn ₹50 on a friend's
-          first delivered order. Shown above the delivery details. */}
-      <ReferAndEarn phone={String(order["Phone Number"] || number)} />
-
-      {/* Deliver-to (directly below the map) */}
-      <section className="od-block">
-        <div className="od-block-titlerow">
-          <div className="od-block-title">Delivery details</div>
-          {canEditAddress && (
-            <button
-              type="button"
-              className="od-edit-btn"
-              onClick={openAddrEdit}
-            >
-              <Pencil size={13} /> Edit
-            </button>
-          )}
-        </div>
-        <div className="od-deliver-row">
-          <span className="od-deliver-ic">
-            <User size={15} />
-          </span>
-          <span>
-            {custName || "—"} · +91 {order["Phone Number"] || number}
-          </span>
-        </div>
-        <div className="od-deliver-row">
-          <span className="od-deliver-ic">
-            <Home size={15} />
-          </span>
-          <span>
-            {addr}
-            {order["Pincode"] ? ` - ${order["Pincode"]}` : ""}
-          </span>
-        </div>
-        {receiver?.approx && (
-          <div className="od-deliver-row od-approx-row">
-            <span className="od-deliver-ic">
-              <MapPin size={15} />
-            </span>
-            <span className="od-approx-txt">
-              Map showing the approximate area for pincode{" "}
-              <strong>{order["Pincode"]}</strong>
-            </span>
-          </div>
-        )}
-      </section>
-
-      {/* Note for this order — shown once shipped and every status ahead. */}
-      {showOrderNote && (
-      <section className="od-block">
-        <div className="od-block-titlerow">
-          <div className="od-block-title">Note for this order</div>
-          {!noteEditing && (
-            <button
-              type="button"
-              className="od-edit-btn"
-              onClick={() => {
-                setNoteDraft(orderNote);
-                setNoteEditing(true);
-              }}
-            >
-              <Pencil size={13} /> {orderNote ? "Edit" : "Add"}
-            </button>
-          )}
-        </div>
-        {noteEditing ? (
-          <>
-            <textarea
-              className="od-note-input"
-              rows={3}
-              placeholder="e.g. Please call before delivery, leave with the guard…"
-              value={noteDraft}
-              onChange={(e) => setNoteDraft(e.target.value)}
-            />
-            <div className="od-note-actions">
-              <button
-                type="button"
-                className="od-note-cancel"
-                onClick={() => setNoteEditing(false)}
-                disabled={noteSaving}
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                className="od-note-save"
-                onClick={saveNote}
-                disabled={noteSaving}
-              >
-                {noteSaving ? "Saving…" : "Save note"}
-              </button>
-            </div>
-          </>
-        ) : orderNote ? (
-          <p className="od-note-text">{orderNote}</p>
-        ) : (
-          <p className="od-note-empty">
-            No note added yet. Add delivery instructions for this order.
-          </p>
-        )}
-      </section>
-      )}
 
       {/* Items summary strip (Flipkart "Total N items" + thumbnails) */}
       <section className="od-block od-items-block">
@@ -1666,6 +1627,23 @@ export default function OrderDetailPage() {
             <ShieldCheck size={15} /> You saved ₹{bd.savings} on this order
           </div>
         )}
+        {/* Ask about this order + Download bill — one row in the billing card. */}
+        <div className="od-bill-actions">
+          <button
+            type="button"
+            className="od-help-btn"
+            onClick={() => setShowSupport(true)}
+          >
+            <FaWhatsapp size={16} /> Ask about order
+          </button>
+          <button
+            type="button"
+            className="od-bill-btn"
+            onClick={downloadBill}
+          >
+            <Download size={16} /> Download bill
+          </button>
+        </div>
       </section>
 
       {/* COD → pay-online upgrade (only before the parcel is moving) */}
@@ -1692,117 +1670,6 @@ export default function OrderDetailPage() {
         orderValue={bd.grand}
         cancelled={cancelled}
       />
-
-      {/* Rate your experience — posts to the shared store-review sheet */}
-      <section className="od-review">
-        {revDone ? (
-          <div className="od-review-done">
-            <span className="od-review-done-ic">
-              <Check size={20} strokeWidth={3} />
-            </span>
-            <div>
-              <strong>Thanks for the review! 🙏</strong>
-              <p>Your feedback helps other readers trust TheBookX.</p>
-            </div>
-          </div>
-        ) : (
-          <>
-            <div className="od-review-head">
-              <span className="od-review-title">Rate your experience</span>
-              <span className="od-review-sub">
-                How was your order &amp; our service?
-              </span>
-            </div>
-            <div
-              className="od-review-stars"
-              onMouseLeave={() => setRevHover(0)}
-            >
-              {[1, 2, 3, 4, 5].map((n) => (
-                <button
-                  key={n}
-                  type="button"
-                  className="od-star"
-                  aria-label={`${n} star${n > 1 ? "s" : ""}`}
-                  onMouseEnter={() => setRevHover(n)}
-                  onClick={() => {
-                    setRevRating(n);
-                    setRevErr("");
-                  }}
-                >
-                  <Star
-                    size={30}
-                    strokeWidth={1.5}
-                    className={
-                      (revHover || revRating) >= n ? "od-star-on" : "od-star-off"
-                    }
-                    fill={
-                      (revHover || revRating) >= n ? "currentColor" : "none"
-                    }
-                  />
-                </button>
-              ))}
-            </div>
-            <textarea
-              className="od-review-input"
-              rows={3}
-              placeholder="Tell us what you loved (or what we can improve)…"
-              value={revText}
-              onChange={(e) => {
-                setRevText(e.target.value);
-                setRevErr("");
-              }}
-            />
-            {revErr && <span className="od-review-err">{revErr}</span>}
-            <button
-              type="button"
-              className="pri-big-btn width100 od-review-submit"
-              onClick={submitOrderReview}
-              disabled={revBusy}
-            >
-              {revBusy ? (
-                <>
-                  <Loader2 size={16} className="lb-spinner" /> Submitting…
-                </>
-              ) : (
-                "Submit review"
-              )}
-            </button>
-          </>
-        )}
-      </section>
-
-      {/* Ask about this order — opens the support topic sheet */}
-      <button
-        type="button"
-        className="od-help-btn"
-        onClick={() => setShowSupport(true)}
-      >
-        <FaWhatsapp size={16} /> Ask about this order
-      </button>
-      <button
-        type="button"
-        className="od-bill-btn od-bill-full"
-        onClick={downloadBill}
-      >
-        <Download size={16} /> Download bill
-      </button>
-
-      {/* Join our community — WhatsApp group + Instagram */}
-      <CommunityJoin variant="card" />
-
-      {/* You might also be interested in */}
-      {recos.length > 0 && (
-        <section className="od-reco">
-          <div className="od-block-title">You might also be interested in</div>
-          <div className="od-reco-scroll">
-            {recos.map((b) => (
-              <div className="od-reco-item" key={b.id}>
-                <BookCard book={b} />
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
 
       {/* Good to know — cancellation notice, at the bottom */}
       {!delivered && !cancelled && (
@@ -1943,6 +1810,221 @@ export default function OrderDetailPage() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Add-note slide-up sheet */}
+      <AnimatePresence>
+        {showNoteSheet && (
+          <motion.div
+            className="bill-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => !noteSaving && setShowNoteSheet(false)}
+            style={{ maxWidth: "980px", margin: "0 auto" }}
+          >
+            <motion.div
+              className="bill-modal od-sheet"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="bill-header">
+                <span className="weight-600 font-16 flex items-center gap-8">
+                  <Pencil size={16} /> Note for this order
+                </span>
+                <span
+                  className="cursor-pointer"
+                  onClick={() => !noteSaving && setShowNoteSheet(false)}
+                >
+                  <X size={16} />
+                </span>
+              </div>
+              <div className="od-sheet-body">
+                <textarea
+                  className="od-note-input"
+                  rows={4}
+                  placeholder="e.g. Please call before delivery, leave with the guard…"
+                  value={noteDraft}
+                  onChange={(e) => setNoteDraft(e.target.value)}
+                  autoFocus
+                />
+                <button
+                  type="button"
+                  className="od-track-btn"
+                  onClick={async () => {
+                    await saveNote();
+                    setShowNoteSheet(false);
+                  }}
+                  disabled={noteSaving}
+                >
+                  {noteSaving ? "Saving…" : "Save note"}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Rate-us slide-up sheet */}
+      <AnimatePresence>
+        {showRateSheet && (
+          <motion.div
+            className="bill-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => !revBusy && setShowRateSheet(false)}
+            style={{ maxWidth: "980px", margin: "0 auto" }}
+          >
+            <motion.div
+              className="bill-modal od-sheet"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="bill-header">
+                <span className="weight-600 font-16 flex items-center gap-8">
+                  <Star size={16} /> Rate your experience
+                </span>
+                <span
+                  className="cursor-pointer"
+                  onClick={() => !revBusy && setShowRateSheet(false)}
+                >
+                  <X size={16} />
+                </span>
+              </div>
+              <div className="od-sheet-body">
+                {revDone ? (
+                  <div className="od-review-done">
+                    <span className="od-review-done-ic">
+                      <Check size={20} strokeWidth={3} />
+                    </span>
+                    <div>
+                      <strong>Thanks for the review! 🙏</strong>
+                      <p>Your feedback helps other readers trust TheBookX.</p>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div
+                      className="od-review-stars"
+                      onMouseLeave={() => setRevHover(0)}
+                    >
+                      {[1, 2, 3, 4, 5].map((n) => (
+                        <button
+                          key={n}
+                          type="button"
+                          className="od-star"
+                          aria-label={`${n} star${n > 1 ? "s" : ""}`}
+                          onMouseEnter={() => setRevHover(n)}
+                          onClick={() => {
+                            setRevRating(n);
+                            setRevErr("");
+                          }}
+                        >
+                          <Star
+                            size={32}
+                            strokeWidth={1.5}
+                            className={
+                              (revHover || revRating) >= n
+                                ? "od-star-on"
+                                : "od-star-off"
+                            }
+                            fill={
+                              (revHover || revRating) >= n
+                                ? "currentColor"
+                                : "none"
+                            }
+                          />
+                        </button>
+                      ))}
+                    </div>
+                    <textarea
+                      className="od-review-input"
+                      rows={3}
+                      placeholder="Tell us what you loved (or what we can improve)…"
+                      value={revText}
+                      onChange={(e) => {
+                        setRevText(e.target.value);
+                        setRevErr("");
+                      }}
+                    />
+                    {revErr && (
+                      <span className="od-review-err">{revErr}</span>
+                    )}
+                    <button
+                      type="button"
+                      className="od-track-btn"
+                      onClick={submitOrderReview}
+                      disabled={revBusy}
+                    >
+                      {revBusy ? (
+                        <>
+                          <Loader2 size={16} className="lb-spinner" />{" "}
+                          Submitting…
+                        </>
+                      ) : (
+                        "Submit review"
+                      )}
+                    </button>
+                  </>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Refer & win slide-up sheet */}
+      <AnimatePresence>
+        {showReferSheet && (
+          <motion.div
+            className="bill-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowReferSheet(false)}
+            style={{ maxWidth: "980px", margin: "0 auto" }}
+          >
+            <motion.div
+              className="bill-modal od-sheet"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="bill-header">
+                <span className="weight-600 font-16 flex items-center gap-8">
+                  <Gift size={16} /> Refer &amp; win ₹50
+                </span>
+                <span
+                  className="cursor-pointer"
+                  onClick={() => setShowReferSheet(false)}
+                >
+                  <X size={16} />
+                </span>
+              </div>
+              <div className="od-sheet-body">
+                <ReferAndEarn
+                  phone={String(order["Phone Number"] || number)}
+                />
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Floating community FAB (bottom-right, sliding label) + install bar. */}
+      <div className="od-community-fab">
+        <CommunityJoin variant="icon" />
+        <span className="od-community-fab-label">Join community</span>
+      </div>
+      <PwaInstallPromo variant="bar" />
     </main>
   );
 }

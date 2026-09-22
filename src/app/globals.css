@@ -41673,21 +41673,174 @@ img[data-loaded="true"] {
   cursor: pointer;
   box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.25);
 }
-/* Floating arrival card (Flipkart-style, overlaps map bottom) */
+/* Arrival card — full-width, sits just below the map. */
 .od-track-card {
   position: relative;
   z-index: 6;
-  /* Pull up so it overlaps the map bottom, then normal flow for what follows. */
-  margin: -48px 16px 16px;
+  margin: 12px 0;
   background: #fff;
   border: 1px solid var(--dark-20, #82828250);
-  border-radius: 14px;
-  padding: 14px 16px;
-  box-shadow: 0 10px 28px -12px rgba(0, 0, 0, 0.35);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 8px 24px -14px rgba(0, 0, 0, 0.28);
 }
-/* When the map didn't load, the card sits in normal flow (no overlap pull-up). */
 .od-track-card.od-track-card-flat {
   margin-top: 12px;
+}
+
+/* Quick-action row (Add note / Rate us / Refer & win). */
+.od-quick {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.od-quick-btn {
+  flex: 1 1 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 11px 8px;
+  border-radius: 12px;
+  border: 1px solid var(--dark-20, #82828250);
+  background: #fff;
+  color: #1c1814;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.od-quick-btn svg {
+  color: var(--tertiary, #fb8500);
+}
+.od-quick-btn:active {
+  transform: scale(0.97);
+}
+.od-quick-refer {
+  border-color: rgba(251, 133, 0, 0.4);
+  background: rgba(251, 133, 0, 0.07);
+}
+
+/* User-profile card (bold name, phone, address). */
+.od-profile-card {
+  border: 1px solid var(--dark-20, #82828250);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 12px;
+}
+.od-profile-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+.od-profile-name {
+  display: block;
+  font-size: 19px;
+  font-weight: 800;
+  color: #111827;
+  line-height: 1.2;
+}
+.od-profile-phone {
+  display: block;
+  margin-top: 3px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray-500, #6b7280);
+}
+.od-profile-addr {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--hairline, #e5e7eb);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--gray-500, #4b5563);
+}
+.od-profile-addr svg {
+  flex: 0 0 auto;
+  margin-top: 2px;
+  color: var(--tertiary, #fb8500);
+}
+
+/* Ask + Download, one row inside the billing card. */
+.od-bill-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+.od-bill-actions > button {
+  flex: 1 1 0;
+  width: auto;
+  margin: 0;
+  padding: 11px 8px;
+  white-space: nowrap;
+}
+
+/* Slide-up sheet body used by the note/rate/refer modals. */
+.od-sheet {
+  max-width: 560px;
+  margin: 0 auto;
+}
+.od-sheet-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px 18px 22px;
+}
+
+/* Floating community FAB + sliding label (bottom-right, above install bar). */
+.od-community-fab {
+  position: fixed;
+  right: 16px;
+  bottom: 92px;
+  z-index: 1250;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-direction: row-reverse;
+}
+.od-community-fab-label {
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 0;
+  padding: 8px 0;
+  border-radius: 999px;
+  background: #1c1814;
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 800;
+  opacity: 0;
+  animation: odFabLabel 6s ease-in-out 1.2s infinite;
+}
+@keyframes odFabLabel {
+  0%,
+  100% {
+    max-width: 0;
+    opacity: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  8%,
+  30% {
+    max-width: 150px;
+    opacity: 1;
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+  38% {
+    max-width: 0;
+    opacity: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .od-community-fab-label {
+    animation: none;
+  }
 }
 /* Upgrade-to-faster-delivery CTA (order-detail) */
 .od-upgrade-cta {
@@ -45373,12 +45526,8 @@ img[data-loaded="true"] {
 .refearn-meter-fill {
   transform-box: fill-box;
   transform-origin: left center;
-  animation: refMeterFill 2.8s ease-in-out infinite;
-}
-@keyframes refMeterFill {
-  0% { transform: scaleX(0.12); opacity: 0.85; }
-  60% { transform: scaleX(0.92); opacity: 1; }
-  100% { transform: scaleX(0.12); opacity: 0.85; }
+  /* Static fill — no looping animation. */
+  transform: scaleX(0.72);
 }
 .refearn-meter-lbl {
   font-size: 10.5px;

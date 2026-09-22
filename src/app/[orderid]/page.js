@@ -16,9 +16,11 @@ import {
   updateOrderRow,
 } from "@/utils/googleFormOrder";
 import { getDeliveryCharge } from "@/utils/cartOffers";
-import { Plane } from "lucide-react";
+import { Plane, BookPlus } from "lucide-react";
+import { books as ALL_BOOKS } from "@/utils/book";
 
 const MERCHANT_PASSWORD = "987321";
+const ADDON_DISCOUNT = 0.2; // flat 20% off books added before packing
 // Matches the checkout flow: flat COD handling fee (see bag/page.js).
 const COD_HANDLING_FEE = 29;
 
@@ -151,6 +153,80 @@ export default function MerchantConfirmPage() {
     }
   };
 
+  // ── Add-books-before-packing approval (?addbooks=<base64 [{id,q}]>) ──
+  const addBooksReq = !!search.get("addbooks");
+  const addBooks = (() => {
+    const raw = search.get("addbooks");
+    if (!raw) return [];
+    let list = [];
+    try {
+      list = JSON.parse(atob(decodeURIComponent(raw)));
+    } catch {
+      return [];
+    }
+    if (!Array.isArray(list)) return [];
+    return list
+      .map((it) => {
+        const b = ALL_BOOKS.find((x) => x.id === it.id);
+        if (!b) return null;
+        const qty = Math.max(1, Number(it.q) || 1);
+        const unit = Math.max(
+          1,
+          Math.round((b.discountedPrice ?? 0) * (1 - ADDON_DISCOUNT)),
+        );
+        return { name: b.name, qty, unit, total: unit * qty };
+      })
+      .filter(Boolean);
+  })();
+  const addBooksAmount = addBooks.reduce((s, b) => s + b.total, 0);
+  const approveAddBooks = async () => {
+    if (pwd !== MERCHANT_PASSWORD) {
+      setErr("Incorrect merchant password.");
+      return;
+    }
+    if (!addBooks.length) {
+      setErr("No valid books to add from this link.");
+      return;
+    }
+    setErr("");
+    setSubmitting(true);
+    try {
+      // Append the new (20%-off) lines to the existing Books List.
+      const existing = String(order["Books List"] || "").trim();
+      const startIdx = existing ? existing.split("\n").filter(Boolean).length : 0;
+      const newLines = addBooks
+        .map(
+          (b, i) =>
+            `${startIdx + i + 1}. ${b.name} | Qty: ${b.qty} | ₹${b.unit} each | Total: ₹${b.total}`,
+        )
+        .join("\n");
+      const booksList = existing ? `${existing}\n${newLines}` : newLines;
+
+      const curTotal = num(order["Total Amount"]);
+      const orderIsCOD = /cash|cod/i.test(String(order["Payment Type"] || ""));
+      const fields = { "Books List": booksList };
+      if (orderIsCOD) {
+        // COD (incl. ₹99-advance COD): add the extra to the amount collected.
+        fields["Total Amount"] = String(curTotal + addBooksAmount);
+      } else {
+        // Online-paid order: collect the extra as COD (convert the order).
+        fields["Payment Type"] = "Cash on Delivery";
+        fields["Advance Paid"] = "No";
+        fields["Total Amount"] = String(addBooksAmount);
+      }
+      // Confirm the order if it was still unconfirmed.
+      if (/unconfirmed/i.test(String(order["Order Status"] || ""))) {
+        fields["Order Status"] = "Processing";
+      }
+      await updateOrderRow(orderId, fields);
+      setDone(true);
+    } catch (e) {
+      setErr("Could not add the books. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const handleConfirm = async () => {
     if (pwd !== MERCHANT_PASSWORD) {
       setErr("Incorrect merchant password.");
@@ -196,15 +272,23 @@ export default function MerchantConfirmPage() {
             <div className="mc-success-ic">
               <CheckCircle2 size={40} />
             </div>
-            <h1>{upgradeReq ? "Upgrade approved" : "Order confirmed"}</h1>
+            <h1>
+              {upgradeReq
+                ? "Upgrade approved"
+                : addBooksReq
+                  ? "Books added"
+                  : "Order confirmed"}
+            </h1>
             <p>
               {upgradeReq
                 ? "The order is now marked as Faster (air) delivery."
-                : `The order has been confirmed${
-                    walletUsed > 0
-                      ? ` and ₹${walletUsed} was debited from the customer's wallet.`
-                      : "."
-                  }`}
+                : addBooksReq
+                  ? `${addBooks.length} book(s) added at 20% off. ₹${addBooksAmount} will be collected as cash on delivery.`
+                  : `The order has been confirmed${
+                      walletUsed > 0
+                        ? ` and ₹${walletUsed} was debited from the customer's wallet.`
+                        : "."
+                    }`}
             </p>
             <span className="mc-oid">Order {orderId}</span>
           </div>
@@ -269,6 +353,73 @@ export default function MerchantConfirmPage() {
                 </>
               ) : (
                 "Approve Faster upgrade"
+              )}
+            </button>
+          </>
+        ) : addBooksReq ? (
+          <>
+            <div className="mc-head">
+              <BookPlus size={22} />
+              <span>Add books to order</span>
+            </div>
+            <div className="mc-summary">
+              <Row label="Order ID" value={orderId} />
+              <Row
+                label="Customer"
+                value={String(order["Customer Name"] || "").replace(
+                  /\s*\(unconfirmed\)\s*/i,
+                  "",
+                )}
+              />
+              <Row label="Phone" value={order["Phone Number"]} />
+              <Row
+                label="Current payment"
+                value={order["Payment Type"] || "—"}
+              />
+              {addBooks.map((b, i) => (
+                <Row
+                  key={i}
+                  label={`+ ${b.name}${b.qty > 1 ? ` ×${b.qty}` : ""}`}
+                  value={`₹${b.total} (20% off)`}
+                />
+              ))}
+              <Row
+                label="Extra to collect (COD)"
+                value={`+₹${addBooksAmount}`}
+                highlight
+              />
+            </div>
+            <div className="mc-note">
+              Adds these books to the parcel at 20% off. For a prepaid order this
+              extra is collected as <b>cash on delivery</b>; for COD it is added
+              to the amount to collect.
+            </div>
+            <label className="mc-label">
+              <Lock size={14} /> Merchant password
+            </label>
+            <input
+              type="password"
+              className="sec-mid-btn mc-input"
+              placeholder="Enter merchant password"
+              value={pwd}
+              onChange={(e) => setPwd(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && approveAddBooks()}
+              inputMode="numeric"
+              autoComplete="off"
+            />
+            {err && <span className="mc-err">{err}</span>}
+            <button
+              type="button"
+              className="pri-big-btn width100 mc-btn"
+              onClick={approveAddBooks}
+              disabled={submitting || !pwd}
+            >
+              {submitting ? (
+                <>
+                  <Loader2 size={16} className="lb-spinner" /> Adding…
+                </>
+              ) : (
+                `Add ${addBooks.length} book(s) · +₹${addBooksAmount}`
               )}
             </button>
           </>

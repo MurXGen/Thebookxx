@@ -47,6 +47,7 @@ import ReferAndEarn from "@/components/profile/ReferAndEarn";
 import CodPayOnline from "@/components/profile/CodPayOnline";
 import CommunityJoin from "@/components/CommunityJoin";
 import PwaInstallPromo from "@/components/PwaInstallPromo";
+import AddBeforePacking from "@/components/profile/AddBeforePacking";
 import BookCard from "@/components/BookCard";
 import { updateOrderRow } from "@/utils/googleFormOrder";
 import { getDeliveryCharge } from "@/utils/cartOffers";
@@ -1296,6 +1297,20 @@ export default function OrderDetailPage() {
           )}
         </div>
       )}
+
+      {/* Add more before packing — flat 20% off, only while still packable. */}
+      {order &&
+        !inTransit &&
+        !outForDelivery &&
+        !delivered &&
+        !cancelled &&
+        !shippingId && (
+          <AddBeforePacking
+            order={order}
+            orderId={orderId}
+            phone={order["Phone Number"] || number}
+          />
+        )}
 
       {/* Quick actions — minimal buttons that open slide-up sheets. */}
       <div className="od-quick">

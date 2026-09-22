@@ -465,11 +465,29 @@ export default function OrderDetailPage() {
         });
       }
 
-      map.fitBounds(path, { padding: [36, 36] });
+      // Zoom to fit the route, then re-centre on the parcel's CURRENT position
+      // and lift it up so it sits in the visible upper area (not hidden behind
+      // the bottom status overlay).
+      const curPoint = path[splitIdx];
+      const OVERLAY_LIFT = 96; // px to push the current point above the card
+      const focusCurrent = () => {
+        try {
+          map.fitBounds(path, { padding: [40, 40] });
+          if (!delivered) {
+            map.setView(curPoint, map.getZoom(), { animate: false });
+            map.panBy([0, OVERLAY_LIFT], { animate: false });
+          } else {
+            // Delivered → focus the destination, lifted above the overlay.
+            map.setView(B, map.getZoom(), { animate: false });
+            map.panBy([0, OVERLAY_LIFT], { animate: false });
+          }
+        } catch {}
+      };
+      focusCurrent();
       setTimeout(() => {
         try {
           map.invalidateSize();
-          map.fitBounds(path, { padding: [36, 36] });
+          focusCurrent();
         } catch {}
       }, 80);
 

@@ -1,34 +1,26 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { Plus, Check, TrendingUp, X, Package } from "lucide-react";
 import { books as ALL_BOOKS } from "@/utils/book";
+import { getCatalogueData, getBooksByCategory } from "@/utils/catalogueUtils";
 import { FaWhatsapp } from "react-icons/fa";
 
 const ADDON_DISCOUNT = 0.2; // flat 20% off add-ons
 const MERCHANT_WA = "917710892108";
+const BATCH = 10; // lazy-load step
 
 const normName = (s) =>
   String(s || "")
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "");
 
-// Add-more-before-packing upsell — shown on the order-detail page while the
-// order is still packable. Adds ride at a flat 20% off; the customer confirms
-// on WhatsApp with a merchant approve link that appends them to this order.
-const CATEGORIES = [
-  { key: "all", label: "All" },
-  { key: "bestseller", label: "Bestseller" },
-  { key: "fiction", label: "Fiction" },
-  { key: "non-fiction", label: "Non-Fiction" },
-];
-
+// Add-more-before-packing upsell — mirrors the homepage "Find your next read"
+// browser (category tabs + lazy-loaded 2-row rail) but adds at a flat 20% off
+// into a per-order package the customer confirms on WhatsApp.
 export default function AddBeforePacking({ order, orderId, phone }) {
-  const [cat, setCat] = useState("all");
   const storeKey = `tbx_addpack_${orderId}`;
-  // Load any previously-added books from localStorage on first render (this
-  // component only renders client-side once the order has loaded).
   const [added, setAdded] = useState(() => {
     if (typeof window === "undefined") return [];
     try {
@@ -38,6 +30,11 @@ export default function AddBeforePacking({ order, orderId, phone }) {
       return [];
     }
   });
+  const [active, setActive] = useState("all");
+  const [visible, setVisible] = useState(BATCH);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const scrollRef = useRef(null);
+
   const persist = (next) => {
     setAdded(next);
     try {
@@ -45,7 +42,15 @@ export default function AddBeforePacking({ order, orderId, phone }) {
     } catch {}
   };
 
-  // Names already in the order → excluded from the trending picks.
+  // Category tabs — All first, then every catalogue category by size.
+  const cats = useMemo(() => {
+    const data = getCatalogueData()
+      .filter((c) => c.count > 0)
+      .sort((a, b) => b.count - a.count);
+    return [{ key: "all", label: "All" }, ...data];
+  }, []);
+
+  // Names already in the order → excluded.
   const inOrder = useMemo(() => {
     const set = new Set();
     String(order?.["Books List"] || "")
@@ -60,24 +65,42 @@ export default function AddBeforePacking({ order, orderId, phone }) {
   const disc = (b) =>
     Math.max(1, Math.round((b.discountedPrice ?? 0) * (1 - ADDON_DISCOUNT)));
 
-  // The full catalogue (with a cover, priced, not already in the order/added),
-  // filtered by the selected category tab.
-  const pool = useMemo(() => {
-    const addedIds = new Set(added.map((a) => a.id));
-    return ALL_BOOKS.filter((b) => {
-      if (!b.image || !b.id) return false;
-      if (inOrder.has(normName(b.name))) return false;
-      if (addedIds.has(b.id)) return false;
-      const price = b.discountedPrice ?? 0;
-      if (price <= 1) return false;
-      if (cat === "all") return true;
-      const tags = (b.catalogue || []).map((t) => String(t).toLowerCase());
-      return tags.includes(cat);
-    });
-  }, [inOrder, added, cat]);
+  // Full pool for the active category (revealed lazily).
+  const full = useMemo(() => {
+    const src =
+      active === "all" ? ALL_BOOKS : getBooksByCategory(active);
+    return src.filter(
+      (b) =>
+        b.image &&
+        b.id &&
+        (b.discountedPrice ?? 0) > 1 &&
+        !inOrder.has(normName(b.name)),
+    );
+  }, [active, inOrder]);
+  const shown = full.slice(0, visible);
+  const hasMore = visible < full.length;
 
+  const onRailScroll = () => {
+    const el = scrollRef.current;
+    if (!el || loadingMore || !hasMore) return;
+    if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 220) {
+      setLoadingMore(true);
+      setTimeout(() => {
+        setVisible((v) => Math.min(v + BATCH, full.length));
+        setLoadingMore(false);
+      }, 350);
+    }
+  };
+  const selectCat = (key) => {
+    if (key === active) return;
+    setActive(key);
+    setVisible(BATCH);
+    if (scrollRef.current) scrollRef.current.scrollLeft = 0;
+  };
+
+  const isAdded = (id) => added.some((x) => x.id === id);
   const addBook = (b) => {
-    if (added.some((x) => x.id === b.id)) return;
+    if (isAdded(b.id)) return;
     persist([
       ...added,
       {
@@ -127,25 +150,11 @@ export default function AddBeforePacking({ order, orderId, phone }) {
     );
   };
 
-  // Availability regardless of the active category (so the section stays even
-  // when the current tab has no matches).
-  const hasAny = useMemo(() => {
-    const addedIds = new Set(added.map((a) => a.id));
-    return ALL_BOOKS.some(
-      (b) =>
-        b.image &&
-        b.id &&
-        (b.discountedPrice ?? 0) > 1 &&
-        !inOrder.has(normName(b.name)) &&
-        !addedIds.has(b.id),
-    );
-  }, [inOrder, added]);
-
-  if (!hasAny && !added.length) return null;
+  if (!full.length && !added.length) return null;
 
   return (
     <section className="abp">
-      {/* Added-to-package summary (above the trending grid). */}
+      {/* Added-to-package summary */}
       {added.length > 0 && (
         <div className="abp-cart">
           <div className="abp-cart-head">
@@ -178,7 +187,7 @@ export default function AddBeforePacking({ order, orderId, phone }) {
         </div>
       )}
 
-      {/* Trending header */}
+      {/* Header */}
       <div className="abp-head">
         <div className="abp-head-txt">
           <span className="abp-tag">
@@ -194,58 +203,90 @@ export default function AddBeforePacking({ order, orderId, phone }) {
         </span>
       </div>
 
-      {/* Category tabs */}
-      <div className="abp-cats">
-        {CATEGORIES.map((c) => (
-          <button
-            key={c.key}
-            type="button"
-            className={`abp-cat${cat === c.key ? " on" : ""}`}
-            onClick={() => setCat(c.key)}
-          >
-            {c.label}
-          </button>
-        ))}
+      {/* Category tabs (underlined, scrollable) — same as homepage */}
+      <div className="cb-tabbar abp-tabbar">
+        <div className="cb-tabs" role="tablist">
+          {cats.map((c) => (
+            <button
+              key={c.key}
+              type="button"
+              role="tab"
+              aria-selected={active === c.key}
+              className={`cb-tab${active === c.key ? " on" : ""}`}
+              onClick={() => selectCat(c.key)}
+            >
+              {c.label}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* 2-row horizontal-scroll rail */}
-      <div className="abp-rail">
-        {pool.map((b) => {
-          const price = disc(b);
-          const orig = b.discountedPrice ?? 0;
-          return (
-            <div className="abp-item" key={b.id}>
-              <div className="abp-cover">
-                {b.image ? (
-                  <Image src={b.image} alt={b.name} width={120} height={150} />
-                ) : (
-                  <span className="abp-cover-ph">
-                    <Package size={20} />
+      {/* 2-row lazy-loaded rail — same card style as homepage */}
+      {shown.length === 0 ? (
+        <p className="cb-empty">No books in this category yet.</p>
+      ) : (
+        <div className="or1-scroll" ref={scrollRef} onScroll={onRailScroll}>
+          <div className="or1-grid">
+            {shown.map((b) => {
+              const price = disc(b);
+              const orig = b.discountedPrice ?? 0;
+              const on = isAdded(b.id);
+              return (
+                <div className="or1-card" key={b.id}>
+                  <div className="or1-cover">
+                    <span className="or1-cover-link">
+                      <Image
+                        src={b.image}
+                        alt={b.name}
+                        width={120}
+                        height={150}
+                        loading="lazy"
+                      />
+                    </span>
+                    {on ? (
+                      <button
+                        type="button"
+                        className="or1-add on"
+                        onClick={() => removeBook(b.id)}
+                        aria-label={`Remove ${b.name}`}
+                      >
+                        <Check size={17} strokeWidth={3} />
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className="or1-add"
+                        onClick={() => addBook(b)}
+                        aria-label={`Add ${b.name}`}
+                      >
+                        <Plus size={18} />
+                      </button>
+                    )}
+                  </div>
+                  <span className="or1-name">{b.name}</span>
+                  <div className="or1-price">
+                    <span className="or1-now">₹{price}</span>
+                    {orig > price && <span className="or1-mrp">₹{orig}</span>}
+                  </div>
+                  {orig > price && (
+                    <span className="or1-save-tag">You save ₹{orig - price}</span>
+                  )}
+                </div>
+              );
+            })}
+            {loadingMore &&
+              Array.from({ length: 4 }).map((_, i) => (
+                <div className="cb-skel" key={`more-${i}`}>
+                  <span className="cb-skel-cover">
+                    <span className="cb-skel-shine" />
                   </span>
-                )}
-                <button
-                  type="button"
-                  className="abp-add"
-                  onClick={() => addBook(b)}
-                  aria-label={`Add ${b.name}`}
-                >
-                  <Plus size={18} />
-                </button>
-              </div>
-              <span className="abp-name" title={b.name}>
-                {b.name}
-              </span>
-              <div className="abp-price">
-                <b>₹{price}</b>
-                {orig > price && <s>₹{orig}</s>}
-              </div>
-              {orig > price && (
-                <span className="abp-save">You save ₹{orig - price}</span>
-              )}
-            </div>
-          );
-        })}
-      </div>
+                  <span className="cb-skel-line w70" />
+                  <span className="cb-skel-line w40" />
+                </div>
+              ))}
+          </div>
+        </div>
+      )}
     </section>
   );
 }

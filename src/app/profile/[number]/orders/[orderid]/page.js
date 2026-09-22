@@ -1728,6 +1728,8 @@ export default function OrderDetailPage() {
           <SupportSheet
             phone={number}
             orderId={orderId}
+            eta={`${etaMin}–${etaMax}`}
+            onDetail
             onClose={() => setShowSupport(false)}
           />
         )}

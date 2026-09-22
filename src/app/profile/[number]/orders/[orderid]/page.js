@@ -1191,16 +1191,20 @@ export default function OrderDetailPage() {
               className={`od-tc-badge${delivered ? " done" : ""}${cancelled ? " cancelled" : ""}`}
             >
               {cancelled ? (
-                <X size={26} />
+                <X size={28} />
               ) : delivered ? (
-                <Home size={26} />
-              ) : eta.done ? (
-                <span className="od-tc-badge-done">{eta.done}</span>
-              ) : (
+                <Home size={28} />
+              ) : eta.num ? (
                 <>
                   <span className="od-tc-badge-num">{eta.num}</span>
                   <span className="od-tc-badge-unit">{eta.unit}</span>
                 </>
+              ) : /unconfirm/i.test(eta.done || "") ? (
+                <CalendarClock size={28} />
+              ) : /pack|ship/i.test(eta.done || "") ? (
+                <Package size={28} />
+              ) : (
+                <Check size={30} strokeWidth={3} />
               )}
             </span>
             <div className="od-tc-txt">

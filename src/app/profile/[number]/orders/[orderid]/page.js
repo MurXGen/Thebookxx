@@ -184,7 +184,9 @@ function statusLabel(order) {
   if (/in\s*transit/.test(st))
     return { title: "In transit", sub: "Your parcel is on its way" };
   if (/shipped|getting shipped/.test(st))
-    return { title: "Shipped from Mumbai", sub: "Handed to the courier" };
+    return { title: "About to ship", sub: "Your parcel is being handed over" };
+  if (/processing/.test(st))
+    return { title: "Order status", sub: "We're preparing your order" };
   if (/cancel/.test(st))
     return { title: "Cancelled", sub: "This order was cancelled" };
   if (/unconfirmed|pending/.test(st)) {
@@ -907,6 +909,17 @@ export default function OrderDetailPage() {
     if (/shipped|getting shipped/.test(st)) return { done: "Packing" };
     return { done: "Confirmed" };
   })();
+  // Badge text for the compact status (per the custom status→badge mapping).
+  const psBadge = (() => {
+    const st = String(order?.["Order Status"] || "").toLowerCase();
+    if (cancelled) return "Cancelled";
+    if (delivered) return "Delivered"; // includes "money received"
+    if (/shipped|getting shipped/.test(st)) return "Getting shipped";
+    if (/processing/.test(st)) return "Preparing";
+    if (inTransit || outForDelivery) return `${eta.num} ${eta.unit}`;
+    if (/unconfirmed|pending/.test(st)) return "Processing";
+    return "Confirmed";
+  })();
 
   // Journey progress 0..1 for the green fill bar.
   const progressPct = Math.round(computeProgress(order) * 100);
@@ -1181,11 +1194,7 @@ export default function OrderDetailPage() {
               <span
                 className={`od-ps-badge${delivered ? " done" : ""}${cancelled ? " cancelled" : ""}`}
               >
-                {cancelled
-                  ? "Cancelled"
-                  : delivered
-                    ? "Delivered"
-                    : eta.done || `${eta.num} ${eta.unit}`}
+                {psBadge}
               </span>
             </div>
             {!cancelled && (
@@ -1195,11 +1204,27 @@ export default function OrderDetailPage() {
             )}
             <div className="od-ps-foot">
               <span className="od-ps-deliv">
-                {isFaster ? <Plane size={13} /> : <Train size={13} />}
-                {isFaster ? "Express" : "Standard"}
-                {!delivered && ` · ${etaMin}–${etaMax}d`}
+                {delivered ? (
+                  <>
+                    <Home size={13} /> Delivered
+                  </>
+                ) : (
+                  <>
+                    {isFaster ? <Plane size={13} /> : <Train size={13} />}
+                    {isFaster ? "Express" : "Standard"}
+                    {` · ${etaMin}–${etaMax}d`}
+                  </>
+                )}
               </span>
-              {inTransit && shippingId ? (
+              {delivered ? (
+                <button
+                  type="button"
+                  className="od-ps-faster"
+                  onClick={() => setShowRateSheet(true)}
+                >
+                  <Star size={12} /> Review us
+                </button>
+              ) : inTransit && shippingId ? (
                 <button
                   type="button"
                   className="od-ps-track"

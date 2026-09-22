@@ -33,7 +33,6 @@ import {
   Check,
   Star,
   Copy,
-  Phone,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import {
@@ -47,7 +46,6 @@ import OrderScratchCard from "@/components/profile/OrderScratchCard";
 import ReferAndEarn from "@/components/profile/ReferAndEarn";
 import CodPayOnline from "@/components/profile/CodPayOnline";
 import CommunityJoin from "@/components/CommunityJoin";
-import PwaInstallPromo from "@/components/PwaInstallPromo";
 import BookCard from "@/components/BookCard";
 import { updateOrderRow } from "@/utils/googleFormOrder";
 import { getDeliveryCharge } from "@/utils/cartOffers";
@@ -1187,29 +1185,22 @@ export default function OrderDetailPage() {
           }`}
         >
           <div className="od-tc-main">
-            <span
-              className={`od-tc-badge${delivered ? " done" : ""}${cancelled ? " cancelled" : ""}`}
-            >
-              {cancelled ? (
-                <X size={28} />
-              ) : delivered ? (
-                <Home size={28} />
-              ) : eta.num ? (
-                <>
-                  <span className="od-tc-badge-num">{eta.num}</span>
-                  <span className="od-tc-badge-unit">{eta.unit}</span>
-                </>
-              ) : /unconfirm/i.test(eta.done || "") ? (
-                <CalendarClock size={28} />
-              ) : /pack|ship/i.test(eta.done || "") ? (
-                <Package size={28} />
-              ) : (
-                <Check size={30} strokeWidth={3} />
-              )}
+            <span className="od-tc-ic">
+              {delivered ? <Home size={18} /> : <Truck size={18} />}
             </span>
             <div className="od-tc-txt">
               <strong>{stLabel.title}</strong>
               <span>{stLabel.sub}</span>
+            </div>
+            <div className="od-tc-eta">
+              {eta.done ? (
+                <span className="od-tc-eta-done">{eta.done}</span>
+              ) : (
+                <>
+                  <span className="od-tc-eta-num">{eta.num}</span>
+                  <span className="od-tc-eta-unit">{eta.unit}</span>
+                </>
+              )}
             </div>
           </div>
           {!cancelled && (
@@ -1252,10 +1243,7 @@ export default function OrderDetailPage() {
                   </button>
                 ) : (
                   upgradeExtra != null &&
-                  !shippingId &&
-                  /processing|getting shipped/i.test(
-                    order["Order Status"] || "",
-                  ) && (
+                  !shippingId && (
                     <button
                       type="button"
                       className="od-tc-upgrade"
@@ -1437,52 +1425,50 @@ export default function OrderDetailPage() {
         )}
       </AnimatePresence>
 
-      {/* Savings ribbon (Zepto-style) — prominent, just under the status. */}
-      {bd.savings > 0 && (
-        <div className="od-saved-ribbon">
-          <span className="od-saved-corner left" />
-          You saved <b>₹{bd.savings}</b> on this order
-          <span className="od-saved-corner right" />
-        </div>
-      )}
+      {/* Refer & earn — generate a shareable link, earn ₹50 on a friend's
+          first delivered order. Shown above the delivery details. */}
+      <ReferAndEarn phone={String(order["Phone Number"] || number)} />
 
-      {/* Deliver-to (Zepto-style: address row + phone row) */}
-      <section className="od-block od-deliver-card">
-        {canEditAddress && (
-          <button
-            type="button"
-            className="od-edit-btn od-deliver-edit"
-            onClick={openAddrEdit}
-          >
-            <Pencil size={13} /> Edit
-          </button>
-        )}
-        <div className="od-deliver-row2">
-          <span className="od-deliver-chip">
-            <MapPin size={17} />
-          </span>
-          <div className="od-deliver-txt">
-            <strong>Delivery to Home</strong>
-            <span>
-              {addr}
-              {order["Pincode"] ? ` - ${order["Pincode"]}` : ""}
-            </span>
-          </div>
+      {/* Deliver-to (directly below the map) */}
+      <section className="od-block">
+        <div className="od-block-titlerow">
+          <div className="od-block-title">Delivery details</div>
+          {canEditAddress && (
+            <button
+              type="button"
+              className="od-edit-btn"
+              onClick={openAddrEdit}
+            >
+              <Pencil size={13} /> Edit
+            </button>
+          )}
         </div>
-        <div className="od-deliver-sep" />
-        <div className="od-deliver-row2">
-          <span className="od-deliver-chip">
-            <Phone size={16} />
+        <div className="od-deliver-row">
+          <span className="od-deliver-ic">
+            <User size={15} />
           </span>
-          <div className="od-deliver-txt">
-            <strong>{custName || "—"}</strong>
-            <span>+91 {order["Phone Number"] || number}</span>
-          </div>
+          <span>
+            {custName || "—"} · +91 {order["Phone Number"] || number}
+          </span>
+        </div>
+        <div className="od-deliver-row">
+          <span className="od-deliver-ic">
+            <Home size={15} />
+          </span>
+          <span>
+            {addr}
+            {order["Pincode"] ? ` - ${order["Pincode"]}` : ""}
+          </span>
         </div>
         {receiver?.approx && (
-          <div className="od-approx-row2">
-            <MapPin size={12} /> Approximate area for pincode{" "}
-            <strong>&nbsp;{order["Pincode"]}</strong>
+          <div className="od-deliver-row od-approx-row">
+            <span className="od-deliver-ic">
+              <MapPin size={15} />
+            </span>
+            <span className="od-approx-txt">
+              Map showing the approximate area for pincode{" "}
+              <strong>{order["Pincode"]}</strong>
+            </span>
           </div>
         )}
       </section>
@@ -1675,6 +1661,11 @@ export default function OrderDetailPage() {
           </span>
           <span className="od-paid-mode">{order["Payment Type"] || "—"}</span>
         </div>
+        {bd.savings > 0 && (
+          <div className="od-save-banner">
+            <ShieldCheck size={15} /> You saved ₹{bd.savings} on this order
+          </div>
+        )}
       </section>
 
       {/* COD → pay-online upgrade (only before the parcel is moving) */}
@@ -1780,26 +1771,24 @@ export default function OrderDetailPage() {
         )}
       </section>
 
-      {/* Refer & earn — promo moved below the transactional + review sections
-          so the important order info sits at the top. */}
-      <ReferAndEarn phone={String(order["Phone Number"] || number)} />
+      {/* Ask about this order — opens the support topic sheet */}
+      <button
+        type="button"
+        className="od-help-btn"
+        onClick={() => setShowSupport(true)}
+      >
+        <FaWhatsapp size={16} /> Ask about this order
+      </button>
+      <button
+        type="button"
+        className="od-bill-btn od-bill-full"
+        onClick={downloadBill}
+      >
+        <Download size={16} /> Download bill
+      </button>
 
       {/* Join our community — WhatsApp group + Instagram */}
       <CommunityJoin variant="card" />
-
-      {/* Ask + Download — compact 2-up action row */}
-      <div className="od-actions-row">
-        <button
-          type="button"
-          className="od-help-btn"
-          onClick={() => setShowSupport(true)}
-        >
-          <FaWhatsapp size={16} /> Ask about order
-        </button>
-        <button type="button" className="od-bill-btn" onClick={downloadBill}>
-          <Download size={16} /> Download bill
-        </button>
-      </div>
 
       {/* You might also be interested in */}
       {recos.length > 0 && (
@@ -1954,9 +1943,6 @@ export default function OrderDetailPage() {
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Fixed install-app bar (hidden when already installed). */}
-      <PwaInstallPromo variant="bar" />
     </main>
   );
 }

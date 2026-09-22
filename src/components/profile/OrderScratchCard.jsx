@@ -121,7 +121,11 @@ export default function OrderScratchCard({
   if (status === "hidden") return null;
 
   return (
-    <section className="od-block od-scratch-block">
+    <section
+      className={`od-scratch-block${
+        status === "revealed" ? " od-scratch-flush" : " od-block"
+      }`}
+    >
       {status === "checking" && (
         <div className="od-scratch-skel" aria-busy="true" aria-label="Loading reward">
           <div className="od-scratch-skel-head">

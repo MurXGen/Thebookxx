@@ -34715,6 +34715,15 @@ img[data-loaded="true"] {
     var(--card-bg, #fff);
   border: 1px solid rgba(251, 133, 0, 0.22);
 }
+/* Revealed reward: drop the outer container — the won card is its own full-
+   width container. */
+.od-scratch-flush {
+  overflow: visible;
+  background: none;
+  border: none;
+  padding: 0;
+  margin-bottom: 12px;
+}
 /* Ready state — text on the left, 3D scratch card on the right */
 .od-scratch-ready {
   display: flex;

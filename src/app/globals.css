@@ -16542,6 +16542,209 @@ img[data-loaded="true"] {
   min-width: 0;
 }
 /* ── Delivered reconcile (India Post file upload) ── */
+/* ── Tracking-ID export panel (Track orders tab) ── */
+.mo-tid {
+  border: 1px solid var(--hairline, #e5e7eb);
+  border-radius: 14px;
+  padding: 14px;
+  background: #fff;
+  margin-bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.mo-dark .mo-tid {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+.mo-tid-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.mo-tid-head-txt {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.mo-tid-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text, #1c1814);
+}
+.mo-tid-title svg {
+  color: var(--tertiary, #fb8500);
+}
+.mo-dark .mo-tid-title {
+  color: #f3f4f6;
+}
+.mo-tid-sub {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted, #6b7280);
+}
+.mo-tid-copy {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 10px;
+  border: none;
+  background: var(--tertiary, #fb8500);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.mo-tid-copy:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.mo-tid-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px;
+}
+.mo-tid-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted, #6b7280);
+}
+.mo-tid-field select,
+.mo-tid-field input {
+  height: 38px;
+  padding: 0 10px;
+  border-radius: 10px;
+  border: 1px solid var(--hairline, #d1d5db);
+  background: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text, #1c1814);
+}
+.mo-dark .mo-tid-field select,
+.mo-dark .mo-tid-field input {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.16);
+  color: #f3f4f6;
+}
+.mo-tid-clear {
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid var(--hairline, #d1d5db);
+  background: transparent;
+  color: var(--muted, #6b7280);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.mo-tid-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 4px;
+  border-top: 1px dashed var(--hairline, #e5e7eb);
+}
+.mo-dark .mo-tid-bar {
+  border-top-color: rgba(255, 255, 255, 0.12);
+}
+.mo-tid-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text, #1c1814);
+  cursor: pointer;
+}
+.mo-dark .mo-tid-all {
+  color: #e5e7eb;
+}
+.mo-tid-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 420px;
+  overflow-y: auto;
+}
+.mo-tid-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 11px;
+  border: 1px solid var(--hairline, #e5e7eb);
+  border-radius: 10px;
+  background: #fff;
+  cursor: pointer;
+}
+.mo-tid-row.on {
+  border-color: var(--tertiary, #fb8500);
+  background: rgba(251, 133, 0, 0.05);
+}
+.mo-dark .mo-tid-row {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+.mo-tid-row input[type="checkbox"] {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--tertiary, #fb8500);
+}
+.mo-tid-row-main {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.mo-tid-tracking {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: var(--text, #1c1814);
+}
+.mo-dark .mo-tid-tracking {
+  color: #f3f4f6;
+}
+.mo-tid-meta {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted, #9ca3af);
+}
+.mo-tid-status {
+  flex: 0 0 auto;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--muted, #6b7280);
+  white-space: nowrap;
+}
+.mo-dark .mo-tid-status {
+  background: rgba(255, 255, 255, 0.08);
+  color: #cbd5e1;
+}
+.mo-tid-empty {
+  font-size: 13px;
+  color: var(--muted, #9ca3af);
+  padding: 6px 2px;
+  margin: 0;
+}
+
 .mo-deliv {
   border: 1px solid var(--hairline, #e5e7eb);
   border-radius: 14px;

@@ -4312,6 +4312,13 @@ export default function ManageOrdersPage() {
   const [trackInput, setTrackInput] = useState("");
   const [trackError, setTrackError] = useState("");
   const [trackList, setTrackList] = useState([]);
+  // ── Tracking-ID export (Track orders tab): list every order's tracking ID
+  // with its date + order id, filter by status + date range, select & copy. ──
+  const [tidStatus, setTidStatus] = useState("all");
+  const [tidFrom, setTidFrom] = useState("");
+  const [tidTo, setTidTo] = useState("");
+  const [tidSel, setTidSel] = useState([]); // selected Order IDs
+  const [tidCopied, setTidCopied] = useState(false);
   const [trackPicks, setTrackPicks] = useState({});
   const [trackFailed, setTrackFailed] = useState([]);
   const [trackSummary, setTrackSummary] = useState(null);
@@ -5570,6 +5577,53 @@ export default function ManageOrdersPage() {
     });
     return [...set].sort((a, b) => a.localeCompare(b));
   }, [orders]);
+
+  // Orders that carry a tracking (Shipping) ID, filtered by the export panel's
+  // status + date range, newest first.
+  const tidRows = useMemo(() => {
+    const from = tidFrom ? new Date(tidFrom) : null;
+    if (from) from.setHours(0, 0, 0, 0);
+    const to = tidTo ? new Date(tidTo) : null;
+    if (to) to.setHours(23, 59, 59, 999);
+    return orders
+      .map((o) => {
+        const tracking = String(o["Shipping ID"] || "").trim();
+        if (!tracking) return null;
+        const d = getOrderDate(o);
+        return {
+          orderId: String(o["Order ID"] || ""),
+          tracking,
+          status: String(o["Order Status"] || "").trim(),
+          date: d,
+        };
+      })
+      .filter((r) => {
+        if (!r) return false;
+        if (tidStatus !== "all" && r.status !== tidStatus) return false;
+        if (from && (!r.date || r.date < from)) return false;
+        if (to && (!r.date || r.date > to)) return false;
+        return true;
+      })
+      .sort((a, b) => (b.date?.getTime() || 0) - (a.date?.getTime() || 0));
+  }, [orders, tidStatus, tidFrom, tidTo]);
+  const tidCopy = () => {
+    const chosen = tidSel.length
+      ? tidRows.filter((r) => tidSel.includes(r.orderId))
+      : tidRows;
+    const text = chosen.map((r) => r.tracking).join(" ");
+    if (!text) {
+      showToast("No tracking IDs to copy.", "info");
+      return;
+    }
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        setTidCopied(true);
+        setTimeout(() => setTidCopied(false), 1800);
+        showToast(`${chosen.length} tracking ID(s) copied ✓`, "success");
+      })
+      .catch(() => showToast("Couldn't copy — long-press to select.", "info"));
+  };
 
   const distinctPayments = useMemo(() => {
     const set = new Set();
@@ -9437,6 +9491,155 @@ export default function ManageOrdersPage() {
         {/* ===== Track orders ===== */}
         {activeTab === "track" && (
           <div className="mo-track-notify mo-track-plain">
+            {/* Tracking-ID export — all tracking IDs by status + date range */}
+            <div className="mo-tid">
+              <div className="mo-tid-head">
+                <div className="mo-tid-head-txt">
+                  <span className="mo-tid-title">
+                    <Copy size={16} /> Copy tracking IDs
+                  </span>
+                  <span className="mo-tid-sub">
+                    Every order that has a tracking ID — filter by status &amp;
+                    date, select and copy.
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className="mo-tid-copy"
+                  onClick={tidCopy}
+                  disabled={tidRows.length === 0}
+                >
+                  {tidCopied ? <Check size={15} /> : <Copy size={15} />}
+                  Copy {tidSel.length || tidRows.length} ID
+                  {(tidSel.length || tidRows.length) === 1 ? "" : "s"}
+                </button>
+              </div>
+
+              <div className="mo-tid-filters">
+                <label className="mo-tid-field">
+                  <span>Status</span>
+                  <select
+                    value={tidStatus}
+                    onChange={(e) => {
+                      setTidStatus(e.target.value);
+                      setTidSel([]);
+                    }}
+                  >
+                    <option value="all">All statuses</option>
+                    {distinctStatuses.map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="mo-tid-field">
+                  <span>From</span>
+                  <input
+                    type="date"
+                    value={tidFrom}
+                    onChange={(e) => {
+                      setTidFrom(e.target.value);
+                      setTidSel([]);
+                    }}
+                  />
+                </label>
+                <label className="mo-tid-field">
+                  <span>To</span>
+                  <input
+                    type="date"
+                    value={tidTo}
+                    onChange={(e) => {
+                      setTidTo(e.target.value);
+                      setTidSel([]);
+                    }}
+                  />
+                </label>
+                {(tidFrom || tidTo || tidStatus !== "all") && (
+                  <button
+                    type="button"
+                    className="mo-tid-clear"
+                    onClick={() => {
+                      setTidStatus("all");
+                      setTidFrom("");
+                      setTidTo("");
+                      setTidSel([]);
+                    }}
+                  >
+                    Reset
+                  </button>
+                )}
+              </div>
+
+              {tidRows.length > 0 ? (
+                <>
+                  <div className="mo-tid-bar">
+                    <label className="mo-tid-all">
+                      <input
+                        type="checkbox"
+                        checked={
+                          tidSel.length === tidRows.length && tidRows.length > 0
+                        }
+                        onChange={(e) =>
+                          setTidSel(
+                            e.target.checked
+                              ? tidRows.map((r) => r.orderId)
+                              : [],
+                          )
+                        }
+                      />
+                      Select all ({tidSel.length}/{tidRows.length})
+                    </label>
+                  </div>
+                  <div className="mo-tid-list">
+                    {tidRows.map((r) => {
+                      const on = tidSel.includes(r.orderId);
+                      return (
+                        <div
+                          key={r.orderId + r.tracking}
+                          className={`mo-tid-row${on ? " on" : ""}`}
+                          onClick={() =>
+                            setTidSel((prev) =>
+                              prev.includes(r.orderId)
+                                ? prev.filter((x) => x !== r.orderId)
+                                : [...prev, r.orderId],
+                            )
+                          }
+                        >
+                          <input
+                            type="checkbox"
+                            checked={on}
+                            onChange={() => {}}
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                          <div className="mo-tid-row-main">
+                            <span className="mo-tid-tracking">
+                              {r.tracking}
+                            </span>
+                            <span className="mo-tid-meta">
+                              {r.orderId}
+                              {r.date
+                                ? ` · ${r.date.toLocaleDateString("en-IN", {
+                                    day: "numeric",
+                                    month: "short",
+                                    year: "numeric",
+                                  })}`
+                                : ""}
+                            </span>
+                          </div>
+                          <span className="mo-tid-status">{r.status}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </>
+              ) : (
+                <p className="mo-tid-empty">
+                  No orders with a tracking ID for this filter.
+                </p>
+              )}
+            </div>
+
             {/* Delivered reconcile — upload India Post bulk-tracking file */}
             <div className="mo-deliv">
               <div className="mo-deliv-head">

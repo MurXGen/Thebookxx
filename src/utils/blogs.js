@@ -4,6 +4,255 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "nep-exam-heavy-schooling-2026-books-for-students": {
+    id: "blog-058",
+    title:
+      "India's Exam-Heavy School Years Are Under Review: charcha 2026, CBSE's Twice-a-Year Class 10 Exam, and 18 Books for the Skills Nobody Tests",
+    slug: "nep-exam-heavy-schooling-2026-books-for-students",
+    author: "TheBookX Editorial",
+    authorSlug: "murthy-thevar",
+    publishDate: "2026-09-22",
+    lastModified: "2026-09-22",
+    excerpt:
+      "Educators at charcha 2026 want India's exam-heavy secondary schooling rethought. What CBSE's twice-a-year Class 10 exam changes, and 18 books for the skills exams miss.",
+    content: [
+      {
+        type: "paragraph",
+        content:
+          "On 15 September 2026, at a panel in New Delhi titled NEP@Work: Secondary Education and Skilling, a school founder put a number on something Indian parents already suspect. Of a student's roughly sixteen waking hours, he said, ten to twelve are going into reading, writing and preparing for tests. Soumya Jain, founder and CEO of iTeach Schools, a non-profit running free schools for children from low-income families, added the sentence that made the figure land: that arrangement, he said, is simply not acceptable.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The panel was part of charcha 2026 at the India Habitat Centre, and it brought together government officials, school operators and young people who had just come through the system. The argument they converged on is worth taking seriously, because it is not the usual complaint that exams are hard. It is that the exam has quietly become the entire curriculum, and that by Class 9 the practical, hands-on part of school that the National Education Policy 2020 explicitly asks for has already been squeezed out to make room for board preparation.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "The two things changing at once",
+        content:
+          "Policy: NEP 2020 recommends that vocational and hands-on learning be built into mainstream schooling from the middle years, with real subject choice in Classes 9 to 12. At charcha 2026 on 15 September, educators argued that an exam-dominated timetable leaves no hours in which that can actually happen. Examinations: CBSE has moved the Class 10 board to two sittings a year. For the 2026 cycle the first attempt, which is compulsory, was scheduled for 17 February to 11 March 2026, with a second, optional improvement window from 15 May to 1 June 2026; the better of the two scores is the one that counts. Exact eligibility rules and dates should always be confirmed on cbse.gov.in, since CBSE revises circulars through the year.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Why a bookshop is writing about an education panel",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Because the gap the panel described is exactly the gap a bookshelf fills. Nobody at charcha proposed that boards be abolished. What they proposed was that schools also measure things the board cannot: creativity, critical thinking, collaboration, communication, confidence and joy. Those six words are a curriculum in themselves, and not one of them is taught by a question paper. They are, however, the six things a well-chosen book does teach, slowly, in the margins of a day.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "There is also a blunter reason. If a student is already giving ten to twelve hours a day to preparation, the honest recommendation is not more study material. It is a small number of books that do work no textbook does, chosen so that thirty minutes of them is not thirty minutes wasted.",
+      },
+      {
+        type: "blockquote",
+        content:
+          "A board exam measures what a fifteen-year-old can retrieve under pressure in three hours. Almost nothing else about them is being measured at all.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "What CBSE's twice-a-year Class 10 exam actually changes",
+      },
+      {
+        type: "paragraph",
+        content:
+          "This is the reform most families will feel first, and it is widely misunderstood as two chances to pass. It is closer to one exam plus one appeal. The first sitting in February is mandatory for every candidate. The May window is optional and is meant for improvement, with the higher of the two results carried forward, which means a bad day in February is no longer permanent.",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "First attempt: compulsory, held in February. For 2026 the papers ran from 17 February to 11 March.",
+          "Second attempt: optional, held in the May window, 15 May to 1 June for the 2026 cycle.",
+          "Scoring: the better of the two performances is the one recorded; the weaker score is set aside.",
+          "Documents: final marksheets and merit certificates are issued after the second window closes.",
+          "Class 12 separately moves towards digital evaluation of answer sheets and a question paper weighted more heavily towards competency-based questions rather than recall.",
+          "Verify everything against the latest CBSE circular before planning around it.",
+        ],
+      },
+      {
+        type: "paragraph",
+        content:
+          "The reform is genuinely good for the anxious student, and it has a cost the charcha panel implicitly flagged: a board season that used to end in March can now stretch to June. Two attempts reduce the risk of a single catastrophic morning, but they also lengthen the period in which a household organises itself entirely around one exam. Which makes the case for protecting a little non-syllabus reading stronger, not weaker.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Critical thinking and creativity: the two the new papers claim to test",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Competency-based assessment is the official term for questions that ask a student to apply an idea rather than reproduce it. The problem is that nobody can practise application on demand; it comes from having watched other people think. <a href=\"/books/thinking-fast-and-slow\" style=\"color:#fb8500;font-weight:600\">Thinking, Fast and Slow</a> is the best single book for that, because Daniel Kahneman, who won the 2002 Nobel Memorial Prize in Economic Sciences, spends it demonstrating the specific ways a confident mind gets things wrong. A Class 11 student who understands anchoring and availability will read a case-study question differently from one who does not.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "For a shorter attention span, <a href=\"/books/101-essays-that-will-change-the-way-you-think\" style=\"color:#fb8500;font-weight:600\">101 Essays That Will Change The Way You Think</a> works because it is built in three-page units, which fits the only reading window most board-year students have. And <a href=\"/books/steal-like-an-artist-10-things-nobody-told-you-about-being-creative\" style=\"color:#fb8500;font-weight:600\">Steal Like an Artist</a> by Austin Kleon is the correct antidote to the belief, widespread in Indian classrooms, that creativity is a talent some children were born with. Its argument is that originality is assembled from influences you chose deliberately, which is a teachable, unglamorous, entirely doable thing.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Communication: the skill no board exam has ever scored",
+      },
+      {
+        type: "paragraph",
+        content:
+          "This is the widest gap between what school measures and what a career rewards. A student can top the Class 12 boards without ever being assessed on whether they can hold a disagreement without escalating it, or explain an idea to someone who does not already agree. <a href=\"/books/crucial-conversations-tools-for-talking-when-stakes-are-high\" style=\"color:#fb8500;font-weight:600\">Crucial Conversations: Tools for Talking When Stakes Are High</a> is the practical manual, and it is more useful to a seventeen-year-old than its corporate packaging suggests, because most of its examples are about fear rather than strategy.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books/think-faster-talk-smarter\" style=\"color:#fb8500;font-weight:600\">Think Faster, Talk Smarter</a> addresses the narrower and more terrifying case: speaking without preparation, which is what a viva, an interview or a class presentation actually is. Then <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar, which sits one step earlier in the chain. Its concern is the thinking that happens before speech, on the premise that most communication failures are not delivery problems but the visible symptom of an idea the speaker had not finished forming. For a student who writes long answers that somehow lose marks, that is the more accurate diagnosis.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Confidence, habits, and the self-study problem",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The panel's word was confidence, and the research-backed version of it is in <a href=\"/books/mindset-the-new-psychology-of-success\" style=\"color:#fb8500;font-weight:600\">Mindset: The New Psychology of Success</a>. Carol Dweck's distinction between believing ability is fixed and believing it is developed matters most in exactly the years under discussion, because Class 9 is when a mediocre result starts being read by the student as a verdict on who they are.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "On the mechanics, <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> is the one to give a student who has drawn up four timetables and abandoned all of them, because James Clear's central move is to make the system small enough to survive a bad week. <a href=\"/books/deep-work\" style=\"color:#fb8500;font-weight:600\">Deep Work</a> is the harder companion, and the relevant claim in it is that ten hours of interrupted study is worth less than four undistracted ones, which is the most defensible argument a student can make to a parent for shorter hours. And <a href=\"/books/the-art-of-not-overthinking\" style=\"color:#fb8500;font-weight:600\">The Art of Not Overthinking</a> is a short, plain book for the specific state a board-year student lives in: rehearsing an outcome instead of preparing for it.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The part of the panel about who leaves school",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Dr Nisha Dhawan, president and CEO of Empower Foundation, made the point that reframes the whole conversation. Classes 9 to 12 are where young people fall out of education altogether, and the barriers fall hardest on adolescent girls: early marriage, menstruation-related difficulties, inadequate school facilities, and the simple question of whether the journey to school is safe. She described the ten to twenty-four age band as the make-or-break years, and argued for sustained investment in them.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Two books belong here, both by Sudha Murty and both shorter than they look. <a href=\"/books/how-i-taught-my-grandmother-to-read\" style=\"color:#fb8500;font-weight:600\">How I Taught My Grandmother to Read</a> is a set of short true stories in which a sixty-two-year-old woman decides to learn the alphabet, and it is the most persuasive thing in print on the idea that literacy is never closed to anyone. <a href=\"/books/three-thousand-stitches\" style=\"color:#fb8500;font-weight:600\">Three Thousand Stitches</a> is the tougher companion, drawn from her own work with women in difficult circumstances, and it is a useful corrective for any student who thinks social problems are solved by sentiment.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The parent problem: vocational courses and an inherited hierarchy",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Pranjal Patil, state project director and additional director for vocational education with Samagra Shiksha at the Delhi Directorate of Education, named the obstacle that policy cannot legislate away: persuading parents that a vocational course is a real career and not a demotion. She traced the ranking of academic over practical work to a colonial inheritance, which is an uncomfortable and largely accurate reading of how Indian families still sort careers. NITI Aayog has separately pushed a skills-before-degree framing, with structured exposure starting as early as Class 6.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books/build-don-t-talk\" style=\"color:#fb8500;font-weight:600\">Build, Don't Talk</a> by Raj Shamani is the book for that argument, written for and largely read by Indians in their teens and twenties, and its usefulness is that it treats skills, money and self-presentation as learnable rather than inherited. Pair it with <a href=\"/books/ignited-minds-unleashing-the-power-within-india\" style=\"color:#fb8500;font-weight:600\">Ignited Minds</a>, in which A.P.J. Abdul Kalam writes directly to schoolchildren about ambition at a national scale, and <a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a>, his autobiography, which is in large part the story of a boy from Rameswaram whose family could not have bought him an advantage. It remains the single most effective book to hand a student who has decided their circumstances have already settled the matter.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "And joy, which is the item nobody plans for",
+      },
+      {
+        type: "paragraph",
+        content:
+          "It is the last of the six words and the easiest to dismiss, and it is also the one with the clearest link to everything else, because a student who has never once read for pleasure has no reason to believe that reading is anything other than a cost. The fix is short books with no improving purpose. <a href=\"/books/the-blue-umbrella\" style=\"color:#fb8500;font-weight:600\">The Blue Umbrella</a> by Ruskin Bond can be finished in a single sitting and is set in a hill village where the stakes are one umbrella. <a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> by R.K. Narayan works the same way in thirty-two separate doses, which means a student can read one story between two chapters of physics and feel they have been somewhere.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "And <a href=\"/books/five-point-someone\" style=\"color:#fb8500;font-weight:600\">Five Point Someone</a> deserves its place in a piece about exam pressure, whatever anyone thinks of its prose. Chetan Bhagat's first novel, published in 2004, is about three students who discover that a scoring system has quietly replaced their education, and it did more than any policy document to make that a mainstream Indian conversation. Twenty-two years later the charcha panel was making the same point with better data.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "A short shelf, by situation",
+      },
+      {
+        type: "list",
+        style: "ordered",
+        items: [
+          "Class 9 or 10, already overloaded: The Blue Umbrella and Malgudi Days. Nothing instructional. The aim is to keep reading from becoming a chore.",
+          "Sitting the February board and considering the May improvement window: The Art of Not Overthinking, then Atomic Habits.",
+          "Class 11 or 12 facing competency-based papers: Thinking, Fast and Slow and 101 Essays That Will Change The Way You Think.",
+          "Terrified of presentations, vivas and interviews: Think Faster, Talk Smarter, then The Art of Clarity.",
+          "Choosing a vocational or non-conventional track against family resistance: Build, Don't Talk and Wings of Fire.",
+          "Convinced their circumstances have already decided everything: Ignited Minds and How I Taught My Grandmother to Read.",
+          "A parent who wants one book for themselves: Mindset, which is mostly about how adults talk to children about failure.",
+        ],
+      },
+      {
+        type: "callout",
+        style: "success",
+        title: "Building a student's shelf for very little",
+        content:
+          "Every title in this article is on TheBookX, with books starting from ₹1 and free delivery across India. Cash on Delivery is available on every order, which matters if the books are for a student who cannot pay online. Gift wrapping is available for ₹25 if you are sending a set to a niece or nephew starting Class 9, which is, on the evidence of this panel, the year when it counts most.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>",
+      },
+      {
+        type: "paragraph",
+        content:
+          "One honest caveat. No book on this list will raise a board score, and anyone selling that claim is selling something else. What this shelf does is narrower: it keeps a student in contact with the five or six abilities the examination system has no way of recording, during the three years in which the examination system takes up most of their waking life. That is not a substitute for reform. It is what a family can do while waiting for it.",
+      },
+    ],
+    coverImage: "/blogs/nep-exam-heavy-schooling-2026-books-for-students.jpeg",
+    images: [
+      {
+        url: "/blogs/nep-exam-heavy-schooling-2026-books-for-students.jpeg",
+        alt: "An Indian teenage student at a study desk taking a break from textbooks to read a plain unmarked paperback, with a school bag and a glass of water beside her in warm afternoon light",
+        caption:
+          "Educators at charcha 2026 argued that Indian students give ten to twelve of sixteen waking hours to exam preparation, leaving no room for the skills schools say they want to build",
+        category: "Education",
+      },
+    ],
+    keywords: [
+      "nep 2020 secondary education skilling",
+      "charcha 2026 nep at work panel",
+      "exam heavy education india rethink",
+      "cbse class 10 board exam twice a year 2026",
+      "cbse class 10 improvement exam may 2026",
+      "competency based assessment cbse 2026",
+      "books for class 10 students india",
+      "books on critical thinking for students",
+      "vocational education india class 9 to 12",
+      "buy books online india free delivery",
+      "TheBookX",
+    ],
+    categories: ["Education", "Reading Lists", "Books in the News"],
+    faqs: [
+      {
+        question: "What did educators at charcha 2026 actually say about India's exam-heavy schooling?",
+        answer:
+          "At a panel titled NEP@Work: Secondary Education and Skilling, held at the India Habitat Centre in New Delhi on 15 September 2026, Soumya Jain of iTeach Schools said that of a student's roughly sixteen waking hours, ten to twelve go into reading, writing and preparing for tests, and that by Class 9 the practical learning NEP 2020 asks for has already been pushed out. He argued that schools should also measure creativity, critical thinking, collaboration, communication, confidence and joy. Dr Nisha Dhawan of Empower Foundation described Classes 9 to 12 as the stage where students, especially adolescent girls, fall out of the system, and Pranjal Patil of Samagra Shiksha in Delhi said the hardest obstacle to vocational education is persuading parents that it is a legitimate career path.",
+      },
+      {
+        question: "Is the CBSE Class 10 board exam now held twice a year, and how does the second attempt work?",
+        answer:
+          "Yes. From the 2026 cycle CBSE holds the Class 10 board in two sittings. The first, in February, is compulsory for every candidate; for 2026 it was scheduled from 17 February to 11 March. The second, in the May window, was scheduled from 15 May to 1 June 2026 and is optional, intended for improvement rather than as a first attempt. The higher of the two scores is the one recorded, with the weaker result set aside, and final marksheets and merit certificates are issued after the May session. Because CBSE updates its circulars through the year, confirm dates and eligibility on cbse.gov.in before planning around them.",
+      },
+      {
+        question: "Can reading non-syllabus books really help with competency-based exam questions?",
+        answer:
+          "Indirectly, and with no guarantees. Competency-based questions ask a student to apply an idea to an unfamiliar situation rather than reproduce a definition, and that ability comes largely from having encountered a lot of reasoning, not from drilling more questions. Books that show thinking in progress help most: Thinking, Fast and Slow for how confident minds go wrong, 101 Essays That Will Change The Way You Think for short self-contained arguments, and The Art of Clarity for structuring an idea before writing it down. What none of them will do is raise a score on their own, and any student already spending ten hours a day on preparation needs fewer books rather than more.",
+      },
+      {
+        question: "Which books should I give a Class 9 or Class 10 student who is already buried in textbooks?",
+        answer:
+          "Give short fiction with no instructional purpose, because the risk at that age is that reading becomes permanently associated with work. The Blue Umbrella by Ruskin Bond can be finished in one sitting, and Malgudi Days by R.K. Narayan comes in thirty-two short stories that fit between two chapters of revision. If you want one non-fiction title, The Art of Not Overthinking addresses the specific state a board-year student lives in. All are available on TheBookX from ₹1 upwards with free delivery across India, Cash on Delivery, and gift wrapping for ₹25.",
+      },
+    ],
+  },
   "international-day-of-peace-2026-books-to-read": {
     id: "blog-057",
     title:

@@ -4,6 +4,257 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "indian-book-awards-2026-longlists-what-to-read": {
+    id: "blog-059",
+    title:
+      "India's Book Award Season Just Began: The Ramnath Goenka and Crossword 2026 Longlists, Ruthvika Rao's Wilbur Smith Win, and 16 Books to Read Now",
+    slug: "indian-book-awards-2026-longlists-what-to-read",
+    author: "TheBookX Editorial",
+    authorSlug: "murthy-thevar",
+    publishDate: "2026-09-23",
+    lastModified: "2026-09-23",
+    excerpt:
+      "Three Indian book prizes moved in eight days: Ramnath Goenka and Crossword 2026 longlists, and Ruthvika Rao's Wilbur Smith win. What the lists show, and what to read now.",
+    content: [
+      {
+        type: "paragraph",
+        content:
+          "Between 16 and 22 September 2026, three separate book prizes with an Indian centre of gravity published a list. The Crossword Book Awards released ten-book longlists in five categories for their twentieth edition. The Ramnath Goenka Sahithya Samman announced longlists in fiction, nonfiction and debut. And the Wilbur Smith Adventure Writing Prize, judged this year by librarians and library staff, went to Ruthvika Rao for The Fertile Earth. Taken together they are the clearest annual snapshot of what Indian publishing is actually producing, and they arrive three weeks before the Nobel and six weeks before the Booker.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The practical difficulty, if you are a reader in India rather than a juror, is that a longlist is a shopping list you cannot afford. Fifty-odd new hardbacks and trade paperbacks, most published in the last twelve months, most priced between ₹499 and ₹999. This piece does two things: it sets out what the lists actually contain and what the pattern in them means, and then it maps each strand onto books already on the shelf here, so that the longlist becomes a direction to read in rather than a bill.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "The three announcements, in one place",
+        content:
+          "Crossword Book Awards 2026: twentieth edition. Ten-book longlists in five jury categories, Fiction, Nonfiction, Translation, Children's, and Business and Management, announced on 16 September. Shortlists follow in October; the ceremony is in Mumbai in December; each winning author receives ₹50,000. Ramnath Goenka Sahithya Samman 2026: longlists announced on Monday 21 September in Fiction, Nonfiction and Debut, with a Lifetime Achievement award also to be given; winners are announced at the ceremony later this year. Wilbur Smith Adventure Writing Prize 2026: won by Ruthvika Rao for The Fertile Earth, carrying £10,000, for adventure fiction written in English and published in paperback in the UK, judged by librarians and library professionals.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The Ramnath Goenka fiction longlist is unusually heavy at the top",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Most longlists mix one or two established names with eight unfamiliar ones. This one does not. The fiction list carries Amitav Ghosh (Ghost Eye), Kiran Desai (The Loneliness of Sonia and Sunny), Meena Kandasamy (Fieldwork as a Sex Object), Deepa Anappara (The Last of Earth), Geetanjali Shree (Once Elephants Lived Here, translated from the Hindi by Daisy Rockwell), S Hareesh (August 17, translated from the Malayalam by Jayasree Kalathil), Sarnath Banerjee (Absolute Jafar), Rahul Bhattacharya (Railsong), Tarana Husain Khan (The Courtesan, Her Lover and I) and Saharu Nusaiba Kannanari (The Menon Investigation).",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Two details are worth pausing on. Two of the ten are translations, listed in the general fiction category rather than quarantined in a translation prize, which is a change in convention as much as in taste. And one of the ten, Absolute Jafar, is a graphic novel. A decade ago neither would have been routine on an Indian literary fiction longlist.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The nonfiction longlist runs to memoir, political biography and reportage: Arundhati Roy's Mother Mary Comes to Me, Manu Joseph's Why the Poor Don't Kill Us: The Psychology of Indians, Ghazala Wahab's The Hindi Heartland: A Study, Abhishek Choudhary's Believer's Dilemma on Vajpayee and the Hindu right, Snigdha Poonam's Scamlands, and histories by Raghu and Pushpa Palat, Makarand R Paranjape and Prachi Sharma. The debut list is the one to watch if you like getting there early, and it includes Sowmiya Ashok's The Dig on the Keeladi excavations, Ria Chopra's Never Logged Out on India's Gen Z internet, and Mohsin Khan's Allah Miyan's Workshop, translated from the Urdu by Maaz Bin Bilal.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Crossword at twenty: five categories, five separate juries",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The Crossword Book Awards have been running since 1998 and reached their twentieth edition this year. What distinguishes them from a single-category prize is the structure: five categories, each judged by its own three-person jury, which means a children's picture book is never quietly measured against a literary novel.",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "Fiction, judged by Anuja Chauhan, Manju Kapur and Samit Basu.",
+          "Nonfiction, judged by Anirudh Kanisetti, Jyoti Malhotra and Naresh Fernandes.",
+          "Translation, judged by Meena Kandasamy, Ranjit Hoskote and Srinath Perur.",
+          "Children's books, judged by Fiona Fernandez, Payal Kapadia and Ranjit Lal.",
+          "Business and Management, judged by Monika Halan, Rama Bijapurkar and Shrayana Bhattacharya.",
+        ],
+      },
+      {
+        type: "paragraph",
+        content:
+          "The translation longlist is the most revealing of the five. Its ten books come from Assamese, Telugu, Tamil, Hindi, Urdu and Bangla, with two titles each from Telugu and Bangla, and the translators are named on the list alongside the authors. That naming convention is recent and it matters commercially: a translator with a visible track record can be commissioned, paid and marketed, which is how a translation programme becomes a business rather than a favour.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Nine books are on both longlists at once",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The two Indian lists were compiled by different juries under different rules, so the overlap between them is a genuine signal rather than an echo. Nine titles appear on both.",
+      },
+      {
+        type: "list",
+        style: "ordered",
+        items: [
+          "Absolute Jafar by Sarnath Banerjee, a graphic novel on both fiction lists.",
+          "Railsong by Rahul Bhattacharya.",
+          "The Courtesan, Her Lover and I by Tarana Husain Khan.",
+          "The Menon Investigation by Saharu Nusaiba Kannanari.",
+          "The Remnants of Rebellion by Ponnu Elizabeth Mathew, in fiction at Crossword and in debut at Ramnath Goenka.",
+          "The Dig: Keeladi and the Politics of India's Past by Sowmiya Ashok.",
+          "Believer's Dilemma by Abhishek Choudhary.",
+          "The Hindi Heartland: A Study by Ghazala Wahab.",
+          "Scamlands by Snigdha Poonam.",
+        ],
+      },
+      {
+        type: "blockquote",
+        content:
+          "A prize longlist is not a verdict on quality. It is a record of what a small number of serious readers could not stop thinking about in a given year, which is a more useful thing to know.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "A librarians' prize goes to a novel about feudal Telangana",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The Wilbur Smith Adventure Writing Prize is open to adventure fiction in English by authors of any nationality, published in paperback in the UK, and the 2026 award went to Ruthvika Rao for The Fertile Earth. The novel follows Vijaya and Sree, daughters of the landowning Deshmukhs of Irumi, and Krishna and Ranga, sons of a widowed servant in the same household, through a childhood bond and the disaster that follows an attempt to hunt a man-eating tiger. It runs into the Naxalite years and the violence of a feudal order that independence did not dissolve.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Two things make the win worth noting. The judges were librarians and library staff rather than critics, which tends to reward books people finish and then press on someone else. And the prize is named for a writer whose own novels, the sweeping African adventure sagas collected in the <a href=\"/books/wilbur-smith\" style=\"color:#fb8500;font-weight:600\">Wilbur Smith</a> series, are exactly the sort of thing literary juries have historically ignored. A prize that runs from Wilbur Smith to a novel about caste and land in the Eastern Ghats has a wider definition of adventure than most.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "How to use a longlist without buying fifty books",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The mistake is to treat a longlist as an instruction. Fifty titles arrive, most readers buy three out of guilt, finish one, and feel worse about reading than before the list existed. The better use is diagnostic: read the lists for the strands running through them, work out which strand is yours, and then follow it wherever it is affordable. That is a decision about attention rather than about books, which is the subject <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar takes up directly: its argument is that most of what looks like a lack of time is an unmade decision, and that naming what you actually want from a thing is the step people skip.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The strands in this year's lists are reasonably clear. Land, caste and inherited power. Translation from Indian languages. Reportage on how the country actually works. Small-town lives told plainly. Business writing with a point of view. What follows maps each onto books you can read this week, at prices that do not require a decision.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "Land, caste and family violence",
+      },
+      {
+        type: "paragraph",
+        content:
+          "This is the spine of The Fertile Earth and of at least three longlisted novels, and the canonical Indian entry point remains <a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> by Arundhati Roy, which won the Booker Prize in 1997 and whose author is on the Ramnath Goenka nonfiction longlist this year for a memoir. It does in Kerala what Rao does in Telangana: a childhood, a transgression across a line nobody wrote down, and consequences that outlast everyone involved. <a href=\"/books/the-kite-runner\" style=\"color:#fb8500;font-weight:600\">The Kite Runner</a> by Khaled Hosseini is the same shape moved to Kabul, built around the friendship between a landowner's son and a servant's son, and it is the more forgiving of the two if you want the structure without the formal difficulty.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "Translation, if the Crossword list tempted you",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Translated Indian fiction is the fastest-changing part of the market, but the longlisted titles are all new and priced accordingly. The established translated novels are the cheaper way in, and they teach the same reading muscle. <a href=\"/books/the-vegetarian\" style=\"color:#fb8500;font-weight:600\">The Vegetarian</a> by Han Kang, translated from the Korean by Deborah Smith, is short, unsettling and the reason many readers started with translation at all; its author won the Nobel Prize in Literature in 2024. <a href=\"/books/butter\" style=\"color:#fb8500;font-weight:600\">Butter</a> by Asako Yuzuki, loosely based on a Japanese criminal case, is a novel about food, appetite and misogyny that is far stranger than its cover. <a href=\"/books/kafka-on-the-shore\" style=\"color:#fb8500;font-weight:600\">Kafka on the Shore</a> by Haruki Murakami is the surreal end of the same shelf.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "Small towns, ordinary lives, no fireworks",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Several of the longlisted novels are quiet books about unremarkable people, which is the hardest thing to write and the easiest to undersell. The Indian masters of it are already in print and cheap. <a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> by R.K. Narayan is thirty-two short stories in an invented South Indian town, each finishable in a bus ride. <a href=\"/books/the-guide\" style=\"color:#fb8500;font-weight:600\">The Guide</a> is Narayan at novel length, about a tour guide who becomes a holy man largely by not correcting anyone. And <a href=\"/books/the-blue-umbrella\" style=\"color:#fb8500;font-weight:600\">The Blue Umbrella</a> by Ruskin Bond is a hundred pages about a girl, an umbrella and a shopkeeper's envy, and it is the book to hand a ten-year-old who says they do not like reading.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "Nonfiction that argues rather than summarises",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The nonfiction longlists reward books with a thesis, not compilations. <a href=\"/books/sapiens-a-brief-history-of-humankind\" style=\"color:#fb8500;font-weight:600\">Sapiens: A Brief History of Humankind</a> by Yuval Noah Harari is the widest of these, and its useful trick is arguing that shared fictions, money, nations, companies, are what let strangers cooperate at scale. <a href=\"/books/thinking-fast-and-slow\" style=\"color:#fb8500;font-weight:600\">Thinking, Fast and Slow</a> by Daniel Kahneman, who won the 2002 Nobel Memorial Prize in Economic Sciences, is the book to read before any of the reportage, because it explains why a confident reader believes a bad story. <a href=\"/books/talking-to-strangers\" style=\"color:#fb8500;font-weight:600\">Talking to Strangers</a> by Malcolm Gladwell is about the routine failure to read people we do not know, which is the core problem in every investigative book on these lists. And <a href=\"/books/dopamine-nation\" style=\"color:#fb8500;font-weight:600\">Dopamine Nation</a> by Dr Anna Lembke is the closest available companion to the longlisted writing on India's digital life.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "Business and Management, and books for younger readers",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Crossword is one of the few Indian prizes that judges business writing on its own terms, with a jury including Monika Halan and Rama Bijapurkar. The general-reader equivalent on our shelf is <a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> by Morgan Housel, which argues that financial behaviour is governed by personal history rather than spreadsheets, and it is the rare money book a teenager will finish. For the children's category, where this year's Crossword longlist ranges from Viswanathan Anand's chess lessons to a book about animal droppings, the durable Indian gift is <a href=\"/books/jaya-an-illustrated-retelling-of-the-mahabharata\" style=\"color:#fb8500;font-weight:600\">Jaya: An Illustrated Retelling of the Mahabharata</a> by Devdutt Pattanaik, which treats a child as capable of holding a complicated story.",
+      },
+      {
+        type: "callout",
+        style: "success",
+        title: "Reading a longlist on a budget",
+        content:
+          "Every title above is in stock at TheBookX, with books starting from ₹1, free delivery across India and Cash on Delivery available nationwide. Gift wrapping is ₹25 if one of these is going to someone else. A reasonable plan for award season: pick one strand from the lists, buy two books in it now, and keep the actual longlisted titles for when they reach paperback, which for most of them will be within the year.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The Crossword shortlists arrive in October and the ceremony is in Mumbai in December; the Ramnath Goenka winners, including the Lifetime Achievement award, are announced at a ceremony later this year. Both are worth following, and neither is worth obeying. The point of a longlist is that a group of demanding readers spent a year deciding what deserved attention, and then published their working. What you do with it is still a choice you make yourself.",
+      },
+    ],
+    coverImage: "/blogs/indian-book-awards-2026-longlists-what-to-read.jpeg",
+    images: [
+      {
+        url: "/blogs/indian-book-awards-2026-longlists-what-to-read.jpeg",
+        alt: "A young Indian woman sitting cross-legged on a wooden floor beside a stack of plain unmarked hardbacks, reading one open book in warm afternoon light with a cup of chai beside her",
+        caption:
+          "Three Indian book prizes published lists in eight days in September 2026, between them naming close to fifty new titles",
+        category: "Books in the News",
+      },
+    ],
+    keywords: [
+      "indian book awards 2026",
+      "ramnath goenka sahithya samman 2026 longlist",
+      "crossword book awards 2026 longlist",
+      "crossword book awards 20th edition",
+      "wilbur smith adventure writing prize 2026 winner",
+      "ruthvika rao the fertile earth",
+      "indian literary prizes 2026",
+      "translated indian fiction 2026",
+      "best indian books 2026",
+      "buy books online india free delivery",
+      "books from rs 1 india",
+      "TheBookX",
+    ],
+    categories: ["Books in the News", "Reading Lists", "Indian Literature"],
+    faqs: [
+      {
+        question: "What was announced in the Crossword Book Awards 2026 longlist?",
+        answer:
+          "The Crossword Book Awards announced ten-book longlists in five jury categories on 16 September 2026, for the prize's twentieth edition. The categories are Fiction, Nonfiction, Translation, Children's, and Business and Management, and each is judged by its own three-person jury: Anuja Chauhan, Manju Kapur and Samit Basu for Fiction; Anirudh Kanisetti, Jyoti Malhotra and Naresh Fernandes for Nonfiction; Meena Kandasamy, Ranjit Hoskote and Srinath Perur for Translation; Fiona Fernandez, Payal Kapadia and Ranjit Lal for Children's books; and Monika Halan, Rama Bijapurkar and Shrayana Bhattacharya for Business and Management. Shortlists are due in October, the ceremony is in Mumbai in December, and each winning author receives ₹50,000.",
+      },
+      {
+        question: "Who is on the Ramnath Goenka Sahithya Samman 2026 longlist?",
+        answer:
+          "The 2026 longlists were announced on Monday 21 September across Fiction, Nonfiction and Debut, with a Lifetime Achievement award also to be presented. The fiction longlist includes Amitav Ghosh's Ghost Eye, Kiran Desai's The Loneliness of Sonia and Sunny, Meena Kandasamy's Fieldwork as a Sex Object, Deepa Anappara's The Last of Earth, Geetanjali Shree's Once Elephants Lived Here translated by Daisy Rockwell, S Hareesh's August 17 translated by Jayasree Kalathil, Sarnath Banerjee's Absolute Jafar, Rahul Bhattacharya's Railsong, Tarana Husain Khan's The Courtesan, Her Lover and I, and Saharu Nusaiba Kannanari's The Menon Investigation. The nonfiction list includes Arundhati Roy's Mother Mary Comes to Me, Manu Joseph's Why the Poor Don't Kill Us, Ghazala Wahab's The Hindi Heartland and Snigdha Poonam's Scamlands. Winners are announced at a ceremony later this year.",
+      },
+      {
+        question: "Who won the Wilbur Smith Adventure Writing Prize 2026?",
+        answer:
+          "Ruthvika Rao won the 2026 Wilbur Smith Adventure Writing Prize for her novel The Fertile Earth, receiving a cash prize of £10,000. The prize is open to adventure fiction written in English by authors of any nationality and published in paperback in the UK, and this year's winner was chosen by librarians and library staff. The Fertile Earth is set in the village of Irumi in the Eastern Ghats and follows two daughters of a landowning family and two sons of a servant in the same household, moving from a childhood tragedy into the Naxalite years.",
+      },
+      {
+        question: "Which books should I read if I cannot afford the longlisted titles?",
+        answer:
+          "Follow the strand rather than the list. For land, caste and inherited power, the subject of The Fertile Earth and several longlisted novels, read The God of Small Things or The Kite Runner. For translated fiction, start with The Vegetarian, Butter or Kafka on the Shore before moving to the newer Indian-language translations. For quiet small-town fiction, Malgudi Days and The Guide by R.K. Narayan. For argumentative nonfiction, Sapiens, Thinking Fast and Slow or Talking to Strangers. All are available on TheBookX from ₹1 upwards with free delivery across India, Cash on Delivery, and gift wrapping for ₹25. Most longlisted titles also reach paperback within a year, so waiting is a legitimate strategy.",
+      },
+    ],
+  },
   "nep-exam-heavy-schooling-2026-books-for-students": {
     id: "blog-058",
     title:

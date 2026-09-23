@@ -45776,6 +45776,47 @@ img[data-loaded="true"] {
   border-color: var(--tertiary, #fb8500);
   background: rgba(251, 133, 0, 0.06);
 }
+.pa-row-static {
+  cursor: default;
+}
+/* Quantity stepper (bookmarks) — mirrors the book-card − N + control. */
+.pa-stepper {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 999px;
+  background: var(--surface-2, #f4f4f5);
+}
+.pa-step-btn {
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: #fff;
+  color: #1c1814;
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+.pa-step-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+.pa-step-n {
+  min-width: 20px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 800;
+  color: #1c1814;
+}
 .pa-row-emoji {
   flex: 0 0 auto;
   font-size: 19px;

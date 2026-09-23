@@ -277,9 +277,10 @@ export default function AddressModal({
     setGiftWrap(giftWrapSelected);
   }, [giftWrapSelected]);
 
-  // Bookmark add-on: FREE with online (UPI) payment, ₹9 with Cash on Delivery.
-  const [bookmark, setBookmark] = useState(false);
-  const BOOKMARK_COD_CHARGE = 9;
+  // Bookmark add-on: free up to a tier based on order value, then ₹9 each.
+  //   below ₹500  → 2 free · ₹500–999 → 3 free · ₹1000+ → 4 free
+  const [bookmarkQty, setBookmarkQty] = useState(0);
+  const BOOKMARK_UNIT = 9;
 
   const UPI_ID = "7977960242-1@okbizaxis";
 
@@ -484,17 +485,23 @@ export default function AddressModal({
   const totalWithDelivery = getTotalWithDelivery(fasterDelivery);
   const codAdvanceAmount = 99;
 
-  // Add-ons that ride on the bill. Gift wrap applies to both flows; the bookmark
-  // is FREE on online payment and ₹9 only on Cash on Delivery.
-  const addOnsCharge = giftWrap ? giftWrapCharge : 0;
-  const bookmarkCodCharge = bookmark ? BOOKMARK_COD_CHARGE : 0;
+  // Bookmark tier: how many are free for this order value, and the ₹9-each
+  // charge for any extra the shopper adds beyond the free allowance.
+  const freeBookmarks =
+    totalDiscounted >= 1000 ? 4 : totalDiscounted >= 500 ? 3 : 2;
+  const bookmarkExtra = Math.max(0, bookmarkQty - freeBookmarks);
+  const bookmarkCharge = bookmarkExtra * BOOKMARK_UNIT;
 
-  // For the COD fee modal comparison (online total: bookmark is free here).
+  // Add-ons that ride on the bill. Gift wrap applies to both flows; bookmarks
+  // are free up to the tier, then ₹9 each (same on COD and online).
+  const addOnsCharge = giftWrap ? giftWrapCharge : 0;
+
+  // For the COD fee modal comparison.
   const upiTotalForFlow = getTotalWithDelivery(fasterDelivery) + addOnsCharge;
   // COD handling fee: a minimum of ₹29, or 5.9% of the bill when that exceeds
   // ₹29 (whichever is higher).
   const codFeeAmount = Math.max(29, Math.round(upiTotalForFlow * 0.059));
-  const codTotalWithFee = upiTotalForFlow + codFeeAmount + bookmarkCodCharge;
+  const codTotalWithFee = upiTotalForFlow + codFeeAmount + bookmarkCharge;
 
   // ₹99-advance: below ₹400 the COD charge is fully waived; from ₹400 up a
   // silent 5.9% packing & care (handling) charge applies to the balance. The
@@ -738,9 +745,8 @@ export default function AddressModal({
       const deliveryChargeForOrder = getDeliveryCharge(isFaster);
       const giftWrapOn = giftWrap || giftWrapSelected;
       const giftWrapAmountForOrder = giftWrapOn ? giftWrapCharge : 0;
-      // Advance orders get a FREE bookmark (like online payment).
-      const bookmarkAmountForOrder =
-        bookmark && paymentType === "COD" && !advance ? BOOKMARK_COD_CHARGE : 0;
+      // Bookmarks: free up to the tier, ₹9 for each extra (same on all flows).
+      const bookmarkAmountForOrder = bookmarkCharge;
       // Fee: normal COD → COD fee. Advance → COD is waived below ₹400; from ₹400
       // up a silent 5.9% packing & care (handling) charge applies to the balance.
       const onlineBase =
@@ -784,8 +790,9 @@ export default function AddressModal({
           giftWrapAmountForOrder +
           bookmarkAmountForOrder +
           feeForThisOrder,
-        bookmarkSelected: bookmark,
+        bookmarkSelected: bookmarkQty > 0,
         bookmarkCharge: bookmarkAmountForOrder,
+        bookmarkQty,
         // Itemised values, match what the user sees in the success modal
         subtotal: totalDiscounted,
         finalPayable: netPayable,
@@ -1890,29 +1897,51 @@ export default function AddressModal({
                           {giftWrap && <Check size={12} strokeWidth={3} />}
                         </span>
                       </button>
-                      <button
-                        type="button"
-                        className={`pa-row${bookmark ? " on" : ""}`}
-                        onClick={() => setBookmark((v) => !v)}
+                      <div
+                        className={`pa-row pa-row-static${bookmarkQty > 0 ? " on" : ""}`}
                       >
                         <span className="pa-row-ic">
                           <Bookmark size={18} />
                         </span>
                         <span className="pa-row-main">
-                          <span className="pa-row-name">Bookmark</span>
+                          <span className="pa-row-name">Bookmarks</span>
                           <span className="pa-row-sub free">
-                            Free with online payment
+                            {freeBookmarks} free
+                            {bookmarkExtra > 0
+                              ? ` · +₹${BOOKMARK_UNIT} × ${bookmarkExtra} extra`
+                              : ` · +₹${BOOKMARK_UNIT} each beyond`}
                           </span>
                         </span>
                         <span
-                          className={`pa-row-price${paySel === "COD" ? "" : " free"}`}
+                          className={`pa-row-price${bookmarkCharge > 0 ? "" : " free"}`}
                         >
-                          {paySel === "COD" ? `+₹${BOOKMARK_COD_CHARGE}` : "FREE"}
+                          {bookmarkCharge > 0 ? `+₹${bookmarkCharge}` : "FREE"}
                         </span>
-                        <span className={`pa-check${bookmark ? " on" : ""}`}>
-                          {bookmark && <Check size={12} strokeWidth={3} />}
+                        <span className="pa-stepper">
+                          <button
+                            type="button"
+                            className="pa-step-btn"
+                            onClick={() =>
+                              setBookmarkQty((q) => Math.max(0, q - 1))
+                            }
+                            disabled={bookmarkQty === 0}
+                            aria-label="Remove a bookmark"
+                          >
+                            −
+                          </button>
+                          <span className="pa-step-n">{bookmarkQty}</span>
+                          <button
+                            type="button"
+                            className="pa-step-btn"
+                            onClick={() =>
+                              setBookmarkQty((q) => Math.min(20, q + 1))
+                            }
+                            aria-label="Add a bookmark"
+                          >
+                            +
+                          </button>
                         </span>
-                      </button>
+                      </div>
                     </div>
                   </div>
 

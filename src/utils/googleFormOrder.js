@@ -333,6 +333,8 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
     // Chargeable bookmark add-on (no dedicated sheet column — noted in offer field).
     bookmarkSelected = false,
     bookmarkCharge: bookmarkChargeIn = 0,
+    // How many bookmarks the customer chose (free tier + paid extras).
+    bookmarkQty = 0,
     // Optional caller-supplied order id so the client can poll this exact row.
     orderId: orderIdIn,
     // Optional exact payment-source label (e.g. "PhonePe", "Credit Card ·
@@ -404,10 +406,14 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
       ? `Faster Delivery (${deliveryLabel})`
       : `Standard Delivery (${deliveryLabel})`,
     deliveryCharge: deliveryCharge || 0,
-    // Gift-wrap column records both gift wrap and the free bookmark, e.g.
-    // "No", "No-Bookmark", "Yes", "Yes-Bookmark".
+    // Gift-wrap column records gift wrap + the bookmark count, e.g.
+    // "No", "No-Bookmark×2", "Yes-Bookmark×4".
     giftWrap: `${giftWrapSelected ? "Yes" : "No"}${
-      bookmarkSelected ? "-Bookmark" : ""
+      bookmarkQty > 0
+        ? `-Bookmark×${bookmarkQty}`
+        : bookmarkSelected
+          ? "-Bookmark"
+          : ""
     }`,
     giftWrapCharge: giftWrapSelected
       ? Number.isFinite(giftWrapChargeIn)

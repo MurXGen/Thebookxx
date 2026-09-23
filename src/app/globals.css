@@ -47479,6 +47479,10 @@ img[data-loaded="true"] {
   border: 1px solid #bbf7d0;
   background: linear-gradient(120deg, #ecfdf3 0%, #ffffff 100%);
   text-decoration: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
   transition:
     transform 0.12s ease,
     box-shadow 0.15s ease;

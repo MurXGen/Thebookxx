@@ -14,6 +14,7 @@ import {
   expireTimer,
   getRemainingOfferTime,
 } from "@/utils/book";
+import { hydrateCustomBooks } from "@/utils/customBooks";
 
 const StoreContext = createContext(null);
 
@@ -47,6 +48,13 @@ export function StoreProvider({ children }) {
   const [oneRupeeOffer, setOneRupeeOffer] = useState(null);
   const [isOneRupeeEnabled, setIsOneRupeeEnabled] = useState(false);
   const [cartTotal, setCartTotal] = useState(0);
+
+  // Register any persisted custom products into the catalogue so a cart that
+  // contains one still resolves after a reload, then nudge a recompute.
+  useEffect(() => {
+    hydrateCustomBooks();
+    setCart((prev) => [...prev]);
+  }, []);
 
   // ── QuickReads cart (separate slice; each is a one-time ₹49 unlock) ──
   const [qrCart, setQrCart] = useState(() => {

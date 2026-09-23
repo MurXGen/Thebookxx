@@ -87,6 +87,8 @@ import {
 import Link from "next/link";
 import BookCoverImg from "@/components/BookCoverImg";
 import { books as ALL_BOOKS } from "@/utils/book";
+import { bookImages } from "@/utils/bookImages";
+import { encodeProduct } from "@/utils/customBooks";
 import { getBookCost } from "@/data/bookCosts";
 import { creditWalletReward, appendWalletTx } from "@/utils/googleFormOrder";
 import { showToast } from "@/context/ToastContext";
@@ -3878,6 +3880,42 @@ export default function ManageOrdersPage() {
   const [bpShowAll, setBpShowAll] = useState(false); // Book profitability: show all vs top 10
   // Book tab — paste order IDs, show only those as inline booking cards.
   const [bookIdsRaw, setBookIdsRaw] = useState("");
+  // ── Create custom product (name + price + image, shareable link) ──
+  const [cpName, setCpName] = useState("");
+  const [cpPrice, setCpPrice] = useState("");
+  const [cpImgQuery, setCpImgQuery] = useState("");
+  const [cpImgSlug, setCpImgSlug] = useState("");
+  const [cpLinkCopied, setCpLinkCopied] = useState(false);
+  const cpImgMatches = useMemo(() => {
+    const q = cpImgQuery.trim().toLowerCase();
+    const keys = Object.keys(bookImages);
+    return (q ? keys.filter((k) => k.includes(q)) : keys).slice(0, 24);
+  }, [cpImgQuery]);
+  const cpShareUrl = () => {
+    if (!cpName.trim() || !(Number(cpPrice) > 0)) return "";
+    const origin =
+      typeof window !== "undefined" ? window.location.origin : "";
+    return `${origin}/p/${encodeProduct({
+      name: cpName,
+      price: cpPrice,
+      imageSlug: cpImgSlug,
+    })}`;
+  };
+  const cpCopyLink = () => {
+    const url = cpShareUrl();
+    if (!url) {
+      showToast("Add a product name and price first.", "info");
+      return;
+    }
+    navigator.clipboard
+      .writeText(url)
+      .then(() => {
+        setCpLinkCopied(true);
+        setTimeout(() => setCpLinkCopied(false), 1800);
+        showToast("Product link copied — share it with the customer ✓", "success");
+      })
+      .catch(() => showToast("Couldn't copy the link.", "error"));
+  };
   // Uploaded { orderId: weightGrams } overrides applied to booking cards.
   const [bookWeights, setBookWeights] = useState({});
   const importBookWeights = () => {
@@ -9199,6 +9237,99 @@ export default function ManageOrdersPage() {
         {/* ===== Book (paste order IDs → inline India Post booking) ===== */}
         {activeTab === "book" && (
           <div className="mo-book-tab">
+            {/* Create a custom product to share with a customer. */}
+            <div className="mo-cp">
+              <div className="mo-cp-head">
+                <span className="mo-cp-title">
+                  <Package size={16} /> Create a product to share
+                </span>
+                <span className="mo-cp-sub">
+                  Name it, price it, pick a cover — share the link so the
+                  customer can add it to their bag and check out.
+                </span>
+              </div>
+              <div className="mo-cp-grid">
+                <div className="mo-cp-fields">
+                  <label className="mo-cp-field">
+                    <span>Product name</span>
+                    <input
+                      className="admin-input"
+                      placeholder="e.g. Rich Dad Poor Dad"
+                      value={cpName}
+                      onChange={(e) => setCpName(e.target.value)}
+                    />
+                  </label>
+                  <label className="mo-cp-field">
+                    <span>Price (₹)</span>
+                    <input
+                      type="number"
+                      inputMode="numeric"
+                      className="admin-input"
+                      placeholder="e.g. 199"
+                      value={cpPrice}
+                      onChange={(e) => setCpPrice(e.target.value)}
+                    />
+                  </label>
+                  <label className="mo-cp-field">
+                    <span>Cover image</span>
+                    <input
+                      className="admin-input"
+                      placeholder="Search image name…"
+                      value={cpImgQuery}
+                      onChange={(e) => setCpImgQuery(e.target.value)}
+                    />
+                  </label>
+                  <div className="mo-cp-imgs">
+                    {cpImgMatches.map((slug) => (
+                      <button
+                        key={slug}
+                        type="button"
+                        className={`mo-cp-img${cpImgSlug === slug ? " on" : ""}`}
+                        onClick={() => setCpImgSlug(slug)}
+                        title={slug}
+                      >
+                        <img src={bookImages[slug]} alt={slug} loading="lazy" />
+                        {cpImgSlug === slug && (
+                          <span className="mo-cp-img-check">
+                            <Check size={12} strokeWidth={3} />
+                          </span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="mo-cp-preview">
+                  <span className="mo-cp-preview-lbl">Preview</span>
+                  <div className="mo-cp-pcard">
+                    <div className="mo-cp-pcover">
+                      {cpImgSlug ? (
+                        <img src={bookImages[cpImgSlug]} alt="" />
+                      ) : (
+                        <span className="mo-cp-pcover-ph">
+                          <Package size={22} />
+                        </span>
+                      )}
+                    </div>
+                    <div className="mo-cp-pname">
+                      {cpName.trim() || "Product name"}
+                    </div>
+                    <div className="mo-cp-pprice">
+                      {Number(cpPrice) > 0 ? `₹${Math.round(cpPrice)}` : "₹—"}
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    className="mo-cp-copy"
+                    onClick={cpCopyLink}
+                    disabled={!cpName.trim() || !(Number(cpPrice) > 0)}
+                  >
+                    {cpLinkCopied ? <Check size={15} /> : <Copy size={15} />}
+                    {cpLinkCopied ? "Link copied" : "Copy share link"}
+                  </button>
+                </div>
+              </div>
+            </div>
+
             <div className="mo-book-head">
               <label className="mo-book-label" htmlFor="mo-book-ids">
                 Paste order IDs to book

@@ -1399,6 +1399,324 @@ label.sec-mid-btn {
   transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
   will-change: transform;
 }
+/* ── Create-a-product tool (manage-orders → Book tab) ── */
+.mo-cp {
+  border: 1px solid var(--hairline, #e5e7eb);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 16px;
+  background: #fff;
+}
+.mo-dark .mo-cp {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+.mo-cp-head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+.mo-cp-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text, #1c1814);
+}
+.mo-cp-title svg {
+  color: var(--tertiary, #fb8500);
+}
+.mo-dark .mo-cp-title {
+  color: #f3f4f6;
+}
+.mo-cp-sub {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted, #6b7280);
+}
+.mo-cp-grid {
+  display: grid;
+  grid-template-columns: 1fr 190px;
+  gap: 16px;
+}
+@media (max-width: 640px) {
+  .mo-cp-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.mo-cp-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.mo-cp-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted, #6b7280);
+}
+.mo-cp-imgs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+  gap: 7px;
+  max-height: 190px;
+  overflow-y: auto;
+  padding: 2px;
+}
+.mo-cp-img {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  background: #f4f4f5;
+  cursor: pointer;
+  padding: 0;
+}
+.mo-cp-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.mo-cp-img.on {
+  border-color: var(--tertiary, #fb8500);
+}
+.mo-cp-img-check {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--tertiary, #fb8500);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.mo-cp-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.mo-cp-preview-lbl {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted, #9ca3af);
+}
+.mo-cp-pcard {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px;
+  border-radius: 12px;
+  background: linear-gradient(160deg, #fff7ee 0%, #fdeede 100%);
+  border: 1px solid rgba(251, 133, 0, 0.18);
+}
+.mo-cp-pcover {
+  aspect-ratio: 3 / 4;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f4f4f5;
+}
+.mo-cp-pcover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.mo-cp-pcover-ph {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: #9ca3af;
+}
+.mo-cp-pname {
+  font-size: 13px;
+  font-weight: 800;
+  color: #111827;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mo-cp-pprice {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--tertiary, #fb8500);
+}
+.mo-cp-copy {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 42px;
+  border-radius: 10px;
+  border: none;
+  background: var(--tertiary, #fb8500);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.mo-cp-copy:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Custom shared-product page (/p/[code]) ── */
+.cp-page {
+  max-width: 560px;
+  margin: 0 auto;
+  min-height: 100vh;
+  padding: 16px 16px 40px;
+  background: var(--background, #fff);
+}
+.cp-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.cp-back {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid var(--dark-20, #82828250);
+  background: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.cp-head-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text, #1c1814);
+}
+.cp-card {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid var(--dark-20, #82828250);
+  border-radius: 18px;
+  background: linear-gradient(160deg, #fff7ee 0%, #fdeede 100%);
+}
+.cp-cover {
+  flex: 0 0 auto;
+  width: 130px;
+  aspect-ratio: 3 / 4;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f4f4f5;
+  box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.35);
+}
+.cp-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.cp-cover-ph {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: #9ca3af;
+}
+.cp-info {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  justify-content: center;
+}
+.cp-name {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--text, #1c1814);
+}
+.cp-price {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--tertiary, #fb8500);
+}
+.cp-perks {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 2px;
+}
+.cp-perks span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gray-500, #6b7280);
+}
+.cp-perks svg {
+  color: #16a34a;
+}
+.cp-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+.cp-add,
+.cp-buy {
+  flex: 1 1 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 50px;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.cp-add {
+  border: 1px solid #0a0a0a;
+  background: #fff;
+  color: #0a0a0a;
+}
+.cp-buy {
+  border: none;
+  background: #0a0a0a;
+  color: #fff;
+}
+.cp-browse {
+  display: block;
+  text-align: center;
+  margin-top: 18px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--tertiary, #fb8500);
+  text-decoration: none;
+}
+.cp-empty {
+  text-align: center;
+  padding: 60px 16px;
+  color: var(--gray-500, #6b7280);
+}
+.cp-empty-link {
+  display: inline-block;
+  margin-top: 10px;
+  font-weight: 800;
+  color: var(--tertiary, #fb8500);
+  text-decoration: none;
+}
+
 /* ── Install-app promo (compact fixed bar on the orders list) ── */
 .pwa-promo-bar {
   position: fixed;

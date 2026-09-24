@@ -4414,6 +4414,14 @@ export default function ManageOrdersPage() {
   const [cbFiles, setCbFiles] = useState([]); // uploaded file names
   const [cbBusy, setCbBusy] = useState(false);
   const [cbSkipped, setCbSkipped] = useState({ unmatched: 0, already: 0 });
+  // Track-orders tab sections are collapsible accordions (default closed).
+  const [trackAcc, setTrackAcc] = useState({
+    tid: false,
+    codbill: false,
+    deliv: false,
+  });
+  const toggleTrackAcc = (k) =>
+    setTrackAcc((p) => ({ ...p, [k]: !p[k] }));
   useEffect(() => {
     try {
       const raw = localStorage.getItem("mo_track_notify");
@@ -9899,10 +9907,17 @@ export default function ManageOrdersPage() {
           <div className="mo-track-notify mo-track-plain">
             {/* Tracking-ID export — all tracking IDs by status + date range */}
             <div className="mo-tid">
-              <div className="mo-tid-head">
+              <div
+                className="mo-tid-head mo-acc-head"
+                onClick={() => toggleTrackAcc("tid")}
+              >
                 <div className="mo-tid-head-txt">
                   <span className="mo-tid-title">
                     <Copy size={16} /> Copy tracking IDs
+                    <ChevronDown
+                      size={16}
+                      className={`mo-acc-chev${trackAcc.tid ? " open" : ""}`}
+                    />
                   </span>
                   <span className="mo-tid-sub">
                     Every order that has a tracking ID — filter by status &amp;
@@ -9912,7 +9927,10 @@ export default function ManageOrdersPage() {
                 <button
                   type="button"
                   className="mo-tid-copy"
-                  onClick={tidCopy}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    tidCopy();
+                  }}
                   disabled={tidRows.length === 0}
                 >
                   {tidCopied ? <Check size={15} /> : <Copy size={15} />}
@@ -9921,6 +9939,8 @@ export default function ManageOrdersPage() {
                 </button>
               </div>
 
+              {trackAcc.tid && (
+              <>
               <div className="mo-tid-filters">
                 <label className="mo-tid-field">
                   <span>Status</span>
@@ -10044,25 +10064,36 @@ export default function ManageOrdersPage() {
                   No orders with a tracking ID for this filter.
                 </p>
               )}
+              </>
+              )}
             </div>
 
             {/* Paid COD bill(s) — upload Articles_Bill_COD*.xlsx (multiple ok) */}
             <div className="mo-deliv">
-              <div className="mo-deliv-head">
+              <div
+                className="mo-deliv-head mo-acc-head"
+                onClick={() => toggleTrackAcc("codbill")}
+              >
                 <div className="mo-deliv-head-txt">
                   <span className="mo-deliv-title">
                     <IndianRupee size={16} /> Mark paid from COD bill
+                    <ChevronDown
+                      size={16}
+                      className={`mo-acc-chev${trackAcc.codbill ? " open" : ""}`}
+                    />
                   </span>
                   <span className="mo-deliv-sub">
                     Upload the paid-COD article bill(s). Matched orders become{" "}
-                    <b>Money Received</b> (COD) / <b>Delivered</b>. You can add
-                    several files before pushing.
+                    <b>Delivered</b>. You can add several files before pushing.
                   </span>
                 </div>
                 <button
                   type="button"
                   className="mo-deliv-upload"
-                  onClick={openCodBill}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    openCodBill();
+                  }}
                   disabled={cbBusy}
                 >
                   {cbBusy ? (
@@ -10074,6 +10105,8 @@ export default function ManageOrdersPage() {
                 </button>
               </div>
 
+              {trackAcc.codbill && (
+              <>
               {cbFiles.length > 0 && (
                 <div className="mo-deliv-meta">
                   {cbFiles.map((f, i) => (
@@ -10169,7 +10202,7 @@ export default function ManageOrdersPage() {
                             </span>
                             <ArrowRight size={13} />
                             <span className="mo-deliv-new paid">
-                              <Home size={11} />
+                              <Truck size={11} />
                               {m.newStatus}
                             </span>
                           </div>
@@ -10179,14 +10212,23 @@ export default function ManageOrdersPage() {
                   </div>
                 </>
               )}
+              </>
+              )}
             </div>
 
             {/* Delivered reconcile — upload India Post bulk-tracking file */}
             <div className="mo-deliv">
-              <div className="mo-deliv-head">
+              <div
+                className="mo-deliv-head mo-acc-head"
+                onClick={() => toggleTrackAcc("deliv")}
+              >
                 <div className="mo-deliv-head-txt">
                   <span className="mo-deliv-title">
                     <CheckCircle size={16} /> Mark delivered from India Post file
+                    <ChevronDown
+                      size={16}
+                      className={`mo-acc-chev${trackAcc.deliv ? " open" : ""}`}
+                    />
                   </span>
                   <span className="mo-deliv-sub">
                     Upload the bulk-articles-tracking export. Delivered parcels
@@ -10197,7 +10239,10 @@ export default function ManageOrdersPage() {
                 <button
                   type="button"
                   className="mo-deliv-upload"
-                  onClick={openDelivReconcile}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    openDelivReconcile();
+                  }}
                   disabled={delivBusy}
                 >
                   {delivBusy ? (
@@ -10213,6 +10258,8 @@ export default function ManageOrdersPage() {
                 </button>
               </div>
 
+              {trackAcc.deliv && (
+              <>
               {delivFileName && (
                 <div className="mo-deliv-meta">
                   <span className="mo-deliv-file">{delivFileName}</span>
@@ -10476,6 +10523,8 @@ export default function ManageOrdersPage() {
                     })}
                   </div>
                 </>
+              )}
+              </>
               )}
             </div>
 

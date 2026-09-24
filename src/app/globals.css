@@ -16860,6 +16860,21 @@ img[data-loaded="true"] {
   min-width: 0;
 }
 /* ── Delivered reconcile (India Post file upload) ── */
+/* Collapsible section headers in the Track orders tab. */
+.mo-acc-head {
+  cursor: pointer;
+  user-select: none;
+}
+.mo-acc-chev {
+  margin-left: 6px;
+  transition: transform 0.2s ease;
+  color: var(--muted, #9ca3af);
+  vertical-align: middle;
+}
+.mo-acc-chev.open {
+  transform: rotate(180deg);
+}
+
 /* ── Tracking-ID export panel (Track orders tab) ── */
 .mo-tid {
   border: 1px solid var(--hairline, #e5e7eb);

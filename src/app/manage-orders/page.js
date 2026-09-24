@@ -10144,6 +10144,17 @@ export default function ManageOrdersPage() {
                         }
                       />
                       Select all ({cbSel.length}/{cbMatches.length})
+                      <span className="mo-cb-total">
+                        Total COD ₹
+                        {cbMatches
+                          .filter((m) =>
+                            cbSel.length
+                              ? cbSel.includes(m.order["Order ID"])
+                              : true,
+                          )
+                          .reduce((s, m) => s + (Number(m.codValue) || 0), 0)
+                          .toLocaleString()}
+                      </span>
                     </label>
                     <div className="mo-deliv-bar-actions">
                       <button

@@ -16860,6 +16860,17 @@ img[data-loaded="true"] {
   min-width: 0;
 }
 /* ── Delivered reconcile (India Post file upload) ── */
+/* Total COD amount pill in the COD-bill bar. */
+.mo-cb-total {
+  margin-left: 10px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(22, 163, 74, 0.12);
+  color: #15803d;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
 /* Collapsible section headers in the Track orders tab. */
 .mo-acc-head {
   cursor: pointer;

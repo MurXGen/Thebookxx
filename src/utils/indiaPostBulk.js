@@ -771,6 +771,43 @@ export async function parseBookedTrackingFile(file) {
   return map;
 }
 
+// Parse an India Post "Paid COD Articles" bill export (Articles_Bill_COD…xlsx)
+// into { article, codValue, deliveredDate } rows. Reads the "article_number"
+// column (these parcels have had their COD collected & remitted → delivered).
+export async function parseCodBillFile(file) {
+  const XLSX = await import("xlsx");
+  const wb = XLSX.read(await file.arrayBuffer(), { type: "array" });
+  const sheetName =
+    wb.SheetNames.find((n) => /article/i.test(n)) || wb.SheetNames[0];
+  const ws = wb.Sheets[sheetName];
+  if (!ws) throw new Error("No article sheet in the file.");
+  const aoa = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
+  const header = (aoa[0] || []).map((h) => String(h).trim().toLowerCase());
+  const idx = (...names) =>
+    header.findIndex((h) => names.some((n) => h === n));
+  const iArt = idx("article_number", "article number", "barcode no", "article");
+  const iVal = idx("cod_value", "cod value");
+  const iDate = idx("delivered_date", "delivered date");
+  if (iArt < 0)
+    throw new Error(
+      "File needs an 'article_number' column (India Post COD bill export).",
+    );
+  const out = [];
+  for (let r = 1; r < aoa.length; r++) {
+    const row = aoa[r] || [];
+    const article = String(row[iArt] ?? "")
+      .trim()
+      .toUpperCase();
+    if (!/^[A-Z]{2}\d{9}IN$/.test(article)) continue;
+    out.push({
+      article,
+      codValue: iVal >= 0 ? Number(row[iVal]) || 0 : 0,
+      deliveredDate: iDate >= 0 ? String(row[iDate] ?? "").trim() : "",
+    });
+  }
+  return out;
+}
+
 // Build the same workbook as an in-memory Blob (for API upload to India Post).
 export async function buildIpWorkbookBlob(previewRows, sender) {
   const { XLSX, wb } = await buildIpWorkbook(previewRows, sender);

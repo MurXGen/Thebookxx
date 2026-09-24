@@ -101,6 +101,7 @@ import {
   parseIpWorkbookFile,
   parseTrackingStatusFile,
   parseBookedTrackingFile,
+  parseCodBillFile,
   parseWeightsFile,
   loadSender,
   saveSender,
@@ -4406,6 +4407,13 @@ export default function ManageOrdersPage() {
   // Returned to sender (last event "…Returned to Sender") → mark Cancelled.
   const [cancelMatches, setCancelMatches] = useState([]);
   const [cancelSel, setCancelSel] = useState([]);
+  // ── Paid COD bill(s): upload one or more Articles_Bill_COD*.xlsx and mark the
+  // matched orders Delivered / Money Received. Accumulates across files. ──
+  const [cbMatches, setCbMatches] = useState([]); // [{ order, article, newStatus, currentStatus }]
+  const [cbSel, setCbSel] = useState([]);
+  const [cbFiles, setCbFiles] = useState([]); // uploaded file names
+  const [cbBusy, setCbBusy] = useState(false);
+  const [cbSkipped, setCbSkipped] = useState({ unmatched: 0, already: 0 });
   useEffect(() => {
     try {
       const raw = localStorage.getItem("mo_track_notify");
@@ -4877,6 +4885,124 @@ export default function ManageOrdersPage() {
       setTimeout(fetchOrders, 1300);
     } finally {
       setDelivBusy(false);
+    }
+  };
+
+  // ── Paid COD bill upload (accumulates across multiple files) ──
+  const openCodBill = () => {
+    const inp = document.createElement("input");
+    inp.type = "file";
+    inp.accept =
+      ".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+    inp.multiple = true;
+    inp.onchange = (e) => handleCodBillFiles(e);
+    inp.click();
+  };
+  const handleCodBillFiles = async (e) => {
+    const files = Array.from(e?.target?.files || []);
+    if (!files.length) return;
+    setCbBusy(true);
+    try {
+      let unmatched = 0;
+      let already = 0;
+      const addedNames = [];
+      const nextMatches = [...cbMatches];
+      const have = new Set(nextMatches.map((m) => m.order["Order ID"]));
+      for (const file of files) {
+        let rows = [];
+        try {
+          rows = await parseCodBillFile(file);
+        } catch (err) {
+          showToast(
+            `${file.name}: ${err?.message || "unreadable file"}`,
+            "error",
+          );
+          continue;
+        }
+        addedNames.push(file.name);
+        rows.forEach((r) => {
+          const o = orders.find(
+            (ord) => sidUp(ord["Shipping ID"]) === sidUp(r.article),
+          );
+          if (!o) {
+            unmatched += 1;
+            return;
+          }
+          const oid = o["Order ID"];
+          if (!oid || have.has(oid)) return;
+          const newStatus = targetDeliveredStatus(o);
+          const cur = String(o["Order Status"] || "").trim();
+          if (cur.toLowerCase() === newStatus.toLowerCase()) {
+            already += 1;
+            return;
+          }
+          have.add(oid);
+          nextMatches.push({
+            order: o,
+            article: r.article,
+            newStatus,
+            currentStatus: cur || "—",
+            isCOD: isCodOrder(o),
+            codValue: r.codValue,
+          });
+        });
+      }
+      setCbMatches(nextMatches);
+      setCbSel(nextMatches.map((m) => m.order["Order ID"]));
+      setCbFiles((prev) => [...prev, ...addedNames]);
+      setCbSkipped((prev) => ({
+        unmatched: prev.unmatched + unmatched,
+        already: prev.already + already,
+      }));
+      showToast(
+        nextMatches.length
+          ? `${nextMatches.length} order(s) ready to mark paid`
+          : "No matching orders found in these bills",
+        nextMatches.length ? "success" : "info",
+      );
+    } finally {
+      setCbBusy(false);
+    }
+  };
+  const toggleCbSel = (oid) =>
+    setCbSel((prev) =>
+      prev.includes(oid) ? prev.filter((x) => x !== oid) : [...prev, oid],
+    );
+  const clearCodBill = () => {
+    setCbMatches([]);
+    setCbSel([]);
+    setCbFiles([]);
+    setCbSkipped({ unmatched: 0, already: 0 });
+  };
+  const pushCodBillUpdates = async () => {
+    const picked = cbMatches.filter((m) => cbSel.includes(m.order["Order ID"]));
+    if (!picked.length) return;
+    setCbBusy(true);
+    setOrders((prev) =>
+      prev.map((o) => {
+        const m = picked.find((x) => x.order["Order ID"] === o["Order ID"]);
+        return m
+          ? { ...o, "Order Status": m.newStatus, status: m.newStatus }
+          : o;
+      }),
+    );
+    try {
+      await Promise.all(
+        picked.map((m) =>
+          updateOrderRow(m.order["Order ID"], {
+            "Order Status": m.newStatus,
+          }).catch((err) =>
+            console.error("COD bill push failed:", m.order["Order ID"], err),
+          ),
+        ),
+      );
+      const ids = new Set(picked.map((m) => m.order["Order ID"]));
+      setCbMatches((prev) => prev.filter((m) => !ids.has(m.order["Order ID"])));
+      setCbSel([]);
+      showToast(`${picked.length} order(s) marked paid ✓`, "success");
+      setTimeout(fetchOrders, 1300);
+    } finally {
+      setCbBusy(false);
     }
   };
   const toggleRevertSel = (oid) =>
@@ -9916,6 +10042,147 @@ export default function ManageOrdersPage() {
                 <p className="mo-tid-empty">
                   No orders with a tracking ID for this filter.
                 </p>
+              )}
+            </div>
+
+            {/* Paid COD bill(s) — upload Articles_Bill_COD*.xlsx (multiple ok) */}
+            <div className="mo-deliv">
+              <div className="mo-deliv-head">
+                <div className="mo-deliv-head-txt">
+                  <span className="mo-deliv-title">
+                    <IndianRupee size={16} /> Mark paid from COD bill
+                  </span>
+                  <span className="mo-deliv-sub">
+                    Upload the paid-COD article bill(s). Matched orders become{" "}
+                    <b>Money Received</b> (COD) / <b>Delivered</b>. You can add
+                    several files before pushing.
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className="mo-deliv-upload"
+                  onClick={openCodBill}
+                  disabled={cbBusy}
+                >
+                  {cbBusy ? (
+                    <Loader2 size={15} className="mo-spin" />
+                  ) : (
+                    <UploadCloud size={15} />
+                  )}
+                  {cbMatches.length ? "Add more files" : "Upload bill(s)"}
+                </button>
+              </div>
+
+              {cbFiles.length > 0 && (
+                <div className="mo-deliv-meta">
+                  {cbFiles.map((f, i) => (
+                    <span className="mo-deliv-chip" key={i}>
+                      {f}
+                    </span>
+                  ))}
+                  {cbSkipped.already > 0 && (
+                    <span className="mo-deliv-chip">
+                      {cbSkipped.already} already paid
+                    </span>
+                  )}
+                  {cbSkipped.unmatched > 0 && (
+                    <span className="mo-deliv-chip warn">
+                      <AlertCircle size={12} /> {cbSkipped.unmatched} no matching
+                      order
+                    </span>
+                  )}
+                </div>
+              )}
+
+              {cbMatches.length > 0 && (
+                <>
+                  <div className="mo-deliv-bar">
+                    <label className="mo-deliv-all">
+                      <input
+                        type="checkbox"
+                        checked={cbSel.length === cbMatches.length}
+                        onChange={(e) =>
+                          setCbSel(
+                            e.target.checked
+                              ? cbMatches.map((m) => m.order["Order ID"])
+                              : [],
+                          )
+                        }
+                      />
+                      Select all ({cbSel.length}/{cbMatches.length})
+                    </label>
+                    <div className="mo-deliv-bar-actions">
+                      <button
+                        type="button"
+                        className="mo-deliv-clear"
+                        onClick={clearCodBill}
+                        disabled={cbBusy}
+                      >
+                        Clear
+                      </button>
+                      <button
+                        type="button"
+                        className="mo-deliv-push"
+                        onClick={pushCodBillUpdates}
+                        disabled={cbBusy || cbSel.length === 0}
+                      >
+                        {cbBusy ? (
+                          <Loader2 size={15} className="mo-spin" />
+                        ) : (
+                          <Check size={15} />
+                        )}
+                        Push {cbSel.length} update
+                        {cbSel.length === 1 ? "" : "s"}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="mo-deliv-list">
+                    {cbMatches.map((m) => {
+                      const oid = m.order["Order ID"];
+                      const on = cbSel.includes(oid);
+                      return (
+                        <div
+                          key={oid}
+                          className={`mo-deliv-row${on ? " on" : ""}`}
+                          onClick={() => toggleCbSel(oid)}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={on}
+                            onChange={() => toggleCbSel(oid)}
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                          <div className="mo-deliv-row-main">
+                            <span className="mo-deliv-row-name">
+                              {m.order["Customer Name"] || "—"}
+                              <span className="mo-deliv-row-oid">{oid}</span>
+                            </span>
+                            <span className="mo-deliv-row-art">
+                              {m.article}
+                              {m.codValue ? ` · COD ₹${m.codValue}` : ""}
+                            </span>
+                          </div>
+                          <div className="mo-deliv-row-flow">
+                            <span className="mo-deliv-cur">
+                              {m.currentStatus}
+                            </span>
+                            <ArrowRight size={13} />
+                            <span
+                              className={`mo-deliv-new${m.isCOD ? " cod" : " paid"}`}
+                            >
+                              {m.isCOD ? (
+                                <IndianRupee size={11} />
+                              ) : (
+                                <Truck size={11} />
+                              )}
+                              {m.newStatus}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </>
               )}
             </div>
 

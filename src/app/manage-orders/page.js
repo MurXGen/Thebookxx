@@ -4930,9 +4930,11 @@ export default function ManageOrdersPage() {
           }
           const oid = o["Order ID"];
           if (!oid || have.has(oid)) return;
-          const newStatus = targetDeliveredStatus(o);
+          // Paid COD bill = money collected AND delivered → mark "Delivered"
+          // (this upgrades an order sitting at "Money Received" to Delivered).
+          const newStatus = "Delivered";
           const cur = String(o["Order Status"] || "").trim();
-          if (cur.toLowerCase() === newStatus.toLowerCase()) {
+          if (/^delivered$/i.test(cur)) {
             already += 1;
             return;
           }
@@ -4942,7 +4944,6 @@ export default function ManageOrdersPage() {
             article: r.article,
             newStatus,
             currentStatus: cur || "—",
-            isCOD: isCodOrder(o),
             codValue: r.codValue,
           });
         });
@@ -10167,14 +10168,8 @@ export default function ManageOrdersPage() {
                               {m.currentStatus}
                             </span>
                             <ArrowRight size={13} />
-                            <span
-                              className={`mo-deliv-new${m.isCOD ? " cod" : " paid"}`}
-                            >
-                              {m.isCOD ? (
-                                <IndianRupee size={11} />
-                              ) : (
-                                <Truck size={11} />
-                              )}
+                            <span className="mo-deliv-new paid">
+                              <Home size={11} />
                               {m.newStatus}
                             </span>
                           </div>

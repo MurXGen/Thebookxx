@@ -17338,6 +17338,33 @@ img[data-loaded="true"] {
   background: rgba(245, 158, 11, 0.14);
   color: #b45309;
 }
+.mo-deliv-new.cancel {
+  background: rgba(220, 38, 38, 0.12);
+  color: #dc2626;
+}
+.mo-deliv-bar-cancel {
+  margin-top: 6px;
+  padding-top: 12px;
+  border-top: 1px dashed rgba(220, 38, 38, 0.5);
+}
+.mo-deliv-cancel-push {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: none;
+  background: #dc2626;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.mo-deliv-cancel-push:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
 .mo-dark .mo-deliv-new.revert {
   background: rgba(245, 158, 11, 0.2);
   color: #fbbf24;

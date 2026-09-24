@@ -4403,6 +4403,9 @@ export default function ManageOrdersPage() {
   // Delivered / Money Received → offer to move it back to "In Transit".
   const [revertMatches, setRevertMatches] = useState([]);
   const [revertSel, setRevertSel] = useState([]);
+  // Returned to sender (last event "…Returned to Sender") → mark Cancelled.
+  const [cancelMatches, setCancelMatches] = useState([]);
+  const [cancelSel, setCancelSel] = useState([]);
   useEffect(() => {
     try {
       const raw = localStorage.getItem("mo_track_notify");
@@ -4705,7 +4708,14 @@ export default function ManageOrdersPage() {
         if (/not\s*deliver|un\s*deliver|return/i.test(t)) return false;
         return /deliver/i.test(t);
       };
-      const delivered = rows.filter((r) => isDelivered(r.status));
+      // "Item Delivered (Returned to Sender)" — the parcel came back, so the
+      // order should be CANCELLED even though the file's Status is "Delivered".
+      const isReturned = (r) =>
+        /return(?:ed)?\s*to\s*sender/i.test(String(r.lastEvent || "")) ||
+        /return(?:ed)?\s*to\s*sender/i.test(String(r.status || ""));
+      const delivered = rows.filter(
+        (r) => isDelivered(r.status) && !isReturned(r),
+      );
       let unmatched = 0;
       let already = 0;
       const seen = new Set();
@@ -4760,17 +4770,42 @@ export default function ManageOrdersPage() {
           });
         });
 
+      // Returned-to-sender → propose "Cancelled" (skip already-cancelled).
+      const cancSeen = new Set();
+      const cancels = [];
+      rows
+        .filter((r) => isReturned(r))
+        .forEach((r) => {
+          const o = orders.find(
+            (ord) => sidUp(ord["Shipping ID"]) === sidUp(r.article),
+          );
+          if (!o) return;
+          const oid = o["Order ID"];
+          if (!oid || cancSeen.has(oid)) return;
+          const cur = String(o["Order Status"] || "").trim();
+          if (/cancel/i.test(cur)) return;
+          cancSeen.add(oid);
+          cancels.push({
+            order: o,
+            article: r.article,
+            currentStatus: cur || "—",
+            lastEvent: r.lastEvent,
+          });
+        });
+
       setDelivMatches(matches);
       setDelivSel(matches.map((m) => m.order["Order ID"]));
       setRevertMatches(reverts);
       setRevertSel(reverts.map((m) => m.order["Order ID"]));
+      setCancelMatches(cancels);
+      setCancelSel(cancels.map((m) => m.order["Order ID"]));
       setDelivFileName(file.name);
       setDelivSkipped({
         unmatched,
         already,
         notDelivered: rows.length - delivered.length,
       });
-      if (!matches.length && !reverts.length) {
+      if (!matches.length && !reverts.length && !cancels.length) {
         showToast(
           delivered.length
             ? "All delivered parcels are already up to date ✓"
@@ -4780,6 +4815,7 @@ export default function ManageOrdersPage() {
       } else {
         const parts = [];
         if (matches.length) parts.push(`${matches.length} to mark delivered`);
+        if (cancels.length) parts.push(`${cancels.length} returned → cancel`);
         if (reverts.length) parts.push(`${reverts.length} to revert`);
         showToast(`${parts.join(" · ")} ready`, "success");
       }
@@ -4799,8 +4835,49 @@ export default function ManageOrdersPage() {
     setDelivSel([]);
     setRevertMatches([]);
     setRevertSel([]);
+    setCancelMatches([]);
+    setCancelSel([]);
     setDelivFileName("");
     setDelivSkipped({ unmatched: 0, already: 0, notDelivered: 0 });
+  };
+  const toggleCancelSel = (oid) =>
+    setCancelSel((prev) =>
+      prev.includes(oid) ? prev.filter((x) => x !== oid) : [...prev, oid],
+    );
+  // Push the selected returned-to-sender orders → "Cancelled".
+  const pushCancelUpdates = async () => {
+    const picked = cancelMatches.filter((m) =>
+      cancelSel.includes(m.order["Order ID"]),
+    );
+    if (!picked.length) return;
+    setDelivBusy(true);
+    setOrders((prev) =>
+      prev.map((o) =>
+        picked.some((x) => x.order["Order ID"] === o["Order ID"])
+          ? { ...o, "Order Status": "Cancelled", status: "Cancelled" }
+          : o,
+      ),
+    );
+    try {
+      await Promise.all(
+        picked.map((m) =>
+          updateOrderRow(m.order["Order ID"], {
+            "Order Status": "Cancelled",
+          }).catch((err) =>
+            console.error("Cancel push failed:", m.order["Order ID"], err),
+          ),
+        ),
+      );
+      const ids = new Set(picked.map((m) => m.order["Order ID"]));
+      setCancelMatches((prev) =>
+        prev.filter((m) => !ids.has(m.order["Order ID"])),
+      );
+      setCancelSel([]);
+      showToast(`${picked.length} returned order(s) cancelled ✓`, "success");
+      setTimeout(fetchOrders, 1300);
+    } finally {
+      setDelivBusy(false);
+    }
   };
   const toggleRevertSel = (oid) =>
     setRevertSel((prev) =>
@@ -9866,7 +9943,9 @@ export default function ManageOrdersPage() {
                   ) : (
                     <UploadCloud size={15} />
                   )}
-                  {delivMatches.length || revertMatches.length
+                  {delivMatches.length ||
+                  revertMatches.length ||
+                  cancelMatches.length
                     ? "Upload another"
                     : "Upload file"}
                 </button>
@@ -10052,6 +10131,82 @@ export default function ManageOrdersPage() {
                             <span className="mo-deliv-new revert">
                               <Truck size={11} />
                               In Transit
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
+
+              {/* Returned to sender → cancel the order. */}
+              {cancelMatches.length > 0 && (
+                <>
+                  <div className="mo-deliv-bar mo-deliv-bar-cancel">
+                    <label className="mo-deliv-all">
+                      <input
+                        type="checkbox"
+                        checked={cancelSel.length === cancelMatches.length}
+                        onChange={(e) =>
+                          setCancelSel(
+                            e.target.checked
+                              ? cancelMatches.map((m) => m.order["Order ID"])
+                              : [],
+                          )
+                        }
+                      />
+                      Returned to sender — cancel ({cancelSel.length}/
+                      {cancelMatches.length})
+                    </label>
+                    <button
+                      type="button"
+                      className="mo-deliv-cancel-push"
+                      onClick={pushCancelUpdates}
+                      disabled={delivBusy || cancelSel.length === 0}
+                    >
+                      {delivBusy ? (
+                        <Loader2 size={15} className="mo-spin" />
+                      ) : (
+                        <X size={15} />
+                      )}
+                      Cancel {cancelSel.length} order
+                      {cancelSel.length === 1 ? "" : "s"}
+                    </button>
+                  </div>
+                  <div className="mo-deliv-list">
+                    {cancelMatches.map((m) => {
+                      const oid = m.order["Order ID"];
+                      const on = cancelSel.includes(oid);
+                      return (
+                        <div
+                          key={oid}
+                          className={`mo-deliv-row${on ? " on" : ""}`}
+                          onClick={() => toggleCancelSel(oid)}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={on}
+                            onChange={() => toggleCancelSel(oid)}
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                          <div className="mo-deliv-row-main">
+                            <span className="mo-deliv-row-name">
+                              {m.order["Customer Name"] || "—"}
+                              <span className="mo-deliv-row-oid">{oid}</span>
+                            </span>
+                            <span className="mo-deliv-row-art">
+                              {m.article} · returned to sender
+                            </span>
+                          </div>
+                          <div className="mo-deliv-row-flow">
+                            <span className="mo-deliv-cur">
+                              {m.currentStatus}
+                            </span>
+                            <ArrowRight size={13} />
+                            <span className="mo-deliv-new cancel">
+                              <X size={11} />
+                              Cancelled
                             </span>
                           </div>
                         </div>

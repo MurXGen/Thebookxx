@@ -5856,6 +5856,106 @@ textarea.sec-mid-btn,
   font-weight: 800;
   color: #9a3412;
 }
+/* Mumbai fast-delivery stripe — same shape, green accent. overflow hidden lets
+   the height animation collapse cleanly. */
+.addr-notice-mumbai {
+  overflow: hidden;
+  background: #f0fdf4;
+  border-color: rgba(22, 163, 74, 0.35);
+  border-left-color: #16a34a;
+}
+.addr-notice-mumbai .addr-notice-ic {
+  color: #16a34a;
+}
+.addr-notice-mumbai .addr-notice-text {
+  color: #14532d;
+}
+.addr-notice-mumbai .addr-notice-text b {
+  color: #166534;
+}
+
+/* ── "Are you here?" location-consent slide-up sheet ── */
+.pinask-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 100000;
+}
+.pinask-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100001;
+  max-width: 480px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 22px 22px 0 0;
+  padding: 12px 22px calc(24px + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 -14px 44px rgba(0, 0, 0, 0.24);
+  text-align: center;
+}
+.pinask-grip {
+  display: block;
+  width: 44px;
+  height: 5px;
+  border-radius: 999px;
+  background: #e5e7eb;
+  margin: 0 auto 16px;
+}
+.pinask-ico {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 12px;
+  color: #fb8500;
+  background: rgba(251, 133, 0, 0.12);
+}
+.pinask-title {
+  margin: 0 0 6px;
+  font-size: 18px;
+  font-weight: 800;
+  color: #0a0a0a;
+}
+.pinask-sub {
+  margin: 0 auto 20px;
+  max-width: 360px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: #6b7280;
+}
+.pinask-actions {
+  display: flex;
+  gap: 10px;
+}
+.pinask-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 13px 12px;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.pinask-no {
+  background: #f3f4f6;
+  color: #4b5563;
+}
+.pinask-yes {
+  color: #fff;
+  background: linear-gradient(135deg, #fb8500, #ffb703);
+  box-shadow: 0 8px 18px -8px rgba(251, 133, 0, 0.7);
+}
+.pinask-yes:active,
+.pinask-no:active {
+  transform: scale(0.98);
+}
 
 .filters-content {
   max-width: 1200px;

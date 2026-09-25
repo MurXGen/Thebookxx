@@ -18,6 +18,7 @@ import QuickReadsTeaser from "@/components/QuickReadsTeaser";
 import InvoiceParamModal from "@/components/InvoiceParamModal";
 import ReviewGallery from "@/components/ReviewGallery";
 import OneRupeeGrid from "@/components/OneRupeeGrid";
+import BundleDeals from "@/components/BundleDeals";
 import TrendingGrid from "@/components/TrendingGrid";
 import NewlyAddedGrid from "@/components/NewlyAddedGrid";
 import CategoryBrowse from "@/components/CategoryBrowse";
@@ -139,6 +140,9 @@ export default function HomePage() {
 
       {/* Compact 2-row ₹1 books rail — above the review gallery. */}
       <OneRupeeGrid />
+
+      {/* Frequently-bought-together 3D duo bundles — right below the ₹1 store. */}
+      <BundleDeals />
 
       {/* Compact 2-row trending rail — shows discounted price + savings. */}
       <TrendingGrid />

@@ -203,6 +203,9 @@ export default function AddressModal({
   const [district, setDistrict] = useState("");
   const [area, setArea] = useState("");
   const [state, setState] = useState("");
+  // True when the State was auto-filled from the pincode lookup → locked. When
+  // the lookup can't determine it, this stays false so the shopper can type it.
+  const [stateAutoFilled, setStateAutoFilled] = useState(false);
   const [fasterDelivery, setFasterDelivery] = useState(false);
   const [billItemsOpen, setBillItemsOpen] = useState(false); // book summary accordion
   const [isValidPincode, setIsValidPincode] = useState(true);
@@ -535,9 +538,10 @@ export default function AddressModal({
         setCity(postOffice.District);
         setDistrict(postOffice.District);
         setArea(postOffice.Name);
-        // Auto-fill State from the India Post lookup. If the API doesn't return
-        // one, leave it blank so the dropdown prompts the shopper to choose.
+        // Auto-fill State from the India Post lookup. If the API returns one,
+        // lock the field; otherwise leave it blank + editable for the shopper.
         setState(postOffice.State || "");
+        setStateAutoFilled(!!postOffice.State);
         setIsValidPincode(true);
         setPincodeError("");
       } else {
@@ -548,11 +552,13 @@ export default function AddressModal({
         setArea("");
         setCity("");
         setDistrict("");
+        setStateAutoFilled(false);
       }
     } catch (error) {
       console.error("Error fetching pincode details:", error);
       setIsValidPincode(true);
       setPincodeError("Unable to verify pincode. You can still proceed.");
+      setStateAutoFilled(false);
     } finally {
       setIsFetchingLocation(false);
     }
@@ -1528,80 +1534,98 @@ export default function AddressModal({
                 </span>
               </div>
 
-              <div className="input-group">
-                <label className="flex flex-row gap-4 flex-center items-center">
-                  <MapPin size={14} />
-                  Pincode
-                </label>
-                <input
-                  className={`sec-mid-btn width100 ${!isValidPincode && pincode ? "error-border" : ""}`}
-                  placeholder="Enter 6 digit pincode"
-                  value={pincode}
-                  maxLength={6}
-                  onChange={handlePincodeChange}
-                  inputMode="numeric"
-                />
-                {isFetchingLocation && (
-                  <span className="addr-hint">Fetching location…</span>
-                )}
-              </div>
+              {/* Pincode → City → State on one equal-width row. City & State
+                  stay collapsed until a valid 6-digit pincode, then glide in. */}
+              <div className={`addr-loc-row${pincodeReady ? " ready" : ""}`}>
+                <div className="input-group addr-loc-cell">
+                  <label className="flex flex-row gap-4 flex-center items-center">
+                    <MapPin size={14} />
+                    Pincode
+                  </label>
+                  <input
+                    className={`sec-mid-btn width100 ${!isValidPincode && pincode ? "error-border" : ""}`}
+                    placeholder="Enter 6 digit pincode"
+                    value={pincode}
+                    maxLength={6}
+                    onChange={handlePincodeChange}
+                    inputMode="numeric"
+                  />
+                </div>
 
-              {pincodeReady && (
-              <div className="addr-two-col">
-              <div className="input-group">
-                <label>City / District</label>
-                <input
-                  list="cities"
-                  className="sec-mid-btn width100"
-                  placeholder="Enter your city"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                />
-                <datalist id="cities">
-                  {CITIES.map((c) => (
-                    <option key={c} value={c} />
-                  ))}
-                </datalist>
-                {city.trim().toLowerCase() === "mumbai" && (
-                  <span className="mumbai-fast-note">
-                    <Zap size={12} /> Orders within Mumbai delivered in 1–2 days
-                  </span>
-                )}
-              </div>
-
-              <div className="input-group">
-                <label>State</label>
-                <select
-                  className={`sec-mid-btn width100 ${!state ? "error-border" : ""}`}
-                  value={state}
-                  onChange={(e) => setState(e.target.value)}
+                <div
+                  className={`input-group addr-loc-cell${pincodeReady ? "" : " collapsed"}`}
+                  aria-hidden={!pincodeReady}
                 >
-                  <option value="">
-                    {isFetchingLocation ? "Fetching…" : "Select your state"}
-                  </option>
-                  {state && !INDIAN_STATES.includes(state) && (
-                    <option value={state}>{state}</option>
-                  )}
-                  {INDIAN_STATES.map((s) => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
-                  ))}
-                </select>
-                {!state && (
-                  <span className="addr-hint">
-                    Please select your state for smooth delivery.
-                  </span>
-                )}
+                  <label>City / District</label>
+                  <input
+                    list="cities"
+                    className="sec-mid-btn width100"
+                    placeholder="Enter your city"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    tabIndex={pincodeReady ? 0 : -1}
+                  />
+                  <datalist id="cities">
+                    {CITIES.map((c) => (
+                      <option key={c} value={c} />
+                    ))}
+                  </datalist>
+                </div>
+
+                <div
+                  className={`input-group addr-loc-cell${pincodeReady ? "" : " collapsed"}`}
+                  aria-hidden={!pincodeReady}
+                >
+                  <label className="addr-state-label">
+                    State
+                    {stateAutoFilled && state && (
+                      <span className="addr-state-lock">
+                        <Check size={11} strokeWidth={3} /> auto-filled
+                      </span>
+                    )}
+                  </label>
+                  <input
+                    list="states"
+                    className={`sec-mid-btn width100 ${!state ? "error-border" : ""}${stateAutoFilled && state ? " addr-locked" : ""}`}
+                    placeholder={
+                      isFetchingLocation ? "Fetching…" : "Type your state"
+                    }
+                    value={state}
+                    onChange={(e) => {
+                      setState(e.target.value);
+                      setStateAutoFilled(false);
+                    }}
+                    disabled={stateAutoFilled && !!state}
+                    tabIndex={pincodeReady ? 0 : -1}
+                  />
+                  <datalist id="states">
+                    {INDIAN_STATES.map((s) => (
+                      <option key={s} value={s} />
+                    ))}
+                  </datalist>
+                </div>
               </div>
-              </div>
+
+              {isFetchingLocation && (
+                <span className="addr-hint">Fetching location…</span>
+              )}
+              {pincodeReady && city.trim().toLowerCase() === "mumbai" && (
+                <span className="mumbai-fast-note">
+                  <Zap size={12} /> Orders within Mumbai delivered in 1–2 days
+                </span>
+              )}
+              {pincodeReady && !state && (
+                <span className="addr-hint">
+                  Please select your state for smooth delivery.
+                </span>
               )}
 
               {pincodeReady && (
               <div className="input-group">
                 <div className="addr-label-row">
                   <label>
-                    Full address <span className="red">*</span>
+                    Full address — House no, Street, Landmark{" "}
+                    <span className="red">*</span>
                   </label>
                   {locationLink ? (
                     <span className="addr-pin-done">

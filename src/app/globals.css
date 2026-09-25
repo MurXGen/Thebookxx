@@ -5709,6 +5709,67 @@ textarea.sec-mid-btn,
 .addr-two-col .input-group {
   min-width: 0;
 }
+
+/* Pincode · City · State — one equal-width row. City & State glide in once a
+   valid 6-digit pincode is entered (collapsed → full via flex-grow). */
+.addr-loc-row {
+  display: flex;
+  align-items: flex-start;
+}
+.addr-loc-cell {
+  flex: 1 1 0;
+  min-width: 0;
+  transition:
+    flex-grow 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    flex-basis 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.4s ease,
+    margin-left 0.4s ease,
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.addr-loc-cell + .addr-loc-cell {
+  margin-left: 12px;
+}
+.addr-loc-cell label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.addr-loc-cell.collapsed {
+  flex-grow: 0;
+  flex-basis: 0;
+  opacity: 0;
+  margin-left: 0;
+  transform: translateX(12px);
+  overflow: hidden;
+  pointer-events: none;
+}
+/* State auto-fill lock */
+.addr-state-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.addr-state-lock {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #16a34a;
+  background: rgba(22, 163, 74, 0.12);
+  padding: 1px 6px;
+  border-radius: 999px;
+}
+.addr-locked {
+  background: var(--surface-2, #f5f4f2);
+  color: var(--dark-60, #4b5563);
+  cursor: not-allowed;
+}
+@media (max-width: 480px) {
+  .addr-loc-cell + .addr-loc-cell {
+    margin-left: 8px;
+  }
+}
 .addr-pin-btn {
   display: inline-flex;
   align-items: center;

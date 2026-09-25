@@ -2,240 +2,88 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import {
   X,
-  MessageCircle,
   Sparkles,
   ArrowRight,
   ArrowLeft,
-  ShoppingCart,
+  Check,
+  Flame,
+  Gift,
   Heart,
-  Loader2,
+  ShoppingBag,
+  SlidersHorizontal,
 } from "lucide-react";
-import { books } from "@/utils/book";
+import { buildRecommendations, topGenres } from "@/utils/recoEngine";
+import { getCartOffers } from "@/utils/cartOffers";
 import { useRouter } from "next/navigation";
-import LoadingButton from "./UI/LoadingButton";
-import BookCard from "./BookCard";
 import { FaWhatsapp } from "react-icons/fa";
 import { useStore } from "@/context/StoreContext";
+import { showToast } from "@/context/ToastContext";
 
-// Get all unique categories from books with their frequency
-const getAllCategoriesWithFrequency = () => {
-  const categoryMap = new Map();
-  books.forEach((book) => {
-    book.catalogue?.forEach((cat) => {
-      categoryMap.set(cat, (categoryMap.get(cat) || 0) + 1);
-    });
-  });
+const slugify = (t) =>
+  String(t || "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
 
-  return Array.from(categoryMap.entries())
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 20)
-    .map(([category]) => category);
-};
-
-const GENRES = getAllCategoriesWithFrequency();
-
-// Results are shown in batches and lazy-loaded as the shopper scrolls.
-const INITIAL_VISIBLE = 30;
-const LOAD_BATCH = 20;
-
-const AGE_GROUPS = [
-  {
-    id: "0-12",
-    label: "Children (0-12 years)",
-    keywords: ["children", "kids", "picture", "young"],
-  },
-  {
-    id: "13-17",
-    label: "Teen (13-17 years)",
-    keywords: ["young-adult", "teen", "ya"],
-  },
-  {
-    id: "18-25",
-    label: "Young Adult (18-25 years)",
-    keywords: ["new-adult", "college", "campus"],
-  },
-  {
-    id: "26-35",
-    label: "Adult (26-35 years)",
-    keywords: ["adult", "contemporary", "romance"],
-  },
-  {
-    id: "36-50",
-    label: "Mature (36-50 years)",
-    keywords: ["classic", "literary", "historical"],
-  },
-  {
-    id: "50+",
-    label: "Senior (50+ years)",
-    keywords: ["classic", "biography", "history"],
-  },
-  { id: "any", label: "Any age", keywords: [] },
-];
+const GENRES = topGenres(16);
 
 const READING_PREFERENCES = [
-  {
-    id: "entertainment",
-    label: "Entertainment & Fun",
-    keywords: [
-      "romance",
-      "fiction",
-      "fantasy",
-      "thriller",
-      "mystery",
-      "horror",
-      "adventure",
-      "comedy",
-      "humor",
-    ],
-    weight: 1.5,
-  },
-  {
-    id: "knowledge",
-    label: "Knowledge & Learning",
-    keywords: [
-      "educational",
-      "science",
-      "history",
-      "philosophy",
-      "academic",
-      "reference",
-      "textbook",
-    ],
-    weight: 1.5,
-  },
-  {
-    id: "self-improvement",
-    label: "Self Improvement",
-    keywords: [
-      "self-help",
-      "motivation",
-      "psychology",
-      "health",
-      "wellness",
-      "mindfulness",
-      "productivity",
-    ],
-    weight: 1.5,
-  },
-  {
-    id: "career",
-    label: "Career & Business",
-    keywords: [
-      "business",
-      "entrepreneurship",
-      "finance",
-      "management",
-      "leadership",
-      "marketing",
-      "economics",
-    ],
-    weight: 1.5,
-  },
+  { id: "entertainment", label: "Entertainment & Fun" },
+  { id: "knowledge", label: "Knowledge & Learning" },
+  { id: "self-improvement", label: "Self Improvement" },
+  { id: "career", label: "Career & Business" },
 ];
 
-// Calculate book score based on multiple factors
-const calculateBookScore = (book, formData) => {
-  let score = 0;
-
-  // 1. Genre matching (40% weight)
-  if (formData.genres.length > 0) {
-    const matchingGenres =
-      book.catalogue?.filter((cat) => formData.genres.includes(cat)).length ||
-      0;
-    const genreScore = (matchingGenres / formData.genres.length) * 40;
-    score += genreScore;
-  }
-
-  // 2. Reading preference matching (30% weight)
-  if (formData.preference) {
-    const preference = READING_PREFERENCES.find(
-      (p) => p.id === formData.preference,
-    );
-    if (preference) {
-      const matchingKeywords =
-        book.catalogue?.filter((cat) =>
-          preference.keywords.some((keyword) =>
-            cat.toLowerCase().includes(keyword.toLowerCase()),
-          ),
-        ).length || 0;
-      const preferenceScore = Math.min((matchingKeywords / 3) * 30, 30);
-      score += preferenceScore;
-    }
-  }
-
-  // 3. Age group matching (15% weight)
-  if (formData.ageGroup && formData.ageGroup !== "any") {
-    const ageGroup = AGE_GROUPS.find((a) => a.id === formData.ageGroup);
-    if (ageGroup && ageGroup.keywords.length > 0) {
-      const ageMatches =
-        book.catalogue?.filter((cat) =>
-          ageGroup.keywords.some((keyword) =>
-            cat.toLowerCase().includes(keyword.toLowerCase()),
-          ),
-        ).length || 0;
-      const ageScore = Math.min(ageMatches * 7.5, 15);
-      score += ageScore;
-    } else {
-      score += 7.5;
-    }
-  } else {
-    score += 7.5;
-  }
-
-  // 4. Popularity & trends (10% weight)
-  if (book.catalogue?.includes("bestseller")) score += 5;
-  if (book.catalogue?.includes("trending")) score += 5;
-
-  // 5. Value for money (5% weight)
-  const discountPercent =
-    ((book.originalPrice - book.discountedPrice) / book.originalPrice) * 100;
-  if (discountPercent > 50) score += 5;
-  else if (discountPercent > 30) score += 3;
-  else if (book.discountedPrice === 1) score += 5;
-
-  // 6. Stock availability boost
-  if (book.stock > 0 && book.stock < 10) score += 2;
-
-  return { score };
+// Deterministic "social proof" count per book so it never jumps between renders.
+const proofCount = (id) => {
+  const s = String(id || "");
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+  return 300 + (h % 2200); // 300–2499
 };
+
+const origOf = (b) =>
+  Number(b.originalPrice) || Math.round((Number(b.discountedPrice) || 0) * 1.5);
+const discPctOf = (b) => {
+  const o = origOf(b);
+  const d = Number(b.discountedPrice) || 0;
+  return o > d ? ((o - d) / o) * 100 : 0;
+};
+
+// Free-bookmark tier by cart value (mirrors checkout).
+const bmTier = (t) => (t >= 1000 ? 4 : t >= 500 ? 3 : 2);
+
+const INITIAL_VISIBLE = 6;
 
 export default function RecommendationModal({
   isOpen: externalIsOpen,
   onClose: externalOnClose,
 }) {
-  const { addToCart, toggleWishlist } = useStore();
+  const { addToCart, toggleWishlist, cart, cartTotal, hasOneRupeeItem } =
+    useStore();
   const [internalIsOpen, setInternalIsOpen] = useState(false);
-  const [step, setStep] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    genres: [],
-    gender: "",
-    ageGroup: "",
-    preference: "",
-  });
-  const [recommendations, setRecommendations] = useState([]);
-  const [savedRecommendations, setSavedRecommendations] = useState([]);
+  // view: "picks" (default cart-first) | "refine-genre" | "refine-goal"
+  const [view, setView] = useState("picks");
+  const [filters, setFilters] = useState({ genres: [], goal: "" });
+  const [picksList, setPicksList] = useState([]);
   const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
-  // Portal to <body> so the dark overlay always covers the viewport — otherwise,
-  // when opened from inside the cart bar (which uses transform/will-change), the
-  // fixed overlay gets trapped and the backdrop doesn't show on the home page.
+  const [addedIds, setAddedIds] = useState(() => new Set());
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
   const router = useRouter();
 
   const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
 
+  // ?suggest= opens the drawer (self-controlled mode).
   useEffect(() => {
     if (externalIsOpen === undefined && typeof window !== "undefined") {
-      const hasSuggestParam = window.location.search.includes("suggest");
-
-      if (hasSuggestParam) {
+      if (window.location.search.includes("suggest")) {
         setInternalIsOpen(true);
-
-        // Remove the suggest parameter from URL without page reload
         const url = new URL(window.location.href);
         url.searchParams.delete("suggest");
         window.history.replaceState({}, "", url.toString());
@@ -243,481 +91,397 @@ export default function RecommendationModal({
     }
   }, [externalIsOpen]);
 
-  // Load saved state from localStorage on mount
-  useEffect(() => {
-    const savedModalState = localStorage.getItem("recommendationModalState");
-    if (savedModalState) {
-      const parsed = JSON.parse(savedModalState);
-      if (parsed.isOpen && !parsed.isClosed) {
-        setInternalIsOpen(true);
-        if (parsed.step === 4 && parsed.recommendations?.length > 0) {
-          setStep(4);
-          setRecommendations(parsed.recommendations);
-          setSavedRecommendations(parsed.recommendations);
-          if (parsed.formData) {
-            setFormData(parsed.formData);
-          }
-        }
-      }
-    }
-  }, []);
+  const cartIds = useMemo(() => (cart || []).map((i) => i.id), [cart]);
 
-  // Save modal state to localStorage
-  const saveModalState = (open, currentStep, recs, formDataState) => {
-    const state = {
-      isOpen: open,
-      isClosed: false,
-      step: currentStep,
-      recommendations: recs,
-      formData: formDataState,
-      timestamp: Date.now(),
-    };
-    localStorage.setItem("recommendationModalState", JSON.stringify(state));
+  // Freeze a curated list when the drawer opens or filters change — so adding a
+  // book doesn't reshuffle the grid under the shopper's finger. Threshold/perk
+  // nudges still recompute live from cartTotal.
+  const computePicks = () => {
+    const list = buildRecommendations(cartIds, filters).slice(0, 16);
+    setPicksList(list);
+    setVisibleCount(INITIAL_VISIBLE);
   };
 
+  useEffect(() => {
+    if (isOpen) computePicks();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
+
   const handleClose = () => {
-    // Save that modal is closed
-    const closedState = {
-      isOpen: false,
-      isClosed: true,
-      step: 1,
-      recommendations: [],
-      timestamp: Date.now(),
-    };
-    localStorage.setItem(
-      "recommendationModalState",
-      JSON.stringify(closedState),
-    );
-
-    if (externalOnClose) {
-      externalOnClose();
-    } else {
-      setInternalIsOpen(false);
-    }
-
+    if (externalOnClose) externalOnClose();
+    else setInternalIsOpen(false);
     setTimeout(() => {
-      setStep(1);
-      setFormData({
-        genres: [],
-        gender: "",
-        ageGroup: "",
-        preference: "",
-      });
-      setRecommendations([]);
-      setVisibleCount(INITIAL_VISIBLE);
+      setView("picks");
+      setFilters({ genres: [], goal: "" });
+      setAddedIds(new Set());
     }, 300);
   };
 
-  const handleWhatsAppRedirect = () => {
-    const message = encodeURIComponent(
-      `Hi! I'm looking for a book. Can you help me?`,
-    );
-    window.open(`https://wa.me/917710892108?text=${message}`, "_blank");
+  const goToBag = () => {
+    handleClose();
+    router.push("/bag");
   };
 
-  const handleWhatsAppCommunity = () => {
+  const handleWhatsApp = () => {
     window.open(
-      `https://chat.whatsapp.com/Lk3okPbq21s8kJeoM3UA4c?mode=gi_t`,
+      `https://wa.me/917710892108?text=${encodeURIComponent("Hi! I'm looking for a book. Can you help me?")}`,
       "_blank",
     );
   };
 
-  const updateFormData = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const toggleGenre = (genre) => {
-    setFormData((prev) => ({
-      ...prev,
-      genres: prev.genres.includes(genre)
-        ? prev.genres.filter((g) => g !== genre)
-        : [...prev.genres, genre],
+  const toggleGenre = (g) =>
+    setFilters((p) => ({
+      ...p,
+      genres: p.genres.includes(g)
+        ? p.genres.filter((x) => x !== g)
+        : [...p.genres, g],
     }));
+
+  const applyRefine = () => {
+    setView("picks");
+    // Recompute with the chosen filters.
+    const list = buildRecommendations(cartIds, filters).slice(0, 16);
+    setPicksList(list);
+    setVisibleCount(INITIAL_VISIBLE);
   };
 
-  const generateRecommendations = () => {
-    setIsLoading(true);
-
-    setTimeout(() => {
-      const scoredBooks = books.map((book) => {
-        const { score } = calculateBookScore(book, formData);
-        return { ...book, score };
-      });
-
-      scoredBooks.sort((a, b) => b.score - a.score);
-      // Keep the full ranked list (in-stock first) so results go well beyond 30
-      // and load in lazily as the shopper scrolls.
-      const topRecommendations = scoredBooks.filter(
-        (b) => b.stock === undefined || b.stock === null || b.stock > 0,
-      );
-
-      setRecommendations(topRecommendations);
-      setSavedRecommendations(topRecommendations);
-      setVisibleCount(INITIAL_VISIBLE);
-      setStep(4);
-      setIsLoading(false);
-
-      // Persist a trimmed slice so restore is fast and localStorage stays small.
-      saveModalState(true, 4, topRecommendations.slice(0, 60), formData);
-    }, 1500);
+  const addBook = (book) => {
+    addToCart(book.id);
+    setAddedIds((prev) => new Set(prev).add(book.id));
+    showToast(`Added to your bag 🎉 “${book.name}”`, "success");
   };
 
-  const handleSubmit = () => {
-    generateRecommendations();
+  // ── Conversion levers ──────────────────────────────────────────────────
+  const offers = getCartOffers(hasOneRupeeItem);
+  // Current active band = the next unreached target.
+  const activeBand = useMemo(() => {
+    return (
+      offers.find((b) => cartTotal >= b.min && cartTotal < b.target) ||
+      offers.find((b) => cartTotal < b.target) ||
+      null
+    );
+  }, [offers, cartTotal]);
+
+  const unlockFor = (b) => {
+    const newTotal = cartTotal + (Number(b.discountedPrice) || 0);
+    const crossed = offers
+      .filter((x) => x.target > cartTotal && x.target <= newTotal)
+      .sort((a, c) => c.target - a.target)[0];
+    if (crossed) return { txt: `Unlocks ${crossed.reward}`, kind: "offer" };
+    if (bmTier(newTotal) > bmTier(cartTotal))
+      return {
+        txt: `Unlocks ${bmTier(newTotal)} free bookmarks`,
+        kind: "perk",
+      };
+    return null;
   };
 
-  const handleAddAllToCart = () => {
-    recommendations.forEach((book) => {
-      addToCart(book.id);
-    });
-    handleClose();
+  const scarcityFor = (b) => {
+    if (typeof b.stock === "number" && b.stock > 0 && b.stock <= 8)
+      return `Only ${b.stock} left`;
+    if (discPctOf(b) >= 45) return "Selling fast";
+    return null;
   };
 
-  const handleAddAllToWishlist = () => {
-    recommendations.forEach((book) => {
-      toggleWishlist(book.id);
-    });
-    handleClose();
+  const badgeFor = (b) => {
+    const cat = (b.catalogue || []).map((c) => String(c).toLowerCase());
+    if (cat.includes("bestseller")) return "Bestseller";
+    if (cat.includes("trending")) return "Trending";
+    return null;
   };
 
   if (!mounted) return null;
+
+  const heading = cart?.length
+    ? "Readers who bought these also loved"
+    : "Trending picks for you";
+  const subheading =
+    filters.genres.length || filters.goal
+      ? "Filtered to your taste"
+      : cart?.length
+        ? "Hand-picked to pair with your bag"
+        : "The books everyone's adding right now";
 
   return createPortal(
     <AnimatePresence>
       {isOpen && (
         <motion.div className="bill-modal-overlay" onClick={handleClose}>
           <motion.div
-            className="bill-modal"
-            style={{ maxHeight: "800px" }}
+            className="bill-modal reco2-modal"
             onClick={(e) => e.stopPropagation()}
             initial={{ y: "100%" }}
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            drag="y"
-            dragConstraints={{ top: 0, bottom: 0 }}
-            dragElastic={{ top: 0, bottom: 0.6 }}
-            onDragEnd={(e, info) => {
-              if (info.offset.y > 120 || info.velocity.y > 600) handleClose();
-            }}
           >
             {/* Header */}
             <div className="bill-header">
               <span className="weight-600 font-16 flex items-center gap-8">
                 <Sparkles size={16} />
-                Book Recommendations
+                Recommended for you
               </span>
               <span className="cursor-pointer" onClick={handleClose}>
                 <X size={16} />
               </span>
             </div>
 
-            <div className="address-form-content">
-              {/* Step 1: Initial Choice */}
-              {step === 1 && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="flex flex-col gap-16"
-                >
-                  <div className="text-center">
-                    <p className="font-14 dark-50 mt-8">
-                      We're here to help you discover the perfect read!
-                    </p>
-                  </div>
-
-                  <div className="flex flex-col gap-12 mt-16">
-                    <LoadingButton
-                      className="pri-big-btn width100"
-                      onClick={() => setStep(2)}
-                    >
-                      <div className="flex flex-col">
-                        <p className="weight-600">Need help choosing a book?</p>
-                        <span className="font-10">
-                          Get personalized recommendations
-                        </span>
-                      </div>
-                    </LoadingButton>
-
-                    <div className="flex flex-row gap-12">
-                      <LoadingButton
-                        className="sec-big-btn width100"
-                        onClick={handleWhatsAppRedirect}
-                      >
-                        <div className="flex flex-row gap-8">
-                          <FaWhatsapp size={20} color="#25D366" />
-                          <p className="weight-600">Chat with us</p>
-                        </div>
-                      </LoadingButton>
-
-                      <LoadingButton
-                        className="sec-big-btn width100"
-                        onClick={handleWhatsAppCommunity}
-                      >
-                        <div className="flex flex-row gap-8">
-                          <FaWhatsapp size={20} color="#25D366" />
-                          <p className="weight-600">Join community</p>
-                        </div>
-                      </LoadingButton>
+            {/* ── Cart-first curated picks ── */}
+            {view === "picks" && (
+              <>
+                <div className="reco2-body">
+                  <div className="reco2-head">
+                    <div className="reco2-head-txt">
+                      <h3 className="reco2-title">{heading}</h3>
+                      <p className="reco2-sub">{subheading}</p>
                     </div>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* Step 2: Genre Selection */}
-              {step === 2 && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="flex flex-col gap-16 recommendation-modal"
-                >
-                  <div>
-                    <div className="flex justify-between items-center mb-12">
-                      <span className="font-12 gray-500">Step 1 of 3</span>
-                      <span className="font-12 purple">
-                        {formData.genres.length} selected
-                      </span>
-                    </div>
-                    <h3 className="font-18 weight-600 mb-8">
-                      Which genres interest you?
-                    </h3>
-                    <p className="font-12 dark-50 mb-12">
-                      Select multiple genres you enjoy reading
-                    </p>
-
-                    <div
-                      className="chips-container flex flex-row flex-wrap gap-8"
-                      style={{ maxHeight: "250px", overflowY: "auto" }}
-                    >
-                      {GENRES.map((genre) => (
-                        <button
-                          key={genre}
-                          className={`sec-mid-btn ${formData.genres.includes(genre) ? "active" : ""}`}
-                          onClick={() => toggleGenre(genre)}
-                        >
-                          {genre}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="dashed-border my-8"></div>
-
-                  <div>
-                    <h3 className="font-16 weight-600 mb-8">Age Group</h3>
-                    <div className="flex flex-wrap gap-8">
-                      {AGE_GROUPS.map((age) => (
-                        <button
-                          key={age.id}
-                          className={`sec-mid-btn ${formData.ageGroup === age.id ? "active" : ""}`}
-                          onClick={() => updateFormData("ageGroup", age.id)}
-                        >
-                          {age.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="flex flex-row gap-12">
                     <button
-                      className="sec-big-btn width100 flex flex-row items-center justify-center gap-4"
-                      onClick={handleWhatsAppRedirect}
+                      type="button"
+                      className="reco2-refine"
+                      onClick={() => setView("refine-genre")}
                     >
-                      Chat with us
-                      <MessageCircle size={16} />
-                    </button>
-                    <button
-                      className="pri-big-btn width100 flex flex-row items-center justify-center gap-4"
-                      onClick={() => setStep(3)}
-                      disabled={formData.genres.length === 0}
-                    >
-                      Continue
-                      <ArrowRight size={16} />
+                      <SlidersHorizontal size={14} /> Refine
                     </button>
                   </div>
-                </motion.div>
-              )}
 
-              {/* Step 3: Reading Preference */}
-              {step === 3 && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="flex flex-col gap-16"
-                >
-                  <div>
-                    <span className="font-12 gray-500">Step 2 of 3</span>
-                    <h3 className="font-18 weight-600 mt-8 mb-8">
-                      What's your reading goal?
-                    </h3>
-                    <p className="font-12 dark-50 mb-12">
-                      Choose what matters most to you
-                    </p>
-
-                    <div className="flex flex-col gap-8">
-                      {READING_PREFERENCES.map((pref) => (
-                        <button
-                          key={pref.id}
-                          className={`sec-mid-btn width100 ${formData.preference === pref.id ? "active" : ""}`}
-                          onClick={() => updateFormData("preference", pref.id)}
-                          style={{ padding: "12px 16px", textAlign: "left" }}
-                        >
-                          {pref.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="flex flex-row gap-12">
-                    <button
-                      className="sec-big-btn width100 flex flex-row items-center justify-center gap-4"
-                      onClick={() => setStep(2)}
-                    >
-                      <ArrowLeft size={16} />
-                      Back
-                    </button>
-                    <button
-                      className="pri-big-btn width100 flex flex-row items-center justify-center gap-4"
-                      onClick={handleSubmit}
-                      disabled={!formData.preference || isLoading}
-                    >
-                      {isLoading ? (
-                        <>
-                          <Loader2 size={16} className="lb-spinner" />
-                          Finding your books…
-                        </>
-                      ) : (
-                        <>
-                          Submit
-                          <ArrowRight size={16} />
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* Step 4: Recommendations */}
-              {step === 4 && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="flex flex-col gap-16"
-                  style={{ maxHeight: "75vh", overflowY: "auto" }}
-                  onScroll={(e) => {
-                    const el = e.currentTarget;
-                    if (
-                      el.scrollTop + el.clientHeight >= el.scrollHeight - 240 &&
-                      visibleCount < recommendations.length
-                    ) {
-                      setVisibleCount((v) =>
-                        Math.min(v + LOAD_BATCH, recommendations.length),
-                      );
-                    }
-                  }}
-                >
-                  {isLoading ? (
-                    <div className="text-center py-32">
-                      <div className="loading-spinner mb-12"></div>
-                      <p className="font-14 dark-50">
-                        Finding your perfect books...
+                  <div
+                    className="reco2-grid"
+                    onScroll={(e) => {
+                      const el = e.currentTarget;
+                      if (
+                        el.scrollTop + el.clientHeight >=
+                          el.scrollHeight - 200 &&
+                        visibleCount < picksList.length
+                      )
+                        setVisibleCount((v) =>
+                          Math.min(v + 6, picksList.length),
+                        );
+                    }}
+                  >
+                    {picksList.length === 0 && (
+                      <p className="reco2-empty">
+                        We couldn&apos;t find picks right now — tap Refine to
+                        choose a genre.
                       </p>
-                    </div>
-                  ) : (
-                    <>
-                      {recommendations.length > 0 && (
-                        <div>
-                          <div className="text-center mb-16">
-                            <p className="font-12 dark-50 mt-8">
-                              Found {recommendations.length} books matching your
-                              preferences
-                            </p>
-                          </div>
-
-                          <div className="grid-2 margin-tp-12px">
-                            {recommendations.slice(0, visibleCount).map((book) => (
-                              <BookCard key={book.id} book={book} />
-                            ))}
-                          </div>
-
-                          {/* Lazy loader — auto-loads on scroll; tap as fallback */}
-                          {visibleCount < recommendations.length && (
-                            <button
-                              type="button"
-                              className="reco-lazy-more"
-                              onClick={() =>
-                                setVisibleCount((v) =>
-                                  Math.min(v + LOAD_BATCH, recommendations.length),
-                                )
-                              }
-                            >
-                              <span className="reco-lazy-spinner" />
-                              Loading more books…
-                            </button>
-                          )}
-                        </div>
-                      )}
-
-                      {recommendations.length === 0 && (
-                        <div className="text-center py-32">
-                          <p className="font-14 dark-50">
-                            No books found matching your preferences. Try
-                            different genres!
-                          </p>
-                          <button
-                            className="sec-mid-btn mt-16"
-                            onClick={() => setStep(2)}
-                          >
-                            Go back and select different genres
-                          </button>
-                        </div>
-                      )}
-
-                      {recommendations.length > 0 && (
-                        <div className="flex flex-row gap-12">
-                          <button
-                            className="sec-big-btn flex flex-row gap-4 items-center justify-center width100"
-                            onClick={handleWhatsAppRedirect}
-                          >
-                            <FaWhatsapp size={20} color="#25d366" />
-                            Confused? Chat.
-                          </button>
-                          <button
-                            className="pri-big-btn flex flex-row gap-4 items-center justify-center width100"
+                    )}
+                    {picksList.slice(0, visibleCount).map((b) => {
+                      const url = `/books/${slugify(b.name)}`;
+                      const orig = origOf(b);
+                      const disc = Number(b.discountedPrice) || 0;
+                      const save = Math.max(0, orig - disc);
+                      const unlock = unlockFor(b);
+                      const scarcity = scarcityFor(b);
+                      const badge = badgeFor(b);
+                      const added = addedIds.has(b.id);
+                      return (
+                        <article className="reco2-card" key={b.id}>
+                          <Link
+                            href={url}
+                            className="reco2-cover"
                             onClick={handleClose}
                           >
-                            Start Exploring
-                            <ArrowRight size={16} />
-                          </button>
-                        </div>
-                      )}
-                    </>
-                  )}
-                </motion.div>
-              )}
-            </div>
+                            {b.image && (
+                              <img src={b.image} alt={b.name} loading="lazy" />
+                            )}
+                            {badge && (
+                              <span className="reco2-badge">{badge}</span>
+                            )}
+                            {scarcity && (
+                              <span className="reco2-scarcity">
+                                <Flame size={11} /> {scarcity}
+                              </span>
+                            )}
+                          </Link>
+                          <div className="reco2-info">
+                            {b._reason && (
+                              <span className="reco2-reason">{b._reason}</span>
+                            )}
+                            <Link
+                              href={url}
+                              className="reco2-name"
+                              onClick={handleClose}
+                              title={b.name}
+                            >
+                              {b.name}
+                            </Link>
+                            <span className="reco2-social">
+                              <Heart size={11} />{" "}
+                              {proofCount(b.id).toLocaleString()} readers bought
+                              this
+                            </span>
+                            <div className="reco2-price">
+                              <span className="reco2-now">₹{disc}</span>
+                              {orig > disc && (
+                                <span className="reco2-mrp">₹{orig}</span>
+                              )}
+                              {save > 0 && (
+                                <span className="reco2-save">Save ₹{save}</span>
+                              )}
+                            </div>
+                            {unlock && (
+                              <div
+                                className={`reco2-unlock reco2-unlock-${unlock.kind}`}
+                              >
+                                <Gift size={12} /> {unlock.txt}
+                              </div>
+                            )}
+                            <button
+                              type="button"
+                              className={`reco2-add${added ? " added" : ""}`}
+                              onClick={() => addBook(b)}
+                            >
+                              {added ? (
+                                <>
+                                  <Check size={15} /> Added
+                                </>
+                              ) : (
+                                <>
+                                  <ShoppingBag size={15} /> Add · ₹{disc}
+                                </>
+                              )}
+                            </button>
+                          </div>
+                        </article>
+                      );
+                    })}
+                  </div>
+                </div>
 
-            {/* Fixed bottom bar — Add All actions, always in reach */}
-            {step === 4 && !isLoading && recommendations.length > 0 && (
-              <div className="reco-addall-bar">
-                <button
-                  onClick={handleAddAllToCart}
-                  className="reco-addall-btn reco-addall-cart"
-                >
-                  <ShoppingCart size={16} />
-                  Add All to Cart
-                </button>
-                <button
-                  onClick={handleAddAllToWishlist}
-                  className="reco-addall-btn reco-addall-wish"
-                >
-                  <Heart size={16} />
-                  Add All to Wishlist
-                </button>
+                {/* Sticky offer-progress footer — keeps momentum to next reward */}
+                <div className="reco2-foot">
+                  {activeBand && (
+                    <div className="reco2-progress">
+                      <div className="reco2-progress-txt">
+                        <span>
+                          {Math.max(0, activeBand.target - cartTotal) > 0 ? (
+                            <>
+                              <b>₹{Math.max(0, activeBand.target - cartTotal)}</b>{" "}
+                              to {activeBand.reward}
+                            </>
+                          ) : (
+                            <>You&apos;ve unlocked {activeBand.reward} 🎉</>
+                          )}
+                        </span>
+                        <span className="reco2-progress-cur">
+                          Bag ₹{cartTotal}
+                        </span>
+                      </div>
+                      <div className="reco2-progress-bar">
+                        <div
+                          className="reco2-progress-fill"
+                          style={{
+                            width: `${Math.min(
+                              100,
+                              activeBand.target > activeBand.min
+                                ? ((cartTotal - activeBand.min) /
+                                    (activeBand.target - activeBand.min)) *
+                                    100
+                                : 0,
+                            )}%`,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                  <div className="reco2-foot-actions">
+                    <button
+                      type="button"
+                      className="reco2-foot-chat"
+                      onClick={handleWhatsApp}
+                    >
+                      <FaWhatsapp size={18} color="#25d366" />
+                    </button>
+                    <button
+                      type="button"
+                      className="reco2-foot-bag"
+                      onClick={goToBag}
+                    >
+                      Go to bag · ₹{cartTotal} <ArrowRight size={16} />
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* ── Optional refine: genres ── */}
+            {view === "refine-genre" && (
+              <div className="reco2-body reco2-refine-body">
+                <div className="reco2-refine-head">
+                  <span className="reco2-step">Refine · 1 of 2</span>
+                  <h3 className="reco2-title">Which genres do you enjoy?</h3>
+                  <p className="reco2-sub">Pick any that fit — or skip.</p>
+                </div>
+                <div className="reco2-chips">
+                  {GENRES.map((g) => (
+                    <button
+                      key={g}
+                      type="button"
+                      className={`reco2-chip${filters.genres.includes(g) ? " on" : ""}`}
+                      onClick={() => toggleGenre(g)}
+                    >
+                      {g}
+                    </button>
+                  ))}
+                </div>
+                <div className="reco2-refine-actions">
+                  <button
+                    type="button"
+                    className="reco2-btn ghost"
+                    onClick={() => setView("picks")}
+                  >
+                    <ArrowLeft size={15} /> Back
+                  </button>
+                  <button
+                    type="button"
+                    className="reco2-btn primary"
+                    onClick={() => setView("refine-goal")}
+                  >
+                    Next <ArrowRight size={15} />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* ── Optional refine: goal ── */}
+            {view === "refine-goal" && (
+              <div className="reco2-body reco2-refine-body">
+                <div className="reco2-refine-head">
+                  <span className="reco2-step">Refine · 2 of 2</span>
+                  <h3 className="reco2-title">What are you in the mood for?</h3>
+                  <p className="reco2-sub">One tap tailors your picks.</p>
+                </div>
+                <div className="reco2-goals">
+                  {READING_PREFERENCES.map((p) => (
+                    <button
+                      key={p.id}
+                      type="button"
+                      className={`reco2-goal${filters.goal === p.id ? " on" : ""}`}
+                      onClick={() =>
+                        setFilters((f) => ({
+                          ...f,
+                          goal: f.goal === p.id ? "" : p.id,
+                        }))
+                      }
+                    >
+                      {p.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="reco2-refine-actions">
+                  <button
+                    type="button"
+                    className="reco2-btn ghost"
+                    onClick={() => setView("refine-genre")}
+                  >
+                    <ArrowLeft size={15} /> Back
+                  </button>
+                  <button
+                    type="button"
+                    className="reco2-btn primary"
+                    onClick={applyRefine}
+                  >
+                    Show my picks <Sparkles size={15} />
+                  </button>
+                </div>
               </div>
             )}
           </motion.div>

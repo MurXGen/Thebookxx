@@ -9233,7 +9233,7 @@ export default function ManageOrdersPage() {
             {/* Fulfillment funnel — where orders leak out on the way to delivery */}
             <An2Section
               title="Fulfillment funnel"
-              sub="From placed to delivered — spot where orders leak out"
+              sub={`${periodWindow.label} · from placed to delivered — spot where orders leak out`}
               right={
                 <span className="an2-card-total">
                   {funnelStats.successPct}% success
@@ -9311,7 +9311,7 @@ export default function ManageOrdersPage() {
             {/* COD vs Prepaid performance — argue the case for prepaid */}
             <An2Section
               title="COD vs Prepaid performance"
-              sub="Delivery success, cancellations & value by payment method"
+              sub={`${periodWindow.label} · delivery success, cancellations & value by payment method`}
             >
               <div className="an2-pay2">
                 {payPerf.map((p) => (
@@ -9348,7 +9348,7 @@ export default function ManageOrdersPage() {
             {/* Basket size & upsell headroom */}
             <An2Section
               title="Basket size & upsell"
-              sub="Books per order — where the upsell headroom sits"
+              sub={`${periodWindow.label} · books per order — where the upsell headroom sits`}
               right={
                 <span className="an2-card-total">
                   {basketStats.avgBasket} avg
@@ -9389,7 +9389,7 @@ export default function ManageOrdersPage() {
             {/* Frequently bought together — bundle ideas */}
             <An2Section
               title="Frequently bought together"
-              sub="Title pairs seen in the same order — ready-made bundle ideas"
+              sub={`${periodWindow.label} · title pairs seen in the same order — ready-made bundle ideas`}
             >
               {bookPairs.length === 0 ? (
                 <div className="an2-bp-empty">

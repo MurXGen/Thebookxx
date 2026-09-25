@@ -3887,6 +3887,7 @@ export default function ManageOrdersPage() {
   const [cpImgQuery, setCpImgQuery] = useState("");
   const [cpImgSlug, setCpImgSlug] = useState("");
   const [cpLinkCopied, setCpLinkCopied] = useState(false);
+  const [cpOpen, setCpOpen] = useState(false); // create-product accordion
   const cpImgMatches = useMemo(() => {
     const q = cpImgQuery.trim().toLowerCase();
     const keys = Object.keys(bookImages);
@@ -9451,15 +9452,23 @@ export default function ManageOrdersPage() {
           <div className="mo-book-tab">
             {/* Create a custom product to share with a customer. */}
             <div className="mo-cp">
-              <div className="mo-cp-head">
+              <div
+                className="mo-cp-head mo-acc-head"
+                onClick={() => setCpOpen((v) => !v)}
+              >
                 <span className="mo-cp-title">
                   <Package size={16} /> Create a product to share
+                  <ChevronDown
+                    size={16}
+                    className={`mo-acc-chev${cpOpen ? " open" : ""}`}
+                  />
                 </span>
                 <span className="mo-cp-sub">
                   Name it, price it, pick a cover — share the link so the
                   customer can add it to their bag and check out.
                 </span>
               </div>
+              {cpOpen && (
               <div className="mo-cp-grid">
                 <div className="mo-cp-fields">
                   <label className="mo-cp-field">
@@ -9540,6 +9549,7 @@ export default function ManageOrdersPage() {
                   </button>
                 </div>
               </div>
+              )}
             </div>
 
             <div className="mo-book-head">

@@ -114,6 +114,8 @@ export default function HomeHero() {
     { icon: Star, label: "4.4 rating" },
     { icon: BadgeCheck, label: `${titleCount}+ titles` },
     { icon: RotateCcw, label: "7-day returns" },
+    { icon: Truck, label: "Faster delivery", highlight: true },
+    { icon: Gift, label: "Free bookmark", highlight: true },
   ];
 
   const openScratch = () => {
@@ -186,8 +188,11 @@ export default function HomeHero() {
         </p>
 
         <div className="home-hero-stats">
-          {stats.map(({ icon: Icon, label }) => (
-            <div key={label} className="home-hero-stat">
+          {stats.map(({ icon: Icon, label, highlight }) => (
+            <div
+              key={label}
+              className={`home-hero-stat${highlight ? " highlight" : ""}`}
+            >
               <Icon size={15} className="home-hero-stat-icon" />
               <span>{label}</span>
             </div>

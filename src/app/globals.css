@@ -14636,6 +14636,22 @@ img[data-loaded="true"] {
 .home-hero-stat-icon {
   color: var(--tertiary, #fb8500);
 }
+/* Highlighted perks (Faster delivery, Free bookmark) — filled accent pills. */
+.home-hero-stat.highlight {
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-weight: 700;
+  color: #166534;
+  background: linear-gradient(
+    135deg,
+    rgba(22, 163, 74, 0.14),
+    rgba(34, 197, 94, 0.14)
+  );
+  border: 1px solid rgba(22, 163, 74, 0.28);
+}
+.home-hero-stat.highlight .home-hero-stat-icon {
+  color: #16a34a;
+}
 @media (max-width: 640px) {
   .home-hero {
     padding-left: var(--px-16);

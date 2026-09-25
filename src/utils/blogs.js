@@ -4,6 +4,445 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "gandhi-jayanti-2026-books-to-read-non-violence": {
+    id: "blog-061",
+    title:
+      "Gandhi Jayanti 2026 (2 October): 22 Books to Read on Non-Violence, Conscience and Courage",
+    slug: "gandhi-jayanti-2026-books-to-read-non-violence",
+    author: "TheBookX Editorial",
+    authorSlug: "murthy-thevar",
+    publishDate: "2026-09-25",
+    lastModified: "2026-09-25",
+    excerpt:
+      "Gandhi Jayanti 2026 falls on Friday 2 October, the 157th birth anniversary and the UN's International Day of Non-Violence. 22 books for the long weekend.",
+    content: [
+      {
+        type: "paragraph",
+        content:
+          "Gandhi Jayanti 2026 falls on Friday, 2 October, which makes it Mohandas Karamchand Gandhi's 157th birth anniversary and, this year, the start of a three-day weekend. It is one of only three national holidays in the Indian calendar alongside Republic Day and Independence Day, which means it is observed in every state without exception, and it is also the United Nations' International Day of Non-Violence, a designation the General Assembly adopted in June 2007 specifically because of the date.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The day usually gets handled the same way every year: a prayer meeting at Raj Ghat, a school assembly, a cleanliness drive, and a quotation posted somewhere. None of that is wrong, and all of it is forgettable by Monday. What is harder, and more in keeping with a man who read obsessively and changed his mind in public, is to spend part of a free Friday reading something that argues with you.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "Gandhi Jayanti 2026, in one place",
+        content:
+          "Date: Friday, 2 October 2026. Occasion: the 157th birth anniversary of Mohandas Karamchand Gandhi, born at Porbandar on 2 October 1869. Status: one of India's three national holidays, observed in every state, with banks, government offices and schools closed. Also observed worldwide as the International Day of Non-Violence, adopted by the UN General Assembly in June 2007. Shared date: Lal Bahadur Shastri, India's second Prime Minister, was also born on 2 October, in 1904. Because 2 October is a Friday in 2026, most of the country gets a three-day weekend.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Start where Gandhi himself started",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Gandhi's own account of his life, The Story of My Experiments with Truth, was written in Gujarati and serialised through the late 1920s, and it remains the obvious first stop; it has long been out of copyright and is easy to find in almost any edition. But the book he actually returned to for fifty years was a different one. He first read the Bhagavad Gita properly as a law student in London in 1888, in Edwin Arnold's English verse translation, and he later produced his own Gujarati rendering. He described it as the book he turned to when he was in doubt, which is a useful thing to know before reading it.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The Eknath Easwaran edition of <a href=\"/books/the-bhagavad-gita\" style=\"color:#fb8500;font-weight:600\">The Bhagavad Gita</a> is the version to pick if you have never got past the first chapter, because its introduction does the work of explaining why a conversation on a battlefield turns into an argument about duty and detachment. If there are children in the house, <a href=\"/books/the-gita-for-children\" style=\"color:#fb8500;font-weight:600\">The Gita for Children</a> by Roopa Pai is a genuinely good book rather than a simplified one, and it treats a ten-year-old as capable of handling a difficult idea. For the wider mythological context, <a href=\"/books/jaya-an-illustrated-retelling-of-the-mahabharata\" style=\"color:#fb8500;font-weight:600\">Jaya</a> by Devdutt Pattanaik places the Gita back inside the epic it was lifted out of.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Non-violence as a technique, not a temperament",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The common misreading of Gandhi is that satyagraha was a personality trait, something available to unusually calm people. It was not. It was a method with rules: accept the consequences, do not hide, do not humiliate the opponent, and keep the cost visible. Books that show a person holding a position while the cost rises are therefore closer to the point than anything filed under inspiration.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books/man-s-search-for-meaning\" style=\"color:#fb8500;font-weight:600\">Man's Search for Meaning</a> by Viktor Frankl is the shortest and most demanding of them. Frankl, a Viennese psychiatrist who survived the camps, argues that the last freedom available to a person is the choice of response, which is the same claim Gandhi made about the difference between submission and non-cooperation. <a href=\"/books/the-diary-of-a-young-girl\" style=\"color:#fb8500;font-weight:600\">The Diary of a Young Girl</a> by Anne Frank is the same period seen from inside an annexe by a teenager who is not being noble about it, and that is precisely why it lands.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books/to-kill-a-mockingbird\" style=\"color:#fb8500;font-weight:600\">To Kill a Mockingbird</a> by Harper Lee is the novel that has done the most, in the most countries, to explain to young readers what it looks like when one person's refusal is the only thing standing in a room. And <a href=\"/books/i-am-malala\" style=\"color:#fb8500;font-weight:600\">I Am Malala</a> by Malala Yousafzai is the living version: a girl who kept going to school, was shot for it, and then argued that the response should be more schools rather than revenge. Read alongside each other on the same afternoon, the fiction and the memoir do something neither does alone.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The books about what happens when the method fails",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Gandhi Jayanti reading lists tend to be relentlessly uplifting, which is dishonest. The century Gandhi lived in was mostly a demonstration of the opposite case, and the two novels that describe it best are both short and both by the same author. <a href=\"/books/animal-farm\" style=\"color:#fb8500;font-weight:600\">Animal Farm</a> by George Orwell is a hundred and twenty pages on how a liberation movement becomes the thing it replaced, and it is readable in a single sitting on a holiday morning. <a href=\"/books/1984\" style=\"color:#fb8500;font-weight:600\">1984</a> is the longer, colder companion, and its real subject is not surveillance but language: what happens to resistance when the words for it are removed.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Closer to home, <a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> by Arundhati Roy, which won the Booker Prize in 1997, is the most widely read Indian novel in English of the last thirty years and is entirely about an unwritten rule, who is permitted to love whom, and what the enforcement of that rule costs a family in Kerala. It is not a book about Gandhi. It is a book about the India that his generation handed over, which is a more uncomfortable and more useful thing to read on 2 October.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Indian lives worth reading on 2 October",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> by A.P.J. Abdul Kalam is the obvious national-holiday book and it earns the position: a newspaper boy from Rameswaram who ends up running India's missile programme, written without self-congratulation. Its follow-up, <a href=\"/books/ignited-minds-unleashing-the-power-within-india\" style=\"color:#fb8500;font-weight:600\">Ignited Minds</a>, is addressed directly to students and is the better of the two to give a teenager this week.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Sudha Murty's essays occupy a space almost nobody else writes in, which is ordinary Indian ethical life at close range. <a href=\"/books/three-thousand-stitches\" style=\"color:#fb8500;font-weight:600\">Three Thousand Stitches</a> opens with her work with devadasi women in north Karnataka and is the most Gandhian book on this list in method rather than subject: show up, stay long, be embarrassed, continue. <a href=\"/books/wise-and-otherwise-a-salute-to-life\" style=\"color:#fb8500;font-weight:600\">Wise and Otherwise</a> is the same voice across fifty short pieces, and <a href=\"/books/how-i-taught-my-grandmother-to-read\" style=\"color:#fb8500;font-weight:600\">How I Taught My Grandmother to Read</a> is the one to read aloud to a child, since the title story is about a sixty-two-year-old woman deciding she will learn the alphabet after all.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Power, described by people who held it",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Gandhi's insight about power was that it is borrowed, and that it stops working the moment enough people decline to lend it. The two modern political memoirs worth putting next to that idea are <a href=\"/books/a-promised-land\" style=\"color:#fb8500;font-weight:600\">A Promised Land</a> by Barack Obama, who has said more than once that Gandhi is the figure from history he would most like to have dined with, and <a href=\"/books/becoming\" style=\"color:#fb8500;font-weight:600\">Becoming</a> by Michelle Obama, which is the more candid of the pair about what proximity to power actually costs a family. Neither is a hagiography, and both are long enough to justify a three-day weekend.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The inner discipline underneath all of it",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Satyagraha was built on something unglamorous: a daily practice of self-restraint that Gandhi treated as training, in the way an athlete treats training. The closest Western equivalent in print is <a href=\"/books/meditations\" style=\"color:#fb8500;font-weight:600\">Meditations</a> by Marcus Aurelius, which is not a book of advice but a private notebook written by a man reminding himself of things he kept forgetting. <a href=\"/books/the-obstacle-is-the-way\" style=\"color:#fb8500;font-weight:600\">The Obstacle Is the Way</a> by Ryan Holiday is its modern translation into plain instructions, and it is the more practical starting point for most readers.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Two others fit the same shelf. <a href=\"/books/the-courage-to-be-disliked\" style=\"color:#fb8500;font-weight:600\">The Courage to Be Disliked</a> by Ichiro Kishimi and Fumitake Koga is a dialogue about separating your tasks from other people's opinions, which is the psychological core of civil disobedience stated in ordinary language. <a href=\"/books/the-forty-rules-of-love\" style=\"color:#fb8500;font-weight:600\">The Forty Rules of Love</a> by Elif Shafak comes at the same territory from the Sufi tradition, and is the gentler of the two if the day is meant to be restful rather than strenuous.",
+      },
+      {
+        type: "blockquote",
+        content:
+          "A holiday named after a man who read the Gita, Thoreau, Ruskin and Tolstoy and then changed his life because of them is best kept by reading something, not by quoting him.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "How to actually use the long weekend for reading",
+      },
+      {
+        type: "list",
+        style: "ordered",
+        items: [
+          "Pick one short book and one long one. Friday is for something you can finish, like Animal Farm or Man's Search for Meaning. Saturday and Sunday are for the four-hundred-page memoir you have been postponing.",
+          "Read one book you expect to disagree with. Gandhi's method depended on taking the opponent's position seriously enough to state it fairly, and a reading list that only flatters you is a waste of a free day.",
+          "Read one thing aloud. If there are children at home, How I Taught My Grandmother to Read or The Gita for Children works better spoken than silently, and it turns the holiday into something shared.",
+          "Do not try to finish four books. Two is a realistic holiday total for most people, and three only if one of them is short. An abandoned pile is worse than a completed pair.",
+          "Order now, not on 1 October. Books start from ₹1 at TheBookX with free delivery across India, but a parcel still needs days, and the whole point of a Friday holiday is having the book already in the house.",
+          "Put the phone in another room for the first hour. Everything else on this list fails without it, which is the least profound and most load-bearing item here.",
+        ],
+      },
+      {
+        type: "paragraph",
+        content:
+          "There is one more thread running through all of this that is easy to miss. Gandhi's real skill was not endurance; it was clarity. He could state what he wanted in one sentence, which is why the salt march worked as an argument and not merely as a protest. That habit, separating what you actually think from the noise around it, is the entire subject of <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar, and it is a reasonable thing to read on a day off when the noise is temporarily switched off anyway.",
+      },
+      {
+        type: "callout",
+        style: "success",
+        title: "Building the Gandhi Jayanti shelf without overspending",
+        content:
+          "Every title above is available at TheBookX, with books starting from ₹1, free delivery across India and Cash on Delivery nationwide. Gift wrapping is ₹25 if one of these is going to a student, a teacher or a parent for the holiday. A sensible three-book order for the weekend: one short classic, one Indian memoir, one book for reading aloud.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The reason 2 October became an international observance rather than a purely Indian one is that the method travelled: to Montgomery, to Johannesburg, to Warsaw, to Manila. Whether it still works is a live question and a fair one to argue about. But the argument is only worth having if you have read something, and there are seven days left before the holiday. That is enough time for a parcel and a decision.",
+      },
+    ],
+    coverImage: "/blogs/gandhi-jayanti-2026-books-to-read-non-violence.jpeg",
+    images: [
+      {
+        url: "/blogs/gandhi-jayanti-2026-books-to-read-non-violence.jpeg",
+        alt: "A young Indian woman reading a plain paperback on a sunlit veranda on a holiday morning, a small stack of unmarked books and a steel tumbler of tea on the cane table beside her",
+        caption:
+          "Gandhi Jayanti 2026 falls on Friday, 2 October, the 157th birth anniversary and the UN's International Day of Non-Violence",
+        category: "Festivals & Gifting",
+      },
+    ],
+    keywords: [
+      "gandhi jayanti 2026",
+      "gandhi jayanti 2026 date",
+      "2 october 2026 holiday",
+      "gandhi jayanti books to read",
+      "international day of non-violence 2026",
+      "books on non violence",
+      "gandhi 157th birth anniversary",
+      "long weekend reading list india",
+      "books to gift on gandhi jayanti",
+      "buy books online india free delivery",
+      "books from rs 1 india",
+      "TheBookX",
+    ],
+    categories: ["Festivals & Gifting", "Reading Lists", "Reading Culture"],
+    faqs: [
+      {
+        question: "When is Gandhi Jayanti 2026 and is it a public holiday?",
+        answer:
+          "Gandhi Jayanti 2026 falls on Friday, 2 October 2026, marking the 157th birth anniversary of Mohandas Karamchand Gandhi, who was born at Porbandar on 2 October 1869. It is one of India's three national holidays alongside Republic Day and Independence Day, which means it is observed in every state without exception, with banks, government offices and schools closed. Because it falls on a Friday in 2026, most of the country gets a three-day weekend. The same date is also observed worldwide as the International Day of Non-Violence, adopted by the UN General Assembly in June 2007.",
+      },
+      {
+        question: "Which books should I read on Gandhi Jayanti?",
+        answer:
+          "Gandhi's own autobiography, The Story of My Experiments with Truth, is the obvious starting point and is long out of copyright. Beyond it, the book Gandhi himself returned to for fifty years was the Bhagavad Gita, which he first read in London in 1888. For the ideas rather than the man, Man's Search for Meaning by Viktor Frankl and The Diary of a Young Girl by Anne Frank are the strongest short reads on holding a position under pressure, To Kill a Mockingbird by Harper Lee and I Am Malala by Malala Yousafzai cover the same ground in fiction and in living memory, and Animal Farm and 1984 by George Orwell describe what happens when the method fails. All are available on TheBookX from ₹1 upwards with free delivery across India.",
+      },
+      {
+        question: "What are good Gandhi Jayanti book gifts for students and children?",
+        answer:
+          "For school and college students, Wings of Fire and Ignited Minds by A.P.J. Abdul Kalam are the two most giftable Indian books for a national holiday, and Ignited Minds is addressed directly to young readers. For younger children, The Gita for Children by Roopa Pai treats a difficult text seriously rather than watering it down, and How I Taught My Grandmother to Read by Sudha Murty is short enough to read aloud in one sitting. I Am Malala works well for teenagers. TheBookX offers gift wrapping for ₹25, free delivery across India and Cash on Delivery nationwide.",
+      },
+      {
+        question: "Why is 2 October the International Day of Non-Violence?",
+        answer:
+          "The United Nations General Assembly voted in June 2007 to observe 2 October as the International Day of Non-Violence, choosing the date deliberately because it is Mahatma Gandhi's birthday. The resolution reaffirms the relevance of non-violence as a principle and invites member states to mark the day through education and public awareness. It is the reason Gandhi Jayanti is observed beyond India, and the reason the day is usually framed around the method of satyagraha rather than around Gandhi as a personality.",
+      },
+      {
+        question: "Is anyone else born on 2 October in Indian history?",
+        answer:
+          "Yes. Lal Bahadur Shastri, India's second Prime Minister, was born on 2 October 1904, so his birth anniversary shares the date with Gandhi Jayanti and is marked alongside it each year, particularly at Vijay Ghat in Delhi. Shastri led the country through the 1965 war and the food crisis of the mid-1960s, and the coincidence of dates means 2 October is effectively a double commemoration in official observances.",
+      },
+    ],
+  },
+  "world-tourism-day-2026-travel-books-to-read": {
+    id: "blog-060",
+    title:
+      "World Tourism Day 2026 (27 September): 17 Travel Books to Read Before, During and After the Trip",
+    slug: "world-tourism-day-2026-travel-books-to-read",
+    author: "TheBookX Editorial",
+    authorSlug: "murthy-thevar",
+    publishDate: "2026-09-24",
+    lastModified: "2026-09-24",
+    excerpt:
+      "World Tourism Day 2026 falls on Sunday 27 September, themed on AI and tourism. AI can plan the route. Here are 17 books that do the part it cannot.",
+    content: [
+      {
+        type: "paragraph",
+        content:
+          "World Tourism Day falls on 27 September every year, and in 2026 that is a Sunday. The official host is El Salvador, and the theme is Digital Agenda and Artificial Intelligence to Redesign Tourism, with the programme built around smart destinations, digital identity and payments, data-driven sustainability, and getting small tourism businesses online. It is, in short, a day about logistics: how a traveller finds a place, books it, pays for it and moves through it.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "That is worth taking seriously. Logistics is where most trips actually fail, and an itinerary engine that knows the Konkan railway timetable better than you do is a genuine improvement on a group chat and a guess. But there is a second half of travel that no booking system touches, which is the question of what you already know about a place on the morning you arrive. Two people can get off the same train at Varanasi with identical bookings and have completely different weeks, and the difference is almost entirely what each of them read first.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "World Tourism Day 2026, in one place",
+        content:
+          "Date: Sunday, 27 September 2026. Official host: El Salvador, only the second Central American country to host after Costa Rica in 2002. Theme: Digital Agenda and Artificial Intelligence to Redesign Tourism, covering smart destinations, digital identity and payments, digitalisation of small and medium tourism businesses, and AI-supported promotion. The day was established by the UN's tourism body in 1979 and first observed in 1980; 27 September marks the anniversary of the adoption of its statutes in 1970.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "What the AI does well, and exactly where it stops",
+      },
+      {
+        type: "paragraph",
+        content:
+          "An AI trip planner is very good at the reversible parts of travel. Routes, prices, opening hours, visa paperwork, the fastest way from Kochi to Alleppey on a Tuesday. These are questions with correct answers, and a system that has read every timetable will beat you at them. What it cannot do is give you the thing that makes a place legible once you are standing in it: the argument a city has been having with itself for two hundred years, the reason a particular food is eaten at a particular hour, why the person behind the counter is being formal with you.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Novelists and travel writers have been doing that work for a long time, and they do it in a form that survives a patchy network. What follows is a reading list organised the way a trip actually runs: what to read before you leave, what to carry on the move, and what to read when the trip is not happening at all.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Before you go: books that give a place a prior",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "India, and the short trip you can actually take this year",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Start with the one Indian novel that is literally about a tour guide. <a href=\"/books/the-guide\" style=\"color:#fb8500;font-weight:600\">The Guide</a> by R.K. Narayan follows Raju, a railway-station guide in the invented town of Malgudi who talks his way into being a tourist expert, then a manager, then a convict, then a holy man, largely by never correcting anybody's assumption about him. It is the sharpest thing ever written about what tourists want a local to be. <a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> is the same town in thirty-two short stories, each finishable on a bus leg, which makes it the better book to carry.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "For the hills, <a href=\"/books/the-room-on-the-roof\" style=\"color:#fb8500;font-weight:600\">The Room on the Roof</a> by Ruskin Bond was written when he was seventeen and is still the most accurate account of Dehradun and the Mussoorie road in print: bazaars, monsoon, a boy escaping a guardian, and a landscape described by somebody who was not performing wonder at it. And if you are travelling with children, <a href=\"/books/andaman-adventure\" style=\"color:#fb8500;font-weight:600\">Andaman Adventure</a> by Deepak Dalal does what almost no Indian children's book does, which is set a real adventure in a real Indian place with real geography, in this case the islands themselves. Hand it to a nine-year-old three weeks before a Port Blair flight and the trip changes character.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "The Hindi shelf, where Indian road writing actually lives",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Some of the most interesting writing about moving through India is in Hindi and rarely makes English travel lists. <a href=\"/books/ibne-batuta-ka-joota\" style=\"color:#fb8500;font-weight:600\">Ibne Batuta Ka Joota</a> by Divya Prakash Dubey takes its title from the wandering fourteenth-century traveller Ibn Battuta and is a collection of short stories about contemporary Indians in transit between the lives they have and the ones they planned. <a href=\"/books/musafir-cafe\" style=\"color:#fb8500;font-weight:600\">Musafir Cafe</a> by the same author is the novel-length version of that restlessness, about two people who keep choosing their own script over the one handed to them.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books/banaras-talkies\" style=\"color:#fb8500;font-weight:600\">Banaras Talkies</a> by Satya Vyas is set in the BHU hostels and is the funniest book on this list, and it will do more for a Varanasi trip than any curated walking tour, because it is about the city as a place people live badly and happily in rather than a place people photograph. All three are short, cheap, and read easily on a train.",
+      },
+      {
+        type: "heading",
+        level: 3,
+        content: "East Asia, for the bookshop-and-cafe kind of trip",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Tokyo's Jimbocho district is roughly a hundred and fifty secondhand bookshops in a few blocks, and <a href=\"/books/days-at-the-morisaki-bookshop\" style=\"color:#fb8500;font-weight:600\">Days at the Morisaki Bookshop</a> by Satoshi Yagisawa is set in one of them. It is about a young woman who moves into the room above her uncle's shop after a breakup and slowly repairs. Under two hundred pages, and the best possible preparation for walking that neighbourhood. Its Korean counterpart is <a href=\"/books/welcome-to-the-hyunam-dong-bookshop\" style=\"color:#fb8500;font-weight:600\">Welcome to the Hyunam-dong Bookshop</a> by Hwang Bo-reum, set in a Seoul neighbourhood shop, and it is really a book about burnout and what a person does after quitting.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "For Singapore, <a href=\"/books/crazy-rich-asians\" style=\"color:#fb8500;font-weight:600\">Crazy Rich Asians</a> by Kevin Kwan is far more useful than its film reputation suggests. Strip out the comedy and it is a detailed map of a city's class geography and, more practically, its food: the hawker centres, the specific dishes, the order in which people eat them. It is a novel that doubles as a shopping list.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "On the move: books built around the journey itself",
+      },
+      {
+        type: "paragraph",
+        content:
+          "There is a particular pleasure in reading a book about travelling while travelling, and Agatha Christie owns this category outright because she wrote it from the inside; she travelled the actual routes with her archaeologist husband. <a href=\"/books/murder-on-the-orient-express\" style=\"color:#fb8500;font-weight:600\">Murder on the Orient Express</a> is a train stopped by snow in the Balkans with thirteen suspects in one carriage, and it is the ideal overnight-train book for the obvious reason. <a href=\"/books/death-on-the-nile\" style=\"color:#fb8500;font-weight:600\">Death on the Nile</a> is the same trick on a steamer between Aswan and Abu Simbel, and the Egypt in it is described by someone who had been there in the heat.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "For the journey as metaphor, <a href=\"/books/the-alchemist\" style=\"color:#fb8500;font-weight:600\">The Alchemist</a> by Paulo Coelho is the shortest and most-gifted version: a shepherd crosses from Andalusia into the Egyptian desert chasing a recurring dream. It is the book to give someone who is about to take a trip they are nervous about. For the journey as reportage, <a href=\"/books/investment-biker\" style=\"color:#fb8500;font-weight:600\">Investment Biker</a> by Jim Rogers is a genuinely odd and genuinely good travel book: an investor rides a motorcycle across six continents in the early nineties and writes about borders, currencies, black markets and bad roads with an eye no ordinary travel writer has.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "And for anyone travelling with a reluctant reader, the <a href=\"/books/tintin-set\" style=\"color:#fb8500;font-weight:600\">Tintin Set</a> by Hergé remains the most efficient travel-adventure format ever devised. Peru, Tibet, Scotland, the Congo, the Moon. A child who will not sit still for a chapter book will sit still for these, and the panels survive being read on a moving vehicle in bad light.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "When the trip is not happening",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Most years, for most people, the trip does not happen. Leave does not come through, the fare doubles, someone gets ill. The book for that situation is <a href=\"/books/a-gentleman-in-moscow\" style=\"color:#fb8500;font-weight:600\">A Gentleman in Moscow</a> by Amor Towles, in which a Russian count is sentenced in 1922 to permanent house arrest in a Moscow hotel and spends thirty years there. It is four hundred and eighty pages about a man who cannot leave one building, and it is the most convincing argument in modern fiction that attention, not distance, is what makes a place interesting. Read it and your own city gets slightly larger.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "How to pack books for a trip, practically",
+      },
+      {
+        type: "list",
+        style: "ordered",
+        items: [
+          "One book per leg, not one book per trip. Most people overestimate reading time on the road and underestimate it in waiting rooms. Two paperbacks for a week is usually right.",
+          "Short-story collections and linked vignettes beat long novels on the move, because travel reading is interrupted reading. Malgudi Days and Ibne Batuta Ka Joota exist for exactly this.",
+          "Pick one book about where you are going and one book about nothing to do with it. The second one is what you will actually read on the flight back, when you are too tired for a new place.",
+          "Paperbacks over hardbacks, always. Weight matters more than you think at the end of day four, and a paperback you can bend open one-handed is worth more than a handsome edition you are protecting.",
+          "Read the place book before you go, not during. A prior only works if you arrive with it. Carry the fiction; front-load the context.",
+          "Order two weeks ahead. Books from ₹1 with free delivery across India is a good deal, but it is not an overnight one, and the week before a trip is the worst week to be waiting for a parcel.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The part of travel that is really a decision problem",
+      },
+      {
+        type: "paragraph",
+        content:
+          "There is a reason people come back from a trip having decided something. Travel removes the usual inputs, and a head with fewer inputs sorts itself. That is also the entire subject of <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar, which is about the ordinary discipline of separating what you actually think from the noise around it. It is a good book to carry on a solo trip, for the plain reason that it asks questions and then leaves you alone with them, which is roughly what a long bus journey does anyway.",
+      },
+      {
+        type: "blockquote",
+        content:
+          "The traveller sees what he sees. The tourist sees what he has come to see. The difference is entirely a matter of what was read first.",
+      },
+      {
+        type: "callout",
+        style: "success",
+        title: "Building a travel shelf without overspending",
+        content:
+          "Every title above is available at TheBookX, with books starting from ₹1, free delivery across India and Cash on Delivery nationwide. Gift wrapping is ₹25 if one of these is going to someone who is about to travel, which is a better send-off present than luggage. A sensible order for a single trip: one place book, one journey book, one unrelated paperback for the way home.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The 2026 theme is right that AI is about to absorb most of the friction in travel, and good riddance to most of it. But the friction was never the point, and removing it does not by itself make anyone a better traveller. What makes the difference is arriving somewhere already curious about a specific thing, and that has only ever come from one place. World Tourism Day is on Sunday. The reading can start today.",
+      },
+    ],
+    coverImage: "/blogs/world-tourism-day-2026-travel-books-to-read.jpeg",
+    images: [
+      {
+        url: "/blogs/world-tourism-day-2026-travel-books-to-read.jpeg",
+        alt: "A young Indian woman sitting by a train window reading a plain paperback, a worn canvas backpack on the seat beside her and green countryside blurring past in warm morning light",
+        caption:
+          "World Tourism Day 2026 falls on Sunday 27 September, under the theme Digital Agenda and Artificial Intelligence to Redesign Tourism",
+        category: "Reading Lists",
+      },
+    ],
+    keywords: [
+      "world tourism day 2026",
+      "world tourism day 2026 theme",
+      "world tourism day 27 september 2026",
+      "travel books to read",
+      "best travel books india",
+      "books to read before you travel",
+      "travel fiction books",
+      "books to read on a train journey",
+      "hindi travel books",
+      "buy books online india free delivery",
+      "books from rs 1 india",
+      "TheBookX",
+    ],
+    categories: ["Reading Lists", "Travel Reading", "Books in the News"],
+    faqs: [
+      {
+        question: "When is World Tourism Day 2026 and what is the theme?",
+        answer:
+          "World Tourism Day 2026 falls on Sunday, 27 September 2026. The official host country is El Salvador, the second Central American host after Costa Rica in 2002, and the theme is Digital Agenda and Artificial Intelligence to Redesign Tourism. The programme covers smart destinations, data-driven sustainability, digital identity and payments, digitalisation of small and medium tourism businesses, and AI-supported promotion for small operators. The day was established by the UN's tourism body in 1979 and first observed in 1980, with 27 September marking the anniversary of the adoption of its statutes in 1970.",
+      },
+      {
+        question: "What are the best books to read before travelling in India?",
+        answer:
+          "For South India, The Guide and Malgudi Days by R.K. Narayan, the first of which is literally about a railway-station tour guide in the fictional town of Malgudi. For the Uttarakhand hills, The Room on the Roof by Ruskin Bond, written when he was seventeen and set in Dehradun and on the Mussoorie road. For the Andaman Islands with children, Andaman Adventure by Deepak Dalal. For Varanasi, Banaras Talkies by Satya Vyas, set in the BHU hostels. All are available on TheBookX from ₹1 upwards with free delivery across India and Cash on Delivery.",
+      },
+      {
+        question: "Which books are best to read on a long train or flight journey?",
+        answer:
+          "Interrupted reading suits short pieces, so short-story collections work better than long novels on the move: Malgudi Days by R.K. Narayan or Ibne Batuta Ka Joota by Divya Prakash Dubey. For books set on the journey itself, Murder on the Orient Express and Death on the Nile by Agatha Christie are the classics, both written by an author who had travelled those routes. For children on a long journey, the Tintin Set by Hergé holds attention better than anything text-only. Carry paperbacks rather than hardbacks, and budget roughly one book per leg rather than one per trip.",
+      },
+      {
+        question: "What should I read if I cannot travel this year?",
+        answer:
+          "A Gentleman in Moscow by Amor Towles is the strongest answer: a Russian count is sentenced in 1922 to permanent house arrest in a Moscow hotel and stays there for three decades, and the novel makes the case that attention rather than distance is what makes a place interesting. The Alchemist by Paulo Coelho works for the same reason at a fraction of the length. Investment Biker by Jim Rogers is the opposite approach, an actual six-continent motorcycle journey written up with an investor's eye for borders and currencies. All three are in stock at TheBookX with free delivery across India, Cash on Delivery, and gift wrapping for ₹25.",
+      },
+    ],
+  },
   "indian-book-awards-2026-longlists-what-to-read": {
     id: "blog-059",
     title:

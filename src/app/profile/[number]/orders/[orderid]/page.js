@@ -50,6 +50,7 @@ import PwaInstallPromo from "@/components/PwaInstallPromo";
 import AddBeforePacking from "@/components/profile/AddBeforePacking";
 import BookCard from "@/components/BookCard";
 import { updateOrderRow } from "@/utils/googleFormOrder";
+import { parseAddonsField } from "@/utils/addonsField";
 import { getDeliveryCharge } from "@/utils/cartOffers";
 import { books as ALL_BOOKS } from "@/utils/book";
 
@@ -604,14 +605,15 @@ export default function OrderDetailPage() {
     const grand = parseFloat(order?.["Total Amount"]) || sub;
     const isFree = (order?.["Delivery Type"] || "").toLowerCase().includes("free");
     let deliveryFee = parseFloat(order?.["Delivery Charge"]) || 0;
-    const giftFee =
-      order?.["Gift Wrap"] === "Yes"
-        ? parseFloat(order?.["Gift Wrap Charge"]) || 0
-        : 0;
+    const addons = parseAddonsField(order?.["Gift Wrap"]);
+    const giftFee = addons.giftOn
+      ? parseFloat(order?.["Gift Wrap Charge"]) || 0
+      : 0;
+    const bookmarkFee = addons.bookmarkCharge;
     const isCOD = (order?.["Payment Type"] || "").includes("Cash on Delivery");
     let codFee = 0;
     let discount = 0;
-    const extra = grand - sub - deliveryFee - giftFee;
+    const extra = grand - sub - deliveryFee - giftFee - bookmarkFee;
     if (extra > 0) {
       if (isCOD) codFee = extra;
       else deliveryFee += extra;
@@ -631,6 +633,10 @@ export default function OrderDetailPage() {
       grand,
       deliveryFee,
       giftFee,
+      bookmarkFee,
+      bookmarkCharged: addons.bookmarkCharged,
+      bookmarkFree: addons.bookmarkFree,
+      bookmarkQty: addons.bookmarkQty,
       codFee,
       discount,
       freeDelivery,
@@ -648,6 +654,9 @@ export default function OrderDetailPage() {
       grand,
       deliveryFee,
       giftFee,
+      bookmarkFee,
+      bookmarkCharged,
+      bookmarkFree,
       codFee,
       discount,
       freeDelivery,
@@ -661,6 +670,7 @@ export default function OrderDetailPage() {
       (sub > 0 ? 1 : 0) +
       1 +
       (giftFee > 0 ? 1 : 0) +
+      (bookmarkFee > 0 ? 1 : 0) +
       (codFee > 0 ? 1 : 0) +
       (discount > 0 ? 1 : 0);
     const H = 300 + items.length * rowH + summaryCount * 26 + 70 + 70;
@@ -743,6 +753,11 @@ export default function OrderDetailPage() {
       freeDelivery ? "#008f0c" : "#0a0a0a",
     );
     if (giftFee > 0) sumLine("Gift wrapping", `+₹${giftFee}`);
+    if (bookmarkFee > 0)
+      sumLine(
+        `Bookmarks (${bookmarkCharged} × ₹9${bookmarkFree > 0 ? `, ${bookmarkFree} free` : ""})`,
+        `+₹${bookmarkFee}`,
+      );
     if (codFee > 0) sumLine("COD handling fee", `+₹${codFee}`);
     if (discount > 0) sumLine("Discount", `−₹${discount}`, "#008f0c");
     y += 18;
@@ -1642,6 +1657,15 @@ export default function OrderDetailPage() {
           <div className="od-price-row">
             <span>Gift wrapping</span>
             <span>+₹{bd.giftFee}</span>
+          </div>
+        )}
+        {bd.bookmarkFee > 0 && (
+          <div className="od-price-row">
+            <span>
+              Bookmarks ({bd.bookmarkCharged} × ₹9
+              {bd.bookmarkFree > 0 ? `, ${bd.bookmarkFree} free` : ""})
+            </span>
+            <span>+₹{bd.bookmarkFee}</span>
           </div>
         )}
         {bd.codFee > 0 && (

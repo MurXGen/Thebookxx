@@ -492,16 +492,18 @@ export default function AddressModal({
   const bookmarkExtra = Math.max(0, bookmarkQty - freeBookmarks);
   const bookmarkCharge = bookmarkExtra * BOOKMARK_UNIT;
 
-  // Add-ons that ride on the bill. Gift wrap applies to both flows; bookmarks
-  // are free up to the tier, then ₹9 each (same on COD and online).
-  const addOnsCharge = giftWrap ? giftWrapCharge : 0;
+  // Add-ons that ride on the bill. Gift wrap + chargeable bookmarks both apply
+  // to EVERY flow (online, two-parts, COD) as real line items — never folded
+  // into a discount. Free-tier bookmarks add ₹0.
+  const bookmarkFreeApplied = Math.min(bookmarkQty, freeBookmarks);
+  const addOnsCharge = (giftWrap ? giftWrapCharge : 0) + bookmarkCharge;
 
   // For the COD fee modal comparison.
   const upiTotalForFlow = getTotalWithDelivery(fasterDelivery) + addOnsCharge;
   // COD handling fee: a minimum of ₹29, or 5.9% of the bill when that exceeds
   // ₹29 (whichever is higher).
   const codFeeAmount = Math.max(29, Math.round(upiTotalForFlow * 0.059));
-  const codTotalWithFee = upiTotalForFlow + codFeeAmount + bookmarkCharge;
+  const codTotalWithFee = upiTotalForFlow + codFeeAmount;
 
   // ₹99-advance: below ₹400 the COD charge is fully waived; from ₹400 up a
   // silent 5.9% packing & care (handling) charge applies to the balance. The
@@ -750,7 +752,10 @@ export default function AddressModal({
       // Fee: normal COD → COD fee. Advance → COD is waived below ₹400; from ₹400
       // up a silent 5.9% packing & care (handling) charge applies to the balance.
       const onlineBase =
-        netPayable + deliveryChargeForOrder + giftWrapAmountForOrder;
+        netPayable +
+        deliveryChargeForOrder +
+        giftWrapAmountForOrder +
+        bookmarkAmountForOrder;
       const feeForThisOrder = advance
         ? onlineBase > 400
           ? Math.max(0, Math.round(onlineBase * 0.059))
@@ -793,6 +798,7 @@ export default function AddressModal({
         bookmarkSelected: bookmarkQty > 0,
         bookmarkCharge: bookmarkAmountForOrder,
         bookmarkQty,
+        bookmarkFree: bookmarkFreeApplied,
         // Itemised values, match what the user sees in the success modal
         subtotal: totalDiscounted,
         finalPayable: netPayable,

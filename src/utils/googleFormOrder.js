@@ -1,5 +1,7 @@
 // utils/googleFormOrder.js
 
+import { encodeAddonsField } from "./addonsField";
+
 const GOOGLE_FORM_ORDER_URL =
   "https://docs.google.com/forms/d/e/1FAIpQLSc3dUHr_S01ODuvQpok_8n0tG0ezfUPD5NLK0M_tyms25I-eQ/formResponse";
 
@@ -335,6 +337,8 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
     bookmarkCharge: bookmarkChargeIn = 0,
     // How many bookmarks the customer chose (free tier + paid extras).
     bookmarkQty = 0,
+    // How many of those bookmarks fell inside the free tier (rest are charged).
+    bookmarkFree = 0,
     // Optional caller-supplied order id so the client can poll this exact row.
     orderId: orderIdIn,
     // Optional exact payment-source label (e.g. "PhonePe", "Credit Card ·
@@ -406,15 +410,13 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
       ? `Faster Delivery (${deliveryLabel})`
       : `Standard Delivery (${deliveryLabel})`,
     deliveryCharge: deliveryCharge || 0,
-    // Gift-wrap column records gift wrap + the bookmark count, e.g.
-    // "No", "No-Bookmark×2", "Yes-Bookmark×4".
-    giftWrap: `${giftWrapSelected ? "Yes" : "No"}${
-      bookmarkQty > 0
-        ? `-Bookmark×${bookmarkQty}`
-        : bookmarkSelected
-          ? "-Bookmark"
-          : ""
-    }`,
+    // Gift-wrap column records gift wrap + the bookmark split, e.g.
+    // "No", "No-Bookmark 4-2" (4 charged, 2 free), "Yes-Bookmark 0-1".
+    giftWrap: encodeAddonsField({
+      giftOn: !!giftWrapSelected,
+      bookmarkQty: bookmarkQty || (bookmarkSelected ? 1 : 0),
+      bookmarkFree,
+    }),
     giftWrapCharge: giftWrapSelected
       ? Number.isFinite(giftWrapChargeIn)
         ? giftWrapChargeIn

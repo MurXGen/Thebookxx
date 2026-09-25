@@ -89,6 +89,7 @@ import BookCoverImg from "@/components/BookCoverImg";
 import { books as ALL_BOOKS } from "@/utils/book";
 import { bookImages } from "@/utils/bookImages";
 import { encodeProduct } from "@/utils/customBooks";
+import { parseAddonsField } from "@/utils/addonsField";
 import { getBookCost } from "@/data/bookCosts";
 import { creditWalletReward, appendWalletTx } from "@/utils/googleFormOrder";
 import { showToast } from "@/context/ToastContext";
@@ -12486,11 +12487,12 @@ export default function ManageOrdersPage() {
                                 /faster|express/i.test(deliv) ||
                                 /^e/i.test(String(order.shippingId || "").trim());
                               const freeD = /free/i.test(deliv);
-                              const giftOn = /^\s*yes/i.test(gwRaw);
-                              // Bookmark opt-in is stamped into the Gift Wrap
-                              // field: "No" = not opted, anything containing
-                              // "Bookmark" = opted.
-                              const bookmarkOn = /bookmark/i.test(gwRaw);
+                              // Gift wrap + bookmark split are both encoded in the
+                              // Gift Wrap column (e.g. "Yes-Bookmark 4-2").
+                              const addonsB = parseAddonsField(gwRaw);
+                              const giftOn = addonsB.giftOn;
+                              const bookmarkOn = addonsB.bookmarkQty > 0;
+                              const bookmarkFeeB = addonsB.bookmarkCharge;
                               const subB = books.reduce(
                                 (s, b) =>
                                   s + (b.total || b.price * (b.quantity || 1) || 0),
@@ -12506,8 +12508,13 @@ export default function ManageOrdersPage() {
                                 ? parseFloat(order["Gift Wrap Charge"]) || 0
                                 : 0;
                               const discB =
-                                grandB - subB - delFeeB - giftFeeB < 0
-                                  ? subB + delFeeB + giftFeeB - grandB
+                                grandB - subB - delFeeB - giftFeeB - bookmarkFeeB <
+                                0
+                                  ? subB +
+                                    delFeeB +
+                                    giftFeeB +
+                                    bookmarkFeeB -
+                                    grandB
                                   : 0;
                               const advancePaid = /^\s*yes/i.test(
                                 String(order["Advance Paid"] || ""),
@@ -12524,7 +12531,10 @@ export default function ManageOrdersPage() {
                                 badges.push({ e: "🚚", t: "Free delivery" });
                               if (giftOn) badges.push({ e: "🎁", t: "Gift wrap" });
                               if (bookmarkOn)
-                                badges.push({ e: "🔖", t: "Bookmark" });
+                                badges.push({
+                                  e: "🔖",
+                                  t: `Bookmark ${addonsB.bookmarkQty}`,
+                                });
                               // "Saved ₹X" chip removed — that's the customer's
                               // discount, not an operator concern (one money rule).
                               if (!badges.length) return null;
@@ -12768,6 +12778,14 @@ export default function ManageOrdersPage() {
                                           ? Math.round(rev * 0.015)
                                           : 0;
                                         const net = Math.round(rev - fee);
+                                        const ad = parseAddonsField(
+                                          order["Gift Wrap"],
+                                        );
+                                        const giftChg = ad.giftOn
+                                          ? parseFloat(
+                                              order["Gift Wrap Charge"],
+                                            ) || 0
+                                          : 0;
                                         return (
                                           <div className="mo-bill-sec">
                                             <div className="mo-bill-sec-t">
@@ -12778,6 +12796,29 @@ export default function ManageOrdersPage() {
                                                 <span>Order value</span>
                                                 <b>₹{rev.toLocaleString()}</b>
                                               </div>
+                                              {ad.bookmarkQty > 0 && (
+                                                <div className="mo-bill-row muted">
+                                                  <span>
+                                                    Bookmarks · {ad.bookmarkQty}{" "}
+                                                    ({ad.bookmarkCharged}×₹9
+                                                    {ad.bookmarkFree > 0
+                                                      ? `, ${ad.bookmarkFree} free`
+                                                      : ""}
+                                                    )
+                                                  </span>
+                                                  <b>
+                                                    {ad.bookmarkCharge > 0
+                                                      ? `+₹${ad.bookmarkCharge}`
+                                                      : "FREE"}
+                                                  </b>
+                                                </div>
+                                              )}
+                                              {giftChg > 0 && (
+                                                <div className="mo-bill-row muted">
+                                                  <span>Gift wrap</span>
+                                                  <b>+₹{giftChg}</b>
+                                                </div>
+                                              )}
                                               {isCOD && (
                                                 <>
                                                   <div className="mo-bill-row muted">

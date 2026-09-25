@@ -6451,6 +6451,181 @@ export default function ManageOrdersPage() {
     return { rows, totals };
   }, [anOrders]);
 
+  // ── NEW sales-growth analytics ──────────────────────────────────────────
+  // Fulfillment funnel + cancel/RTO leakage (period-scoped). Every order that
+  // carries an Order ID counts as "placed"; a tracking id / shipped-or-later
+  // status counts as "shipped"; delivered / money-received counts as delivered.
+  const funnelStats = useMemo(() => {
+    let placed = 0,
+      shipped = 0,
+      delivered = 0,
+      cancelled = 0,
+      returned = 0;
+    anOrders.forEach((o) => {
+      const s = String(o["Order Status"] || "").toLowerCase();
+      const hasTrack = !!String(o["Shipping ID"] || "").trim();
+      placed += 1;
+      if (/cancel/.test(s)) cancelled += 1;
+      if (/return/.test(s)) returned += 1;
+      const isDelivered = /delivered|money received/.test(s);
+      if (isDelivered) delivered += 1;
+      if (
+        isDelivered ||
+        hasTrack ||
+        /shipped|in\s*transit|out for delivery/.test(s)
+      )
+        shipped += 1;
+    });
+    const pct = (x) => (placed ? Math.round((x / placed) * 100) : 0);
+    return {
+      placed,
+      shipped,
+      delivered,
+      cancelled,
+      returned,
+      shippedPct: pct(shipped),
+      deliveredPct: pct(delivered),
+      cancelPct: pct(cancelled),
+      // delivery success measured against everything that actually shipped
+      successPct: shipped ? Math.round((delivered / shipped) * 100) : 0,
+    };
+  }, [anOrders]);
+
+  // Delivered / cancel performance + AOV split by payment method. COD carries
+  // the RTO risk, so surfacing its success rate argues for pushing prepaid.
+  const payPerf = useMemo(() => {
+    const mk = () => ({ n: 0, delivered: 0, cancelled: 0, revenue: 0 });
+    const cod = mk();
+    const upi = mk();
+    anOrders.forEach((o) => {
+      const isCod = /cash|cod/i.test(String(o["Payment Type"] || ""));
+      const bucket = isCod ? cod : upi;
+      const s = String(o["Order Status"] || "").toLowerCase();
+      bucket.n += 1;
+      bucket.revenue += o.revenue || 0;
+      if (/delivered|money received/.test(s)) bucket.delivered += 1;
+      if (/cancel/.test(s)) bucket.cancelled += 1;
+    });
+    const shape = (b, label, key) => ({
+      key,
+      label,
+      n: b.n,
+      revenue: b.revenue,
+      aov: b.n ? Math.round(b.revenue / b.n) : 0,
+      deliveredPct: b.n ? Math.round((b.delivered / b.n) * 100) : 0,
+      cancelPct: b.n ? Math.round((b.cancelled / b.n) * 100) : 0,
+    });
+    return [shape(cod, "Cash on delivery", "cod"), shape(upi, "Prepaid · UPI", "upi")];
+  }, [anOrders]);
+
+  // Basket size: how many books per order (1 / 2 / 3 / 4+). Reveals upsell
+  // headroom — each bucket shows its share of orders and its average value.
+  const basketStats = useMemo(() => {
+    const buckets = [
+      { key: "1", label: "1 book", n: 0, rev: 0 },
+      { key: "2", label: "2 books", n: 0, rev: 0 },
+      { key: "3", label: "3 books", n: 0, rev: 0 },
+      { key: "4", label: "4+ books", n: 0, rev: 0 },
+    ];
+    let totalUnits = 0;
+    anOrders.forEach((o) => {
+      const units = (o.parsedBooks || []).reduce(
+        (t, b) => t + (Number(b.quantity) || 1),
+        0,
+      );
+      if (units <= 0) return;
+      totalUnits += units;
+      const idx = units >= 4 ? 3 : units - 1;
+      buckets[idx].n += 1;
+      buckets[idx].rev += o.revenue || 0;
+    });
+    const total = buckets.reduce((s, b) => s + b.n, 0) || 1;
+    return {
+      buckets: buckets.map((b) => ({
+        ...b,
+        pct: Math.round((b.n / total) * 100),
+        aov: b.n ? Math.round(b.rev / b.n) : 0,
+      })),
+      avgBasket: total ? Math.round((totalUnits / total) * 100) / 100 : 0,
+      total,
+    };
+  }, [anOrders]);
+
+  // Frequently bought together: co-occurrence counts for every unordered pair
+  // of distinct titles appearing in the same order. Top pairs → bundle ideas.
+  const bookPairs = useMemo(() => {
+    const pairMap = {};
+    anOrders.forEach((o) => {
+      const names = Array.from(
+        new Set(
+          (o.parsedBooks || [])
+            .map((b) => String(b.name || "").trim())
+            .filter(Boolean),
+        ),
+      );
+      if (names.length < 2) return;
+      for (let i = 0; i < names.length; i++) {
+        for (let j = i + 1; j < names.length; j++) {
+          const key = [names[i], names[j]].sort().join(" ⋆ ");
+          pairMap[key] = (pairMap[key] || 0) + 1;
+        }
+      }
+    });
+    return Object.entries(pairMap)
+      .map(([k, count]) => {
+        const [a, b] = k.split(" ⋆ ");
+        return { a, b, count };
+      })
+      .filter((p) => p.count > 1)
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 6);
+  }, [anOrders]);
+
+  // Top customers by lifetime spend (ALL-TIME, not period-scoped — retention
+  // is about the whole relationship). Masked phone, orders, spend, last order.
+  const topCustomers = useMemo(() => {
+    const map = {};
+    orders.forEach((o) => {
+      if (!String(o["Order ID"] || "").trim()) return;
+      const ph = String(o["Phone Number"] || "")
+        .replace(/\D/g, "")
+        .slice(-10);
+      if (ph.length !== 10) return;
+      if (!map[ph])
+        map[ph] = { phone: ph, name: "", orders: 0, spend: 0, last: 0 };
+      map[ph].orders += 1;
+      map[ph].spend += o.revenue || 0;
+      const nm = String(o["Name"] || o["Customer Name"] || "").trim();
+      if (nm && !map[ph].name) map[ph].name = nm;
+      const d = getOrderDate(o);
+      const t = d ? d.getTime() : 0;
+      if (t > map[ph].last) map[ph].last = t;
+    });
+    const all = Object.values(map);
+    const rows = all
+      .sort((a, b) => b.spend - a.spend)
+      .slice(0, 10)
+      .map((r) => ({
+        ...r,
+        mask: `${r.phone.slice(0, 2)}••••${r.phone.slice(-3)}`,
+        lastLabel: r.last
+          ? new Date(r.last).toLocaleDateString("en-IN", {
+              day: "numeric",
+              month: "short",
+            })
+          : "—",
+      }));
+    const repeat = all.filter((r) => r.orders > 1);
+    const repeatRev = repeat.reduce((s, r) => s + r.spend, 0);
+    const totalRev = all.reduce((s, r) => s + r.spend, 0) || 1;
+    return {
+      rows,
+      totalCustomers: all.length,
+      repeatCount: repeat.length,
+      repeatRevPct: Math.round((repeatRev / totalRev) * 100),
+    };
+  }, [orders]);
+
   // 9 — Time-of-day quadrants (6-hour buckets) for the selected period.
   const quadrantData = useMemo(() => {
     const q = [
@@ -9053,6 +9228,257 @@ export default function ManageOrdersPage() {
                   />
                 </>
               )}
+            </An2Section>
+
+            {/* Fulfillment funnel — where orders leak out on the way to delivery */}
+            <An2Section
+              title="Fulfillment funnel"
+              sub="From placed to delivered — spot where orders leak out"
+              right={
+                <span className="an2-card-total">
+                  {funnelStats.successPct}% success
+                </span>
+              }
+            >
+              {funnelStats.placed === 0 ? (
+                <div className="an2-bp-empty">No orders in this period.</div>
+              ) : (
+                <>
+                  <div className="an2-funnel">
+                    {[
+                      {
+                        label: "Placed",
+                        n: funnelStats.placed,
+                        pct: 100,
+                        color: "#6366f1",
+                      },
+                      {
+                        label: "Shipped",
+                        n: funnelStats.shipped,
+                        pct: funnelStats.shippedPct,
+                        color: "#0891b2",
+                      },
+                      {
+                        label: "Delivered",
+                        n: funnelStats.delivered,
+                        pct: funnelStats.deliveredPct,
+                        color: "#16a34a",
+                      },
+                    ].map((st) => (
+                      <div className="an2-fn-row" key={st.label}>
+                        <span className="an2-fn-l">{st.label}</span>
+                        <div className="an2-fn-track">
+                          <div
+                            className="an2-fn-fill"
+                            style={{
+                              width: `${st.pct}%`,
+                              background: st.color,
+                            }}
+                          >
+                            <span className="an2-fn-n">{st.n}</span>
+                          </div>
+                        </div>
+                        <span className="an2-fn-pct">{st.pct}%</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="an2-fn-foot">
+                    <div className="an2-fn-chip">
+                      <span className="an2-fn-chip-v v-neg">
+                        {funnelStats.cancelPct}%
+                      </span>
+                      <span className="an2-fn-chip-l">
+                        Cancelled ({funnelStats.cancelled})
+                      </span>
+                    </div>
+                    <div className="an2-fn-chip">
+                      <span className="an2-fn-chip-v v-neg">
+                        {funnelStats.returned}
+                      </span>
+                      <span className="an2-fn-chip-l">Returned to sender</span>
+                    </div>
+                    <div className="an2-fn-chip">
+                      <span className="an2-fn-chip-v v-pos">
+                        {funnelStats.successPct}%
+                      </span>
+                      <span className="an2-fn-chip-l">Shipped → delivered</span>
+                    </div>
+                  </div>
+                </>
+              )}
+            </An2Section>
+
+            {/* COD vs Prepaid performance — argue the case for prepaid */}
+            <An2Section
+              title="COD vs Prepaid performance"
+              sub="Delivery success, cancellations & value by payment method"
+            >
+              <div className="an2-pay2">
+                {payPerf.map((p) => (
+                  <div className={`an2-pay2-card pay-${p.key}`} key={p.key}>
+                    <div className="an2-pay2-head">
+                      <span className="an2-pay2-name">{p.label}</span>
+                      <span className="an2-pay2-n">
+                        {p.n} order{p.n === 1 ? "" : "s"}
+                      </span>
+                    </div>
+                    <div className="an2-pay2-metrics">
+                      <div className="an2-pay2-m">
+                        <span className="an2-pay2-mv v-pos">
+                          {p.deliveredPct}%
+                        </span>
+                        <span className="an2-pay2-ml">Delivered</span>
+                      </div>
+                      <div className="an2-pay2-m">
+                        <span className="an2-pay2-mv v-neg">{p.cancelPct}%</span>
+                        <span className="an2-pay2-ml">Cancelled</span>
+                      </div>
+                      <div className="an2-pay2-m">
+                        <span className="an2-pay2-mv">
+                          ₹{p.aov.toLocaleString()}
+                        </span>
+                        <span className="an2-pay2-ml">Avg order</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </An2Section>
+
+            {/* Basket size & upsell headroom */}
+            <An2Section
+              title="Basket size & upsell"
+              sub="Books per order — where the upsell headroom sits"
+              right={
+                <span className="an2-card-total">
+                  {basketStats.avgBasket} avg
+                </span>
+              }
+            >
+              {basketStats.total === 0 ? (
+                <div className="an2-bp-empty">No orders in this period.</div>
+              ) : (
+                <div className="an2-basket">
+                  {basketStats.buckets.map((b) => {
+                    const max = Math.max(
+                      1,
+                      ...basketStats.buckets.map((x) => x.n),
+                    );
+                    return (
+                      <div className="an2-bk-row" key={b.key}>
+                        <span className="an2-bk-l">{b.label}</span>
+                        <div className="an2-bk-track">
+                          <div
+                            className="an2-bk-fill"
+                            style={{ width: `${(b.n / max) * 100}%` }}
+                          />
+                        </div>
+                        <span className="an2-bk-meta">
+                          {b.n} · {b.pct}%
+                          <span className="an2-bk-aov">
+                            ₹{b.aov.toLocaleString()} AOV
+                          </span>
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </An2Section>
+
+            {/* Frequently bought together — bundle ideas */}
+            <An2Section
+              title="Frequently bought together"
+              sub="Title pairs seen in the same order — ready-made bundle ideas"
+            >
+              {bookPairs.length === 0 ? (
+                <div className="an2-bp-empty">
+                  Not enough multi-book orders yet to spot pairings.
+                </div>
+              ) : (
+                <div className="an2-pairs">
+                  {bookPairs.map((p, i) => (
+                    <div className="an2-pair" key={i}>
+                      <div className="an2-pair-books">
+                        <span className="an2-pair-b">{p.a}</span>
+                        <span className="an2-pair-plus">+</span>
+                        <span className="an2-pair-b">{p.b}</span>
+                      </div>
+                      <span className="an2-pair-c">
+                        {p.count}×<span className="an2-pair-cl">together</span>
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </An2Section>
+
+            {/* Top customers — lifetime value & repeat revenue */}
+            <An2Section
+              title="Top customers"
+              sub="Lifetime spend across all time — your win-back & loyalty list"
+              right={
+                <span className="an2-card-total">
+                  {topCustomers.repeatRevPct}% repeat ₹
+                </span>
+              }
+            >
+              <div className="an2-bp-sum">
+                <div className="an2-bp-sc">
+                  <span className="an2-bp-sc-l">Customers</span>
+                  <strong className="an2-bp-sc-v">
+                    {topCustomers.totalCustomers}
+                  </strong>
+                </div>
+                <div className="an2-bp-sc">
+                  <span className="an2-bp-sc-l">Repeat buyers</span>
+                  <strong className="an2-bp-sc-v v-rev">
+                    {topCustomers.repeatCount}
+                  </strong>
+                </div>
+                <div className="an2-bp-sc">
+                  <span className="an2-bp-sc-l">Revenue from repeats</span>
+                  <strong className="an2-bp-sc-v v-pos">
+                    {topCustomers.repeatRevPct}%
+                  </strong>
+                </div>
+              </div>
+              <div className="an2-bp-scroll">
+                <table className="an2-bp-table">
+                  <thead>
+                    <tr>
+                      <th>Customer</th>
+                      <th className="ta-r">Orders</th>
+                      <th className="ta-r">Spend</th>
+                      <th className="ta-r">Last order</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {topCustomers.rows.length === 0 && (
+                      <tr>
+                        <td colSpan={4} className="an2-bp-empty">
+                          No customers yet.
+                        </td>
+                      </tr>
+                    )}
+                    {topCustomers.rows.map((r) => (
+                      <tr key={r.phone}>
+                        <td>
+                          <span className="an2-bp-name">
+                            {r.name || "Customer"}
+                          </span>
+                          <span className="an2-cust-ph">+91 {r.mask}</span>
+                        </td>
+                        <td className="ta-r">{r.orders}</td>
+                        <td className="ta-r">
+                          ₹{Math.round(r.spend).toLocaleString()}
+                        </td>
+                        <td className="ta-r an2-cust-last">{r.lastLabel}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </An2Section>
           </div>
         )}

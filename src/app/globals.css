@@ -37389,6 +37389,265 @@ img[data-loaded="true"] {
   text-align: center;
 }
 
+/* ── Fulfillment funnel ── */
+.an2-funnel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.an2-fn-row {
+  display: grid;
+  grid-template-columns: 72px 1fr 44px;
+  align-items: center;
+  gap: 10px;
+}
+.an2-fn-l {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--foreground);
+}
+.an2-fn-track {
+  height: 26px;
+  border-radius: 8px;
+  background: var(--surface-2, #f3f4f6);
+  overflow: hidden;
+}
+.an2-fn-fill {
+  height: 100%;
+  min-width: 30px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 8px;
+  transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.an2-fn-n {
+  font-size: 12px;
+  font-weight: 800;
+  color: #fff;
+}
+.an2-fn-pct {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--dark-50);
+  text-align: right;
+}
+.an2-fn-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+.an2-fn-chip {
+  flex: 1 1 120px;
+  background: var(--surface-2, #faf9f7);
+  border: 1px solid var(--hairline, #e5e7eb);
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.an2-fn-chip-v {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--foreground);
+}
+.an2-fn-chip-v.v-pos {
+  color: #16a34a;
+}
+.an2-fn-chip-v.v-neg {
+  color: #ef4444;
+}
+.an2-fn-chip-l {
+  font-size: 11px;
+  color: var(--dark-50);
+}
+
+/* ── COD vs Prepaid performance ── */
+.an2-pay2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+.an2-pay2-card {
+  border: 1px solid var(--hairline, #e5e7eb);
+  border-radius: 14px;
+  padding: 14px;
+  background: var(--surface-2, #faf9f7);
+  border-top: 3px solid #94a3b8;
+}
+.an2-pay2-card.pay-cod {
+  border-top-color: #2563eb;
+}
+.an2-pay2-card.pay-upi {
+  border-top-color: #16a34a;
+}
+.an2-pay2-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 12px;
+}
+.an2-pay2-name {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--foreground);
+}
+.an2-pay2-n {
+  font-size: 11.5px;
+  color: var(--dark-50);
+}
+.an2-pay2-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.an2-pay2-m {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.an2-pay2-mv {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--foreground);
+}
+.an2-pay2-mv.v-pos {
+  color: #16a34a;
+}
+.an2-pay2-mv.v-neg {
+  color: #ef4444;
+}
+.an2-pay2-ml {
+  font-size: 10.5px;
+  color: var(--dark-50);
+}
+
+/* ── Basket size & upsell ── */
+.an2-basket {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.an2-bk-row {
+  display: grid;
+  grid-template-columns: 68px 1fr auto;
+  align-items: center;
+  gap: 10px;
+}
+.an2-bk-l {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--foreground);
+}
+.an2-bk-track {
+  height: 14px;
+  border-radius: 999px;
+  background: var(--surface-2, #f3f4f6);
+  overflow: hidden;
+}
+.an2-bk-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #fb8500, #f59e0b);
+  transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.an2-bk-meta {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--dark-50);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.an2-bk-aov {
+  font-size: 11px;
+  font-weight: 700;
+  color: #16a34a;
+}
+
+/* ── Frequently bought together ── */
+.an2-pairs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.an2-pair {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--surface-2, #faf9f7);
+  border: 1px solid var(--hairline, #e5e7eb);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+.an2-pair-books {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+.an2-pair-b {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--foreground);
+}
+.an2-pair-plus {
+  font-size: 12px;
+  font-weight: 800;
+  color: #fb8500;
+}
+.an2-pair-c {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-size: 15px;
+  font-weight: 800;
+  color: #7c3aed;
+  white-space: nowrap;
+}
+.an2-pair-cl {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--dark-50);
+}
+
+/* ── Top customers ── */
+.an2-cust-ph {
+  display: block;
+  font-size: 11px;
+  color: var(--dark-50);
+  margin-top: 2px;
+}
+.an2-cust-last {
+  color: var(--dark-50);
+  white-space: nowrap;
+}
+
+/* ── Dark mode ── */
+.mo-dark .an2-fn-track,
+.mo-dark .an2-bk-track,
+.mo-dark .an2-fn-chip,
+.mo-dark .an2-pay2-card,
+.mo-dark .an2-pair {
+  background: #26282d;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+.mo-dark .an2-fn-l,
+.mo-dark .an2-bk-l,
+.mo-dark .an2-fn-chip-v,
+.mo-dark .an2-pay2-name,
+.mo-dark .an2-pay2-mv,
+.mo-dark .an2-pair-b {
+  color: #f3f4f6;
+}
+
 /* ── Dark mode ── */
 .mo-dark .an2-btn,
 .mo-dark .an2-stat,

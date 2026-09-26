@@ -119,6 +119,7 @@ export const bookImages = {
   "king-of-wrath-set": `${BOOK_IMAGE_BASE_PATH}/king-of-wrath-set.png`,
   "twisted-love-series-set": `${BOOK_IMAGE_BASE_PATH}/twisted-love-series-set.png`,
   "windy-city-series-set": `${BOOK_IMAGE_BASE_PATH}/windy-city-series-set.jpeg`,
+  "gunahon-ka-devta": `${BOOK_IMAGE_BASE_PATH}/gunahon-ka-devta.jpeg`,
   "meluha-nagas-vayaputra-set": `${BOOK_IMAGE_BASE_PATH}/meluha-nagas-vayaputra-set.png`,
   "chainsawman-set": `${BOOK_IMAGE_BASE_PATH}/chainsawman-set.png`,
   "diary-of-a-whimpy-kid-set": `${BOOK_IMAGE_BASE_PATH}/diary-of-a-whimpy-kid-set.png`,

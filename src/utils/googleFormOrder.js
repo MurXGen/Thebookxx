@@ -189,7 +189,12 @@ export const fetchWalletBalance = async (phone) => {
     const res = await fetch(`/api/wallet?phone=${digits}`);
     const json = await res.json();
     const entries = Array.isArray(json.entries) ? json.entries : [];
-    const bal = entries.reduce((s, e) => s + (Number(e.amount) || 0), 0);
+    // Locked reward coins (order still present in the sheet) aren't spendable —
+    // exclude them so checkout only offers the spendable balance.
+    const bal = entries.reduce(
+      (s, e) => s + (e.locked && Number(e.amount) > 0 ? 0 : Number(e.amount) || 0),
+      0,
+    );
     return Math.max(0, Math.round(bal));
   } catch (e) {
     console.error("Wallet balance read failed:", e);

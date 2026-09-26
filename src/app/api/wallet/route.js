@@ -101,20 +101,19 @@ export async function GET(request) {
           !/unconfirmed/i.test(e.type) && !/unconfirmed/i.test(e.reason || ""),
       );
 
-    // Refund wallet spends tied to CANCELLED orders. When a customer paid part
-    // of an order from their wallet (a debit tagged with that Order ID) and the
-    // order is later cancelled in the sheet, that debit must stop reducing the
-    // balance — i.e. the amount is returned to the wallet automatically.
-    // Safety: any failure reading the orders sheet leaves the balance untouched
-    // (we never refund on an incomplete/failed read, so a debit is only dropped
-    // when we positively confirm the order is cancelled).
-    const debitOrderIds = new Set(
-      entries
-        .filter((e) => e.amount < 0 && e.orderId)
-        .map((e) => String(e.orderId).trim()),
-    );
+    // Cross-reference the orders sheet (scoped to this phone) once, to power:
+    //   (a) CANCELLED-order refunds — a wallet debit tagged with a cancelled
+    //       order's id stops reducing the balance (amount returned).
+    //   (b) LOCKED reward coins — a scratch-card CREDIT whose order is still
+    //       present in the sheet is "locked": shown in history but not spendable
+    //       (blocks reward → spend → cancel abuse). It unlocks once that order
+    //       is no longer in the sheet.
+    // Safety: any failure reading the orders sheet leaves everything untouched
+    // (no refunds applied, nothing locked) — we never penalise on a failed read.
+    const anyOrderLinked = entries.some((e) => e.orderId);
+    let presentIds = new Set();
     let cancelledIds = new Set();
-    if (debitOrderIds.size > 0) {
+    if (anyOrderLinked) {
       try {
         const oMeta = await gvizQuery({
           sheet: ORDERS_SHEET_NAME,
@@ -134,17 +133,29 @@ export async function GET(request) {
         });
         tableToObjects(oTable).forEach((row) => {
           const oid = String(row["Order ID"] ?? row["Order Id"] ?? "").trim();
+          if (!oid) return;
+          presentIds.add(oid);
           const status = String(row["Order Status"] ?? "");
-          if (oid && /cancel/i.test(status)) cancelledIds.add(oid);
+          if (/cancel/i.test(status)) cancelledIds.add(oid);
         });
       } catch {
+        presentIds = new Set(); // read failed → lock nothing (safe)
         cancelledIds = new Set(); // read failed → refund nothing (safe)
       }
     }
 
+    const withLock = entries.map((e) => ({
+      ...e,
+      // A reward credit whose order is still present in the sheet is locked.
+      locked:
+        e.amount > 0 &&
+        !!e.orderId &&
+        presentIds.has(String(e.orderId).trim()),
+    }));
+
     const finalEntries =
       cancelledIds.size > 0
-        ? entries.filter(
+        ? withLock.filter(
             (e) =>
               !(
                 e.amount < 0 &&
@@ -152,7 +163,7 @@ export async function GET(request) {
                 cancelledIds.has(String(e.orderId).trim())
               ),
           )
-        : entries;
+        : withLock;
 
     return Response.json({ entries: finalEntries });
   } catch (e) {

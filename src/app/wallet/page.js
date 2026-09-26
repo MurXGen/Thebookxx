@@ -199,14 +199,21 @@ export default function WalletPage() {
                       <span className="wallet-txn-date">
                         {fmtDateTime(h.date)}
                       </span>
-                      {h.type === "credit" && h.expires && (
-                        <span className="wallet-txn-exp">
-                          Expires {fmtDate(h.expires)}
+                      {h.locked ? (
+                        <span className="wallet-txn-locked">
+                          Locked — unlocks after this order is completed
                         </span>
+                      ) : (
+                        h.type === "credit" &&
+                        h.expires && (
+                          <span className="wallet-txn-exp">
+                            Expires {fmtDate(h.expires)}
+                          </span>
+                        )
                       )}
                     </div>
                     <span
-                      className={`wallet-txn-amt ${h.type === "credit" ? "cr" : "db"}`}
+                      className={`wallet-txn-amt ${h.locked ? "locked" : h.type === "credit" ? "cr" : "db"}`}
                     >
                       {h.type === "credit" ? "+" : "−"}₹{Math.abs(h.amount)}
                     </span>

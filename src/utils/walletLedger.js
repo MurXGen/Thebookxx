@@ -59,13 +59,16 @@ export function computeWalletLedger(entries, now = Date.now(), ttlDays = WALLET_
   for (const e of sorted) {
     if (e.amount > 0) {
       const expires = new Date(e.date.getTime() + ttlDays * DAY);
-      credits.push({ date: e.date, remaining: e.amount, expires });
+      // Locked reward coins (order still active in the sheet) appear in history
+      // but are NOT spendable — keep them out of the FIFO balance pool.
+      if (!e.locked) credits.push({ date: e.date, remaining: e.amount, expires });
       history.push({
         date: e.date,
         amount: e.amount,
         type: "credit",
         reason: e.reason || "",
         orderId: e.orderId || "",
+        locked: !!e.locked,
         expires,
       });
     } else {
@@ -131,6 +134,7 @@ export async function fetchWalletEntries(phone) {
       reason: e.reason || "",
       type: e.type || "",
       orderId: e.orderId || "",
+      locked: !!e.locked,
     }));
   } catch (e) {
     console.error("Wallet ledger fetch failed:", e);

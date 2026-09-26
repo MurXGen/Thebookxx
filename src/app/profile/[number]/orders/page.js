@@ -111,10 +111,14 @@ export default function OrdersListPage() {
         const all = Array.isArray(json.orders) ? json.orders : [];
         const real = all
           .filter((o) => {
-            // Hide raw WhatsApp leads (not yet a real order); unconfirmed
-            // online/COD-converted orders still show, tagged "Unconfirmed".
+            // Hide raw WhatsApp leads (not yet a real order) AND unconfirmed
+            // orders (drafts / payment-pending) — customers only see confirmed
+            // orders in their history.
             const wa = /whatsapp/i.test(o["Payment Type"] || "");
-            return !wa;
+            const unconfirmed =
+              /unconfirmed/i.test(o["Order Status"] || "") ||
+              /\(unconfirmed\)/i.test(o["Customer Name"] || "");
+            return !wa && !unconfirmed;
           })
           .map((o) => {
             const rawStatus = String(o["Order Status"] || "");

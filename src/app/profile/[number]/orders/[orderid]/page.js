@@ -278,7 +278,13 @@ export default function OrderDetailPage() {
           .replace(/\D/g, "")
           .slice(-10);
         const owned = row && (!/^\d{10}$/.test(number) || rowPhone === number);
-        if (!ignore) setOrder(owned ? row : null);
+        // Unconfirmed orders (drafts / payment-pending) aren't real orders yet —
+        // show the "not found" state rather than a detail page for them.
+        const unconfirmed =
+          row &&
+          (/unconfirmed/i.test(row["Order Status"] || "") ||
+            /\(unconfirmed\)/i.test(row["Customer Name"] || ""));
+        if (!ignore) setOrder(owned && !unconfirmed ? row : null);
       } catch {
         if (!ignore) setOrder(null);
       } finally {

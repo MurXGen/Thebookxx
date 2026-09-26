@@ -829,6 +829,7 @@ const TRACK_STATUS_OPTIONS = [
   "Out for Delivery",
   "Delivered",
   "Money received",
+  "On hold",
   "Cancelled",
 ];
 
@@ -836,6 +837,7 @@ const TRACK_STATUS_OPTIONS = [
 function moStatusColor(status) {
   const s = String(status || "").toLowerCase();
   if (/unconfirmed/.test(s)) return "#e11d48"; // rose — needs verification
+  if (/on\s*hold/.test(s)) return "#d97706"; // amber — packaging issue
   if (/cancel/.test(s)) return "#dc2626"; // red
   if (/delivered|money received/.test(s)) return "#16a34a"; // green
   if (/out for delivery/.test(s)) return "#4f46e5"; // indigo

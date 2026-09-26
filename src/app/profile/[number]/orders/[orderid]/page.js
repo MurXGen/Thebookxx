@@ -188,6 +188,11 @@ function statusLabel(order) {
     return { title: "About to ship", sub: "Your parcel is being handed over" };
   if (/processing/.test(st))
     return { title: "Order status", sub: "We're preparing your order" };
+  if (/on\s*hold/.test(st))
+    return {
+      title: "On hold",
+      sub: "There is some issue in packaging this item",
+    };
   if (/cancel/.test(st))
     return { title: "Cancelled", sub: "This order was cancelled" };
   if (/unconfirmed|pending/.test(st)) {
@@ -881,6 +886,7 @@ export default function OrderDetailPage() {
   const showOrderNote =
     shipped || inTransit || outForDelivery || delivered;
   const cancelled = /cancel/i.test(order["Order Status"] || "");
+  const onHold = /on\s*hold/i.test(order["Order Status"] || "");
   const shippingId = order["Shipping ID"] || "";
 
   // Address is editable before the parcel really moves: not delivered/cancelled/
@@ -976,6 +982,7 @@ export default function OrderDetailPage() {
   const psBadge = (() => {
     const st = String(order?.["Order Status"] || "").toLowerCase();
     if (cancelled) return "Cancelled";
+    if (/on\s*hold/.test(st)) return "On hold";
     if (delivered) return "Delivered"; // includes "money received"
     if (/shipped|getting shipped/.test(st)) return "Getting shipped";
     if (/processing/.test(st)) return "Preparing";
@@ -1299,11 +1306,13 @@ export default function OrderDetailPage() {
                 <span>
                   {cancelled
                     ? "This order was cancelled"
-                    : delivered
-                      ? "Your books have arrived — enjoy!"
-                      : outForDelivery
-                        ? "Arriving today — keep your phone handy"
-                        : `Reaching you in ${etaMin}–${etaMax} days`}
+                    : onHold
+                      ? "There is some issue in packaging this item"
+                      : delivered
+                        ? "Your books have arrived — enjoy!"
+                        : outForDelivery
+                          ? "Arriving today — keep your phone handy"
+                          : `Reaching you in ${etaMin}–${etaMax} days`}
                 </span>
               </div>
               <span

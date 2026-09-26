@@ -59,8 +59,8 @@ export function computeWalletLedger(entries, now = Date.now(), ttlDays = WALLET_
   for (const e of sorted) {
     if (e.amount > 0) {
       const expires = new Date(e.date.getTime() + ttlDays * DAY);
-      // Locked reward coins (order still active in the sheet) appear in history
-      // but are NOT spendable — keep them out of the FIFO balance pool.
+      // Locked/orphan reward coins (linked order not found for this phone) are
+      // invalid — keep them out of the FIFO balance pool (and hidden by the UI).
       if (!e.locked) credits.push({ date: e.date, remaining: e.amount, expires });
       history.push({
         date: e.date,

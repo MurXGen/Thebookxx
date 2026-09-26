@@ -177,8 +177,8 @@ export default function WalletPage() {
 
             <div className="wallet-txn-list">
               {ledger.history
-                // Locked reward coins (order still active) are hidden entirely
-                // until they unlock — never shown or usable.
+                // Orphan reward coins (linked order not found for this number)
+                // are hidden entirely — never shown or usable.
                 .filter((h) => !h.locked)
                 .filter((h) => filter === "all" || h.type === filter)
                 .map((h, i) => (

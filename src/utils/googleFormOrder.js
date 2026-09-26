@@ -189,8 +189,8 @@ export const fetchWalletBalance = async (phone) => {
     const res = await fetch(`/api/wallet?phone=${digits}`);
     const json = await res.json();
     const entries = Array.isArray(json.entries) ? json.entries : [];
-    // Locked reward coins (order still present in the sheet) aren't spendable —
-    // exclude them so checkout only offers the spendable balance.
+    // Locked/orphan reward coins (linked order not found) aren't spendable —
+    // exclude them so checkout only offers the valid, spendable balance.
     const bal = entries.reduce(
       (s, e) => s + (e.locked && Number(e.amount) > 0 ? 0 : Number(e.amount) || 0),
       0,

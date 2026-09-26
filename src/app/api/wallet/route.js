@@ -104,15 +104,16 @@ export async function GET(request) {
     // Cross-reference the orders sheet (scoped to this phone) once, to power:
     //   (a) CANCELLED-order refunds — a wallet debit tagged with a cancelled
     //       order's id stops reducing the balance (amount returned).
-    //   (b) LOCKED reward coins — a scratch-card CREDIT whose order is still
-    //       present in the sheet is "locked": shown in history but not spendable
-    //       (blocks reward → spend → cancel abuse). It unlocks once that order
-    //       is no longer in the sheet.
+    //   (b) ORPHAN reward coins — a scratch-card CREDIT whose linked Order ID is
+    //       NOT found in this phone's orders is invalid: it's hidden and not
+    //       spendable. Only coins tied to a real, present order (or with no order
+    //       link at all, e.g. manual/goodwill credits) count.
     // Safety: any failure reading the orders sheet leaves everything untouched
-    // (no refunds applied, nothing locked) — we never penalise on a failed read.
+    // (no refunds applied, nothing hidden) — we never penalise on a failed read.
     const anyOrderLinked = entries.some((e) => e.orderId);
     let presentIds = new Set();
     let cancelledIds = new Set();
+    let ordersReadOk = false;
     if (anyOrderLinked) {
       try {
         const oMeta = await gvizQuery({
@@ -138,19 +139,23 @@ export async function GET(request) {
           const status = String(row["Order Status"] ?? "");
           if (/cancel/i.test(status)) cancelledIds.add(oid);
         });
+        ordersReadOk = true;
       } catch {
-        presentIds = new Set(); // read failed → lock nothing (safe)
+        presentIds = new Set(); // read failed → hide nothing (safe)
         cancelledIds = new Set(); // read failed → refund nothing (safe)
+        ordersReadOk = false;
       }
     }
 
     const withLock = entries.map((e) => ({
       ...e,
-      // A reward credit whose order is still present in the sheet is locked.
+      // A reward credit whose linked order is NOT found for this phone is an
+      // orphan → locked (hidden + unspendable). Only applied on a good read.
       locked:
+        ordersReadOk &&
         e.amount > 0 &&
         !!e.orderId &&
-        presentIds.has(String(e.orderId).trim()),
+        !presentIds.has(String(e.orderId).trim()),
     }));
 
     const finalEntries =

@@ -1956,6 +1956,22 @@ export const books = [
     weight: 900,
   },
   {
+    id: "bk-691",
+    name: "Windy City Series (5 book series)",
+    image: bookImages["windy-city-series-set"],
+    description:
+      "Buy the Windy City Series (5 Book Series) by Liz Tomforde online at the lowest price on TheBookX.in. Own the complete Chicago sports-romance saga — Mile High, The Right Move, Caught Up, Play Along and Wild Card — a swoon-worthy, slow-burn collection loved by BookTok, together in one paperback set. Every book is authentic and high-quality, delivered securely via Delhivery and Indian Post, with titles starting at just ₹1 for a limited time. Enjoy Cash on Delivery, free shipping and easy returns across India — your trusted destination for bestselling romance box sets.",
+    author: "Liz Tomforde",
+    pages: "1700-1900",
+    language: "English",
+    size: "Paperback",
+    stock: 12,
+    catalogue: ["romance", "set", "bestseller", "trending"],
+    originalPrice: calculateOriginalPrice(1299),
+    discountedPrice: 1299,
+    weight: 1350,
+  },
+  {
     id: "bk-115",
     name: "The Shiva Trilogy Set",
     image: bookImages["meluha-nagas-vayaputra-set"],

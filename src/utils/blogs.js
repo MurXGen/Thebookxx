@@ -4,6 +4,228 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "frankfurt-book-fair-2026-what-indian-readers-should-know": {
+    id: "blog-062",
+    title:
+      "Frankfurt Book Fair 2026 (7-11 October): How a Trade Fair in Germany Decides What You Read Next in India",
+    slug: "frankfurt-book-fair-2026-what-indian-readers-should-know",
+    author: "TheBookX Editorial",
+    authorSlug: "murthy-thevar",
+    publishDate: "2026-09-26",
+    lastModified: "2026-09-26",
+    excerpt:
+      "Frankfurter Buchmesse runs 7-11 October 2026 with Czechia as Guest of Honour. Here is what actually happens there, and why it changes your shelf two years later.",
+    content: [
+      {
+        type: "paragraph",
+        content:
+          "In eleven days, on Wednesday 7 October, roughly four thousand publishing companies will begin unpacking crates inside a convention centre in Frankfurt am Main. By Sunday 11 October they will have packed up again. Almost nothing that happens in those five days will be reported in Indian newspapers, and almost every foreign novel you buy in 2028 will have passed through a conversation held in one of those booths.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The Frankfurter Buchmesse is not a book fair in the sense an Indian reader means the phrase. There is no stack of paperbacks at forty per cent off and no author signing at the far end. It is a rights market: a place where the person who owns a book in one language sells the right to publish it in another. Understanding how that market works is the closest thing there is to seeing the machinery behind a bookshop shelf, and it is worth ten minutes even if you will never attend.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "Frankfurt Book Fair 2026, in one place",
+        content:
+          "Dates: Wednesday 7 October to Sunday 11 October 2026, at Messe Frankfurt, Germany. Guest of Honour: Czechia, presenting under the motto 'A Country on the Coast', borrowed from Shakespeare's The Winter's Tale, which famously gives landlocked Bohemia a seashore. Scale: organisers expect more than 4,300 exhibitors from over 90 countries. Trade days come first; the weekend opens to the general public. India has been Guest of Honour twice, in 1986 and again in 2006.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "What is actually being sold in Frankfurt",
+      },
+      {
+        type: "paragraph",
+        content:
+          "A book has two separate lives. There is the physical object, which is manufactured and shipped and discounted, and there is the underlying right to publish it, which is a licence with a territory, a language, a term and a royalty attached. Frankfurt trades the second thing. An agent walks into a half-hour appointment with a pitch and a sample translation; an editor from a house in Seoul or Sao Paulo or Delhi decides whether to make an offer.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The lag between that handshake and your order confirmation is usually between eighteen months and three years. Translation takes a year on its own if it is done properly. This is why translated fiction arrives in waves rather than steadily, and why a Korean novel you had never heard of suddenly appears in four Indian bookshops at once. Someone bought it in a booth three autumns ago.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "R.F. Kuang's <a href=\"/books/babel\" style=\"color:#fb8500;font-weight:600\">Babel</a> is the one novel that dramatises this entire apparatus, and it is a sharp companion read for fair week, because it treats translation as an exercise of power rather than a neutral service.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Fiction gets the attention, but non-fiction is the larger share of what moves at Frankfurt, and the pattern is easier to see there. <a href=\"/books/sapiens-a-brief-history-of-humankind\" style=\"color:#fb8500;font-weight:600\">Sapiens</a> by Yuval Noah Harari was written in Hebrew and published in Israel in 2011 before the English edition made it a global book; <a href=\"/books/ikigai\" style=\"color:#fb8500;font-weight:600\">Ikigai</a> by Hector Garcia and Francesc Miralles was written in Spanish about a Japanese idea and now sells in India in quantities neither author could have forecast. Both are examples of a book becoming international because someone bought a licence, not because it was written for the world.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Czechia is Guest of Honour, so start with Prague",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The Guest of Honour slot is the one part of Frankfurt built for readers rather than buyers. A country gets a pavilion, a programme and, more usefully, a wave of new translations timed to the fair. Czechia holds it in 2026 under the motto 'A Country on the Coast', a joke at its own expense drawn from the stage direction in The Winter's Tale that gives Bohemia a coastline it has never had.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "For most readers the entry point into Czech literature is one writer, and he wrote in German. Franz Kafka was born in Prague in 1883 and lived almost his whole life there, and the city is present in his work as a set of corridors, offices and unanswerable procedures. <a href=\"/books/the-metamorphosis\" style=\"color:#fb8500;font-weight:600\">The Metamorphosis</a> is the correct place to begin because it is short enough to finish in an evening and because its first sentence does all the work of explaining what kind of book it is. Then <a href=\"/books/the-trial\" style=\"color:#fb8500;font-weight:600\">The Trial</a>, which anyone who has dealt with a government office will recognise faster than they would like, and <a href=\"/books/the-castle\" style=\"color:#fb8500;font-weight:600\">The Castle</a>, which is the same nightmare run in reverse.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The book that changes how the other three read is <a href=\"/books/letters-to-milena\" style=\"color:#fb8500;font-weight:600\">Letters to Milena</a>. Milena Jesenska was a Czech journalist who translated Kafka into Czech, and the correspondence is between a writer and his translator who were also, briefly and disastrously, in love with each other. It is the only place in Kafka where the machinery drops away and a recognisable person is talking. Read it last.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "Where to begin with Kafka, in order",
+        content:
+          "The Metamorphosis for the shock and the brevity. The Trial for the procedure. The Castle if the first two worked. Letters to Milena for the man behind all of it. Skip the collected short fiction until you have done at least two of the above, and do not start with the diaries.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The last decade of Frankfurt, visible on your shelf",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The clearest evidence that the rights market works is the shape of Indian bookshop displays over the past ten years. Three separate waves are easy to trace, and all three began as foreign-language rights deals.",
+      },
+      {
+        type: "list",
+        style: "ordered",
+        items: [
+          "Japanese comfort fiction. Toshikazu Kawaguchi's <a href=\"/books/before-the-coffee-gets-cold\" style=\"color:#fb8500;font-weight:600\">Before the Coffee Gets Cold</a> began as a stage play, became a Japanese novel, and reached English in 2019, after which it spent years on Indian bestseller tables. <a href=\"/books/days-at-the-morisaki-bookshop\" style=\"color:#fb8500;font-weight:600\">Days at the Morisaki Bookshop</a> by Satoshi Yagisawa followed the same route, and both are short enough to finish in two sittings.",
+          "Korean literary fiction. Han Kang's <a href=\"/books/the-vegetarian\" style=\"color:#fb8500;font-weight:600\">The Vegetarian</a>, in Deborah Smith's translation, won the International Booker in 2016 and opened a door that has not closed since. <a href=\"/books/i-want-to-die-but-i-want-to-eat-tteokbokki\" style=\"color:#fb8500;font-weight:600\">I Want to Die but I Want to Eat Tteokbokki</a> by Baek Sehee and <a href=\"/books/welcome-to-the-hyunam-dong-bookshop\" style=\"color:#fb8500;font-weight:600\">Welcome to the Hyunam-dong Bookshop</a> by Hwang Bo-reum both arrived through the same widened door.",
+          "Japanese crime and satire. <a href=\"/books/butter\" style=\"color:#fb8500;font-weight:600\">Butter</a> by Asako Yuzuki, based loosely on a real case, is the current example of a novel that would not have been translated at all fifteen years ago, and it is the wave still arriving.",
+        ],
+      },
+      {
+        type: "paragraph",
+        content:
+          "None of these were sure things. Each one was a bet placed by an editor in a booth, and the run of Japanese and Korean fiction on Indian shelves is the visible residue of a long series of such bets paying off.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Where India stands in this market",
+      },
+      {
+        type: "paragraph",
+        content:
+          "India is one of the largest print book markets in the world and among the largest English-language publishing markets anywhere, with tens of thousands of registered publishers. It is also, historically, a net importer of rights rather than an exporter: far more foreign titles are licensed into India than Indian titles are licensed out. That imbalance is the actual story of India at Frankfurt, and it has begun to shift, slowly, on the back of translation from Indian languages rather than English-language exports.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The obvious way to see what is at stake is to read across the gap yourself. <a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> by Arundhati Roy is the English-language Indian novel that travelled furthest, and it won the Booker in 1997. Then read something that went the other way: <a href=\"/books/diwar-mein-ek-khidki-rahti-thi\" style=\"color:#fb8500;font-weight:600\">Diwar Mein Ek Khidki Rahti Thi</a> by Vinod Kumar Shukla, one of the great Hindi novels of the last half century, or Satya Vyas's <a href=\"/books/banaras-talkies\" style=\"color:#fb8500;font-weight:600\">Banaras Talkies</a> if you want contemporary Hindi that is genuinely popular rather than merely respected.",
+      },
+      {
+        type: "blockquote",
+        content:
+          "A book only becomes world literature when somebody decides it is worth the cost of a translator. Everything else is distribution.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "How to use fair week if you are nowhere near Frankfurt",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Frankfurt is not a spectator event, but the week is a genuinely good excuse to fix one gap in your reading. The most common gap among Indian readers who read widely in English is that almost nothing on the shelf was written in a third language. Here is a practical way to close it.",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "Pick one language you have never read from and take the shortest well-known book in it. For Russian, that is Dostoevsky's <a href=\"/books/white-nights\" style=\"color:#fb8500;font-weight:600\">White Nights</a> rather than a nine-hundred-page novel. Start light and earn the long one.",
+          "Check the translator's name before you buy. A translation is a piece of writing by a specific person, and the difference between two editions of the same novel is not cosmetic.",
+          "Pair a translated novel with something familiar so you do not stall. <a href=\"/books/norwegian-wood\" style=\"color:#fb8500;font-weight:600\">Norwegian Wood</a> or <a href=\"/books/kafka-on-the-shore\" style=\"color:#fb8500;font-weight:600\">Kafka on the Shore</a> by Haruki Murakami work well here, because Murakami is himself a translator and writes in a register that crosses over easily.",
+          "Do not confuse popular with easy. <a href=\"/books/the-alchemist\" style=\"color:#fb8500;font-weight:600\">The Alchemist</a> by Paulo Coelho, translated from Portuguese, is a better starting point than any prize list.",
+          "Keep one long Russian novel going in the background for the rest of the year. <a href=\"/books/crime-and-punishment\" style=\"color:#fb8500;font-weight:600\">Crime and Punishment</a> is the one most people finish, and <a href=\"/books/how-to-read-a-book\" style=\"color:#fb8500;font-weight:600\">How to Read a Book</a> by Mortimer Adler is the old, unfashionable manual that makes a difficult one survivable.",
+        ],
+      },
+      {
+        type: "paragraph",
+        content:
+          "There is a smaller point buried in all of this that has nothing to do with Germany. The reason translation is difficult is that most writing is less precise than it looks, and a translator is the first reader forced to establish what a sentence actually claims before rendering it. Anyone who has tried to write a clear paragraph knows that sensation. Working out what you mean before you say it is the whole subject of <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar, and it is a short book to read alongside a difficult translated one.",
+      },
+      {
+        type: "callout",
+        style: "success",
+        title: "Building a translated-fiction shelf without overspending",
+        content:
+          "Every title mentioned here is available at TheBookX, with books starting from ₹1, free delivery across India and Cash on Delivery nationwide. Gift wrapping is ₹25 if one is going to a reader who already owns everything in English. A sensible first order for fair week: one Kafka, one Korean or Japanese novel under 250 pages, and one book originally written in an Indian language.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The fair closes on Sunday 11 October and the trade moves on to the next appointment. The books bought in those five days will reach Indian shelves somewhere around 2028, by which point nobody will remember that they were bought at all. That is the ordinary and slightly strange fact underneath a bookshop: most of what is in front of you was chosen years ago, by someone you will never meet, in a language you may not read.",
+      },
+    ],
+    coverImage: "/blogs/frankfurt-book-fair-2026-what-indian-readers-should-know.jpeg",
+    images: [
+      {
+        url: "/blogs/frankfurt-book-fair-2026-what-indian-readers-should-know.jpeg",
+        alt: "A young woman browsing a tall shelf of plain unmarked hardbacks in a warmly lit bookshop, holding one open in both hands",
+        caption:
+          "Frankfurter Buchmesse runs 7-11 October 2026, with Czechia as Guest of Honour under the motto 'A Country on the Coast'",
+        category: "Reading Culture",
+      },
+    ],
+    keywords: [
+      "frankfurt book fair 2026",
+      "frankfurter buchmesse 2026 dates",
+      "frankfurt book fair guest of honour czechia",
+      "frankfurt book fair india",
+      "translated fiction books india",
+      "kafka books to read in order",
+      "czech literature books",
+      "international book rights explained",
+      "best translated novels to start with",
+      "buy translated books online india",
+      "books from rs 1 india free delivery",
+      "TheBookX",
+    ],
+    categories: ["Reading Culture", "Books in Translation", "Reading Lists"],
+    faqs: [
+      {
+        question: "When is the Frankfurt Book Fair 2026 and where is it held?",
+        answer:
+          "The Frankfurter Buchmesse 2026 runs from Wednesday 7 October to Sunday 11 October 2026 at Messe Frankfurt in Frankfurt am Main, Germany. The first days are reserved for the publishing trade and the weekend opens to the general public. Organisers expect more than 4,300 exhibitors from over 90 countries. It is primarily a rights and licensing market rather than a retail book fair, which is what distinguishes it from consumer fairs such as the World Book Fair in New Delhi or the Kolkata Book Fair.",
+      },
+      {
+        question: "Which country is Guest of Honour at Frankfurt Book Fair 2026?",
+        answer:
+          "Czechia is the Guest of Honour at the Frankfurt Book Fair 2026, presenting under the motto 'A Country on the Coast'. The phrase is drawn from Shakespeare's The Winter's Tale, which places a seacoast in landlocked Bohemia, and the Czech programme uses it as a deliberate joke about its own geography. India has held the Guest of Honour slot twice, in 1986 and again in 2006.",
+      },
+      {
+        question: "How does the Frankfurt Book Fair affect what Indian readers can buy?",
+        answer:
+          "Frankfurt is where publishers buy and sell translation and territorial rights. An editor at an Indian or international house may acquire the English-language or South Asian rights to a foreign novel during the fair, after which translation, editing and printing typically take between eighteen months and three years. That lag is why translated fiction reaches Indian shelves in waves. The Japanese and Korean fiction currently on Indian bestseller tables, including Before the Coffee Gets Cold and The Vegetarian, reached readers through exactly this route.",
+      },
+      {
+        question: "Which Czech books should I read for the 2026 Guest of Honour year?",
+        answer:
+          "Franz Kafka, born in Prague in 1883, is the natural starting point even though he wrote in German. Begin with The Metamorphosis, which is short enough to finish in one evening, then The Trial and The Castle. Letters to Milena is the book to read last: Milena Jesenska was the Czech journalist who translated Kafka into Czech, and the correspondence shows a recognisable person rather than a literary figure. All four are available at TheBookX with free delivery across India.",
+      },
+      {
+        question: "What is the easiest translated novel to start with?",
+        answer:
+          "Start short and popular rather than prize-winning. Before the Coffee Gets Cold by Toshikazu Kawaguchi, The Alchemist by Paulo Coelho and The Metamorphosis by Franz Kafka are all under 250 pages and require no prior familiarity with their traditions. Dostoevsky's White Nights is the right way into Russian literature before attempting Crime and Punishment. Checking the translator's name is worth the extra minute, because two translations of the same novel can read very differently.",
+      },
+    ],
+  },
   "gandhi-jayanti-2026-books-to-read-non-violence": {
     id: "blog-061",
     title:

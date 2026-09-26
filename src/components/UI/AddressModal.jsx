@@ -515,11 +515,10 @@ export default function AddressModal({
   const codFeeAmount = Math.max(29, Math.round(upiTotalForFlow * 0.059));
   const codTotalWithFee = upiTotalForFlow + codFeeAmount;
 
-  // ₹99-advance: below ₹400 the COD charge is fully waived; from ₹400 up a
-  // silent 5.9% packing & care (handling) charge applies to the balance. The
-  // customer prepays ₹99 online and pays the rest at delivery.
-  const advanceHandlingFee =
-    upiTotalForFlow > 400 ? Math.max(0, Math.round(upiTotalForFlow * 0.059)) : 0;
+  // ₹99-advance ("Pay in two parts"): NO COD / handling fee — priced the same
+  // as full online payment. The customer prepays ₹99 online and pays the rest
+  // at delivery, with no extra charge on the balance.
+  const advanceHandlingFee = 0;
   const advanceOrderTotal = upiTotalForFlow + advanceHandlingFee;
   const advanceRemaining = Math.max(0, advanceOrderTotal - codAdvanceAmount);
 
@@ -762,17 +761,15 @@ export default function AddressModal({
       const giftWrapAmountForOrder = giftWrapOn ? giftWrapCharge : 0;
       // Bookmarks: free up to the tier, ₹9 for each extra (same on all flows).
       const bookmarkAmountForOrder = bookmarkCharge;
-      // Fee: normal COD → COD fee. Advance → COD is waived below ₹400; from ₹400
-      // up a silent 5.9% packing & care (handling) charge applies to the balance.
+      // Fee: normal COD → COD fee. Advance ("Pay in two parts") → NO fee at all
+      // (priced the same as full online payment).
       const onlineBase =
         netPayable +
         deliveryChargeForOrder +
         giftWrapAmountForOrder +
         bookmarkAmountForOrder;
       const feeForThisOrder = advance
-        ? onlineBase > 400
-          ? Math.max(0, Math.round(onlineBase * 0.059))
-          : 0
+        ? 0
         : paymentType === "COD"
           ? codFeeAmount
           : 0;

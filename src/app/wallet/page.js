@@ -177,6 +177,9 @@ export default function WalletPage() {
 
             <div className="wallet-txn-list">
               {ledger.history
+                // Locked reward coins (order still active) are hidden entirely
+                // until they unlock — never shown or usable.
+                .filter((h) => !h.locked)
                 .filter((h) => filter === "all" || h.type === filter)
                 .map((h, i) => (
                   <div key={i} className="wallet-txn">
@@ -199,21 +202,14 @@ export default function WalletPage() {
                       <span className="wallet-txn-date">
                         {fmtDateTime(h.date)}
                       </span>
-                      {h.locked ? (
-                        <span className="wallet-txn-locked">
-                          Locked — unlocks after this order is completed
+                      {h.type === "credit" && h.expires && (
+                        <span className="wallet-txn-exp">
+                          Expires {fmtDate(h.expires)}
                         </span>
-                      ) : (
-                        h.type === "credit" &&
-                        h.expires && (
-                          <span className="wallet-txn-exp">
-                            Expires {fmtDate(h.expires)}
-                          </span>
-                        )
                       )}
                     </div>
                     <span
-                      className={`wallet-txn-amt ${h.locked ? "locked" : h.type === "credit" ? "cr" : "db"}`}
+                      className={`wallet-txn-amt ${h.type === "credit" ? "cr" : "db"}`}
                     >
                       {h.type === "credit" ? "+" : "−"}₹{Math.abs(h.amount)}
                     </span>

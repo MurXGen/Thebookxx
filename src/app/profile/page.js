@@ -970,22 +970,9 @@ export default function MyOrdersPage() {
       };
       const realOrders = parsedOrders.filter(isRealOrder);
 
-      // Orders still awaiting confirmation now appear in the list itself with an
-      // "Unconfirmed" status (instead of a separate banner card).
-      const pendingAsOrders = pending
-        // WhatsApp-button orders are handled over chat — never shown/counted here.
-        .filter((order) => !/whatsapp/i.test(order["Payment Type"] || ""))
-        .map((order) => ({
-          ...order,
-          parsedBooks: parseBooksList(order["Books List"]),
-          status: "Unconfirmed",
-          shippingId: "",
-          advancePaid: order["Advance Paid"] || "No",
-          comment: order["Comment for this order"] || order["Comment"] || "",
-        }))
-        .filter(isRealOrder);
-
-      setOrders([...pendingAsOrders, ...realOrders]);
+      // Unconfirmed / still-pending orders are NOT shown in the customer's order
+      // status & history — only confirmed orders count here.
+      setOrders(realOrders);
 
       // Referral payout safety-net: if this shopper was referred and now has a
       // delivered order, settle the reward (₹50 to referrer, ₹30 to them). The

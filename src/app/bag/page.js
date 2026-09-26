@@ -6,6 +6,7 @@ import LazyBookGrid from "@/components/UI/LazyBookGrid";
 import PageHeader from "@/components/UI/PageHeader";
 import RecentlyViewed from "@/components/RecentlyViewed";
 import RecommendationModal from "@/components/RecommendationModal";
+import SearchOverlay from "@/components/SearchOverlay";
 import AddressModal from "@/components/UI/AddressModal";
 import BillModal from "@/components/UI/BillModal";
 import CartOfferStrip from "@/components/UI/CartOfferStrip";
@@ -41,6 +42,7 @@ import {
   Sparkles,
   User,
   Share2,
+  Search,
   ShoppingCart,
   RotateCcw,
   FileText,
@@ -96,6 +98,7 @@ function BagContent() {
   const [showSharedModal, setShowSharedModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false); // review-before-share
   const [shareBusy, setShareBusy] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false); // header search overlay
 
   const [hasAcceptedShipping, setHasAcceptedShipping] = useState(false);
 
@@ -1165,6 +1168,15 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
             <button
               type="button"
               className="bag-icon-btn"
+              onClick={() => setSearchOpen(true)}
+              aria-label="Search books"
+              title="Search books"
+            >
+              <Search size={19} />
+            </button>
+            <button
+              type="button"
+              className="bag-icon-btn"
               onClick={handleShareBag}
               aria-label="Share your bag"
               title="Share your bag"
@@ -1625,6 +1637,8 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
         isOpen={showRecommendationModal}
         onClose={() => setShowRecommendationModal(false)}
       />
+
+      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
 
       {sharedModal}
 

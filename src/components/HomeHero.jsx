@@ -182,9 +182,8 @@ export default function HomeHero() {
         </h1>
 
         <p className="home-hero-sub">
-          Hand-picked bestsellers, self-help and fiction at the lowest prices,
-          starting at just ₹1. Cash on Delivery, free shipping and easy 7-day
-          returns across India.
+          Hand-picked bestsellers, self-help &amp; fiction from just ₹1 — free
+          shipping, Cash on Delivery &amp; easy 7-day returns across India.
         </p>
 
         <div className="home-hero-stats">

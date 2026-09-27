@@ -59,6 +59,7 @@ import {
 import ScratchRewardSheet from "./ScratchRewardSheet";
 import OrderPlacedSuccess from "./OrderPlacedSuccess";
 import CartSupportSheet from "./CartSupportSheet";
+import OrderSuccessCard from "./OrderSuccessCard";
 import { showToast } from "@/context/ToastContext";
 
 const PINCODE_DATA_KEY = "user_pincode";
@@ -260,6 +261,8 @@ export default function AddressModal({
   // note + faster-delivery upgrade writes).
   const [placedOrderId, setPlacedOrderId] = useState("");
   const [supportOpen, setSupportOpen] = useState(false); // "Need support?" sheet
+  const [successCtx, setSuccessCtx] = useState(null); // snapshot for success card
+  const [showSuccessCard, setShowSuccessCard] = useState(false);
   const [successPayment, setSuccessPayment] = useState("COD");
   // "Pay online" method chooser (UPI apps + Cards/gift-card for overseas users)
   const [showPayMethod, setShowPayMethod] = useState(false);
@@ -2611,6 +2614,30 @@ export default function AddressModal({
                 .replace(/\D/g, "")
                 .slice(-10);
               const oid = placedOrderId || upiOrderRef;
+              // Snapshot the placed order so the interactive success card can
+              // offer add-ons even after the cart is cleared.
+              setSuccessCtx({
+                orderId: oid,
+                phone: digits,
+                name,
+                address: { address, city, state, pincode },
+                books: (cartBooks || []).map((b) => ({
+                  id: b.id,
+                  name: b.name,
+                  image: b.image,
+                  qty: b.qty || 1,
+                  price: b.discountedPrice,
+                })),
+                baseTotal:
+                  paySel === "COD"
+                    ? codTotalWithFee
+                    : paySel === "ADV"
+                      ? advanceOrderTotal
+                      : upiTotalForFlow,
+                faster: fasterDelivery,
+                bookmarkQty,
+                freeBookmarks,
+              });
               // Clear the cart now the order is placed.
               try {
                 clearCart && clearCart();
@@ -2622,14 +2649,38 @@ export default function AddressModal({
                   localStorage.setItem("track_orders_phone", digits);
               } catch {}
               setShowCODSuccess(false);
+              setShowSuccessCard(true);
+            }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Interactive success card — note, edit address, faster upgrade,
+          bookmarks, and 30%-off add-ons, all pushed to the placed order. */}
+      <AnimatePresence>
+        {showSuccessCard && successCtx && (
+          <OrderSuccessCard
+            {...successCtx}
+            onTrack={() => {
+              const d = successCtx.phone;
+              const oid = successCtx.orderId;
               if (typeof window !== "undefined") {
-                if (digits.length === 10 && oid) {
+                if (d.length === 10 && oid)
                   window.location.assign(
-                    `/profile/${digits}/orders/${encodeURIComponent(oid)}`,
+                    `/profile/${d}/orders/${encodeURIComponent(oid)}`,
                   );
-                } else {
-                  window.location.assign("/profile");
-                }
+                else window.location.assign("/profile");
+              }
+            }}
+            onClose={() => {
+              const d = successCtx.phone;
+              const oid = successCtx.orderId;
+              if (typeof window !== "undefined") {
+                if (d.length === 10 && oid)
+                  window.location.assign(
+                    `/profile/${d}/orders/${encodeURIComponent(oid)}`,
+                  );
+                else window.location.assign("/profile");
               }
             }}
           />

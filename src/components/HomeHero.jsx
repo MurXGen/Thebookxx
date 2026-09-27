@@ -266,7 +266,6 @@ export default function HomeHero() {
               .filter((x) => x.b)
               .map(({ b, rank }, idx) => {
                 const url = `/books/${slugify(b.name)}`;
-                const now = Number(b.discountedPrice) || 0;
                 return (
                   <motion.div
                     className={`hpz hpz-r${rank}`}
@@ -295,9 +294,35 @@ export default function HomeHero() {
                     >
                       <span className="hpz-cover">
                         <img src={b.image} alt={b.name} loading="lazy" />
+                        <span className="hpz-bm" aria-hidden="true">
+                          <svg
+                            viewBox="0 0 26 40"
+                            width="26"
+                            height="40"
+                            fill="none"
+                          >
+                            <path
+                              d="M2 0h22a2 2 0 0 1 2 2v38l-13-8-13 8V2a2 2 0 0 1 2-2z"
+                              fill="url(#hpzbm)"
+                            />
+                            <defs>
+                              <linearGradient
+                                id="hpzbm"
+                                x1="0"
+                                y1="0"
+                                x2="0"
+                                y2="40"
+                                gradientUnits="userSpaceOnUse"
+                              >
+                                <stop stopColor="#fb8500" />
+                                <stop offset="1" stopColor="#ffb703" />
+                              </linearGradient>
+                            </defs>
+                          </svg>
+                          <span className="hpz-bm-txt">FREE</span>
+                        </span>
                       </span>
                       <span className="hpz-title">{b.name}</span>
-                      <span className="hpz-price">₹{now}</span>
                     </button>
                     <div className="hpz-pillar">
                       <span className="hpz-rank">{rank}</span>

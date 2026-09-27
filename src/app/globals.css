@@ -14577,6 +14577,7 @@ img[data-loaded="true"] {
   cursor: pointer;
 }
 .hpz-cover {
+  position: relative;
   display: block;
   width: 80px;
   height: 108px;
@@ -14591,6 +14592,32 @@ img[data-loaded="true"] {
   height: 100%;
   object-fit: cover;
   display: block;
+}
+/* Free-bookmark ribbon tucked into the top-right of the cover */
+.hpz-bm {
+  position: absolute;
+  top: 0;
+  right: 8px;
+  width: 22px;
+  height: 34px;
+  z-index: 3;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.3));
+}
+.hpz-bm svg {
+  display: block;
+  width: 22px;
+  height: 34px;
+}
+.hpz-bm-txt {
+  position: absolute;
+  top: 4px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #fff;
 }
 .hpz-r2 .hpz-cover {
   animation-delay: 0.5s;

@@ -58,6 +58,7 @@ import {
 } from "@/utils/googleFormOrder";
 import ScratchRewardSheet from "./ScratchRewardSheet";
 import OrderPlacedSuccess from "./OrderPlacedSuccess";
+import CartSupportSheet from "./CartSupportSheet";
 import { showToast } from "@/context/ToastContext";
 
 const PINCODE_DATA_KEY = "user_pincode";
@@ -258,6 +259,7 @@ export default function AddressModal({
   // Real order id of the just-placed confirmed order (for the success modal's
   // note + faster-delivery upgrade writes).
   const [placedOrderId, setPlacedOrderId] = useState("");
+  const [supportOpen, setSupportOpen] = useState(false); // "Need support?" sheet
   const [successPayment, setSuccessPayment] = useState("COD");
   // "Pay online" method chooser (UPI apps + Cards/gift-card for overseas users)
   const [showPayMethod, setShowPayMethod] = useState(false);
@@ -2318,12 +2320,11 @@ export default function AddressModal({
                   <button
                     type="button"
                     className="sec-big-btn pay-sel-wa"
-                    disabled={tooManyOneRupee}
-                    onClick={() => !tooManyOneRupee && beginPayment("WhatsApp")}
-                    aria-label="Order on WhatsApp"
+                    onClick={() => setSupportOpen(true)}
+                    aria-label="Need support?"
                   >
                     <FaWhatsapp size={18} color="#25D366" />
-                    <span>Order</span>
+                    <span>Need support?</span>
                   </button>
                   <button
                     type="button"
@@ -2569,6 +2570,37 @@ export default function AddressModal({
           />
         )}
       </AnimatePresence>
+
+      {/* "Need support?" — pre-purchase help sheet with the bag details ready */}
+      <CartSupportSheet
+        open={supportOpen}
+        onClose={() => setSupportOpen(false)}
+        name={name}
+        phone={phone}
+        books={(cartBooks || []).map((b) => ({
+          name: b.name,
+          qty: b.qty || 1,
+          price: b.discountedPrice,
+        }))}
+        total={
+          paySel === "COD"
+            ? codTotalWithFee
+            : paySel === "ADV"
+              ? advanceOrderTotal
+              : upiTotalForFlow
+        }
+        giftWrap={giftWrap || giftWrapSelected}
+        bookmarkQty={bookmarkQty}
+        paymentLabel={
+          paySel === "COD"
+            ? "Cash on Delivery"
+            : paySel === "ADV"
+              ? "Pay in two parts (₹99 now)"
+              : paySel === "UPI"
+                ? "Pay Online"
+                : ""
+        }
+      />
 
       {/* ========== ORDER PLACED SPLASH → order detail page ========== */}
       <AnimatePresence>

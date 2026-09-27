@@ -31,6 +31,18 @@ const slugify = (t) =>
 
 const ADD_DISCOUNT = 0.3; // flat 30% off books added from this modal
 
+// Quick prefilled note chips — tap to fill, or type a custom note.
+const NOTE_CHIPS = [
+  "Call before delivery",
+  "Leave with the guard",
+  "Leave with a neighbour",
+  "Deliver after 6 PM",
+  "It's a gift — no invoice inside",
+  "Handle with care",
+  "Ring the bell",
+  "Call on arrival, gate is locked",
+];
+
 // Build the sheet "Books List" string from an array of line items.
 const buildBooksList = (items) =>
   items
@@ -530,9 +542,27 @@ export default function OrderSuccessCard({
               >
                 <div className="osc-sub-title">Add a note to your order</div>
                 <p className="osc-sub-sub">
-                  Anything we should know — gift message, delivery instruction,
-                  landmark…
+                  Tap a quick note, or type your own — gift message, delivery
+                  instruction, landmark…
                 </p>
+                <div className="osc-note-chips">
+                  {NOTE_CHIPS.map((c) => (
+                    <button
+                      key={c}
+                      type="button"
+                      className={`osc-note-chip${note.includes(c) ? " on" : ""}`}
+                      onClick={() =>
+                        setNote((prev) => {
+                          const t = prev.trim();
+                          if (t.includes(c)) return t; // already added
+                          return t ? `${t}. ${c}` : c;
+                        })
+                      }
+                    >
+                      {c}
+                    </button>
+                  ))}
+                </div>
                 <textarea
                   className="osc-sub-input"
                   rows={3}

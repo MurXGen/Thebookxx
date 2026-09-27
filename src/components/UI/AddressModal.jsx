@@ -1522,6 +1522,7 @@ export default function AddressModal({
       : "";
 
   return (
+    <>
     <AnimatePresence>
       {open && (
         <motion.div
@@ -2655,38 +2656,6 @@ export default function AddressModal({
         )}
       </AnimatePresence>
 
-      {/* Interactive success card — note, edit address, faster upgrade,
-          bookmarks, and 30%-off add-ons, all pushed to the placed order. */}
-      <AnimatePresence>
-        {showSuccessCard && successCtx && (
-          <OrderSuccessCard
-            {...successCtx}
-            onTrack={() => {
-              const d = successCtx.phone;
-              const oid = successCtx.orderId;
-              if (typeof window !== "undefined") {
-                if (d.length === 10 && oid)
-                  window.location.assign(
-                    `/profile/${d}/orders/${encodeURIComponent(oid)}`,
-                  );
-                else window.location.assign("/profile");
-              }
-            }}
-            onClose={() => {
-              const d = successCtx.phone;
-              const oid = successCtx.orderId;
-              if (typeof window !== "undefined") {
-                if (d.length === 10 && oid)
-                  window.location.assign(
-                    `/profile/${d}/orders/${encodeURIComponent(oid)}`,
-                  );
-                else window.location.assign("/profile");
-              }
-            }}
-          />
-        )}
-      </AnimatePresence>
-
       {/* ========== Pay-online method chooser ========== */}
       <AnimatePresence>
         {showPayMethod && (
@@ -3029,6 +2998,29 @@ export default function AddressModal({
         )}
       </AnimatePresence>
     </AnimatePresence>
+
+    {/* Interactive success card — rendered OUTSIDE the checkout overlay so it
+        survives the modal closing; no auto-redirect (user drives everything). */}
+    <AnimatePresence>
+      {showSuccessCard && successCtx && (
+        <OrderSuccessCard
+          {...successCtx}
+          onTrack={() => {
+            const d = successCtx.phone;
+            const oid = successCtx.orderId;
+            if (typeof window !== "undefined") {
+              if (d.length === 10 && oid)
+                window.location.assign(
+                  `/profile/${d}/orders/${encodeURIComponent(oid)}`,
+                );
+              else window.location.assign("/profile");
+            }
+          }}
+          onClose={() => setShowSuccessCard(false)}
+        />
+      )}
+    </AnimatePresence>
+    </>
   );
 }
 

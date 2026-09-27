@@ -4,6 +4,253 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "daughters-day-2026-books-to-gift-india": {
+    id: "blog-063",
+    title:
+      "Daughters' Day 2026 (27 September): 23 Books to Gift, Sorted by Age, and the One Gifting Mistake Almost Everyone Makes",
+    slug: "daughters-day-2026-books-to-gift-india",
+    author: "TheBookX Editorial",
+    authorSlug: "murthy-thevar",
+    publishDate: "2026-09-27",
+    lastModified: "2026-09-27",
+    excerpt:
+      "Daughters' Day falls on Sunday 27 September 2026 in India. Twenty-three books worth gifting, sorted by age, and why the improving book is usually the wrong one.",
+    content: [
+      {
+        type: "paragraph",
+        content:
+          "Daughters' Day in India falls on the fourth Sunday of September, which this year is today, Sunday 27 September 2026. It is not a government holiday and it has no scriptural weight. It began as a greeting-card and gifting observance, spread through WhatsApp forwards, and has settled into something most Indian families now mark in a small way. That modest origin is worth stating plainly, because it also explains why the gifts attached to it are so often forgettable. An occasion invented by retail tends to produce gifts chosen the way retail suggests: quickly, visibly, and without much thought about the person receiving them.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "A book is the exception, but only if it is chosen properly. This piece sets out what goes wrong when people buy books for daughters, and then gives twenty-three specific titles sorted into four age bands, with a sentence on why each one earns its place. Every book named here is on the shelf at TheBookX, and prices start from ₹1 with free delivery and Cash on Delivery across India.",
+      },
+      {
+        type: "callout",
+        style: "info",
+        title: "Daughters' Day 2026, in one place",
+        content:
+          "Date in India: Sunday 27 September 2026, the fourth Sunday of September. It is an informal observance rather than a public holiday, and the date therefore shifts each year. Several other countries mark an International Daughters Day on the same fourth-Sunday rule, while some calendars list a separate National Daughters Day on 25 September. In India, the fourth-Sunday date is the one commonly followed.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The mistake: gifting the lesson instead of the story",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Walk into any bookshop on a gifting weekend and watch what adults reach for when buying for a girl. It is almost always an improving book. Something about confidence. Something about inspiring women. Something with a subtitle promising that the reader will emerge braver, kinder or more ambitious than she went in. The intention is generous. The effect is that the girl receives, in physical form, a statement about what the giver thinks she currently lacks.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Children and teenagers read that message accurately and immediately. A book handed over with the words 'this will be very good for you' is a book that will sit on a shelf. The books that actually get read are the ones offered without a project attached: this is a story I loved, I think you will love it, tell me when you are done. The lesson, if there is one, arrives on its own and is far more durable for having arrived unannounced.",
+      },
+      {
+        type: "callout",
+        style: "success",
+        title: "A practical rule before you buy",
+        content:
+          "Ask what she reads now, not what she should read. If she is deep in fantasy, the right gift is a better fantasy novel, not a biography of a scientist. Reading taste widens sideways from something loved, not upwards from something prescribed. And when in doubt, buy two: one squarely inside her existing taste, one a half-step outside it. The first gets read this week, the second gets read in six months, and both were worth buying.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Ages 6 to 10: the years when reading becomes a habit or does not",
+      },
+      {
+        type: "paragraph",
+        content:
+          "This is the band where the stakes are highest and the budget is lowest. A child who finds one book she rereads until the spine cracks has generally become a reader for life. A child who is handed graded readers and comprehension exercises has generally not. The aim here is delight, not vocabulary.",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<a href=\"/books/grandma-s-bag-of-stories\" style=\"color:#fb8500;font-weight:600\">Grandma's Bag of Stories</a> by Sudha Murty. Short folk tales told in a frame narrative, each one finishable at bedtime. The Indian setting means a child recognises the world she is reading about, which matters more at this age than most adults assume.",
+          "<a href=\"/books/the-blue-umbrella\" style=\"color:#fb8500;font-weight:600\">The Blue Umbrella</a> by Ruskin Bond. A hill village, a girl named Binya, a beautiful object and the small moral trouble it causes. Under a hundred pages, and one of the few Indian books that treats a child's inner life as genuinely complicated.",
+          "<a href=\"/books/the-gopi-diaries-set-of-3\" style=\"color:#fb8500;font-weight:600\">The Gopi Diaries (Set of 3)</a> by Sudha Murty. A puppy narrating his own life. Gentle, funny, and the sort of set that converts a reluctant reader because finishing one book immediately produces a second.",
+          "<a href=\"/books/the-magic-drum\" style=\"color:#fb8500;font-weight:600\">The Magic Drum</a> by Sudha Murty. Folk tales from across India with proper twists in them, useful for a child who has started to find picture books babyish but is not ready for chapter novels.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Ages 10 to 13: give her a series, not a book",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Around ten, most children who read at all want to live inside a world rather than visit one. The single most effective gift at this age is a box set, because it removes the friction between finishing one book and starting the next. That gap is where reading habits die.",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<a href=\"/books/harry-potter-series-set-books-1-7\" style=\"color:#fb8500;font-weight:600\">Harry Potter Series Set (Books 1-7)</a> by J.K. Rowling. The books get longer and darker as the reader gets older, which is the rarest quality in a children's series and the reason it still works three decades on.",
+          "<a href=\"/books/percy-jackson-ultimate-collection\" style=\"color:#fb8500;font-weight:600\">Percy Jackson Ultimate Collection</a> by Rick Riordan. Greek mythology delivered at speed and with jokes. Pairs unusually well with an Indian child's existing appetite for mythological stories.",
+          "<a href=\"/books/the-hunger-games-trilogy-set\" style=\"color:#fb8500;font-weight:600\">The Hunger Games Trilogy Set</a> by Suzanne Collins. Katniss Everdeen remains the benchmark for a heroine who is competent, tired and morally uncertain rather than plucky. Suitable from about twelve.",
+          "<a href=\"/books/jaya-an-illustrated-retelling-of-the-mahabharata\" style=\"color:#fb8500;font-weight:600\">Jaya: An Illustrated Retelling of the Mahabharata</a> by Devdutt Pattanaik. For the child who has absorbed the epic through television and is ready for a version that takes her seriously, with the contradictions left in rather than smoothed over.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Ages 13 to 17: stop protecting her from difficulty",
+      },
+      {
+        type: "paragraph",
+        content:
+          "The common error with teenagers is buying down. A fifteen-year-old who is reading long-form arguments on her phone every day is not going to be challenged by a book written for eleven-year-olds, and she will notice the condescension. This is the age for classics, for mysteries with real plotting, and for non-fiction written for adults.",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<a href=\"/books/little-women\" style=\"color:#fb8500;font-weight:600\">Little Women</a> by Louisa May Alcott. Four sisters, one of whom wants to write and finds the wanting expensive. Published in 1868 and still the most honest novel in English about ambition inside a family.",
+          "<a href=\"/books/the-diary-of-a-young-girl\" style=\"color:#fb8500;font-weight:600\">The Diary of a Young Girl</a> by Anne Frank. Written between 1942 and 1944 by a girl aged thirteen to fifteen. It is not primarily a book about the Holocaust; it is a book about a teenager arguing with her mother, and that is exactly why it lands.",
+          "<a href=\"/books/i-am-malala\" style=\"color:#fb8500;font-weight:600\">I Am Malala</a> by Malala Yousafzai. The rare inspirational memoir that survives the category, because the specific detail of the Swat Valley is sharper than any of the general conclusions drawn from it.",
+          "<a href=\"/books/a-good-girl-s-guide-to-murder\" style=\"color:#fb8500;font-weight:600\">A Good Girl's Guide to Murder</a> by Holly Jackson. A school project turns into a genuine investigation. Properly constructed as a mystery, which is why it converts teenagers who claim not to read.",
+          "<a href=\"/books/pride-and-prejudice\" style=\"color:#fb8500;font-weight:600\">Pride and Prejudice</a> by Jane Austen. Worth gifting at sixteen rather than waiting for a syllabus to ruin it. The marriage plot is the surface; the actual subject is how quickly an intelligent person can be wrong about someone.",
+        ],
+      },
+      {
+        type: "blockquote",
+        content:
+          "There is nothing I would not do for those who are really my friends. I have no notion of loving people by halves, it is not my nature.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "That is Isabella Thorpe in Austen's Northanger Abbey, and she is lying. Teenagers who read Austen closely work this out themselves and are delighted by it. No adult needs to explain it to them.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "The adult daughter: books for a person, not a role",
+      },
+      {
+        type: "paragraph",
+        content:
+          "If your daughter is twenty-five or forty-five, the gifting problem inverts. She can buy her own books. What she cannot easily buy is the sense that someone noticed what she is actually interested in. Choose specifically, and skip anything that reads as advice.",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "<a href=\"/books/lessons-in-chemistry\" style=\"color:#fb8500;font-weight:600\">Lessons in Chemistry</a> by Bonnie Garmus. A chemist in 1960s California ends up hosting a cookery show and teaches chemistry on air anyway. Funny, angry, and a reliable gift for someone who says she has no time to read.",
+          "<a href=\"/books/circe\" style=\"color:#fb8500;font-weight:600\">Circe</a> by Madeline Miller. The witch from the Odyssey given several hundred pages of her own. The prose is unhurried in a way that suits a reader who wants to slow down.",
+          "<a href=\"/books/the-palace-of-illusions\" style=\"color:#fb8500;font-weight:600\">The Palace of Illusions</a> by Chitra Banerjee Divakaruni. The Mahabharata narrated by Draupadi. For anyone who grew up with the epic and has never once heard it from inside.",
+          "<a href=\"/books/becoming\" style=\"color:#fb8500;font-weight:600\">Becoming</a> by Michelle Obama. Strongest in its first third, on the South Side of Chicago, long before the politics. That section is the reason to gift it.",
+          "<a href=\"/books/three-thousand-stitches\" style=\"color:#fb8500;font-weight:600\">Three Thousand Stitches</a> by Sudha Murty. True accounts from decades of foundation work, including the Devadasi rehabilitation programme. Plain writing about difficult subjects, and the least sentimental book on this list.",
+          "<a href=\"/books/quiet\" style=\"color:#fb8500;font-weight:600\">Quiet</a> by Susan Cain. On introversion in a culture built for extroverts. A good gift for a daughter who has spent her life being told to speak up more, and a slightly uncomfortable one for the parent who told her.",
+          "<a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> by Morgan Housel. Short chapters arguing that financial behaviour is driven by personal history rather than arithmetic. The one money book that does not feel like homework.",
+          "<a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear. Worth gifting only if she has asked for something in this line. Handed over unrequested, it becomes the improving book described at the top of this article.",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "Two more, for the shelf rather than the occasion",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Some books are better given without a festival attached, which is itself a reason to give them on a low-stakes day like this one. <a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> by A.P.J. Abdul Kalam works at almost any age above thirteen, and the early chapters about Rameswaram do more for a young reader's sense of possibility than any chapter of advice could. And <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is the one to keep for a daughter in her late teens or twenties who is drowning in options: it is about cutting noise and deciding, which is the specific problem of that decade.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "How to actually hand it over",
+      },
+      {
+        type: "list",
+        style: "ordered",
+        items: [
+          "Write in it. A date and one line on the first page. Twenty years later that line is the reason the book survives three house moves.",
+          "Do not explain the lesson. If the book has a point, she will find it. Saying it out loud converts a gift into an instruction.",
+          "Ask about it once, later. Not the next day. Two weeks on, ask where she has reached. Interest sustains reading far better than encouragement does.",
+          "Buy the paperback, not the collector's edition. A book that is too nice to take in a bag is a book that does not get read.",
+          "If she already owns it, that is information, not a failure. It tells you her taste precisely, and the next gift will be better for it.",
+        ],
+      },
+      {
+        type: "callout",
+        style: "success",
+        title: "Ordering in time, and gift wrapping",
+        content:
+          "Books at TheBookX start from ₹1, delivery is free across India, and Cash on Delivery is available if you would rather not pay online. Gift wrapping can be added at checkout for ₹25, which is worth it for an occasion like this: a wrapped book reads as a considered gift rather than a delivery box that happened to arrive.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>",
+      },
+      {
+        type: "heading",
+        level: 2,
+        content: "One last thought on the occasion itself",
+      },
+      {
+        type: "paragraph",
+        content:
+          "It is fair to be sceptical of a day invented largely so that things could be sold on it. But there is a narrow, real use for a manufactured occasion: it supplies a reason to do something you already meant to do and kept postponing. Almost nobody needs a calendar entry to love a daughter. Plenty of people need one to finally sit down, think for ten minutes about what she actually likes, and buy the right book instead of the obvious one. Used that way, the fourth Sunday in September earns its place.",
+      },
+    ],
+    coverImage: "/blogs/daughters-day-2026-books-to-gift-india.jpeg",
+    images: [
+      {
+        url: "/blogs/daughters-day-2026-books-to-gift-india.jpeg",
+        alt: "A mother and her teenage daughter sitting together on a sunlit sofa, the daughter holding an open plain hardback book and laughing",
+        caption:
+          "Daughters' Day 2026 falls on Sunday 27 September in India, the fourth Sunday of the month",
+        category: "Gifting",
+      },
+    ],
+    keywords: [
+      "daughters day 2026",
+      "daughters day 2026 date india",
+      "daughters day gift ideas",
+      "books to gift your daughter",
+      "best books for teenage girls india",
+      "books for young girls to read",
+      "daughters day books gift",
+      "gift books online india free delivery",
+      "books for daughters age wise",
+      "buy books online india from rs 1",
+      "TheBookX",
+    ],
+    categories: ["Gifting", "Reading Lists", "Books for Children"],
+    faqs: [
+      {
+        question: "When is Daughters' Day 2026 in India?",
+        answer:
+          "Daughters' Day 2026 in India falls on Sunday 27 September 2026. The Indian observance follows the fourth Sunday of September, which is why the date changes every year. It is an informal day rather than a public holiday, and it carries no religious or scriptural basis. Several international calendars use the same fourth-Sunday rule, while some list a separate National Daughters Day on 25 September, so you will see more than one date quoted online.",
+      },
+      {
+        question: "What is a good book to gift on Daughters' Day?",
+        answer:
+          "Choose by her current reading taste rather than by what you think she should read. For ages six to ten, Grandma's Bag of Stories by Sudha Murty or The Blue Umbrella by Ruskin Bond. For ten to thirteen, a box set such as the Harry Potter Series Set or Percy Jackson, because a set removes the gap between finishing one book and starting the next. For teenagers, Little Women, The Diary of a Young Girl, I Am Malala or A Good Girl's Guide to Murder. For an adult daughter, Lessons in Chemistry, Circe, The Palace of Illusions, Becoming or Three Thousand Stitches. All are available at TheBookX with free delivery across India.",
+      },
+      {
+        question: "Why do books make a better gift than the usual Daughters' Day presents?",
+        answer:
+          "A book is one of the few gifts that is specific to the person receiving it. Choosing the right one requires knowing what she actually likes, and that act of attention is most of the gift. A book also lasts: an inscription with a date on the first page turns it into an object she will still have decades later. The practical advantage is cost. At TheBookX prices start from ₹1 with free delivery and Cash on Delivery across India, so a thoughtful gift does not have to be an expensive one.",
+      },
+      {
+        question: "What should I avoid when gifting a book to a daughter?",
+        answer:
+          "Avoid the improving book. Self-help titles about confidence or ambition, handed over unrequested, tend to read as a statement about what the giver thinks she lacks, and those books usually go unread. Avoid buying down for teenagers, who notice condescension quickly. Avoid explaining the lesson when you hand it over, since that converts a gift into an instruction. If you are unsure, buy two: one firmly inside her existing taste and one a half-step outside it.",
+      },
+      {
+        question: "Can I get the book gift wrapped and delivered in time?",
+        answer:
+          "Yes. Gift wrapping can be added at checkout at TheBookX for ₹25, delivery is free across India, and Cash on Delivery is available if you prefer not to pay online. If the order will not reach her before the day itself, a practical approach is to send a photograph of the book with a line about why you chose it, and let the parcel follow. The choosing is the part she will remember.",
+      },
+    ],
+  },
   "frankfurt-book-fair-2026-what-indian-readers-should-know": {
     id: "blog-062",
     title:

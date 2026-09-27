@@ -1267,6 +1267,37 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
             <CartOfferStrip discountedAmount={totalDiscounted} />
           )}
 
+          {cartBooks.length > 0 &&
+            (() => {
+              const free =
+                totalDiscounted >= 1000 ? 4 : totalDiscounted >= 500 ? 3 : 2;
+              const nextAt =
+                totalDiscounted < 500
+                  ? 500
+                  : totalDiscounted < 1000
+                    ? 1000
+                    : null;
+              return (
+                <div className="bag-bm-strip">
+                  <span className="bag-bm-ic" aria-hidden="true">
+                    🔖
+                  </span>
+                  <span className="bag-bm-txt">
+                    <b>
+                      {free} free bookmark{free > 1 ? "s" : ""}
+                    </b>{" "}
+                    included with this order
+                    {nextAt ? (
+                      <span className="bag-bm-next">
+                        {" "}
+                        · add ₹{nextAt - totalDiscounted} more for {free + 1}
+                      </span>
+                    ) : null}
+                  </span>
+                </div>
+              );
+            })()}
+
           <div className="cart-items-panel">
             <div className="cart-items-list">
               {cartBooks.map((book) => (

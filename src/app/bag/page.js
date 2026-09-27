@@ -1676,26 +1676,26 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
       <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
 
       {/* Interactive order-success card — owned by the always-mounted bag page
-          so it persists after the checkout modal closes (no auto-redirect). */}
-      <AnimatePresence>
-        {successCtx && (
-          <OrderSuccessCard
-            {...successCtx}
-            onTrack={() => {
-              const d = successCtx.phone;
-              const oid = successCtx.orderId;
-              if (typeof window !== "undefined") {
-                if (d && d.length === 10 && oid)
-                  window.location.assign(
-                    `/profile/${d}/orders/${encodeURIComponent(oid)}`,
-                  );
-                else window.location.assign("/profile");
-              }
-            }}
-            onClose={() => setSuccessCtx(null)}
-          />
-        )}
-      </AnimatePresence>
+          so it persists after the checkout modal closes (no auto-redirect).
+          Rendered directly (no AnimatePresence) because the card portals its
+          own motion overlay. */}
+      {successCtx && (
+        <OrderSuccessCard
+          {...successCtx}
+          onTrack={() => {
+            const d = successCtx.phone;
+            const oid = successCtx.orderId;
+            if (typeof window !== "undefined") {
+              if (d && d.length === 10 && oid)
+                window.location.assign(
+                  `/profile/${d}/orders/${encodeURIComponent(oid)}`,
+                );
+              else window.location.assign("/profile");
+            }
+          }}
+          onClose={() => setSuccessCtx(null)}
+        />
+      )}
 
       {sharedModal}
 

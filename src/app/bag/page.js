@@ -1284,13 +1284,14 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
                   </span>
                   <span className="bag-bm-txt">
                     <b>
-                      {free} free bookmark{free > 1 ? "s" : ""}
+                      Up to {free} free bookmark{free > 1 ? "s" : ""}
                     </b>{" "}
-                    included with this order
+                    on this order — add them at checkout
                     {nextAt ? (
                       <span className="bag-bm-next">
                         {" "}
-                        · add ₹{nextAt - totalDiscounted} more for {free + 1}
+                        · add ₹{nextAt - totalDiscounted} more to unlock{" "}
+                        {free + 1}
                       </span>
                     ) : null}
                   </span>

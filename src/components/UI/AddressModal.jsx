@@ -2651,15 +2651,13 @@ export default function AddressModal({
                   localStorage.setItem("track_orders_phone", digits);
               } catch {}
               setShowCODSuccess(false);
-              // Prefer the parent (always-mounted) to own the success card so it
-              // survives this modal closing; fall back to the internal card.
-              if (onOrderPlaced) {
-                onOrderPlaced(ctx);
-                onClose && onClose();
-              } else {
-                setSuccessCtx(ctx);
-                setShowSuccessCard(true);
-              }
+              // Show the interactive success card. It lives at the top level of
+              // this (always-mounted) component, so it survives the checkout
+              // overlay closing. Also notify the parent for good measure.
+              setSuccessCtx(ctx);
+              setShowSuccessCard(true);
+              if (onOrderPlaced) onOrderPlaced(ctx);
+              if (onClose) onClose();
             }}
           />
         )}
@@ -3009,26 +3007,26 @@ export default function AddressModal({
     </AnimatePresence>
 
     {/* Interactive success card — rendered OUTSIDE the checkout overlay so it
-        survives the modal closing; no auto-redirect (user drives everything). */}
-    <AnimatePresence>
-      {showSuccessCard && successCtx && (
-        <OrderSuccessCard
-          {...successCtx}
-          onTrack={() => {
-            const d = successCtx.phone;
-            const oid = successCtx.orderId;
-            if (typeof window !== "undefined") {
-              if (d.length === 10 && oid)
-                window.location.assign(
-                  `/profile/${d}/orders/${encodeURIComponent(oid)}`,
-                );
-              else window.location.assign("/profile");
-            }
-          }}
-          onClose={() => setShowSuccessCard(false)}
-        />
-      )}
-    </AnimatePresence>
+        survives the modal closing; no auto-redirect (user drives everything).
+        Rendered directly (NOT inside AnimatePresence) because the card portals
+        its own motion overlay — AnimatePresence around a portal fails to mount. */}
+    {showSuccessCard && successCtx && (
+      <OrderSuccessCard
+        {...successCtx}
+        onTrack={() => {
+          const d = successCtx.phone;
+          const oid = successCtx.orderId;
+          if (typeof window !== "undefined") {
+            if (d.length === 10 && oid)
+              window.location.assign(
+                `/profile/${d}/orders/${encodeURIComponent(oid)}`,
+              );
+            else window.location.assign("/profile");
+          }
+        }}
+        onClose={() => setShowSuccessCard(false)}
+      />
+    )}
     </>
   );
 }

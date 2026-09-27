@@ -134,6 +134,7 @@ const WALLET_MAX_PER_ORDER = 399;
 export default function AddressModal({
   open,
   onClose,
+  onOrderPlaced,
   finalPayable,
   totalDiscounted,
   handleWhatsAppCheckout,
@@ -2617,7 +2618,7 @@ export default function AddressModal({
               const oid = placedOrderId || upiOrderRef;
               // Snapshot the placed order so the interactive success card can
               // offer add-ons even after the cart is cleared.
-              setSuccessCtx({
+              const ctx = {
                 orderId: oid,
                 phone: digits,
                 name,
@@ -2638,7 +2639,7 @@ export default function AddressModal({
                 faster: fasterDelivery,
                 bookmarkQty,
                 freeBookmarks,
-              });
+              };
               // Clear the cart now the order is placed.
               try {
                 clearCart && clearCart();
@@ -2650,7 +2651,15 @@ export default function AddressModal({
                   localStorage.setItem("track_orders_phone", digits);
               } catch {}
               setShowCODSuccess(false);
-              setShowSuccessCard(true);
+              // Prefer the parent (always-mounted) to own the success card so it
+              // survives this modal closing; fall back to the internal card.
+              if (onOrderPlaced) {
+                onOrderPlaced(ctx);
+                onClose && onClose();
+              } else {
+                setSuccessCtx(ctx);
+                setShowSuccessCard(true);
+              }
             }}
           />
         )}

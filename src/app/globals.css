@@ -28128,22 +28128,25 @@ img[data-loaded="true"] {
   margin: 10px 0 4px;
 }
 .launch-inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  border-radius: 20px;
-  padding: 22px clamp(18px, 3vw, 34px);
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  align-items: stretch;
+  gap: 20px;
+  border-radius: 22px;
+  padding: 0;
   background:
-    radial-gradient(120% 140% at 88% 20%, rgba(251, 133, 0, 0.16), transparent 60%),
-    linear-gradient(120deg, #fff8f0 0%, #fff 55%, #fff4e6 100%);
+    radial-gradient(120% 160% at 78% 10%, rgba(251, 133, 0, 0.1), transparent 60%),
+    linear-gradient(120deg, #fff8f0 0%, #fff 60%, #fff4e6 100%);
   border: 1px solid rgba(251, 133, 0, 0.28);
   overflow: hidden;
   position: relative;
 }
 .launch-copy {
-  flex: 1 1 auto;
   min-width: 0;
+  padding: 26px clamp(18px, 3vw, 34px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 .launch-eyebrow {
   display: inline-flex;
@@ -28206,6 +28209,12 @@ img[data-loaded="true"] {
   padding: 4px 9px;
   border-radius: 999px;
 }
+.launch-cta-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
 .launch-cta {
   display: inline-flex;
   align-items: center;
@@ -28226,13 +28235,87 @@ img[data-loaded="true"] {
   filter: brightness(1.05);
   transform: translateY(-1px);
 }
+.launch-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--dark-60, #4b5563);
+}
+.launch-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.launch-meta-item svg {
+  color: var(--tertiary, #fb8500);
+}
+.launch-meta-item.hot {
+  color: #b91c1c;
+}
+.launch-meta-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--dark-40, #cbd5e1);
+}
+
+/* Right showcase panel — the book on an orange pedestal with rays behind it */
+.launch-showcase {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 18px 12px 20px;
+  overflow: hidden;
+  text-decoration: none;
+  background:
+    radial-gradient(90% 70% at 50% 30%, rgba(255, 183, 3, 0.28), transparent 70%),
+    linear-gradient(160deg, #ff9e2c, #fb8500 55%, #ef7a00);
+}
+.launch-rays {
+  position: absolute;
+  top: -30%;
+  left: 50%;
+  width: 320px;
+  height: 320px;
+  transform: translateX(-50%);
+  background: repeating-conic-gradient(
+    from 0deg at 50% 50%,
+    rgba(255, 255, 255, 0.16) 0deg 8deg,
+    transparent 8deg 22deg
+  );
+  animation: launchRays 24s linear infinite;
+  pointer-events: none;
+}
+@keyframes launchRays {
+  to {
+    transform: translateX(-50%) rotate(360deg);
+  }
+}
+.launch-showcase-cap {
+  position: relative;
+  z-index: 2;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.18);
+  padding: 4px 12px;
+  border-radius: 999px;
+}
 
 /* 3D floating book */
 .launch-stage {
   position: relative;
-  flex: 0 0 auto;
-  width: 210px;
-  height: 200px;
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 190px;
   display: grid;
   place-items: center;
   perspective: 1000px;
@@ -28240,18 +28323,19 @@ img[data-loaded="true"] {
 }
 .launch-glow {
   position: absolute;
-  width: 150px;
-  height: 40px;
-  bottom: 16px;
+  width: 160px;
+  height: 42px;
+  bottom: 8px;
   border-radius: 50%;
-  background: radial-gradient(rgba(251, 133, 0, 0.4), transparent 70%);
-  filter: blur(6px);
+  background: radial-gradient(rgba(120, 53, 15, 0.5), transparent 70%);
+  filter: blur(7px);
   animation: launchShadow 4s ease-in-out infinite;
 }
 .launch-book {
   position: relative;
-  width: 132px;
-  height: 186px;
+  z-index: 2;
+  width: 150px;
+  height: 212px;
   border-radius: 4px 8px 8px 4px;
   overflow: hidden;
   transform-style: preserve-3d;
@@ -28345,24 +28429,45 @@ img[data-loaded="true"] {
     animation: none;
   }
 }
-@media (max-width: 640px) {
+@media (max-width: 700px) {
   .launch-inner {
-    flex-direction: column-reverse;
+    grid-template-columns: 1fr;
+  }
+  .launch-copy {
+    order: 2;
     text-align: center;
-    gap: 14px;
-    padding: 20px 16px;
+    align-items: center;
+    padding: 20px 16px 24px;
   }
   .launch-sub {
     margin-left: auto;
     margin-right: auto;
   }
   .launch-price-row,
-  .launch-eyebrow {
+  .launch-eyebrow,
+  .launch-cta-row,
+  .launch-meta {
     justify-content: center;
   }
+  .launch-showcase {
+    order: 1;
+    flex-direction: row;
+    justify-content: center;
+    gap: 16px;
+    padding: 18px 16px 12px;
+  }
   .launch-stage {
-    width: 170px;
-    height: 176px;
+    min-height: 150px;
+    width: auto;
+  }
+  .launch-book {
+    width: 118px;
+    height: 168px;
+  }
+  .launch-showcase-cap {
+    position: absolute;
+    bottom: 10px;
+    right: 12px;
   }
 }
 .mo-dark .launch-inner {

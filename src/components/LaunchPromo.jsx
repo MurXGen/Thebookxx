@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Sparkles, ArrowRight, BadgePercent } from "lucide-react";
+import { Sparkles, ArrowRight, BadgePercent, Star, Truck } from "lucide-react";
 import { books } from "@/utils/book";
 
 const slugify = (t) =>
@@ -55,22 +55,41 @@ export default function LaunchPromo() {
             )}
           </div>
 
-          <Link href={url} className="launch-cta">
-            Grab your copy <ArrowRight size={17} />
-          </Link>
+          <div className="launch-cta-row">
+            <Link href={url} className="launch-cta">
+              Grab your copy <ArrowRight size={17} />
+            </Link>
+            <span className="launch-meta">
+              <span className="launch-meta-item">
+                <Star size={14} /> 4.4 rating
+              </span>
+              <span className="launch-meta-dot" />
+              <span className="launch-meta-item">
+                <Truck size={14} /> Free delivery
+              </span>
+              <span className="launch-meta-dot" />
+              <span className="launch-meta-item hot">Limited launch price</span>
+            </span>
+          </div>
         </div>
 
-        <Link href={url} className="launch-stage" aria-label={book.name}>
-          <div className="launch-glow" aria-hidden="true" />
-          <div className="launch-book">
-            {book.image && (
-              <img src={book.image} alt={`${book.name} book cover`} />
-            )}
-            <span className="launch-book-spine" aria-hidden="true" />
-            <span className="launch-book-shine" aria-hidden="true" />
+        <Link href={url} className="launch-showcase" aria-label={book.name}>
+          <span className="launch-rays" aria-hidden="true" />
+          <div className="launch-stage">
+            <div className="launch-glow" aria-hidden="true" />
+            <div className="launch-book">
+              {book.image && (
+                <img src={book.image} alt={`${book.name} book cover`} />
+              )}
+              <span className="launch-book-spine" aria-hidden="true" />
+              <span className="launch-book-shine" aria-hidden="true" />
+            </div>
+            <span className="launch-new-tag" aria-hidden="true">
+              NEW
+            </span>
           </div>
-          <span className="launch-new-tag" aria-hidden="true">
-            NEW
+          <span className="launch-showcase-cap">
+            {(book.catalogue && book.catalogue[0]) || "Bestseller"} · out now
           </span>
         </Link>
       </div>

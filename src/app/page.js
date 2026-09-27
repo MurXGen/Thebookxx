@@ -18,6 +18,7 @@ import QuickReadsTeaser from "@/components/QuickReadsTeaser";
 import InvoiceParamModal from "@/components/InvoiceParamModal";
 import ReviewGallery from "@/components/ReviewGallery";
 import OneRupeeGrid from "@/components/OneRupeeGrid";
+import LaunchPromo from "@/components/LaunchPromo";
 import BundleDeals from "@/components/BundleDeals";
 import TrendingGrid from "@/components/TrendingGrid";
 import NewlyAddedGrid from "@/components/NewlyAddedGrid";
@@ -134,6 +135,9 @@ export default function HomePage() {
       <IntroVideo />
 
       <Navbar />
+
+      {/* Most-awaited launch banner — top of page, below the navbar. */}
+      <LaunchPromo />
 
       {/* Static hero, provides the visible H1 + value prop above the carousel. */}
       <HomeHero />

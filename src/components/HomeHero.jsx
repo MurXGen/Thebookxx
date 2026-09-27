@@ -299,9 +299,7 @@ export default function HomeHero() {
                         <span
                           className="hpz-bm hpz-bm-back"
                           aria-hidden="true"
-                        >
-                          <span className="hpz-bm-txt">FREE</span>
-                        </span>
+                        />
                         <span
                           className="hpz-bm hpz-bm-front"
                           aria-hidden="true"

@@ -14604,13 +14604,13 @@ img[data-loaded="true"] {
 /* Two free-bookmark ribbons fanned at the bottom-right, tilted. */
 .hpz-bm {
   position: absolute;
-  width: 18px;
-  height: 50px;
+  width: 15px;
+  height: 40px;
   border-radius: 3px 3px 2px 2px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 8px -2px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 4px 8px -3px rgba(0, 0, 0, 0.35);
   /* V-notch at the bottom, like a real bookmark tail. */
   clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 84%, 0 100%);
 }
@@ -14618,33 +14618,34 @@ img[data-loaded="true"] {
   /* little tassel loop at the top */
   content: "";
   position: absolute;
-  top: -4px;
+  top: -3px;
   left: 50%;
   width: 4px;
-  height: 6px;
+  height: 5px;
   transform: translateX(-50%);
-  border: 1.5px solid #d6336c;
+  border: 1.4px solid #d6336c;
   border-bottom: none;
   border-radius: 4px 4px 0 0;
 }
 .hpz-bm-txt {
   writing-mode: vertical-rl;
   transform: rotate(180deg);
-  font-size: 7px;
+  font-size: 5.5px;
   font-weight: 800;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
+  line-height: 1;
   color: #fff;
 }
 .hpz-bm-back {
-  right: -8px;
-  bottom: -8px;
+  right: -5px;
+  bottom: 8px;
   background: linear-gradient(160deg, #ff8fb1, #f0629a);
-  transform: rotate(-16deg);
+  transform: rotate(-14deg);
   z-index: 2;
 }
 .hpz-bm-front {
-  right: 2px;
-  bottom: -12px;
+  right: 3px;
+  bottom: 2px;
   background: linear-gradient(160deg, #ffb3c8, #f472a6);
   transform: rotate(12deg);
   z-index: 4;
@@ -14671,6 +14672,8 @@ img[data-loaded="true"] {
   }
 }
 .hpz-title {
+  position: relative;
+  z-index: 6;
   font-size: 11px;
   font-weight: 700;
   line-height: 1.2;

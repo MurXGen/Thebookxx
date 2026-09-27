@@ -44,7 +44,7 @@ export default function HomeHero() {
 
   // Readers' top 3 picks shown in the hero showcase.
   const pickNames = [
-    "Atomic Habits",
+    "The Metamorphosis",
     "The Art of Clarity",
     "Did You Ever Love Me?",
   ];
@@ -304,7 +304,7 @@ export default function HomeHero() {
                           className="hpz-bm hpz-bm-front"
                           aria-hidden="true"
                         >
-                          <span className="hpz-bm-txt">FREE</span>
+                          <span className="hpz-bm-txt">BOOKMARK</span>
                         </span>
                       </span>
                       <span className="hpz-title">{b.name}</span>

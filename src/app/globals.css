@@ -14605,14 +14605,14 @@ img[data-loaded="true"] {
 .hpz-bm {
   position: absolute;
   width: 15px;
-  height: 40px;
+  height: 48px;
   border-radius: 3px 3px 2px 2px;
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: 0 4px 8px -3px rgba(0, 0, 0, 0.35);
   /* V-notch at the bottom, like a real bookmark tail. */
-  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 84%, 0 100%);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 88%, 0 100%);
 }
 .hpz-bm::before {
   /* little tassel loop at the top */
@@ -14630,9 +14630,9 @@ img[data-loaded="true"] {
 .hpz-bm-txt {
   writing-mode: vertical-rl;
   transform: rotate(180deg);
-  font-size: 5.5px;
+  font-size: 5px;
   font-weight: 800;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.02em;
   line-height: 1;
   color: #fff;
 }
@@ -14740,7 +14740,7 @@ img[data-loaded="true"] {
 .hpz-r3 .hpz-pillar {
   height: 72px;
 }
-.hpz-r1 .hpz-cover {
+.hpz-r1 .hpz-coverwrap {
   width: 100px;
   height: 132px;
 }

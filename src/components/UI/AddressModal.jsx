@@ -133,6 +133,7 @@ export default function AddressModal({
   open,
   onClose,
   onOrderPlaced,
+  proActive = false,
   finalPayable,
   totalDiscounted,
   handleWhatsAppCheckout,
@@ -532,8 +533,10 @@ export default function AddressModal({
   const qrAddOn = quickReadTotal || 0;
   const netPayable = Math.max(0, finalPayable - walletApplied) + qrAddOn;
 
+  // Members ("TheBookX Exclusive") get free delivery on orders above ₹400.
+  const proFreeDelivery = proActive && netPayable > 400;
   const getDeliveryCharge = (isFaster) =>
-    isFaster ? fasterDeliveryCharge : standardDeliveryCharge;
+    proFreeDelivery ? 0 : isFaster ? fasterDeliveryCharge : standardDeliveryCharge;
 
   const getTotalWithDelivery = (isFaster) =>
     netPayable + getDeliveryCharge(isFaster);
@@ -557,8 +560,10 @@ export default function AddressModal({
   // For the COD fee modal comparison.
   const upiTotalForFlow = getTotalWithDelivery(fasterDelivery) + addOnsCharge;
   // COD handling fee: a minimum of ₹29, or 5.9% of the bill when that exceeds
-  // ₹29 (whichever is higher).
-  const codFeeAmount = Math.max(29, Math.round(upiTotalForFlow * 0.059));
+  // ₹29 (whichever is higher). Members ("TheBookX Exclusive") pay NO COD fee.
+  const codFeeAmount = proActive
+    ? 0
+    : Math.max(29, Math.round(upiTotalForFlow * 0.059));
   const codTotalWithFee = upiTotalForFlow + codFeeAmount;
 
   // ₹99-advance ("Pay in two parts"): NO COD / handling fee — priced the same
@@ -2310,6 +2315,10 @@ export default function AddressModal({
                           {fasterDelivery ? (
                             <span className="pay-method-desc">
                               Not available with Faster delivery
+                            </span>
+                          ) : proActive ? (
+                            <span className="pay-method-desc pay-perk">
+                              No COD fee · Member
                             </span>
                           ) : (
                             <span className="pay-method-desc pay-method-cod-fee">

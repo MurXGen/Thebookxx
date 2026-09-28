@@ -15103,6 +15103,88 @@ img[data-loaded="true"] {
   font-weight: 600;
 }
 
+/* Cart plan tabs (Standard / TheBookX Exclusive) */
+.plan-tabs {
+  display: flex;
+  gap: 8px;
+  background: var(--surface-2, #f3f4f6);
+  border-radius: 14px;
+  padding: 4px;
+}
+.plan-tab {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 8px;
+  border: none;
+  border-radius: 11px;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--dark-60, #4b5563);
+  cursor: pointer;
+}
+.plan-tab.on {
+  background: #fff;
+  color: var(--foreground, #0a0a0a);
+  box-shadow: 0 4px 10px -6px rgba(0, 0, 0, 0.3);
+}
+.plan-tab-pro.on {
+  background: linear-gradient(135deg, #ffd77a, #f5b301);
+  color: #3b2a00;
+}
+.plan-tab-live {
+  font-size: 8.5px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  padding: 1px 5px;
+  border-radius: 999px;
+  background: #16a34a;
+  color: #fff;
+}
+.plan-pro-banner {
+  border: 1px solid rgba(245, 179, 1, 0.4);
+  border-radius: 14px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, #fff8e6, #fff);
+}
+.plan-pro-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--foreground, #0a0a0a);
+}
+.plan-pro-title svg {
+  color: #f5b301;
+}
+.plan-pro-sub {
+  margin: 4px 0 8px;
+  font-size: 12.5px;
+  color: var(--dark-60, #4b5563);
+}
+.plan-pro-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #166534;
+}
+.plan-unlock-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #ffd77a, #f5b301) !important;
+  color: #2a1e00 !important;
+}
+
 /* ═══════════════════════════════════════════════════════════════════════
    Interactive order-success card (OrderSuccessCard)
    ═══════════════════════════════════════════════════════════════════════ */

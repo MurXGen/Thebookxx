@@ -6,6 +6,9 @@ import LazyBookGrid from "@/components/UI/LazyBookGrid";
 import PageHeader from "@/components/UI/PageHeader";
 import RecentlyViewed from "@/components/RecentlyViewed";
 import RecommendationModal from "@/components/RecommendationModal";
+import ProUpgradeModal from "@/components/UI/ProUpgradeModal";
+import { fetchProStatus, cachedProStatus, PRO_PRICE } from "@/utils/proPlan";
+import { Crown } from "lucide-react";
 import SearchOverlay from "@/components/SearchOverlay";
 import AddressModal from "@/components/UI/AddressModal";
 import OrderSuccessCard from "@/components/UI/OrderSuccessCard";
@@ -101,6 +104,25 @@ function BagContent() {
   const [showShareModal, setShowShareModal] = useState(false); // review-before-share
   const [shareBusy, setShareBusy] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false); // header search overlay
+  // TheBookX Exclusive (Pro) membership
+  const [planTab, setPlanTab] = useState("standard"); // standard | pro
+  const [proStatus, setProStatus] = useState(null); // {active,daysLeft,...}
+  const [proModalOpen, setProModalOpen] = useState(false);
+  const [knownPhone, setKnownPhone] = useState("");
+  useEffect(() => {
+    try {
+      const p = String(localStorage.getItem("track_orders_phone") || "")
+        .replace(/\D/g, "")
+        .slice(-10);
+      const cached = cachedProStatus(p);
+      if (cached) setProStatus(cached);
+      if (p.length === 10) {
+        setKnownPhone(p);
+        fetchProStatus(p).then(setProStatus);
+      }
+    } catch {}
+  }, []);
+  const proActive = !!proStatus?.active;
 
   const [hasAcceptedShipping, setHasAcceptedShipping] = useState(false);
 
@@ -554,6 +576,16 @@ function BagContent() {
     if (appliedOffer.type === "percentage") {
       offerDiscount = Math.round((totalDiscounted * appliedOffer.value) / 100);
       offerLabel = `Free delivery`;
+    }
+  }
+
+  // TheBookX Exclusive members: flat 20% off, applied best-of vs the cart tier
+  // (whichever saves more — never both).
+  if (proActive) {
+    const proDisc = Math.round(totalDiscounted * 0.2);
+    if (proDisc > offerDiscount) {
+      offerDiscount = proDisc;
+      offerLabel = "Member 20% OFF";
     }
   }
 
@@ -1263,6 +1295,65 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
         </>
       )}
 
+      {cartBooks.length > 0 && (
+        <div className="plan-tabs">
+          <button
+            type="button"
+            className={`plan-tab${planTab === "standard" ? " on" : ""}`}
+            onClick={() => setPlanTab("standard")}
+          >
+            Standard
+          </button>
+          <button
+            type="button"
+            className={`plan-tab plan-tab-pro${planTab === "pro" ? " on" : ""}`}
+            onClick={() => setPlanTab("pro")}
+          >
+            <Crown size={14} /> TheBookX Exclusive
+            {proActive && <span className="plan-tab-live">ACTIVE</span>}
+          </button>
+        </div>
+      )}
+
+      {cartBooks.length > 0 && planTab === "pro" && (
+        <div className="plan-pro-banner">
+          {proActive ? (
+            <>
+              <div className="plan-pro-title">
+                <Crown size={16} /> You&apos;re a member
+              </div>
+              <p className="plan-pro-sub">
+                Member pricing is applied at checkout
+                {proStatus?.daysLeft ? ` · ${proStatus.daysLeft} days left` : ""}
+                .
+              </p>
+              <ul className="plan-pro-list">
+                <li>✓ Flat 20% off (best price applied)</li>
+                <li>✓ Zero COD handling fee</li>
+                <li>✓ Free delivery above ₹400</li>
+                <li>✓ 50% off packing &amp; care</li>
+              </ul>
+            </>
+          ) : (
+            <>
+              <div className="plan-pro-title">
+                <Crown size={16} /> TheBookX Exclusive · ₹{PRO_PRICE}/mo
+              </div>
+              <p className="plan-pro-sub">
+                Members save on every order. Unlock and this cart re-prices
+                instantly.
+              </p>
+              <ul className="plan-pro-list">
+                <li>✓ Flat 20% off (best price applied)</li>
+                <li>✓ Zero COD handling fee</li>
+                <li>✓ Free delivery above ₹400</li>
+                <li>✓ 50% off packing &amp; care</li>
+              </ul>
+            </>
+          )}
+        </div>
+      )}
+
       {(cartBooks.length > 0 || qrItems.length > 0) && (
         <>
           {cartBooks.length > 0 && (
@@ -1449,19 +1540,33 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
                     <Sparkle size={12} />
                     Suggest Me
                   </span>
-                  <button
-                    type="button"
-                    className="pri-big-btn"
-                    onClick={handleConfirmOrderClick}
-                    aria-disabled={isCheckoutDisabled}
-                    style={
-                      isCheckoutDisabled
-                        ? { opacity: 0.6, cursor: "not-allowed" }
-                        : undefined
-                    }
-                  >
-                    {isShortening ? "Preparing…" : "Confirm Order"}
-                  </button>
+                  {planTab === "pro" && !proActive ? (
+                    <button
+                      type="button"
+                      className="pri-big-btn plan-unlock-btn"
+                      onClick={() => setProModalOpen(true)}
+                    >
+                      <Crown size={15} /> Unlock · ₹{PRO_PRICE}/mo
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      className="pri-big-btn"
+                      onClick={handleConfirmOrderClick}
+                      aria-disabled={isCheckoutDisabled}
+                      style={
+                        isCheckoutDisabled
+                          ? { opacity: 0.6, cursor: "not-allowed" }
+                          : undefined
+                      }
+                    >
+                      {isShortening
+                        ? "Preparing…"
+                        : proActive
+                          ? "Confirm Order · Member"
+                          : "Confirm Order"}
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
@@ -1646,6 +1751,7 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
         open={showAddressModal}
         onClose={() => setShowAddressModal(false)}
         onOrderPlaced={(ctx) => setSuccessCtx(ctx)}
+        proActive={proActive}
         finalPayable={finalPayable}
         totalDiscounted={totalDiscounted}
         standardDeliveryCharge={standardDeliveryCharge}
@@ -1700,6 +1806,16 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
       />
 
       <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
+
+      <ProUpgradeModal
+        open={proModalOpen}
+        phone={knownPhone}
+        onClose={() => setProModalOpen(false)}
+        onActivated={(s) => {
+          setProStatus(s);
+          setPlanTab("pro");
+        }}
+      />
 
       {sharedModal}
 

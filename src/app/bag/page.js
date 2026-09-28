@@ -656,6 +656,13 @@ function BagContent() {
   const bundledQrTotal = hasBundledQr ? qrTotal : 0;
   const displayedFixedBarTotalWithQr = displayedFixedBarTotal + bundledQrTotal;
 
+  // Pro tab preview (non-members): show the price they'd pay AS a member (flat
+  // 20% off the books) so they see the value before tapping Upgrade.
+  const showProPreview = planTab === "pro" && !proActive;
+  const proPreviewTotal =
+    Math.max(0, totalDiscounted - Math.round(totalDiscounted * 0.2)) +
+    bundledQrTotal;
+
   // Returns the COD fee amount only when paymentType is COD
   const getCodFeeForPayment = (paymentType) =>
     paymentType === "COD" ? COD_HANDLING_FEE : 0;
@@ -1502,23 +1509,34 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
             >
               <div className="flex flex-row justify-between width100 items-center">
                 <div className="bill-left">
-                  <span className="font-12 dark-50">Total payable</span>
+                  <span className="font-12 dark-50">
+                    {showProPreview ? "Member price" : "Total payable"}
+                  </span>
                   <div className="flex flex-col">
                     <div className="flex flex-row gap-8 items-center">
                       <span className="font-16 weight-600 discounted">
-                        ₹{displayedFixedBarTotalWithQr}
+                        ₹{showProPreview ? proPreviewTotal : displayedFixedBarTotalWithQr}
                       </span>
-                      {offerDiscount > 0 && (
+                      {(showProPreview || offerDiscount > 0) && (
                         <span className="strike dark-50 original">
-                          ₹{totalDiscounted + bundledQrTotal}
+                          ₹
+                          {showProPreview
+                            ? displayedFixedBarTotalWithQr
+                            : totalDiscounted + bundledQrTotal}
                         </span>
                       )}
                     </div>
 
-                    {appliedOffer && (
+                    {showProPreview ? (
                       <span className="font-14 green weight-600">
-                        {offerLabel}
+                        Member 20% OFF · unlock to apply
                       </span>
+                    ) : (
+                      appliedOffer && (
+                        <span className="font-14 green weight-600">
+                          {offerLabel}
+                        </span>
+                      )
                     )}
                   </div>
 

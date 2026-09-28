@@ -3,7 +3,17 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Check, Crown, Tag, Truck, ShieldCheck, Loader2 } from "lucide-react";
+import Image from "next/image";
+import {
+  X,
+  Check,
+  Zap,
+  Tag,
+  Truck,
+  ShieldCheck,
+  Loader2,
+  Copy,
+} from "lucide-react";
 import {
   PRO_PRICE,
   fetchProStatus,
@@ -11,11 +21,41 @@ import {
 } from "@/utils/proPlan";
 import { showToast } from "@/context/ToastContext";
 
+const UPI_ID = "7977960242-1@okbizaxis";
+const TELEGRAM_URL = "https://api.journalx.app/api/bookxTelegram/order";
+
+// Fire a Telegram notification so the team can verify & mark this ₹99 payment
+// Paid in the "Pro Plan" sheet tab.
+function notifyProTelegram(phone) {
+  const digits = String(phone || "").replace(/\D/g, "").slice(-10);
+  const msg = `👑 *TheBookX Exclusive — membership payment*\n\n📞 ${digits}\n💳 ₹${PRO_PRICE} / month\n\n➡️ Verify the UPI payment, then set *Status → Paid* for this number in the *Pro Plan* tab to activate.`;
+  const payload = JSON.stringify({
+    orderDetails: msg,
+    customerName: "Pro membership",
+    customerPhone: digits,
+    totalAmount: PRO_PRICE,
+    paymentMethod: "PRO_MEMBERSHIP",
+    codHandlingFee: 0,
+  });
+  try {
+    if (typeof navigator !== "undefined" && navigator.sendBeacon) {
+      const blob = new Blob([payload], { type: "application/json" });
+      if (navigator.sendBeacon(TELEGRAM_URL, blob)) return;
+    }
+  } catch {}
+  fetch(TELEGRAM_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    keepalive: true,
+    body: payload,
+  }).catch(() => {});
+}
+
 const BENEFITS = [
   { icon: Tag, text: "Flat 20% off every order (best price applied)" },
   { icon: ShieldCheck, text: "Zero COD handling fee" },
   { icon: Truck, text: "Free delivery on orders above ₹400" },
-  { icon: Crown, text: "50% off packing & care charges" },
+  { icon: Zap, text: "50% off packing & care charges" },
 ];
 
 const norm = (p) => String(p || "").replace(/\D/g, "").slice(-10);
@@ -76,20 +116,7 @@ export default function ProUpgradeModal({
     runCheck(p);
   };
 
-  const pay = async () => {
-    const p = norm(num);
-    if (p.length !== 10) return;
-    setBusy(true);
-    const r = await startProPayment(p);
-    setBusy(false);
-    if (r && r.active) {
-      setStatusInfo(r);
-      setStep("active");
-      onActivated && onActivated(r);
-      return;
-    }
-    setStep("paying");
-    // Poll every 3s until an admin marks the payment Paid.
+  const startPoll = (p) => {
     clearPoll();
     pollRef.current = setInterval(async () => {
       const s = await fetchProStatus(p);
@@ -104,6 +131,36 @@ export default function ProUpgradeModal({
         onActivated && onActivated(s);
       }
     }, 3000);
+  };
+
+  // "Pay ₹99" → write the Unconfirmed row, show the UPI QR, and start polling.
+  const pay = async () => {
+    const p = norm(num);
+    if (p.length !== 10) return;
+    setBusy(true);
+    const r = await startProPayment(p);
+    setBusy(false);
+    if (r && r.active) {
+      setStatusInfo(r);
+      setStep("active");
+      onActivated && onActivated(r);
+      return;
+    }
+    setStep("qr");
+    startPoll(p);
+  };
+
+  // Shopper taps "I've paid" → notify the team on Telegram to verify + mark Paid.
+  const confirmPaid = () => {
+    notifyProTelegram(norm(num));
+    showToast("Thanks! We're verifying your payment 🔎", "success");
+  };
+
+  const copyUpi = () => {
+    try {
+      navigator.clipboard.writeText(UPI_ID);
+      showToast("UPI ID copied", "success");
+    } catch {}
   };
 
   if (!mounted) return null;
@@ -121,7 +178,7 @@ export default function ProUpgradeModal({
         >
           <motion.div
             className="bill-modal pro-modal"
-            style={{ maxWidth: "460px" }}
+            style={{ maxWidth: "980px", margin: "0 auto" }}
             initial={{ y: "100%" }}
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
@@ -130,7 +187,7 @@ export default function ProUpgradeModal({
           >
             <div className="pro-head">
               <span className="pro-badge">
-                <Crown size={15} /> TheBookX Exclusive
+                <Zap size={15} /> TheBookX Exclusive
               </span>
               <button
                 type="button"
@@ -198,7 +255,7 @@ export default function ProUpgradeModal({
                     <Loader2 size={16} className="pro-spin" />
                   ) : (
                     <>
-                      <Crown size={16} /> Pay ₹{PRO_PRICE} &amp; activate
+                      <Zap size={16} /> Pay ₹{PRO_PRICE} &amp; activate
                     </>
                   )}
                 </button>
@@ -208,20 +265,47 @@ export default function ProUpgradeModal({
               </div>
             )}
 
-            {/* Paying / awaiting confirmation */}
-            {step === "paying" && (
-              <div className="pro-body pro-center">
-                <span className="pro-loader" />
-                <h3 className="pro-title">Confirming your payment…</h3>
-                <p className="pro-sub">
-                  Pay ₹{PRO_PRICE} by UPI if you haven&apos;t already. This
-                  activates the moment we confirm — keep this open.
+            {/* QR payment — scan & pay ₹99, we poll + verify */}
+            {step === "qr" && (
+              <div className="pro-body pro-qr-body">
+                <div className="pro-qr-payee">
+                  <span className="pro-qr-logo">TB</span>
+                  <div className="pro-qr-payee-info">
+                    <span className="pro-qr-payee-name">TheBookX</span>
+                    <span className="pro-qr-payee-upi">{UPI_ID}</span>
+                  </div>
+                  <span className="pro-qr-amt">₹{PRO_PRICE}</span>
+                </div>
+
+                <div className="pro-qr-card">
+                  <div className="pro-qr-img">
+                    <Image
+                      src="/books/uskillbook.png"
+                      alt="UPI QR to pay ₹99"
+                      width={260}
+                      height={312}
+                    />
+                  </div>
+                  <span className="pro-qr-scan">
+                    Scan with any UPI app to pay ₹{PRO_PRICE}
+                  </span>
+                  <span className="pro-qr-status">
+                    <span className="pro-qr-dot" /> Waiting for your payment…
+                  </span>
+                </div>
+
+                <button type="button" className="pro-copy" onClick={copyUpi}>
+                  <Copy size={14} /> Copy UPI ID
+                </button>
+
+                <button type="button" className="pro-cta" onClick={confirmPaid}>
+                  <Check size={16} /> I&apos;ve paid ₹{PRO_PRICE}
+                </button>
+                <p className="pro-fine">
+                  This activates the moment we confirm your payment — keep this
+                  open.
                 </p>
-                <button
-                  type="button"
-                  className="pro-ghost"
-                  onClick={onClose}
-                >
+                <button type="button" className="pro-ghost" onClick={onClose}>
                   I&apos;ll check later
                 </button>
               </div>

@@ -8,7 +8,7 @@ import RecentlyViewed from "@/components/RecentlyViewed";
 import RecommendationModal from "@/components/RecommendationModal";
 import ProUpgradeModal from "@/components/UI/ProUpgradeModal";
 import { fetchProStatus, cachedProStatus, PRO_PRICE } from "@/utils/proPlan";
-import { Crown } from "lucide-react";
+import { Zap as Crown } from "lucide-react";
 import SearchOverlay from "@/components/SearchOverlay";
 import AddressModal from "@/components/UI/AddressModal";
 import OrderSuccessCard from "@/components/UI/OrderSuccessCard";

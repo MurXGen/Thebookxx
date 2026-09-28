@@ -15127,13 +15127,17 @@ img[data-loaded="true"] {
   cursor: pointer;
 }
 .plan-tab.on {
-  background: #fff;
-  color: var(--foreground, #0a0a0a);
-  box-shadow: 0 4px 10px -6px rgba(0, 0, 0, 0.3);
+  background: #0a0a0a;
+  color: #fff;
+  box-shadow: 0 4px 12px -6px rgba(0, 0, 0, 0.5);
 }
+/* Pro active: dark premium gradient with a gold accent. */
 .plan-tab-pro.on {
-  background: linear-gradient(135deg, #ffd77a, #f5b301);
-  color: #3b2a00;
+  background: linear-gradient(135deg, #1c1a12 0%, #3a2f10 55%, #0a0a0a 100%);
+  color: #ffd77a;
+}
+.plan-tab-pro.on svg {
+  color: #ffd77a;
 }
 .plan-tab-live {
   font-size: 8.5px;
@@ -15431,6 +15435,106 @@ img[data-loaded="true"] {
   background: linear-gradient(135deg, #16a34a, #22c55e);
   box-shadow: 0 10px 24px -8px rgba(22, 163, 74, 0.7);
   margin-bottom: 4px;
+}
+
+/* Pro QR payment step */
+.pro-qr-body {
+  align-items: center;
+  text-align: center;
+}
+.pro-qr-payee {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 340px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--surface-2, #f5f4f2);
+}
+.pro-qr-logo {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 12px;
+  color: #fff;
+  background: #0a0a0a;
+}
+.pro-qr-payee-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+  flex: 1;
+}
+.pro-qr-payee-name {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--foreground, #0a0a0a);
+}
+.pro-qr-payee-upi {
+  font-size: 11px;
+  color: var(--dark-50, #6b7280);
+}
+.pro-qr-amt {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--foreground, #0a0a0a);
+}
+.pro-qr-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid var(--hairline, #e5e7eb);
+}
+.pro-qr-img {
+  width: 220px;
+  height: 264px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.pro-qr-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.pro-qr-scan {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--foreground, #0a0a0a);
+}
+.pro-qr-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  color: #b45309;
+}
+.pro-qr-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #f5b301;
+  animation: oscSpin 1.4s linear infinite;
+}
+.pro-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--hairline, #e5e7eb);
+  background: #fff;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--foreground, #0a0a0a);
+  cursor: pointer;
 }
 
 /* "Placing your order…" loader shown for 2s before the success card. */

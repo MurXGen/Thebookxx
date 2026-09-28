@@ -38,7 +38,12 @@ const parseSheetDate = (input) => {
   return isNaN(d.getTime()) ? null : d;
 };
 
-const isPaid = (s) => /paid|active|confirm|yes/i.test(String(s || ""));
+const isPaid = (s) => {
+  const t = String(s || "").toLowerCase();
+  // "Unconfirmed" contains "confirmed", so exclude the negatives first.
+  if (/unconfirm|pending|cancel|refund|reject|fail/.test(t)) return false;
+  return /paid|active|confirmed|success|^\s*yes\s*$/.test(t);
+};
 
 function computeStatus(rows) {
   const now = Date.now();

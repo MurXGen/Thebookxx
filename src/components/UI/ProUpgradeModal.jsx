@@ -176,7 +176,7 @@ export default function ProUpgradeModal({
     <AnimatePresence>
       {open && (
         <motion.div
-          className="bill-modal-overlay"
+          className={`bill-modal-overlay${step === "qr" ? " upiv3-overlay" : ""}`}
           style={{ zIndex: 100001 }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -184,7 +184,7 @@ export default function ProUpgradeModal({
           onClick={onClose}
         >
           <motion.div
-            className="bill-modal pro-modal"
+            className={`bill-modal pro-modal${step === "qr" ? " upiv3-modal" : ""}`}
             style={{ maxWidth: "980px", margin: "0 auto" }}
             initial={{ y: "100%" }}
             animate={{ y: 0 }}

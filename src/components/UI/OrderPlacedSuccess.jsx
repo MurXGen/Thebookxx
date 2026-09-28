@@ -15,6 +15,11 @@ export default function OrderPlacedSuccess({
   subtitle = "Taking you to your order…",
 }) {
   const doneRef = useRef(false);
+  // Keep the latest onDone in a ref so parent re-renders (e.g. wallet polling)
+  // don't re-run this effect and RESET the 2s finish timer — which would stop
+  // onDone from ever firing and leave this splash stuck on screen.
+  const onDoneRef = useRef(onDone);
+  onDoneRef.current = onDone;
 
   useEffect(() => {
     const buzz = (p) => {
@@ -30,15 +35,17 @@ export default function OrderPlacedSuccess({
     const finish = setTimeout(() => {
       if (!doneRef.current) {
         doneRef.current = true;
-        onDone && onDone();
+        onDoneRef.current && onDoneRef.current();
       }
-    }, 2000);
+    }, 1600);
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
       clearTimeout(finish);
     };
-  }, [onDone]);
+    // Run ONCE on mount — never re-run on prop identity changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const R = 52;
   const C = 2 * Math.PI * R;

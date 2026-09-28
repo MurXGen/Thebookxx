@@ -405,12 +405,14 @@ export default function AddressModal({
 
   // Order placed → snapshot the order and hand it straight to the interactive
   // success card (which shows its own animated tick). No separate splash.
+  // Called DIRECTLY (synchronously) from each success point so it always runs.
   const successHandedRef = useRef(false);
-  useEffect(() => {
-    if (!showCODSuccess || successHandedRef.current) return;
+  const finishToSuccess = (oidArg, payment) => {
+    if (successHandedRef.current) return;
     successHandedRef.current = true;
     const digits = String(phone || "").replace(/\D/g, "").slice(-10);
-    const oid = placedOrderId || upiOrderRef;
+    const oid = oidArg || placedOrderId || upiOrderRef || "";
+    const pay = payment || paySel || "COD";
     const ctx = {
       orderId: oid,
       phone: digits,
@@ -424,18 +426,18 @@ export default function AddressModal({
         price: b.discountedPrice,
       })),
       baseTotal:
-        paySel === "COD"
+        pay === "COD"
           ? codTotalWithFee
-          : paySel === "ADV"
+          : pay === "ADV"
             ? advanceOrderTotal
             : upiTotalForFlow,
       faster: fasterDelivery,
       bookmarkQty,
       freeBookmarks,
     };
-    try {
-      clearCart && clearCart();
-    } catch {}
+    // NOTE: do NOT clear the cart here — the bag early-returns an empty-bag view
+    // when the cart is empty, which would unmount the success card before it can
+    // show. The bag clears the cart when the success modal is dismissed instead.
     try {
       if (digits.length === 10)
         localStorage.setItem("track_orders_phone", digits);
@@ -443,8 +445,7 @@ export default function AddressModal({
     setShowCODSuccess(false);
     if (onOrderPlaced) onOrderPlaced(ctx);
     if (onClose) onClose();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showCODSuccess]);
+  };
 
   // Prefill the checkout from a logged-in shopper's first order on record.
   // Same orders sheet as the wallet, so we grab their earliest matching row
@@ -952,11 +953,11 @@ export default function AddressModal({
     if (typeof window !== "undefined") window.location.assign("/profile");
   };
 
-  const triggerCODSuccess = (isFasterDeliverySelected) => {
+  const triggerCODSuccess = (isFasterDeliverySelected, oid) => {
     setFasterDelivery(isFasterDeliverySelected);
     persistLogin();
     setSuccessPayment("COD");
-    setShowCODSuccess(true);
+    finishToSuccess(oid, "COD");
   };
 
   // Finalise a UPI order after the shopper closes the success screen (mirrors
@@ -992,7 +993,7 @@ export default function AddressModal({
       cart_total: finalPayable,
       cod_fee: codFeeAmount,
     });
-    triggerCODSuccess(fasterDelivery);
+    const oid = `ORD${Date.now()}`;
     // GA purchase — only counted here, at the COD success point.
     trackPurchase({
       cartItems: cartBooks,
@@ -1000,7 +1001,8 @@ export default function AddressModal({
       paymentId: `COD-${Date.now()}`,
     });
     // Now log the CONFIRMED order (plain name, no "(unconfirmed)" tag).
-    submitToGoogleForm("COD", fasterDelivery, true);
+    submitToGoogleForm("COD", fasterDelivery, true, oid);
+    triggerCODSuccess(fasterDelivery, oid);
     // Push the COD order to Telegram (previously only UPI notified — the COD
     // success modal never invoked its onContinue handler). Fire-and-forget so
     // it never blocks the success screen.
@@ -1098,14 +1100,15 @@ export default function AddressModal({
     } else if (method === "COD") {
       // The ₹29 fee is already disclosed on the Summary & Pay sheet, so place
       // the COD order directly (no second fee-confirmation modal).
+      const oid = `ORD${Date.now()}`;
       trackPurchase({
         cartItems: cartBooks,
         totalAmount: netPayable,
         paymentId: `COD-${Date.now()}`,
       });
-      submitToGoogleForm("COD", isFaster, true);
+      submitToGoogleForm("COD", isFaster, true, oid);
       notifyCODToTelegram(isFaster);
-      triggerCODSuccess(isFaster);
+      triggerCODSuccess(isFaster, oid);
     }
   };
 
@@ -1158,13 +1161,14 @@ export default function AddressModal({
         paymentId: `GIFT-${Date.now()}`,
       });
     } catch (_) {}
-    submitToGoogleForm(giftMethod, fasterDelivery, true, undefined, label);
+    const oid = `ORD${Date.now()}`;
+    submitToGoogleForm(giftMethod, fasterDelivery, true, oid, label);
     setShowPayMethod(false);
     setFasterDelivery(fasterDelivery);
     persistLogin();
     setSuccessPayment("UPI");
     setSuccessPaymentLabel(label);
-    setShowCODSuccess(true);
+    finishToSuccess(oid, advanceMode ? "ADV" : "UPI");
   };
 
   // Inline UPI-app pick (from under the Pay Online card) → straight to the QR.
@@ -1355,7 +1359,7 @@ export default function AddressModal({
     setShowUPIPayment(false);
     persistLogin();
     setSuccessPayment("UPI");
-    setShowCODSuccess(true);
+    finishToSuccess(upiOrderRef, advanceMode ? "ADV" : "UPI");
   };
 
   // Timeout fallback: hand the order to WhatsApp with everything pre-filled,
@@ -1444,13 +1448,14 @@ export default function AddressModal({
     trackFunnelEvent(EVENTS.PAYMENT_METHOD_SELECTED, {
       method: "COD_from_UPI",
     });
+    const oid = `ORD${Date.now()}`;
     trackPurchase({
       cartItems: cartBooks,
       totalAmount: netPayable,
       paymentId: `COD-${Date.now()}`,
     });
-    submitToGoogleForm("COD", fasterDelivery, true);
-    triggerCODSuccess(fasterDelivery);
+    submitToGoogleForm("COD", fasterDelivery, true, oid);
+    triggerCODSuccess(fasterDelivery, oid);
   };
 
   // Combine the structured parts into one deliverable address string.

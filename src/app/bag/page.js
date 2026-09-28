@@ -1622,6 +1622,9 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
           onTrack={() => {
             const d = successCtx.phone;
             const oid = successCtx.orderId;
+            try {
+              clearCart && clearCart();
+            } catch {}
             if (typeof window !== "undefined") {
               if (d && d.length === 10 && oid)
                 window.location.assign(
@@ -1630,7 +1633,12 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
               else window.location.assign("/profile");
             }
           }}
-          onClose={() => setSuccessCtx(null)}
+          onClose={() => {
+            try {
+              clearCart && clearCart();
+            } catch {}
+            setSuccessCtx(null);
+          }}
         />
       )}
 

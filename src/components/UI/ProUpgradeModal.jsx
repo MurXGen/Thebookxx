@@ -70,6 +70,7 @@ export default function ProUpgradeModal({
   const [step, setStep] = useState("offer");
   const [num, setNum] = useState(norm(phone));
   const [busy, setBusy] = useState(false);
+  const [qrLoading, setQrLoading] = useState(false);
   const [statusInfo, setStatusInfo] = useState(null);
   const pollRef = useRef(null);
   const [mounted, setMounted] = useState(false);
@@ -133,21 +134,26 @@ export default function ProUpgradeModal({
     }, 3000);
   };
 
-  // "Pay ₹99" → write the Unconfirmed row, show the UPI QR, and start polling.
-  const pay = async () => {
+  // "Pay ₹99" → show the UPI QR right away (brief "preparing" loader), and write
+  // the Unconfirmed row + start polling in the background so the button never
+  // hangs on a slow sheet write.
+  const pay = () => {
     const p = norm(num);
     if (p.length !== 10) return;
-    setBusy(true);
-    const r = await startProPayment(p);
-    setBusy(false);
-    if (r && r.active) {
-      setStatusInfo(r);
-      setStep("active");
-      onActivated && onActivated(r);
-      return;
-    }
     setStep("qr");
+    setQrLoading(true);
+    setTimeout(() => setQrLoading(false), 1500);
     startPoll(p);
+    startProPayment(p)
+      .then((r) => {
+        if (r && r.active) {
+          clearPoll();
+          setStatusInfo(r);
+          setStep("active");
+          onActivated && onActivated(r);
+        }
+      })
+      .catch(() => {});
   };
 
   // Shopper taps "I've paid" → notify the team on Telegram to verify + mark Paid.
@@ -278,20 +284,32 @@ export default function ProUpgradeModal({
                 </div>
 
                 <div className="pro-qr-card">
-                  <div className="pro-qr-img">
+                  <div
+                    className={`pro-qr-img${qrLoading ? " loading" : ""}`}
+                  >
                     <Image
                       src="/books/uskillbook.png"
                       alt="UPI QR to pay ₹99"
                       width={260}
                       height={312}
                     />
+                    {qrLoading && (
+                      <div className="pro-qr-loader">
+                        <span className="pro-loader" />
+                        <span>Generating secure QR…</span>
+                      </div>
+                    )}
                   </div>
                   <span className="pro-qr-scan">
-                    Scan with any UPI app to pay ₹{PRO_PRICE}
+                    {qrLoading
+                      ? "Preparing your QR…"
+                      : `Scan with any UPI app to pay ₹${PRO_PRICE}`}
                   </span>
-                  <span className="pro-qr-status">
-                    <span className="pro-qr-dot" /> Waiting for your payment…
-                  </span>
+                  {!qrLoading && (
+                    <span className="pro-qr-status">
+                      <span className="pro-qr-dot" /> Waiting for your payment…
+                    </span>
+                  )}
                 </div>
 
                 <button type="button" className="pro-copy" onClick={copyUpi}>

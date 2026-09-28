@@ -31,6 +31,11 @@ export const REFERRALS_SHEET_NAME =
 
 // Reward amounts (credited to wallets only when the referred friend's first
 // order is DELIVERED). Two-sided: referrer earns, friend gets a welcome perk.
+// TheBookX Exclusive (Pro) membership tab. One row per ₹99 monthly payment:
+// Phone Number | Amount | Status (Unconfirmed→Paid) | Timestamp | Plan | Expiry.
+export const PRO_PLAN_SHEET_NAME =
+  process.env.PRO_PLAN_SHEET_NAME || "Pro Plan";
+
 export const REFERRER_REWARD = Number(process.env.REFERRER_REWARD || 50);
 export const REFEREE_REWARD = Number(process.env.REFEREE_REWARD || 30);
 
@@ -184,6 +189,52 @@ export async function referralRows(sheet) {
   try {
     const table = await gvizQuery({ sheet });
     return tableToObjects(table);
+  } catch {
+    return [];
+  }
+}
+
+// ── TheBookX Exclusive (Pro) membership ──────────────────────────────────
+// Append a ₹99 membership payment row (Status starts "Unconfirmed").
+export function proPlanAppend(data) {
+  return appscriptPost(APPSCRIPT_ORDER_URL, {
+    action: "append",
+    sheet: PRO_PLAN_SHEET_NAME,
+    data,
+  });
+}
+
+// Read Pro Plan rows for one phone (scoped server-side via gviz `where`).
+export async function proPlanRows(phone) {
+  const digits = String(phone || "").replace(/\D/g, "").slice(-10);
+  if (digits.length !== 10) return [];
+  try {
+    const meta = await gvizQuery({
+      sheet: PRO_PLAN_SHEET_NAME,
+      tq: "select * limit 0",
+    });
+    const phoneCol = findColumn(meta, "Phone Number");
+    let where = "";
+    if (phoneCol) {
+      where =
+        phoneCol.type === "number"
+          ? `where ${phoneCol.id} = ${digits}`
+          : `where ${phoneCol.id} = '${digits}'`;
+    }
+    const table = await gvizQuery({
+      sheet: PRO_PLAN_SHEET_NAME,
+      tq: `select * ${where}`.trim(),
+    });
+    const rows = tableToObjects(table);
+    // If the sheet has no phone column, filter in memory.
+    return phoneCol
+      ? rows
+      : rows.filter(
+          (r) =>
+            String(r["Phone Number"] ?? "")
+              .replace(/\D/g, "")
+              .slice(-10) === digits,
+        );
   } catch {
     return [];
   }

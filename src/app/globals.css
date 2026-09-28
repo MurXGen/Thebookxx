@@ -15116,6 +15116,169 @@ img[data-loaded="true"] {
   background: rgba(0, 0, 0, 0.5);
   padding: 0;
 }
+/* ── TheBookX Exclusive (Pro) upgrade modal ── */
+.pro-modal {
+  overflow: hidden;
+}
+.pro-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px 6px;
+}
+.pro-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #3b2a00;
+  background: linear-gradient(135deg, #ffd77a, #f5b301);
+  box-shadow: 0 6px 16px -8px rgba(245, 179, 1, 0.8);
+}
+.pro-x {
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--dark-50, #6b7280);
+}
+.pro-body {
+  padding: 8px 18px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.pro-center {
+  align-items: center;
+  text-align: center;
+  padding-top: 22px;
+}
+.pro-title {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--foreground, #0a0a0a);
+}
+.pro-sub {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--dark-60, #4b5563);
+}
+.pro-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.pro-price {
+  font-size: 34px;
+  font-weight: 800;
+  color: var(--foreground, #0a0a0a);
+}
+.pro-per {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--dark-50, #6b7280);
+}
+.pro-benefits {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.pro-benefits li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--foreground, #0a0a0a);
+}
+.pro-benefit-ic {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  color: #b45309;
+  background: rgba(245, 179, 1, 0.16);
+}
+.pro-input {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1px solid var(--hairline, #e5e7eb);
+  border-radius: 12px;
+  font-size: 15px;
+  outline: none;
+}
+.pro-input:focus {
+  border-color: #f5b301;
+}
+.pro-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px 16px;
+  border: none;
+  border-radius: 13px;
+  font-size: 15px;
+  font-weight: 800;
+  color: #2a1e00;
+  cursor: pointer;
+  background: linear-gradient(135deg, #ffd77a, #f5b301);
+  box-shadow: 0 10px 22px -10px rgba(245, 179, 1, 0.9);
+}
+.pro-cta:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.pro-ghost {
+  border: none;
+  background: none;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--dark-50, #6b7280);
+  cursor: pointer;
+  padding: 4px;
+}
+.pro-fine {
+  margin: 0;
+  font-size: 11px;
+  color: var(--dark-50, #6b7280);
+  text-align: center;
+}
+.pro-spin {
+  animation: oscSpin 0.8s linear infinite;
+}
+.pro-loader {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 4px solid rgba(245, 179, 1, 0.25);
+  border-top-color: #f5b301;
+  animation: oscSpin 0.8s linear infinite;
+  margin-bottom: 4px;
+}
+.pro-tick {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  box-shadow: 0 10px 24px -8px rgba(22, 163, 74, 0.7);
+  margin-bottom: 4px;
+}
+
 /* "Placing your order…" loader shown for 2s before the success card. */
 .osc-placing {
   margin: auto;

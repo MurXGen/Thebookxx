@@ -73,6 +73,8 @@ export default function OrderSuccessCard({
   const [addedIds, setAddedIds] = useState(() => new Set());
   const [orderBooks, setOrderBooks] = useState(books);
   const [savingKey, setSavingKey] = useState("");
+  // "placing" → 2s loader, then "done" → the success content + tick + haptic.
+  const [phase, setPhase] = useState("placing");
 
   const [noteOpen, setNoteOpen] = useState(false);
   const [note, setNote] = useState("");
@@ -258,16 +260,35 @@ export default function OrderSuccessCard({
     .join(", ");
   const extraBmCharge = Math.max(0, bmQty - freeBookmarks) * BOOKMARK_UNIT;
 
-  // Celebratory haptic when the success modal opens.
+  // Show a 2s "Placing your order…" loader, then reveal the success content
+  // with a celebratory haptic buzz.
   useEffect(() => {
-    try {
-      if (typeof navigator !== "undefined" && navigator.vibrate)
-        navigator.vibrate([18, 40, 60]);
-    } catch {}
+    const t = setTimeout(() => {
+      setPhase("done");
+      try {
+        if (typeof navigator !== "undefined" && navigator.vibrate)
+          navigator.vibrate([18, 40, 60, 30, 90]);
+      } catch {}
+    }, 2000);
+    return () => clearTimeout(t);
   }, []);
   const TR = 30;
   const TC = 2 * Math.PI * TR;
   const sparks = Array.from({ length: 10 });
+
+  if (phase === "placing") {
+    return (
+      <div className="osc-overlay">
+        <div className="osc-placing">
+          <span className="osc-placing-spinner" aria-hidden="true" />
+          <span className="osc-placing-txt">Placing your order…</span>
+          <span className="osc-placing-sub">
+            Hang tight — confirming your books
+          </span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="osc-overlay">

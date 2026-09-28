@@ -15181,6 +15181,71 @@ img[data-loaded="true"] {
   font-weight: 600;
   color: #166534;
 }
+
+/* Exclusive features — animated horizontal marquee (Swiggy-style) */
+.pro-marquee {
+  position: relative;
+  overflow: hidden;
+  margin: 2px -16px 0;
+  padding: 2px 0;
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 10%,
+    #000 90%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 10%,
+    #000 90%,
+    transparent
+  );
+}
+.pro-marquee-track {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  white-space: nowrap;
+  will-change: transform;
+  animation: pro-marquee-scroll 18s linear infinite;
+}
+.pro-marquee:hover .pro-marquee-track {
+  animation-play-state: paused;
+}
+.pro-chip {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #2a1e00;
+  background: linear-gradient(135deg, #fff3cf, #ffe39a);
+  border: 1px solid rgba(245, 179, 1, 0.5);
+  box-shadow: 0 1px 3px rgba(245, 179, 1, 0.18);
+}
+.pro-chip-ic {
+  font-size: 13px;
+  line-height: 1;
+}
+@keyframes pro-marquee-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pro-marquee-track {
+    animation: none;
+  }
+}
 .plan-unlock-btn {
   display: inline-flex;
   align-items: center;

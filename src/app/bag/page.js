@@ -1325,39 +1325,39 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
       {cartBooks.length > 0 && planTab === "pro" && (
         <div className="plan-pro-banner">
           {proActive ? (
-            <>
-              <div className="plan-pro-title">
-                <Crown size={16} /> You&apos;re a member
-              </div>
-              <p className="plan-pro-sub">
-                Member pricing is applied at checkout
-                {proStatus?.daysLeft ? ` · ${proStatus.daysLeft} days left` : ""}
-                .
-              </p>
-              <ul className="plan-pro-list">
-                <li>✓ Flat 20% off (best price applied)</li>
-                <li>✓ Zero COD handling fee</li>
-                <li>✓ Free delivery above ₹400</li>
-                <li>✓ 50% off packing &amp; care</li>
-              </ul>
-            </>
+            <div className="plan-pro-title">
+              <Crown size={16} /> You&apos;re a member
+              {proStatus?.daysLeft ? ` · ${proStatus.daysLeft} days left` : ""}
+            </div>
           ) : (
-            <>
-              <div className="plan-pro-title">
-                <Crown size={16} /> TheBookX Exclusive · ₹{PRO_PRICE}/mo
-              </div>
-              <p className="plan-pro-sub">
-                Members save on every order. Unlock and this cart re-prices
-                instantly.
-              </p>
-              <ul className="plan-pro-list">
-                <li>✓ Flat 20% off (best price applied)</li>
-                <li>✓ Zero COD handling fee</li>
-                <li>✓ Free delivery above ₹400</li>
-                <li>✓ 50% off packing &amp; care</li>
-              </ul>
-            </>
+            <div className="plan-pro-title">
+              <Crown size={16} /> TheBookX Exclusive · ₹{PRO_PRICE}/mo
+            </div>
           )}
+          <p className="plan-pro-sub">
+            {proActive
+              ? "Member pricing is applied at checkout."
+              : "Unlock and this cart re-prices instantly."}
+          </p>
+          <div className="pro-marquee" aria-hidden="true">
+            <div className="pro-marquee-track">
+              {[0, 1].map((dup) =>
+                [
+                  { ic: "🏷️", t: "Flat 20% off" },
+                  { ic: "🚚", t: "Free delivery over ₹400" },
+                  { ic: "🛡️", t: "Zero COD fee" },
+                  { ic: "🎁", t: "50% off packing" },
+                  { ic: "⚡", t: "Priority dispatch" },
+                  { ic: "🔖", t: "Extra free bookmarks" },
+                ].map((f, i) => (
+                  <span className="pro-chip" key={`${dup}-${i}`}>
+                    <span className="pro-chip-ic">{f.ic}</span>
+                    {f.t}
+                  </span>
+                )),
+              )}
+            </div>
+          </div>
         </div>
       )}
 

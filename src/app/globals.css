@@ -15106,10 +15106,14 @@ img[data-loaded="true"] {
 /* Cart plan tabs (Standard / TheBookX Exclusive) */
 .plan-tabs {
   display: flex;
-  gap: 8px;
-  background: var(--surface-2, #f3f4f6);
-  border-radius: 14px;
-  padding: 4px;
+  gap: 6px;
+  background: #eceef1;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 999px;
+  padding: 5px;
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.06),
+    0 1px 1px rgba(255, 255, 255, 0.6);
 }
 .plan-tab {
   flex: 1;
@@ -15117,27 +15121,44 @@ img[data-loaded="true"] {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 10px 8px;
+  padding: 11px 8px;
   border: none;
-  border-radius: 11px;
+  border-radius: 999px;
   background: transparent;
   font-size: 13px;
   font-weight: 800;
-  color: var(--dark-60, #4b5563);
+  color: #374151;
   cursor: pointer;
+  transition:
+    background 0.22s ease,
+    color 0.22s ease,
+    box-shadow 0.22s ease,
+    transform 0.22s ease;
+}
+.plan-tab:not(.on):hover {
+  color: #111827;
+  background: rgba(255, 255, 255, 0.6);
 }
 .plan-tab.on {
-  background: #0a0a0a;
+  background: linear-gradient(180deg, #1f1f1f 0%, #0a0a0a 100%);
   color: #fff;
-  box-shadow: 0 4px 12px -6px rgba(0, 0, 0, 0.5);
+  box-shadow:
+    0 6px 16px -6px rgba(0, 0, 0, 0.55),
+    0 2px 4px -2px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  transform: translateY(-0.5px);
 }
-/* Pro active: dark premium gradient with a gold accent. */
+/* Pro active: dark premium gradient with a gold accent + glow. */
 .plan-tab-pro.on {
-  background: linear-gradient(135deg, #1c1a12 0%, #3a2f10 55%, #0a0a0a 100%);
-  color: #ffd77a;
+  background: linear-gradient(135deg, #2a2415 0%, #4a3a12 50%, #0f0d08 100%);
+  color: #ffdf8e;
+  box-shadow:
+    0 6px 18px -6px rgba(120, 90, 10, 0.6),
+    0 2px 5px -2px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 223, 142, 0.25);
 }
 .plan-tab-pro.on svg {
-  color: #ffd77a;
+  color: #ffdf8e;
 }
 .plan-tab-live {
   font-size: 8.5px;

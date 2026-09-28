@@ -15163,16 +15163,58 @@ img[data-loaded="true"] {
 }
 .osc-tick {
   position: relative;
-  width: 58px;
-  height: 58px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   display: grid;
   place-items: center;
   color: #fff;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   background: linear-gradient(135deg, #16a34a, #22c55e);
-  box-shadow: 0 10px 22px -8px rgba(22, 163, 74, 0.7);
-  animation: oscPop 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: 0 10px 24px -8px rgba(22, 163, 74, 0.75);
+}
+.osc-tick-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.osc-tick-track {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.3);
+  stroke-width: 4;
+}
+.osc-tick-ring2 {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+.osc-tick-check {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.osc-tick-blast {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid rgba(22, 163, 74, 0.55);
+  pointer-events: none;
+}
+.osc-tick-spark {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: #22c55e;
+  pointer-events: none;
 }
 .osc-tick-ring {
   position: absolute;

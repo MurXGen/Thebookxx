@@ -57,7 +57,6 @@ import {
   updateOrderRow,
 } from "@/utils/googleFormOrder";
 import ScratchRewardSheet from "./ScratchRewardSheet";
-import OrderPlacedSuccess from "./OrderPlacedSuccess";
 import CartSupportSheet from "./CartSupportSheet";
 import { showToast } from "@/context/ToastContext";
 
@@ -403,6 +402,49 @@ export default function AddressModal({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phone]);
+
+  // Order placed → snapshot the order and hand it straight to the interactive
+  // success card (which shows its own animated tick). No separate splash.
+  const successHandedRef = useRef(false);
+  useEffect(() => {
+    if (!showCODSuccess || successHandedRef.current) return;
+    successHandedRef.current = true;
+    const digits = String(phone || "").replace(/\D/g, "").slice(-10);
+    const oid = placedOrderId || upiOrderRef;
+    const ctx = {
+      orderId: oid,
+      phone: digits,
+      name,
+      address: { address, city, state, pincode },
+      books: (cartBooks || []).map((b) => ({
+        id: b.id,
+        name: b.name,
+        image: b.image,
+        qty: b.qty || 1,
+        price: b.discountedPrice,
+      })),
+      baseTotal:
+        paySel === "COD"
+          ? codTotalWithFee
+          : paySel === "ADV"
+            ? advanceOrderTotal
+            : upiTotalForFlow,
+      faster: fasterDelivery,
+      bookmarkQty,
+      freeBookmarks,
+    };
+    try {
+      clearCart && clearCart();
+    } catch {}
+    try {
+      if (digits.length === 10)
+        localStorage.setItem("track_orders_phone", digits);
+    } catch {}
+    setShowCODSuccess(false);
+    if (onOrderPlaced) onOrderPlaced(ctx);
+    if (onClose) onClose();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showCODSuccess]);
 
   // Prefill the checkout from a logged-in shopper's first order on record.
   // Same orders sheet as the wallet, so we grab their earliest matching row
@@ -2603,58 +2645,8 @@ export default function AddressModal({
         }
       />
 
-      {/* ========== ORDER PLACED SPLASH → order detail page ========== */}
-      <AnimatePresence>
-        {showCODSuccess && (
-          <OrderPlacedSuccess
-            onDone={() => {
-              const digits = String(phone || "")
-                .replace(/\D/g, "")
-                .slice(-10);
-              const oid = placedOrderId || upiOrderRef;
-              // Snapshot the placed order so the interactive success card can
-              // offer add-ons even after the cart is cleared.
-              const ctx = {
-                orderId: oid,
-                phone: digits,
-                name,
-                address: { address, city, state, pincode },
-                books: (cartBooks || []).map((b) => ({
-                  id: b.id,
-                  name: b.name,
-                  image: b.image,
-                  qty: b.qty || 1,
-                  price: b.discountedPrice,
-                })),
-                baseTotal:
-                  paySel === "COD"
-                    ? codTotalWithFee
-                    : paySel === "ADV"
-                      ? advanceOrderTotal
-                      : upiTotalForFlow,
-                faster: fasterDelivery,
-                bookmarkQty,
-                freeBookmarks,
-              };
-              // Clear the cart now the order is placed.
-              try {
-                clearCart && clearCart();
-              } catch {}
-              // Treat the ordering number as "signed in" so the profile/orders
-              // flow recognises them (and the ownership guards pass).
-              try {
-                if (digits.length === 10)
-                  localStorage.setItem("track_orders_phone", digits);
-              } catch {}
-              setShowCODSuccess(false);
-              // Hand the order snapshot to the parent (bag), which owns and
-              // renders the interactive success modal, then close checkout.
-              if (onOrderPlaced) onOrderPlaced(ctx);
-              if (onClose) onClose();
-            }}
-          />
-        )}
-      </AnimatePresence>
+      {/* Order placed → hand off directly to the interactive success card
+          (the animated tick now lives inside that modal). No separate splash. */}
 
       {/* ========== Pay-online method chooser ========== */}
       <AnimatePresence>

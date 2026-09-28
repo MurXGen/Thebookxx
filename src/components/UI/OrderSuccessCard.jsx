@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { motion } from "framer-motion";
 import {
   Check,
   MapPin,
@@ -257,15 +258,78 @@ export default function OrderSuccessCard({
     .join(", ");
   const extraBmCharge = Math.max(0, bmQty - freeBookmarks) * BOOKMARK_UNIT;
 
+  // Celebratory haptic when the success modal opens.
+  useEffect(() => {
+    try {
+      if (typeof navigator !== "undefined" && navigator.vibrate)
+        navigator.vibrate([18, 40, 60]);
+    } catch {}
+  }, []);
+  const TR = 30;
+  const TC = 2 * Math.PI * TR;
+  const sparks = Array.from({ length: 10 });
+
   return (
     <div className="osc-overlay">
       <div className="osc-modal">
-        {/* ── Top: success tick + message ── */}
+        {/* ── Top: animated success tick + message ── */}
         <div className="osc-top">
-          <span className="osc-tick">
-            <span className="osc-tick-ring" />
-            <Check size={26} strokeWidth={3} />
-          </span>
+          <motion.span
+            className="osc-tick"
+            initial={{ scale: 0.9 }}
+            animate={{ scale: [0.9, 1, 1.12, 1] }}
+            transition={{
+              duration: 0.5,
+              times: [0, 0.6, 0.82, 1],
+              delay: 0.1,
+              ease: "easeOut",
+            }}
+          >
+            <motion.span
+              className="osc-tick-blast"
+              initial={{ scale: 0.4, opacity: 0.5 }}
+              animate={{ scale: 2, opacity: 0 }}
+              transition={{ duration: 0.7, delay: 0.14, ease: "easeOut" }}
+            />
+            {sparks.map((_, i) => {
+              const a = (i / sparks.length) * Math.PI * 2;
+              return (
+                <motion.span
+                  key={i}
+                  className="osc-tick-spark"
+                  initial={{ x: 0, y: 0, opacity: 0, scale: 0.6 }}
+                  animate={{
+                    x: Math.cos(a) * 46,
+                    y: Math.sin(a) * 46,
+                    opacity: [0, 1, 0],
+                    scale: 1,
+                  }}
+                  transition={{ duration: 0.7, delay: 0.16, ease: "easeOut" }}
+                />
+              );
+            })}
+            <svg viewBox="0 0 72 72" className="osc-tick-svg">
+              <circle cx="36" cy="36" r={TR} className="osc-tick-track" />
+              <motion.circle
+                cx="36"
+                cy="36"
+                r={TR}
+                className="osc-tick-ring2"
+                strokeDasharray={TC}
+                initial={{ strokeDashoffset: TC }}
+                animate={{ strokeDashoffset: 0 }}
+                transition={{ duration: 0.6, ease: "easeInOut" }}
+                transform="rotate(-90 36 36)"
+              />
+              <motion.path
+                d="M24 37 L32 45 L49 27"
+                className="osc-tick-check"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ duration: 0.3, delay: 0.55, ease: "easeOut" }}
+              />
+            </svg>
+          </motion.span>
           <h2 className="osc-top-title">Order placed successfully 🎉</h2>
           <p className="osc-top-sub">
             {orderId ? `Order ${orderId}` : "Thank you for your order"} · we're

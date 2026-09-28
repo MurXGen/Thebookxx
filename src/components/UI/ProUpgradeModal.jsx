@@ -13,6 +13,7 @@ import {
   ShieldCheck,
   Loader2,
   Copy,
+  Package,
 } from "lucide-react";
 import {
   PRO_PRICE,
@@ -271,62 +272,120 @@ export default function ProUpgradeModal({
               </div>
             )}
 
-            {/* QR payment — scan & pay ₹99, we poll + verify */}
+            {/* QR payment — mirrors the order UPI flow (upiv3) UI */}
             {step === "qr" && (
-              <div className="pro-body pro-qr-body">
-                <div className="pro-qr-payee">
-                  <span className="pro-qr-logo">TB</span>
-                  <div className="pro-qr-payee-info">
-                    <span className="pro-qr-payee-name">TheBookX</span>
-                    <span className="pro-qr-payee-upi">{UPI_ID}</span>
-                  </div>
-                  <span className="pro-qr-amt">₹{PRO_PRICE}</span>
-                </div>
-
-                <div className="pro-qr-card">
-                  <div
-                    className={`pro-qr-img${qrLoading ? " loading" : ""}`}
-                  >
-                    <Image
-                      src="/books/uskillbook.png"
-                      alt="UPI QR to pay ₹99"
-                      width={260}
-                      height={312}
-                    />
-                    {qrLoading && (
-                      <div className="pro-qr-loader">
-                        <span className="pro-loader" />
-                        <span>Generating secure QR…</span>
-                      </div>
-                    )}
-                  </div>
-                  <span className="pro-qr-scan">
-                    {qrLoading
-                      ? "Preparing your QR…"
-                      : `Scan with any UPI app to pay ₹${PRO_PRICE}`}
-                  </span>
-                  {!qrLoading && (
-                    <span className="pro-qr-status">
-                      <span className="pro-qr-dot" /> Waiting for your payment…
+              <>
+                <div className="upiv3 upiv3-scroll">
+                  <div className="upiv3-payee">
+                    <span className="upiv3-payee-logo">TB</span>
+                    <div className="upiv3-payee-info">
+                      <span className="upiv3-payee-name">TheBookX</span>
+                      <span className="upiv3-payee-upi">{UPI_ID}</span>
+                    </div>
+                    <span className="upiv3-verified">
+                      <ShieldCheck size={11} /> Verified
                     </span>
-                  )}
+                  </div>
+
+                  <div className="upiv3-qr">
+                    <div className="upiv3-qr-card">
+                      <div className="upiv3-qr-top">
+                        <div className="upiv3-qr-top-l">
+                          <span className="upiv3-qr-payee-lbl">Paying to</span>
+                          <span className="upiv3-qr-payee">
+                            TheBookX Exclusive
+                          </span>
+                        </div>
+                        <span className="upiv3-qr-amt">₹{PRO_PRICE}</span>
+                      </div>
+
+                      <div
+                        className={`upiv3-qr-img${qrLoading ? " loading" : " ready"}`}
+                      >
+                        <span className="upiv3-corner tl" aria-hidden="true" />
+                        <span className="upiv3-corner tr" aria-hidden="true" />
+                        <span className="upiv3-corner bl" aria-hidden="true" />
+                        <span className="upiv3-corner br" aria-hidden="true" />
+                        <Image
+                          src="/books/uskillbook.png"
+                          alt="UPI QR to pay ₹99"
+                          width={300}
+                          height={360}
+                        />
+                        {!qrLoading && (
+                          <span className="upiv3-scanline" aria-hidden="true" />
+                        )}
+                        {qrLoading && (
+                          <div className="upiv3-qr-loader">
+                            <span className="upiv3-spin lg" />
+                            <span>Generating secure QR…</span>
+                          </div>
+                        )}
+                      </div>
+
+                      <span className="upiv3-qr-scan">
+                        {qrLoading
+                          ? "Hang tight — preparing your QR"
+                          : `Scan with any UPI app to pay ₹${PRO_PRICE}`}
+                      </span>
+                      {!qrLoading && (
+                        <span className="upiv3-status">
+                          <span className="upiv3-status-dot" />
+                          Waiting for your payment…
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="upiv3-apps" aria-hidden="true">
+                    <span className="upiv3-apps-lbl">Works with</span>
+                    <span className="upiv3-app-chip gpay">GPay</span>
+                    <span className="upiv3-app-chip phonepe">PhonePe</span>
+                    <span className="upiv3-app-chip paytm">Paytm</span>
+                    <span className="upiv3-app-chip bhim">BHIM</span>
+                    <span className="upiv3-apps-more">+ all UPI</span>
+                  </div>
+
+                  <div className="upiv3-trust">
+                    <span>
+                      <ShieldCheck size={13} /> 256-bit encrypted
+                    </span>
+                    <span>
+                      <Package size={13} /> Instant activation
+                    </span>
+                  </div>
                 </div>
 
-                <button type="button" className="pro-copy" onClick={copyUpi}>
-                  <Copy size={14} /> Copy UPI ID
-                </button>
-
-                <button type="button" className="pro-cta" onClick={confirmPaid}>
-                  <Check size={16} /> I&apos;ve paid ₹{PRO_PRICE}
-                </button>
-                <p className="pro-fine">
-                  This activates the moment we confirm your payment — keep this
-                  open.
-                </p>
-                <button type="button" className="pro-ghost" onClick={onClose}>
-                  I&apos;ll check later
-                </button>
-              </div>
+                <div className="upiv3-footer">
+                  <div className="upiv3-id-row">
+                    <button
+                      type="button"
+                      className="upiv3-link"
+                      onClick={copyUpi}
+                    >
+                      <Copy size={14} /> Copy UPI ID
+                    </button>
+                  </div>
+                  <button
+                    type="button"
+                    className="pro-cta"
+                    onClick={confirmPaid}
+                  >
+                    <Check size={16} /> I&apos;ve paid ₹{PRO_PRICE}
+                  </button>
+                  <p className="pro-fine">
+                    Activates the moment we confirm your payment — keep this
+                    open.
+                  </p>
+                  <button
+                    type="button"
+                    className="pro-ghost"
+                    onClick={onClose}
+                  >
+                    I&apos;ll check later
+                  </button>
+                </div>
+              </>
             )}
 
             {/* Active */}

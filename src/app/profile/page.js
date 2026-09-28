@@ -49,6 +49,7 @@ import {
   Info,
   RotateCcw,
   Lightbulb,
+  Crown,
 } from "lucide-react";
 import Image from "next/image";
 import { FaWhatsapp } from "react-icons/fa";
@@ -64,6 +65,12 @@ import InstallAppBar from "@/components/InstallAppBar";
 import RecommendationModal from "@/components/RecommendationModal";
 import ReferralCodeField from "@/components/profile/ReferralCodeField";
 import ReferAndEarn from "@/components/profile/ReferAndEarn";
+import ProUpgradeModal from "@/components/UI/ProUpgradeModal";
+import {
+  fetchProStatus,
+  cachedProStatus,
+  PRO_PRICE,
+} from "@/utils/proPlan";
 import { getVerifiedBookIdsForPhone } from "@/lib/quickreads";
 import { fetchWalletLedger } from "@/utils/walletLedger";
 import {
@@ -415,6 +422,8 @@ export default function MyOrdersPage() {
   const [epSaving, setEpSaving] = useState(false);
   const [customerName, setCustomerName] = useState("");
   const [walletBalance, setWalletBalance] = useState(0);
+  const [proStatus, setProStatus] = useState(null);
+  const [proOpen, setProOpen] = useState(false);
   const [savedPhones, setSavedPhones] = useState([]);
   // Which order cards are expanded (Amazon/Flipkart-style collapsed by default)
   const [expandedOrders, setExpandedOrders] = useState({});
@@ -545,6 +554,15 @@ export default function MyOrdersPage() {
       setRefGuide(true);
     } catch {}
   }, [showPhoneInput, loading, cardLoading, booting]);
+
+  // TheBookX Exclusive (Pro) membership status for the logged-in number.
+  useEffect(() => {
+    const p = String(phoneNumber || "").replace(/\D/g, "").slice(-10);
+    if (p.length !== 10) return;
+    const cached = cachedProStatus(p);
+    if (cached) setProStatus(cached);
+    fetchProStatus(p).then(setProStatus);
+  }, [phoneNumber]);
 
   // Cache the shopper's ordered books so the Reading Tracker can import them.
   useEffect(() => {
@@ -1891,6 +1909,52 @@ Please cancel this order. Thank you `;
                     </Link>
                   </motion.div>
                 )}
+                {/* TheBookX Exclusive membership status */}
+                {!cardLoading && !booting && (
+                  <div
+                    className={`pro-card${proStatus?.active ? " active" : ""}`}
+                  >
+                    <div className="pro-card-main">
+                      <span className="pro-card-ic">
+                        <Crown size={18} />
+                      </span>
+                      <div className="pro-card-txt">
+                        <span className="pro-card-title">
+                          TheBookX Exclusive
+                        </span>
+                        <span className="pro-card-sub">
+                          {proStatus?.active
+                            ? `Active · ${proStatus.daysLeft} day${
+                                proStatus.daysLeft === 1 ? "" : "s"
+                              } left`
+                            : `Save on every order · ₹${PRO_PRICE}/mo`}
+                        </span>
+                      </div>
+                    </div>
+                    {proStatus?.active ? (
+                      proStatus.daysLeft <= 7 ? (
+                        <button
+                          type="button"
+                          className="pro-card-btn"
+                          onClick={() => setProOpen(true)}
+                        >
+                          Renew
+                        </button>
+                      ) : (
+                        <span className="pro-card-live">MEMBER</span>
+                      )
+                    ) : (
+                      <button
+                        type="button"
+                        className="pro-card-btn"
+                        onClick={() => setProOpen(true)}
+                      >
+                        Join
+                      </button>
+                    )}
+                  </div>
+                )}
+
                 {/* Refer & Earn — minimal, tucked inside the profile card. */}
                 {!cardLoading && !booting && (
                   <ReferAndEarn phone={phoneNumber} minimal guide={refGuide} />
@@ -3565,6 +3629,13 @@ Please cancel this order. Thank you `;
       <RecommendationModal
         isOpen={showSuggest}
         onClose={() => setShowSuggest(false)}
+      />
+
+      <ProUpgradeModal
+        open={proOpen}
+        phone={phoneNumber}
+        onClose={() => setProOpen(false)}
+        onActivated={(s) => setProStatus(s)}
       />
 
       {/* ── Track shipment slide-up ── */}

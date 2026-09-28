@@ -59,7 +59,6 @@ import {
 import ScratchRewardSheet from "./ScratchRewardSheet";
 import OrderPlacedSuccess from "./OrderPlacedSuccess";
 import CartSupportSheet from "./CartSupportSheet";
-import OrderSuccessCard from "./OrderSuccessCard";
 import { showToast } from "@/context/ToastContext";
 
 const PINCODE_DATA_KEY = "user_pincode";
@@ -262,8 +261,6 @@ export default function AddressModal({
   // note + faster-delivery upgrade writes).
   const [placedOrderId, setPlacedOrderId] = useState("");
   const [supportOpen, setSupportOpen] = useState(false); // "Need support?" sheet
-  const [successCtx, setSuccessCtx] = useState(null); // snapshot for success card
-  const [showSuccessCard, setShowSuccessCard] = useState(false);
   const [successPayment, setSuccessPayment] = useState("COD");
   // "Pay online" method chooser (UPI apps + Cards/gift-card for overseas users)
   const [showPayMethod, setShowPayMethod] = useState(false);
@@ -1523,7 +1520,6 @@ export default function AddressModal({
       : "";
 
   return (
-    <>
     <AnimatePresence>
       {open && (
         <motion.div
@@ -2651,11 +2647,8 @@ export default function AddressModal({
                   localStorage.setItem("track_orders_phone", digits);
               } catch {}
               setShowCODSuccess(false);
-              // Show the interactive success card. It lives at the top level of
-              // this (always-mounted) component, so it survives the checkout
-              // overlay closing. Also notify the parent for good measure.
-              setSuccessCtx(ctx);
-              setShowSuccessCard(true);
+              // Hand the order snapshot to the parent (bag), which owns and
+              // renders the interactive success modal, then close checkout.
               if (onOrderPlaced) onOrderPlaced(ctx);
               if (onClose) onClose();
             }}
@@ -3005,29 +2998,6 @@ export default function AddressModal({
         )}
       </AnimatePresence>
     </AnimatePresence>
-
-    {/* Interactive success card — rendered OUTSIDE the checkout overlay so it
-        survives the modal closing; no auto-redirect (user drives everything).
-        Rendered directly (NOT inside AnimatePresence) because the card portals
-        its own motion overlay — AnimatePresence around a portal fails to mount. */}
-    {showSuccessCard && successCtx && (
-      <OrderSuccessCard
-        {...successCtx}
-        onTrack={() => {
-          const d = successCtx.phone;
-          const oid = successCtx.orderId;
-          if (typeof window !== "undefined") {
-            if (d.length === 10 && oid)
-              window.location.assign(
-                `/profile/${d}/orders/${encodeURIComponent(oid)}`,
-              );
-            else window.location.assign("/profile");
-          }
-        }}
-        onClose={() => setShowSuccessCard(false)}
-      />
-    )}
-    </>
   );
 }
 

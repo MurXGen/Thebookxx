@@ -15106,59 +15106,116 @@ img[data-loaded="true"] {
 /* ═══════════════════════════════════════════════════════════════════════
    Interactive order-success card (OrderSuccessCard)
    ═══════════════════════════════════════════════════════════════════════ */
+.osc-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 0;
+}
+@media (min-width: 560px) {
+  .osc-overlay {
+    align-items: center;
+    padding: 20px;
+  }
+}
 .osc-modal {
+  position: relative;
   display: flex;
   flex-direction: column;
-  max-height: 92vh;
+  width: 100%;
   max-width: 560px;
-  padding: 0;
+  max-height: 92vh;
+  background: var(--card, #fff);
+  border-radius: 22px 22px 0 0;
   overflow: hidden;
+  box-shadow: 0 -14px 44px rgba(0, 0, 0, 0.24);
+  animation: oscSlideUp 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.osc-head {
+@media (min-width: 560px) {
+  .osc-modal {
+    border-radius: 22px;
+  }
+}
+@keyframes oscSlideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* Top: tick + message */
+.osc-top {
+  flex-shrink: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 11px;
-  padding: 16px 18px;
+  text-align: center;
+  gap: 4px;
+  padding: 26px 18px 18px;
+  background: linear-gradient(180deg, #f0fdf4, #fff);
   border-bottom: 1px solid var(--hairline, #eee2d6);
 }
 .osc-tick {
-  flex-shrink: 0;
-  width: 34px;
-  height: 34px;
+  position: relative;
+  width: 58px;
+  height: 58px;
   border-radius: 50%;
   display: grid;
   place-items: center;
   color: #fff;
+  margin-bottom: 6px;
   background: linear-gradient(135deg, #16a34a, #22c55e);
-  box-shadow: 0 6px 14px -6px rgba(22, 163, 74, 0.7);
+  box-shadow: 0 10px 22px -8px rgba(22, 163, 74, 0.7);
+  animation: oscPop 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.osc-head-txt {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
+.osc-tick-ring {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 2px solid rgba(22, 163, 74, 0.35);
+  animation: oscRing 0.9s ease-out;
 }
-.osc-head-title {
-  font-size: 16px;
+@keyframes oscPop {
+  0% {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.12);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes oscRing {
+  from {
+    transform: scale(0.6);
+    opacity: 0.8;
+  }
+  to {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+.osc-top-title {
+  margin: 0;
+  font-size: 19px;
   font-weight: 800;
   color: var(--foreground, #0a0a0a);
 }
-.osc-head-sub {
-  font-size: 12px;
+.osc-top-sub {
+  margin: 0;
+  font-size: 12.5px;
   color: var(--dark-50, #6b7280);
 }
-.osc-close {
-  flex-shrink: 0;
-  border: none;
-  background: var(--surface-2, #f3f4f6);
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-  color: var(--dark-60, #4b5563);
-}
+
 .osc-body {
   flex: 1;
   min-height: 0;
@@ -15167,6 +15224,23 @@ img[data-loaded="true"] {
   display: flex;
   flex-direction: column;
   gap: 14px;
+}
+.osc-note-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  border: 1px solid var(--hairline, #e5e7eb);
+  border-radius: 12px;
+  background: #fff;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--foreground, #0a0a0a);
+  cursor: pointer;
+}
+.osc-note-arrow {
+  margin-left: auto;
+  color: var(--dark-40, #9ca3af);
 }
 
 /* Delivering-to notice */
@@ -15499,19 +15573,21 @@ img[data-loaded="true"] {
   border-top: 1px solid var(--hairline, #eee2d6);
   background: var(--card, #fff);
 }
-.osc-foot-total {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.1;
-}
-.osc-foot-total span {
-  font-size: 11px;
-  color: var(--dark-50, #6b7280);
-}
-.osc-foot-total b {
-  font-size: 18px;
+.osc-foot-ghost {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid var(--hairline, #e5e7eb);
+  border-radius: 12px;
+  padding: 13px 16px;
+  font-size: 13.5px;
   font-weight: 800;
-  color: var(--foreground, #0a0a0a);
+  color: var(--dark-60, #4b5563);
+  background: #fff;
+  cursor: pointer;
+  white-space: nowrap;
 }
 .osc-foot-cta {
   flex: 1;

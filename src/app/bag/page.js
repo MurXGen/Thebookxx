@@ -8,6 +8,7 @@ import RecentlyViewed from "@/components/RecentlyViewed";
 import RecommendationModal from "@/components/RecommendationModal";
 import SearchOverlay from "@/components/SearchOverlay";
 import AddressModal from "@/components/UI/AddressModal";
+import OrderSuccessCard from "@/components/UI/OrderSuccessCard";
 import BillModal from "@/components/UI/BillModal";
 import CartOfferStrip from "@/components/UI/CartOfferStrip";
 import FreeShippingNudgeModal from "@/components/UI/FreeShippingNudgeModal";
@@ -90,6 +91,7 @@ function BagContent() {
   const [showQrCheckout, setShowQrCheckout] = useState(false);
   const [showBill, setShowBill] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
+  const [successCtx, setSuccessCtx] = useState(null); // interactive success modal
   const [upsellAccepted, setUpsellAccepted] = useState(false);
   const [showRecommendationModal, setShowRecommendationModal] = useState(false);
   const [showFreeShippingNudge, setShowFreeShippingNudge] = useState(false);
@@ -1614,9 +1616,28 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
         )}
       </AnimatePresence>
 
+      {successCtx && (
+        <OrderSuccessCard
+          {...successCtx}
+          onTrack={() => {
+            const d = successCtx.phone;
+            const oid = successCtx.orderId;
+            if (typeof window !== "undefined") {
+              if (d && d.length === 10 && oid)
+                window.location.assign(
+                  `/profile/${d}/orders/${encodeURIComponent(oid)}`,
+                );
+              else window.location.assign("/profile");
+            }
+          }}
+          onClose={() => setSuccessCtx(null)}
+        />
+      )}
+
       <AddressModal
         open={showAddressModal}
         onClose={() => setShowAddressModal(false)}
+        onOrderPlaced={(ctx) => setSuccessCtx(ctx)}
         finalPayable={finalPayable}
         totalDiscounted={totalDiscounted}
         standardDeliveryCharge={standardDeliveryCharge}

@@ -1,20 +1,17 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { createPortal } from "react-dom";
 import {
   Check,
-  X,
   MapPin,
   Pencil,
   StickyNote,
-  Truck,
   Zap,
   Plus,
   Minus,
   ArrowRight,
   BookOpen,
+  ShoppingBag,
 } from "lucide-react";
 import { books as ALL_BOOKS } from "@/utils/book";
 import { getDeliveryCharge } from "@/utils/cartOffers";
@@ -31,7 +28,6 @@ const slugify = (t) =>
 
 const ADD_DISCOUNT = 0.3; // flat 30% off books added from this modal
 
-// Quick prefilled note chips — tap to fill, or type a custom note.
 const NOTE_CHIPS = [
   "Call before delivery",
   "Leave with the guard",
@@ -43,7 +39,6 @@ const NOTE_CHIPS = [
   "Call on arrival, gate is locked",
 ];
 
-// Build the sheet "Books List" string from an array of line items.
 const buildBooksList = (items) =>
   items
     .map(
@@ -59,7 +54,7 @@ export default function OrderSuccessCard({
   phone = "",
   name = "",
   address = { address: "", city: "", state: "", pincode: "" },
-  books = [], // [{ id, name, image, qty, price }]
+  books = [],
   baseTotal = 0,
   faster = false,
   bookmarkQty = 0,
@@ -69,16 +64,15 @@ export default function OrderSuccessCard({
 }) {
   const digits = String(phone || "").replace(/\D/g, "").slice(-10);
 
-  // Live, adjustable order snapshot (starts from what was placed).
   const [total, setTotal] = useState(Number(baseTotal) || 0);
   const [isFaster, setIsFaster] = useState(!!faster);
   const [bmQty, setBmQty] = useState(Number(bookmarkQty) || 0);
   const [committedBm, setCommittedBm] = useState(Number(bookmarkQty) || 0);
-  const [added, setAdded] = useState([]); // [{ id, name, price, qty }]
+  const [added, setAdded] = useState([]);
   const [addedIds, setAddedIds] = useState(() => new Set());
+  const [orderBooks, setOrderBooks] = useState(books);
   const [savingKey, setSavingKey] = useState("");
 
-  // Sub-sheets
   const [noteOpen, setNoteOpen] = useState(false);
   const [note, setNote] = useState("");
   const [noteSaved, setNoteSaved] = useState(false);
@@ -93,20 +87,19 @@ export default function OrderSuccessCard({
   const [addrView, setAddrView] = useState({ ...address, phone: digits });
 
   const orderValue = useMemo(
-    () => books.reduce((s, b) => s + (b.price || 0) * (b.qty || 1), 0),
-    [books],
+    () => orderBooks.reduce((s, b) => s + (b.price || 0) * (b.qty || 1), 0),
+    [orderBooks],
   );
-  const hasOneRupee = books.some((b) => Number(b.price) === 1);
+  const hasOneRupee = orderBooks.some((b) => Number(b.price) === 1);
   const upgradeExtra = useMemo(() => {
     const std = getDeliveryCharge(orderValue, false, hasOneRupee);
     const fst = getDeliveryCharge(orderValue, true, hasOneRupee);
     return Math.max(0, fst - std);
   }, [orderValue, hasOneRupee]);
 
-  // Bestsellers to upsell (exclude what's already in the order / added).
   const inOrder = useMemo(
-    () => new Set(books.map((b) => b.id)),
-    [books],
+    () => new Set(orderBooks.map((b) => b.id)),
+    [orderBooks],
   );
   const bestsellers = useMemo(
     () =>
@@ -120,10 +113,10 @@ export default function OrderSuccessCard({
     [inOrder],
   );
 
-  const fullList = () =>
+  const fullList = (extraBooks) =>
     buildBooksList([
-      ...books.map((b) => ({ name: b.name, price: b.price, qty: b.qty || 1 })),
-      ...added.map((b) => ({ name: b.name, price: b.price, qty: b.qty })),
+      ...orderBooks.map((b) => ({ name: b.name, price: b.price, qty: b.qty || 1 })),
+      ...extraBooks.map((b) => ({ name: b.name, price: b.price, qty: b.qty })),
     ]);
 
   // ── Actions ──────────────────────────────────────────────────────────
@@ -207,7 +200,7 @@ export default function OrderSuccessCard({
       });
       setCommittedBm(bmQty);
       setTotal(newTotal);
-      showToast(`${bmQty} bookmark${bmQty > 1 ? "s" : ""} added 🔖`, "success");
+      showToast(`${bmQty} bookmark${bmQty === 1 ? "" : "s"} added 🔖`, "success");
     } catch {
       showToast("Couldn't add bookmarks. Try again.", "error");
     } finally {
@@ -241,17 +234,14 @@ export default function OrderSuccessCard({
     if (!added.length) return;
     setSavingKey("books");
     const addSum = added.reduce((s, b) => s + b.price * b.qty, 0);
-    // total already includes previously-committed added books; recompute from base.
-    const baseNoAdd = total; // current total is source of truth; add only the new delta
-    const newTotal = baseNoAdd + addSum;
+    const newTotal = total + addSum;
     try {
       await updateOrderRow(orderId, {
-        "Books List": fullList(),
+        "Books List": fullList(added),
         "Total Amount": String(newTotal),
       });
       setTotal(newTotal);
-      // Fold added into the order so further adds append correctly.
-      books.push(...added.map((b) => ({ ...b })));
+      setOrderBooks((prev) => [...prev, ...added]);
       setAdded([]);
       setAddedIds(new Set());
       showToast(`Added to your package 🎉 · +₹${addSum}`, "success");
@@ -262,56 +252,30 @@ export default function OrderSuccessCard({
     }
   };
 
-  if (typeof document === "undefined") return null;
-
-  const addrLine = [
-    addrView.address,
-    addrView.city,
-    addrView.state,
-    addrView.pincode,
-  ]
+  const addrLine = [addrView.address, addrView.city, addrView.state, addrView.pincode]
     .filter(Boolean)
     .join(", ");
+  const extraBmCharge = Math.max(0, bmQty - freeBookmarks) * BOOKMARK_UNIT;
 
-  return createPortal(
-    <motion.div
-      className="bill-modal-overlay"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      style={{ zIndex: 99990 }}
-    >
-      <motion.div
-        className="bill-modal osc-modal"
-        initial={{ y: "100%" }}
-        animate={{ y: 0 }}
-        exit={{ y: "100%" }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div className="osc-head">
+  return (
+    <div className="osc-overlay">
+      <div className="osc-modal">
+        {/* ── Top: success tick + message ── */}
+        <div className="osc-top">
           <span className="osc-tick">
-            <Check size={18} strokeWidth={3} />
+            <span className="osc-tick-ring" />
+            <Check size={26} strokeWidth={3} />
           </span>
-          <div className="osc-head-txt">
-            <span className="osc-head-title">Order confirmed 🎉</span>
-            <span className="osc-head-sub">
-              {orderId ? `Order ${orderId}` : "Your order is placed"}
-            </span>
-          </div>
-          <button
-            type="button"
-            className="osc-close"
-            onClick={onClose}
-            aria-label="Close"
-          >
-            <X size={18} />
-          </button>
+          <h2 className="osc-top-title">Order placed successfully 🎉</h2>
+          <p className="osc-top-sub">
+            {orderId ? `Order ${orderId}` : "Thank you for your order"} · we're
+            getting it ready
+          </p>
         </div>
 
+        {/* ── Middle: scrollable content ── */}
         <div className="osc-body">
-          {/* Delivery-to notice */}
+          {/* Delivering to */}
           <div className="osc-deliver">
             <div className="osc-deliver-head">
               <span className="osc-deliver-cap">
@@ -332,43 +296,35 @@ export default function OrderSuccessCard({
             <div className="osc-deliver-phone">+91 {addrView.phone || digits}</div>
             <div className="osc-deliver-addr">{addrLine}</div>
             <div className="osc-deliver-note">
-              Please make sure your address &amp; number are correct for a
-              smooth, successful delivery.
+              Please make sure your address &amp; number are correct for a smooth,
+              successful delivery.
             </div>
           </div>
 
-          {/* Quick actions */}
-          <div className="osc-actions">
-            <button
-              type="button"
-              className="osc-action"
-              onClick={() => setNoteOpen(true)}
-            >
-              <StickyNote size={16} />
-              {noteSaved ? "Note added" : "Add note"}
-            </button>
-            <button
-              type="button"
-              className="osc-action osc-action-dark"
-              onClick={onTrack}
-            >
-              <Truck size={16} /> Track order
-            </button>
-          </div>
+          {/* Add note */}
+          <button
+            type="button"
+            className="osc-note-btn"
+            onClick={() => setNoteOpen(true)}
+          >
+            <StickyNote size={16} />
+            {noteSaved ? "Note added — edit" : "Add a note for delivery"}
+            <ArrowRight size={15} className="osc-note-arrow" />
+          </button>
 
-          {/* Faster delivery upgrade */}
-          {!isFaster && upgradeExtra > 0 && (
+          {/* Faster upgrade */}
+          {!isFaster && upgradeExtra > 0 ? (
             <div className="osc-up">
               <div className="osc-up-ic">
                 <Zap size={18} />
               </div>
               <div className="osc-up-main">
                 <span className="osc-up-title">
-                  Get it faster — upgrade for ₹{upgradeExtra}
+                  Get it faster — add ₹{upgradeExtra}
                 </span>
                 <span className="osc-up-sub">
-                  Delivered in <b>1–5 days</b> instead of 4–9 · priority
-                  dispatch by air · same books, sooner.
+                  <b>1–5 days</b> instead of 4–9 · priority dispatch by air ·
+                  same books, sooner.
                 </span>
               </div>
               <button
@@ -380,8 +336,7 @@ export default function OrderSuccessCard({
                 {savingKey === "faster" ? "…" : "Upgrade"}
               </button>
             </div>
-          )}
-          {isFaster && (
+          ) : isFaster ? (
             <div className="osc-up osc-up-done">
               <div className="osc-up-ic">
                 <Zap size={18} />
@@ -391,7 +346,7 @@ export default function OrderSuccessCard({
                 <span className="osc-up-sub">Arriving in 1–5 days.</span>
               </div>
             </div>
-          )}
+          ) : null}
 
           {/* Bookmarks */}
           <div className="osc-bm">
@@ -432,14 +387,12 @@ export default function OrderSuccessCard({
               {savingKey === "bm"
                 ? "Adding…"
                 : `Pack ${bmQty} bookmark${bmQty === 1 ? "" : "s"}${
-                    Math.max(0, bmQty - freeBookmarks) > 0
-                      ? ` · +₹${Math.max(0, bmQty - freeBookmarks) * BOOKMARK_UNIT}`
-                      : " · free"
+                    extraBmCharge > 0 ? ` · +₹${extraBmCharge}` : " · free"
                   }`}
             </button>
           )}
 
-          {/* Bestsellers — flat 30% off, add before packing */}
+          {/* Bestseller upsell */}
           {bestsellers.length > 0 && (
             <div className="osc-sell">
               <div className="osc-sell-head">
@@ -447,7 +400,7 @@ export default function OrderSuccessCard({
                   ✨ Add before we pack — <b>flat 30% off</b>
                 </span>
                 <span className="osc-sell-sub">
-                  Only at this step. Ships together, nothing extra to pay online.
+                  Only at this step · ships together, nothing extra online.
                 </span>
               </div>
               <div className="osc-sell-row">
@@ -511,156 +464,121 @@ export default function OrderSuccessCard({
           )}
         </div>
 
-        {/* Footer */}
+        {/* ── Bottom: two CTAs ── */}
         <div className="osc-foot">
-          <div className="osc-foot-total">
-            <span>Order total</span>
-            <b>₹{total}</b>
-          </div>
+          <button type="button" className="osc-foot-ghost" onClick={onClose}>
+            <ShoppingBag size={16} /> Keep shopping
+          </button>
           <button type="button" className="osc-foot-cta" onClick={onTrack}>
-            Track order <ArrowRight size={17} />
+            Track my order <ArrowRight size={17} />
           </button>
         </div>
 
         {/* Note sub-sheet */}
-        <AnimatePresence>
-          {noteOpen && (
-            <>
-              <motion.div
-                className="osc-sub-backdrop"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setNoteOpen(false)}
+        {noteOpen && (
+          <>
+            <div className="osc-sub-backdrop" onClick={() => setNoteOpen(false)} />
+            <div className="osc-sub">
+              <div className="osc-sub-title">Add a note to your order</div>
+              <p className="osc-sub-sub">
+                Tap a quick note, or type your own.
+              </p>
+              <div className="osc-note-chips">
+                {NOTE_CHIPS.map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    className={`osc-note-chip${note.includes(c) ? " on" : ""}`}
+                    onClick={() =>
+                      setNote((prev) => {
+                        const t = prev.trim();
+                        if (t.includes(c)) return t;
+                        return t ? `${t}. ${c}` : c;
+                      })
+                    }
+                  >
+                    {c}
+                  </button>
+                ))}
+              </div>
+              <textarea
+                className="osc-sub-input"
+                rows={3}
+                placeholder="e.g. Please call before delivery, leave with the guard…"
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
               />
-              <motion.div
-                className="osc-sub"
-                initial={{ y: "100%" }}
-                animate={{ y: 0 }}
-                exit={{ y: "100%" }}
-                transition={{ type: "spring", stiffness: 380, damping: 34 }}
+              <button
+                type="button"
+                className="osc-sub-save"
+                disabled={savingKey === "note" || !note.trim()}
+                onClick={saveNote}
               >
-                <div className="osc-sub-title">Add a note to your order</div>
-                <p className="osc-sub-sub">
-                  Tap a quick note, or type your own — gift message, delivery
-                  instruction, landmark…
-                </p>
-                <div className="osc-note-chips">
-                  {NOTE_CHIPS.map((c) => (
-                    <button
-                      key={c}
-                      type="button"
-                      className={`osc-note-chip${note.includes(c) ? " on" : ""}`}
-                      onClick={() =>
-                        setNote((prev) => {
-                          const t = prev.trim();
-                          if (t.includes(c)) return t; // already added
-                          return t ? `${t}. ${c}` : c;
-                        })
-                      }
-                    >
-                      {c}
-                    </button>
-                  ))}
-                </div>
-                <textarea
-                  className="osc-sub-input"
-                  rows={3}
-                  placeholder="e.g. Please call before delivery, leave with the guard…"
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                />
-                <button
-                  type="button"
-                  className="osc-sub-save"
-                  disabled={savingKey === "note" || !note.trim()}
-                  onClick={saveNote}
-                >
-                  {savingKey === "note" ? "Saving…" : "Save note"}
-                </button>
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
+                {savingKey === "note" ? "Saving…" : "Save note"}
+              </button>
+            </div>
+          </>
+        )}
 
         {/* Address edit sub-sheet */}
-        <AnimatePresence>
-          {addrOpen && (
-            <>
-              <motion.div
-                className="osc-sub-backdrop"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setAddrOpen(false)}
+        {addrOpen && (
+          <>
+            <div className="osc-sub-backdrop" onClick={() => setAddrOpen(false)} />
+            <div className="osc-sub">
+              <div className="osc-sub-title">Edit delivery details</div>
+              <input
+                className="osc-sub-field"
+                placeholder="Phone number"
+                inputMode="numeric"
+                value={addr.phone}
+                onChange={(e) => setAddr((a) => ({ ...a, phone: e.target.value }))}
               />
-              <motion.div
-                className="osc-sub"
-                initial={{ y: "100%" }}
-                animate={{ y: 0 }}
-                exit={{ y: "100%" }}
-                transition={{ type: "spring", stiffness: 380, damping: 34 }}
-              >
-                <div className="osc-sub-title">Edit delivery details</div>
+              <textarea
+                className="osc-sub-field"
+                rows={2}
+                placeholder="Full address"
+                value={addr.address}
+                onChange={(e) =>
+                  setAddr((a) => ({ ...a, address: e.target.value }))
+                }
+              />
+              <div className="osc-sub-grid3">
                 <input
                   className="osc-sub-field"
-                  placeholder="Phone number"
-                  inputMode="numeric"
-                  value={addr.phone}
-                  onChange={(e) =>
-                    setAddr((a) => ({ ...a, phone: e.target.value }))
-                  }
+                  placeholder="City"
+                  value={addr.city}
+                  onChange={(e) => setAddr((a) => ({ ...a, city: e.target.value }))}
                 />
-                <textarea
+                <input
                   className="osc-sub-field"
-                  rows={2}
-                  placeholder="Full address"
-                  value={addr.address}
+                  placeholder="State"
+                  value={addr.state}
                   onChange={(e) =>
-                    setAddr((a) => ({ ...a, address: e.target.value }))
+                    setAddr((a) => ({ ...a, state: e.target.value }))
                   }
                 />
-                <div className="osc-sub-grid3">
-                  <input
-                    className="osc-sub-field"
-                    placeholder="City"
-                    value={addr.city}
-                    onChange={(e) =>
-                      setAddr((a) => ({ ...a, city: e.target.value }))
-                    }
-                  />
-                  <input
-                    className="osc-sub-field"
-                    placeholder="State"
-                    value={addr.state}
-                    onChange={(e) =>
-                      setAddr((a) => ({ ...a, state: e.target.value }))
-                    }
-                  />
-                  <input
-                    className="osc-sub-field"
-                    placeholder="Pincode"
-                    inputMode="numeric"
-                    value={addr.pincode}
-                    onChange={(e) =>
-                      setAddr((a) => ({ ...a, pincode: e.target.value }))
-                    }
-                  />
-                </div>
-                <button
-                  type="button"
-                  className="osc-sub-save"
-                  disabled={savingKey === "addr"}
-                  onClick={saveAddr}
-                >
-                  {savingKey === "addr" ? "Saving…" : "Save details"}
-                </button>
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
-      </motion.div>
-    </motion.div>,
-    document.body,
+                <input
+                  className="osc-sub-field"
+                  placeholder="Pincode"
+                  inputMode="numeric"
+                  value={addr.pincode}
+                  onChange={(e) =>
+                    setAddr((a) => ({ ...a, pincode: e.target.value }))
+                  }
+                />
+              </div>
+              <button
+                type="button"
+                className="osc-sub-save"
+                disabled={savingKey === "addr"}
+                onClick={saveAddr}
+              >
+                {savingKey === "addr" ? "Saving…" : "Save details"}
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
   );
 }

@@ -198,6 +198,7 @@ const downloadCsv = (filename, headers, rows) => {
 
 const PROFILE_URL = "https://www.thebookx.in/profile";
 const INDIA_POST_URL = "https://www.indiapost.gov.in";
+const REVIEW_URL = "https://www.thebookx.in/review";
 
 // Polite "some books are out of stock" WhatsApp message listing the specific
 // unpicked titles, offering a swap or refund.
@@ -242,6 +243,17 @@ const waMessages = (order) => {
     order?.shippingId || order?.["Shipping ID"] || "",
   ).trim();
   const hi = `Hi ${name} 👋`;
+
+  // Faster (express) orders arrive quicker than standard. Detect via the
+  // Delivery Type column, or an India Post Speed-post tracking ID (starts "E").
+  const isFaster =
+    /faster|express/i.test(String(order?.["Delivery Type"] || "")) ||
+    /^e/i.test(tracking);
+  // Realistic India Post delivery window shown in the shipping messages.
+  const etaWindow = isFaster ? "1–5 days" : "4–9 days";
+
+  // Review page link (appended to the delivered/review message).
+  const reviewLine = `\n⭐ *Leave a review:* ${REVIEW_URL}`;
 
   // Link block appended below every message: a divider, the customer's order
   // detail page link, their profile link, the tracking ID and the India Post
@@ -297,14 +309,14 @@ const waMessages = (order) => {
       key: "shipped",
       label: "Shipped",
       text:
-        `🚚 *Shipped*\n\n${hi}\nOn its way! Expected in *5–9 days* (minor weather delays possible).` +
+        `🚚 *Shipped*\n\n${hi}\nOn its way! Expected in *${etaWindow}*${isFaster ? " ⚡ (Faster delivery)" : ""} (minor weather delays possible).` +
         linkBlock,
     },
     {
       key: "transit",
       label: "In Transit",
       text:
-        `🛣️ *In transit*\n\n${hi}\nArriving in *4–9 working days*. Thanks for your patience!` +
+        `🛣️ *In transit*\n\n${hi}\nArriving in *${etaWindow}*${isFaster ? " ⚡ (Faster delivery)" : ""}. Thanks for your patience!` +
         linkBlock,
     },
     {
@@ -318,7 +330,7 @@ const waMessages = (order) => {
     {
       key: "delivered",
       label: "Delivered",
-      text: `🎉 *Delivered*\n\n${hi}\nHope you love your books! A quick ⭐ *review* would mean a lot.${linkBlock}`,
+      text: `🎉 *Delivered*\n\n${hi}\nHope you love your books! A quick ⭐ *review* would mean a lot.${reviewLine}${linkBlock}`,
     },
     {
       key: "received",

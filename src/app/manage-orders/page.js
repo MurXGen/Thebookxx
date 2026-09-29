@@ -275,12 +275,13 @@ const waMessages = (order) => {
       : "") +
     `\n\n— Team *TheBookX* 📚`;
 
-  // Out-for-delivery note only: parcels arrive via India Post (post office).
-  // Friendly reassurance + be-available + how to pay. Kept to the OFD message.
-  const postWarn =
-    `\n\n📮 Your parcel is from *India Post* — 100% genuine. ` +
-    `Please *be available* to receive it today. Can't be home? Ask a family member or neighbour to collect it for you. ` +
-    `You can pay the postman by *cash or online (UPI)* on delivery. 🙏`;
+  // Minimal link block for the Out-for-delivery message: only the Order ID +
+  // order link (no tracking ID, India Post, or profile links).
+  const minimalBlock =
+    `\n\n━━━━━━━━━━━━━━` +
+    (orderId ? `\n📦 *Order ID:* ${orderId}` : "") +
+    `\n🔗 *Order:* ${orderDetailUrl}` +
+    `\n\n— Team *TheBookX* 📚`;
 
   // Every message opens with an emoji *stage headline*, a short crisp note,
   // then (where relevant) the post-office warning and the link block below.
@@ -323,9 +324,10 @@ const waMessages = (order) => {
       key: "ofd",
       label: "Out for delivery",
       text:
-        `🛵 *Out for delivery today*\n\n${hi}\nKeep your phone reachable so the postman can deliver it.` +
-        postWarn +
-        linkBlock,
+        `🛵 *Out for delivery today*\n\n${hi}\n` +
+        `Your order is arriving today. *Delivery time window: 9 AM – 8 PM.* ` +
+        `Our delivery person may *call you*, so please keep your phone reachable. 📞` +
+        minimalBlock,
     },
     {
       key: "delivered",

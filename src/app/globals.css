@@ -19769,6 +19769,23 @@ img[data-loaded="true"] {
   opacity: 0.5;
   cursor: not-allowed;
 }
+.ip-bulk-fill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #b45309;
+  background: #fff7ed;
+  border: 1px solid #fdba74;
+  border-radius: 9px;
+  padding: 9px 16px;
+  cursor: pointer;
+}
+.ip-bulk-fill:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 .ip-bulk-push {
   display: inline-flex;
   align-items: center;
@@ -27488,6 +27505,134 @@ img[data-loaded="true"] {
   display: flex;
   flex-direction: column;
   gap: 14px;
+}
+
+/* Scan tracking IDs from a label photo (Book tab) */
+.mo-scan {
+  border: 1px solid var(--dark-10, #e5e7eb);
+  border-radius: 14px;
+  background: #fff;
+  overflow: hidden;
+}
+.mo-scan-body {
+  padding: 4px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.mo-scan-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.mo-scan-upload {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px dashed var(--tertiary, #fb8500);
+  background: #fff7ed;
+  color: #b45309;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.mo-scan-upload:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+.mo-scan-count {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #166534;
+}
+.mo-scan-progress {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--dark-10, #e5e7eb);
+  overflow: hidden;
+}
+.mo-scan-progress span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #fb8500, #f59e0b);
+  transition: width 0.2s ease;
+}
+.mo-scan-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 360px;
+  overflow-y: auto;
+}
+.mo-scan-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.mo-scan-idx {
+  flex: 0 0 22px;
+  text-align: right;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--dark-40, #9ca3af);
+}
+.mo-scan-input {
+  flex: 1;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.mo-scan-del {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid var(--dark-10, #e5e7eb);
+  background: #fff;
+  color: var(--danger, #dc2626);
+  cursor: pointer;
+}
+.mo-scan-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.mo-scan-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 9px;
+  border: 1px solid var(--dark-10, #e5e7eb);
+  background: #fff;
+  color: var(--foreground, #0a0a0a);
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.mo-scan-submit {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #16a34a, #15803d);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.mo-scan-submit:disabled {
+  opacity: 0.7;
+  cursor: default;
 }
 .mo-book-head {
   display: flex;

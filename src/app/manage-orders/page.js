@@ -3671,6 +3671,114 @@ export default function ManageOrdersPage() {
   useEffect(() => {
     setIpSender(loadSender());
   }, []);
+
+  // ── Scan physical-copy tracking IDs (Book tab) ──
+  // Upload a photo of an EMS/India Post label sheet → OCR (Tesseract.js) →
+  // extract the article numbers (2 letters + 9 digits + "IN") → editable
+  // preview → push to the tracking_ids sheet (status "Not Used").
+  const [scanOpen, setScanOpen] = useState(false);
+  const [scanBusy, setScanBusy] = useState(false);
+  const [scanProgress, setScanProgress] = useState(0);
+  const [scanIds, setScanIds] = useState([]); // array of strings
+  const [scanPushing, setScanPushing] = useState(false);
+
+  const extractTrackingIds = (text) => {
+    const out = [];
+    String(text || "")
+      .toUpperCase()
+      .split(/\n/)
+      .forEach((line) => {
+        const compact = line.replace(/\s+/g, "");
+        const m = compact.match(/[A-Z]{2}\d{9}[A-Z]{2}/g);
+        if (m) m.forEach((x) => x.endsWith("IN") && out.push(x));
+      });
+    return out;
+  };
+
+  const runScanOcr = async (files) => {
+    if (!files || !files.length) return;
+    setScanBusy(true);
+    setScanProgress(0);
+    try {
+      const Tesseract = (await import("tesseract.js")).default;
+      const collected = new Set(scanIds);
+      let done = 0;
+      for (const file of files) {
+        const { data } = await Tesseract.recognize(file, "eng", {
+          logger: (m) => {
+            if (m.status === "recognizing text") {
+              const frac = (done + (m.progress || 0)) / files.length;
+              setScanProgress(Math.round(frac * 100));
+            }
+          },
+        });
+        extractTrackingIds(data?.text).forEach((id) => collected.add(id));
+        done += 1;
+        setScanProgress(Math.round((done / files.length) * 100));
+      }
+      const list = [...collected];
+      setScanIds(list);
+      showToast(
+        list.length
+          ? `Found ${list.length} tracking ID(s) — review & submit`
+          : "No tracking IDs detected — try a clearer photo",
+        list.length ? "success" : "error",
+      );
+    } catch (err) {
+      console.error("OCR failed:", err);
+      showToast(`Scan failed: ${err?.message || "unreadable image"}`, "error");
+    } finally {
+      setScanBusy(false);
+    }
+  };
+
+  const openScanUpload = () => {
+    const inp = document.createElement("input");
+    inp.type = "file";
+    inp.accept = "image/*";
+    inp.multiple = true;
+    inp.onchange = (e) => runScanOcr(Array.from(e?.target?.files || []));
+    inp.click();
+  };
+
+  const editScanId = (idx, val) =>
+    setScanIds((prev) =>
+      prev.map((v, i) => (i === idx ? val.toUpperCase().replace(/\s+/g, "") : v)),
+    );
+  const removeScanId = (idx) =>
+    setScanIds((prev) => prev.filter((_, i) => i !== idx));
+  const addScanId = () => setScanIds((prev) => [...prev, ""]);
+
+  const pushScanIds = async () => {
+    const ids = [...new Set(scanIds.map((s) => s.trim().toUpperCase()).filter(Boolean))];
+    if (!ids.length) {
+      showToast("Nothing to submit", "error");
+      return;
+    }
+    setScanPushing(true);
+    try {
+      const res = await fetch("/api/tracking-ids", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "append", ids }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (json.success) {
+        showToast(
+          `Pushed ${json.added} tracking ID(s)${json.skipped ? ` · ${json.skipped} already in sheet` : ""} ✓`,
+          "success",
+        );
+        setScanIds([]);
+      } else {
+        showToast(`Push failed: ${json.error || "try again"}`, "error");
+      }
+    } catch (err) {
+      showToast(`Push failed: ${err?.message || "network"}`, "error");
+    } finally {
+      setScanPushing(false);
+    }
+  };
+
   // Counts for the two buttons:
   //  • With a manual selection → you choose the product; ALL selected go into
   //    whichever file you click, so both buttons show the selected total.
@@ -3746,6 +3854,61 @@ export default function ManageOrdersPage() {
     setIpSenderOpen(false);
     showToast("Sender details saved.", "success");
   };
+  // Fill empty barcode/article cells with random UNUSED tracking IDs from the
+  // pool — Speed pulls E… (EMS) IDs, Contractual pulls C… IDs. The consumed IDs
+  // are remembered so they can be flipped to "Used" once the file downloads.
+  const [ipFilling, setIpFilling] = useState(false);
+  const [ipFilledIds, setIpFilledIds] = useState([]);
+  const fillIpBarcodes = async () => {
+    if (!ipBulk || !ipBulk.rows.length) return;
+    const prefix = ipBulk.product === "contractual" ? "C" : "E";
+    const emptyIdx = ipBulk.rows
+      .map((r, i) => (String(r.barcode || "").trim() ? -1 : i))
+      .filter((i) => i >= 0);
+    if (!emptyIdx.length) {
+      showToast("All rows already have a barcode.", "success");
+      return;
+    }
+    setIpFilling(true);
+    try {
+      const res = await fetch(
+        `/api/tracking-ids?status=unused&prefix=${prefix}&limit=${emptyIdx.length}`,
+      );
+      const json = await res.json().catch(() => ({}));
+      const pool = Array.isArray(json.ids) ? json.ids : [];
+      if (!pool.length) {
+        showToast(
+          `No unused ${prefix === "C" ? "Contractual (C…)" : "Speed (E…)"} tracking IDs in the pool.`,
+          "error",
+        );
+        return;
+      }
+      const assigned = [];
+      setIpBulk((prev) => {
+        if (!prev) return prev;
+        let p = 0;
+        const rows = prev.rows.map((r) => {
+          if (!String(r.barcode || "").trim() && p < pool.length) {
+            const id = pool[p++];
+            assigned.push(id);
+            return { ...r, barcode: id };
+          }
+          return r;
+        });
+        return { ...prev, rows };
+      });
+      setIpFilledIds((prev) => [...new Set([...prev, ...assigned])]);
+      showToast(
+        `Filled ${assigned.length} barcode(s)${assigned.length < emptyIdx.length ? ` · pool ran out (${emptyIdx.length - assigned.length} left blank)` : ""} ✓`,
+        "success",
+      );
+    } catch (err) {
+      showToast(`Fill failed: ${err?.message || "network"}`, "error");
+    } finally {
+      setIpFilling(false);
+    }
+  };
+
   const [ipDownloading, setIpDownloading] = useState(false);
   const downloadIpBulk = async () => {
     if (!ipBulk || ipBulk.rows.length === 0) return;
@@ -3772,10 +3935,27 @@ export default function ManageOrdersPage() {
       const stamp = new Date().toISOString().slice(0, 10);
       const fname = `indiapost-${ipBulk.product}-${stamp}.xlsx`;
       await downloadIpWorkbook(fname, ipBulk.rows, ipSender);
+      // Flip any pool barcodes consumed into this file to "Used" so they're not
+      // handed out again. Fire-and-forget; the download already succeeded.
+      const usedIds = [
+        ...new Set(
+          ipBulk.rows
+            .map((r) => String(r.barcode || "").trim().toUpperCase())
+            .filter((id) => ipFilledIds.includes(id)),
+        ),
+      ];
+      if (usedIds.length) {
+        fetch("/api/tracking-ids", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "markUsed", ids: usedIds }),
+        }).catch(() => {});
+      }
       showToast(
-        `${ipBulk.rows.length}-parcel ${ipBulk.product} file downloaded ✓`,
+        `${ipBulk.rows.length}-parcel ${ipBulk.product} file downloaded ✓${usedIds.length ? ` · ${usedIds.length} ID(s) marked Used` : ""}`,
         "success",
       );
+      setIpFilledIds([]);
       setIpBulk(null);
     } catch (e) {
       console.error("IP bulk export failed:", e);
@@ -9893,6 +10073,113 @@ export default function ManageOrdersPage() {
         {/* ===== Book (paste order IDs → inline India Post booking) ===== */}
         {activeTab === "book" && (
           <div className="mo-book-tab">
+            {/* Scan physical-copy tracking IDs from a label photo → OCR →
+                editable preview → push to the tracking_ids sheet. */}
+            <div className="mo-scan">
+              <div
+                className="mo-cp-head mo-acc-head"
+                onClick={() => setScanOpen((v) => !v)}
+              >
+                <span className="mo-cp-title">
+                  <UploadCloud size={16} /> Scan tracking IDs from a label photo
+                  <ChevronDown
+                    size={16}
+                    className={`mo-acc-chev${scanOpen ? " open" : ""}`}
+                  />
+                </span>
+                <span className="mo-cp-sub">
+                  Upload a photo of an EMS / India Post barcode sheet. We read the
+                  article numbers, you review &amp; edit, then push them to the
+                  tracking_ids pool (status “Not Used”).
+                </span>
+              </div>
+              {scanOpen && (
+                <div className="mo-scan-body">
+                  <div className="mo-scan-actions">
+                    <button
+                      type="button"
+                      className="mo-scan-upload"
+                      onClick={openScanUpload}
+                      disabled={scanBusy}
+                    >
+                      {scanBusy ? (
+                        <>
+                          <Loader2 size={15} className="mo-spin" /> Reading…{" "}
+                          {scanProgress}%
+                        </>
+                      ) : (
+                        <>
+                          <UploadCloud size={15} /> Upload label photo(s)
+                        </>
+                      )}
+                    </button>
+                    {scanIds.length > 0 && (
+                      <span className="mo-scan-count">
+                        {scanIds.length} ID{scanIds.length > 1 ? "s" : ""} detected
+                      </span>
+                    )}
+                  </div>
+
+                  {scanBusy && (
+                    <div className="mo-scan-progress">
+                      <span style={{ width: `${scanProgress}%` }} />
+                    </div>
+                  )}
+
+                  {scanIds.length > 0 && (
+                    <>
+                      <div className="mo-scan-list">
+                        {scanIds.map((id, i) => (
+                          <div className="mo-scan-row" key={i}>
+                            <span className="mo-scan-idx">{i + 1}</span>
+                            <input
+                              className="admin-input mo-scan-input"
+                              value={id}
+                              placeholder="EM212310098IN"
+                              onChange={(e) => editScanId(i, e.target.value)}
+                            />
+                            <button
+                              type="button"
+                              className="mo-scan-del"
+                              onClick={() => removeScanId(i)}
+                              aria-label="Remove"
+                            >
+                              <Trash2 size={15} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="mo-scan-foot">
+                        <button
+                          type="button"
+                          className="mo-scan-add"
+                          onClick={addScanId}
+                        >
+                          <Plus size={14} /> Add row
+                        </button>
+                        <button
+                          type="button"
+                          className="mo-scan-submit"
+                          onClick={pushScanIds}
+                          disabled={scanPushing}
+                        >
+                          {scanPushing ? (
+                            <>
+                              <Loader2 size={15} className="mo-spin" /> Pushing…
+                            </>
+                          ) : (
+                            <>
+                              <Check size={15} /> Submit {scanIds.length} to sheet
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+
             {/* Create a custom product to share with a customer. */}
             <div className="mo-cp">
               <div
@@ -15542,6 +15829,18 @@ export default function ManageOrdersPage() {
                     onClick={() => setIpBulk(null)}
                   >
                     Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="ip-bulk-fill"
+                    disabled={ipFilling || ipBulk.rows.length === 0}
+                    onClick={fillIpBarcodes}
+                    title={`Fill empty barcodes with unused ${ipBulk.product === "contractual" ? "Contractual (C…)" : "Speed (E…)"} tracking IDs`}
+                  >
+                    <UploadCloud size={15} />
+                    {ipFilling
+                      ? "Filling…"
+                      : `Fill barcodes (${ipBulk.product === "contractual" ? "C…" : "E…"})`}
                   </button>
                   <button
                     type="button"

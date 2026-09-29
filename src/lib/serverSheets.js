@@ -36,6 +36,12 @@ export const REFERRALS_SHEET_NAME =
 export const PRO_PLAN_SHEET_NAME =
   process.env.PRO_PLAN_SHEET_NAME || "Pro Plan";
 
+// Physical-copy tracking-ID pool tab. Columns: ids | status ("Not Used"/"Used").
+// Scanned barcodes from label sheets land here; the India Post bulk file pulls
+// the next unused ID by prefix (E… = Speed, C… = Contractual) and marks it Used.
+export const TRACKING_IDS_SHEET_NAME =
+  process.env.TRACKING_IDS_SHEET_NAME || "tracking_ids";
+
 export const REFERRER_REWARD = Number(process.env.REFERRER_REWARD || 50);
 export const REFEREE_REWARD = Number(process.env.REFEREE_REWARD || 30);
 
@@ -201,6 +207,38 @@ export function proPlanAppend(data) {
     action: "append",
     sheet: PRO_PLAN_SHEET_NAME,
     data,
+  });
+}
+
+// ── Physical-copy tracking-ID pool ───────────────────────────────────────
+// Read every row of the tracking_ids tab → [{ ids, status }].
+export async function trackingIdsRows() {
+  try {
+    const table = await gvizQuery({ sheet: TRACKING_IDS_SHEET_NAME });
+    return tableToObjects(table);
+  } catch {
+    return [];
+  }
+}
+
+// Append one scanned tracking ID (status defaults to "Not Used").
+export function trackingIdAppend(id, status = "Not Used") {
+  return appscriptPost(APPSCRIPT_ORDER_URL, {
+    action: "append",
+    sheet: TRACKING_IDS_SHEET_NAME,
+    data: { ids: String(id).trim(), status },
+  });
+}
+
+// Flip a tracking ID's status (match on the ids column). Used when a barcode is
+// consumed into an India Post bulk file → "Used".
+export function trackingIdUpdate(id, status = "Used") {
+  return appscriptPost(APPSCRIPT_ORDER_URL, {
+    action: "update",
+    sheet: TRACKING_IDS_SHEET_NAME,
+    matchColumn: "ids",
+    matchValue: String(id).trim(),
+    data: { status },
   });
 }
 

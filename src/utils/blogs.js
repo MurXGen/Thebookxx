@@ -4,6 +4,169 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "international-coffee-day-2026-books-to-read-with-coffee": {
+    "id": "blog-065",
+    "title": "International Coffee Day 2026 (1 October): 20 Books to Read With Your Cup, Sorted by Morning, Afternoon and Late Night",
+    "slug": "international-coffee-day-2026-books-to-read-with-coffee",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-09-29",
+    "lastModified": "2026-09-29",
+    "excerpt": "International Coffee Day is 1 October 2026. Twenty books matched to the morning, afternoon and late-night cup, plus a simple habit to read more every day.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "International Coffee Day is marked on 1 October, which this year falls on a Thursday, and in India it lands at an interesting moment. Coffee here is no longer just the filter kaapi of the south or the office vending-machine cup. Trade coverage this year describes home-brewing workshops in Delhi, Surat and Bengaluru selling out every weekend for months, alcohol-free coffee evenings replacing some nightlife, and growers in Nagaland, Meghalaya and Arunachal Pradesh joining older regions such as Karnataka's Baba Budan Hills, Araku Valley in Andhra Pradesh and Koraput in Odisha on the specialty map. The plant itself has a long local story: the popular account is that seven seeds were planted in the Baba Budan hills around 1600."
+      },
+      {
+        "type": "paragraph",
+        "content": "Reading and coffee have always shared a table, and this post is a practical guide to pairing them well. It is not a list of books about coffee, because there are only a handful of those. It is a list of books that suit a particular kind of cup: the slow first mug of the day, the mid-afternoon reset, the late cup that turns into a late chapter. Every title below is on the TheBookX shelf, and books start from ₹1 with free delivery and Cash on Delivery across India."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "International Coffee Day 2026 at a glance",
+        "content": "Date: Thursday, 1 October 2026. Indian coffee origins worth knowing: Baba Budan Hills (Karnataka), Araku Valley (Andhra Pradesh), Koraput (Odisha) and emerging Northeast regions. The reading idea: match the length and mood of the book to the length and mood of the cup."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Start with the books that actually feature a cup"
+      },
+      {
+        "type": "paragraph",
+        "content": "The obvious place to begin is Toshikazu Kawaguchi's <a href=\"/books/before-the-coffee-gets-cold\" style=\"color:#fb8500;font-weight:600\">Before the Coffee Gets Cold</a>, in which a small Tokyo cafe lets customers travel back in time, but only until the coffee cools. The rules are strict and the stories are short, so it suits a single sitting. The follow-ups, <a href=\"/books/tales-from-the-cafe\" style=\"color:#fb8500;font-weight:600\">Tales from the Cafe</a>, <a href=\"/books/before-your-memory-fades\" style=\"color:#fb8500;font-weight:600\">Before Your Memory Fades</a> and <a href=\"/books/before-we-say-goodbye\" style=\"color:#fb8500;font-weight:600\">Before We Say Goodbye</a>, keep the same quiet tone. If you prefer bookshops to cafes, <a href=\"/books/days-at-the-morisaki-bookshop\" style=\"color:#fb8500;font-weight:600\">Days at the Morisaki Bookshop</a> and <a href=\"/books/welcome-to-the-hyunam-dong-bookshop\" style=\"color:#fb8500;font-weight:600\">Welcome to the Hyunam-dong Bookshop</a> offer the same warm, low-stakes comfort: people healing slowly among shelves, with tea or coffee always somewhere nearby."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "The morning cup: short, clear and useful"
+      },
+      {
+        "type": "paragraph",
+        "content": "A morning coffee usually has ten to twenty minutes attached to it. That is enough for a few pages of something that sharpens the day rather than clouds it, and it is where non-fiction earns its place. The habit works best when the book is already open on the table and the phone is not."
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar. Short chapters on thinking and speaking clearly, built for exactly this kind of ten-minute read. One idea, one cup, one small change for the day.",
+          "<a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear. The habit-stacking idea fits neatly here: attach reading to the coffee you already make every morning.",
+          "<a href=\"/books/deep-work\" style=\"color:#fb8500;font-weight:600\">Deep Work</a> by Cal Newport. Best read before you open your inbox, as it argues for protecting the first focused hours.",
+          "<a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> by Morgan Housel. Each chapter stands alone, so you can stop when the cup is empty.",
+          "<a href=\"/books/ikigai\" style=\"color:#fb8500;font-weight:600\">Ikigai</a> by Hector Garcia and Francesc Miralles. A gentle, slow read on purpose and small daily rituals."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "The afternoon cup: fiction that pulls you out of the day"
+      },
+      {
+        "type": "paragraph",
+        "content": "The mid-afternoon slump is the ideal slot for a story with momentum. <a href=\"/books/the-midnight-library\" style=\"color:#fb8500;font-weight:600\">The Midnight Library</a> by Matt Haig imagines a library of every life you might have lived, and it moves fast. <a href=\"/books/lessons-in-chemistry\" style=\"color:#fb8500;font-weight:600\">Lessons in Chemistry</a> by Bonnie Garmus is funny, sharp and easy to dip into. For something with a stronger pulse, <a href=\"/books/gone-girl\" style=\"color:#fb8500;font-weight:600\">Gone Girl</a> by Gillian Flynn will make a fifteen-minute break run long, so plan accordingly."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "The late cup: books for slow evenings"
+      },
+      {
+        "type": "paragraph",
+        "content": "When the cup is a late one and the house is quiet, longer and more literary books come into their own. <a href=\"/books/norwegian-wood\" style=\"color:#fb8500;font-weight:600\">Norwegian Wood</a> by Haruki Murakami is a melancholy, absorbing novel of memory and friendship. <a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> by Arundhati Roy rewards slow reading, sentence by sentence. <a href=\"/books/the-seven-husbands-of-evelyn-hugo\" style=\"color:#fb8500;font-weight:600\">The Seven Husbands of Evelyn Hugo</a> by Taylor Jenkins Reid is the warm, page-turning option when you want a glamorous story that still has emotional weight. For a lighter Indian classic, <a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> by R.K. Narayan offers short stories that end before the coffee does."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "One for the investors, and one for the reflective"
+      },
+      {
+        "type": "paragraph",
+        "content": "Coffee has an odd place in finance writing too. <a href=\"/books/coffee-can-investing\" style=\"color:#fb8500;font-weight:600\">Coffee Can Investing</a> takes its name from the idea of buying good businesses and leaving them alone, like a can you never open, and it is a useful counterweight to daily market noise. At the other end, <a href=\"/books/tuesdays-with-morrie\" style=\"color:#fb8500;font-weight:600\">Tuesdays with Morrie</a> by Mitch Albom is a short, humane book about conversations on what matters, made for a slow weekend cup."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "How to build a coffee-and-book habit that lasts"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "Keep the book where the coffee happens. The kitchen counter or desk beats the bedside table for this habit.",
+          "Read before scrolling. Make the first ten minutes of the cup phone-free, even if only for a week.",
+          "Match length to mood. Short chapters for mornings, plots for afternoons, literary novels for evenings.",
+          "Set a page floor, not a page target. Five pages counts. The goal is to never skip a day.",
+          "Buy two at a time. One light and one demanding, so you always have the right book for the cup."
+        ]
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "A small gifting idea",
+        "content": "A good book and a bag of Indian single-origin coffee make a thoughtful gift for a colleague or friend, and it costs far less than a hamper. Add gift wrapping for +₹25 at checkout."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Frequently asked questions"
+      },
+      {
+        "type": "paragraph",
+        "content": "The questions below are the ones readers most often ask when building a coffee-time reading habit."
+      },
+      {
+        "type": "paragraph",
+        "content": "Ready to pair your next cup with a good book? Books start from ₹1, delivery is free and Cash on Delivery is available across India."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      }
+    ],
+    "coverImage": "/blogs/international-coffee-day-2026-books-to-read-with-coffee.jpeg",
+    "images": [
+      {
+        "url": "/blogs/international-coffee-day-2026-books-to-read-with-coffee.jpeg",
+        "alt": "A young woman reading a paperback at a sunlit window with a cup of coffee on the table",
+        "caption": "The easiest reading habit is the one attached to a cup you already make.",
+        "category": "Reading Habits"
+      }
+    ],
+    "keywords": [
+      "International Coffee Day 2026",
+      "books to read with coffee",
+      "coffee and books",
+      "best books to read with coffee India",
+      "cafe books",
+      "reading habit India",
+      "Before the Coffee Gets Cold",
+      "books for coffee lovers"
+    ],
+    "categories": [
+      "Reading Habits",
+      "Book Recommendations",
+      "Occasions"
+    ],
+    "faqs": [
+      {
+        "question": "When is International Coffee Day 2026?",
+        "answer": "International Coffee Day is observed on 1 October every year. In 2026 it falls on a Thursday."
+      },
+      {
+        "question": "What are good books to read with coffee?",
+        "answer": "Short, absorbing books work best. Before the Coffee Gets Cold, The Midnight Library, Atomic Habits and The Art of Clarity all suit a single cup because their chapters or stories are brief."
+      },
+      {
+        "question": "Is it better to read fiction or non-fiction with morning coffee?",
+        "answer": "It depends on your goal. Short non-fiction suits mornings because a few pages give you one idea to apply, while fiction suits afternoons and evenings when you want to switch off."
+      },
+      {
+        "question": "Can I get these books with Cash on Delivery in India?",
+        "answer": "Yes. TheBookX delivers across India with free delivery and Cash on Delivery, and many books start from ₹1."
+      }
+    ]
+  },
   "world-heart-day-2026-reading-calms-heart-books": {
     id: "blog-064",
     title:

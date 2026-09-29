@@ -11039,11 +11039,47 @@ textarea.sec-mid-btn,
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
+}
+
+/* Visible breadcrumb trail (replaces the back button) */
+.bd-breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--dark-50, #6b7280);
+}
+.bd-breadcrumb a {
+  color: var(--dark-50, #6b7280);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.15s ease;
+}
+.bd-breadcrumb a:hover {
+  color: var(--tertiary, #fb8500);
+  text-decoration: underline;
+}
+.bd-bc-sep {
+  color: var(--dark-30, #cbd0d6);
+  flex: 0 0 auto;
+}
+.bd-bc-current {
+  color: var(--foreground, #0a0a0a);
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 46vw;
 }
 
 .bd-topbar-actions {
   display: flex;
   gap: var(--px-8);
+  flex: 0 0 auto;
 }
 
 .bd-icon-btn {

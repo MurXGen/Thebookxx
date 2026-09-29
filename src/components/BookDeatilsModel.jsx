@@ -5,7 +5,6 @@ import { useStore } from "@/context/StoreContext";
 import { showToast } from "@/context/ToastContext";
 import { books } from "@/utils/book";
 import {
-  ArrowLeft,
   Heart,
   MessageSquare,
   ShoppingCart,
@@ -54,6 +53,7 @@ import {
 import QuickReadsReader from "./quickreads/QuickReadsReader";
 import BookCard from "./BookCard";
 import Link from "next/link";
+import Navbar from "@/components/Navbar";
 import YouMayLike from "./UI/YouMayLike";
 import BookReviews from "./UI/BookReviews";
 import StoreReviews from "./StoreReviews";
@@ -610,6 +610,9 @@ export default function BookDetailsModal({ book }) {
 
   return (
     <>
+      {/* Site navbar at the very top of the book-details page */}
+      <Navbar />
+
       {/* JSON-LD Schema for Book Details */}
       <Script
         id={`book-detail-schema-${book.id}`}
@@ -765,14 +768,6 @@ export default function BookDetailsModal({ book }) {
             exit={{ y: -60, opacity: 0 }}
             transition={{ duration: 0.2 }}
           >
-            <button
-              type="button"
-              className="bd-icon-btn"
-              onClick={() => router.back()}
-              aria-label="Go back"
-            >
-              <ArrowLeft size={20} />
-            </button>
             <span className="bd-sticky-title">{book.name}</span>
             <div className="bd-sticky-actions">
               <button
@@ -841,16 +836,27 @@ export default function BookDetailsModal({ book }) {
             }}
           />
 
-          {/* ===== Top bar (in-flow) ===== */}
+          {/* ===== Top bar (in-flow) — visible breadcrumb + actions ===== */}
           <div className="bd-topbar">
-            <button
-              type="button"
-              className="bd-icon-btn"
-              onClick={() => router.back()}
-              aria-label="Go back"
-            >
-              <ArrowLeft size={20} />
-            </button>
+            <nav className="bd-breadcrumb" aria-label="Breadcrumb">
+              <Link href="/">Home</Link>
+              <ChevronRight size={14} className="bd-bc-sep" />
+              <Link href="/books">Books</Link>
+              {book.catalogue?.[0] && (
+                <>
+                  <ChevronRight size={14} className="bd-bc-sep" />
+                  <Link href={`/category/${book.catalogue[0]}`}>
+                    {book.catalogue[0]
+                      .replace(/-/g, " ")
+                      .replace(/\b\w/g, (c) => c.toUpperCase())}
+                  </Link>
+                </>
+              )}
+              <ChevronRight size={14} className="bd-bc-sep" />
+              <span className="bd-bc-current" aria-current="page">
+                {book.name}
+              </span>
+            </nav>
             <div className="bd-topbar-actions">
               <button
                 type="button"

@@ -55,12 +55,49 @@ export async function generateMetadata({ params }) {
   const title = book.author
     ? `${book.name} by ${book.author} - Books from ₹1`
     : `${book.name} - Books from ₹1`;
-  const description = `Buy ${book.name}${book.author ? ` by ${book.author}` : ""} online at the lowest price on TheBookX. Free delivery, Cash on Delivery and easy 7-day returns across India. ${book.description.substring(0, 70)}`;
+
+  // Human-readable genre/category labels (drive audience-intent keywords).
+  const cats = (book.catalogue || []).map((c) =>
+    String(c)
+      .replace(/-/g, " ")
+      .replace(/\b\w/g, (ch) => ch.toUpperCase()),
+  );
+  const genrePhrase = cats.length ? cats.join(", ") : "bestselling books";
+  const isHindi = /hindi/i.test(book.language || "");
+  const langLabel = isHindi ? "Hindi" : book.language || "English";
+
+  const description = `Buy ${book.name}${book.author ? ` by ${book.author}` : ""} (${langLabel}${cats[0] ? `, ${cats[0]}` : ""}) online at the lowest price on TheBookX. Free delivery, Cash on Delivery & easy 7-day returns across India. ${book.description.substring(0, 70)}`;
+
+  // Aggressive, audience-targeted keyword set: exact title, author-fan,
+  // price-intent, genre/category, language, and India buy-intent terms.
+  const keywords = [
+    book.name,
+    book.author,
+    book.author && `${book.author} books`,
+    `${book.name} book`,
+    `${book.name} price`,
+    `${book.name} lowest price`,
+    `buy ${book.name} online`,
+    `${book.name} cash on delivery`,
+    `${book.name} online India`,
+    isHindi && `${book.name} Hindi book`,
+    isHindi && `Hindi books online`,
+    ...cats,
+    ...cats.map((c) => `${c} books online India`),
+    "buy books online India",
+    "cheap books online",
+    "low price books",
+    "book shopping online",
+    "TheBookX",
+  ]
+    .filter(Boolean)
+    .join(", ");
 
   return {
     title,
     description,
-    keywords: `${book.name}, ${book.author}, ${book.name} price, ${book.name} lowest price, buy ${book.name} online, ${book.name} cash on delivery, ${book.catalogue?.join(", ")}, cheap books online, low price books, TheBookX`,
+    category: cats[0] || "Books",
+    keywords,
     authors: [{ name: book.author || "Various Authors" }],
     alternates: { canonical: bookUrl },
     openGraph: {

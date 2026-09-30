@@ -21,6 +21,7 @@ import {
   Search,
   Download,
   UploadCloud,
+  Camera,
   Loader2,
   Plus,
   Edit,
@@ -86,6 +87,7 @@ import {
 } from "framer-motion";
 import Link from "next/link";
 import BookCoverImg from "@/components/BookCoverImg";
+import BarcodeScanner from "@/components/UI/BarcodeScanner";
 import { books as ALL_BOOKS } from "@/utils/book";
 import { bookImages } from "@/utils/bookImages";
 import { encodeProduct } from "@/utils/customBooks";
@@ -3709,6 +3711,14 @@ export default function ManageOrdersPage() {
   const [scanProgress, setScanProgress] = useState(0);
   const [scanIds, setScanIds] = useState([]); // array of strings
   const [scanPushing, setScanPushing] = useState(false);
+  const [scannerOpen, setScannerOpen] = useState(false);
+
+  // A live-camera barcode hit → add if new (dedupe, keep order).
+  const onScanDetect = (code) => {
+    const id = String(code || "").trim().toUpperCase().replace(/\s+/g, "");
+    if (!id) return;
+    setScanIds((prev) => (prev.includes(id) ? prev : [...prev, id]));
+  };
 
   const extractTrackingIds = (text) => {
     const out = [];
@@ -10126,6 +10136,13 @@ export default function ManageOrdersPage() {
                   <div className="mo-scan-actions">
                     <button
                       type="button"
+                      className="mo-scan-scanbtn"
+                      onClick={() => setScannerOpen(true)}
+                    >
+                      <Camera size={15} /> Scan with camera
+                    </button>
+                    <button
+                      type="button"
                       className="mo-scan-upload"
                       onClick={openScanUpload}
                       disabled={scanBusy}
@@ -10207,6 +10224,13 @@ export default function ManageOrdersPage() {
                 </div>
               )}
             </div>
+
+            <BarcodeScanner
+              open={scannerOpen}
+              onClose={() => setScannerOpen(false)}
+              onDetect={onScanDetect}
+              existing={scanIds}
+            />
 
             {/* Create a custom product to share with a customer. */}
             <div className="mo-cp">

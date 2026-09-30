@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@fullhuman/postcss-purgecss": "^8.0.0",
+    "@zxing/browser": "^0.2.1",
+    "@zxing/library": "^0.23.0",
     "axios": "^1.13.4",
     "canvas-confetti": "^1.9.4",
     "critters": "^0.0.23",

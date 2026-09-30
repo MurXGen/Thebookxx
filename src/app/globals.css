@@ -27782,41 +27782,126 @@ img[data-loaded="true"] {
 .bscan-torch.on {
   background: #fb8500;
 }
+/* Draggable divider between the camera stage and the list */
+.bscan-resizer {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
+  background: #101010;
+  color: #6b7280;
+  cursor: ns-resize;
+  touch-action: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.bscan-resizer:active {
+  color: #fb8500;
+}
 .bscan-foot {
   flex: 0 0 auto;
-  padding: 14px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+  padding: 4px 12px calc(12px + env(safe-area-inset-bottom, 0px));
   background: #101010;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
+}
+.bscan-foot-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 .bscan-caught {
-  font-size: 13px;
+  font-size: 12.5px;
   color: #cbd5e1;
 }
 .bscan-count {
   font-weight: 800;
   color: #fb8500;
-  font-size: 16px;
+  font-size: 15px;
 }
-.bscan-list {
+.bscan-panel {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 6px;
+  padding-right: 2px;
 }
-.bscan-chip {
+.bscan-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 60px;
+  text-align: center;
+  font-size: 12.5px;
+  color: #6b7280;
+  padding: 8px;
+}
+.bscan-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 7px 8px 7px 10px;
+}
+.bscan-row-idx {
+  flex: 0 0 auto;
+  font-size: 11px;
+  font-weight: 700;
+  color: #6b7280;
+  min-width: 16px;
+}
+.bscan-row-code {
+  flex: 1;
+  min-width: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: #f3f4f6;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: text;
+}
+.bscan-row-input {
+  flex: 1;
+  min-width: 0;
+  background: #000;
+  border: 1px solid #fb8500;
+  border-radius: 7px;
+  color: #fff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 13px;
+  letter-spacing: 0.03em;
+  padding: 5px 8px;
+  text-transform: uppercase;
+}
+.bscan-row-btn {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 9px;
-  border-radius: 999px;
-  background: rgba(22, 163, 74, 0.18);
-  color: #86efac;
-  font-size: 11.5px;
-  font-weight: 700;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  justify-content: center;
+  cursor: pointer;
+}
+.bscan-row-btn.edit {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e5e7eb;
+}
+.bscan-row-btn.del {
+  background: rgba(220, 38, 38, 0.18);
+  color: #fca5a5;
 }
 .bscan-done {
+  flex: 0 0 auto;
   border: none;
   border-radius: 12px;
   padding: 14px;
@@ -28871,6 +28956,23 @@ img[data-loaded="true"] {
 .mo-card-track-save:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+.mo-card-track-scan {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  color: var(--tertiary, #fb8500);
+  background: #fff7ed;
+  border: 1px solid #fdba74;
+  border-radius: 9px;
+  cursor: pointer;
+}
+.mo-dark .mo-card-track-scan {
+  background: rgba(251, 133, 0, 0.12);
+  border-color: rgba(251, 133, 0, 0.4);
 }
 /* Always-visible "Cancel" + "Copy JSON" row on the order card. */
 .mo-card > .mo-card-json {

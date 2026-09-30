@@ -3161,6 +3161,7 @@ export default function ManageOrdersPage() {
   const longPressRef = useRef(false); // true right after a long-press selects a card
   const lpTimer = useRef(null); // long-press timer handle
   const [trackDrafts, setTrackDrafts] = useState({}); // { orderId: "CX..." }
+  const [trackScanFor, setTrackScanFor] = useState(null); // orderId being scanned
   const [addrEdit, setAddrEdit] = useState({}); // { orderId: {address,city,state,pincode} }
   const [rowSaving, setRowSaving] = useState({}); // { orderId: "tracking"|"address"|"status" }
   const toggleExpand = (id) =>
@@ -10229,6 +10230,9 @@ export default function ManageOrdersPage() {
               open={scannerOpen}
               onClose={() => setScannerOpen(false)}
               onDetect={onScanDetect}
+              onEdit={editScanId}
+              onRemove={removeScanId}
+              ids={scanIds}
               existing={scanIds}
             />
 
@@ -13014,6 +13018,15 @@ export default function ManageOrdersPage() {
                                   />
                                   <button
                                     type="button"
+                                    className="mo-card-track-scan"
+                                    title="Scan tracking barcode"
+                                    aria-label="Scan tracking barcode"
+                                    onClick={() => setTrackScanFor(orderId)}
+                                  >
+                                    <Camera size={16} />
+                                  </button>
+                                  <button
+                                    type="button"
                                     className="mo-card-track-save"
                                     disabled={
                                       !String(trackDrafts[orderId] || "").trim()
@@ -15422,6 +15435,19 @@ export default function ManageOrdersPage() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Order-card tracking scanner — single capture fills the card's tracking
+          input (saved to the order only; NOT the tracking_ids pool). */}
+      <BarcodeScanner
+        open={!!trackScanFor}
+        single
+        title="Scan tracking ID"
+        onClose={() => setTrackScanFor(null)}
+        onDetect={(code) => {
+          if (trackScanFor)
+            setTrackDrafts((p) => ({ ...p, [trackScanFor]: code }));
+        }}
+      />
 
       {/* ===== Notes (chat-style, slide-up) ===== */}
       <AnimatePresence>

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { X, Check, Camera, Zap } from "lucide-react";
+import { X, Check, Camera, Zap, Pencil, Trash2, GripHorizontal } from "lucide-react";
 
 // Live camera barcode scanner (EMS / India Post labels are Code 128).
 // We run our OWN decode loop over a center-cropped region of interest (the
@@ -14,7 +14,12 @@ export default function BarcodeScanner({
   open,
   onClose,
   onDetect,
+  onEdit,
+  onRemove,
+  ids = [],
   existing = [],
+  single = false, // single-capture mode: grab one code, hand it back, close
+  title = "Scan barcode",
 }) {
   const videoRef = useRef(null);
   const frameRef = useRef(null);
@@ -29,11 +34,48 @@ export default function BarcodeScanner({
   const [mounted, setMounted] = useState(false);
   const [error, setError] = useState("");
   const [ready, setReady] = useState(false);
-  const [session, setSession] = useState([]);
+  const [sessionCount, setSessionCount] = useState(0);
   const [captured, setCaptured] = useState(""); // shows the just-grabbed code
   const [torchOn, setTorchOn] = useState(false);
+  const [editIdx, setEditIdx] = useState(-1);
+  const [listH, setListH] = useState(170); // resizable list-panel height (px)
+  const dragRef = useRef(null);
 
   useEffect(() => setMounted(true), []);
+
+  // Drag the divider to resize the list panel vs the camera stage.
+  const startResize = (e) => {
+    e.preventDefault();
+    const startY = e.touches ? e.touches[0].clientY : e.clientY;
+    const startH = listH;
+    const maxH = Math.round(window.innerHeight * 0.6);
+    const move = (ev) => {
+      const y = ev.touches ? ev.touches[0].clientY : ev.clientY;
+      const next = Math.max(70, Math.min(maxH, startH + (startY - y)));
+      setListH(next);
+    };
+    const up = () => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      window.removeEventListener("touchmove", move);
+      window.removeEventListener("touchend", up);
+    };
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+    window.addEventListener("touchmove", move, { passive: false });
+    window.addEventListener("touchend", up);
+  };
+
+  const removeAt = (i) => {
+    const val = String(ids[i] || "").toUpperCase();
+    seenRef.current.delete(val); // allow re-scanning a removed code
+    if (editIdx === i) setEditIdx(-1);
+    onRemove && onRemove(i);
+  };
+  const editAt = (i, val) => {
+    const up = String(val || "").toUpperCase().replace(/\s+/g, "");
+    onEdit && onEdit(i, up);
+  };
 
   const beep = () => {
     try {
@@ -93,9 +135,10 @@ export default function BarcodeScanner({
 
   const handleHit = (raw) => {
     const code = String(raw || "").trim().toUpperCase().replace(/\s+/g, "");
-    if (!code || seenRef.current.has(code)) return;
+    if (!single && (!code || seenRef.current.has(code))) return;
+    if (!code) return;
     seenRef.current.add(code);
-    setSession((prev) => [code, ...prev]);
+    setSessionCount((n) => n + 1);
     setCaptured(code);
     flashUntilRef.current = Date.now() + 1000;
     beep();
@@ -103,6 +146,13 @@ export default function BarcodeScanner({
       if (navigator.vibrate) navigator.vibrate(70);
     } catch {}
     onDetect && onDetect(code);
+    // Single-capture: hand the one code back and close after a brief flash.
+    if (single) {
+      if (loopRef.current) clearInterval(loopRef.current);
+      loopRef.current = null;
+      setTimeout(() => onClose && onClose(), 550);
+      return;
+    }
     setTimeout(() => {
       if (Date.now() >= flashUntilRef.current) setCaptured("");
     }, 1050);
@@ -111,7 +161,7 @@ export default function BarcodeScanner({
   useEffect(() => {
     if (!open) return;
     seenRef.current = new Set(existing.map((s) => String(s).toUpperCase()));
-    setSession([]);
+    setSessionCount(0);
     setCaptured("");
     setError("");
     setReady(false);
@@ -206,7 +256,7 @@ export default function BarcodeScanner({
     <div className="bscan-overlay">
       <div className="bscan-head">
         <span className="bscan-title">
-          <Camera size={16} /> Scan barcode
+          <Camera size={16} /> {title}
         </span>
         <button
           type="button"
@@ -272,24 +322,88 @@ export default function BarcodeScanner({
         </button>
       </div>
 
-      <div className="bscan-foot">
-        <div className="bscan-caught">
-          <span className="bscan-count">{session.length}</span> scanned this
-          session
+      {single ? (
+        <div className="bscan-foot">
+          <button type="button" className="bscan-done" onClick={onClose}>
+            Cancel
+          </button>
         </div>
-        {session.length > 0 && (
-          <div className="bscan-list">
-            {session.slice(0, 6).map((c, i) => (
-              <span className="bscan-chip" key={i}>
-                <Check size={12} /> {c}
-              </span>
-            ))}
-          </div>
-        )}
+      ) : (
+      <>
+      {/* Draggable divider between the camera and the ID list */}
+      <div
+        className="bscan-resizer"
+        ref={dragRef}
+        onPointerDown={startResize}
+        onTouchStart={startResize}
+        role="separator"
+        aria-label="Drag to resize the list"
+      >
+        <GripHorizontal size={18} />
+      </div>
+
+      <div className="bscan-foot">
+        <div className="bscan-foot-top">
+          <span className="bscan-caught">
+            <span className="bscan-count">{ids.length}</span> ID
+            {ids.length === 1 ? "" : "s"} in list
+            {sessionCount ? ` · ${sessionCount} this session` : ""}
+          </span>
+        </div>
+
+        <div className="bscan-panel" style={{ height: listH }}>
+          {ids.length === 0 ? (
+            <div className="bscan-empty">
+              Scanned IDs will appear here — edit or remove any before pushing.
+            </div>
+          ) : (
+            ids.map((code, i) => (
+              <div className="bscan-row" key={i}>
+                <span className="bscan-row-idx">{i + 1}</span>
+                {editIdx === i ? (
+                  <input
+                    className="bscan-row-input"
+                    value={code}
+                    autoFocus
+                    onChange={(e) => editAt(i, e.target.value)}
+                    onBlur={() => setEditIdx(-1)}
+                    onKeyDown={(e) => e.key === "Enter" && setEditIdx(-1)}
+                  />
+                ) : (
+                  <span
+                    className="bscan-row-code"
+                    onClick={() => setEditIdx(i)}
+                  >
+                    {code || "—"}
+                  </span>
+                )}
+                <button
+                  type="button"
+                  className="bscan-row-btn edit"
+                  onClick={() => setEditIdx(editIdx === i ? -1 : i)}
+                  aria-label="Edit"
+                >
+                  {editIdx === i ? <Check size={16} /> : <Pencil size={15} />}
+                </button>
+                <button
+                  type="button"
+                  className="bscan-row-btn del"
+                  onClick={() => removeAt(i)}
+                  aria-label="Remove"
+                >
+                  <Trash2 size={15} />
+                </button>
+              </div>
+            ))
+          )}
+        </div>
+
         <button type="button" className="bscan-done" onClick={onClose}>
-          Done{session.length ? ` · ${session.length} added` : ""}
+          Done{ids.length ? ` · ${ids.length} in list` : ""}
         </button>
       </div>
+      </>
+      )}
     </div>,
     document.body,
   );

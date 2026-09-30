@@ -4,6 +4,190 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "world-teachers-day-2026-60-years-books-for-teachers-and-lifelong-learners": {
+    "id": "blog-066",
+    "title": "World Teachers' Day 2026 (5 October): 60 Years of the Teacher Status Recommendation and 17 Books for Teachers and Lifelong Learners",
+    "slug": "world-teachers-day-2026-60-years-books-for-teachers-and-lifelong-learners",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-09-30",
+    "lastModified": "2026-09-30",
+    "excerpt": "World Teachers' Day is 5 October 2026, the 60th anniversary of the teacher status recommendation. Seventeen books to gift a teacher or learn better yourself.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "World Teachers' Day is observed every year on 5 October, and in 2026 it carries extra weight. UNESCO has set the theme as \"Standing with teachers: 60 years of protecting the profession, advancing its status and shaping our futures\", marking six decades since the 1966 ILO/UNESCO Recommendation concerning the Status of Teachers. The observance has been celebrated since 1994, and this year's focus is on three things: how much teachers are recognised, how much voice and autonomy they have, and whether their pay and workload are fair."
+      },
+      {
+        "type": "paragraph",
+        "content": "For readers in India, the day is a natural prompt to do two things: thank the teachers who shaped us, and become better learners ourselves. This guide does both. It pairs the anniversary with a practical reading list of books about learning, curiosity, focus and character, all available on TheBookX, and it works equally well as a gifting list for a teacher, a tutor or a school principal."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "What the 60th anniversary is really about"
+      },
+      {
+        "type": "paragraph",
+        "content": "The 1966 Recommendation is the international reference point for how teachers should be prepared, employed and treated. UNESCO says new challenges have arrived since then, from digital technologies and climate change to inclusion, migration and displacement. The 2026 global event at UNESCO Headquarters includes high-level discussions and the ninth edition of the UNESCO-Hamdan Prize for Teacher Development."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "The three dimensions of teacher status",
+        "content": "UNESCO frames the 2026 conversation around symbolic status (recognition and respect), professional status (autonomy and voice) and material status (salary and workload). A book, a handwritten note or a class-wide thank you speaks to the first of these."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Why teachers are the original reading recommenders"
+      },
+      {
+        "type": "paragraph",
+        "content": "Most of us can name the teacher who first handed us a book we were not supposed to read yet. Research on reading habits repeatedly points the same way: children and adults who read for pleasure usually had someone, a teacher, a parent or a librarian, put the right book in their hands at the right time. That is why a book is one of the few gifts that repays a teacher in their own currency."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books that teach you how to learn"
+      },
+      {
+        "type": "paragraph",
+        "content": "If World Teachers' Day makes you want to sharpen your own learning, start with the books that explain how the mind picks up new skills. <a href=\"/books/mindset-the-new-psychology-of-success\" style=\"color:#fb8500;font-weight:600\">Mindset: The New Psychology of Success</a> by Carol Dweck is the classic on why believing ability can grow changes how students and teachers approach mistakes. <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear turns study and practice into small daily systems, which is exactly what exam preparation needs. <a href=\"/books/deep-work\" style=\"color:#fb8500;font-weight:600\">Deep Work</a> by Cal Newport makes the case for protected, distraction-free hours, a skill every student now has to train deliberately."
+      },
+      {
+        "type": "paragraph",
+        "content": "For clearer thinking, <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a short, practical read on cutting through mental noise and making decisions with less overthinking, a good companion for any student or teacher facing a heavy term. <a href=\"/books/thinking-fast-and-slow\" style=\"color:#fb8500;font-weight:600\">Thinking, Fast and Slow</a> by Daniel Kahneman explains the biases behind snap judgements, and <a href=\"/books/the-art-of-not-overthinking\" style=\"color:#fb8500;font-weight:600\">The Art of Not Overthinking</a> is an easy read for anxious exam weeks."
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<a href=\"/books/mindset-the-new-psychology-of-success\" style=\"color:#fb8500;font-weight:600\">Mindset</a>: for the belief that effort changes outcomes.",
+          "<a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a>: for building a study routine that survives a busy week.",
+          "<a href=\"/books/deep-work\" style=\"color:#fb8500;font-weight:600\">Deep Work</a>: for focus in a world of notifications.",
+          "<a href=\"/books/the-7-habits-of-highly-effective-people-powerful-lessons-in-personal-change\" style=\"color:#fb8500;font-weight:600\">The 7 Habits of Highly Effective People</a>: for planning, priorities and personal responsibility."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books about teachers and the people who shape us"
+      },
+      {
+        "type": "paragraph",
+        "content": "Some of the most moving reading is about mentors. <a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a>, the autobiography of Dr A.P.J. Abdul Kalam, is full of teachers who changed his direction, from a school teacher who explained flight using a bird on the wing to the scientists who mentored him at ISRO and DRDO. Kalam was himself a teacher at heart, and its sequel-in-spirit, <a href=\"/books/ignited-minds-unleashing-the-power-within-india\" style=\"color:#fb8500;font-weight:600\">Ignited Minds: Unleashing the Power Within India</a>, speaks directly to students about purpose and the responsibility of young India."
+      },
+      {
+        "type": "paragraph",
+        "content": "For fiction, <a href=\"/books/the-alchemist\" style=\"color:#fb8500;font-weight:600\">The Alchemist</a> by Paulo Coelho is a gentle story about following a calling and learning from every guide along the way, and it is a reliable gift for a teacher who loves parables. Readers who want something darker and more literary can pick up Kafka's <a href=\"/books/the-metamorphosis\" style=\"color:#fb8500;font-weight:600\">The Metamorphosis</a> or <a href=\"/books/the-trial\" style=\"color:#fb8500;font-weight:600\">The Trial</a>, both short enough for a weekend. <a href=\"/books/ikigai\" style=\"color:#fb8500;font-weight:600\">Ikigai</a> suits a teacher approaching retirement or reflecting on a long career, because it asks what makes a working life feel worthwhile."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books for building character and curiosity"
+      },
+      {
+        "type": "paragraph",
+        "content": "Good teachers care about character as much as marks. <a href=\"/books/how-to-win-friends-and-influence-people\" style=\"color:#fb8500;font-weight:600\">How to Win Friends and Influence People</a> remains one of the best introductions to listening and communication, both central to classroom life. <a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> by Morgan Housel is a plain-language lesson in patience and behaviour that older students can use immediately, and <a href=\"/books/sapiens-a-brief-history-of-humankind\" style=\"color:#fb8500;font-weight:600\">Sapiens</a> by Yuval Noah Harari gives curious teenagers a sweeping story of how humans got here. For a self-improvement classic, <a href=\"/books/think-and-grow-rich\" style=\"color:#fb8500;font-weight:600\">Think and Grow Rich</a> by Napoleon Hill is still widely read for its focus on goals and persistence."
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Gifting tip",
+        "content": "A book plus a short handwritten line about what that teacher taught you is remembered far longer than an expensive gift. Gift wrapping is available on TheBookX for +₹25, and books start from ₹1 with free delivery and Cash on Delivery across India."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "How to gift a book to a teacher: a simple guide"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "Match the book to the teacher's subject or to a moment they mentioned in class, not to a bestseller list.",
+          "Prefer short, re-readable books such as The Alchemist or The Art of Clarity for busy teachers.",
+          "Write two lines inside the cover: one specific thing they taught you and one thank-you.",
+          "For a group gift from a class, choose three different books so the teacher can pick, and add a shared card.",
+          "Order early, since 5 October is a Monday and delivery across India takes a few days."
+        ]
+      },
+      {
+        "type": "blockquote",
+        "content": "The 60-year-old question behind World Teachers' Day is simple: are the people who teach us being given the respect, voice and support the job deserves?"
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "A five-minute reading habit for teachers and students"
+      },
+      {
+        "type": "paragraph",
+        "content": "Teachers and students share the same enemy: fragmented attention. Pick one book from this list, read ten pages a day before your phone, and finish it within a month. Pair it with a note of what you would try in class or in your own study routine. <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> and <a href=\"/books/deep-work\" style=\"color:#fb8500;font-weight:600\">Deep Work</a> are the easiest starting points because each chapter ends with something you can act on the same day."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Frequently asked questions"
+      },
+      {
+        "type": "paragraph",
+        "content": "The questions below cover the date, the theme and how to mark the day with a book."
+      },
+      {
+        "type": "paragraph",
+        "content": "Ready to thank a teacher, or become a better learner yourself? Books start from ₹1, delivery is free and Cash on Delivery is available across India. Gift wrapping is +₹25."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      }
+    ],
+    "coverImage": "/blogs/world-teachers-day-2026-60-years-books-for-teachers-and-lifelong-learners.jpeg",
+    "images": [
+      {
+        "url": "/blogs/world-teachers-day-2026-60-years-books-for-teachers-and-lifelong-learners.jpeg",
+        "alt": "A smiling schoolteacher handing a paperback to a young student in a sunlit classroom",
+        "caption": "A book with a two-line thank-you note is one of the most lasting gifts for a teacher.",
+        "category": "Occasions"
+      }
+    ],
+    "keywords": [
+      "World Teachers' Day 2026",
+      "books to gift a teacher",
+      "World Teachers Day 5 October",
+      "best books for teachers India",
+      "books on learning",
+      "gift for teacher India",
+      "Wings of Fire",
+      "Atomic Habits",
+      "The Art of Clarity"
+    ],
+    "categories": [
+      "Occasions",
+      "Book Recommendations",
+      "Education"
+    ],
+    "faqs": [
+      {
+        "question": "When is World Teachers' Day 2026?",
+        "answer": "World Teachers' Day is observed on 5 October every year. In 2026 it falls on a Monday."
+      },
+      {
+        "question": "What is the theme of World Teachers' Day 2026?",
+        "answer": "UNESCO's theme is \"Standing with teachers: 60 years of protecting the profession, advancing its status and shaping our futures\", marking 60 years of the 1966 ILO/UNESCO Recommendation concerning the Status of Teachers."
+      },
+      {
+        "question": "What book should I gift my teacher?",
+        "answer": "Choose a short, meaningful book such as Wings of Fire, The Alchemist, Ikigai or The Art of Clarity, and add a handwritten note about what they taught you."
+      },
+      {
+        "question": "Can I get these books with Cash on Delivery in India?",
+        "answer": "Yes. TheBookX offers Cash on Delivery across India, free delivery, books from ₹1 and gift wrapping for +₹25."
+      }
+    ]
+  },
   "international-coffee-day-2026-books-to-read-with-coffee": {
     "id": "blog-065",
     "title": "International Coffee Day 2026 (1 October): 20 Books to Read With Your Cup, Sorted by Morning, Afternoon and Late Night",

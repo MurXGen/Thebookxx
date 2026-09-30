@@ -6648,11 +6648,11 @@ export const books = [
   },
   {
     id: "bk-026",
-    name: "We Are There for Each Other",
-    image: bookImages["we-are-there-for-each-other"],
+    name: "We Are There for other",
+    image: bookImages["we-are-there-for-other"],
     description:
-      "Sagar Chudesara's national bestselling debut 'We Are There for Each Other' — an intense love story of four friends on a road trip of a lifetime, a heartfelt journey of romance, friendship and fighting for love. One of India's fastest-selling debut novels, now at TheBookX.in. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
-    author: "Sagar Chudesara",
+      "Sagari national bestselling debut 'We Are There for other' — an intense love story of four friends on a road trip of a lifetime, a heartfelt journey of romance, friendship and fighting for love. One of India's fastest-selling debut novels, now at TheBookX.in. TheBookX delivers premium quality books in pristine condition, securely shipped via Delhivery and Indian Post. Shop now, books starting at just ₹1.",
+    author: "Sagari",
     pages: "280",
     language: "English",
     size: "Paperback",

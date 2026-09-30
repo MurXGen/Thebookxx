@@ -255,6 +255,23 @@ const waMessages = (order) => {
   // Review page link (appended to the delivered/review message).
   const reviewLine = `\n⭐ *Leave a review:* ${REVIEW_URL}`;
 
+  // Book lines + grand total for the "Pay online (prepaid)" message.
+  const parsedBooks = Array.isArray(order?.parsedBooks) ? order.parsedBooks : [];
+  const bookLines = parsedBooks
+    .map((b) => {
+      const qty = b.quantity > 1 ? ` ×${b.quantity}` : "";
+      const lineTotal = b.total || b.price * (b.quantity || 1);
+      return `• ${b.name}${qty}${lineTotal ? ` — ₹${lineTotal}` : ""}`;
+    })
+    .join("\n");
+  const grandTotal =
+    Number(
+      String(order?.["Total Amount"] ?? order?.revenue ?? "").replace(
+        /[^\d.]/g,
+        "",
+      ),
+    ) || parsedBooks.reduce((s, b) => s + (b.total || b.price * (b.quantity || 1) || 0), 0);
+
   // Link block appended below every message: a divider, the customer's order
   // detail page link, their profile link, the tracking ID and the India Post
   // tracking link (tracking lines only when a tracking ID exists).
@@ -290,6 +307,17 @@ const waMessages = (order) => {
       key: "confirm",
       label: "Confirm order",
       text: `✅ *Confirm your order*\n\n${hi}\nReply *YES* to confirm and we'll pack & ship right away. 📚${linkBlock}`,
+    },
+    {
+      key: "payonline",
+      label: "Pay online (prepaid)",
+      text:
+        `💳 *Pay online to confirm*\n\n${hi}\n` +
+        `The book(s) below are available on *prepaid only — not available for Cash on Delivery*. Please pay online to confirm and we'll ship right away. 📚\n\n` +
+        (bookLines ? `${bookLines}\n\n` : "") +
+        `*Total to pay: ₹${grandTotal}*\n\n` +
+        `Pay securely here 👉 ${orderDetailUrl}` +
+        linkBlock,
     },
     {
       key: "predelivery",

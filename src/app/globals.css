@@ -27667,20 +27667,102 @@ img[data-loaded="true"] {
     opacity: 1;
   }
 }
-.bscan-hint,
+.bscan-frame.hit {
+  box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.45);
+}
+.bscan-frame.hit .bscan-corner {
+  border-color: #22c55e;
+}
+.bscan-hitmark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 52px;
+  height: 52px;
+  border-radius: 999px;
+  background: #22c55e;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  animation: bscan-pop 0.25s ease;
+}
+@keyframes bscan-pop {
+  from {
+    transform: translate(-50%, -50%) scale(0.4);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Live status pill under the frame */
+.bscan-status,
 .bscan-error {
   position: absolute;
-  left: 16px;
-  right: 16px;
-  bottom: 18px;
-  text-align: center;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border-radius: 999px;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
+  white-space: nowrap;
+  background: rgba(0, 0, 0, 0.6);
   color: #f3f4f6;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
+}
+.bscan-status.ok {
+  background: #16a34a;
+  color: #fff;
 }
 .bscan-error {
   color: #fca5a5;
+  white-space: normal;
+  max-width: 88vw;
+  text-align: center;
+}
+.bscan-spin {
+  width: 15px;
+  height: 15px;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  animation: tbx-spin 0.7s linear infinite;
+}
+.bscan-dots {
+  display: inline-flex;
+  gap: 3px;
+}
+.bscan-dots i {
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: #fb8500;
+  animation: bscan-blink 1s infinite ease-in-out;
+}
+.bscan-dots i:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.bscan-dots i:nth-child(3) {
+  animation-delay: 0.3s;
+}
+@keyframes bscan-blink {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
 }
 .bscan-torch {
   position: absolute;

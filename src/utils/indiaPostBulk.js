@@ -396,7 +396,12 @@ export function buildPreviewRow(order, serial) {
   return {
     serial,
     orderId: order?.["Order ID"] || "",
-    barcode: "", // India Post article/barcode number (from your allocated series)
+    // Prefill the barcode/article number from the tracking ID already saved on
+    // the order (Shipping ID). Blank when none is set yet.
+    barcode: cap(
+      String(order?.["Shipping ID"] ?? order?.shippingId ?? "").trim(),
+      IP_LIMITS.barcode,
+    ),
     receiverName: cap(clean(order?.["Customer Name"]), IP_LIMITS.receiverName),
     mobile,
     add1: cap(add1, IP_LIMITS.add1),

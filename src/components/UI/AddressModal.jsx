@@ -299,6 +299,25 @@ export default function AddressModal({
     }
   };
 
+  // After the verify countdown ends, the shopper taps "Verify status": we show a
+  // loader on the button, push the order to Processing, confirm it's placed &
+  // under review, then run the normal success flow ("Placing your order…").
+  const [verifyStatusBusy, setVerifyStatusBusy] = useState(false);
+  const handleVerifyStatus = async () => {
+    if (verifyStatusBusy) return;
+    setVerifyStatusBusy(true);
+    try {
+      await markOrderProcessing();
+      showToast(
+        "Order placed successfully — it's under review by our team for further processing ✓",
+        "success",
+      );
+      finalizeUPISuccess();
+    } finally {
+      setVerifyStatusBusy(false);
+    }
+  };
+
   const [giftWrap, setGiftWrap] = useState(giftWrapSelected);
   // The modal stays mounted, so keep the internal gift-wrap flag in sync with
   // the bag's selection — otherwise the +₹25 never reflects in the totals.
@@ -694,6 +713,7 @@ export default function AddressModal({
     setQrUnlocked(false);
     setUpiPhase("await");
     setUpiReassured(false);
+    setVerifyStatusBusy(false);
     processingMarkedRef.current = false;
     const t = setTimeout(() => {
       setQrUnlocked(true);
@@ -2966,6 +2986,8 @@ export default function AddressModal({
             upiPhase={upiPhase}
             verifyCountdown={verifyCountdown}
             reassured={upiReassured}
+            verifyStatusBusy={verifyStatusBusy}
+            onVerifyStatus={handleVerifyStatus}
             upiId={UPI_ID}
             onRevealQR={handleUPIPaymentClick}
             onCopyUpi={handleCopyUpiId}
@@ -4175,6 +4197,8 @@ function UPIPaymentModal({
   upiPhase = "await",
   verifyCountdown = 30,
   reassured = false,
+  verifyStatusBusy = false,
+  onVerifyStatus,
   upiId,
   onRevealQR,
   onCopyUpi,
@@ -4334,26 +4358,26 @@ function UPIPaymentModal({
             {upiPhase === "timeout" ? (
               <button
                 type="button"
-                className="sec-big-btn flex flex-row items-center justify-center gap-6"
-                onClick={onCheckStatus}
+                className="sec-big-btn width100 flex flex-row items-center justify-center gap-6"
+                onClick={onVerifyStatus}
+                disabled={verifyStatusBusy}
               >
-                <RefreshCw size={15} /> Check again
+                {verifyStatusBusy ? (
+                  <>
+                    <span className="upiv3-spin dark" /> Placing your order…
+                  </>
+                ) : (
+                  <>
+                    <ShieldCheck size={16} /> Verify status
+                  </>
+                )}
               </button>
             ) : (
-              <span className="sec-big-btn is-loading flex flex-row items-center justify-center gap-6">
+              <span className="sec-big-btn width100 is-loading flex flex-row items-center justify-center gap-6">
                 <span className="upiv3-spin dark" /> Verifying…{" "}
                 {verifyCountdown}s
               </span>
             )}
-            <button
-              type="button"
-              className="sec-big-btn flex flex-row items-center justify-center gap-6"
-              onClick={onWhatsAppFallback}
-              disabled={reassured}
-            >
-              <Check size={16} />
-              {reassured ? "Order confirmed" : "I’ve paid"}
-            </button>
           </div>
 
           {onSwitchToCOD && (

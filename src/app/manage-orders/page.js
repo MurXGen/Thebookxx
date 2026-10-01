@@ -7602,6 +7602,24 @@ export default function ManageOrdersPage() {
   };
 
   // Permanently remove a row (user-triggered, confirmed).
+  // Raw delete POST only — no confirm, no refetch, no local mutation. Returns
+  // true on success. Callers decide how to refresh (once, after a batch).
+  const deleteOrderRequest = async (orderId) => {
+    if (!orderId || !SHEET_EDIT_API_URL) return false;
+    try {
+      const body = new URLSearchParams({ action: "delete", orderId });
+      await fetch(SHEET_EDIT_API_URL, {
+        method: "POST",
+        mode: "no-cors",
+        body,
+      });
+      return true;
+    } catch (e) {
+      console.error("Delete failed:", e);
+      return false;
+    }
+  };
+
   const deleteOrderRow = async (order, { skipConfirm = false } = {}) => {
     const orderId = order["Order ID"];
     if (!SHEET_EDIT_API_URL) {
@@ -7617,17 +7635,12 @@ export default function ManageOrdersPage() {
       )
     )
       return;
-    try {
-      const body = new URLSearchParams({ action: "delete", orderId });
-      await fetch(SHEET_EDIT_API_URL, {
-        method: "POST",
-        mode: "no-cors",
-        body,
-      });
+    const ok = await deleteOrderRequest(orderId);
+    if (ok) {
       setDetailOrder(null);
-      setTimeout(fetchOrders, 1300);
-    } catch (e) {
-      console.error("Delete failed:", e);
+      // Drop it locally right away so the UI updates without a full reload.
+      setOrders((prev) => prev.filter((o) => o["Order ID"] !== orderId));
+    } else {
       alert("Failed to delete order");
     }
   };
@@ -8156,18 +8169,22 @@ export default function ManageOrdersPage() {
       )
     )
       return;
+    const ids = [...unconfDelSel];
     setUnconfDeleting(true);
     try {
-      for (const oid of unconfDelSel) {
-        const ord =
-          unconfirmedOrders.find((o) => o["Order ID"] === oid) || {
-            "Order ID": oid,
-          };
-        // eslint-disable-next-line no-await-in-loop
-        await deleteOrderRow(ord, { skipConfirm: true });
-      }
-      showToast(`Deleted ${unconfDelSel.length} order(s) permanently`, "success");
+      // Fire every delete, then refresh ONCE (no per-row reload/flicker).
+      const results = await Promise.all(ids.map((oid) => deleteOrderRequest(oid)));
+      const okCount = results.filter(Boolean).length;
+      // Optimistically drop all deleted rows from local state immediately.
+      setOrders((prev) => prev.filter((o) => !ids.includes(o["Order ID"])));
       setUnconfDelSel([]);
+      showToast(
+        okCount === ids.length
+          ? `Deleted ${okCount} order(s) permanently`
+          : `Deleted ${okCount} of ${ids.length} — refreshing`,
+        okCount === ids.length ? "success" : "error",
+      );
+      // One reconciling refetch after the sheet settles.
       setTimeout(fetchOrders, 1600);
     } catch (e) {
       console.error("Bulk delete failed:", e);

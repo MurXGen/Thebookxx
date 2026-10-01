@@ -282,6 +282,22 @@ export default function AddressModal({
   const [verifyCountdown, setVerifyCountdown] = useState(30);
   const [upiOrderRef, setUpiOrderRef] = useState("");
   const upiPollRef = useRef({ poll: null, tick: null });
+  // Once the shopper taps "Check again"/"I've paid", we optimistically flip
+  // their order to Processing so they see it's confirmed (no WhatsApp bounce,
+  // no fear of a lost payment). Guarded so we only write once.
+  const [upiReassured, setUpiReassured] = useState(false);
+  const processingMarkedRef = useRef(false);
+  const markOrderProcessing = async () => {
+    const oid = upiOrderRef;
+    setUpiReassured(true);
+    if (!oid || processingMarkedRef.current) return;
+    processingMarkedRef.current = true;
+    try {
+      await updateOrderRow(oid, { "Order Status": "Processing" });
+    } catch (e) {
+      console.error("Mark Processing failed:", e);
+    }
+  };
 
   const [giftWrap, setGiftWrap] = useState(giftWrapSelected);
   // The modal stays mounted, so keep the internal gift-wrap flag in sync with
@@ -677,6 +693,8 @@ export default function AddressModal({
     if (!showUPIPayment) return;
     setQrUnlocked(false);
     setUpiPhase("await");
+    setUpiReassured(false);
+    processingMarkedRef.current = false;
     const t = setTimeout(() => {
       setQrUnlocked(true);
       setVerifyCountdown(30);
@@ -691,8 +709,10 @@ export default function AddressModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showUPIPayment]);
 
-  // "Check payment status" — re-run the 30s verification poll.
+  // "Check payment status" — re-run the 30s verification poll AND optimistically
+  // mark the order Processing so the shopper sees it's confirmed.
   const handleCheckUPIStatus = () => {
+    markOrderProcessing();
     setVerifyCountdown(30);
     setUpiPhase("verifying");
   };
@@ -1367,61 +1387,19 @@ export default function AddressModal({
     finishToSuccess(upiOrderRef, advanceMode ? "ADV" : "UPI");
   };
 
-  // Timeout fallback: hand the order to WhatsApp with everything pre-filled,
-  // including a MERCHANT CONFIRMATION LINK. The merchant opens the link, enters
-  // the password and the order is confirmed (+ wallet debited) on the sheet.
+  // Shopper taps "I've paid" — instead of bouncing them to WhatsApp (which left
+  // them anxious about a lost payment), optimistically mark the order Processing
+  // so they immediately see it's confirmed. We keep polling the sheet in the
+  // background, and the team still verifies the UPI payment before dispatch.
   const handleUPIWhatsAppVerify = async () => {
-    const bookLines = (cartBooks || [])
-      .map((b, i) => `${i + 1}. ${b.name} × ${b.qty}`)
-      .join("\n");
-    const amountPaid =
-      netPayable +
-      getDeliveryCharge(fasterDelivery) +
-      (giftWrap ? giftWrapCharge : 0);
-
-    // Merchant confirm link /{orderId}?w=<walletUsed>
-    const origin =
-      typeof window !== "undefined"
-        ? window.location.origin
-        : "https://thebookx.in";
-    let confirmLink = `${origin}/${encodeURIComponent(upiOrderRef || "")}${
-      walletApplied > 0 ? `?w=${walletApplied}` : ""
-    }`;
-    try {
-      if (typeof shortenUrl === "function") {
-        const short = await shortenUrl(confirmLink);
-        if (short) confirmLink = short;
-      }
-    } catch (_) {}
-
-    const msg = [
-      "Hi TheBookX ",
-      "",
-      "I've *paid via UPI* but my order is still showing as verifying. Please confirm it.",
-      "",
-      ` *Order Ref:* ${upiOrderRef || "-"}`,
-      ` *Name:* ${name}`,
-      ` *Phone:* ${phone}`,
-      ` *Address:* ${fullAddress}, ${city} - ${pincode}`,
-      bookLines ? "" : "",
-      bookLines ? ` *Items:*\n${bookLines}` : "",
-      "",
-      ` *Amount paid:* ₹${amountPaid}`,
-      walletApplied > 0 ? ` *Wallet used:* ₹${walletApplied}` : "",
-      "",
-      "———",
-      " *Merchant only* — confirm this order:",
-      confirmLink,
-    ]
-      .filter((l) => l !== "")
-      .join("\n");
     trackFunnelEvent(EVENTS.UPI_PAYMENT_VERIFIED, {
       amount: finalPayable,
-      via: "whatsapp_fallback",
+      via: "mark_processing",
     });
-    window.open(
-      `https://wa.me/917710892108?text=${encodeURIComponent(msg)}`,
-      "_blank",
+    await markOrderProcessing();
+    showToast(
+      "Payment noted — your order is confirmed and being processed ✓",
+      "success",
     );
   };
 
@@ -2987,6 +2965,7 @@ export default function AddressModal({
             upiCopied={upiCopied}
             upiPhase={upiPhase}
             verifyCountdown={verifyCountdown}
+            reassured={upiReassured}
             upiId={UPI_ID}
             onRevealQR={handleUPIPaymentClick}
             onCopyUpi={handleCopyUpiId}
@@ -4195,6 +4174,7 @@ function UPIPaymentModal({
   upiCopied,
   upiPhase = "await",
   verifyCountdown = 30,
+  reassured = false,
   upiId,
   onRevealQR,
   onCopyUpi,
@@ -4295,13 +4275,19 @@ function UPIPaymentModal({
                   : "Hang tight — preparing your QR"}
               </span>
 
-              {/* Live status while waiting for the payment */}
-              {qrUnlocked && (
-                <span className="upiv3-status">
-                  <span className="upiv3-status-dot" />
-                  Waiting for your payment…
-                </span>
-              )}
+              {/* Live status — flips to a reassuring "confirmed" once the
+                  shopper taps Check again / I've paid */}
+              {qrUnlocked &&
+                (reassured ? (
+                  <span className="upiv3-status ok">
+                    <Check size={14} /> Order confirmed — we&apos;re processing it
+                  </span>
+                ) : (
+                  <span className="upiv3-status">
+                    <span className="upiv3-status-dot" />
+                    Waiting for your payment…
+                  </span>
+                ))}
             </div>
           </motion.div>
 
@@ -4363,8 +4349,10 @@ function UPIPaymentModal({
               type="button"
               className="sec-big-btn flex flex-row items-center justify-center gap-6"
               onClick={onWhatsAppFallback}
+              disabled={reassured}
             >
-              <FaWhatsapp size={16} color="#25D366" /> Verify on WhatsApp
+              <Check size={16} />
+              {reassured ? "Order confirmed" : "I've paid"}
             </button>
           </div>
 

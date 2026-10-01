@@ -55,6 +55,7 @@ import {
   fetchOrderStatusById,
   fetchWalletBalance,
   updateOrderRow,
+  debitWallet,
 } from "@/utils/googleFormOrder";
 import ScratchRewardSheet from "./ScratchRewardSheet";
 import CartSupportSheet from "./CartSupportSheet";
@@ -810,6 +811,24 @@ export default function AddressModal({
     }
   };
 
+  // One order id per checkout session, so the draft (Unconfirmed) row written
+  // when the shopper proceeds and the confirmed write at payment target the
+  // SAME row — no duplicate orders. Reset when a new checkout opens.
+  const checkoutOidRef = useRef("");
+  const draftedOidsRef = useRef(new Set());
+  const ensureCheckoutOid = () => {
+    if (!checkoutOidRef.current) checkoutOidRef.current = `ORD${Date.now()}`;
+    return checkoutOidRef.current;
+  };
+  // A fresh checkout session each time the address modal opens → a brand-new
+  // order id (so a later order never updates a previously completed one).
+  useEffect(() => {
+    if (open) {
+      checkoutOidRef.current = "";
+      draftedOidsRef.current = new Set();
+    }
+  }, [open]);
+
   // Submit to Google Form (the sheet's source of truth).
   // IMPORTANT: `isFaster` must be passed explicitly when the caller knows the
   // user's delivery-speed choice, because `setFasterDelivery` is async and
@@ -823,14 +842,56 @@ export default function AddressModal({
     paymentLabel = "",
     advance = false,
   ) => {
-    // For a CONFIRMED order without an explicit id, mint one and remember it so
-    // the success modal can edit this exact row (note / faster-delivery upgrade).
-    if (confirmed && !orderId) {
-      orderId = `ORD${Date.now()}`;
-      setPlacedOrderId(orderId);
-    } else if (confirmed && orderId) {
-      setPlacedOrderId(orderId);
+    // Always ride on the single checkout order id so draft + confirm share a row.
+    if (!orderId) orderId = ensureCheckoutOid();
+    if (confirmed) setPlacedOrderId(orderId);
+
+    // UPSERT: if a row for this checkout id was already written (a draft, or an
+    // earlier method the shopper switched away from), UPDATE it in place instead
+    // of appending a duplicate order. The very first write falls through to the
+    // append path below.
+    if (draftedOidsRef.current.has(orderId)) {
+      const deliveryChargeForOrder = getDeliveryCharge(isFaster);
+      const giftWrapAmt = giftWrap || giftWrapSelected ? giftWrapCharge : 0;
+      const feeForThisOrder = advance
+        ? 0
+        : paymentType === "COD"
+          ? codFeeAmount
+          : 0;
+      const totalForOrder =
+        netPayable +
+        deliveryChargeForOrder +
+        giftWrapAmt +
+        bookmarkCharge +
+        feeForThisOrder;
+      const resolvedPay =
+        paymentLabel ||
+        (paymentType === "COD"
+          ? "Cash on Delivery"
+          : paymentType === "WhatsApp"
+            ? "WhatsApp"
+            : "UPI Payment");
+      const updates = {
+        "Order Status": confirmed ? "Processing" : "Unconfirmed",
+        "Payment Type": resolvedPay,
+        "Total Amount": String(totalForOrder),
+        ...(advance ? { "Advance Paid": "Yes" } : {}),
+      };
+      updateOrderRow(orderId, updates).catch((e) =>
+        console.error("Order upsert update failed:", e),
+      );
+      if (confirmed && walletApplied > 0) {
+        debitWallet(
+          walletCheckedPhone || phone,
+          walletApplied,
+          orderId,
+        ).catch(() => {});
+      }
+      return;
     }
+    // First write for this checkout id → append below and remember it so any
+    // later write (draft re-submit or confirm) updates this same row.
+    draftedOidsRef.current.add(orderId);
     try {
       // Build the link SYNCHRONOUSLY (no await on the URL shortener). Awaiting
       // a slow shortener here used to delay the sheet POST — if the shopper
@@ -939,7 +1000,7 @@ export default function AddressModal({
     // Sheet write happens HERE, after user has picked delivery speed.
     // Passing `true` explicitly because setFasterDelivery is async.
     if (tempPaymentMethod === "UPI") {
-      const ref = `TBX${Date.now()}`;
+      const ref = ensureCheckoutOid();
       setUpiOrderRef(ref);
       setUpiPhase("await");
       setQrUnlocked(false);
@@ -960,7 +1021,7 @@ export default function AddressModal({
       cart_total: finalPayable,
     });
     if (tempPaymentMethod === "UPI") {
-      const ref = `TBX${Date.now()}`;
+      const ref = ensureCheckoutOid();
       setUpiOrderRef(ref);
       setUpiPhase("await");
       setQrUnlocked(false);
@@ -1038,7 +1099,7 @@ export default function AddressModal({
       cart_total: finalPayable,
       cod_fee: codFeeAmount,
     });
-    const oid = `ORD${Date.now()}`;
+    const oid = ensureCheckoutOid();
     // GA purchase — only counted here, at the COD success point.
     trackPurchase({
       cartItems: cartBooks,
@@ -1145,7 +1206,7 @@ export default function AddressModal({
     } else if (method === "COD") {
       // The ₹29 fee is already disclosed on the Summary & Pay sheet, so place
       // the COD order directly (no second fee-confirmation modal).
-      const oid = `ORD${Date.now()}`;
+      const oid = ensureCheckoutOid();
       trackPurchase({
         cartItems: cartBooks,
         totalAmount: netPayable,
@@ -1160,7 +1221,7 @@ export default function AddressModal({
   // Chose a specific UPI app (Paytm / PhonePe / GPay / Other) → log the order
   // with that app as the source, then show the existing UPI QR modal.
   const chooseUpiApp = (app) => {
-    const ref = `TBX${Date.now()}`;
+    const ref = ensureCheckoutOid();
     setUpiOrderRef(ref);
     setUpiPhase("await");
     setQrUnlocked(false);
@@ -1206,7 +1267,7 @@ export default function AddressModal({
         paymentId: `GIFT-${Date.now()}`,
       });
     } catch (_) {}
-    const oid = `ORD${Date.now()}`;
+    const oid = ensureCheckoutOid();
     submitToGoogleForm(giftMethod, fasterDelivery, true, oid, label);
     setShowPayMethod(false);
     setFasterDelivery(fasterDelivery);
@@ -1274,7 +1335,7 @@ export default function AddressModal({
     // "(unconfirmed)" tag) until we confirm the chat/payment manually.
     // Generate ONE order id and use it for both the sheet row and the WhatsApp
     // message link (thebookx.in?orderID=…), so the link resolves to this order.
-    const orderId = `ORD${Date.now()}`;
+    const orderId = ensureCheckoutOid();
     submitToGoogleForm("WhatsApp", fasterDelivery, false, orderId);
     trackFunnelEvent(EVENTS.PAYMENT_METHOD_SELECTED, {
       method: "WhatsApp",
@@ -1451,7 +1512,7 @@ export default function AddressModal({
     trackFunnelEvent(EVENTS.PAYMENT_METHOD_SELECTED, {
       method: "COD_from_UPI",
     });
-    const oid = `ORD${Date.now()}`;
+    const oid = ensureCheckoutOid();
     trackPurchase({
       cartItems: cartBooks,
       totalAmount: netPayable,

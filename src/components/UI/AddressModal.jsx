@@ -4352,7 +4352,7 @@ function UPIPaymentModal({
               disabled={reassured}
             >
               <Check size={16} />
-              {reassured ? "Order confirmed" : "I've paid"}
+              {reassured ? "Order confirmed" : "I’ve paid"}
             </button>
           </div>
 

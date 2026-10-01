@@ -4058,6 +4058,8 @@ export default function ManageOrdersPage() {
   // the customer and move them to Processing — protecting conversion. A header
   // icon reopens it; a skip button dismisses it for the session.
   const [showUnconfirmed, setShowUnconfirmed] = useState(false);
+  const [unconfDelSel, setUnconfDelSel] = useState([]); // orderIds queued to delete
+  const [unconfDeleting, setUnconfDeleting] = useState(false);
   const [cardBulkStatus, setCardBulkStatus] = useState("Getting Shipped");
   const [cardBulkBusy, setCardBulkBusy] = useState(false);
   // Queued per-card status edits waiting to be pushed to the sheet in one go
@@ -8134,6 +8136,46 @@ export default function ManageOrdersPage() {
   const unconfirmedOrders = orders.filter(
     (o) => o["Order ID"] && isUnconfirmedOrder(o),
   );
+
+  // Unconfirmed panel: queued "delete permanently" selection + bulk delete.
+  const toggleUnconfDel = (oid) =>
+    setUnconfDelSel((prev) =>
+      prev.includes(oid) ? prev.filter((x) => x !== oid) : [...prev, oid],
+    );
+  const changeUnconfStatus = (oid, val) => {
+    patchLocalOrder(oid, { "Order Status": val, status: val });
+    updateOrderRow(oid, { "Order Status": val }).then(() =>
+      setTimeout(fetchOrders, 1300),
+    );
+  };
+  const bulkDeleteUnconf = async () => {
+    if (!unconfDelSel.length) return;
+    if (
+      !window.confirm(
+        `Delete ${unconfDelSel.length} order(s) permanently from the sheet?\n\nThis also removes any wallet reward credited for them. This cannot be undone.`,
+      )
+    )
+      return;
+    setUnconfDeleting(true);
+    try {
+      for (const oid of unconfDelSel) {
+        const ord =
+          unconfirmedOrders.find((o) => o["Order ID"] === oid) || {
+            "Order ID": oid,
+          };
+        // eslint-disable-next-line no-await-in-loop
+        await deleteOrderRow(ord, { skipConfirm: true });
+      }
+      showToast(`Deleted ${unconfDelSel.length} order(s) permanently`, "success");
+      setUnconfDelSel([]);
+      setTimeout(fetchOrders, 1600);
+    } catch (e) {
+      console.error("Bulk delete failed:", e);
+      showToast("Some deletions failed — refresh and retry", "error");
+    } finally {
+      setUnconfDeleting(false);
+    }
+  };
   // The unconfirmed-orders panel is opened manually via its badge/button — we
   // no longer auto-pop it on every visit.
   const notedOrdersCount = filteredOrders.filter(
@@ -15994,11 +16036,15 @@ export default function ManageOrdersPage() {
                     const isCOD = /cash|cod/i.test(o["Payment Type"] || "");
                     const amt =
                       parseFloat(o["Total Amount"]) || o.revenue || 0;
-                    const books = (o.parsedBooks || [])
-                      .map((b) => b.name)
-                      .join(", ");
+                    const booksArr = o.parsedBooks || [];
+                    const marked = unconfDelSel.includes(oid);
+                    const curStatus =
+                      o["Order Status"] || o.status || "Unconfirmed";
                     return (
-                      <div className="mo-unconf-item" key={oid}>
+                      <div
+                        className={`mo-unconf-item${marked ? " marked" : ""}`}
+                        key={oid}
+                      >
                         <div className="mo-unconf-meta">
                           <span className="mo-unconf-name">
                             {o["Customer Name"] || "—"}
@@ -16006,10 +16052,19 @@ export default function ManageOrdersPage() {
                           <span className="mo-unconf-sub">
                             {oid} · {isCOD ? "COD" : "Prepaid"} · ₹{amt}
                           </span>
-                          {books && (
-                            <span className="mo-unconf-books">{books}</span>
+                          {booksArr.length > 0 && (
+                            <ul className="mo-unconf-books">
+                              {booksArr.map((b, bi) => (
+                                <li key={bi}>
+                                  {b.name}
+                                  {b.quantity > 1 ? ` ×${b.quantity}` : ""}
+                                  {b.price ? ` · ₹${b.total || b.price}` : ""}
+                                </li>
+                              ))}
+                            </ul>
                           )}
                         </div>
+
                         <div className="mo-unconf-actions">
                           <button
                             type="button"
@@ -16023,23 +16078,45 @@ export default function ManageOrdersPage() {
                                 openWhatsApp(o["Phone Number"], msg.text);
                             }}
                           >
-                            <FaWhatsapp size={15} /> Confirm
+                            <FaWhatsapp size={15} /> WhatsApp
                           </button>
+
+                          <div className="mo-unconf-status">
+                            <select
+                              value={curStatus}
+                              onChange={(e) =>
+                                changeUnconfStatus(oid, e.target.value)
+                              }
+                              title="Change order status (saved to the sheet)"
+                            >
+                              {TRACK_STATUS_OPTIONS.map((s) => (
+                                <option key={s} value={s}>
+                                  {s}
+                                </option>
+                              ))}
+                            </select>
+                            <ChevronDown size={14} />
+                          </div>
+
                           <button
                             type="button"
-                            className="mo-unconf-proc"
-                            title="Mark this order Processing (confirmed) — saved to the sheet"
-                            onClick={() => {
-                              patchLocalOrder(oid, {
-                                "Order Status": "Processing",
-                                status: "Processing",
-                              });
-                              updateOrderRow(oid, {
-                                "Order Status": "Processing",
-                              }).then(() => setTimeout(fetchOrders, 1300));
-                            }}
+                            className={`mo-unconf-del${marked ? " on" : ""}`}
+                            title={
+                              marked
+                                ? "Remove from delete selection"
+                                : "Mark to delete permanently"
+                            }
+                            onClick={() => toggleUnconfDel(oid)}
                           >
-                            <Check size={15} /> Processing
+                            {marked ? (
+                              <>
+                                <Check size={15} /> Marked
+                              </>
+                            ) : (
+                              <>
+                                <Trash2 size={15} /> Delete
+                              </>
+                            )}
                           </button>
                         </div>
                       </div>
@@ -16048,14 +16125,49 @@ export default function ManageOrdersPage() {
                 </div>
               )}
 
-              <button
-                type="button"
-                className="sec-big-btn width100"
-                style={{ marginTop: 12 }}
-                onClick={() => setShowUnconfirmed(false)}
-              >
-                Skip for now
-              </button>
+              {unconfDelSel.length > 0 ? (
+                <div className="mo-unconf-delbar">
+                  <span className="mo-unconf-delcount">
+                    {unconfDelSel.length} selected to delete
+                  </span>
+                  <div className="mo-unconf-delbtns">
+                    <button
+                      type="button"
+                      className="mo-unconf-delclear"
+                      onClick={() => setUnconfDelSel([])}
+                      disabled={unconfDeleting}
+                    >
+                      Clear
+                    </button>
+                    <button
+                      type="button"
+                      className="mo-unconf-delpush"
+                      onClick={bulkDeleteUnconf}
+                      disabled={unconfDeleting}
+                    >
+                      {unconfDeleting ? (
+                        <>
+                          <Loader2 size={15} className="mo-spin" /> Deleting…
+                        </>
+                      ) : (
+                        <>
+                          <Trash2 size={15} /> Delete {unconfDelSel.length}{" "}
+                          permanently
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  className="sec-big-btn width100"
+                  style={{ marginTop: 12 }}
+                  onClick={() => setShowUnconfirmed(false)}
+                >
+                  Skip for now
+                </button>
+              )}
             </motion.div>
           </motion.div>
         )}

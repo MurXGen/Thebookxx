@@ -4,6 +4,186 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "international-day-of-older-persons-2026-books-for-grandparents": {
+    "id": "blog-067",
+    "title": "International Day of Older Persons 2026 (1 October): 17 Books to Gift Grandparents and Read for a Longer, Fuller Life",
+    "slug": "international-day-of-older-persons-2026-books-for-grandparents",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-10-01",
+    "lastModified": "2026-10-01",
+    "excerpt": "International Day of Older Persons falls on 1 October 2026. Seventeen books to gift grandparents or read yourself for a longer, calmer, more purposeful life.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "International Day of Older Persons is observed every year on 1 October. The United Nations General Assembly declared it on 14 December 1990, following the Vienna International Plan of Action on Ageing adopted in 1982. The 2026 theme is \"The Age of Longevity: Rethinking Systems for Longer Lives\", a reminder that living longer is only a gain if those extra years are lived well."
+      },
+      {
+        "type": "paragraph",
+        "content": "In India, that question is close to home. Almost every family has a grandparent, a parent or a neighbour who is navigating retirement, health, loneliness or simply the slower pace of later life. A book is one of the kindest and most lasting ways to show up for them, and it is also a good way for the rest of us to prepare for our own longer lives. This guide collects seventeen titles from the TheBookX catalogue for exactly that."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "What the 2026 theme is really saying"
+      },
+      {
+        "type": "paragraph",
+        "content": "According to the WHO South-East Asia Region statement for the day, the share of people aged 60 and above in the region is set to nearly double, from 11.3% in 2024 to 20.9% by 2050. At age 60, the regional average includes 4.6 years lived with chronic disease or poor health. The WHO calls for a whole-of-government and whole-of-society approach so that longer lives are also lived well, and it names India among the countries that have enacted policies for integrated care, long-term care and age-friendly approaches."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "Why this matters for readers",
+        "content": "Longevity is not only a healthcare question. Housing, community, purpose, sleep, movement and social connection all shape how the later decades feel. Reading touches nearly all of them: it gives structure to the day, a reason to talk to someone, and something to look forward to."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Why books suit later life so well"
+      },
+      {
+        "type": "paragraph",
+        "content": "A book asks very little: no charger, no login, no subscription. Large, clear print and a comfortable chair are enough. Short chapters and familiar voices make it easy to read a little each day, and a shared book becomes a conversation across generations. If you are choosing a gift for a grandparent, the best pick is usually something familiar in tone, warm in spirit and easy to dip in and out of."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Gentle, familiar stories for grandparents"
+      },
+      {
+        "type": "paragraph",
+        "content": "Start with writers who feel like old friends. <a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> by R.K. Narayan is a collection of small-town stories that many grandparents will remember from television or school, and <a href=\"/books/the-guide\" style=\"color:#fb8500;font-weight:600\">The Guide</a> is his most celebrated novel, a story of reinvention that rewards a slow read. Sudha Murty's <a href=\"/books/wise-and-otherwise-a-salute-to-life\" style=\"color:#fb8500;font-weight:600\">Wise and Otherwise</a> and <a href=\"/books/three-thousand-stitches\" style=\"color:#fb8500;font-weight:600\">Three Thousand Stitches</a> are short, true-to-life pieces about ordinary people, ideal for a ten-minute read with evening tea."
+      },
+      {
+        "type": "paragraph",
+        "content": "If a grandparent enjoys telling stories, give them the books they can read aloud. <a href=\"/books/grandma-s-bag-of-stories\" style=\"color:#fb8500;font-weight:600\">Grandma's Bag of Stories</a> and <a href=\"/books/grandparents-bag-of-stories\" style=\"color:#fb8500;font-weight:600\">Grandparents' Bag of Stories</a> are made for reading with grandchildren, and <a href=\"/books/how-i-taught-my-grandmother-to-read\" style=\"color:#fb8500;font-weight:600\">How I Taught My Grandmother to Read</a> is a quiet reminder that learning has no age limit."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Spiritual and reflective reading"
+      },
+      {
+        "type": "paragraph",
+        "content": "Later life often brings a wish for calm and meaning. <a href=\"/books/the-bhagavad-gita\" style=\"color:#fb8500;font-weight:600\">The Bhagavad Gita</a> is the obvious companion for a morning routine, and <a href=\"/books/autobiography-of-a-yogi\" style=\"color:#fb8500;font-weight:600\">Autobiography of a Yogi</a> by Paramahansa Yogananda is a long-loved account of a spiritual search. <a href=\"/books/light-on-yoga\" style=\"color:#fb8500;font-weight:600\">Light on Yoga</a> by B.K.S. Iyengar suits readers who want to keep the body supple, though anyone with a health condition should check with a doctor before starting new exercise."
+      },
+      {
+        "type": "paragraph",
+        "content": "For a book about purpose itself, <a href=\"/books/man-s-search-for-meaning\" style=\"color:#fb8500;font-weight:600\">Man's Search for Meaning</a> by Viktor Frankl is short and deeply humane, and <a href=\"/books/ikigai\" style=\"color:#fb8500;font-weight:600\">Ikigai</a> explores the Japanese idea of a reason to get up in the morning, drawing on conversations with people in Okinawa, a place known for long lives."
+      },
+      {
+        "type": "blockquote",
+        "content": "Longer lives are worth most when they are lived with a reason to get up in the morning."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books for the rest of us: preparing for a longer life"
+      },
+      {
+        "type": "paragraph",
+        "content": "The theme also speaks to people in their thirties, forties and fifties. The habits that make later life easier are built early. <a href=\"/books/why-we-sleep\" style=\"color:#fb8500;font-weight:600\">Why We Sleep</a> by Matthew Walker makes a strong case for protecting rest, while <a href=\"/books/meditations\" style=\"color:#fb8500;font-weight:600\">Meditations</a> by Marcus Aurelius offers a calm, practical way of thinking about time, loss and acceptance."
+      },
+      {
+        "type": "paragraph",
+        "content": "Fiction has its place too. <a href=\"/books/the-midnight-library\" style=\"color:#fb8500;font-weight:600\">The Midnight Library</a> by Matt Haig asks what we would change if we could try other lives, a gentle prompt to talk about regrets and second chances with someone older. <a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a>, the autobiography of A.P.J. Abdul Kalam, shows how curiosity and discipline stay alive through every decade."
+      },
+      {
+        "type": "paragraph",
+        "content": "And if the overwhelm of modern life is getting in the way of calm at any age, <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar offers a practical way to simplify thinking, decide what matters and reduce mental clutter. It makes a thoughtful gift for a parent approaching retirement who wants to make the next chapter deliberate."
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "A simple way to gift a book",
+        "content": "Pick one book, write two lines inside the cover about why you chose it, and offer to read the first chapter together. Gift wrapping is available for +₹25, and delivery is free with Cash on Delivery across India."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "How to turn a gift into a habit"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "Choose a fixed time, such as after the morning walk or with evening tea, so reading becomes part of the day.",
+          "Read aloud together for ten minutes. Shared reading is a good antidote to loneliness.",
+          "Keep the book where it is easy to reach, with good light and, if needed, reading glasses beside it.",
+          "Ask one question afterwards: what did you like, or what did it remind you of? Memories often follow.",
+          "If eyesight is a concern, look for larger print or take turns reading aloud."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "A quick pick list by person"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "For a grandparent who loves stories: Malgudi Days or Wise and Otherwise.",
+          "For a spiritual reader: The Bhagavad Gita or Autobiography of a Yogi.",
+          "For a retired parent seeking purpose: Ikigai or Man's Search for Meaning.",
+          "For a family reading session: Grandma's Bag of Stories.",
+          "For yourself or a working adult: The Art of Clarity, Why We Sleep or Meditations."
+        ]
+      },
+      {
+        "type": "paragraph",
+        "content": "This 1 October, the most meaningful gift may simply be time, with a good book as the excuse. Books start from ₹1 on TheBookX, with free delivery and Cash on Delivery across India."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      }
+    ],
+    "coverImage": "/blogs/international-day-of-older-persons-2026-books-for-grandparents.jpeg",
+    "images": [
+      {
+        "url": "/blogs/international-day-of-older-persons-2026-books-for-grandparents.jpeg",
+        "alt": "A grandmother and her young granddaughter reading a book together on a sunlit verandah with cups of tea",
+        "caption": "Shared reading across generations turns a book into a conversation.",
+        "category": "Occasions"
+      }
+    ],
+    "keywords": [
+      "International Day of Older Persons 2026",
+      "books for grandparents",
+      "gift ideas for grandparents India",
+      "books for senior citizens",
+      "best books for elderly India",
+      "1 October 2026",
+      "healthy ageing books",
+      "longevity books",
+      "books to gift parents"
+    ],
+    "categories": [
+      "Occasions",
+      "Gift Guides",
+      "Book Recommendations"
+    ],
+    "faqs": [
+      {
+        "question": "When is International Day of Older Persons 2026?",
+        "answer": "It is observed on 1 October every year. The United Nations General Assembly established it on 14 December 1990. The 2026 theme is \"The Age of Longevity: Rethinking Systems for Longer Lives\"."
+      },
+      {
+        "question": "What are good books to gift grandparents?",
+        "answer": "Familiar, warm and easy-to-dip-into books work best. Malgudi Days, Wise and Otherwise, The Bhagavad Gita, Ikigai and Grandma's Bag of Stories are popular choices because they have short, self-contained sections."
+      },
+      {
+        "question": "Which books help with purpose and healthy ageing?",
+        "answer": "Ikigai and Man's Search for Meaning explore purpose, Why We Sleep covers the value of rest, and Light on Yoga suits readers interested in gentle movement. Anyone with a health condition should consult a doctor before changing their routine."
+      },
+      {
+        "question": "Can I get these books delivered across India with Cash on Delivery?",
+        "answer": "Yes. TheBookX offers free delivery and Cash on Delivery across India, many books start from ₹1, and gift wrapping is available for +₹25."
+      }
+    ]
+  },
   "world-teachers-day-2026-60-years-books-for-teachers-and-lifelong-learners": {
     "id": "blog-066",
     "title": "World Teachers' Day 2026 (5 October): 60 Years of the Teacher Status Recommendation and 17 Books for Teachers and Lifelong Learners",

@@ -50,6 +50,7 @@ import PwaInstallPromo from "@/components/PwaInstallPromo";
 import AddBeforePacking from "@/components/profile/AddBeforePacking";
 import BookCard from "@/components/BookCard";
 import ProUpgradeModal from "@/components/UI/ProUpgradeModal";
+import CartConfetti from "@/components/UI/Confetti";
 import {
   updateOrderRow,
   fetchWalletBalance,
@@ -231,6 +232,9 @@ export default function OrderDetailPage() {
   const [walletBal, setWalletBal] = useState(0);
   const [trkIdCopied, setTrkIdCopied] = useState(false);
   const [showProModal, setShowProModal] = useState(false);
+  // Loyalty celebration: 3+ real orders → confetti on their recent last 4.
+  const [celebrate, setCelebrate] = useState(false);
+  const [loyalN, setLoyalN] = useState(0);
   useEffect(() => {
     const digits = String(number || "").replace(/\D/g, "").slice(-10);
     if (digits.length !== 10) return;
@@ -243,6 +247,56 @@ export default function OrderDetailPage() {
       .then((b) => setWalletBal(Number(b) || 0))
       .catch(() => {});
   }, [number]);
+
+  // Loyalty celebration — 3+ real orders → confetti + banner on their recent
+  // last 4 orders (once per order, so it feels special, not spammy).
+  useEffect(() => {
+    const digits = String(number || "").replace(/\D/g, "").slice(-10);
+    if (digits.length !== 10 || !orderId) return;
+    (async () => {
+      try {
+        const res = await fetch(`/api/orders?phone=${digits}`);
+        const json = await res.json();
+        const all = Array.isArray(json.orders) ? json.orders : [];
+        const real = all.filter((o) => {
+          const wa = /whatsapp/i.test(o["Payment Type"] || "");
+          const unc =
+            /unconfirmed|pending/i.test(o["Order Status"] || "") ||
+            /\(unconfirmed\)/i.test(o["Customer Name"] || "");
+          return !wa && !unc && o["Order ID"];
+        });
+        if (real.length <= 2) return;
+        const sorted = [...real].sort((a, b) => {
+          const da = parseSheetDate(
+            a["Timestamp (D)"] || a["Timestamp"] || a["Timestamp(D)"],
+          );
+          const db = parseSheetDate(
+            b["Timestamp (D)"] || b["Timestamp"] || b["Timestamp(D)"],
+          );
+          return (db?.getTime() || 0) - (da?.getTime() || 0);
+        });
+        const recent4 = new Set(
+          sorted.slice(0, 4).map((o) => String(o["Order ID"])),
+        );
+        if (!recent4.has(String(orderId))) return;
+        setLoyalN(real.length);
+        const key = `tbx_celebrate_${orderId}`;
+        let seen = false;
+        try {
+          seen = !!localStorage.getItem(key);
+        } catch {}
+        if (!seen) {
+          setCelebrate(true);
+          try {
+            localStorage.setItem(key, "1");
+          } catch {}
+          try {
+            if (navigator.vibrate) navigator.vibrate([10, 30, 10]);
+          } catch {}
+        }
+      } catch {}
+    })();
+  }, [number, orderId]);
   const [receiver, setReceiver] = useState(null); // {lat,lng,label}
   const [geoState, setGeoState] = useState("idle"); // idle|loading|ok|missing
   const [routeCoords, setRouteCoords] = useState(null);
@@ -1279,6 +1333,21 @@ export default function OrderDetailPage() {
           Help
         </button>
       </header>
+
+      {/* Loyalty confetti + celebration banner (3+ orders, recent 4). */}
+      <CartConfetti trigger={celebrate} />
+      {loyalN > 2 && (
+        <div className="od-loyalty">
+          <span className="od-loyalty-emoji">🎉</span>
+          <div className="od-loyalty-txt">
+            <strong>That&apos;s {loyalN} orders with TheBookX!</strong>
+            <span>
+              You&apos;re one of our loyal readers — thank you for keeping the
+              pages turning. 📚
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* User profile — bold name, number, address. */}
       {order && (

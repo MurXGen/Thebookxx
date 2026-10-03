@@ -45913,7 +45913,7 @@ img[data-loaded="true"] {
 
 /* ── Delivery details card (ETA date + timeline + tracking id) ── */
 .od-deliv-card {
-  border: 1px solid var(--dark-10, #e5e7eb);
+  border: 1px solid var(--dark-20, #82828250);
   border-radius: 14px;
   padding: 14px;
   margin-bottom: 12px;

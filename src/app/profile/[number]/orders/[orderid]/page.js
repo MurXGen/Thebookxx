@@ -1475,7 +1475,7 @@ export default function OrderDetailPage() {
             );
           })()}
 
-          {shippingId ? (
+          {shippingId && (
             <div className="od-trk-id">
               <div className="od-trk-id-l">
                 <span className="od-trk-lbl">Tracking ID</span>
@@ -1506,14 +1506,6 @@ export default function OrderDetailPage() {
                 </a>
               </div>
             </div>
-          ) : (
-            !delivered && (
-              <p className="od-deliv-next">
-                {/processing|getting shipped/i.test(order["Order Status"] || "")
-                  ? "Next: we pack your parcel and share a tracking ID here."
-                  : "Next: we confirm your order, then pack & ship it."}
-              </p>
-            )
           )}
         </section>
       )}

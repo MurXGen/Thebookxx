@@ -47400,6 +47400,18 @@ img[data-loaded="true"] {
   font-weight: 800;
   color: #111827;
 }
+.od-pay-due {
+  margin-top: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  font-weight: 800;
+  color: #b45309;
+}
+.od-pay-due span:last-child {
+  color: #b45309;
+}
 .od-paid-row {
   display: flex;
   align-items: center;

@@ -639,6 +639,11 @@ export default function OrderDetailPage() {
       listing += mrp * (b.qty || 1);
     });
     if (!listing) listing = Math.round(sub * 1.5);
+    // ₹99 advance (Pay in two parts): paid online, the rest collected at the
+    // door. "Pay on delivery" is the grand total minus any advance already paid.
+    const advancePaid = /^\s*yes/i.test(String(order?.["Advance Paid"] || ""));
+    const advanceAmount = advancePaid ? 99 : 0;
+    const payOnDelivery = Math.max(0, grand - advanceAmount);
     return {
       sub,
       grand,
@@ -654,6 +659,10 @@ export default function OrderDetailPage() {
       deliveryLabel: !freeDelivery && isHandling ? "Handling & Care" : "Delivery",
       listing,
       savings: Math.max(0, listing - sub),
+      isCOD,
+      advancePaid,
+      advanceAmount,
+      payOnDelivery,
     };
   }, [books, order]);
 
@@ -1699,14 +1708,28 @@ export default function OrderDetailPage() {
           <span>Total amount</span>
           <span>₹{bd.grand}</span>
         </div>
+        {bd.advancePaid && (
+          <div className="od-price-row od-price-save">
+            <span>Advance paid online</span>
+            <span>−₹{bd.advanceAmount}</span>
+          </div>
+        )}
+        {bd.isCOD && !delivered && (
+          <div className="od-price-row od-pay-due">
+            <span>
+              {bd.advancePaid ? "To pay on delivery (balance)" : "To pay on delivery"}
+            </span>
+            <span>₹{bd.payOnDelivery}</span>
+          </div>
+        )}
         <div className="od-paid-row">
           <span>
-            {/cash on delivery|cod/i.test(order["Payment Type"] || "") &&
-            !delivered
-              ? "Pay on delivery"
-              : "Paid by"}
+            {bd.isCOD && !delivered ? "Payment mode" : "Paid by"}
           </span>
-          <span className="od-paid-mode">{order["Payment Type"] || "—"}</span>
+          <span className="od-paid-mode">
+            {order["Payment Type"] || "—"}
+            {bd.advancePaid ? " · ₹99 advance paid" : ""}
+          </span>
         </div>
         {bd.savings > 0 && (
           <div className="od-save-banner">

@@ -4,6 +4,179 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "nobel-prize-literature-2026-books-by-laureates-to-read-india": {
+    "id": "blog-068",
+    "title": "Nobel Prize in Literature 2026 (8 October): Books by Laureates and World Classics to Read Before the Announcement",
+    "slug": "nobel-prize-literature-2026-books-by-laureates-to-read-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-10-02",
+    "lastModified": "2026-10-02",
+    "excerpt": "The 2026 Nobel Prize in Literature is announced on 8 October. Read Han Kang, Ishiguro and world classics now, with books from ₹1 and free delivery in India.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "The Nobel Prize in Literature for 2026 will be announced on Thursday, 8 October, at 13:00 CEST at the earliest, by the Swedish Academy in Stockholm. That is 4:30 PM in India. Every year the announcement sends readers hunting for the winner's books, and every year bookshops see the same pattern: the laureate sells out within days. This guide helps you get ahead of that rush, and gives you a reading list built around world literature that is already on the TheBookX shelves."
+      },
+      {
+        "type": "paragraph",
+        "content": "Books from ₹1, free delivery and Cash on Delivery are available across India, so you can build a Nobel-season reading pile without waiting for the announcement."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "How the Nobel Prize in Literature works"
+      },
+      {
+        "type": "paragraph",
+        "content": "The prize is awarded by the Swedish Academy for the most outstanding work in an ideal direction, a phrase taken from Alfred Nobel's will. Nominations are confidential, and the Academy does not publish its shortlist for fifty years. That secrecy is why every October brings a wave of guesswork, with critics and betting sites naming perennial favourites. Treat those lists as entertainment rather than evidence: the Academy has a long record of choosing writers few predicted."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "Announcement details",
+        "content": "Date: Thursday, 8 October 2026. Time: 13:00 CEST at the earliest (about 4:30 PM IST). Venue: the Swedish Academy, Stockholm. Source: nobelprize.org announcement schedule."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Start with recent laureates"
+      },
+      {
+        "type": "paragraph",
+        "content": "The easiest way to join the conversation is to read a recent winner before the new name is announced. Han Kang, the South Korean author, received the 2024 prize, and her novel <a href=\"/books/the-vegetarian\" style=\"color:#fb8500;font-weight:600\">The Vegetarian</a> remains the best doorway into her spare, unsettling prose. It is short, strange and unforgettable, and it is a strong pick for a first Nobel read."
+      },
+      {
+        "type": "paragraph",
+        "content": "Kazuo Ishiguro, the 2017 laureate, writes quiet novels that carry enormous emotional weight. <a href=\"/books/klara-and-the-sun\" style=\"color:#fb8500;font-weight:600\">Klara and the Sun</a> imagines the world through an artificial friend, while <a href=\"/books/never-let-me-go\" style=\"color:#fb8500;font-weight:600\">Never Let Me Go</a> is a restrained, heartbreaking story about memory and the cost of being human. Both reward slow reading."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Authors often discussed in Nobel season"
+      },
+      {
+        "type": "paragraph",
+        "content": "Japanese novelist Haruki Murakami is regularly mentioned in the speculation that surrounds the announcement, though mentions are not nominations and he has not won. His dreamlike fiction is a good gateway into translated literature: try <a href=\"/books/kafka-on-the-shore\" style=\"color:#fb8500;font-weight:600\">Kafka on the Shore</a> for magical realism or <a href=\"/books/norwegian-wood\" style=\"color:#fb8500;font-weight:600\">Norwegian Wood</a> for a gentler, more realistic story of youth and loss."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Indian voices that belong on the same shelf"
+      },
+      {
+        "type": "paragraph",
+        "content": "India's literature has long been part of the world conversation even where the prize has not followed. Arundhati Roy's <a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> won the Booker Prize in 1997 and still reads like a book written yesterday. Vikram Seth's <a href=\"/books/an-unsuitable-boy\" style=\"color:#fb8500;font-weight:600\">An Unsuitable Boy</a> is a vast, warm family epic, and Chitra Banerjee Divakaruni's <a href=\"/books/the-palace-of-illusions\" style=\"color:#fb8500;font-weight:600\">The Palace of Illusions</a> retells the Mahabharata through Draupadi's eyes. Khaled Hosseini's <a href=\"/books/the-kite-runner\" style=\"color:#fb8500;font-weight:600\">The Kite Runner</a> and <a href=\"/books/a-thousand-splendid-suns\" style=\"color:#fb8500;font-weight:600\">A Thousand Splendid Suns</a> round out a South Asian reading arc that Indian readers adore."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "World classics worth revisiting"
+      },
+      {
+        "type": "paragraph",
+        "content": "Nobel season is also a good excuse to read the books that shaped modern fiction. <a href=\"/books/1984\" style=\"color:#fb8500;font-weight:600\">1984</a> and <a href=\"/books/animal-farm\" style=\"color:#fb8500;font-weight:600\">Animal Farm</a> by George Orwell are as relevant as ever, <a href=\"/books/the-bell-jar\" style=\"color:#fb8500;font-weight:600\">The Bell Jar</a> is a landmark of confessional writing, and <a href=\"/books/a-gentleman-in-moscow\" style=\"color:#fb8500;font-weight:600\">A Gentleman in Moscow</a> is a gracious, beautifully paced modern classic. For something more hopeful, Paulo Coelho's <a href=\"/books/the-alchemist\" style=\"color:#fb8500;font-weight:600\">The Alchemist</a> is one of the most translated novels of our time."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Non-fiction to sharpen how you read"
+      },
+      {
+        "type": "paragraph",
+        "content": "Reading literature well is a skill. <a href=\"/books/how-to-read-a-book\" style=\"color:#fb8500;font-weight:600\">How to Read a Book</a> teaches you how to approach dense texts, and <a href=\"/books/man-s-search-for-meaning\" style=\"color:#fb8500;font-weight:600\">Man's Search for Meaning</a> shows how witness writing can change a life. If you want to build the habit itself, <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> offers a practical system for reading a little every day. And for clearer thinking and writing, <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a focused guide to cutting through mental noise."
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "Pick one recent laureate and one classic, so the pile feels balanced.",
+          "Read translated fiction in short sittings of 20 to 30 minutes.",
+          "Keep a note of one line you liked from every chapter.",
+          "After 8 October, add the new laureate's most accessible title to your list.",
+          "Pass finished books to a friend, because Nobel conversations are better shared."
+        ]
+      },
+      {
+        "type": "blockquote",
+        "content": "A book must be the axe for the frozen sea within us. - Franz Kafka"
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "A reading plan for the next three weeks"
+      },
+      {
+        "type": "paragraph",
+        "content": "Dussehra falls on Tuesday, 20 October 2026, so the weeks ahead are a natural time to read. Week one: finish a short laureate novel such as <a href=\"/books/the-vegetarian\" style=\"color:#fb8500;font-weight:600\">The Vegetarian</a>. Week two: read the new laureate's work once the name is public. Week three: close with something warm and long, such as <a href=\"/books/an-unsuitable-boy\" style=\"color:#fb8500;font-weight:600\">An Unsuitable Boy</a> or <a href=\"/books/the-midnight-library\" style=\"color:#fb8500;font-weight:600\">The Midnight Library</a>. Curious readers who like big ideas can also try <a href=\"/books/sapiens-a-brief-history-of-humankind\" style=\"color:#fb8500;font-weight:600\">Sapiens</a> in the evenings."
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Gifting a reader this season",
+        "content": "A Nobel-themed stack makes a thoughtful gift. Add gift wrapping for just ₹25 per order, and delivery is free across India with Cash on Delivery available."
+      },
+      {
+        "type": "paragraph",
+        "content": "The Diary of a Young Girl by Anne Frank is another timeless witness account worth adding to a literary shelf: <a href=\"/books/the-diary-of-a-young-girl\" style=\"color:#fb8500;font-weight:600\">The Diary of a Young Girl</a>."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Frequently asked questions"
+      },
+      {
+        "type": "paragraph",
+        "content": "Answers to the questions readers ask most are below, and the same questions are marked up for search engines."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      }
+    ],
+    "coverImage": "/blogs/nobel-prize-literature-2026-books-by-laureates-to-read-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/nobel-prize-literature-2026-books-by-laureates-to-read-india.jpeg",
+        "alt": "A young woman reading a hardcover novel by a sunlit window with a cup of tea and a small stack of books beside her",
+        "caption": "Nobel season is the perfect time to start a new literary read.",
+        "category": "Occasions"
+      }
+    ],
+    "keywords": [
+      "Nobel Prize in Literature 2026",
+      "Nobel Prize literature announcement date",
+      "Nobel laureate books India",
+      "Han Kang The Vegetarian",
+      "Kazuo Ishiguro books",
+      "world literature books India",
+      "best translated novels to read",
+      "buy books online India"
+    ],
+    "categories": [
+      "Occasions",
+      "Book Recommendations",
+      "World Literature"
+    ],
+    "faqs": [
+      {
+        "question": "When is the Nobel Prize in Literature 2026 announced?",
+        "answer": "The Swedish Academy will announce it on Thursday, 8 October 2026, at 13:00 CEST at the earliest, which is about 4:30 PM in India."
+      },
+      {
+        "question": "Which Nobel laureate books should I read first?",
+        "answer": "Han Kang's The Vegetarian (2024 laureate) and Kazuo Ishiguro's Klara and the Sun or Never Let Me Go (2017 laureate) are accessible, widely loved starting points."
+      },
+      {
+        "question": "Can I buy Nobel-season books cheaply in India?",
+        "answer": "Yes. TheBookX offers books from ₹1, free delivery and Cash on Delivery across India."
+      },
+      {
+        "question": "Who will win the Nobel Prize in Literature 2026?",
+        "answer": "Nobody outside the Swedish Academy knows. Nominations are secret for fifty years, and the Academy often picks writers who were not widely predicted."
+      }
+    ]
+  },
   "international-day-of-older-persons-2026-books-for-grandparents": {
     "id": "blog-067",
     "title": "International Day of Older Persons 2026 (1 October): 17 Books to Gift Grandparents and Read for a Longer, Fuller Life",

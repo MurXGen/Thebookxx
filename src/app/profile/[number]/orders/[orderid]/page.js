@@ -49,7 +49,13 @@ import CommunityJoin from "@/components/CommunityJoin";
 import PwaInstallPromo from "@/components/PwaInstallPromo";
 import AddBeforePacking from "@/components/profile/AddBeforePacking";
 import BookCard from "@/components/BookCard";
-import { updateOrderRow } from "@/utils/googleFormOrder";
+import ProUpgradeModal from "@/components/UI/ProUpgradeModal";
+import {
+  updateOrderRow,
+  fetchWalletBalance,
+  creditWalletReward,
+} from "@/utils/googleFormOrder";
+import { cachedProStatus, fetchProStatus, PRO_PRICE } from "@/utils/proPlan";
 import { parseAddonsField } from "@/utils/addonsField";
 import { getDeliveryCharge } from "@/utils/cartOffers";
 import { books as ALL_BOOKS } from "@/utils/book";
@@ -220,6 +226,23 @@ export default function OrderDetailPage() {
 
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
+  // Sales nudges: membership status + wallet balance for this shopper.
+  const [proActive, setProActive] = useState(false);
+  const [walletBal, setWalletBal] = useState(0);
+  const [trkIdCopied, setTrkIdCopied] = useState(false);
+  const [showProModal, setShowProModal] = useState(false);
+  useEffect(() => {
+    const digits = String(number || "").replace(/\D/g, "").slice(-10);
+    if (digits.length !== 10) return;
+    const cached = cachedProStatus(digits);
+    if (cached) setProActive(!!cached.active);
+    fetchProStatus(digits)
+      .then((s) => setProActive(!!s.active))
+      .catch(() => {});
+    fetchWalletBalance(digits)
+      .then((b) => setWalletBal(Number(b) || 0))
+      .catch(() => {});
+  }, [number]);
   const [receiver, setReceiver] = useState(null); // {lat,lng,label}
   const [geoState, setGeoState] = useState("idle"); // idle|loading|ok|missing
   const [routeCoords, setRouteCoords] = useState(null);
@@ -1193,6 +1216,17 @@ export default function OrderDetailPage() {
           typeof navigator !== "undefined" ? navigator.userAgent : "",
       });
       recordReviewSubmission();
+      // Reward a review on a delivered order with ₹10 straight to the wallet.
+      if (delivered) {
+        creditWalletReward(
+          String(order["Phone Number"] || number || ""),
+          10,
+          orderId,
+          "Review reward",
+        )
+          .then(() => setWalletBal((b) => b + 10))
+          .catch(() => {});
+      }
       setRevDone(true);
     } catch (e) {
       setRevErr("Couldn't submit right now. Please try again.");
@@ -1383,6 +1417,107 @@ export default function OrderDetailPage() {
         )}
       </section>
 
+      {/* Delivery details — ETA date, status timeline, courier, tracking ID. */}
+      {order && !cancelled && (
+        <section className="od-deliv-card">
+          {!delivered && estimate && (
+            <div className="od-deliv-eta">
+              <CalendarClock size={18} />
+              <div className="od-deliv-eta-txt">
+                <strong>
+                  {outForDelivery
+                    ? "Arriving today"
+                    : `Arriving by ${estimate.to}`}
+                </strong>
+                <span>
+                  {isFaster ? "Express" : "Standard"} ·{" "}
+                  {isFaster ? "India Post Speed Post" : "India Post"}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {(() => {
+            const steps = [
+              { k: "Placed", Icon: Check },
+              { k: "Packed", Icon: Package },
+              { k: "Shipped", Icon: Truck },
+              { k: "Out for delivery", Icon: Navigation },
+              { k: "Delivered", Icon: Home },
+            ];
+            const idx = delivered
+              ? 4
+              : outForDelivery
+                ? 3
+                : inTransit || (shipped && shippingId)
+                  ? 2
+                  : /processing|getting shipped|packed/i.test(
+                        order["Order Status"] || "",
+                      )
+                    ? 1
+                    : 0;
+            return (
+              <ol className="od-timeline">
+                {steps.map((s, i) => {
+                  const state =
+                    i < idx ? "done" : i === idx ? "active" : "todo";
+                  const Ic = s.Icon;
+                  return (
+                    <li key={s.k} className={`od-tl-step ${state}`}>
+                      <span className="od-tl-dot">
+                        <Ic size={13} />
+                      </span>
+                      <span className="od-tl-lbl">{s.k}</span>
+                    </li>
+                  );
+                })}
+              </ol>
+            );
+          })()}
+
+          {shippingId ? (
+            <div className="od-trk-id">
+              <div className="od-trk-id-l">
+                <span className="od-trk-lbl">Tracking ID</span>
+                <span className="od-trk-val">{shippingId}</span>
+              </div>
+              <div className="od-trk-id-r">
+                <button
+                  type="button"
+                  className="od-trk-copy"
+                  onClick={() => {
+                    try {
+                      navigator.clipboard.writeText(String(shippingId));
+                      setTrkIdCopied(true);
+                      setTimeout(() => setTrkIdCopied(false), 1500);
+                    } catch {}
+                  }}
+                >
+                  {trkIdCopied ? <Check size={14} /> : <Copy size={14} />}
+                  {trkIdCopied ? "Copied" : "Copy"}
+                </button>
+                <a
+                  className="od-trk-link"
+                  href="https://www.indiapost.gov.in/_layouts/15/dop.portal.tracking/trackconsignment.aspx"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Track on India Post ↗
+                </a>
+              </div>
+            </div>
+          ) : (
+            !delivered && (
+              <p className="od-deliv-next">
+                {/processing|getting shipped/i.test(order["Order Status"] || "")
+                  ? "Next: we pack your parcel and share a tracking ID here."
+                  : "Next: we confirm your order, then pack & ship it."}
+              </p>
+            )
+          )}
+        </section>
+      )}
+
       {/* Quick actions — minimal buttons that open slide-up sheets. */}
       <div className="od-quick">
         <button
@@ -1398,10 +1533,10 @@ export default function OrderDetailPage() {
         </button>
         <button
           type="button"
-          className="od-quick-btn"
+          className={`od-quick-btn${delivered ? " od-quick-reward" : ""}`}
           onClick={() => setShowRateSheet(true)}
         >
-          <Star size={15} /> Rate us
+          <Star size={15} /> {delivered ? "Rate us · +₹10" : "Rate us"}
         </button>
         <button
           type="button"
@@ -1771,6 +1906,62 @@ export default function OrderDetailPage() {
             onPaid={(fields) => setOrder((o) => ({ ...o, ...fields }))}
           />
         )}
+
+      {/* Membership pitch — show the real fees paid vs ₹0 for members. */}
+      {order &&
+        !proActive &&
+        !cancelled &&
+        bd.deliveryFee + bd.codFee > 0 && (
+          <section className="od-pro-pitch">
+            <div className="od-pro-head">
+              <Zap size={16} /> TheBookX Exclusive
+            </div>
+            <p className="od-pro-line">
+              You paid{" "}
+              <b>
+                ₹{bd.deliveryFee + bd.codFee}
+              </b>{" "}
+              in delivery{bd.codFee > 0 ? " + COD fee" : ""} on this order.
+              Members pay <b>₹0</b> — plus flat 20% off every book.
+            </p>
+            <button
+              type="button"
+              className="od-pro-cta"
+              onClick={() => setShowProModal(true)}
+            >
+              Unlock for ₹{PRO_PRICE}/mo →
+            </button>
+          </section>
+        )}
+
+      {/* Wallet nudge — spendable balance to pull them back for a next order. */}
+      {walletBal > 0 && !cancelled && (
+        <Link href="/" className="od-wallet-nudge">
+          <span className="od-wallet-ic">₹</span>
+          <span className="od-wallet-txt">
+            You have <b>₹{walletBal}</b> in your wallet — use it on your next
+            order.
+          </span>
+          <span className="od-wallet-go">Shop now →</span>
+        </Link>
+      )}
+
+      {/* Cross-sell rail — more books readers loved (new order). */}
+      {recos.length > 0 && !cancelled && (
+        <section className="od-reco">
+          <div className="od-reco-head">
+            <span className="od-reco-title">Readers also loved</span>
+            <span className="od-reco-sub">Add your next great read</span>
+          </div>
+          <div className="od-reco-rail">
+            {recos.map((b) => (
+              <div className="od-reco-item" key={b.id || b.name}>
+                <BookCard book={b} />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Scratch-card reward — below the bill breakdown (skeleton → 3D → reveal) */}
       <OrderScratchCard
@@ -2150,6 +2341,16 @@ export default function OrderDetailPage() {
         <span className="od-community-fab-label">Join community</span>
       </div>
       <PwaInstallPromo variant="bar" />
+
+      <ProUpgradeModal
+        open={showProModal}
+        onClose={() => setShowProModal(false)}
+        phone={String(order?.["Phone Number"] || number || "")}
+        onActivated={() => {
+          setProActive(true);
+          setShowProModal(false);
+        }}
+      />
     </main>
   );
 }

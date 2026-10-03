@@ -644,12 +644,22 @@ export default function OrderDetailPage() {
       ? parseFloat(order?.["Gift Wrap Charge"]) || 0
       : 0;
     const bookmarkFee = addons.bookmarkCharge;
-    const isCOD = (order?.["Payment Type"] || "").includes("Cash on Delivery");
+    const advancePaidFlag = /^\s*yes/i.test(
+      String(order?.["Advance Paid"] || ""),
+    );
+    // COD covers plain Cash-on-Delivery AND ₹99-advance orders (balance at door).
+    const isCOD =
+      /cash on delivery|\bcod\b|advance/i.test(
+        String(order?.["Payment Type"] || ""),
+      ) || advancePaidFlag;
+    const hasCodFee = /cash on delivery/i.test(
+      String(order?.["Payment Type"] || ""),
+    );
     let codFee = 0;
     let discount = 0;
     const extra = grand - sub - deliveryFee - giftFee - bookmarkFee;
     if (extra > 0) {
-      if (isCOD) codFee = extra;
+      if (hasCodFee) codFee = extra;
       else deliveryFee += extra;
     } else if (extra < 0) discount = -extra;
     const freeDelivery = isFree || deliveryFee === 0;
@@ -664,7 +674,7 @@ export default function OrderDetailPage() {
     if (!listing) listing = Math.round(sub * 1.5);
     // ₹99 advance (Pay in two parts): paid online, the rest collected at the
     // door. "Pay on delivery" is the grand total minus any advance already paid.
-    const advancePaid = /^\s*yes/i.test(String(order?.["Advance Paid"] || ""));
+    const advancePaid = advancePaidFlag;
     const advanceAmount = advancePaid ? 99 : 0;
     const payOnDelivery = Math.max(0, grand - advanceAmount);
     return {
@@ -1842,11 +1852,20 @@ export default function OrderDetailPage() {
           </div>
         )}
         {bd.isCOD && !delivered && (
-          <div className="od-price-row od-pay-due">
-            <span>
-              {bd.advancePaid ? "To pay on delivery (balance)" : "To pay on delivery"}
+          <div className="od-pay-due">
+            <div className="od-pay-due-main">
+              <span className="od-pay-due-lbl">
+                {bd.advancePaid
+                  ? "To pay on delivery (balance)"
+                  : "To pay on delivery"}
+              </span>
+              <span className="od-pay-due-amt">₹{bd.payOnDelivery}</span>
+            </div>
+            <span className="od-pay-due-note">
+              {bd.advancePaid
+                ? `₹${bd.advanceAmount} already paid online · pay the remaining ₹${bd.payOnDelivery} in cash/UPI to the delivery agent`
+                : "Pay in cash or UPI to the delivery agent"}
             </span>
-            <span>₹{bd.payOnDelivery}</span>
           </div>
         )}
         <div className="od-paid-row">

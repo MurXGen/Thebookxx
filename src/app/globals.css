@@ -47675,16 +47675,34 @@ img[data-loaded="true"] {
   color: #111827;
 }
 .od-pay-due {
-  margin-top: 8px;
-  padding: 10px 12px;
-  border-radius: 10px;
+  margin-top: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
   background: #fff7ed;
   border: 1px solid #fed7aa;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.od-pay-due-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.od-pay-due-lbl {
+  font-size: 14px;
   font-weight: 800;
   color: #b45309;
 }
-.od-pay-due span:last-child {
+.od-pay-due-amt {
+  font-size: 18px;
+  font-weight: 900;
   color: #b45309;
+}
+.od-pay-due-note {
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: #c2792b;
 }
 .od-paid-row {
   display: flex;

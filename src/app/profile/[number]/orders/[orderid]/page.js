@@ -1300,6 +1300,85 @@ export default function OrderDetailPage() {
         </section>
       )}
 
+      {/* Order status card — moved below the name/address card (standalone). */}
+      {order && (
+        <div className="od-map-eta od-eta-standalone">
+          <div className="od-map-eta-row">
+            <span
+              className={`od-map-eta-dot${delivered ? " done" : cancelled ? " off" : ""}`}
+            />
+            <div className="od-map-eta-txt">
+              <strong>{stLabel.title}</strong>
+              <span>
+                {cancelled
+                  ? "This order was cancelled"
+                  : onHold
+                    ? "There is some issue in packaging this item"
+                    : delivered
+                      ? "Your books have arrived — enjoy!"
+                      : outForDelivery
+                        ? "Arriving today — keep your phone handy"
+                        : `Reaching you in ${etaMin}–${etaMax} days`}
+              </span>
+            </div>
+            <span
+              className={`od-map-eta-badge${delivered ? " done" : ""}${cancelled ? " cancelled" : ""}`}
+            >
+              {psBadge}
+            </span>
+          </div>
+          {!cancelled && (
+            <div className="od-map-eta-bar" aria-hidden="true">
+              <span style={{ width: `${progressPct}%` }} />
+            </div>
+          )}
+          <div className="od-map-eta-foot">
+            <span className="od-map-eta-deliv">
+              {delivered ? (
+                <>
+                  <Home size={13} /> Delivered
+                </>
+              ) : (
+                <>
+                  {isFaster ? <Plane size={13} /> : <Train size={13} />}
+                  {isFaster ? "Express delivery" : "Standard delivery"}
+                </>
+              )}
+            </span>
+            {delivered ? (
+              <button
+                type="button"
+                className="od-map-eta-btn"
+                onClick={() => setShowRateSheet(true)}
+              >
+                <Star size={12} /> Review us
+              </button>
+            ) : inTransit && shippingId ? (
+              <button
+                type="button"
+                className="od-map-eta-btn"
+                onClick={() => setShowTrack(true)}
+              >
+                Track ↗
+              </button>
+            ) : upgradeExtra != null &&
+              !shippingId &&
+              /processing|getting shipped/i.test(
+                order["Order Status"] || "",
+              ) ? (
+              <button
+                type="button"
+                className="od-map-eta-btn"
+                onClick={() => setShowUpgradeModal(true)}
+                disabled={upgrading}
+              >
+                <Zap size={12} /> Faster +₹{upgradeExtra}
+              </button>
+            ) : null}
+          </div>
+        </div>
+      )}
+
       {/* Map + floating arrival card (Flipkart-style) */}
       <section
         className={`od-map-card${mapFull ? " od-map-full" : ""}`}
@@ -1336,85 +1415,6 @@ export default function OrderDetailPage() {
           </div>
         )}
 
-        {/* Floating status card — full status, progress, ETA + action, right on
-            the map (single source of truth; shown over any map state). */}
-        {order && (
-          <div className="od-map-eta">
-            <div className="od-map-eta-row">
-              <span
-                className={`od-map-eta-dot${delivered ? " done" : cancelled ? " off" : ""}`}
-              />
-              <div className="od-map-eta-txt">
-                <strong>{stLabel.title}</strong>
-                <span>
-                  {cancelled
-                    ? "This order was cancelled"
-                    : onHold
-                      ? "There is some issue in packaging this item"
-                      : delivered
-                        ? "Your books have arrived — enjoy!"
-                        : outForDelivery
-                          ? "Arriving today — keep your phone handy"
-                          : `Reaching you in ${etaMin}–${etaMax} days`}
-                </span>
-              </div>
-              <span
-                className={`od-map-eta-badge${delivered ? " done" : ""}${cancelled ? " cancelled" : ""}`}
-              >
-                {psBadge}
-              </span>
-            </div>
-            {!cancelled && (
-              <div className="od-map-eta-bar" aria-hidden="true">
-                <span style={{ width: `${progressPct}%` }} />
-              </div>
-            )}
-            <div className="od-map-eta-foot">
-              <span className="od-map-eta-deliv">
-                {delivered ? (
-                  <>
-                    <Home size={13} /> Delivered
-                  </>
-                ) : (
-                  <>
-                    {isFaster ? <Plane size={13} /> : <Train size={13} />}
-                    {isFaster ? "Express delivery" : "Standard delivery"}
-                  </>
-                )}
-              </span>
-              {delivered ? (
-                <button
-                  type="button"
-                  className="od-map-eta-btn"
-                  onClick={() => setShowRateSheet(true)}
-                >
-                  <Star size={12} /> Review us
-                </button>
-              ) : inTransit && shippingId ? (
-                <button
-                  type="button"
-                  className="od-map-eta-btn"
-                  onClick={() => setShowTrack(true)}
-                >
-                  Track ↗
-                </button>
-              ) : upgradeExtra != null &&
-                !shippingId &&
-                /processing|getting shipped/i.test(
-                  order["Order Status"] || "",
-                ) ? (
-                <button
-                  type="button"
-                  className="od-map-eta-btn"
-                  onClick={() => setShowUpgradeModal(true)}
-                  disabled={upgrading}
-                >
-                  <Zap size={12} /> Faster +₹{upgradeExtra}
-                </button>
-              ) : null}
-            </div>
-          </div>
-        )}
       </section>
 
       {/* Delivery details — ETA date, status timeline, courier, tracking ID. */}

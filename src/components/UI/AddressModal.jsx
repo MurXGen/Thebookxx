@@ -57,6 +57,7 @@ import {
   updateOrderRow,
   debitWallet,
 } from "@/utils/googleFormOrder";
+import { PRO_PRICE, startProPayment } from "@/utils/proPlan";
 import ScratchRewardSheet from "./ScratchRewardSheet";
 import CartSupportSheet from "./CartSupportSheet";
 import { showToast } from "@/context/ToastContext";
@@ -225,6 +226,9 @@ export default function AddressModal({
   const [showFasterDeliveryModal, setShowFasterDeliveryModal] = useState(false);
   // Full-page payment selection sheet (UPI / COD / WhatsApp + coins toggle).
   const [showPaySelect, setShowPaySelect] = useState(false);
+  // Pro-membership add-on — default ON for non-members; adds ₹99 to the bill and
+  // registers a pending membership when the order is placed.
+  const [proAddon, setProAddon] = useState(true);
   // Coupons — slide-up list + code entry; applied coupon discounts the order.
   const [showCouponSheet, setShowCouponSheet] = useState(false);
   const [coupons, setCoupons] = useState([]);
@@ -233,6 +237,7 @@ export default function AddressModal({
   const [couponApplying, setCouponApplying] = useState(false);
   const [appliedCoupon, setAppliedCoupon] = useState(null); // {code,title,discount}
   const couponRedeemedRef = useRef(false);
+  const proRegisteredRef = useRef(false);
   // Which method is currently highlighted on the "Choose payment method" sheet.
   // Defaults to none — the shopper must pick, then confirm with the button below.
   const [paySel, setPaySel] = useState("UPI"); // online selected by default
@@ -579,8 +584,14 @@ export default function AddressModal({
   const couponDiscount = appliedCoupon
     ? Math.min(appliedCoupon.discount || 0, finalPayable)
     : 0;
+  // Pro-membership add-on (₹99) — only billable when the shopper isn't already a
+  // member and keeps the add-on toggled on.
+  const proAddonActive = !proActive && proAddon;
+  const proAddonCharge = proAddonActive ? PRO_PRICE : 0;
   const netPayable =
-    Math.max(0, finalPayable - walletApplied - couponDiscount) + qrAddOn;
+    Math.max(0, finalPayable - walletApplied - couponDiscount) +
+    qrAddOn +
+    proAddonCharge;
 
   // ── Coupons ──────────────────────────────────────────────────────────────
   const loadCoupons = async () => {
@@ -921,6 +932,12 @@ export default function AddressModal({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "redeem", code: appliedCoupon.code }),
       }).catch(() => {});
+    }
+
+    // Pro add-on: register a pending membership once, when the order is placed.
+    if (confirmed && proAddonActive && !proRegisteredRef.current) {
+      proRegisteredRef.current = true;
+      startProPayment(normalizePhone(phone)).catch(() => {});
     }
 
     // UPSERT: if a row for this checkout id was already written (a draft, or an
@@ -2267,6 +2284,79 @@ export default function AddressModal({
                           </button>
                         </span>
                       </div>
+
+                      {/* TheBookX Exclusive — default-on ₹99 add-on (hidden for
+                          existing members). */}
+                      {!proActive && (
+                        <button
+                          type="button"
+                          className={`pa-row${proAddon ? " on" : ""}`}
+                          onClick={() => setProAddon((v) => !v)}
+                        >
+                          <span className="pa-row-ic paid">
+                            <span className="pa-ripple" aria-hidden="true" />
+                            <Zap size={18} />
+                          </span>
+                          <span className="pa-row-main">
+                            <span className="pa-row-name">
+                              TheBookX Exclusive
+                            </span>
+                            <span className="pa-row-sub free">
+                              Flat 20% off, free delivery &amp; more
+                            </span>
+                          </span>
+                          <span className="pa-row-price">+₹{PRO_PRICE}</span>
+                          <span className={`pa-check${proAddon ? " on" : ""}`}>
+                            {proAddon && <Check size={12} strokeWidth={3} />}
+                          </span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Apply coupon */}
+                  <div className="pay-addon-block">
+                    <span className="deliv-addon-head">Coupon</span>
+                    <div className="pa-list">
+                      {appliedCoupon ? (
+                        <div className="pa-row pa-row-static on">
+                          <span className="pa-row-ic paid">
+                            <Tag size={18} />
+                          </span>
+                          <span className="pa-row-main">
+                            <span className="pa-row-name">
+                              {appliedCoupon.code} applied
+                            </span>
+                            <span className="pa-row-sub free">
+                              You saved ₹{couponDiscount}
+                            </span>
+                          </span>
+                          <button
+                            type="button"
+                            className="paymeth-coupon-remove"
+                            onClick={removeCoupon}
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          className="pa-row"
+                          onClick={openCouponSheet}
+                        >
+                          <span className="pa-row-ic">
+                            <Tag size={18} />
+                          </span>
+                          <span className="pa-row-main">
+                            <span className="pa-row-name">Apply coupon</span>
+                            <span className="pa-row-sub">
+                              Have a code? Save more on this order
+                            </span>
+                          </span>
+                          <ChevronRight size={16} className="paymeth-row-chev" />
+                        </button>
+                      )}
                     </div>
                   </div>
 
@@ -2866,37 +2956,6 @@ export default function AddressModal({
                       you&apos;re in trusted company!
                     </span>
                   </div>
-
-                  {/* Apply coupon */}
-                  {appliedCoupon ? (
-                    <div className="paymeth-coupon applied">
-                      <Tag size={16} />
-                      <span className="paymeth-coupon-txt">
-                        <strong>{appliedCoupon.code} applied</strong>
-                        <small>You saved ₹{couponDiscount}</small>
-                      </span>
-                      <button
-                        type="button"
-                        className="paymeth-coupon-remove"
-                        onClick={removeCoupon}
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  ) : (
-                    <button
-                      type="button"
-                      className="paymeth-coupon"
-                      onClick={openCouponSheet}
-                    >
-                      <Tag size={16} />
-                      <span className="paymeth-coupon-txt">
-                        <strong>Apply coupon</strong>
-                        <small>Have a code? Save more on this order</small>
-                      </span>
-                      <ChevronRight size={16} className="paymeth-row-chev" />
-                    </button>
-                  )}
 
                   {/* UPI apps */}
                   <div className="paymeth-group">

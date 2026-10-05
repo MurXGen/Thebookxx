@@ -10653,7 +10653,7 @@ textarea.sec-mid-btn,
   display: flex;
   flex-direction: column;
   gap: 0;
-  z-index: 99999;
+  z-index: 2147483000;
   width: 100%;
   max-width: none;
   margin: 0;
@@ -15518,6 +15518,12 @@ img[data-loaded="true"] {
 }
 .pro-cta:disabled {
   opacity: 0.6;
+  cursor: default;
+}
+.pro-cta-wait {
+  background: #f3f4f6;
+  color: var(--dark-50, #6b7280);
+  box-shadow: none;
   cursor: default;
 }
 .pro-ghost {

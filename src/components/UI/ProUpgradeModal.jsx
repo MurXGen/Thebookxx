@@ -73,13 +73,18 @@ export default function ProUpgradeModal({
   const [busy, setBusy] = useState(false);
   const [qrLoading, setQrLoading] = useState(false);
   const [statusInfo, setStatusInfo] = useState(null);
+  const [verifyCountdown, setVerifyCountdown] = useState(30);
+  const [checking, setChecking] = useState(false);
   const pollRef = useRef(null);
+  const tickRef = useRef(null);
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
   const clearPoll = () => {
     if (pollRef.current) clearInterval(pollRef.current);
     pollRef.current = null;
+    if (tickRef.current) clearInterval(tickRef.current);
+    tickRef.current = null;
   };
 
   // On open, decide the starting step: need a number first, else check status.
@@ -118,26 +123,52 @@ export default function ProUpgradeModal({
     runCheck(p);
   };
 
+  const activate = (s) => {
+    clearPoll();
+    setStatusInfo(s);
+    setStep("active");
+    try {
+      if (navigator.vibrate) navigator.vibrate([18, 40, 60, 30, 90]);
+    } catch {}
+    showToast("TheBookX Exclusive activated 🎉", "success");
+    onActivated && onActivated(s);
+  };
+
+  // Poll the sheet every 3s so the plan activates the moment the team marks the
+  // ₹99 payment Paid; a parallel 1s ticker drives the "Verifying… Ns" countdown.
   const startPoll = (p) => {
     clearPoll();
+    setVerifyCountdown(30);
+    tickRef.current = setInterval(() => {
+      setVerifyCountdown((n) => (n <= 1 ? 0 : n - 1));
+    }, 1000);
     pollRef.current = setInterval(async () => {
       const s = await fetchProStatus(p);
-      if (s.active) {
-        clearPoll();
-        setStatusInfo(s);
-        setStep("active");
-        try {
-          if (navigator.vibrate) navigator.vibrate([18, 40, 60, 30, 90]);
-        } catch {}
-        showToast("TheBookX Exclusive activated 🎉", "success");
-        onActivated && onActivated(s);
-      }
+      if (s.active) activate(s);
     }, 3000);
   };
 
-  // "Pay ₹99" → show the UPI QR right away (brief "preparing" loader), and write
-  // the Unconfirmed row + start polling in the background so the button never
-  // hangs on a slow sheet write.
+  // After the 30s window, the shopper taps "Check status" → verify once; if the
+  // team has marked it Paid, activate immediately, else keep them informed.
+  const checkStatus = async () => {
+    const p = norm(num);
+    if (p.length !== 10 || checking) return;
+    setChecking(true);
+    try {
+      const s = await fetchProStatus(p);
+      if (s.active) activate(s);
+      else {
+        showToast("Still verifying — we'll activate the moment it's confirmed 🔎", "info");
+        setVerifyCountdown(0);
+      }
+    } finally {
+      setChecking(false);
+    }
+  };
+
+  // "Pay ₹99" → show the UPI QR right away (brief "preparing" loader), write the
+  // Unconfirmed row, notify the team on Telegram to verify, and poll in the
+  // background. The countdown + Check-status mirror the order payment flow.
   const pay = () => {
     const p = norm(num);
     if (p.length !== 10) return;
@@ -145,22 +176,12 @@ export default function ProUpgradeModal({
     setQrLoading(true);
     setTimeout(() => setQrLoading(false), 1500);
     startPoll(p);
+    notifyProTelegram(p);
     startProPayment(p)
       .then((r) => {
-        if (r && r.active) {
-          clearPoll();
-          setStatusInfo(r);
-          setStep("active");
-          onActivated && onActivated(r);
-        }
+        if (r && r.active) activate(r);
       })
       .catch(() => {});
-  };
-
-  // Shopper taps "I've paid" → notify the team on Telegram to verify + mark Paid.
-  const confirmPaid = () => {
-    notifyProTelegram(norm(num));
-    showToast("Thanks! We're verifying your payment 🔎", "success");
   };
 
   const copyUpi = () => {
@@ -366,13 +387,26 @@ export default function ProUpgradeModal({
                       <Copy size={14} /> Copy UPI ID
                     </button>
                   </div>
-                  <button
-                    type="button"
-                    className="pro-cta"
-                    onClick={confirmPaid}
-                  >
-                    <Check size={16} /> I&apos;ve paid ₹{PRO_PRICE}
-                  </button>
+                  {verifyCountdown > 0 ? (
+                    <span className="pro-cta pro-cta-wait">
+                      <Loader2 size={16} className="pro-spin" /> Verifying…{" "}
+                      {verifyCountdown}s
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      className="pro-cta"
+                      onClick={checkStatus}
+                      disabled={checking}
+                    >
+                      {checking ? (
+                        <Loader2 size={16} className="pro-spin" />
+                      ) : (
+                        <Check size={16} />
+                      )}
+                      {checking ? "Checking…" : "Check status"}
+                    </button>
+                  )}
                   <p className="pro-fine">
                     Activates the moment we confirm your payment — keep this
                     open.

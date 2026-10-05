@@ -4,6 +4,172 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "world-mental-health-day-2026-books-to-read-for-a-calmer-mind": {
+    "id": "blog-069",
+    "title": "World Mental Health Day 2026 (10 October): 17 Books for a Calmer Mind and Better Everyday Wellbeing",
+    "slug": "world-mental-health-day-2026-books-to-read-for-a-calmer-mind",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-10-05",
+    "lastModified": "2026-10-05",
+    "excerpt": "World Mental Health Day is 10 October 2026. Seventeen calming, thoughtful books on focus, stress, sleep and meaning, with books from ₹1 and free delivery in India.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "World Mental Health Day is observed every year on 10 October. The 2026 theme announced by the World Federation for Mental Health is \"Lived Experiences Heard: Real Voices, Real Change\", a call to listen to people who have lived through mental health challenges and to let their voices shape how communities, workplaces and services respond."
+      },
+      {
+        "type": "paragraph",
+        "content": "Books are one of the quietest ways to practise that listening. A good memoir, novel or thoughtful guide can make a reader feel less alone, give words to a feeling, or simply slow a racing mind for twenty minutes. This list gathers seventeen titles from the TheBookX catalogue that readers turn to for calm, focus, rest and meaning. They are reading companions for everyday wellbeing, not a substitute for professional care."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "A gentle note",
+        "content": "Books can support everyday wellbeing, but they are not medical advice. If you or someone close to you is struggling, please speak to a qualified doctor or counsellor, or reach out to a trusted person today."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books for a quieter, clearer mind"
+      },
+      {
+        "type": "paragraph",
+        "content": "Overthinking is one of the most common complaints of modern life, and clarity is its antidote. <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a practical guide to decluttering your thoughts, filtering noise and deciding what deserves your attention, with short exercises you can use the same day. Pair it with <a href=\"/books/the-power-of-now\" style=\"color:#fb8500;font-weight:600\">The Power of Now</a> by Eckhart Tolle, a classic on stepping out of worry about the future and regret about the past by returning to the present moment."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/the-subtle-art-of-not-giving-a-f-ck\" style=\"color:#fb8500;font-weight:600\">The Subtle Art of Not Giving a F*ck</a> by Mark Manson takes a blunt, funny look at what actually matters, and why chasing constant positivity can leave us more anxious. <a href=\"/books/the-courage-to-be-disliked\" style=\"color:#fb8500;font-weight:600\">The Courage to Be Disliked</a> by Ichiro Kishimi and Fumitake Koga, written as a conversation between a philosopher and a young man, tackles people-pleasing and the pressure of other people's opinions."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books for focus, habits and digital overload"
+      },
+      {
+        "type": "paragraph",
+        "content": "Attention is a wellbeing issue too. <a href=\"/books/dopamine-detox\" style=\"color:#fb8500;font-weight:600\">Dopamine Detox</a> is a short, practical read on breaking the cycle of endless scrolling and quick hits. <a href=\"/books/deep-work\" style=\"color:#fb8500;font-weight:600\">Deep Work</a> by Cal Newport makes the case for protected, distraction-free hours, and <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear shows how tiny daily changes, like a ten-minute walk or a fixed bedtime, compound into a steadier life."
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "Keep your phone out of reach for the first 30 minutes after waking.",
+          "Read for ten minutes before sleep instead of scrolling.",
+          "Take one short walk without headphones each day.",
+          "Write down three things on your mind before bed so they stop circling."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books for rest, sleep and the body"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/why-we-sleep\" style=\"color:#fb8500;font-weight:600\">Why We Sleep</a> by Matthew Walker explains, in clear language, why sleep shapes mood, memory and resilience, and offers simple habits for sleeping better. For a different kind of calm, <a href=\"/books/the-daily-stoic-366-meditations-on-wisdom-perseverance-and-the-art-of-living\" style=\"color:#fb8500;font-weight:600\">The Daily Stoic</a> gives you one short Stoic reflection for every day of the year, ideal for a two-minute morning pause. For readers who want to understand how stress and difficult experiences are held in the body, <a href=\"/books/the-body-keeps-the-score\" style=\"color:#fb8500;font-weight:600\">The Body Keeps the Score</a> by Bessel van der Kolk is widely discussed, though it is a heavier read best approached when you feel ready."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Stories that make you feel less alone"
+      },
+      {
+        "type": "paragraph",
+        "content": "Fiction can be gentle company. <a href=\"/books/the-midnight-library\" style=\"color:#fb8500;font-weight:600\">The Midnight Library</a> by Matt Haig follows a woman who explores the lives she might have lived, and it is a warm, hopeful story about regret and second chances. <a href=\"/books/anxious-people\" style=\"color:#fb8500;font-weight:600\">Anxious People</a> by Fredrik Backman is a funny, tender novel about a failed bank robbery and the ordinary worries that connect strangers. <a href=\"/books/the-alchemist\" style=\"color:#fb8500;font-weight:600\">The Alchemist</a> by Paulo Coelho remains a short, comforting fable about following your purpose."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books about meaning and resilience"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/man-s-search-for-meaning\" style=\"color:#fb8500;font-weight:600\">Man's Search for Meaning</a> by Viktor Frankl is a profound account of finding purpose in the hardest circumstances, and a book many readers return to for years. <a href=\"/books/ikigai\" style=\"color:#fb8500;font-weight:600\">Ikigai</a> offers a lighter, Japanese-inspired look at long, purposeful living, while <a href=\"/books/the-monk-who-sold-his-ferrari\" style=\"color:#fb8500;font-weight:600\">The Monk Who Sold His Ferrari</a> by Robin Sharma blends story and practical advice on balance, discipline and inner calm. For steady thinking about money stress, <a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> by Morgan Housel is a calm, plain-language read on patience and behaviour."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "How to build a small reading habit for wellbeing"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "Pick one book from the list above, not five. A single short book you finish beats a pile you never open.",
+          "Choose a fixed slot, such as ten minutes after dinner or during the commute.",
+          "Read on paper where you can, since it is easier on the eyes and gives your phone a rest.",
+          "Share what you read with a friend or family member, which turns reading into connection.",
+          "Be kind to yourself on slow days. Even two pages count."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Gifting a calmer mind"
+      },
+      {
+        "type": "paragraph",
+        "content": "A thoughtful book is a quiet way to tell someone you are thinking of them, especially for a friend who has had a tough year. Gift wrapping is available at +₹25, and with books from ₹1, free delivery and Cash on Delivery across India, it is easy to send a book without overspending."
+      },
+      {
+        "type": "blockquote",
+        "content": "Listening begins with showing up. Sometimes that means a conversation, and sometimes it means handing someone a book that says: you are not alone."
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Build your wellbeing shelf",
+        "content": "Books from ₹1, free delivery and Cash on Delivery across India. Add gift wrapping for +₹25."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      }
+    ],
+    "coverImage": "/blogs/world-mental-health-day-2026-books-to-read-for-a-calmer-mind.jpeg",
+    "images": [
+      {
+        "url": "/blogs/world-mental-health-day-2026-books-to-read-for-a-calmer-mind.jpeg",
+        "alt": "A young woman reading a book in a cosy corner with a cup of tea and warm afternoon light, looking relaxed and calm",
+        "caption": "Ten quiet minutes with a good book can be a small act of self-care.",
+        "category": "Occasions"
+      }
+    ],
+    "keywords": [
+      "World Mental Health Day 2026",
+      "World Mental Health Day books",
+      "books for a calmer mind",
+      "mental wellbeing books India",
+      "books to reduce overthinking",
+      "self-help books India",
+      "Lived Experiences Heard theme",
+      "buy books online India"
+    ],
+    "categories": [
+      "Occasions",
+      "Self-Help",
+      "Book Recommendations"
+    ],
+    "faqs": [
+      {
+        "question": "When is World Mental Health Day 2026?",
+        "answer": "World Mental Health Day is observed on 10 October every year. In 2026 the theme announced by the World Federation for Mental Health is \"Lived Experiences Heard: Real Voices, Real Change\"."
+      },
+      {
+        "question": "Which books help with overthinking and stress?",
+        "answer": "The Art of Clarity, The Power of Now, Dopamine Detox and Atomic Habits are popular, practical starting points for a calmer, more focused mind."
+      },
+      {
+        "question": "Can books replace professional mental health support?",
+        "answer": "No. Books can support everyday wellbeing, but anyone who is struggling should speak to a qualified doctor or counsellor."
+      },
+      {
+        "question": "Where can I buy wellbeing books cheaply in India?",
+        "answer": "TheBookX offers books from ₹1, free delivery and Cash on Delivery across India, with optional gift wrapping for +₹25."
+      }
+    ]
+  },
   "nobel-prize-literature-2026-books-by-laureates-to-read-india": {
     "id": "blog-068",
     "title": "Nobel Prize in Literature 2026 (8 October): Books by Laureates and World Classics to Read Before the Announcement",

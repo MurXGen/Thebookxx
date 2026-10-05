@@ -15184,6 +15184,12 @@ img[data-loaded="true"] {
     inset 0 1px 0 rgba(255, 255, 255, 0.12);
   transform: translateY(-0.5px);
 }
+.plan-tab-pro {
+  position: relative;
+  overflow: visible;
+  text-align: center;
+  line-height: 1.15;
+}
 /* Pro active: dark premium gradient with a gold accent + glow. */
 .plan-tab-pro.on {
   background: linear-gradient(135deg, #2a2415 0%, #4a3a12 50%, #0f0d08 100%);
@@ -15196,14 +15202,26 @@ img[data-loaded="true"] {
 .plan-tab-pro.on svg {
   color: #ffdf8e;
 }
+/* Allow the ACTIVE badge to float above the pill without clipping. */
+.plan-tabs {
+  overflow: visible;
+}
 .plan-tab-live {
+  position: absolute;
+  top: -8px;
+  right: 10px;
+  z-index: 2;
   font-size: 8.5px;
   font-weight: 800;
-  letter-spacing: 0.04em;
-  padding: 1px 5px;
+  letter-spacing: 0.06em;
+  padding: 2px 7px;
   border-radius: 999px;
   background: #16a34a;
   color: #fff;
+  box-shadow: 0 2px 6px -2px rgba(22, 163, 74, 0.7);
+}
+.plan-pro-banner-member {
+  margin: 12px 0;
 }
 .plan-pro-banner {
   border: 1px solid rgba(245, 179, 1, 0.4);

@@ -1322,22 +1322,15 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
         </div>
       )}
 
-      {cartBooks.length > 0 && planTab === "pro" && (
+      {/* Non-member pitch — right under the tabs. The active member banner is
+          moved BELOW the books section (see proMemberBanner). */}
+      {cartBooks.length > 0 && planTab === "pro" && !proActive && (
         <div className="plan-pro-banner">
-          {proActive ? (
-            <div className="plan-pro-title">
-              <Crown size={16} /> You&apos;re a member
-              {proStatus?.daysLeft ? ` · ${proStatus.daysLeft} days left` : ""}
-            </div>
-          ) : (
-            <div className="plan-pro-title">
-              <Crown size={16} /> TheBookX Exclusive · ₹{PRO_PRICE}/mo
-            </div>
-          )}
+          <div className="plan-pro-title">
+            <Crown size={16} /> TheBookX Exclusive · ₹{PRO_PRICE}/mo
+          </div>
           <p className="plan-pro-sub">
-            {proActive
-              ? "Member pricing is applied at checkout."
-              : "Unlock and this cart re-prices instantly."}
+            Unlock and this cart re-prices instantly.
           </p>
           <div className="pro-marquee" aria-hidden="true">
             <div className="pro-marquee-track">
@@ -1475,6 +1468,40 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
             </div>
           </div>
 
+          {/* Active member banner — moved below the added books once active. */}
+          {proActive && planTab === "pro" && (
+            <div className="plan-pro-banner plan-pro-banner-member">
+              <div className="plan-pro-title">
+                <Crown size={16} /> You&apos;re a member
+                {proStatus?.daysLeft
+                  ? ` · ${proStatus.daysLeft} days left`
+                  : ""}
+              </div>
+              <p className="plan-pro-sub">
+                Member pricing is applied at checkout.
+              </p>
+              <div className="pro-marquee" aria-hidden="true">
+                <div className="pro-marquee-track">
+                  {[0, 1].map((dup) =>
+                    [
+                      { ic: "🏷️", t: "Flat 20% off" },
+                      { ic: "🚚", t: "Free delivery over ₹400" },
+                      { ic: "🛡️", t: "Zero COD fee" },
+                      { ic: "🎁", t: "50% off packing" },
+                      { ic: "⚡", t: "Priority dispatch" },
+                      { ic: "🔖", t: "Extra free bookmarks" },
+                    ].map((f, i) => (
+                      <span className="pro-chip" key={`${dup}-${i}`}>
+                        <span className="pro-chip-ic">{f.ic}</span>
+                        {f.t}
+                      </span>
+                    )),
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Wishlist — horizontal strip below the added books */}
           <WishlistStrip />
 
@@ -1578,11 +1605,7 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
                           : undefined
                       }
                     >
-                      {isShortening
-                        ? "Preparing…"
-                        : proActive
-                          ? "Confirm Order · Member"
-                          : "Confirm Order"}
+                      {isShortening ? "Preparing…" : "Confirm Order"}
                     </button>
                   )}
                 </div>

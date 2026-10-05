@@ -225,6 +225,14 @@ export default function AddressModal({
   const [showFasterDeliveryModal, setShowFasterDeliveryModal] = useState(false);
   // Full-page payment selection sheet (UPI / COD / WhatsApp + coins toggle).
   const [showPaySelect, setShowPaySelect] = useState(false);
+  // Coupons — slide-up list + code entry; applied coupon discounts the order.
+  const [showCouponSheet, setShowCouponSheet] = useState(false);
+  const [coupons, setCoupons] = useState([]);
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
+  const [couponApplying, setCouponApplying] = useState(false);
+  const [appliedCoupon, setAppliedCoupon] = useState(null); // {code,title,discount}
+  const couponRedeemedRef = useRef(false);
   // Which method is currently highlighted on the "Choose payment method" sheet.
   // Defaults to none — the shopper must pick, then confirm with the button below.
   const [paySel, setPaySel] = useState("UPI"); // online selected by default
@@ -567,7 +575,66 @@ export default function AddressModal({
     walletEnabled && walletBalance > 0 ? maxWalletUsable : 0;
   // QuickReads add-on rides on the same bill (flat, no delivery/offer applied).
   const qrAddOn = quickReadTotal || 0;
-  const netPayable = Math.max(0, finalPayable - walletApplied) + qrAddOn;
+  // Coupon stacks on top of the cart offer — clamp so it never exceeds payable.
+  const couponDiscount = appliedCoupon
+    ? Math.min(appliedCoupon.discount || 0, finalPayable)
+    : 0;
+  const netPayable =
+    Math.max(0, finalPayable - walletApplied - couponDiscount) + qrAddOn;
+
+  // ── Coupons ──────────────────────────────────────────────────────────────
+  const loadCoupons = async () => {
+    setCouponLoading(true);
+    try {
+      const res = await fetch(
+        `/api/coupons?cartValue=${Math.round(finalPayable)}`,
+      );
+      const json = await res.json();
+      setCoupons(Array.isArray(json.coupons) ? json.coupons : []);
+    } catch {
+      setCoupons([]);
+    } finally {
+      setCouponLoading(false);
+    }
+  };
+  const openCouponSheet = () => {
+    setShowCouponSheet(true);
+    loadCoupons();
+  };
+  const applyCoupon = async (rawCode) => {
+    const code = String(rawCode || "").trim().toUpperCase();
+    if (!code || couponApplying) return;
+    setCouponApplying(true);
+    try {
+      const res = await fetch("/api/coupons", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "validate",
+          code,
+          cartValue: Math.round(finalPayable),
+        }),
+      });
+      const j = await res.json();
+      if (j.ok && j.discount > 0) {
+        setAppliedCoupon({ code: j.code, title: j.title, discount: j.discount });
+        couponRedeemedRef.current = false;
+        showToast(`Coupon ${j.code} applied — ₹${j.discount} off 🎉`, "success");
+        setShowCouponSheet(false);
+        setCouponCode("");
+      } else {
+        showToast(j.reason || "This coupon can't be applied", "error");
+      }
+    } catch {
+      showToast("Couldn't apply the coupon — try again", "error");
+    } finally {
+      setCouponApplying(false);
+    }
+  };
+  const removeCoupon = () => {
+    setAppliedCoupon(null);
+    showToast("Coupon removed", "info");
+  };
 
   // Members ("TheBookX Exclusive") get free delivery on orders above ₹400.
   const proFreeDelivery = proActive && netPayable > 400;
@@ -846,6 +913,16 @@ export default function AddressModal({
     if (!orderId) orderId = ensureCheckoutOid();
     if (confirmed) setPlacedOrderId(orderId);
 
+    // Count the coupon redemption once, only when the order is actually placed.
+    if (confirmed && appliedCoupon?.code && !couponRedeemedRef.current) {
+      couponRedeemedRef.current = true;
+      fetch("/api/coupons", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "redeem", code: appliedCoupon.code }),
+      }).catch(() => {});
+    }
+
     // UPSERT: if a row for this checkout id was already written (a draft, or an
     // earlier method the shopper switched away from), UPDATE it in place instead
     // of appending a duplicate order. The very first write falls through to the
@@ -876,6 +953,7 @@ export default function AddressModal({
         "Payment Type": resolvedPay,
         "Total Amount": String(totalForOrder),
         ...(advance ? { "Advance Paid": "Yes" } : {}),
+        ...(appliedCoupon?.code ? { Coupon: appliedCoupon.code } : {}),
       };
       updateOrderRow(orderId, updates).catch((e) =>
         console.error("Order upsert update failed:", e),
@@ -977,6 +1055,8 @@ export default function AddressModal({
         codHandlingFee: feeForThisOrder,
         advancePaid: advance,
         orderComment: resellNote || "",
+        coupon: appliedCoupon?.code || "",
+        couponDiscount: appliedCoupon ? couponDiscount : 0,
         confirmed,
         cartBooks,
         quickReadItems,
@@ -2787,6 +2867,37 @@ export default function AddressModal({
                     </span>
                   </div>
 
+                  {/* Apply coupon */}
+                  {appliedCoupon ? (
+                    <div className="paymeth-coupon applied">
+                      <Tag size={16} />
+                      <span className="paymeth-coupon-txt">
+                        <strong>{appliedCoupon.code} applied</strong>
+                        <small>You saved ₹{couponDiscount}</small>
+                      </span>
+                      <button
+                        type="button"
+                        className="paymeth-coupon-remove"
+                        onClick={removeCoupon}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      className="paymeth-coupon"
+                      onClick={openCouponSheet}
+                    >
+                      <Tag size={16} />
+                      <span className="paymeth-coupon-txt">
+                        <strong>Apply coupon</strong>
+                        <small>Have a code? Save more on this order</small>
+                      </span>
+                      <ChevronRight size={16} className="paymeth-row-chev" />
+                    </button>
+                  )}
+
                   {/* UPI apps */}
                   <div className="paymeth-group">
                     <span className="paymeth-group-title">Pay via UPI</span>
@@ -2902,6 +3013,106 @@ export default function AddressModal({
                   </p>
                 </div>
               )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ========== Apply coupon — slide-up (list + code entry) ========== */}
+      <AnimatePresence>
+        {showCouponSheet && (
+          <motion.div
+            className="bill-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowCouponSheet(false)}
+            style={{ maxWidth: "980px", margin: "0 auto" }}
+          >
+            <motion.div
+              className="bill-modal coupon-modal"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.34, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="bill-header">
+                <span className="weight-600 font-16 flex items-center gap-8">
+                  <Tag size={18} /> Apply coupon
+                </span>
+                <span
+                  className="cursor-pointer"
+                  onClick={() => setShowCouponSheet(false)}
+                >
+                  <X size={18} />
+                </span>
+              </div>
+
+              {/* Code entry */}
+              <div className="coupon-entry">
+                <input
+                  className="coupon-input"
+                  placeholder="Enter coupon code"
+                  value={couponCode}
+                  onChange={(e) =>
+                    setCouponCode(e.target.value.toUpperCase().replace(/\s+/g, ""))
+                  }
+                  onKeyDown={(e) => e.key === "Enter" && applyCoupon(couponCode)}
+                />
+                <button
+                  type="button"
+                  className="coupon-apply-btn"
+                  disabled={!couponCode.trim() || couponApplying}
+                  onClick={() => applyCoupon(couponCode)}
+                >
+                  {couponApplying ? "Applying…" : "Apply"}
+                </button>
+              </div>
+
+              {/* Available coupons */}
+              <div className="coupon-list">
+                {couponLoading ? (
+                  <div className="coupon-empty">Loading coupons…</div>
+                ) : coupons.length === 0 ? (
+                  <div className="coupon-empty">No coupons available right now.</div>
+                ) : (
+                  coupons.map((c) => {
+                    const expired = c.status !== "active" || !c.usable;
+                    return (
+                      <div
+                        className={`coupon-card${expired ? " expired" : ""}`}
+                        key={c.code}
+                      >
+                        <div className="coupon-card-l">
+                          <span className="coupon-code">{c.code}</span>
+                          <span className="coupon-title">{c.title}</span>
+                          {c.status !== "active" ? (
+                            <span className="coupon-badge exp">Expired</span>
+                          ) : !c.usable && c.reason ? (
+                            <span className="coupon-badge warn">{c.reason}</span>
+                          ) : (
+                            <span className="coupon-badge ok">
+                              Save{" "}
+                              {c.type === "percent"
+                                ? `${c.value}%`
+                                : `₹${c.value}`}
+                            </span>
+                          )}
+                        </div>
+                        <button
+                          type="button"
+                          className="coupon-use-btn"
+                          disabled={expired || couponApplying}
+                          onClick={() => applyCoupon(c.code)}
+                        >
+                          {expired ? "Expired" : "Apply"}
+                        </button>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
             </motion.div>
           </motion.div>
         )}
@@ -4096,6 +4307,12 @@ export function CODSuccessModal({
                       <div className="rcpt-line green">
                         <span>Offer{offerLabel ? ` (${offerLabel})` : ""}</span>
                         <span>-₹{offerDiscount}</span>
+                      </div>
+                    )}
+                    {couponDiscount > 0 && appliedCoupon && (
+                      <div className="rcpt-line green">
+                        <span>Coupon ({appliedCoupon.code})</span>
+                        <span>-₹{couponDiscount}</span>
                       </div>
                     )}
                     {walletApplied > 0 && (

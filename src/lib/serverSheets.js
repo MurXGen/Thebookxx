@@ -42,6 +42,12 @@ export const PRO_PLAN_SHEET_NAME =
 export const TRACKING_IDS_SHEET_NAME =
   process.env.TRACKING_IDS_SHEET_NAME || "tracking_ids";
 
+// Coupons tab. Columns: Code | Title | Type (percent/flat) | Value |
+// Max Discount | Min Order | Usage Limit | Used Count | Per User Limit |
+// Status (Active/Expired/Deactivated) | Expiry.
+export const COUPONS_SHEET_NAME =
+  process.env.COUPONS_SHEET_NAME || "Coupons";
+
 export const REFERRER_REWARD = Number(process.env.REFERRER_REWARD || 50);
 export const REFEREE_REWARD = Number(process.env.REFEREE_REWARD || 30);
 
@@ -239,6 +245,28 @@ export function trackingIdUpdate(id, status = "Used") {
     matchColumn: "ids",
     matchValue: String(id).trim(),
     data: { status },
+  });
+}
+
+// ── Coupons ───────────────────────────────────────────────────────────────
+// Read every coupon row → [{ Code, Title, Type, Value, ... }].
+export async function couponRows() {
+  try {
+    const table = await gvizQuery({ sheet: COUPONS_SHEET_NAME });
+    return tableToObjects(table);
+  } catch {
+    return [];
+  }
+}
+
+// Update a coupon row matched on its Code (e.g. bump Used Count).
+export function couponUpdate(code, data) {
+  return appscriptPost(APPSCRIPT_ORDER_URL, {
+    action: "update",
+    sheet: COUPONS_SHEET_NAME,
+    matchColumn: "Code",
+    matchValue: String(code).trim(),
+    data,
   });
 }
 

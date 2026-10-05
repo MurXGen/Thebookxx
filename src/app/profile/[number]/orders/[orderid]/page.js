@@ -731,6 +731,12 @@ export default function OrderDetailPage() {
     const advancePaid = advancePaidFlag;
     const advanceAmount = advancePaid ? 99 : 0;
     const payOnDelivery = Math.max(0, grand - advanceAmount);
+    // Applied coupon (code column + discount parsed from the Offer Applied note).
+    const couponCode = String(order?.["Coupon"] || "").trim();
+    const cMatch = String(order?.["Offer Applied"] || "").match(
+      /Coupon\s+\S+\s*\(₹(\d+)\s*OFF\)/i,
+    );
+    const couponDiscount = cMatch ? parseInt(cMatch[1], 10) : 0;
     return {
       sub,
       grand,
@@ -750,6 +756,8 @@ export default function OrderDetailPage() {
       advancePaid,
       advanceAmount,
       payOnDelivery,
+      couponCode,
+      couponDiscount,
     };
   }, [books, order]);
 
@@ -1908,6 +1916,14 @@ export default function OrderDetailPage() {
           <div className="od-price-row od-price-save">
             <span>Discount</span>
             <span>−₹{bd.discount}</span>
+          </div>
+        )}
+        {bd.couponCode && (
+          <div className="od-price-row od-price-save">
+            <span>Coupon ({bd.couponCode})</span>
+            <span>
+              {bd.couponDiscount > 0 ? `−₹${bd.couponDiscount}` : "Applied"}
+            </span>
           </div>
         )}
         <div className="od-price-row od-price-total">

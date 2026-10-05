@@ -35,6 +35,7 @@ const SHEET_HEADERS = {
   timestamp: "Timestamp",
   userAgent: "User Agent",
   shippingId: "Shipping ID",
+  coupon: "Coupon",
 };
 
 // Field IDs from your Google Form URL
@@ -354,6 +355,9 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
     advancePaid = false,
     // Reseller margin note ("Reseller: preferred final ₹X · margin ₹Y").
     orderComment = "",
+    // Applied coupon code + its discount (stacked on the cart offer).
+    coupon = "",
+    couponDiscount = 0,
     // When true the order is a completed checkout (→ "Processing"); when false
     // it is a draft / payment-pending write (→ "Unconfirmed", admin verifies).
     confirmed = false,
@@ -429,9 +433,14 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
       : 0,
     offerApplied:
       (offerDiscount > 0 ? `${offerLabel} (₹${offerDiscount} OFF)` : "None") +
+      (coupon
+        ? ` · Coupon ${coupon}${couponDiscount > 0 ? ` (₹${couponDiscount} OFF)` : ""}`
+        : "") +
       (walletUsed > 0
         ? ` · Wallet used ₹${walletUsed}${walletPhone ? ` (${walletPhone})` : ""}`
         : ""),
+    // Dedicated Coupon column (code only) for admin + per-order display.
+    ...(coupon ? { coupon: String(coupon) } : {}),
     tinyUrl: orderLink,
     // "Yes" when the customer prepaid the ₹99 advance (rest collected at door).
     ...(advancePaid ? { advancePaid: "Yes" } : {}),

@@ -8,6 +8,7 @@ import { ArrowLeft, ShoppingBag, ShieldCheck, Truck, Check } from "lucide-react"
 import { useStore } from "@/context/StoreContext";
 import { showToast } from "@/context/ToastContext";
 import { registerCustomBook, buildCustomBook } from "@/utils/customBooks";
+import BookCoverImg from "@/components/BookCoverImg";
 
 export default function CustomProductPage() {
   const params = useParams();
@@ -64,9 +65,11 @@ export default function CustomProductPage() {
               priority
             />
           ) : (
-            <span className="cp-cover-ph">
-              <ShoppingBag size={28} />
-            </span>
+            <BookCoverImg
+              name={book.name}
+              image=""
+              className="cp-cover-fallback"
+            />
           )}
         </div>
         <div className="cp-info">

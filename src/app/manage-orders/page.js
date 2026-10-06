@@ -10395,9 +10395,11 @@ export default function ManageOrdersPage() {
                       {cpImgSlug ? (
                         <img src={bookImages[cpImgSlug]} alt="" />
                       ) : (
-                        <span className="mo-cp-pcover-ph">
-                          <Package size={22} />
-                        </span>
+                        <BookCoverImg
+                          name={cpName.trim() || "Product name"}
+                          image=""
+                          className="mo-cp-pcover-fallback"
+                        />
                       )}
                     </div>
                     <div className="mo-cp-pname">

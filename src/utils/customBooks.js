@@ -55,8 +55,9 @@ export function decodeProduct(code) {
 export function buildCustomBook(code) {
   const p = decodeProduct(code);
   if (!p) return null;
-  const image =
-    bookImages[p.imageSlug] || Object.values(bookImages)[0] || "";
+  // No cover chosen → leave the image empty so the UI renders the designed
+  // name-on-cover fallback (instead of defaulting to some other book's cover).
+  const image = p.imageSlug ? bookImages[p.imageSlug] || "" : "";
   return {
     id: `cust-${code}`,
     name: p.name,

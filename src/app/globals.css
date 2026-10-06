@@ -32519,6 +32519,13 @@ img[data-loaded="true"] {
 }
 
 /* Black one-line trust stripe stuck under the navbar */
+/* Custom-product cover fallback (designed name-on-cover) fills its container */
+.cp-cover-fallback,
+.mo-cp-pcover-fallback {
+  width: 100%;
+  height: 100%;
+}
+
 /* Full-width search bar under the navbar row */
 .nav-searchbar-wrap {
   padding: 0 16px 10px;

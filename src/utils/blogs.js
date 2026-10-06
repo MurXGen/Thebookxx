@@ -4,6 +4,150 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "world-students-day-2026-kalam-95th-birth-anniversary-books-for-students": {
+    "id": "blog-070",
+    "title": "World Students' Day 2026 (15 October): Kalam's 95th Birth Anniversary and 18 Books Every Student Should Read",
+    "slug": "world-students-day-2026-kalam-95th-birth-anniversary-books-for-students",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-10-06",
+    "lastModified": "2026-10-06",
+    "excerpt": "World Students' Day on 15 October marks Dr Kalam's 95th birth anniversary. Here are 18 books for school and college students, from Wings of Fire to study guides.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "Every year on 15 October, India and many other countries mark World Students' Day on the birth anniversary of Dr A.P.J. Abdul Kalam, the scientist who became the 11th President of India and spent much of his later life talking to young people. Kalam was born on 15 October 1931 in Rameswaram, Tamil Nadu, which makes 2026 his 95th birth anniversary. The day has been observed since 2010 as a tribute to his belief that students are the architects of a nation's future."
+      },
+      {
+        "type": "paragraph",
+        "content": "A good way to honour a teacher-president is to do what he kept telling students to do: read, question and keep learning. This guide gathers books from the TheBookX catalogue for school students, college students and exam aspirants, from Kalam's own writing to practical study guides, memoirs of determined young people and classics worth reading before graduation. Books start from ₹1, with free delivery and Cash on Delivery across India."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Start with Kalam himself"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> is the book most Indian students meet first: Kalam's account of growing up in Rameswaram, selling newspapers as a boy, studying aeronautics and joining ISRO and DRDO. It is a story about perseverance rather than privilege, and it reads easily even for a Class 8 student. <a href=\"/books/ignited-minds-unleashing-the-power-within-india\" style=\"color:#fb8500;font-weight:600\">Ignited Minds: Unleashing the Power Within India</a> is the follow-up for older readers, a direct appeal to young Indians to build the country through curiosity, honesty and hard work."
+      },
+      {
+        "type": "blockquote",
+        "content": "Dream, dream, dream. Dreams transform into thoughts and thoughts result in action. (A.P.J. Abdul Kalam, widely attributed)"
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books that teach you how to study"
+      },
+      {
+        "type": "paragraph",
+        "content": "Marks follow method. Most students are never taught how to read, focus or manage time, and a few well-chosen books can fix that. <a href=\"/books/how-to-read-a-book\" style=\"color:#fb8500;font-weight:600\">How to Read a Book</a> is the classic on reading actively, which is exactly what exam preparation and college reading demand. <a href=\"/books/deep-work\" style=\"color:#fb8500;font-weight:600\">Deep Work</a> by Cal Newport explains why two hours of undistracted study beats six hours with a phone nearby. <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> shows how small daily routines, such as one fixed study slot, compound over a year. <a href=\"/books/eat-that-frog\" style=\"color:#fb8500;font-weight:600\">Eat That Frog</a> is a short, practical guide to doing the hardest task first, a useful rule when the syllabus feels endless."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/make-time\" style=\"color:#fb8500;font-weight:600\">Make Time</a> and <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar help with the other great student problem, a crowded mind. The Art of Clarity is a practical read on filtering noise, deciding what matters and thinking in a straight line, which is a skill every student needs before a board exam, a competitive test or a big career choice."
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "Pick one fixed study block a day and protect it from your phone.",
+          "Start with the hardest subject while your energy is highest.",
+          "Read actively: underline, ask questions and summarise each chapter in three lines.",
+          "Revise in short sessions spread over days instead of one last-night rush."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "True stories of students who refused to give up"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/i-am-malala\" style=\"color:#fb8500;font-weight:600\">I Am Malala</a> is the story of a schoolgirl who insisted on her right to education, and it makes every student's daily classroom feel a little more precious. <a href=\"/books/the-diary-of-a-young-girl\" style=\"color:#fb8500;font-weight:600\">The Diary of a Young Girl</a> by Anne Frank is a teenager's honest voice under extraordinary pressure. <a href=\"/books/mindset\" style=\"color:#fb8500;font-weight:600\">Mindset</a> by Carol Dweck explains why believing that ability can grow changes how students handle failure, a lesson that suits every result day."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "A reading tip for students",
+        "content": "Choose one book from each group: one about your subject, one about how you learn, and one story that simply inspires you. Twenty pages a day finishes a 300-page book in about two weeks."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books for college students and young adults"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/ikigai\" style=\"color:#fb8500;font-weight:600\">Ikigai</a> is a gentle guide to finding purpose, useful when you are choosing a stream or a first job. <a href=\"/books/outliers\" style=\"color:#fb8500;font-weight:600\">Outliers</a> by Malcolm Gladwell questions the idea that success is only talent and shows how practice, timing and opportunity matter. <a href=\"/books/man-s-search-for-meaning\" style=\"color:#fb8500;font-weight:600\">Man's Search for Meaning</a> is a short and powerful read for anyone feeling lost. <a href=\"/books/word-power-made-easy\" style=\"color:#fb8500;font-weight:600\">Word Power Made Easy</a> builds the vocabulary that helps in competitive exams, interviews and everyday writing."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Novels to read for the joy of it"
+      },
+      {
+        "type": "paragraph",
+        "content": "Not every book must be a study aid. Fiction builds empathy, language and attention, and students who read for pleasure often write better too. <a href=\"/books/the-alchemist\" style=\"color:#fb8500;font-weight:600\">The Alchemist</a> is a fable about following your own path, and <a href=\"/books/five-point-someone\" style=\"color:#fb8500;font-weight:600\">Five Point Someone</a> by Chetan Bhagat remains a funny, relatable novel about life in an Indian engineering college. <a href=\"/books/the-midnight-library\" style=\"color:#fb8500;font-weight:600\">The Midnight Library</a> asks what a life of different choices might look like, which is a thoughtful read for anyone near a big decision."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "How parents and teachers can use World Students' Day"
+      },
+      {
+        "type": "paragraph",
+        "content": "The simplest gift for a student is a book chosen for them. Parents can let children pick one title they are excited about and one that supports their studies. Teachers can run a ten-minute reading circle in class on 15 October, where each student shares one line from a book. Schools can start a class shelf with donated paperbacks. Since books on TheBookX start from ₹1 and delivery is free with Cash on Delivery across India, a whole class library is easier to build than it sounds."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      }
+    ],
+    "coverImage": "/blogs/world-students-day-2026-kalam-95th-birth-anniversary-books-for-students.jpeg",
+    "images": [
+      {
+        "url": "/blogs/world-students-day-2026-kalam-95th-birth-anniversary-books-for-students.jpeg",
+        "alt": "A young Indian student reading a book by a sunlit window with a notebook and cup of tea",
+        "caption": "World Students' Day on 15 October celebrates learning and the legacy of Dr A.P.J. Abdul Kalam.",
+        "category": "Education"
+      }
+    ],
+    "keywords": [
+      "World Students Day 2026",
+      "World Students Day 15 October",
+      "Abdul Kalam birth anniversary 2026",
+      "books for students India",
+      "Wings of Fire",
+      "best books for students",
+      "books to gift students",
+      "study books India"
+    ],
+    "categories": [
+      "Education",
+      "Student Life",
+      "Book Recommendations"
+    ],
+    "faqs": [
+      {
+        "question": "Why is World Students' Day celebrated on 15 October?",
+        "answer": "It marks the birth anniversary of Dr A.P.J. Abdul Kalam, born on 15 October 1931 in Rameswaram. The day honours his lifelong belief in education and in young people as builders of the nation."
+      },
+      {
+        "question": "Which Kalam book should a student read first?",
+        "answer": "Wings of Fire is the best starting point. It tells his life story from a small town to ISRO and DRDO in simple language, and suits school and college readers alike."
+      },
+      {
+        "question": "What are good books to help students study better?",
+        "answer": "How to Read a Book, Deep Work, Atomic Habits, Eat That Frog and The Art of Clarity by Murthy Thevar all focus on reading, focus, habits and clear thinking, and they are available on TheBookX."
+      },
+      {
+        "question": "Can I order books for students with Cash on Delivery?",
+        "answer": "Yes. TheBookX offers free delivery and Cash on Delivery across India, with books starting from ₹1."
+      }
+    ]
+  },
   "world-mental-health-day-2026-books-to-read-for-a-calmer-mind": {
     "id": "blog-069",
     "title": "World Mental Health Day 2026 (10 October): 17 Books for a Calmer Mind and Better Everyday Wellbeing",

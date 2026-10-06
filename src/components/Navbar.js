@@ -252,6 +252,24 @@ export default function Navbar() {
           </div>
         </nav>
 
+        {/* Full-width search bar — opens the search overlay on tap */}
+        <div className="section-1200 nav-searchbar-wrap">
+          <button
+            type="button"
+            className="nav-searchbar"
+            onClick={() => {
+              trackEvent("search_opened", { source: "navbar_bar" });
+              setSearchOpen(true);
+            }}
+            aria-label="Search books"
+          >
+            <Search size={18} />
+            <span className="nav-searchbar-ph">
+              Search books, authors, genres…
+            </span>
+          </button>
+        </div>
+
         {/* Rotating trust promo — black one-line stripe stuck below the navbar */}
         <div className="nav-trust-stripe">
           <RotatingTrust />

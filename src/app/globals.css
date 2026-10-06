@@ -32519,6 +32519,42 @@ img[data-loaded="true"] {
 }
 
 /* Black one-line trust stripe stuck under the navbar */
+/* Full-width search bar under the navbar row */
+.nav-searchbar-wrap {
+  padding: 0 16px 10px;
+}
+.nav-searchbar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--dark-10, #e5e7eb);
+  background: var(--surface-2, #f5f6f7);
+  color: var(--dark-50, #6b7280);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: text;
+  text-align: left;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.nav-searchbar:hover {
+  border-color: var(--tertiary, #fb8500);
+  background: #fff;
+}
+.nav-searchbar svg {
+  flex: 0 0 auto;
+  color: var(--tertiary, #fb8500);
+}
+.nav-searchbar-ph {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .nav-trust-stripe {
   position: relative;
   background: var(--foreground, #0a0a0a);

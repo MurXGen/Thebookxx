@@ -136,6 +136,8 @@ export async function POST(request) {
       title: found.title,
       type: found.type,
       value: found.value,
+      maxDiscount: found.maxDiscount,
+      minOrder: found.minOrder,
       discount: d.discount,
       reason: d.reason,
     });

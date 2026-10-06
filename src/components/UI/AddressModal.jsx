@@ -580,14 +580,40 @@ export default function AddressModal({
     walletEnabled && walletBalance > 0 ? maxWalletUsable : 0;
   // QuickReads add-on rides on the same bill (flat, no delivery/offer applied).
   const qrAddOn = quickReadTotal || 0;
-  // Coupon stacks on top of the cart offer — clamp so it never exceeds payable.
-  const couponDiscount = appliedCoupon
-    ? Math.min(appliedCoupon.discount || 0, finalPayable)
-    : 0;
   // Pro-membership add-on (₹99) — only billable when the shopper isn't already a
   // member and keeps the add-on toggled on.
   const proAddonActive = !proActive && proAddon;
   const proAddonCharge = proAddonActive ? PRO_PRICE : 0;
+
+  // Coupon applies to the ENTIRE pre-coupon bill (items after offer + QuickReads
+  // + Pro add-on + delivery + gift/bookmark add-ons), not just the item subtotal.
+  // Computed from the coupon's rule each render (so it's exactly 10% of the bill).
+  const _netNoCoupon = Math.max(0, finalPayable) + qrAddOn + proAddonCharge;
+  const _proFreeDeliv = proActive && _netNoCoupon > 400;
+  const _delivForCoupon = _proFreeDeliv
+    ? 0
+    : fasterDelivery
+      ? fasterDeliveryCharge
+      : standardDeliveryCharge;
+  const _bmFreeForCoupon =
+    totalDiscounted >= 1000 ? 4 : totalDiscounted >= 500 ? 3 : 2;
+  const _addOnsForCoupon =
+    (giftWrap ? giftWrapCharge : 0) +
+    Math.max(0, bookmarkQty - _bmFreeForCoupon) * BOOKMARK_UNIT;
+  const couponBaseTotal =
+    _netNoCoupon + _delivForCoupon + _addOnsForCoupon;
+  const couponDiscount = (() => {
+    if (!appliedCoupon) return 0;
+    const base = Math.max(0, couponBaseTotal);
+    let d =
+      appliedCoupon.type === "flat"
+        ? Math.min(appliedCoupon.value || 0, base)
+        : Math.round((base * (appliedCoupon.value || 0)) / 100);
+    if (appliedCoupon.type === "percent" && appliedCoupon.maxDiscount > 0)
+      d = Math.min(d, appliedCoupon.maxDiscount);
+    return Math.max(0, Math.min(d, base));
+  })();
+
   const netPayable =
     Math.max(0, finalPayable - walletApplied - couponDiscount) +
     qrAddOn +
@@ -628,9 +654,18 @@ export default function AddressModal({
       });
       const j = await res.json();
       if (j.ok && j.discount > 0) {
-        setAppliedCoupon({ code: j.code, title: j.title, discount: j.discount });
+        // Store the coupon's RULE (type/value/cap) so the discount is recomputed
+        // against the full bill, not just the item subtotal.
+        setAppliedCoupon({
+          code: j.code,
+          title: j.title,
+          type: j.type,
+          value: j.value,
+          maxDiscount: j.maxDiscount || 0,
+          minOrder: j.minOrder || 0,
+        });
         couponRedeemedRef.current = false;
-        showToast(`Coupon ${j.code} applied — ₹${j.discount} off 🎉`, "success");
+        showToast(`Coupon ${j.code} applied 🎉`, "success");
         setShowCouponSheet(false);
         setCouponCode("");
       } else {

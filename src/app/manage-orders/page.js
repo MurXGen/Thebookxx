@@ -877,6 +877,28 @@ const TRACK_STATUS_OPTIONS = [
   "Cancelled",
 ];
 
+// Group a raw "Payment Type" string into a common filter bucket, so the admin
+// filter shows a handful of options instead of every exact label variant.
+const PAYMENT_BUCKETS = [
+  "UPI / Online",
+  "₹99 advance",
+  "Cash on Delivery",
+  "Other (Cards/Gift)",
+  "WhatsApp",
+];
+function paymentBucket(raw) {
+  const s = String(raw || "").toLowerCase();
+  if (!s) return "";
+  if (/99\s*advance|advance\s*\(cod\)/.test(s)) return "₹99 advance";
+  if (/gift\s*card|gift\s*voucher|credit\s*card|debit\s*card|net\s*banking|amazon/.test(s))
+    return "Other (Cards/Gift)";
+  if (/whatsapp/.test(s)) return "WhatsApp";
+  if (/cash|cod/.test(s)) return "Cash on Delivery";
+  if (/upi|online|gpay|google pay|phonepe|paytm|bhim|prepaid/.test(s))
+    return "UPI / Online";
+  return "Other (Cards/Gift)";
+}
+
 // Status → accent colour for the order-card status chip.
 function moStatusColor(status) {
   const s = String(status || "").toLowerCase();
@@ -6082,7 +6104,7 @@ export default function ManageOrdersPage() {
 
     if (paymentFilter !== "all") {
       filtered = filtered.filter(
-        (order) => order["Payment Type"] === paymentFilter,
+        (order) => paymentBucket(order["Payment Type"]) === paymentFilter,
       );
     }
 
@@ -6185,13 +6207,15 @@ export default function ManageOrdersPage() {
       .catch(() => showToast("Couldn't copy — long-press to select.", "info"));
   };
 
+  // Common payment buckets actually present in the orders (keeps the filter
+  // short: UPI/Online, ₹99 advance, COD, Other cards/gift, WhatsApp).
   const distinctPayments = useMemo(() => {
-    const set = new Set();
+    const present = new Set();
     orders.forEach((o) => {
-      const v = String(o["Payment Type"] || "").trim();
-      if (v) set.add(v);
+      const b = paymentBucket(o["Payment Type"]);
+      if (b) present.add(b);
     });
-    return [...set].sort((a, b) => a.localeCompare(b));
+    return PAYMENT_BUCKETS.filter((b) => present.has(b));
   }, [orders]);
 
   const gettingShippedCount = useMemo(

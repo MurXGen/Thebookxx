@@ -3108,25 +3108,38 @@ export default function AddressModal({
                 </span>
               </div>
 
-              {/* Code entry */}
-              <div className="coupon-entry">
-                <input
-                  className="coupon-input"
-                  placeholder="Enter coupon code"
-                  value={couponCode}
-                  onChange={(e) =>
-                    setCouponCode(e.target.value.toUpperCase().replace(/\s+/g, ""))
-                  }
-                  onKeyDown={(e) => e.key === "Enter" && applyCoupon(couponCode)}
-                />
-                <button
-                  type="button"
-                  className="coupon-apply-btn"
-                  disabled={!couponCode.trim() || couponApplying}
-                  onClick={() => applyCoupon(couponCode)}
-                >
-                  {couponApplying ? "Applying…" : "Apply"}
-                </button>
+              {/* Code entry — matches the unlock modal's input style */}
+              <div className="input-group coupon-entry">
+                <label className="flex flex-row gap-4 items-center">
+                  <Tag size={14} />
+                  Coupon code
+                </label>
+                <div className="coupon-entry-row">
+                  <input
+                    className="sec-mid-btn coupon-input"
+                    placeholder="Enter coupon code"
+                    value={couponCode}
+                    onChange={(e) =>
+                      setCouponCode(
+                        e.target.value.toUpperCase().replace(/\s+/g, ""),
+                      )
+                    }
+                    onKeyDown={(e) =>
+                      e.key === "Enter" && applyCoupon(couponCode)
+                    }
+                  />
+                  <button
+                    type="button"
+                    className="coupon-apply-btn"
+                    disabled={!couponCode.trim() || couponApplying}
+                    onClick={() => applyCoupon(couponCode)}
+                  >
+                    {couponApplying ? "Applying…" : "Apply"}
+                  </button>
+                </div>
+                <span className="font-10 gray-500 mt-4">
+                  Have a code? Enter it or pick one below.
+                </span>
               </div>
 
               {/* Available coupons */}

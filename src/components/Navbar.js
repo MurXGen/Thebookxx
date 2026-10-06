@@ -13,7 +13,7 @@ import {
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { FaWhatsapp } from "react-icons/fa";
 import { HiOutlineShoppingBag } from "react-icons/hi2";
 import SearchMain from "./UI/SearchMain";
@@ -85,6 +85,25 @@ export default function Navbar() {
   const [index, setIndex] = useState(0);
   const [searchOpen, setSearchOpen] = useState(false);
   const [navHidden, setNavHidden] = useState(false);
+  // Measure the fixed navbar's real height so the spacer below matches exactly.
+  const navRef = useRef(null);
+  const [navH, setNavH] = useState(98);
+  useEffect(() => {
+    const el = navRef.current;
+    if (!el) return;
+    const measure = () => setNavH(el.offsetHeight || 98);
+    measure();
+    let ro;
+    if (typeof ResizeObserver !== "undefined") {
+      ro = new ResizeObserver(measure);
+      ro.observe(el);
+    }
+    window.addEventListener("resize", measure);
+    return () => {
+      if (ro) ro.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, []);
   const [walletBalance, setWalletBalance] = useState(0);
   const [walletExpiring, setWalletExpiring] = useState(0);
   const [showExpiryTip, setShowExpiryTip] = useState(false);
@@ -130,7 +149,10 @@ export default function Navbar() {
 
   return (
     <>
-      <header className={`navbar-wrapper${navHidden ? " nav-hidden" : ""}`}>
+      <header
+        ref={navRef}
+        className={`navbar-wrapper${navHidden ? " nav-hidden" : ""}`}
+      >
         {/* <div className="flex flex-row justify-between">
           <div className="mobile-offer-strip width100">
 
@@ -235,6 +257,12 @@ export default function Navbar() {
           <RotatingTrust />
         </div>
       </header>
+      {/* Spacer reserves the fixed navbar's height so content isn't hidden. */}
+      <div
+        className="navbar-spacer"
+        aria-hidden="true"
+        style={{ height: navH }}
+      />
 
       <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
     </>

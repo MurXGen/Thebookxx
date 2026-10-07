@@ -4,6 +4,165 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "diwali-2026-books-to-gift-dhanteras-lakshmi-puja-bhai-dooj": {
+    "id": "blog-071",
+    "title": "Diwali 2026 Books to Gift: Dhanteras, Lakshmi Puja and Bhai Dooj Picks from ₹1",
+    "slug": "diwali-2026-books-to-gift-dhanteras-lakshmi-puja-bhai-dooj",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-10-07",
+    "lastModified": "2026-10-07",
+    "excerpt": "Diwali 2026 runs 6 to 11 November. Book gift ideas for Dhanteras, Lakshmi Puja and Bhai Dooj, from mythology to money books, with free delivery and COD.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "Diwali 2026 arrives early in November. Dhanteras falls on Friday, 6 November, Naraka Chaturdashi and the main Lakshmi Puja share Sunday, 8 November, Govardhan Puja is on Tuesday, 10 November and Bhai Dooj closes the five days on Wednesday, 11 November. Exact muhurat timings vary by city and panchang, so confirm locally before fixing your puja time. What does not vary is the pattern: courier networks slow down in the weeks before the festival, so the books you want to give should be ordered in October, not the week of Dhanteras."
+      },
+      {
+        "type": "paragraph",
+        "content": "Books are an underrated Diwali gift. They do not expire like sweets, they do not duplicate the fifth box of dry fruits in the cupboard, and a handwritten line on the first page makes them personal in a way a hamper never is. This guide matches books from the TheBookX catalogue to each of the five days, and to the people you are most likely to be buying for. Books start from ₹1, with free delivery and Cash on Delivery across India, and gift wrapping is available at +₹25 per book."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "The five days of Diwali 2026 and a book for each"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<strong>Dhanteras, Friday 6 November:</strong> the day associated with wealth and new purchases. A money book is a natural fit.",
+          "<strong>Naraka Chaturdashi, Sunday 8 November:</strong> Choti Diwali, a day of early baths, diyas and family. Short, easy books for the whole house.",
+          "<strong>Lakshmi Puja, Sunday 8 November:</strong> the main evening. Mythology and stories that children can read aloud.",
+          "<strong>Govardhan Puja, Tuesday 10 November:</strong> a day for new beginnings in many business families. Habit and productivity books suit it.",
+          "<strong>Bhai Dooj, Wednesday 11 November:</strong> siblings. A novel you both end up arguing about is the ideal gift."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Dhanteras: books about money and a better life"
+      },
+      {
+        "type": "paragraph",
+        "content": "Dhanteras is when many families buy something lasting, which makes it the right day to give a book that pays off over years. <a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> by Morgan Housel is a collection of short essays on how people actually behave with money, and it works for a first-job graduate as well as a retired uncle. <a href=\"/books/rich-dad-poor-dad\" style=\"color:#fb8500;font-weight:600\">Rich Dad Poor Dad</a> remains the most common first book on assets and liabilities for Indian readers. For anyone who wants a calmer relationship with work and goals, <a href=\"/books/ikigai\" style=\"color:#fb8500;font-weight:600\">Ikigai</a> offers a gentle Japanese framework for finding purpose without burning out."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "Order early, wrap later",
+        "content": "Place your gift order by the third week of October. That leaves time to check each book on arrival, write a line on the first page and add gift wrapping (+₹25 per book) before Dhanteras on 6 November."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Lakshmi Puja evening: mythology and stories for the whole family"
+      },
+      {
+        "type": "paragraph",
+        "content": "Diwali is rooted in the return of Rama to Ayodhya, so the Ramayana and Mahabharata are the obvious reading for the festival week. <a href=\"/books/sita-an-illustrated-retelling-of-the-ramayana\" style=\"color:#fb8500;font-weight:600\">Sita: An Illustrated Retelling of the Ramayana</a> by Devdutt Pattanaik tells the epic through its central woman, and <a href=\"/books/jaya-an-illustrated-retelling-of-the-mahabharata\" style=\"color:#fb8500;font-weight:600\">Jaya: An Illustrated Retelling of the Mahabharata</a> is the companion for older teens and adults. If you prefer fiction with a mythological spine, <a href=\"/books/the-immortals-of-meluha\" style=\"color:#fb8500;font-weight:600\">The Immortals of Meluha</a> and its sequel <a href=\"/books/the-secret-of-the-nagas\" style=\"color:#fb8500;font-weight:600\">The Secret of the Nagas</a> by Amish reimagine Shiva as a human hero and are reliably hard to put down. For a reader who wants the philosophical source text, <a href=\"/books/the-bhagavad-gita\" style=\"color:#fb8500;font-weight:600\">The Bhagavad Gita</a> is the book many families keep near the puja shelf."
+      },
+      {
+        "type": "paragraph",
+        "content": "For younger children, <a href=\"/books/grandma-s-bag-of-stories\" style=\"color:#fb8500;font-weight:600\">Grandma's Bag of Stories</a> by Sudha Murty is the safest choice: short, warm and easy to read aloud in the gap between diyas and dinner."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Govardhan Puja: habits, focus and a fresh start"
+      },
+      {
+        "type": "paragraph",
+        "content": "Many business families open new account books around Diwali, and the same instinct works for personal habits. <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear is the practical pick for anyone who wants to turn a Diwali resolution into something that lasts past January. <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is written for readers who feel mentally cluttered and want a simple way to think, decide and speak with more focus, which makes it a good companion for the quiet days after the festival rush. <a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> by Dr A.P.J. Abdul Kalam suits students and first-time job seekers who need a reminder that persistence beats background."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Bhai Dooj: novels for brothers and sisters"
+      },
+      {
+        "type": "paragraph",
+        "content": "Bhai Dooj gifts often default to chocolates, but a shared book gives siblings something to talk about long after the tilak. <a href=\"/books/the-alchemist\" style=\"color:#fb8500;font-weight:600\">The Alchemist</a> by Paulo Coelho is a short parable about following your own path, and it travels well between age groups. <a href=\"/books/the-midnight-library\" style=\"color:#fb8500;font-weight:600\">The Midnight Library</a> by Matt Haig asks what you would change if you could try the lives you did not live, and is a favourite with readers in their twenties and thirties. For a sibling who loves Indian literary fiction, <a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> by Arundhati Roy and R.K. Narayan's <a href=\"/books/malgudi-days\" style=\"color:#fb8500;font-weight:600\">Malgudi Days</a> offer two very different but equally rewarding ways into Indian storytelling."
+      },
+      {
+        "type": "blockquote",
+        "content": "A book given with a line in the first page becomes the thing someone still has in fifteen years."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "How to choose when you are buying for many people"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "<strong>List the people first.</strong> Parents, siblings, children, colleagues, house help and neighbours each need a different kind of book.",
+          "<strong>Match the book to the person, not the occasion.</strong> A short, easy read for someone who rarely reads; a longer novel for a habitual reader.",
+          "<strong>Keep one safe pick for office gifting.</strong> A self-improvement or money book is neutral and useful for almost any colleague.",
+          "<strong>Mix prices.</strong> Books start from ₹1 on TheBookX, so a thoughtful gift for every name on the list is realistic without a large budget.",
+          "<strong>Write one line inside.</strong> A date and a sentence matter more than the wrapping."
+        ]
+      },
+      {
+        "type": "paragraph",
+        "content": "Cash on Delivery and free delivery across India make it easy to send gifts directly to relatives in other cities. Place each address as a separate order and add gift wrapping at checkout."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      },
+      {
+        "type": "paragraph",
+        "content": "Diwali is the festival of lamps, but it has always been equally a festival of giving. A well-chosen book lights up a longer evening than any firework, and unlike most gifts it keeps getting better each time it is reopened."
+      }
+    ],
+    "coverImage": "/blogs/diwali-2026-books-to-gift-dhanteras-lakshmi-puja-bhai-dooj.jpeg",
+    "images": [
+      {
+        "url": "/blogs/diwali-2026-books-to-gift-dhanteras-lakshmi-puja-bhai-dooj.jpeg",
+        "alt": "A cheerful young woman in a festive kurta unwrapping a book gift beside lit brass diyas and marigold flowers on a wooden table in warm evening light",
+        "caption": "Books are a Diwali gift that outlasts the sweets and the fireworks",
+        "category": "Festivals & Gifting"
+      }
+    ],
+    "keywords": [
+      "diwali 2026 books to gift",
+      "diwali gift ideas books",
+      "diwali 2026 date",
+      "dhanteras 2026 gift",
+      "bhai dooj 2026 gift ideas",
+      "lakshmi puja 2026",
+      "best books to gift this diwali",
+      "buy books online india",
+      "books under 100 rupees",
+      "gift wrapping books india",
+      "TheBookX"
+    ],
+    "categories": [
+      "Festivals & Gifting",
+      "Gift Guides",
+      "Indian Mythology"
+    ],
+    "faqs": [
+      {
+        "question": "When is Diwali 2026?",
+        "answer": "Diwali 2026 is a five-day festival from Friday, 6 November (Dhanteras) to Wednesday, 11 November (Bhai Dooj). Naraka Chaturdashi and the main Lakshmi Puja both fall on Sunday, 8 November, and Govardhan Puja is on Tuesday, 10 November. Exact muhurat timings differ by city, so check your local panchang."
+      },
+      {
+        "question": "What are good books to gift for Diwali?",
+        "answer": "Mythology retellings such as Sita and Jaya, bestsellers such as Atomic Habits and The Psychology of Money, and short novels such as The Alchemist suit most recipients. Children enjoy Sudha Murty's Grandma's Bag of Stories. TheBookX stocks all of these, with books starting from ₹1."
+      },
+      {
+        "question": "When should I order Diwali gift books to avoid delays?",
+        "answer": "Order by the third week of October 2026. Courier networks across India slow in the weeks before Diwali, and early orders leave time to check each book and add a handwritten note. TheBookX offers free delivery and Cash on Delivery across India."
+      },
+      {
+        "question": "Does TheBookX offer gift wrapping?",
+        "answer": "Yes. Gift wrapping is available at an extra ₹25 per book, which suits Diwali, Bhai Dooj and other festival gifting. You can also send gifts to a different delivery address by placing a separate order."
+      }
+    ]
+  },
   "world-students-day-2026-kalam-95th-birth-anniversary-books-for-students": {
     "id": "blog-070",
     "title": "World Students' Day 2026 (15 October): Kalam's 95th Birth Anniversary and 18 Books Every Student Should Read",

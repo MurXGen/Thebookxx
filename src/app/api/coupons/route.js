@@ -49,6 +49,11 @@ function parseCoupon(r) {
   else if (expiry && expiry.getTime() < Date.now()) status = "expired";
   else if (usageLimit > 0 && usedCount >= usageLimit) status = "expired";
 
+  // Visibility "No" → hidden from the available-coupon LIST, but the shopper can
+  // still apply it by typing the exact code (as long as it's active). Blank = Yes.
+  const vis = String(r.Visibility ?? r.visibility ?? "").trim().toLowerCase();
+  const visible = !(vis === "no" || vis === "false" || vis === "hidden" || vis === "0");
+
   return {
     code,
     title: String(r.Title ?? r.title ?? "").trim() || code,
@@ -59,6 +64,7 @@ function parseCoupon(r) {
     usageLimit,
     usedCount,
     status,
+    visible,
   };
 }
 
@@ -86,7 +92,9 @@ export async function GET(request) {
   const rows = await couponRows();
   const coupons = rows
     .map(parseCoupon)
-    .filter((c) => c && c.status !== "deactivated")
+    // Hide deactivated AND visibility:No coupons from the public list. Hidden
+    // codes still work when typed (handled in the POST validate path).
+    .filter((c) => c && c.status !== "deactivated" && c.visible)
     .map((c) => {
       const d = c.status === "active" ? discountFor(c, cartValue) : null;
       return {

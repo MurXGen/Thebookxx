@@ -133,7 +133,31 @@ export default function Navbar() {
     };
   }, []);
 
-  // Navbar stays fixed/visible at all times (does not hide on scroll).
+  // Hide the navbar when scrolling DOWN, reveal it when scrolling UP.
+  useEffect(() => {
+    let last = window.scrollY;
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(() => {
+        const y = window.scrollY;
+        const delta = y - last;
+        if (y < 80) {
+          setNavHidden(false); // always show near the top
+        } else if (delta > 6) {
+          setNavHidden(true); // scrolling down → hide
+        } else if (delta < -6) {
+          setNavHidden(false); // scrolling up → show
+        }
+        last = y;
+        ticking = false;
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   const cartCount =
     cart.reduce((sum, i) => sum + (i.qty || 1), 0) + (qrCart?.length || 0);
 

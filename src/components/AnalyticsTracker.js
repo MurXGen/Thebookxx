@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 
 const GA_ID = "G-VZX7GSTR9Z";
@@ -24,6 +24,7 @@ function safeGtag(...args) {
 
 export default function AnalyticsTracker() {
   const pathname = usePathname();
+  const router = useRouter();
   const scrollFired = useRef({}); // milestones already sent for this page
   const sessionInit = useRef(false);
 
@@ -104,13 +105,17 @@ export default function AnalyticsTracker() {
         medium: utm.medium,
         campaign: utm.campaign,
       });
+      // Register the hit in the utm sheet (keepalive so it survives the redirect).
       fetch("/api/utm", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(utm),
         keepalive: true,
       }).catch(() => {});
+      // Clean the URL → land them on the main site without the utm_* params.
+      router.replace("/");
     } catch {}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ── Scroll-depth milestones (25 / 50 / 75 / 100 %) ──

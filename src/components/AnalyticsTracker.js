@@ -65,6 +65,54 @@ export default function AnalyticsTracker() {
     } catch {}
   }, []);
 
+  // ── UTM attribution (influencer / campaign tracking) ──
+  // On first load, read utm_* params, record the hit to the utm sheet tab once
+  // per browser session (per campaign), and remember it for later attribution.
+  const utmInit = useRef(false);
+  useEffect(() => {
+    if (utmInit.current) return;
+    utmInit.current = true;
+    try {
+      const sp = new URLSearchParams(window.location.search);
+      const utm = {
+        source: sp.get("utm_source") || "",
+        medium: sp.get("utm_medium") || "",
+        campaign: sp.get("utm_campaign") || "",
+        content: sp.get("utm_content") || "",
+        term: sp.get("utm_term") || "",
+      };
+      if (!utm.source && !utm.campaign) return;
+
+      // Remember the first-touch UTM for this shopper (attribution later).
+      try {
+        if (!localStorage.getItem("tbx_utm")) {
+          localStorage.setItem(
+            "tbx_utm",
+            JSON.stringify({ ...utm, at: Date.now() }),
+          );
+        }
+      } catch {}
+
+      // Count once per session per campaign key (avoids inflating on reloads).
+      const key = `${utm.source}|${utm.medium}|${utm.campaign}`.toLowerCase();
+      const seenKey = `tbx_utm_seen_${key}`;
+      if (sessionStorage.getItem(seenKey)) return;
+      sessionStorage.setItem(seenKey, "1");
+
+      safeGtag("event", "utm_landing", {
+        source: utm.source,
+        medium: utm.medium,
+        campaign: utm.campaign,
+      });
+      fetch("/api/utm", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(utm),
+        keepalive: true,
+      }).catch(() => {});
+    } catch {}
+  }, []);
+
   // ── Scroll-depth milestones (25 / 50 / 75 / 100 %) ──
   useEffect(() => {
     const onScroll = () => {

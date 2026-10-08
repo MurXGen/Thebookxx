@@ -44,9 +44,14 @@ export const TRACKING_IDS_SHEET_NAME =
 
 // Coupons tab. Columns: Code | Title | Type (percent/flat) | Value |
 // Max Discount | Min Order | Usage Limit | Used Count | Per User Limit |
-// Status (Active/Expired/Deactivated) | Expiry.
+// Status (Active/Expired/Deactivated) | Expiry | Visibility.
 export const COUPONS_SHEET_NAME =
   process.env.COUPONS_SHEET_NAME || "Coupons";
+
+// UTM attribution tab (influencer / campaign tracking). Columns:
+// Key | Source | Medium | Campaign | Content | Term | Count | First Seen |
+// Last Activity. One row per unique source/medium/campaign combination.
+export const UTM_SHEET_NAME = process.env.UTM_SHEET_NAME || "utm";
 
 export const REFERRER_REWARD = Number(process.env.REFERRER_REWARD || 50);
 export const REFEREE_REWARD = Number(process.env.REFEREE_REWARD || 30);
@@ -266,6 +271,32 @@ export function couponUpdate(code, data) {
     sheet: COUPONS_SHEET_NAME,
     matchColumn: "Code",
     matchValue: String(code).trim(),
+    data,
+  });
+}
+
+// ── UTM attribution ───────────────────────────────────────────────────────
+export async function utmRows() {
+  try {
+    const table = await gvizQuery({ sheet: UTM_SHEET_NAME });
+    return tableToObjects(table);
+  } catch {
+    return [];
+  }
+}
+export function utmAppend(data) {
+  return appscriptPost(APPSCRIPT_ORDER_URL, {
+    action: "append",
+    sheet: UTM_SHEET_NAME,
+    data,
+  });
+}
+export function utmUpdate(key, data) {
+  return appscriptPost(APPSCRIPT_ORDER_URL, {
+    action: "update",
+    sheet: UTM_SHEET_NAME,
+    matchColumn: "Key",
+    matchValue: String(key),
     data,
   });
 }

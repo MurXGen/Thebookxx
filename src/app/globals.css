@@ -32519,6 +32519,135 @@ img[data-loaded="true"] {
 }
 
 /* Black one-line trust stripe stuck under the navbar */
+/* UTM link generator (manage-orders Book tab) */
+.mo-utm-body {
+  padding: 4px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.mo-utm-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.mo-utm-lbl {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--dark-60, #4b5563);
+}
+.mo-utm-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.mo-utm-chip {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--dark-10, #e5e7eb);
+  background: #fff;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--dark-60, #4b5563);
+  cursor: pointer;
+  text-transform: capitalize;
+}
+.mo-utm-chip.on {
+  background: var(--tertiary, #fb8500);
+  border-color: var(--tertiary, #fb8500);
+  color: #fff;
+}
+.mo-utm-slug {
+  font-size: 11px;
+  font-family: ui-monospace, Menlo, monospace;
+  color: #15803d;
+}
+.mo-utm-grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.mo-utm-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  border-radius: 10px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+}
+.mo-utm-preview-lbl {
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #b45309;
+}
+.mo-utm-url {
+  font-size: 12.5px;
+  font-family: ui-monospace, Menlo, monospace;
+  color: var(--foreground, #0a0a0a);
+  word-break: break-all;
+  line-height: 1.5;
+}
+.mo-utm-key {
+  font-size: 11.5px;
+  color: var(--dark-50, #6b7280);
+}
+.mo-utm-key b {
+  font-family: ui-monospace, Menlo, monospace;
+  color: #b45309;
+}
+.mo-utm-set {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--dark-10, #e5e7eb);
+}
+.mo-utm-set-lbl {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--dark-60, #4b5563);
+  text-transform: capitalize;
+}
+.mo-utm-set-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.mo-utm-set-med {
+  flex: 0 0 64px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--dark-50, #6b7280);
+  text-transform: capitalize;
+}
+.mo-utm-set-url {
+  flex: 1;
+  min-width: 0;
+  font-size: 11px;
+  font-family: ui-monospace, Menlo, monospace;
+  color: var(--dark-60, #4b5563);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mo-utm-set-copy {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--dark-10, #e5e7eb);
+  background: #fff;
+  color: var(--tertiary, #fb8500);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /* Custom-product cover fallback (designed name-on-cover) fills its container */
 .cp-cover-fallback,
 .mo-cp-pcover-fallback {

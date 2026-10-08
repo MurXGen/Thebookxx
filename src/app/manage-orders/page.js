@@ -4148,6 +4148,49 @@ export default function ManageOrdersPage() {
   const [cpImgSlug, setCpImgSlug] = useState("");
   const [cpLinkCopied, setCpLinkCopied] = useState(false);
   const [cpOpen, setCpOpen] = useState(false); // create-product accordion
+
+  // ── UTM link generator (influencer / campaign tracking) ──
+  const [utmOpen, setUtmOpen] = useState(false);
+  const [utmBase, setUtmBase] = useState("https://thebookx.in/");
+  const [utmCampaign, setUtmCampaign] = useState("");
+  const [utmSource, setUtmSource] = useState("");
+  const [utmMedium, setUtmMedium] = useState("");
+  const [utmContent, setUtmContent] = useState("");
+  const [utmTerm, setUtmTerm] = useState("");
+  const [utmCopied, setUtmCopied] = useState("");
+  const utmSlug = (s) =>
+    String(s || "")
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "_")
+      .replace(/(^_|_$)/g, "");
+  const buildUtmUrl = (over = {}) => {
+    const src = utmSlug(over.source ?? utmSource);
+    const med = utmSlug(over.medium ?? utmMedium);
+    const camp = utmSlug(over.campaign ?? utmCampaign);
+    const cont = utmSlug(over.content ?? utmContent);
+    const term = utmSlug(over.term ?? utmTerm);
+    let base = String(utmBase || "").trim() || "https://thebookx.in/";
+    if (!/^https?:\/\//i.test(base)) base = `https://${base}`;
+    const u = new URL(base);
+    if (src) u.searchParams.set("utm_source", src);
+    if (med) u.searchParams.set("utm_medium", med);
+    if (camp) u.searchParams.set("utm_campaign", camp);
+    if (cont) u.searchParams.set("utm_content", cont);
+    if (term) u.searchParams.set("utm_term", term);
+    return u.toString();
+  };
+  const copyUtm = (url, tag = "main") => {
+    try {
+      navigator.clipboard.writeText(url);
+      setUtmCopied(tag);
+      setTimeout(() => setUtmCopied(""), 1600);
+      showToast("UTM link copied ✓", "success");
+    } catch {}
+  };
+  // "Copy all" for a campaign across the common placements of the chosen source.
+  const UTM_PLACEMENTS = ["reel", "story", "bio", "post", "video", "broadcast"];
+  const utmReady = utmSlug(utmCampaign) && utmSlug(utmSource);
   const cpImgMatches = useMemo(() => {
     const q = cpImgQuery.trim().toLowerCase();
     const keys = Object.keys(bookImages);
@@ -10420,6 +10463,162 @@ export default function ManageOrdersPage() {
                   </button>
                 </div>
               </div>
+              )}
+            </div>
+
+            {/* UTM link generator — build trackable campaign/influencer links. */}
+            <div className="mo-cp mo-utm">
+              <div
+                className="mo-cp-head mo-acc-head"
+                onClick={() => setUtmOpen((v) => !v)}
+              >
+                <span className="mo-cp-title">
+                  <ExternalLink size={16} /> UTM link generator
+                  <ChevronDown
+                    size={16}
+                    className={`mo-acc-chev${utmOpen ? " open" : ""}`}
+                  />
+                </span>
+                <span className="mo-cp-sub">
+                  Build trackable links for influencers &amp; campaigns — visits
+                  land in the <b>utm</b> sheet tab (count + last activity).
+                </span>
+              </div>
+              {utmOpen && (
+                <div className="mo-utm-body">
+                  <label className="mo-cp-field">
+                    <span>Campaign (influencer / promo)</span>
+                    <input
+                      className="admin-input"
+                      placeholder="e.g. Aartika Kumari"
+                      value={utmCampaign}
+                      onChange={(e) => setUtmCampaign(e.target.value)}
+                    />
+                    {utmCampaign.trim() && (
+                      <span className="mo-utm-slug">
+                        utm_campaign = {utmSlug(utmCampaign)}
+                      </span>
+                    )}
+                  </label>
+
+                  <div className="mo-utm-field">
+                    <span className="mo-utm-lbl">Source (platform)</span>
+                    <div className="mo-utm-chips">
+                      {["instagram", "youtube", "whatsapp", "telegram", "facebook"].map(
+                        (s) => (
+                          <button
+                            key={s}
+                            type="button"
+                            className={`mo-utm-chip${utmSource === s ? " on" : ""}`}
+                            onClick={() => setUtmSource(s)}
+                          >
+                            {s}
+                          </button>
+                        ),
+                      )}
+                    </div>
+                    <input
+                      className="admin-input"
+                      placeholder="or type a custom source"
+                      value={utmSource}
+                      onChange={(e) => setUtmSource(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="mo-utm-field">
+                    <span className="mo-utm-lbl">Medium (placement)</span>
+                    <div className="mo-utm-chips">
+                      {UTM_PLACEMENTS.map((m) => (
+                        <button
+                          key={m}
+                          type="button"
+                          className={`mo-utm-chip${utmMedium === m ? " on" : ""}`}
+                          onClick={() => setUtmMedium(m)}
+                        >
+                          {m}
+                        </button>
+                      ))}
+                    </div>
+                    <input
+                      className="admin-input"
+                      placeholder="or type a custom medium"
+                      value={utmMedium}
+                      onChange={(e) => setUtmMedium(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="mo-utm-grid2">
+                    <label className="mo-cp-field">
+                      <span>Content (optional)</span>
+                      <input
+                        className="admin-input"
+                        placeholder="e.g. oct_post1"
+                        value={utmContent}
+                        onChange={(e) => setUtmContent(e.target.value)}
+                      />
+                    </label>
+                    <label className="mo-cp-field">
+                      <span>Base URL</span>
+                      <input
+                        className="admin-input"
+                        value={utmBase}
+                        onChange={(e) => setUtmBase(e.target.value)}
+                      />
+                    </label>
+                  </div>
+
+                  {/* Live preview */}
+                  <div className="mo-utm-preview">
+                    <span className="mo-utm-preview-lbl">Your link</span>
+                    <code className="mo-utm-url">{buildUtmUrl()}</code>
+                    <span className="mo-utm-key">
+                      Groups in sheet as:{" "}
+                      <b>
+                        {utmSlug(utmSource) || "—"}|{utmSlug(utmMedium) || "—"}|
+                        {utmSlug(utmCampaign) || "—"}
+                      </b>
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    className="mo-cp-copy"
+                    onClick={() => copyUtm(buildUtmUrl(), "main")}
+                    disabled={!utmReady}
+                  >
+                    {utmCopied === "main" ? <Check size={15} /> : <Copy size={15} />}
+                    {utmCopied === "main" ? "Link copied" : "Copy UTM link"}
+                  </button>
+
+                  {/* Quick set — one link per placement for this source */}
+                  {utmReady && (
+                    <div className="mo-utm-set">
+                      <span className="mo-utm-set-lbl">
+                        Quick set · {utmSlug(utmSource)} placements
+                      </span>
+                      {UTM_PLACEMENTS.map((m) => {
+                        const url = buildUtmUrl({ medium: m });
+                        const tag = `set-${m}`;
+                        return (
+                          <div className="mo-utm-set-row" key={m}>
+                            <span className="mo-utm-set-med">{m}</span>
+                            <code className="mo-utm-set-url">{url}</code>
+                            <button
+                              type="button"
+                              className="mo-utm-set-copy"
+                              onClick={() => copyUtm(url, tag)}
+                            >
+                              {utmCopied === tag ? (
+                                <Check size={13} />
+                              ) : (
+                                <Copy size={13} />
+                              )}
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               )}
             </div>
 

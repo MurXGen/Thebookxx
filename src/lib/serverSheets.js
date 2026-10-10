@@ -346,6 +346,25 @@ export function reviewRewardAppend(data) {
     data,
   });
 }
+// Admin: read every review submission.
+export async function reviewRewardAllRows() {
+  try {
+    const table = await gvizQuery({ sheet: REVIEWS_SHEET_NAME });
+    return tableToObjects(table);
+  } catch {
+    return [];
+  }
+}
+// Admin: update a submission row (matched on Sub ID).
+export function reviewRewardUpdate(subId, data) {
+  return appscriptPost(APPSCRIPT_ORDER_URL, {
+    action: "update",
+    sheet: REVIEWS_SHEET_NAME,
+    matchColumn: "Sub ID",
+    matchValue: String(subId),
+    data,
+  });
+}
 
 // Read Pro Plan rows for one phone (scoped server-side via gviz `where`).
 export async function proPlanRows(phone) {

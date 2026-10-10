@@ -4629,6 +4629,77 @@ export default function ManageOrdersPage() {
 
   // Scrollable section tabs — jump to a section, remembered across sessions.
   const [activeTab, setActiveTab] = useState("analytics");
+
+  // ── Review-reward submissions (Users tab manager) ──
+  const [reviewSubs, setReviewSubs] = useState([]);
+  const [reviewLoading, setReviewLoading] = useState(false);
+  const [reviewDrafts, setReviewDrafts] = useState({}); // subId → {status,amount,note}
+  const [reviewSaving, setReviewSaving] = useState("");
+  const REVIEW_AMOUNTS = [50, 100, 150, 200];
+  const REVIEW_REASONS = [
+    "Post not public",
+    "Not our books",
+    "Link not working",
+    "Already rewarded",
+    "Low quality / unclear",
+  ];
+  const loadReviewSubs = async () => {
+    setReviewLoading(true);
+    try {
+      const res = await fetch("/api/reviews?all=1");
+      const j = await res.json();
+      const list = Array.isArray(j.submissions) ? j.submissions : [];
+      setReviewSubs(list);
+      setReviewDrafts(
+        Object.fromEntries(
+          list.map((s) => [
+            s.subId,
+            { status: s.status, amount: s.amount || "", note: s.note || "" },
+          ]),
+        ),
+      );
+    } catch {
+      setReviewSubs([]);
+    } finally {
+      setReviewLoading(false);
+    }
+  };
+  useEffect(() => {
+    if (activeTab === "users") loadReviewSubs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab]);
+  const setReviewDraft = (subId, patch) =>
+    setReviewDrafts((p) => ({ ...p, [subId]: { ...(p[subId] || {}), ...patch } }));
+  const saveReview = async (sub) => {
+    const d = reviewDrafts[sub.subId] || {};
+    setReviewSaving(sub.subId);
+    try {
+      const res = await fetch("/api/reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "update",
+          subId: sub.subId,
+          phone: sub.phone,
+          status: d.status,
+          amount: d.amount,
+          note: d.note,
+        }),
+      });
+      const j = await res.json().catch(() => ({}));
+      showToast(
+        j.credited
+          ? `Saved · ₹${d.amount} credited to ${sub.phone}'s wallet ✓`
+          : "Review updated ✓",
+        "success",
+      );
+      loadReviewSubs();
+    } catch {
+      showToast("Couldn't save — try again", "error");
+    } finally {
+      setReviewSaving("");
+    }
+  };
   // Batch-labels tab: paste order IDs → show only those orders + bulk labels.
   const [batchInput, setBatchInput] = useState("");
   const [batchSelected, setBatchSelected] = useState([]);
@@ -10756,6 +10827,120 @@ export default function ManageOrdersPage() {
         {/* ===== Users (customer management) ===== */}
         {activeTab === "users" && (
           <div className="an2 um">
+            {/* Review-reward submissions — approve + set amount (credits wallet) */}
+            <details className="admin-stats rvw-acc" open>
+              <summary className="admin-stats-summary">
+                <Gift size={14} /> Review rewards
+                {reviewSubs.length > 0 && (
+                  <span className="rvw-count">{reviewSubs.length}</span>
+                )}
+                <ChevronDown size={15} className="admin-stats-caret" />
+              </summary>
+              <div className="rvw-list">
+                {reviewLoading ? (
+                  <div className="rvw-empty">Loading submissions…</div>
+                ) : reviewSubs.length === 0 ? (
+                  <div className="rvw-empty">No review submissions yet.</div>
+                ) : (
+                  reviewSubs.map((s) => {
+                    const d = reviewDrafts[s.subId] || {};
+                    return (
+                      <div className={`rvw-row ${d.status || s.status}`} key={s.subId}>
+                        <div className="rvw-top">
+                          <span className="rvw-phone">{s.phone}</span>
+                          {s.platform && (
+                            <span className="rvw-plat">{s.platform}</span>
+                          )}
+                          <a
+                            className="rvw-link"
+                            href={s.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            View post ↗
+                          </a>
+                        </div>
+
+                        {/* Status chips */}
+                        <div className="rvw-chips">
+                          {["pending", "approved", "rejected"].map((st) => (
+                            <button
+                              key={st}
+                              type="button"
+                              className={`rvw-chip st-${st}${(d.status || s.status) === st ? " on" : ""}`}
+                              onClick={() => setReviewDraft(s.subId, { status: st })}
+                            >
+                              {st}
+                            </button>
+                          ))}
+                        </div>
+
+                        {/* Amount chips + custom */}
+                        <div className="rvw-chips">
+                          {REVIEW_AMOUNTS.map((a) => (
+                            <button
+                              key={a}
+                              type="button"
+                              className={`rvw-chip amt${Number(d.amount) === a ? " on" : ""}`}
+                              onClick={() => setReviewDraft(s.subId, { amount: a })}
+                            >
+                              ₹{a}
+                            </button>
+                          ))}
+                          <input
+                            className="rvw-amt-input"
+                            inputMode="numeric"
+                            placeholder="₹"
+                            value={d.amount ?? ""}
+                            onChange={(e) =>
+                              setReviewDraft(s.subId, {
+                                amount: e.target.value.replace(/[^\d]/g, ""),
+                              })
+                            }
+                          />
+                        </div>
+
+                        {/* Reason chips (for rejected) + note input */}
+                        <div className="rvw-chips">
+                          {REVIEW_REASONS.map((rs) => (
+                            <button
+                              key={rs}
+                              type="button"
+                              className={`rvw-chip reason${d.note === rs ? " on" : ""}`}
+                              onClick={() => setReviewDraft(s.subId, { note: rs })}
+                            >
+                              {rs}
+                            </button>
+                          ))}
+                        </div>
+                        <input
+                          className="rvw-note-input"
+                          placeholder="Note / reason (shown to the customer)"
+                          value={d.note ?? ""}
+                          onChange={(e) =>
+                            setReviewDraft(s.subId, { note: e.target.value })
+                          }
+                        />
+
+                        <button
+                          type="button"
+                          className="rvw-save"
+                          onClick={() => saveReview(s)}
+                          disabled={reviewSaving === s.subId}
+                        >
+                          {reviewSaving === s.subId
+                            ? "Saving…"
+                            : (d.status || s.status) === "approved"
+                              ? `Save & credit ₹${d.amount || 0}`
+                              : "Save"}
+                        </button>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </details>
+
             <details className="admin-stats um-stats-acc">
               <summary className="admin-stats-summary">
                 <BarChart3 size={14} />

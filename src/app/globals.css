@@ -32737,6 +32737,144 @@ img[data-loaded="true"] {
   text-align: center;
 }
 
+/* Review-reward manager (manage-orders Users tab) */
+.rvw-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--tertiary, #fb8500);
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 800;
+  margin-left: 4px;
+}
+.rvw-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px 2px 2px;
+}
+.rvw-empty {
+  padding: 18px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--dark-50, #6b7280);
+}
+.rvw-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--dark-10, #e5e7eb);
+  background: #fff;
+}
+.rvw-row.approved {
+  border-color: rgba(22, 163, 74, 0.4);
+  background: rgba(22, 163, 74, 0.05);
+}
+.rvw-row.rejected {
+  border-color: rgba(220, 38, 38, 0.35);
+  background: rgba(220, 38, 38, 0.04);
+}
+.rvw-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.rvw-phone {
+  font-size: 14px;
+  font-weight: 800;
+  color: #111827;
+}
+.rvw-plat {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--dark-50, #6b7280);
+  background: var(--surface-2, #f3f4f6);
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+.rvw-link {
+  margin-left: auto;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--tertiary, #fb8500);
+  text-decoration: none;
+}
+.rvw-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.rvw-chip {
+  padding: 5px 11px;
+  border-radius: 999px;
+  border: 1px solid var(--dark-10, #e5e7eb);
+  background: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--dark-60, #4b5563);
+  cursor: pointer;
+  text-transform: capitalize;
+}
+.rvw-chip.on.st-approved {
+  background: #16a34a;
+  border-color: #16a34a;
+  color: #fff;
+}
+.rvw-chip.on.st-rejected {
+  background: #dc2626;
+  border-color: #dc2626;
+  color: #fff;
+}
+.rvw-chip.on.st-pending,
+.rvw-chip.on.amt,
+.rvw-chip.on.reason {
+  background: var(--tertiary, #fb8500);
+  border-color: var(--tertiary, #fb8500);
+  color: #fff;
+}
+.rvw-amt-input {
+  width: 64px;
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid var(--dark-20, #d1d5db);
+  font-size: 13px;
+  color: #0a0a0a;
+}
+.rvw-note-input {
+  width: 100%;
+  height: 38px;
+  padding: 0 12px;
+  border-radius: 9px;
+  border: 1px solid var(--dark-20, #d1d5db);
+  font-size: 13px;
+  color: #0a0a0a;
+}
+.rvw-save {
+  align-self: flex-start;
+  padding: 9px 16px;
+  border-radius: 10px;
+  border: none;
+  background: var(--tertiary, #fb8500);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.rvw-save:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 /* UTM link generator (manage-orders Book tab) */
 .mo-utm-body {
   padding: 4px 16px 16px;

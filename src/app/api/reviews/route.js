@@ -10,7 +10,13 @@
 //   Sub ID | Timestamp | Phone Number | Order ID | Platform | Post Link |
 //   Status | Amount | Note | Reviewed At
 
-import { reviewRewardRows, reviewRewardAppend } from "@/lib/serverSheets";
+import {
+  reviewRewardRows,
+  reviewRewardAppend,
+  reviewRewardAllRows,
+  reviewRewardUpdate,
+  walletAppend,
+} from "@/lib/serverSheets";
 import { rateLimit, clientIp, tooMany } from "@/lib/rateLimit";
 
 const TELEGRAM_PROXY = "https://api.journalx.app/api/bookxTelegram/order";
@@ -35,6 +41,27 @@ export async function GET(request) {
   if (!rl.allowed) return tooMany(rl.retryAfter);
 
   const { searchParams } = new URL(request.url);
+
+  // Admin: full list for the Users tab review manager.
+  if (searchParams.get("all")) {
+    const all = await reviewRewardAllRows();
+    const list = all
+      .map((r) => ({
+        subId: String(r["Sub ID"] ?? r["Sub Id"] ?? "").trim(),
+        timestamp: String(r["Timestamp"] ?? "").trim(),
+        phone: String(r["Phone Number"] ?? "").trim(),
+        orderId: String(r["Order ID"] ?? "").trim(),
+        platform: String(r["Platform"] ?? "").trim(),
+        link: String(r["Post Link"] ?? "").trim(),
+        status: normStatus(r["Status"]),
+        amount: num(r["Amount"]),
+        note: String(r["Note"] ?? "").trim(),
+      }))
+      .filter((s) => s.subId || s.link)
+      .reverse();
+    return Response.json({ submissions: list });
+  }
+
   const phone = digits10(searchParams.get("phone"));
   if (phone.length !== 10) return Response.json({ submissions: [] });
 
@@ -114,6 +141,50 @@ export async function POST(request) {
   try {
     body = await request.json();
   } catch {}
+
+  // Admin: update a submission's status/amount/note (+ credit wallet on approval)
+  if (String(body.action || "").toLowerCase() === "update") {
+    const subId = String(body.subId || "").trim();
+    if (!subId)
+      return Response.json({ ok: false, error: "no subId" }, { status: 400 });
+    const status = normStatus(body.status);
+    const amount = Math.max(0, Math.round(num(body.amount)));
+    const note = String(body.note || "").trim().slice(0, 300);
+    const phone = digits10(body.phone);
+
+    // Only credit the wallet the first time it flips to Approved with an amount.
+    const all = await reviewRewardAllRows();
+    const current = all.find(
+      (r) => String(r["Sub ID"] ?? "").trim() === subId,
+    );
+    const wasApproved = current ? normStatus(current["Status"]) === "approved" : false;
+
+    await reviewRewardUpdate(subId, {
+      Status: status === "approved" ? "Approved" : status === "rejected" ? "Rejected" : "Pending",
+      Amount: amount || "",
+      Note: note,
+      "Reviewed At": new Date().toLocaleString("en-IN", { hour12: true }),
+    });
+
+    let credited = false;
+    if (
+      status === "approved" &&
+      amount > 0 &&
+      !wasApproved &&
+      phone.length === 10
+    ) {
+      const r = await walletAppend({
+        Timestamp: new Date().toLocaleString("en-IN", { hour12: true }),
+        "Phone Number": phone,
+        Amount: amount,
+        Type: "Credit",
+        Reason: "Review reward",
+        "Order ID": subId,
+      });
+      credited = !!r.success;
+    }
+    return Response.json({ ok: true, credited });
+  }
 
   const phone = digits10(body.phone);
   const link = String(body.link || "").trim().slice(0, 500);

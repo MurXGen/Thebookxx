@@ -17042,25 +17042,26 @@ img[data-loaded="true"] {
   transition: transform 0.28s var(--ease);
 }
 .cat3d-book.center {
-  transform: translateX(-50%) translateY(-5px);
+  transform: translateX(-50%) translateY(-4px);
   z-index: 3;
 }
+/* Two covers sit beside each other, slightly overlapping (upright, together) */
 .cat3d-book.left {
-  transform: translateX(-50%) rotate(-15deg) translate(-16px, 3px);
+  transform: translateX(-50%) translateX(-15px);
   z-index: 1;
 }
 .cat3d-book.right {
-  transform: translateX(-50%) rotate(15deg) translate(16px, 3px);
+  transform: translateX(-50%) translateX(15px);
   z-index: 2;
 }
 .cat3d-card:hover .cat3d-book.center {
-  transform: translateX(-50%) translateY(-11px);
+  transform: translateX(-50%) translateY(-10px);
 }
 .cat3d-card:hover .cat3d-book.left {
-  transform: translateX(-50%) rotate(-20deg) translate(-22px, -2px);
+  transform: translateX(-50%) translateX(-22px) translateY(-3px);
 }
 .cat3d-card:hover .cat3d-book.right {
-  transform: translateX(-50%) rotate(20deg) translate(22px, -2px);
+  transform: translateX(-50%) translateX(22px) translateY(-3px);
 }
 .cat3d-fallback {
   position: absolute;

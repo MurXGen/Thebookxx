@@ -159,7 +159,7 @@ export const books = [
       "Transform your thinking with this powerful self-help guide from TheBookX.in. Authored by Murthy Thevar, this book teaches you proven strategies to eliminate confusion, think clearly, and make confident decisions without overthinking. TheBookX delivers high-quality books in pristine condition, securely packaged and shipped via Delhivery and Indian Post. Grab your copy today, books starting at just ₹1 for a limited time. Your trusted destination for affordable, authentic books across India.",
     catalogue: ["self-help", "bestseller", "trending"],
     originalPrice: calculateOriginalPrice(189),
-    discountedPrice: 189,
+    discountedPrice: 129,
     weight: 400,
     size: "Paperback",
     author: "Murthy Thevar",
@@ -255,7 +255,7 @@ export const books = [
     stock: 26,
     catalogue: ["finance", "trending", "bestseller"],
     originalPrice: calculateOriginalPrice(169),
-    discountedPrice: 169,
+    discountedPrice: 149,
     weight: 250,
   },
   {
@@ -319,7 +319,7 @@ export const books = [
     stock: 29,
     catalogue: ["self-help", "psychology", "bestseller"],
     originalPrice: calculateOriginalPrice(159),
-    discountedPrice: 159,
+    discountedPrice: 149,
     weight: 250,
   },
   {
@@ -9884,7 +9884,7 @@ export const books = [
     stock: 24,
     catalogue: ["romance", "fiction", "trending"],
     originalPrice: calculateOriginalPrice(239),
-    discountedPrice: 239,
+    discountedPrice: 169,
     weight: 400,
   },
   {

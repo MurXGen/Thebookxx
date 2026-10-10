@@ -123,6 +123,52 @@ export default function HomeHero() {
       window.dispatchEvent(new Event("tbx:open-scratch"));
   };
 
+  // ── Aggressive on-page SEO for the hero + its featured books ──
+  const ORIGIN = "https://www.thebookx.in";
+  const absUrl = (img) =>
+    !img ? "" : /^https?:\/\//i.test(img) ? img : `${ORIGIN}${img}`;
+  const bookUrl = (b) => `${ORIGIN}/books/${slugify(b.name)}`;
+  const seoJsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": `${ORIGIN}/#website`,
+        url: ORIGIN,
+        name: "TheBookX",
+        description:
+          "Buy books online in India starting at ₹1 — bestsellers, self-help & fiction with free shipping, Cash on Delivery and 7-day returns.",
+        potentialAction: {
+          "@type": "SearchAction",
+          target: `${ORIGIN}/?q={search_term_string}`,
+          "query-input": "required name=search_term_string",
+        },
+      },
+      {
+        "@type": "ItemList",
+        name: "Readers' top picks on TheBookX",
+        itemListElement: picks.map((b, i) => ({
+          "@type": "ListItem",
+          position: i + 1,
+          item: {
+            "@type": "Book",
+            name: b.name,
+            ...(b.author ? { author: { "@type": "Person", name: b.author } } : {}),
+            image: absUrl(b.image),
+            url: bookUrl(b),
+            offers: {
+              "@type": "Offer",
+              price: String(b.discountedPrice),
+              priceCurrency: "INR",
+              availability: "https://schema.org/InStock",
+              url: bookUrl(b),
+            },
+          },
+        })),
+      },
+    ],
+  };
+
   return (
     <section
       className="home-hero"
@@ -130,6 +176,37 @@ export default function HomeHero() {
       onPointerDown={spawnBurst}
       style={{ position: "relative" }}
     >
+      {/* Structured data — WebSite search action + featured books as Products */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(seoJsonLd) }}
+      />
+
+      {/* SEO: crawlable internal links + keyword context (visually hidden) */}
+      <div className="hero-seo">
+        <h2>
+          Buy bestselling books online in India at the lowest prices — starting
+          at ₹1 with free shipping, Cash on Delivery and 7-day returns.
+        </h2>
+        <p>Popular books on TheBookX:</p>
+        <ul>
+          {picks.map((b) => (
+            <li key={`seo-${b.id}`}>
+              <Link href={`/books/${slugify(b.name)}`}>
+                Buy {b.name}
+                {b.author ? ` by ${b.author}` : ""} online at ₹
+                {b.discountedPrice}
+              </Link>
+            </li>
+          ))}
+          <li>
+            <Link href="/books">Browse all books from ₹1</Link>
+          </li>
+          <li>
+            <Link href="/1rupee">Bestsellers at just ₹1</Link>
+          </li>
+        </ul>
+      </div>
       {/* Tap-anywhere firecracker sparkles */}
       <div className="hero-spark-layer" aria-hidden="true">
         {bursts.map((burst) =>
@@ -294,7 +371,11 @@ export default function HomeHero() {
                     >
                       <span className="hpz-coverwrap">
                         <span className="hpz-cover">
-                          <img src={b.image} alt={b.name} loading="lazy" />
+                          <img
+                            src={b.image}
+                            alt={`${b.name}${b.author ? ` by ${b.author}` : ""} — buy online at ₹${b.discountedPrice} on TheBookX`}
+                            loading="lazy"
+                          />
                         </span>
                         <span
                           className="hpz-bm hpz-bm-back"

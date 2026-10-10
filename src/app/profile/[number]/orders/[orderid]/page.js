@@ -26,7 +26,6 @@ import {
   Gift,
   Maximize2,
   Minimize2,
-  CalendarClock,
   Pencil,
   Zap,
   ChevronRight,
@@ -1098,22 +1097,8 @@ export default function OrderDetailPage() {
   // Journey progress 0..1 for the green fill bar.
   const progressPct = Math.round(computeProgress(order) * 100);
 
-  // Delivery window (min/max days) + estimated date range.
+  // Delivery window (min/max days) — used for the support sheet ETA copy.
   const [etaMin, etaMax] = isFaster ? [1, 5] : [4, 9];
-  const estimate = (() => {
-    const od = parseSheetDate(
-      order["Timestamp (D)"] || order["Timestamp"] || order["Timestamp(D)"],
-    );
-    if (!od) return null;
-    const fmt = (d) =>
-      d.toLocaleDateString("en-IN", { day: "2-digit", month: "short" });
-    return {
-      from: fmt(new Date(od.getTime() + etaMin * 86400000)),
-      to: fmt(new Date(od.getTime() + etaMax * 86400000)),
-      mn: etaMin,
-      mx: etaMax,
-    };
-  })();
   const trackOrder = {
     ...order,
     orderId,
@@ -1507,23 +1492,6 @@ export default function OrderDetailPage() {
       {/* Delivery details — ETA date, status timeline, courier, tracking ID. */}
       {order && !cancelled && (
         <section className="od-deliv-card">
-          {!delivered && estimate && (
-            <div className="od-deliv-eta">
-              <CalendarClock size={18} />
-              <div className="od-deliv-eta-txt">
-                <strong>
-                  {outForDelivery
-                    ? "Arriving today"
-                    : `Arriving by ${estimate.to}`}
-                </strong>
-                <span>
-                  {isFaster ? "Express" : "Standard"} ·{" "}
-                  {isFaster ? "India Post Speed Post" : "India Post"}
-                </span>
-              </div>
-            </div>
-          )}
-
           {(() => {
             const steps = [
               { k: "Placed", Icon: Check },

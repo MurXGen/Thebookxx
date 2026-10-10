@@ -14430,6 +14430,106 @@ img[data-loaded="true"] {
     0 0,
     20px 22px;
 }
+/* ── Festive Q4 sale banner ── */
+.hero-festive {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 0 auto 2px;
+  padding: 10px 18px;
+  border-radius: 14px;
+  color: #fff8ec;
+  background: linear-gradient(
+    100deg,
+    #7a1020 0%,
+    #c0223b 26%,
+    #fb8500 60%,
+    #ffb703 100%
+  );
+  background-size: 220% 100%;
+  animation: heroFestiveSheen 6s ease-in-out infinite;
+  box-shadow: 0 12px 28px -14px rgba(192, 34, 59, 0.7),
+    inset 0 0 0 1px rgba(255, 210, 63, 0.35);
+  position: relative;
+  overflow: hidden;
+}
+.hero-festive::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -40%;
+  width: 28%;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    rgba(255, 255, 255, 0.5),
+    transparent
+  );
+  transform: skewX(-18deg);
+  animation: heroFestiveShine 3.6s ease-in-out infinite;
+}
+@keyframes heroFestiveSheen {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+@keyframes heroFestiveShine {
+  0%,
+  62% {
+    left: -40%;
+  }
+  100% {
+    left: 130%;
+  }
+}
+.hero-festive-diya {
+  font-size: 20px;
+  line-height: 1;
+  flex: 0 0 auto;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+.hero-festive-txt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.2;
+  min-width: 0;
+}
+.hero-festive-kicker {
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.92;
+}
+.hero-festive-amt {
+  font-size: 15px;
+  font-weight: 800;
+}
+.hero-festive-amt b {
+  font-size: 17px;
+  font-weight: 900;
+  color: #fff;
+}
+@media (max-width: 520px) {
+  .hero-festive {
+    gap: 9px;
+    padding: 9px 12px;
+  }
+  .hero-festive-amt {
+    font-size: 13.5px;
+  }
+  .hero-festive-amt b {
+    font-size: 15px;
+  }
+}
+
 /* Tap-anywhere firecracker sparkle layer */
 .hero-spark-layer {
   position: absolute;
@@ -50597,13 +50697,16 @@ img[data-loaded="true"] {
   margin-top: 10px;
 }
 /* Light brand tint on the checkout summary cards — subtle contrast vs white bg.
-   Selected/active states keep their own stronger highlight. */
+   Selected/active states keep their own stronger highlight. The payment-method
+   cards stay plain white (reverted on request). */
 .pay-sel-bill .pa-row,
-.pay-method,
 .pay-sel-coins,
 .resell-row {
   background: #fff8f0;
   border-color: rgba(251, 133, 0, 0.2);
+}
+.pay-method {
+  background: #fff;
 }
 .pay-addon-grid {
   display: grid;

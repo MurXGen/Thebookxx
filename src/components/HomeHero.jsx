@@ -234,6 +234,22 @@ export default function HomeHero() {
 
       <div className="hero-top">
         <div className="home-hero-inner">
+          {/* Festive Q4 sale banner — up to 50% off every order */}
+          <div className="hero-festive" role="note">
+            <span className="hero-festive-diya" aria-hidden="true">
+              🪔
+            </span>
+            <span className="hero-festive-txt">
+              <span className="hero-festive-kicker">Festive Season Sale is live</span>
+              <span className="hero-festive-amt">
+                Up to <b>50% OFF</b> on every order
+              </span>
+            </span>
+            <span className="hero-festive-diya" aria-hidden="true">
+              ✨
+            </span>
+          </div>
+
           {/* Offers marquee — auto-scrolls; tap any chip to see all reward tiers */}
           <div className="hero-offers-row" role="list">
             <div className="hero-offers-track">

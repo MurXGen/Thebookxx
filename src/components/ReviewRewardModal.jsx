@@ -207,7 +207,7 @@ export default function ReviewRewardModal({
         </span>
         <span className="rr-cos-txt">
           <b>Post &amp; earn up to ₹{MAX_REWARD}</b>
-          <small>Share a reel/story — cashback to your wallet</small>
+          <small>Share a reel/story — cashback to your account</small>
         </span>
       </button>
     ) : variant === "chip" ? (

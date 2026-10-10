@@ -86,6 +86,37 @@ export default function HomeHero() {
   // Tap-anywhere firecracker: spawn a short-lived sparkle burst at the pointer.
   const heroRef = useRef(null);
   const [bursts, setBursts] = useState([]);
+
+  // Tap the festive season card → a big confetti shower across the hero.
+  const [showers, setShowers] = useState([]);
+  const fireShower = (e) => {
+    e?.stopPropagation?.();
+    const COLORS = [
+      "#fb8500",
+      "#ffb703",
+      "#ffd23f",
+      "#c0223b",
+      "#ff8c42",
+      "#4ade80",
+      "#60a5fa",
+      "#f472b6",
+      "#ffffff",
+    ];
+    const id = `sh-${Date.now()}-${Math.random()}`;
+    const pieces = Array.from({ length: 54 }).map((_, i) => ({
+      i,
+      left: Math.random() * 100,
+      delay: Math.random() * 0.45,
+      dur: 1.8 + Math.random() * 1.6,
+      size: 6 + Math.random() * 7,
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      rot: Math.random() * 760 - 380,
+      drift: Math.random() * 160 - 80,
+      round: Math.random() < 0.42,
+    }));
+    setShowers((s) => [...s, { id, pieces }]);
+    setTimeout(() => setShowers((s) => s.filter((z) => z.id !== id)), 3600);
+  };
   const SPARK_COLORS = ["#fb8500", "#ff8c42", "#e6a83c", "#ffd23f", "#c0223b"];
   const spawnBurst = (e) => {
     const el = heroRef.current;
@@ -254,6 +285,28 @@ export default function HomeHero() {
         ))}
       </div>
 
+      {/* Confetti shower fired when the season card is tapped */}
+      <div className="hero-shower-layer" aria-hidden="true">
+        {showers.flatMap((sh) =>
+          sh.pieces.map((p) => (
+            <span
+              key={`${sh.id}-${p.i}`}
+              className={`hero-shower-piece${p.round ? " round" : ""}`}
+              style={{
+                left: `${p.left}%`,
+                width: p.size,
+                height: p.round ? p.size : p.size + 4,
+                background: p.color,
+                animationDelay: `${p.delay}s`,
+                animationDuration: `${p.dur}s`,
+                "--sh-rot": `${p.rot}deg`,
+                "--sh-x": `${p.drift}px`,
+              }}
+            />
+          )),
+        )}
+      </div>
+
       {/* Tap-anywhere firecracker sparkles */}
       <div className="hero-spark-layer" aria-hidden="true">
         {bursts.map((burst) =>
@@ -279,9 +332,15 @@ export default function HomeHero() {
 
       <div className="hero-top">
         <div className="home-hero-inner">
-          {/* Festive Q4 sale banner — up to 50% off every order */}
-          <div className="hero-festive" role="note">
-            {/* Celebration confetti */}
+          {/* Festive Q4 season card — tap to shower confetti */}
+          <button
+            type="button"
+            className="hero-festive"
+            onClick={fireShower}
+            aria-label="Festive sale — up to 50% off. Tap for confetti."
+          >
+            <span className="hero-festive-glow" aria-hidden="true" />
+            {/* Ambient confetti inside the card */}
             <span className="hero-festive-confetti" aria-hidden="true">
               {Array.from({ length: 14 }).map((_, i) => (
                 <span key={i} className={`hfc hfc-${i}`} />
@@ -291,15 +350,18 @@ export default function HomeHero() {
               🪔
             </span>
             <span className="hero-festive-txt">
-              <span className="hero-festive-kicker">Festive Season Sale is live</span>
+              <span className="hero-festive-kicker">
+                ✦ Festive Season Sale is live ✦
+              </span>
               <span className="hero-festive-amt">
                 Up to <b>50% OFF</b> on every order
               </span>
+              <span className="hero-festive-hint">Tap for a surprise 🎉</span>
             </span>
             <span className="hero-festive-diya" aria-hidden="true">
               🎉
             </span>
-          </div>
+          </button>
 
           {/* Offers marquee — auto-scrolls; tap any chip to see all reward tiers */}
           <div className="hero-offers-row" role="list">

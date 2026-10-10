@@ -14435,11 +14435,13 @@ img[data-loaded="true"] {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  margin: 0 auto 2px;
-  padding: 9px 20px;
-  /* Banner/ribbon feel — not a button: flat, wide, soft rounded. */
-  border-radius: 10px;
+  gap: 14px;
+  width: 100%;
+  margin: 0 auto 4px;
+  padding: 14px 22px;
+  border: none;
+  border-radius: 18px;
+  cursor: pointer;
   color: #fff8ec;
   background: linear-gradient(
     100deg,
@@ -14450,8 +14452,60 @@ img[data-loaded="true"] {
   );
   background-size: 220% 100%;
   animation: heroFestiveSheen 6s ease-in-out infinite;
+  box-shadow: 0 16px 36px -16px rgba(192, 34, 59, 0.85),
+    inset 0 0 0 1.5px rgba(255, 221, 128, 0.55);
   position: relative;
   overflow: hidden;
+  transition: transform 0.12s ease, box-shadow 0.2s ease;
+}
+.hero-festive:hover {
+  box-shadow: 0 20px 44px -16px rgba(192, 34, 59, 0.9),
+    inset 0 0 0 1.5px rgba(255, 221, 128, 0.7);
+}
+.hero-festive:active {
+  transform: scale(0.98);
+}
+/* Soft radial glow behind the card content */
+.hero-festive-glow {
+  position: absolute;
+  inset: -40% -10%;
+  background: radial-gradient(
+    60% 120% at 50% 0%,
+    rgba(255, 221, 128, 0.55),
+    transparent 70%
+  );
+  pointer-events: none;
+  animation: heroFestivePulse 3.2s ease-in-out infinite;
+}
+@keyframes heroFestivePulse {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+.hero-festive-hint {
+  margin-top: 3px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #fff;
+  opacity: 0.9;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  animation: heroHintBob 1.8s ease-in-out infinite;
+}
+@keyframes heroHintBob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(1.5px);
+  }
 }
 .hero-festive::after {
   content: "";
@@ -14512,13 +14566,20 @@ img[data-loaded="true"] {
   opacity: 0.92;
 }
 .hero-festive-amt {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 800;
 }
 .hero-festive-amt b {
-  font-size: 17px;
+  font-size: 21px;
   font-weight: 900;
   color: #fff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+.hero-festive-kicker {
+  font-size: 11px;
+}
+.hero-festive-diya {
+  font-size: 26px;
 }
 @media (max-width: 520px) {
   .hero-festive {
@@ -14667,6 +14728,50 @@ img[data-loaded="true"] {
   font-weight: 700;
   color: var(--dark-50, #6b7280);
   margin-top: 2px;
+}
+
+/* ── Tap-to-shower confetti (fired from the festive season card) ── */
+.hero-shower-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 26;
+}
+.hero-shower-piece {
+  position: absolute;
+  top: -26px;
+  border-radius: 2px;
+  opacity: 0;
+  will-change: transform, opacity;
+  animation-name: heroShowerFall;
+  animation-timing-function: cubic-bezier(0.3, 0.1, 0.5, 1);
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+}
+.hero-shower-piece.round {
+  border-radius: 50%;
+}
+@keyframes heroShowerFall {
+  0% {
+    transform: translate(0, -26px) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--sh-x, 0), 880px) rotate(var(--sh-rot, 360deg));
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-shower-layer {
+    display: none;
+  }
 }
 
 /* Tap-anywhere firecracker sparkle layer */

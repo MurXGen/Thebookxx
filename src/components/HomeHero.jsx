@@ -236,6 +236,12 @@ export default function HomeHero() {
         <div className="home-hero-inner">
           {/* Festive Q4 sale banner — up to 50% off every order */}
           <div className="hero-festive" role="note">
+            {/* Celebration confetti */}
+            <span className="hero-festive-confetti" aria-hidden="true">
+              {Array.from({ length: 14 }).map((_, i) => (
+                <span key={i} className={`hfc hfc-${i}`} />
+              ))}
+            </span>
             <span className="hero-festive-diya" aria-hidden="true">
               🪔
             </span>
@@ -246,7 +252,7 @@ export default function HomeHero() {
               </span>
             </span>
             <span className="hero-festive-diya" aria-hidden="true">
-              ✨
+              🎉
             </span>
           </div>
 

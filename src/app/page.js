@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import AllBooks from "@/components/AllBooks";
 import CartBar from "@/components/CartBar";
 import Navbar from "@/components/Navbar";
-import ReviewRewardCard from "@/components/ReviewRewardCard";
 import PincodeModal from "@/components/UI/PincodeModal";
 import CountdownTimer from "@/components/UI/CountDownTimer";
 import LabelDivider from "@/components/UI/LineDivider";
@@ -139,35 +138,49 @@ export default function HomePage() {
       {/* Static hero, provides the visible H1 + value prop above the carousel. */}
       <HomeHero />
 
-      {/* Compact 2-row ₹1 books rail — above the review gallery. */}
-      <OneRupeeGrid />
+      <LazySection threshold={0.05}>
+        <Suspense fallback={<BooksSkeleton />}>
+          <SmoothAppear delay={0.2}>
+            <CatalogueSection />
+          </SmoothAppear>
+        </Suspense>
+      </LazySection>
 
-      {/* Share & earn — post a review, get up to ₹200 back. */}
-      <div className="section-1200" style={{ padding: "0 12px" }}>
-        <ReviewRewardCard />
-      </div>
+      {/* Combo offers — curated multi-book bundles, above the ₹1 rail */}
+      <LazySection threshold={0.05}>
+        <Suspense fallback={<BooksSkeleton />}>
+          <SmoothAppear delay={0.28}>
+            <ComboDeals />
+          </SmoothAppear>
+        </Suspense>
+      </LazySection>
+
+      {/* Compact 2-row ₹1 books rail — above the review gallery. */}
+      {/* <OneRupeeGrid /> */}
+
+      {/* Share & earn now lives as a compact CTA in the navbar (ReviewRewardModal),
+          opening the full flow in a slide-up modal. */}
 
       {/* Frequently-bought-together 3D duo bundles — right below the ₹1 store. */}
-      <BundleDeals />
+      {/* <BundleDeals /> */}
 
       {/* Compact 2-row trending rail — shows discounted price + savings. */}
-      <TrendingGrid />
+      {/* <TrendingGrid /> */}
 
       {/* Compact 2-row newly-added rail. */}
-      <NewlyAddedGrid />
+      {/* <NewlyAddedGrid /> */}
 
       {/* Category tabs → 2-column book grid with a switch loader. */}
-      <CategoryBrowse />
+      {/* <CategoryBrowse /> */}
 
       <PincodeModal />
 
       {/* <UnlockModal /> */}
+      {/* Small QuickReads teaser right below the reviews / write-a-review CTA */}
+      <QuickReadsTeaser />
 
       {/* Review-photo trust gallery — replaces the Bestseller carousel */}
       <ReviewGallery />
-
-      {/* Small QuickReads teaser right below the reviews / write-a-review CTA */}
-      <QuickReadsTeaser />
 
       {/* Floating ₹1 gift box temporarily removed */}
       {/* <OneRupeeHero /> */}
@@ -184,25 +197,6 @@ export default function HomePage() {
         <Suspense fallback={null}>
           <SmoothAppear delay={0.4}>
             <RecommendationModal />
-          </SmoothAppear>
-        </Suspense>
-      </LazySection>
-
-      {/* Explore Categories — hidden for now (kept for reuse):
-      <LazySection threshold={0.05}>
-        <Suspense fallback={<BooksSkeleton />}>
-          <SmoothAppear delay={0.2}>
-            <CatalogueSection />
-          </SmoothAppear>
-        </Suspense>
-      </LazySection>
-      */}
-
-      {/* Combo offers — curated multi-book bundles, above the ₹1 rail */}
-      <LazySection threshold={0.05}>
-        <Suspense fallback={<BooksSkeleton />}>
-          <SmoothAppear delay={0.28}>
-            <ComboDeals />
           </SmoothAppear>
         </Suspense>
       </LazySection>

@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TheBookX — Reels Content Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Lora:ital,wght@0,500;0,600;0,700;1,500;1,600;1,700&family=Anton&family=Kaushan+Script&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#121014;--panel:#1b181e;--panel-2:#232027;--line:#322d38;--ink:#efeaf2;--ink-soft:#a79fb0;
+    --accent:#e0162b;--accent-2:#ff4757;--gold:#e0b83a;--ok:#2e9e5b;
+    /* reel palette (fixed, matches the viral format) */
+    --reel-bg:#ffffff;--reel-ink:#141414;--reel-red:#c81e1e;--reel-sub:#6a6a6a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:
+     radial-gradient(90% 60% at 12% -5%, rgba(224,22,43,.14), transparent 55%),
+     radial-gradient(70% 50% at 100% 0%, rgba(224,184,58,.10), transparent 55%),
+     var(--bg);
+    color:var(--ink);font-family:'Inter',system-ui,sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased;}
+  a{color:inherit;}
+  .wrap{max-width:1280px;margin:0 auto;padding:26px 22px 90px;}
+
+  header.top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px;}
+  .brand{display:flex;align-items:center;gap:12px;}
+  .logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#8e0f1c);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:20px;color:#fff;box-shadow:0 10px 24px -8px rgba(224,22,43,.6);}
+  .brand h1{font-size:18px;font-weight:800;letter-spacing:.2px;}
+  .brand p{font-size:12px;color:var(--ink-soft);margin-top:2px;}
+  .kpis{display:flex;gap:10px;flex-wrap:wrap;}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:9px 14px;}
+  .kpi b{font-size:16px;font-weight:800;}
+  .kpi span{display:block;font-size:10.5px;color:var(--ink-soft);letter-spacing:.3px;text-transform:uppercase;margin-top:1px;}
+
+  .grid{display:grid;grid-template-columns:400px 1fr;gap:22px;align-items:start;}
+  @media(max-width:980px){.grid{grid-template-columns:1fr;}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;}
+  .card h2{font-size:13px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--ink-soft);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+  .card h2 .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);}
+
+  /* ---- phone preview ---- */
+  .stageCol{display:flex;flex-direction:column;align-items:center;}
+  .phone{width:340px;height:604px;border-radius:30px;overflow:hidden;box-shadow:0 36px 90px -30px rgba(0,0,0,.8);background:#000;position:relative;border:1px solid #2a2630;}
+  .frameScale{transform:scale(0.31481);transform-origin:top left;width:1080px;height:1920px;}
+  /* reel safe-zone guides (preview only, never exported) */
+  .safe{position:absolute;inset:0;pointer-events:none;display:none;z-index:5;}
+  .safe.on{display:block;}
+  .safe .z{position:absolute;border:2px dashed rgba(224,22,43,.8);border-radius:8px;}
+  .safe .z span{position:absolute;font-size:9px;font-weight:800;color:#fff;background:rgba(224,22,43,.9);padding:2px 6px;border-radius:5px;white-space:nowrap;}
+  .safe .zr{top:33%;bottom:15%;right:2.5%;width:16%;}
+  .safe .zr span{bottom:4px;left:50%;transform:translateX(-50%);}
+  .safe .zb{left:3%;right:3%;bottom:2.5%;height:18%;}
+  .safe .zb span{top:4px;left:8px;}
+  /* ===== THE REEL FRAME (1080x1920) — zoned for IG reel safe areas ===== */
+  .frame{width:1080px;height:1920px;background:var(--reel-bg);position:relative;overflow:hidden;font-family:'Lora',Georgia,serif;}
+  /* HEADER zone: fixed height so the list always starts at the same Y */
+  .rl-top{position:absolute;top:100px;left:84px;right:150px;text-align:center;}
+  .rl-body{position:absolute;top:330px;bottom:336px;left:0;right:0;display:flex;flex-direction:column;justify-content:center;}
+  .rl-avail{font-family:'Inter';font-weight:600;font-size:34px;color:var(--reel-sub);margin-top:20px;line-height:1.35;}
+  .rl-avail mark{background:rgba(200,30,30,.13);color:var(--reel-red);font-weight:800;padding:3px 10px;border-radius:7px;}
+  .rl-avail b{color:var(--reel-red);font-weight:800;}
+  .rl-tag{font-family:'Inter';font-weight:900;font-size:54px;letter-spacing:1px;line-height:1.3;text-transform:uppercase;color:var(--reel-ink);}
+  .rl-title{font-style:italic;font-weight:700;font-size:60px;line-height:1.14;color:var(--reel-ink);text-align:center;margin:0 80px 46px;}
+  .rl-rule{width:120px;height:5px;background:var(--reel-red);border-radius:3px;margin:22px auto 34px;}
+  /* LIST zone: fixed top, left-aligned, same start on every frame */
+  .rl-list{display:flex;flex-direction:column;gap:22px;align-items:center;}
+  .rl-item{display:flex;gap:22px;align-items:flex-start;max-width:772px;width:100%;justify-content:flex-start;}
+  .rl-num{font-weight:700;font-size:44px;color:var(--reel-ink);min-width:58px;text-decoration:underline;text-underline-offset:6px;text-decoration-thickness:3px;}
+  .rl-txt{font-weight:500;font-size:44px;line-height:1.3;color:var(--reel-ink);flex:1;}
+  .rl-lead{font-weight:700;color:var(--reel-red);}
+  /* FOOTER zone: sits above IG caption/follow strip, clear of right buttons */
+  .rl-foot{position:absolute;left:84px;right:150px;top:1486px;border-top:2px dashed #e6e6e6;padding-top:30px;display:flex;align-items:center;justify-content:space-between;gap:24px;}
+  .rl-cta{display:flex;flex-direction:column;}
+  .rl-cta .big{font-family:'Inter';font-weight:900;font-size:44px;color:var(--reel-ink);line-height:1.05;}
+  .rl-cta .big em{font-style:normal;color:var(--reel-red);}
+  .rl-cta .sub{font-family:'Inter';font-weight:600;font-size:29px;color:var(--reel-sub);margin-top:10px;}
+  .rl-cta .sub mark{background:rgba(200,30,30,.13);color:var(--reel-red);font-weight:800;padding:3px 9px;border-radius:7px;}
+  .rl-badge{font-family:'Inter';font-weight:900;font-size:30px;color:#fff;background:var(--reel-red);padding:18px 26px;border-radius:18px;text-align:center;white-space:nowrap;box-shadow:0 14px 30px -10px rgba(200,30,30,.6);}
+  .rl-badge small{display:block;font-size:16px;font-weight:700;opacity:.92;margin-top:4px;letter-spacing:.3px;}
+  .frame.anim .rl-tag,.frame.anim .rl-avail,.frame.anim .rl-title,.frame.anim .rl-rule,.frame.anim .rl-item{opacity:0;}
+
+  .controls{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:18px;width:340px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;border:none;cursor:pointer;font-family:inherit;font-weight:700;font-size:13px;padding:12px 16px;border-radius:30px;color:#fff;transition:transform .15s,filter .2s;}
+  .btn svg{width:16px;height:16px;}
+  .btn:hover{transform:translateY(-2px);filter:brightness(1.08);}
+  .btn:disabled{opacity:.6;cursor:wait;transform:none;}
+  .btn.png{background:var(--accent);box-shadow:0 12px 26px -8px rgba(224,22,43,.6);}
+  .btn.mp4{background:#2a2630;border:1px solid var(--line);}
+  .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink-soft);}
+  .navrow{display:flex;gap:10px;align-items:center;justify-content:center;margin-top:14px;width:340px;}
+  .nav{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--panel-2);color:var(--ink);cursor:pointer;font-size:18px;}
+  .nav:hover{background:var(--accent);border-color:var(--accent);}
+  .daylabel{flex:1;text-align:center;font-weight:700;font-size:13px;}
+  .daylabel span{display:block;font-size:11px;color:var(--ink-soft);font-weight:500;margin-top:2px;}
+
+  /* ---- right column ---- */
+  .rowcards{display:flex;flex-direction:column;gap:18px;}
+  .variants{display:flex;gap:8px;flex-wrap:wrap;}
+  .chip{background:var(--panel-2);border:1px solid var(--line);color:var(--ink-soft);border-radius:30px;padding:8px 14px;font-weight:600;font-size:12px;cursor:pointer;transition:all .18s;}
+  .chip:hover{color:var(--ink);}
+  .chip.on{background:var(--accent);border-color:var(--accent);color:#fff;}
+
+  .booksgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:10px;}
+  .bookcell{cursor:pointer;border-radius:12px;overflow:hidden;border:2px solid transparent;background:var(--panel-2);transition:border .18s,transform .15s;}
+  .bookcell:hover{transform:translateY(-3px);}
+  .bookcell.on{border-color:var(--accent);}
+  .bookcell img{width:100%;height:118px;object-fit:cover;display:block;background:#2a2630;}
+  .bookcell .nm{font-size:10px;font-weight:600;padding:6px 7px;color:var(--ink-soft);line-height:1.25;}
+
+  /* calendar */
+  .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;}
+  @media(max-width:620px){.cal{grid-template-columns:repeat(4,1fr);}}
+  .day{background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:9px 9px 11px;cursor:pointer;transition:border .18s,transform .15s;position:relative;overflow:hidden;}
+  .day:hover{transform:translateY(-2px);}
+  .day.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset;}
+  .day.anchor::after{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--gold));}
+  .day .dow{font-size:10px;font-weight:700;color:var(--ink-soft);letter-spacing:.5px;text-transform:uppercase;}
+  .day .dt{font-size:11px;color:var(--ink-soft);margin-bottom:6px;}
+  .day .bk{font-size:11px;font-weight:700;line-height:1.25;}
+  .day .vt{font-size:9.5px;color:var(--accent-2);font-weight:600;margin-top:3px;}
+  .today-badge{font-size:9px;font-weight:800;color:#fff;background:var(--gold);color:#201a00;border-radius:20px;padding:1px 7px;position:absolute;top:7px;right:7px;}
+
+  .copyblock{margin-top:12px;background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:12px;}
+  .copyhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;}
+  .copyhead h3{font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--ink-soft);}
+  .copybtn{background:var(--accent);color:#fff;border:none;border-radius:20px;padding:5px 12px;font-weight:700;font-size:10.5px;cursor:pointer;font-family:inherit;}
+  .copybtn.done{background:var(--ok);}
+  .copytext{font-size:12.5px;line-height:1.55;color:#d6cfdd;white-space:pre-wrap;}
+  .copytext.tags{color:var(--gold);}
+
+  .tips{font-size:12.5px;line-height:1.7;color:#cfc8d6;}
+  .tips li{margin-bottom:7px;}
+  .tips b{color:var(--gold);}
+  .note{font-size:11.5px;color:var(--ink-soft);margin-top:10px;line-height:1.5;}
+  .pill{display:inline-block;background:var(--panel-2);border:1px solid var(--line);border-radius:20px;padding:3px 10px;font-size:11px;color:var(--ink-soft);margin:2px 4px 2px 0;}
+
+  /* line-grid backdrop + polish */
+  .bggrid{position:fixed;inset:0;z-index:0;pointer-events:none;
+    background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);
+    background-size:46px 46px;-webkit-mask-image:radial-gradient(130% 92% at 50% -6%,#000 46%,transparent 88%);mask-image:radial-gradient(130% 92% at 50% -6%,#000 46%,transparent 88%);}
+  .wrap{position:relative;z-index:1;}
+  .card{background:linear-gradient(180deg,rgba(35,32,39,.72),rgba(24,21,27,.82));backdrop-filter:blur(6px);box-shadow:0 22px 54px -26px rgba(0,0,0,.65),inset 0 1px 0 rgba(255,255,255,.03);}
+  .logo{position:relative;overflow:hidden;}
+  .logo::after{content:"";position:absolute;inset:0;background:radial-gradient(60% 60% at 30% 20%,rgba(255,255,255,.35),transparent 60%);}
+  .kpi{background:linear-gradient(180deg,rgba(35,32,39,.7),rgba(24,21,27,.8));}
+  .ribbon{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(90deg,rgba(224,22,43,.16),rgba(224,184,58,.12));border:1px solid var(--line);border-radius:30px;padding:7px 14px;font-size:11.5px;font-weight:700;color:#e9e4ec;margin:2px 0 16px;}
+  .ribbon .d{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);}
+  /* 20s SaaS presentation card */
+  .saas .saaswrap{display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start;}
+  .phone.sm{width:300px;height:533px;border-radius:26px;}
+  .phone.sm canvas{width:300px;height:533px;display:block;background:#fbfaf8;}
+  .saasinfo{flex:1;min-width:250px;}
+  .saasinfo p{font-size:13px;line-height:1.65;color:#cfc8d6;margin-bottom:14px;}
+  .feat{display:flex;gap:10px;align-items:flex-start;font-size:12.5px;color:#cfc8d6;margin-bottom:9px;line-height:1.5;}
+  .feat i{width:20px;height:20px;border-radius:6px;background:rgba(224,22,43,.16);color:var(--accent);display:flex;align-items:center;justify-content:center;font-style:normal;font-weight:900;font-size:12px;flex:0 0 auto;margin-top:1px;}
+  .feat b{color:var(--gold);}
+
+  /* ===== editorial carousel (swipe post) ===== */
+  .carowrap{display:flex;gap:26px;flex-wrap:wrap;align-items:flex-start;}
+  .caroframe{position:relative;width:324px;height:405px;border-radius:16px;overflow:hidden;box-shadow:0 22px 54px -26px rgba(0,0,0,.7);background:#fff;}
+  .cscale{transform:scale(0.3);transform-origin:top left;width:1080px;height:1350px;}
+  .cslide{width:1080px;height:1350px;position:relative;background:#ffffff;overflow:hidden;}
+  .cgrid{position:absolute;inset:0;background-image:linear-gradient(#ededed 2px,transparent 2px),linear-gradient(90deg,#ededed 2px,transparent 2px);background-size:66px 66px;-webkit-mask-image:radial-gradient(130% 100% at 50% 50%,#000 70%,transparent 100%);mask-image:radial-gradient(130% 100% at 50% 50%,#000 70%,transparent 100%);}
+  .curl{position:absolute;top:72px;left:90px;font-family:'Poppins';font-weight:700;font-size:28px;letter-spacing:3px;color:#141414;text-transform:uppercase;}
+  .cmade{position:absolute;bottom:88px;left:90px;font-family:'Poppins';font-weight:600;font-size:26px;letter-spacing:2px;color:#141414;text-transform:uppercase;line-height:1.55;}
+  .cmade b{font-weight:800;}
+  .ccircle{position:absolute;width:150px;height:150px;border-radius:50%;background:#E8622A;border:9px solid #141414;display:flex;align-items:center;justify-content:center;}
+  .ccircle svg{width:80px;height:80px;}
+  .cslide.even .ccircle{top:86px;right:86px;}
+  .cslide.odd .ccircle{bottom:150px;right:86px;}
+  .cdraw{width:240px;height:auto;display:block;}
+  .cslide.even .cdraw{margin:0 0 26px 8px;}
+  .cslide.odd .cdraw{margin:34px 0 0 8px;}
+  .ccontent{position:absolute;left:150px;right:120px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:flex-start;}
+  .cblack{font-family:'Anton';font-weight:400;font-size:118px;line-height:.94;letter-spacing:1px;text-transform:uppercase;color:#141414;}
+  .cscript{font-family:'Kaushan Script';font-size:128px;line-height:.9;color:#E8622A;margin:2px 0;}
+  .cbody{font-family:'Poppins';font-weight:500;font-size:40px;line-height:1.36;color:#141414;max-width:650px;margin-top:42px;}
+  .cslide.cta .cbody{font-weight:600;}
+  .cnav{position:absolute;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:50%;border:none;background:rgba(20,20,20,.72);color:#fff;cursor:pointer;z-index:4;font-size:16px;}
+  .cnav.cprev{left:8px;} .cnav.cnext{right:8px;}
+  .cdots{display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap;}
+  .cdots button{width:9px;height:9px;border-radius:50%;border:none;background:#5c574c;cursor:pointer;padding:0;transition:all .2s;}
+  .cdots button.on{background:#E8622A;width:22px;border-radius:5px;}
+  .caroinfo{flex:1;min-width:250px;}
+  .caroinfo p{font-size:13px;line-height:1.65;color:#cfc8d6;margin-bottom:14px;}
+  /* ===== whatsapp daily post ===== */
+  .wawrap{display:flex;gap:26px;flex-wrap:wrap;align-items:flex-start;}
+  .waframe-wrap{position:relative;width:324px;height:324px;border-radius:16px;overflow:hidden;box-shadow:0 22px 54px -26px rgba(0,0,0,.7);background:#F7F1E7;}
+  .wascale{transform:scale(0.3);transform-origin:top left;width:1080px;height:1080px;}
+  .wapost{width:1080px;height:1080px;position:relative;background:#F7F1E7;overflow:hidden;font-family:'Poppins';}
+  .wapost:before{content:"";position:absolute;inset:0;background-image:radial-gradient(circle at 85% 12%,rgba(232,98,42,.10),transparent 42%);}
+  .wa-top{position:absolute;top:68px;left:84px;right:84px;display:flex;justify-content:space-between;align-items:center;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#241f1c;font-size:30px;}
+  .wa-top .wa-hand{color:#E8622A;}
+  .wa-main{position:absolute;top:196px;left:84px;right:84px;height:600px;display:flex;gap:54px;align-items:center;}
+  .wa-cover{height:560px;width:auto;border-radius:12px;box-shadow:0 32px 60px -20px rgba(0,0,0,.55);flex:0 0 auto;}
+  .wa-q{flex:1;position:relative;}
+  .wa-q .qm{font-family:'Lora';font-weight:700;font-size:150px;line-height:.6;color:#E8622A;opacity:.85;display:block;height:70px;}
+  .wa-quote{font-family:'Lora';font-style:italic;font-weight:600;font-size:52px;line-height:1.26;color:#241f1c;}
+  .wa-book{margin-top:30px;font-weight:600;font-size:30px;color:#6b5f54;}
+  .wa-badge{position:absolute;left:84px;right:84px;bottom:168px;display:flex;gap:24px;align-items:center;flex-wrap:wrap;}
+  .wa-pill{background:#E8622A;color:#fff;font-weight:800;font-size:34px;padding:16px 32px;border-radius:50px;letter-spacing:.5px;white-space:nowrap;}
+  .wa-bm{font-weight:600;font-size:30px;color:#241f1c;}
+  .wa-foot{position:absolute;left:0;right:0;bottom:62px;text-align:center;font-weight:800;font-size:30px;letter-spacing:1px;color:#241f1c;text-transform:uppercase;}
+  .wa-foot b{color:#E8622A;}
+  .wainfo{flex:1;min-width:260px;}
+  .wainfo p{font-size:13px;line-height:1.65;color:#cfc8d6;margin-bottom:14px;}
+  .wacap{width:100%;min-height:168px;margin-top:12px;background:#17141d;border:1px solid #322c3d;border-radius:12px;color:#e8e3ef;font-family:inherit;font-size:12.5px;line-height:1.6;padding:12px 14px;resize:vertical;}
+</style>
+</head>
+<body>
+<div class="bggrid"></div>
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand">
+      <div class="logo">X</div>
+      <div><h1>TheBookX — Reels Studio</h1><p>Daily book-insight reels, built on a proven viral format</p></div>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><b id="kBooks">0</b><span>Books loaded</span></div>
+      <div class="kpi"><b id="kReels">0</b><span>Reels ready</span></div>
+      <div class="kpi"><b>₹1</b><span>Hook price</span></div>
+      <div class="kpi"><b>Daily</b><span>Post cadence</span></div>
+    </div>
+  </header>
+
+  <div class="ribbon"><span class="d"></span>Trend-matched &bull; Static PNG + 20-second animated reel video &bull; ₹1 hook on every frame</div>
+  <div class="grid">
+    <!-- LEFT: preview + export -->
+    <div class="stageCol">
+      <div class="phone"><div class="frameScale"><div class="frame" id="frame"></div></div><div class="safe" id="safe"><div class="z zr"><span>Action buttons</span></div><div class="z zb"><span>Caption &middot; follow &middot; audio</span></div></div></div>
+      <div class="navrow">
+        <button class="nav" id="prev">&#8249;</button>
+        <div class="daylabel" id="dayLabel">—</div>
+        <button class="nav" id="next">&#8250;</button>
+      </div>
+      <div class="controls">
+        <button class="btn png" id="dlpng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg>Download PNG</button>
+        <button class="btn ghost" id="safeBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18"/></svg>Safe zones</button><button class="btn mp4" id="dlmp4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v12H4zM8 20h8"/></svg>Download reel video (20s)</button>
+      </div>
+      <div class="note" style="width:340px;text-align:center">PNG for a static post, or the <b style="color:var(--gold)">20-second video</b> (your reel, animated) to post as a Reel with trending audio. MP4 needs Chrome/Edge.</div>
+    </div>
+
+    <!-- RIGHT: controls + calendar + copy + tips -->
+    <div class="rowcards">
+      <div class="card">
+        <h2><span class="dot"></span>Pick a book &amp; angle</h2>
+        <div class="variants" id="variants"></div>
+        <div style="height:14px"></div>
+        <div class="booksgrid" id="booksgrid"></div>
+      </div>
+
+      <div class="card">
+        <h2><span class="dot"></span>Caption &amp; hashtags</h2>
+        <div class="copyblock">
+          <div class="copyhead"><h3>Caption</h3><button class="copybtn" data-t="cap">Copy</button></div>
+          <div class="copytext" id="cap"></div>
+        </div>
+        <div class="copyblock">
+          <div class="copyhead"><h3>Hashtags</h3><button class="copybtn" data-t="tags">Copy</button></div>
+          <div class="copytext tags" id="tags"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2><span class="dot"></span>2-week posting plan <span style="margin-left:auto;font-weight:500;text-transform:none;letter-spacing:0;color:var(--ink-soft)">red bar = The Art of Clarity (recurs with a new angle)</span></h2>
+        <div class="cal" id="cal"></div>
+      </div>
+
+      <div class="card">
+        <h2><span class="dot"></span>Why this format works (and how to post it)</h2>
+        <ul class="tips">
+          <li><b>One repeatable look.</b> Same white listicle + serif title every day builds instant recognition (the reference channel did exactly this to 54K followers).</li>
+          <li><b>Hook in the title.</b> "8 Signs You Overthink Everything:" promises a payoff and makes people stop.</li>
+          <li><b>Red leads, black rest.</b> The eye lands on the bold red phrase first, then reads on — high retention per slide.</li>
+          <li><b>Last line = the ask.</b> Point 8 is always a follow-CTA, and the footer always says <b>Grab books at ₹1</b>.</li>
+          <li><b>Trending audio + daily cadence.</b> Static image, fresh audio, posted every day — the algorithm rewards consistency and saves.</li>
+          <li><b>Anchor + rotation.</b> The Art of Clarity returns every other day with a new angle (overthinking / decisions / rhymes), so the hero book compounds without feeling repetitive.</li>
+        </ul>
+        <div class="note">Caption first 2 lines carry the hook. Ask for a <b>Save</b> and a <b>comment</b>. Reply to early comments fast.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+  <div class="card caro">
+    <h2><span class="dot"></span>Editorial carousel (swipe post)</h2>
+    <div class="carowrap">
+      <div class="caroframe"><div class="cscale"><div class="cslide" id="cframe"></div></div>
+        <button class="cnav cprev">&#8249;</button><button class="cnav cnext">&#8250;</button></div>
+      <div class="caroinfo">
+        <div class="cdots" id="cdots"></div>
+        <p>A premium swipe carousel in the viral editorial style &mdash; grid paper, a heavy <b style="color:#E8622A">condensed + brush-script</b> headline, hand-drawn arrows and the thebookx.in / author credits. Built from the selected book's insights: a cover, one slide per lesson, and a &#8377;1 close.</p>
+        <div class="controls" style="width:auto;justify-content:flex-start;margin-top:4px;">
+          <button class="btn png" id="cdlone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg>Download slide</button>
+          <button class="btn mp4" id="cdlall"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v12H4zM8 20h8"/></svg>Download all slides</button>
+        </div>
+        <div class="note" style="margin-top:12px">1080&times;1350 PNG per slide. "Download all" saves the full set &mdash; your browser may ask to allow multiple downloads once.</div>
+      </div>
+    </div>
+  </div>
+  <div class="card wa">
+    <h2><span class="dot"></span>WhatsApp daily post &mdash; TheBookX group</h2>
+    <div class="wawrap">
+      <div class="waframe-wrap"><div class="wascale"><div class="wapost" id="waframe"></div></div></div>
+      <div class="wainfo">
+        <p>One clean square to send to the <b>TheBookX</b> WhatsApp group each day &mdash; a short quote from the day's book, the free-bookmark perk, the up-to-50%-off hook, and the book link inside the caption. Posts one book per day on the same rotation as the reels.</p>
+        <div class="controls" style="width:auto;justify-content:flex-start;margin-top:4px;">
+          <button class="btn png" id="wadl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg>Download post</button>
+          <button class="btn mp4" id="wacopy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 9h10v10H9zM5 15H4V5h10v1"/></svg>Copy caption</button>
+        </div>
+        <textarea id="wacap" class="wacap" readonly></textarea>
+        <div class="note" style="margin-top:10px">1080&times;1080 PNG. Send one per day to the group and paste the caption &mdash; the book link is already included.</div>
+      </div>
+    </div>
+  </div>
+<div id="waExportHost" style="position:fixed;left:-20000px;top:0;width:1080px;height:1080px;"></div>
+<div id="cexportHost" style="position:fixed;left:-20000px;top:0;width:1080px;height:1350px;"></div>
+<div id="exportHost" style="position:fixed;left:-20000px;top:0;width:1080px;height:1920px;"></div>
+
+<script>
+/* ============ BOOK DATA (key insights as red-lead listicles) ============ */
+const CTA = {l:"If you're not following us,", r:"you'll probably never see this again."};
+const B = "public/books/";
+const BOOKS = [
+  { id:"clarity", title:"The Art of Clarity", author:"Murthy Thevar", cover:B+"the-art-of-clarity.jpeg", anchor:true,
+    tags:"#TheArtOfClarity #MurthyThevar #TheBookX #Overthinking #Clarity #SelfHelp #Bookstagram #BookstagramIndia #Mindset #ProductivityTips #PersonalGrowth #BooksFrom1Rupee",
+    variants:[
+      { tag:"Overthinking", title:"8 Signs You Overthink Everything:", items:[
+        {l:"You replay",r:"conversations that ended hours ago."},
+        {l:"You wait for",r:"a perfect moment that never arrives."},
+        {l:"You mistake being busy",r:"for actually moving forward."},
+        {l:"You ask everyone",r:"except the voice inside you."},
+        {l:"You fear the wrong turn",r:"more than standing still."},
+        {l:"You end the day tired",r:"from deciding, not doing."},
+        {l:"You wait to feel ready",r:"instead of just starting."}, CTA ]},
+      { tag:"Decisions", title:"7 Ways to Finally Make the Call:", items:[
+        {l:"Stop asking what's perfect,",r:"ask what cost you can live with."},
+        {l:"Set a deadline,",r:"or the choice quietly rots."},
+        {l:"Separate the fact",r:"from the story you added."},
+        {l:"Write it down,",r:"clarity starts where noise ends."},
+        {l:"Open the reversible door",r:"fast, the one-way door slow."},
+        {l:"Take the smallest step,",r:"action turns fog into a path."},
+        {l:"Choose, then adjust,",r:"a decision made is energy freed."}, CTA ]},
+      { tag:"Rhyme", title:"8 Tiny Truths for a Clearer Mind:", items:[
+        {l:"A crowded head",r:"keeps you in dread."},
+        {l:"The more you chase,",r:"the less you place."},
+        {l:"Busy all day",r:"can lose the way."},
+        {l:"One clear thing",r:"beats everything."},
+        {l:"Delay the choice,",r:"you lose your voice."},
+        {l:"Think a touch less,",r:"act and progress."},
+        {l:"Quiet the noise,",r:"and find your poise."}, CTA ]},
+    ]},
+  { id:"pom", title:"The Psychology of Money", author:"Morgan Housel", cover:B+"psychology-of-money.jpeg",
+    tags:"#ThePsychologyOfMoney #MorganHousel #TheBookX #PersonalFinance #MoneyMindset #Investing #FinanceBooks #Bookstagram #BookstagramIndia #FinancialFreedom #BooksFrom1Rupee",
+    variants:[{ tag:"Money", title:"7 Money Truths People Learn Too Late:", items:[
+      {l:"Wealth is what",r:"you don't see, not what you show."},
+      {l:"Getting rich and staying rich",r:"are two different skills."},
+      {l:"Saving needs no reason —",r:"it buys you freedom."},
+      {l:"Time, not timing,",r:"does the real compounding."},
+      {l:"'Enough'",r:"is the hardest number to know."},
+      {l:"Behaviour beats brains",r:"when fear shows up."},
+      {l:"You don't need more,",r:"you need fewer mistakes."}, CTA ]}]},
+  { id:"atomic", title:"Atomic Habits", author:"James Clear", cover:B+"atomic-habits.png",
+    tags:"#AtomicHabits #JamesClear #TheBookX #Habits #Productivity #SelfHelp #Discipline #Bookstagram #BookstagramIndia #PersonalGrowth #BooksFrom1Rupee",
+    variants:[{ tag:"Habits", title:"7 Habit Laws That Actually Work:", items:[
+      {l:"You don't rise to goals,",r:"you fall to your systems."},
+      {l:"Get 1% better daily —",r:"it compounds fast."},
+      {l:"Make it obvious,",r:"cue the habit you want."},
+      {l:"Make it easy,",r:"shrink it till it's effortless."},
+      {l:"Never miss twice,",r:"one slip isn't failure."},
+      {l:"Change your identity,",r:"not just your to-do list."},
+      {l:"Environment beats",r:"motivation every time."}, CTA ]}]},
+  { id:"courage", title:"The Courage to Be Disliked", author:"Kishimi & Koga", cover:B+"courage-to-be-disliked.png",
+    tags:"#TheCourageToBeDisliked #Adlerian #TheBookX #Psychology #SelfHelp #Mindset #Freedom #Bookstagram #BookstagramIndia #PersonalGrowth #BooksFrom1Rupee",
+    variants:[{ tag:"Freedom", title:"7 Hard Truths About Freedom:", items:[
+      {l:"Your past",r:"does not decide your present."},
+      {l:"Most problems",r:"are really relationship problems."},
+      {l:"What they think of you",r:"is their task, not yours."},
+      {l:"Living for approval",r:"is living in a cage."},
+      {l:"You can change",r:"the moment you decide to."},
+      {l:"Happiness is contribution,",r:"not applause."},
+      {l:"Freedom begins",r:"when you accept being disliked."}, CTA ]}]},
+  { id:"ego", title:"Ego Is the Enemy", author:"Ryan Holiday", cover:B+"ego-is-the-enemy.png",
+    tags:"#EgoIsTheEnemy #RyanHoliday #TheBookX #Stoicism #SelfHelp #Discipline #Humility #Bookstagram #BookstagramIndia #PersonalGrowth #BooksFrom1Rupee",
+    variants:[{ tag:"Ego", title:"7 Lessons to Beat Your Ego:", items:[
+      {l:"Stay a student,",r:"the moment you 'arrive' you stop."},
+      {l:"Talk less,",r:"do more in silence."},
+      {l:"Humble work",r:"beats flashy words."},
+      {l:"Detach from the outcome,",r:"own the effort."},
+      {l:"Success needs sobriety,",r:"not a victory lap."},
+      {l:"Your worst enemy",r:"lives in your own head."},
+      {l:"Be humble,",r:"or life will humble you."}, CTA ]}]},
+  { id:"deep", title:"Deep Work", author:"Cal Newport", cover:B+"deep-work.jpeg",
+    tags:"#DeepWork #CalNewport #TheBookX #Focus #Productivity #DigitalMinimalism #SelfHelp #Bookstagram #BookstagramIndia #PersonalGrowth #BooksFrom1Rupee",
+    variants:[{ tag:"Focus", title:"7 Rules for Unreal Focus:", items:[
+      {l:"Depth",r:"is the new superpower."},
+      {l:"Busy",r:"is not the same as productive."},
+      {l:"Time-block",r:"every hour of your day."},
+      {l:"Train attention",r:"like a muscle — embrace boredom."},
+      {l:"Quit the shallow",r:"inputs that add only noise."},
+      {l:"Protect your focus",r:"like it's your money."},
+      {l:"Make focus",r:"a ritual, not a mood."}, CTA ]}]},
+  { id:"ikigai", title:"Ikigai", author:"García & Miralles", cover:B+"Ikigai.jpg",
+    tags:"#Ikigai #TheBookX #JapanesePhilosophy #Purpose #Mindfulness #SelfHelp #Longevity #Bookstagram #BookstagramIndia #HappyLife #BooksFrom1Rupee",
+    variants:[{ tag:"Purpose", title:"7 Japanese Secrets to a Long Life:", items:[
+      {l:"Never truly retire,",r:"keep a reason to wake up."},
+      {l:"Take it slow,",r:"hurry steals the joy."},
+      {l:"Eat till",r:"you're 80% full."},
+      {l:"Surround yourself",r:"with good friends."},
+      {l:"Find flow",r:"in the work you love."},
+      {l:"Live in",r:"the present moment."},
+      {l:"Your ikigai",r:"is where love meets purpose."}, CTA ]}]},
+  { id:"richdad", title:"Rich Dad Poor Dad", author:"Robert Kiyosaki", cover:B+"Rich-Dad-Poor-Dad.jpg",
+    tags:"#RichDadPoorDad #RobertKiyosaki #TheBookX #FinancialLiteracy #MoneyMindset #PersonalFinance #Investing #Bookstagram #BookstagramIndia #BooksFrom1Rupee",
+    variants:[{ tag:"Money", title:"7 Money Lessons School Skips:", items:[
+      {l:"The rich",r:"make money work for them."},
+      {l:"Buy assets,",r:"not liabilities that drain you."},
+      {l:"Learn how",r:"money actually works."},
+      {l:"Pay yourself",r:"first, always."},
+      {l:"Mind your own business,",r:"build assets."},
+      {l:"Fear and greed",r:"keep most people poor."},
+      {l:"It's not income,",r:"it's what you keep."}, CTA ]}]},
+  { id:"subtle", title:"The Subtle Art of Not Giving a F*ck", author:"Mark Manson", cover:B+"the-subtle-art-of-not-giving-a-fck.png",
+    tags:"#TheSubtleArt #MarkManson #TheBookX #SelfHelp #Mindset #Honesty #PersonalGrowth #Bookstagram #BookstagramIndia #BooksFrom1Rupee",
+    variants:[{ tag:"Truths", title:"7 Truths Nobody Tells You:", items:[
+      {l:"You can't care",r:"about everything — choose."},
+      {l:"Pain",r:"is the price of growth."},
+      {l:"You are responsible",r:"for how you respond."},
+      {l:"Being 'not special'",r:"is freeing, not sad."},
+      {l:"Your values",r:"decide the problems you get."},
+      {l:"Say no",r:"to live a fuller yes."},
+      {l:"Remember death,",r:"it makes the trivial obvious."}, CTA ]}]},
+  { id:"alchemist", title:"The Alchemist", author:"Paulo Coelho", cover:B+"alchemist.png",
+    tags:"#TheAlchemist #PauloCoelho #TheBookX #Fiction #Inspiration #Dreams #SelfDiscovery #Bookstagram #BookstagramIndia #MustRead #BooksFrom1Rupee",
+    variants:[{ tag:"Dreams", title:"7 Lessons on Chasing Your Dream:", items:[
+      {l:"Fear of failure",r:"is the only real obstacle."},
+      {l:"When you truly want it,",r:"the universe conspires to help."},
+      {l:"The journey",r:"teaches more than the treasure."},
+      {l:"Listen",r:"to your heart, it knows."},
+      {l:"Every 'no'",r:"is a lesson in disguise."},
+      {l:"Your Personal Legend",r:"is worth the risk."},
+      {l:"The treasure",r:"is often where you began."}, CTA ]}]},
+  { id:"tgr", title:"Think and Grow Rich", author:"Napoleon Hill", cover:B+"think-and-grow-rich.png",
+    tags:"#ThinkAndGrowRich #NapoleonHill #TheBookX #Success #WealthMindset #PersonalFinance #SelfHelp #Bookstagram #BookstagramIndia #BooksFrom1Rupee",
+    variants:[{ tag:"Success", title:"7 Laws of Getting Rich:", items:[
+      {l:"Desire",r:"is the starting point of all riches."},
+      {l:"Thoughts become things —",r:"choose them well."},
+      {l:"A definite plan",r:"beats a vague wish."},
+      {l:"Persistence",r:"outlasts talent."},
+      {l:"Surround yourself",r:"with a mastermind."},
+      {l:"Decide fast,",r:"change your mind slow."},
+      {l:"Master fear,",r:"it's the only true enemy."}, CTA ]}]},
+  { id:"5am", title:"The 5 AM Club", author:"Robin Sharma", cover:B+"the-5-am-club.png",
+    tags:"#The5AMClub #RobinSharma #TheBookX #MorningRoutine #Discipline #Productivity #SelfHelp #Bookstagram #BookstagramIndia #PersonalGrowth #BooksFrom1Rupee",
+    variants:[{ tag:"Mornings", title:"7 Rules to Own Your Morning:", items:[
+      {l:"Win the morning,",r:"win the day."},
+      {l:"The 20/20/20:",r:"move, reflect, grow."},
+      {l:"Protect the first hour",r:"from your phone."},
+      {l:"Small daily wins",r:"build real confidence."},
+      {l:"Rest",r:"is part of the work."},
+      {l:"Discipline",r:"is self-respect in action."},
+      {l:"How you start",r:"sets how you finish."}, CTA ]}]},
+  { id:"mindset", title:"Mindset", author:"Carol Dweck", cover:B+"mindset.png",
+    tags:"#Mindset #CarolDweck #TheBookX #GrowthMindset #SelfHelp #Learning #PersonalGrowth #Bookstagram #BookstagramIndia #Motivation #BooksFrom1Rupee",
+    variants:[{ tag:"Growth", title:"7 Shifts From Fixed to Growth:", items:[
+      {l:"'Not yet'",r:"beats 'I can't'."},
+      {l:"Effort",r:"is the path to mastery."},
+      {l:"Failure",r:"is information, not identity."},
+      {l:"Praise the process,",r:"not the talent."},
+      {l:"Challenges",r:"are reps for your brain."},
+      {l:"Feedback",r:"is a gift, not an attack."},
+      {l:"You can grow",r:"any ability you choose."}, CTA ]}]},
+  { id:"7habits", title:"The 7 Habits of Highly Effective People", author:"Stephen Covey", cover:B+"the-7-habits-of-highly-effective-people.jpeg",
+    tags:"#7Habits #StephenCovey #TheBookX #Effectiveness #SelfHelp #Leadership #Productivity #Bookstagram #BookstagramIndia #PersonalGrowth #BooksFrom1Rupee",
+    variants:[{ tag:"Habits", title:"The 7 Habits of Effective People:", items:[
+      {l:"Be proactive,",r:"own your response."},
+      {l:"Begin",r:"with the end in mind."},
+      {l:"Put first things first,",r:"not the urgent noise."},
+      {l:"Think win-win,",r:"not win-lose."},
+      {l:"Seek to understand",r:"before being understood."},
+      {l:"Synergize —",r:"1 plus 1 can be 10."},
+      {l:"Sharpen the saw,",r:"renew yourself."}, CTA ]}]},
+];
+
+/* ============ ROTATION: anchor every other day w/ rotating variants ============ */
+const DOW=['SUN','MON','TUE','WED','THU','FRI','SAT'];
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function buildPlan(days){
+  const anchor=BOOKS.find(b=>b.anchor);
+  const others=BOOKS.filter(b=>!b.anchor);
+  const start=new Date(); start.setHours(0,0,0,0);
+  let plan=[], oi=0, vi=0;
+  for(let i=0;i<days;i++){
+    const d=new Date(start); d.setDate(d.getDate()+i);
+    if(i%2===0){ plan.push({date:d, bookId:anchor.id, vIdx:vi%anchor.variants.length, anchor:true}); vi++; }
+    else { const b=others[oi%others.length]; oi++; plan.push({date:d, bookId:b.id, vIdx:0, anchor:false}); }
+  }
+  return plan;
+}
+let PLAN=buildPlan(14);
+let cur=0; // selected plan index
+let selBook=null, selVar=0; // manual override mode
+
+function bookById(id){ return BOOKS.find(b=>b.id===id); }
+
+/* ============ RENDER THE REEL FRAME ============ */
+const frame=document.getElementById('frame');
+function currentSelection(){
+  if(selBook) return {book:bookById(selBook), vIdx:selVar, date:null};
+  const p=PLAN[cur]; return {book:bookById(p.bookId), vIdx:p.vIdx, date:p.date};
+}
+function renderFrame(){
+  const {book,vIdx}=currentSelection();
+  const v=book.variants[vIdx];
+  const items=v.items.map((it,i)=>(
+    '<div class="rl-item"><span class="rl-num">'+(i+1)+'.</span>'+
+    '<span class="rl-txt"><b class="rl-lead">'+it.l+'</b> '+it.r+'</span></div>'
+  )).join('');
+  frame.innerHTML =
+    '<div class="rl-top"><div class="rl-tag">'+book.title.replace(/\*/g,'')+' Book</div>'+
+      '<div class="rl-avail">Available now on <mark>thebookx.in</mark> &middot; from <b>&#8377;1</b></div></div>'+
+    '<div class="rl-body"><div class="rl-title">'+v.title+'</div>'+
+      '<div class="rl-list">'+items+'</div></div>';
+  // caption + tags
+  document.getElementById('cap').textContent =
+    v.title+'\n\n'+
+    '→ '+v.items[0].l+' '+v.items[0].r+'\n'+
+    '→ '+v.items[1].l+' '+v.items[1].r+'\n'+
+    '→ '+v.items[2].l+' '+v.items[2].r+'\n\n'+
+    'Save this & follow @thebookx for one every day.\n'+
+    '📚 Grab '+book.title.replace(/\*/g,'')+' and more from ₹1 → thebookx.in\n\n'+
+    'Which one hit hardest? Tell me 👇';
+  document.getElementById('tags').textContent = book.tags;
+  // labels + chips + active states
+  const sel=currentSelection();
+  document.getElementById('dayLabel').innerHTML = sel.date
+    ? (DOW[sel.date.getDay()]+' · '+sel.date.getDate()+' '+MON[sel.date.getMonth()]+'<span>'+book.title.replace(/\*/g,'')+' — '+v.tag+(PLAN[cur].anchor?' (anchor)':'')+'</span>')
+    : (book.title.replace(/\*/g,'')+'<span>'+v.tag+' — manual preview</span>');
+  renderVariants();
+  markBooks();
+  markDays();
+}
+
+/* variants chips for the selected book */
+function renderVariants(){
+  const {book,vIdx}=currentSelection();
+  const box=document.getElementById('variants');
+  box.innerHTML = book.variants.map((v,i)=>'<button class="chip'+(i===vIdx?' on':'')+'" data-v="'+i+'">'+v.tag+'</button>').join('')
+    + (book.variants.length>1 ? '<span class="pill" style="align-self:center">The Art of Clarity has '+book.variants.length+' angles that rotate automatically</span>' : '');
+  box.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>{
+    selBook=book.id; selVar=parseInt(c.getAttribute('data-v'),10); renderFrame();
+  }));
+}
+
+/* books grid */
+function buildBooks(){
+  const g=document.getElementById('booksgrid');
+  g.innerHTML = BOOKS.map(b=>(
+    '<div class="bookcell" data-b="'+b.id+'"><img src="'+b.cover+'" alt="'+b.title.replace(/"/g,'')+'" onerror="this.style.opacity=.25"><div class="nm">'+b.title.replace(/\*/g,'')+(b.anchor?' ⭐':'')+'</div></div>'
+  )).join('');
+  g.querySelectorAll('.bookcell').forEach(c=>c.addEventListener('click',()=>{ selBook=c.getAttribute('data-b'); selVar=0; renderFrame(); }));
+}
+function markBooks(){
+  const {book}=currentSelection();
+  document.querySelectorAll('.bookcell').forEach(c=>c.classList.toggle('on', c.getAttribute('data-b')===book.id));
+}
+
+/* calendar */
+function buildCal(){
+  const c=document.getElementById('cal');
+  c.innerHTML = PLAN.map((p,i)=>{
+    const b=bookById(p.bookId), v=b.variants[p.vIdx];
+    const today=i===0;
+    return '<div class="day'+(p.anchor?' anchor':'')+'" data-i="'+i+'">'+
+      (today?'<span class="today-badge">TODAY</span>':'')+
+      '<div class="dow">'+DOW[p.date.getDay()]+'</div>'+
+      '<div class="dt">'+p.date.getDate()+' '+MON[p.date.getMonth()]+'</div>'+
+      '<div class="bk">'+b.title.replace(/\*/g,'')+'</div>'+
+      '<div class="vt">'+v.tag+'</div></div>';
+  }).join('');
+  c.querySelectorAll('.day').forEach(d=>d.addEventListener('click',()=>{ cur=parseInt(d.getAttribute('data-i'),10); selBook=null; renderFrame(); }));
+}
+function markDays(){
+  document.querySelectorAll('.day').forEach(d=>d.classList.toggle('on', !selBook && parseInt(d.getAttribute('data-i'),10)===cur));
+}
+
+document.getElementById('prev').addEventListener('click',()=>{ selBook=null; cur=(cur-1+PLAN.length)%PLAN.length; renderFrame(); });
+document.getElementById('next').addEventListener('click',()=>{ selBook=null; cur=(cur+1)%PLAN.length; renderFrame(); });
+
+/* copy buttons */
+document.querySelectorAll('.copybtn').forEach(btn=>btn.addEventListener('click',()=>{
+  const t=document.getElementById(btn.getAttribute('data-t')).innerText;
+  const done=()=>{ btn.classList.add('done'); const o=btn.textContent; btn.textContent='Copied!'; setTimeout(()=>{btn.classList.remove('done');btn.textContent=o;},1400); };
+  (navigator.clipboard&&navigator.clipboard.writeText) ? navigator.clipboard.writeText(t).then(done,done) : done();
+}));
+
+/* ============ EXPORT ============ */
+const frameScale=document.querySelector('.frameScale');
+const exportHost=document.getElementById('exportHost');
+function resetInline(){ frame.querySelectorAll('.rl-tag,.rl-avail,.rl-title,.rl-rule,.rl-item').forEach(e=>{e.style.opacity='';e.style.transform='';}); }
+async function snap(){ await document.fonts.ready; frame.classList.remove('anim'); resetInline(); exportHost.appendChild(frame); try{ return await html2canvas(frame,{backgroundColor:'#ffffff',scale:1,logging:false}); } finally{ frameScale.appendChild(frame); } }
+function fileName(ext){ const {book,vIdx}=currentSelection(); return 'thebookx-'+book.id+'-'+book.variants[vIdx].tag.toLowerCase()+'-reel.'+ext; }
+
+document.getElementById('dlpng').addEventListener('click',async function(){
+  const b=this; const o=b.innerHTML; b.disabled=true; b.textContent='Rendering…';
+  try{ const c=await snap(); c.toBlob(bl=>{ const a=document.createElement('a'); a.href=URL.createObjectURL(bl); a.download=fileName('png'); a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),3000); },'image/png'); }
+  catch(e){ alert('Export failed: '+e.message); }
+  b.disabled=false; b.innerHTML=o;
+});
+
+/* MP4: staggered entrance of title + each item, captured frame-by-frame */
+function nextFrame(){ return new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))); }
+const clamp=x=>Math.min(1,Math.max(0,x)), easeOut=p=>1-Math.pow(1-p,3), lerp=(a,b,p)=>a+(b-a)*p;
+function seg(t,s,d){ if(t<=s)return 0; if(t>=s+d)return 1; return easeOut((t-s)/d); }
+function sampleAt(t){
+  const els=[frame.querySelector('.rl-tag'),frame.querySelector('.rl-avail'),frame.querySelector('.rl-title'),frame.querySelector('.rl-rule'),
+             ...frame.querySelectorAll('.rl-item')];
+  els.forEach((el,i)=>{ if(!el)return; const s=0.35+i*0.18; const p=seg(t,s,0.55);
+    el.style.opacity=p; el.style.transform='translateY('+lerp(22,0,p)+'px)'; });
+}
+document.getElementById('dlmp4').addEventListener('click',async function(){
+  if(typeof VideoEncoder==='undefined'){ alert('MP4 needs Chrome or Edge (WebCodecs).'); return; }
+  const b=this; const o=b.innerHTML; b.disabled=true;
+  const W=1080,H=1920,FPS=30; let TOTAL;
+  try{
+    const mux=await import('https://esm.sh/mp4-muxer@5');
+    const muxer=new mux.Muxer({target:new mux.ArrayBufferTarget(),fastStart:'in-memory',video:{codec:'avc',width:W,height:H}});
+    let codec='avc1.640028';
+    for(const c of ['avc1.640028','avc1.42E028','avc1.420028','avc1.42001f']){ try{ const s=await VideoEncoder.isConfigSupported({codec:c,width:W,height:H,bitrate:7e6,framerate:FPS}); if(s&&s.supported){codec=c;break;} }catch(e){} }
+    const enc=new VideoEncoder({output:(ch,m)=>muxer.addVideoChunk(ch,m),error:e=>console.error(e)});
+    enc.configure({codec,width:W,height:H,bitrate:7e6,framerate:FPS});
+    const nItems=frame.querySelectorAll('.rl-item').length;
+    TOTAL = 20;                                  // 20-second reel video
+    const ANIM = 0.35 + (3+nItems)*0.18 + 0.7;   // staggered build, then holds for reading
+    frame.classList.add('anim'); exportHost.appendChild(frame);
+    await document.fonts.ready;
+    const total=Math.ceil(TOTAL*FPS);
+    let lastCv=null;
+    for(let f=0; f<=total; f++){
+      const t=Math.min(TOTAL,f/FPS);
+      if(t<=ANIM+0.05 || !lastCv){ sampleAt(Math.min(t,ANIM)); await nextFrame();
+        lastCv=await html2canvas(frame,{backgroundColor:'#ffffff',scale:1,logging:false}); }
+      const vf=new VideoFrame(lastCv,{timestamp:Math.round(f*1e6/FPS),duration:Math.round(1e6/FPS)});
+      enc.encode(vf,{keyFrame:f%(FPS*2)===0}); vf.close();
+      b.textContent='Encoding '+Math.round(f/total*100)+'%';
+    }
+    await enc.flush(); muxer.finalize();
+    const blob=new Blob([muxer.target.buffer],{type:'video/mp4'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=fileName('mp4'); a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+  }catch(e){ alert('MP4 export failed: '+e.message); console.error(e); }
+  frame.classList.remove('anim'); frameScale.appendChild(frame); resetInline(); renderFrame(); b.disabled=false; b.innerHTML=o;
+});
+
+document.getElementById('safeBtn').addEventListener('click',function(){ var s=document.getElementById('safe'); s.classList.toggle('on'); this.style.opacity=s.classList.contains('on')?'1':'.75'; });
+/* init */
+
+
+/* ===================== EDITORIAL CAROUSEL ===================== */
+(function(){
+  const cframe=document.getElementById('cframe'); if(!cframe) return;
+  const ARR_DR="data:image/png;base64,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", ARR_UR="data:image/png;base64,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";
+  const CIRCLE='<div class="ccircle"><svg viewBox="0 0 24 24"><path d="M3 10.3h10V6.3l8.6 5.7-8.6 5.7V13.7H3z" fill="#141414"/></svg></div>';
+  const STOP={for:1,to:1,a:1,an:1,the:1,of:1,in:1,on:1,at:1,that:1,and:1,but:1,your:1,you:1,is:1,it:1,as:1,so:1,'&':1};
+  function split(s){ const w=s.trim().replace(/[,:;.]+$/,'').split(/\s+/); const last=w[w.length-1];
+    if(w.length>1 && !STOP[last.toLowerCase()]){ const sc=w.pop(); return {black:w.join(' '), script:sc}; }
+    return {black:w.join(' '), script:''}; }
+  function esc(x){ return x.replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+  function slidesFor(){
+    const s=currentSelection(), b=s.book, v=s.book.variants[s.vIdx];
+    const ins=v.items.slice(0,-1), out=[];
+    const ct=split(b.title.replace(/\*/g,''));
+    out.push({black:ct.black, script:ct.script||b.title, body:v.title.replace(/:$/,''), cta:false});
+    ins.forEach(it=>{ const sp=split(it.l); out.push({black:sp.black, script:sp.script, body:it.r, cta:false}); });
+    out.push({black:'Available', script:'now', body:'Get '+b.title.replace(/\*/g,'')+' and thousands more on thebookx.in, from just ₹1. Follow @thebookx.in for a new one every day.', cta:true});
+    return {slides:out, author:b.author.toUpperCase()};
+  }
+  let S=slidesFor(), ci=0;
+  function render(i){
+    const sl=S.slides[i], even=i%2===0;
+    // always black -> script -> body so the sentence reads in natural order
+    const head = '<div class="cblack">'+esc(sl.black)+'</div>'+(sl.script?'<div class="cscript">'+esc(sl.script)+'</div>':'');
+    cframe.className='cslide '+(even?'even':'odd')+(sl.cta?' cta':'');
+    const arrow='<img class="cdraw" src="'+(even?ARR_DR:ARR_UR)+'" alt="">';
+    const inner = even
+      ? arrow+head+'<div class="cbody">'+esc(sl.body)+'</div>'
+      : head+'<div class="cbody">'+esc(sl.body)+'</div>'+arrow;
+    cframe.innerHTML='<div class="cgrid"></div><div class="curl">thebookx.in</div>'+CIRCLE+
+      '<div class="ccontent">'+inner+'</div>'+
+      '<div class="cmade">GET BOOKS FROM <b>thebookx.in</b><br>STARTING AT <b>&#8377;1</b></div>';
+    document.querySelectorAll('#cdots button').forEach((d,k)=>d.className=k===i?'on':'');
+  }
+  function buildDots(){ const dd=document.getElementById('cdots'); dd.innerHTML=S.slides.map(()=> '<button></button>').join('');
+    dd.querySelectorAll('button').forEach((b,k)=>b.addEventListener('click',()=>{ci=k;render(ci);})); }
+  function refresh(){ S=slidesFor(); ci=0; buildDots(); render(0); }
+  document.fonts.ready.then(refresh);
+  document.querySelector('.cprev').addEventListener('click',()=>{ci=(ci-1+S.slides.length)%S.slides.length;render(ci);});
+  document.querySelector('.cnext').addEventListener('click',()=>{ci=(ci+1)%S.slides.length;render(ci);});
+  const _rf=renderFrame; renderFrame=function(){ _rf.apply(this,arguments); try{ refresh(); }catch(e){} };
+  const host=document.getElementById('cexportHost'), scale=document.querySelector('.cscale');
+  async function snap(){ await document.fonts.ready; host.appendChild(cframe); try{ return await html2canvas(cframe,{backgroundColor:'#ffffff',scale:1,logging:false}); } finally{ scale.appendChild(cframe); } }
+  function dl(cv,name){ return new Promise(res=>cv.toBlob(bl=>{const a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download=name;a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);res();},450);},'image/png')); }
+  document.getElementById('cdlone').addEventListener('click',async function(){ const b=this,o=b.innerHTML;b.disabled=true;b.textContent='Rendering…';
+    try{ const cv=await snap(); await dl(cv,'thebookx-'+currentSelection().book.id+'-carousel-'+(ci+1)+'.png'); }catch(e){alert('Export failed: '+e.message);} b.disabled=false;b.innerHTML=o; });
+  document.getElementById('cdlall').addEventListener('click',async function(){ const b=this,o=b.innerHTML;b.disabled=true; const keep=ci;
+    try{ for(let k=0;k<S.slides.length;k++){ render(k); b.textContent='Saving '+(k+1)+'/'+S.slides.length; const cv=await snap(); await dl(cv,'thebookx-'+currentSelection().book.id+'-carousel-'+(k+1)+'.png'); } }catch(e){alert('Export failed: '+e.message);} ci=keep; render(ci); b.disabled=false;b.innerHTML=o; });
+})();
+
+/* ============ WHATSAPP DAILY POST ENGINE ============ */
+(function(){
+  const frame=document.getElementById('waframe');
+  const capBox=document.getElementById('wacap');
+  function esc(x){ return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+  function cap(s){ s=s.replace(/\s+/g,' ').trim(); return s.charAt(0).toUpperCase()+s.slice(1); }
+  function data(){
+    const sel=currentSelection(), b=sel.book, v=b.variants[sel.vIdx];
+    const it=v.items[0];
+    const quote=cap(it.l+' '+it.r);
+    const link='https://thebookx.in/?s='+encodeURIComponent(b.title.replace(/\*/g,''));
+    return {b, quote, link};
+  }
+  function render(){
+    const d=data();
+    frame.innerHTML =
+      '<div class="wa-top"><span>thebookx.in</span><span class="wa-hand">@thebookx.in</span></div>'+
+      '<div class="wa-main"><img class="wa-cover" src="'+d.b.cover+'" alt="">'+
+        '<div class="wa-q"><span class="qm">&ldquo;</span><div class="wa-quote">'+esc(d.quote)+'</div>'+
+        '<div class="wa-book">'+esc(d.b.title.replace(/\*/g,''))+' &middot; '+esc(d.b.author)+'</div></div></div>'+
+      '<div class="wa-badge"><span class="wa-pill">UP TO 50% OFF</span><span class="wa-bm">&#128278; Free bookmark with every order</span></div>'+
+      '<div class="wa-foot">Order now at <b>thebookx.in</b> &middot; books from <b>&#8377;1</b></div>';
+    capBox.value =
+      d.b.title.replace(/\*/g,'')+' by '+d.b.author+'\n\n'+
+      '"'+d.quote+'"\n\n'+
+      '📚 Why get it from thebookx.in?\n'+
+      '🔖 Free bookmark with every order\n'+
+      '💰 Up to 50% OFF, books from just ₹1\n'+
+      '✅ Thousands of titles, fast delivery across India\n\n'+
+      '👉 Grab this book: '+d.link+'\n\n'+
+      'Follow for a new pick every day.';
+  }
+  const host=document.getElementById('waExportHost'), scale=frame.parentNode;
+  async function snap(){ await document.fonts.ready; host.appendChild(frame);
+    try{ return await html2canvas(frame,{backgroundColor:'#F7F1E7',scale:2,logging:false,width:1080,height:1080,windowWidth:1080,windowHeight:1080}); }
+    finally{ scale.appendChild(frame); } }
+  function dl(cv,name){ cv.toBlob(bl=>{const a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),600);},'image/png'); }
+  document.getElementById('wadl').addEventListener('click',async function(){ const b=this,o=b.innerHTML;b.disabled=true;b.textContent='Rendering…';
+    try{ const cv=await snap(); dl(cv,'thebookx-'+currentSelection().book.id+'-whatsapp.png'); }catch(e){alert('Export failed: '+e.message);} b.disabled=false;b.innerHTML=o; });
+  document.getElementById('wacopy').addEventListener('click',function(){ capBox.select(); try{document.execCommand('copy');}catch(e){} const b=this,o=b.innerHTML; b.textContent='Copied!'; setTimeout(()=>b.innerHTML=o,1200); });
+  const _rf=renderFrame; renderFrame=function(){ _rf.apply(this,arguments); try{ render(); }catch(e){} };
+  document.fonts.ready.then(render);
+})();
+
+document.getElementById('kBooks').textContent=BOOKS.length;
+document.getElementById('kReels').textContent=BOOKS.reduce((n,b)=>n+b.variants.length,0);
+buildBooks(); buildCal(); renderFrame();
+</script>
+</body>
+</html>

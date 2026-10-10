@@ -22,7 +22,7 @@ export default function CatalogueSection() {
       ...cat,
       covers: getBooksByCategory(cat.key)
         .filter((b) => b.image)
-        .slice(0, 3)
+        .slice(0, 2)
         .map((b) => b.image),
     }));
     setCatalogueData(enriched);
@@ -61,7 +61,7 @@ export default function CatalogueSection() {
             label="All books"
             count={ALL_BOOKS.length}
             covers={ALL_BOOKS.filter((b) => b.image)
-              .slice(0, 3)
+              .slice(0, 2)
               .map((b) => b.image)}
             onClick={() => router.push("/books")}
             color="#fef3e2"

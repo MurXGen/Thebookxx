@@ -18,6 +18,7 @@ import { FaWhatsapp } from "react-icons/fa";
 import { HiOutlineShoppingBag } from "react-icons/hi2";
 import SearchMain from "./UI/SearchMain";
 import SearchOverlay from "./SearchOverlay";
+import ReviewRewardModal from "./ReviewRewardModal";
 import { AnimatePresence, motion } from "framer-motion";
 import { CART_OFFERS } from "@/utils/cartOffers";
 import InstallPWA from "./InstallPWA";
@@ -253,6 +254,8 @@ export default function Navbar() {
                 </span>
               )}
             </Link>
+            {/* Share-&-earn — compact CTA that opens the review flow modal */}
+            <ReviewRewardModal variant="chip" />
             <Link
               href="/profile"
               aria-label="Profile"

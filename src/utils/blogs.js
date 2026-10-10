@@ -4,6 +4,493 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "international-day-of-the-girl-2026-books-to-read-india": {
+    "id": "blog-074",
+    "title": "International Day of the Girl 2026 (11 October): Why Girls' Rights Need Investment, Plus 16 Books Worth Reading",
+    "slug": "international-day-of-the-girl-2026-books-to-read-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-10-10",
+    "lastModified": "2026-10-10",
+    "excerpt": "International Day of the Girl is 11 October. The 2026 theme is ending child marriage. 16 books on girls, courage and education, from ₹1 with free delivery in India.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "International Day of the Girl is observed every year on 11 October, and this year it falls on Sunday. The theme for 2026, as set out by UNICEF, is \"End child marriage and invest in girls' rights\". It is a day for numbers and policy, but it is also a good excuse to pick up a book that makes the numbers feel like people."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "What the 2026 theme is asking for"
+      },
+      {
+        "type": "paragraph",
+        "content": "UNICEF's figures for 2026 are sobering. About one in five girls is married before the age of 18, which adds up to roughly 650 million women and girls alive today. More than 12 million girls marry before adulthood every year, or about one every three seconds. Girls aged 15 to 19 are also twice as likely as boys to be out of education, employment or training."
+      },
+      {
+        "type": "paragraph",
+        "content": "There is a hopeful side too. UNICEF estimates that around 68 million child marriages have been averted over the past 25 years through investment in education, legal reform and social protection. The message of the theme is that this progress is not automatic: it has to be paid for, protected and extended."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "The short version",
+        "content": "Keeping a girl in school is one of the most effective ways to delay marriage and widen her choices. Reading, at home and in school, is a quiet part of that story."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Why books matter on this day"
+      },
+      {
+        "type": "paragraph",
+        "content": "A statistic can be read in ten seconds and forgotten in ten more. A memoir or a novel asks you to spend a few hours inside one girl's head, and that is where understanding tends to start. The books below are grouped by what they do best: true stories of girls who fought to learn, novels with unforgettable female characters, and practical reads for young women building a life of their own."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "True stories of girls who refused to be silenced"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/i-am-malala\" style=\"color:#fb8500;font-weight:600\">I Am Malala</a> is the obvious place to begin. Malala Yousafzai was shot in 2012 for speaking up about girls' education and won the Nobel Peace Prize in 2014, the youngest laureate ever. The book is direct, readable and suitable for teenagers. <a href=\"/books/the-diary-of-a-young-girl\" style=\"color:#fb8500;font-weight:600\">The Diary of a Young Girl</a> by Anne Frank is the classic of girlhood under pressure, written by a teenager who wanted to be a writer. <a href=\"/books/becoming\" style=\"color:#fb8500;font-weight:600\">Becoming</a> by Michelle Obama follows a girl from a modest Chicago home to the world stage, with school and family at the centre of the story."
+      },
+      {
+        "type": "paragraph",
+        "content": "Closer to home, <a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> by A.P.J. Abdul Kalam is not about a girl, but it is the book most Indian parents hand to a child who needs proof that a small-town start is no barrier. <a href=\"/books/a-woman-is-no-man\" style=\"color:#fb8500;font-weight:600\">A Woman Is No Man</a> by Etaf Rum is a novel, and a hard one, about the limits placed on women in a close-knit immigrant family. It is for older readers."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Novels with girls and women at the centre"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/little-women\" style=\"color:#fb8500;font-weight:600\">Little Women</a> remains the gentlest introduction to ambitious girls, with Jo March insisting on a writing life long before that was easy. <a href=\"/books/jane-eyre\" style=\"color:#fb8500;font-weight:600\">Jane Eyre</a> and <a href=\"/books/pride-and-prejudice\" style=\"color:#fb8500;font-weight:600\">Pride and Prejudice</a> are two classics in which women argue for their own minds. <a href=\"/books/to-kill-a-mockingbird\" style=\"color:#fb8500;font-weight:600\">To Kill a Mockingbird</a> is told by a young girl, Scout, and still teaches fairness better than most lectures."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> by Arundhati Roy won the Booker Prize in 1997 and is one of the great Indian novels about how family and society shape a child's future. <a href=\"/books/circe\" style=\"color:#fb8500;font-weight:600\">Circe</a> by Madeline Miller retells Greek myth from a woman's point of view, and <a href=\"/books/the-power\" style=\"color:#fb8500;font-weight:600\">The Power</a> by Naomi Alderman asks what the world would look like if girls suddenly held the physical power. Readers who enjoy retellings can try <a href=\"/books/sita-warrior-of-mithila\" style=\"color:#fb8500;font-weight:600\">Sita: Warrior of Mithila</a>, which gives the Ramayana's heroine an active role. <a href=\"/books/the-bell-jar\" style=\"color:#fb8500;font-weight:600\">The Bell Jar</a> is a darker, older-teen choice about pressure and expectation."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Practical reads for young women building their own path"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/lean-in-women-work-and-the-will-to-lead\" style=\"color:#fb8500;font-weight:600\">Lean In</a> by Sheryl Sandberg is a much-discussed book on women at work, worth reading with a critical eye. <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> and <a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> are not written for any one gender, but financial independence and steady habits are exactly what keep choices open. And <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a short guide to thinking and speaking clearly, a skill that helps a young person state what she wants and say no to what she does not."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "How to gift a book to a girl without it feeling like a lecture"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "Start from her interests, not your agenda. A story she wants to read will do more than a book she is supposed to read.",
+          "Match the age. Anne Frank and Malala suit early teens, while Jane Eyre and The Bell Jar suit older readers.",
+          "Add a short handwritten line on the first page. It turns a book into a keepsake.",
+          "Read it yourself afterwards and talk about it. That conversation is often the real gift."
+        ]
+      },
+      {
+        "type": "paragraph",
+        "content": "Diwali is on 8 November, so many families will be buying gifts soon. TheBookX offers gift wrapping at +₹25 per book, which makes a paperback look like a proper present."
+      },
+      {
+        "type": "blockquote",
+        "content": "One child, one teacher, one book and one pen can change the world. — Malala Yousafzai"
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Books from ₹1, free delivery, Cash on Delivery",
+        "content": "TheBookX is an India-first online bookstore. Browse fiction, non-fiction and bestsellers, get free delivery and pay on delivery anywhere in India."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      }
+    ],
+    "coverImage": "/blogs/international-day-of-the-girl-2026-books-to-read-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/international-day-of-the-girl-2026-books-to-read-india.jpeg",
+        "alt": "A cheerful young Indian woman reading a paperback by a sunny window with a cup of tea and a small stack of books beside her",
+        "caption": "A good book in a girl's hands is a small act of investment in her future.",
+        "category": "Reading"
+      }
+    ],
+    "keywords": [
+      "International Day of the Girl 2026",
+      "International Day of the Girl Child 11 October",
+      "end child marriage invest in girls' rights",
+      "books about girls education",
+      "books for girls India",
+      "I Am Malala",
+      "books to gift a girl",
+      "women empowerment books India",
+      "buy books online India"
+    ],
+    "categories": [
+      "Awareness Days",
+      "Book Recommendations",
+      "Women and Girls"
+    ],
+    "faqs": [
+      {
+        "question": "When is International Day of the Girl in 2026?",
+        "answer": "It is observed on 11 October every year, which is a Sunday in 2026."
+      },
+      {
+        "question": "What is the 2026 theme?",
+        "answer": "UNICEF lists the 2026 theme as \"End child marriage and invest in girls' rights\"."
+      },
+      {
+        "question": "Which books are best to read on this day?",
+        "answer": "I Am Malala, The Diary of a Young Girl, Little Women, Becoming and The God of Small Things are strong starting points, along with Wings of Fire for younger readers."
+      },
+      {
+        "question": "Does TheBookX offer free delivery and Cash on Delivery?",
+        "answer": "Yes. TheBookX offers books from ₹1, free delivery and Cash on Delivery across India, and gift wrapping at +₹25 per book."
+      }
+    ]
+  },
+  "world-post-day-2026-letter-writing-books-to-read-india": {
+    "id": "blog-073",
+    "title": "World Post Day 2026 (9 October): Why Letter Writing Is Back, Plus 15 Books About Letters, Diaries and Clear Words",
+    "slug": "world-post-day-2026-letter-writing-books-to-read-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-10-09",
+    "lastModified": "2026-10-09",
+    "excerpt": "World Post Day is 9 October. India Post's Dhai Akhar letter contest is open till 31 October. 15 books on letters, diaries and clear writing, from ₹1 with free delivery.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "World Post Day is observed every year on 9 October, the anniversary of the founding of the Universal Postal Union in 1874. The day was marked officially from 1969, after a decision at the Universal Postal Congress in Tokyo, and it exists to remind people how much of modern life still travels through a postal network, from parcels and pension papers to a plain handwritten letter."
+      },
+      {
+        "type": "paragraph",
+        "content": "This year the day carries a small Indian twist. India Post's Dhai Akhar national letter-writing competition for 2026 is open for entries until 31 October, with the theme \"A Letter to Mother Earth: My Promise to Protect Nature\". Entries are handwritten, can be in English, Hindi or any other Indian language, and are accepted in two age groups, up to 18 years and above 18. Inland Letter Card entries are capped at 500 words and envelope entries at 1,000 words. Rules and prize details can change, so confirm them on India Post's official site or at your nearest post office before you post an entry."
+      },
+      {
+        "type": "paragraph",
+        "content": "That is a good reason to pick up a pen, and a good reason to read. Below are fifteen books from the TheBookX catalogue that circle around letters, diaries, conversations and the craft of saying what you mean. Books start from ₹1, with free delivery and Cash on Delivery across India."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Why handwriting a letter still matters"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<strong>It slows you down.</strong> You cannot delete in ink, so you decide what you want to say before you say it. That small pause is where clear thinking starts.",
+          "<strong>It is kept.</strong> A letter is something a person can reread in ten years. A message thread rarely gets that treatment.",
+          "<strong>It builds the writing muscle.</strong> Students preparing for essays, interviews or competitive exams benefit from practising structured, complete paragraphs by hand.",
+          "<strong>It says you took time.</strong> In a week of quick replies, a card or a letter signals effort, which is often what the receiver values most."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books of letters and diaries"
+      },
+      {
+        "type": "paragraph",
+        "content": "The most direct way to feel what a letter can carry is to read real ones. <a href=\"/books/letters-to-milena\" style=\"color:#fb8500;font-weight:600\">Letters to Milena</a> collects Franz Kafka's correspondence with Milena Jesenska, and it shows how intense, funny and vulnerable written conversation can become when two people are far apart. <a href=\"/books/the-diary-of-a-young-girl\" style=\"color:#fb8500;font-weight:600\">The Diary of a Young Girl</a> by Anne Frank is not a letter collection in the strict sense, but Anne addressed her entries to an imaginary friend, and the book remains one of the clearest examples of writing as companionship."
+      },
+      {
+        "type": "paragraph",
+        "content": "For a first-person voice closer to home, <a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> by A.P.J. Abdul Kalam reads like a long, warm conversation with the reader about teachers, failure and purpose. It pairs naturally with <a href=\"/books/the-autobiography-of-benjamin-franklin\" style=\"color:#fb8500;font-weight:600\">The Autobiography of Benjamin Franklin</a>, which was written partly as advice to a son and is a lesson in practical self-improvement through writing and reading."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Novels where a letter or a message changes everything"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/the-last-letter\" style=\"color:#fb8500;font-weight:600\">The Last Letter</a> by Rebecca Yarros is a romance built around the idea of words sent across distance, a good pick for readers who like their love stories with emotional weight. <a href=\"/books/dear-debbie\" style=\"color:#fb8500;font-weight:600\">Dear Debbie</a> by Freida McFadden is a fast thriller in the Freida McFadden style for readers who want page-turning tension rather than reflection. <a href=\"/books/you-ve-reached-sam\" style=\"color:#fb8500;font-weight:600\">You've Reached Sam</a> by Dustin Thao explores grief and the longing to say one more thing to someone who is gone, which is also the deepest reason many people write letters at all."
+      },
+      {
+        "type": "paragraph",
+        "content": "If you like quieter stories about people who find each other through words, <a href=\"/books/i-too-had-a-love-story\" style=\"color:#fb8500;font-weight:600\">I Too Had a Love Story</a> by Ravinder Singh is a long-time favourite with Indian readers, and <a href=\"/books/the-kite-runner\" style=\"color:#fb8500;font-weight:600\">The Kite Runner</a> by Khaled Hosseini is a reminder of how a message from the past can pull a whole life back into focus."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "A simple reading and writing pairing",
+        "content": "Read one chapter, then write five lines to someone about it. Over a month that habit gives you a stack of short letters and a book finished."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books to help you write and speak more clearly"
+      },
+      {
+        "type": "paragraph",
+        "content": "A good letter is mostly clear thinking. These non-fiction titles help with that, whether you are writing to a friend, a customer, an examiner or yourself."
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a practical guide to clearing mental clutter so that what you say and write comes out simpler and more direct. It is a natural companion to any letter you are struggling to start.",
+          "<a href=\"/books/how-to-win-friends-and-influence-people\" style=\"color:#fb8500;font-weight:600\">How to Win Friends and Influence People</a> by Dale Carnegie is a classic on tone and respect in communication, and its advice on writing and speaking to people holds up well.",
+          "<a href=\"/books/think-faster-talk-smarter\" style=\"color:#fb8500;font-weight:600\">Think Faster, Talk Smarter</a> by Matt Abrahams gives simple structures for organising a thought quickly, which works for emails and speeches alike.",
+          "<a href=\"/books/steal-like-an-artist-10-things-nobody-told-you-about-being-creative\" style=\"color:#fb8500;font-weight:600\">Steal Like an Artist</a> by Austin Kleon is a short, visual nudge to start making things and share them, including words.",
+          "<a href=\"/books/word-power-made-easy\" style=\"color:#fb8500;font-weight:600\">Word Power Made Easy</a> by Norman Lewis is a steady vocabulary builder for students and professionals who want a wider range of words to choose from."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "A short plan to join the letter-writing revival"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "Pick one person to write to this week: a teacher, a grandparent, a friend you have lost touch with.",
+          "Write a first draft on rough paper, then copy a clean version by hand. Keep it to one page.",
+          "Buy a postcard or an Inland Letter Card from the post office and post it. Check the PIN code carefully.",
+          "If you are eligible, consider a Dhai Akhar entry before 31 October, and read the official guidelines first.",
+          "Keep a small notebook of lines you liked from books, as <a href=\"/books/tuesdays-with-morrie\" style=\"color:#fb8500;font-weight:600\">Tuesdays with Morrie</a> readers often do, and borrow from it the next time you write."
+        ]
+      },
+      {
+        "type": "paragraph",
+        "content": "Letters also make thoughtful gifts as Diwali (8 November) approaches. A book with a handwritten note inside is a very personal present, and TheBookX offers gift wrapping at +₹25 per book."
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Books from ₹1, free delivery, Cash on Delivery",
+        "content": "TheBookX is an India-first online bookstore. Browse fiction, non-fiction and bestsellers, get free delivery and pay on delivery anywhere in India."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      }
+    ],
+    "coverImage": "/blogs/world-post-day-2026-letter-writing-books-to-read-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/world-post-day-2026-letter-writing-books-to-read-india.jpeg",
+        "alt": "A young woman writing a handwritten letter at a wooden desk with a stack of paperback books and a cup of tea in warm window light",
+        "caption": "A handwritten letter and a good book are the simplest ways to mark World Post Day.",
+        "category": "Reading"
+      }
+    ],
+    "keywords": [
+      "World Post Day 2026",
+      "World Post Day 9 October",
+      "letter writing books",
+      "books about letters",
+      "India Post Dhai Akhar 2026",
+      "Dhai Akhar letter writing competition",
+      "epistolary books India",
+      "books to improve writing skills",
+      "buy books online India"
+    ],
+    "categories": [
+      "Awareness Days",
+      "Book Recommendations",
+      "Writing"
+    ],
+    "faqs": [
+      {
+        "question": "When is World Post Day and why is it observed?",
+        "answer": "World Post Day is on 9 October every year. It marks the anniversary of the Universal Postal Union, founded in 1874, and has been observed since the 1969 Universal Postal Congress in Tokyo."
+      },
+      {
+        "question": "What is India Post's Dhai Akhar competition in 2026?",
+        "answer": "It is a national handwritten letter-writing competition with the 2026 theme \"A Letter to Mother Earth: My Promise to Protect Nature\". Entries are open until 31 October 2026 in two age groups, in English, Hindi or any Indian language. Check India Post's official guidelines for full rules and prizes."
+      },
+      {
+        "question": "Which books are good for people who love letters?",
+        "answer": "Letters to Milena, The Diary of a Young Girl, The Last Letter and You've Reached Sam are good starting points, along with The Art of Clarity for clearer writing."
+      },
+      {
+        "question": "Does TheBookX offer free delivery and Cash on Delivery?",
+        "answer": "Yes. TheBookX offers books from ₹1, free delivery and Cash on Delivery across India, and gift wrapping at +₹25 per book."
+      }
+    ]
+  },
+  "karwa-chauth-2026-books-to-gift-your-partner": {
+    "id": "blog-072",
+    "title": "Karwa Chauth 2026 (29 October): 16 Books to Gift Your Partner, from Love Stories to Money Books",
+    "slug": "karwa-chauth-2026-books-to-gift-your-partner",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-10-08",
+    "lastModified": "2026-10-08",
+    "excerpt": "Karwa Chauth is on 29 October 2026. 16 book gift ideas for your partner, from love stories to money and habit books, with free delivery and COD across India.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "Karwa Chauth falls on Thursday, 29 October 2026, according to festival calendars for India. The fast begins before sunrise with sargi and is broken after the moon is sighted, so moonrise and puja timings differ from city to city; check a local panchang or your city's moonrise time before planning the evening. The day is a celebration of marriage and partnership, and gifting is a big part of it: jewellery, sarees, sweets and hampers fill the shops every October."
+      },
+      {
+        "type": "paragraph",
+        "content": "Books rarely make that list, which is exactly why they work. A book is something two people can read at the same time, argue about over chai and keep on a shelf long after the sweets are gone. This guide picks books from the TheBookX catalogue for the partner you are celebrating, whether you are a wife gifting a husband, a husband surprising his wife, a newly married couple or a long-distance pair. Books start from ₹1, with free delivery and Cash on Delivery across India, and gift wrapping is available at +₹25 per book."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Why a book makes a thoughtful Karwa Chauth gift"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<strong>It is personal.</strong> A line written on the first page about why you chose that book says more than a branded box.",
+          "<strong>It fills the long fasting day.</strong> Many people spend the afternoon waiting for the moon with time on their hands. A gripping novel makes that stretch pass gently.",
+          "<strong>It starts a conversation.</strong> A shared book gives a couple something to talk about beyond the household schedule.",
+          "<strong>It lasts.</strong> Unlike a hamper, a book can be reread, lent and passed on."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Love stories for the evening of the moon"
+      },
+      {
+        "type": "paragraph",
+        "content": "If your partner enjoys a good romance, start with classics. <a href=\"/books/pride-and-prejudice\" style=\"color:#fb8500;font-weight:600\">Pride and Prejudice</a> by Jane Austen is still the benchmark for witty, slow-burn love, and <a href=\"/books/jane-eyre\" style=\"color:#fb8500;font-weight:600\">Jane Eyre</a> by Charlotte Bronte offers a more intense, gothic take on equals finding each other. For something contemporary and light, <a href=\"/books/the-love-hypothesis\" style=\"color:#fb8500;font-weight:600\">The Love Hypothesis</a> by Ali Hazelwood and <a href=\"/books/book-lovers\" style=\"color:#fb8500;font-weight:600\">Book Lovers</a> by Emily Henry are easy, funny reads that suit a relaxed afternoon, and <a href=\"/books/the-fault-in-our-stars\" style=\"color:#fb8500;font-weight:600\">The Fault in Our Stars</a> by John Green is a tender, emotional story for readers who like a good cry."
+      },
+      {
+        "type": "paragraph",
+        "content": "Closer to home, <a href=\"/books/i-too-had-a-love-story\" style=\"color:#fb8500;font-weight:600\">I Too Had a Love Story</a> by Ravinder Singh is a widely read Indian love story that many readers first met in their twenties, and <a href=\"/books/everything-i-know-about-love\" style=\"color:#fb8500;font-weight:600\">Everything I Know About Love</a> by Dolly Alderton is a warm, honest memoir about friendship, dating and growing up, good for a partner who prefers real stories to fiction."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "Gift tip",
+        "content": "Pick a book your partner has mentioned or one you both can read. Slip a small note or a bookmark in at the page where the story begins, and choose gift wrapping at checkout for +₹25."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books about love, marriage and growing together"
+      },
+      {
+        "type": "paragraph",
+        "content": "Not every couple wants fiction. <a href=\"/books/8-rules-of-love\" style=\"color:#fb8500;font-weight:600\">8 Rules of Love</a> by Jay Shetty is a practical, modern guide to dating, commitment and self-awareness, written in short chapters that a busy couple can finish together. <a href=\"/books/the-forty-rules-of-love\" style=\"color:#fb8500;font-weight:600\">The Forty Rules of Love</a> by Elif Shafak weaves a contemporary marriage story with the thirteenth-century friendship of Rumi and Shams of Tabriz, a good pick for partners who like reflective, spiritual reading. <a href=\"/books/how-to-fall-in-love\" style=\"color:#fb8500;font-weight:600\">How to Fall in Love</a> by Cecelia Ahern is a gentle, hopeful novel about second chances."
+      },
+      {
+        "type": "paragraph",
+        "content": "Couples also drift into misunderstanding when they stop speaking clearly. <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a self-help book about thinking clearly, cutting through mental clutter and saying what you mean, skills that help in every relationship. Reading it side by side can lead to some of the most honest conversations of the year."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Money, habits and the life you are building together"
+      },
+      {
+        "type": "paragraph",
+        "content": "Karwa Chauth is also a good moment to think about the shared future, and the festive season, with Dhanteras and Diwali only days away, is when many families set money goals. A few books that make that conversation easier:"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a> by Morgan Housel explains how behaviour matters more than intelligence when it comes to money, and is an easy read for both partners.",
+          "<a href=\"/books/rich-dad-poor-dad\" style=\"color:#fb8500;font-weight:600\">Rich Dad Poor Dad</a> by Robert Kiyosaki is a classic starting point for talking about assets, liabilities and building wealth as a household.",
+          "<a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear helps a couple build small routines, from morning walks to monthly budgets, that stick.",
+          "<a href=\"/books/ikigai\" style=\"color:#fb8500;font-weight:600\">Ikigai</a> by Hector Garcia and Francesc Miralles is a calm book about purpose and long life, suited to partners who want to slow down together.",
+          "<a href=\"/books/the-alchemist\" style=\"color:#fb8500;font-weight:600\">The Alchemist</a> by Paulo Coelho is a short, hopeful fable about following your dreams that makes an easy gift for almost anyone."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "How to choose in two minutes"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "Ask what your partner last enjoyed reading or watching. Romance readers will like Hazelwood or Henry, and reflective readers will like Shafak or Shetty.",
+          "If your partner rarely reads, choose a short book. The Alchemist and The Art of Clarity are both quick reads.",
+          "For a joint gift, pick one book you will both read and decide a date, perhaps Diwali night, to discuss it.",
+          "Order early. Courier networks get busy in the weeks before Diwali, so ordering a few days ahead keeps the gift safe from delays."
+        ]
+      },
+      {
+        "type": "blockquote",
+        "content": "The best gift for someone you love is attention, and a book you chose for them is attention you can hold."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "The offer: books from ₹1, free delivery and COD"
+      },
+      {
+        "type": "paragraph",
+        "content": "TheBookX is an India-first online bookstore with books starting from ₹1, free delivery and Cash on Delivery across India. You can add gift wrapping for +₹25, which makes a book arrive looking ready to hand over. Browse the catalogue, pick two books if you want to give one and keep one, and read together this festive season."
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Order before the festive rush",
+        "content": "Karwa Chauth is on 29 October and Diwali follows on 8 November. Ordering this week leaves comfortable room for delivery."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      }
+    ],
+    "coverImage": "/blogs/karwa-chauth-2026-books-to-gift-your-partner.jpeg",
+    "images": [
+      {
+        "url": "/blogs/karwa-chauth-2026-books-to-gift-your-partner.jpeg",
+        "alt": "A couple sharing a book and tea on a balcony at dusk with a brass thali and diyas nearby",
+        "caption": "A book shared on Karwa Chauth gives the day a quiet, lasting memory.",
+        "category": "Gifting"
+      }
+    ],
+    "keywords": [
+      "Karwa Chauth 2026",
+      "Karwa Chauth gift ideas",
+      "Karwa Chauth 29 October 2026",
+      "books to gift partner",
+      "gift for husband Karwa Chauth",
+      "gift for wife Karwa Chauth",
+      "romantic books India",
+      "book gift ideas India",
+      "gift books online India"
+    ],
+    "categories": [
+      "Festivals",
+      "Gifting",
+      "Book Recommendations"
+    ],
+    "faqs": [
+      {
+        "question": "When is Karwa Chauth in 2026?",
+        "answer": "Karwa Chauth falls on Thursday, 29 October 2026. Moonrise time varies by city, so check a local panchang or moonrise table before planning the evening."
+      },
+      {
+        "question": "Is a book a good Karwa Chauth gift?",
+        "answer": "Yes. A book is personal, long-lasting and can be shared. Pair a romance or a reflective book with a handwritten note for a gift that feels thoughtful rather than generic."
+      },
+      {
+        "question": "Which books suit a couple reading together?",
+        "answer": "8 Rules of Love, The Forty Rules of Love, The Psychology of Money, Atomic Habits and The Art of Clarity all work well for partners who want to read and talk about the same book."
+      },
+      {
+        "question": "Does TheBookX offer gift wrapping and Cash on Delivery?",
+        "answer": "Yes. TheBookX offers free delivery and Cash on Delivery across India, books starting from ₹1, and gift wrapping at +₹25 per book."
+      }
+    ]
+  },
   "diwali-2026-books-to-gift-dhanteras-lakshmi-puja-bhai-dooj": {
     "id": "blog-071",
     "title": "Diwali 2026 Books to Gift: Dhanteras, Lakshmi Puja and Bhai Dooj Picks from ₹1",

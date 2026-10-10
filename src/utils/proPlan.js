@@ -7,7 +7,7 @@ export const PRO_VALID_DAYS = 30;
 const CACHE_KEY = "tbx_pro_status";
 
 // Pro benefit constants (applied at checkout only for active members).
-export const PRO_DISCOUNT = 0.2; // flat 20% off (best-of vs cart tier)
+export const PRO_DISCOUNT = 0; // member % discount disabled for now (was 0.2)
 export const PRO_FREE_DELIVERY_MIN = 400; // free delivery on orders above ₹400
 export const PRO_HANDLING_OFF = 0.5; // 50% off the handling & care fee
 

@@ -2337,7 +2337,7 @@ export default function AddressModal({
                               TheBookX Exclusive
                             </span>
                             <span className="pa-row-sub free">
-                              Flat 20% off, free delivery &amp; more
+                              Free delivery, zero COD fee &amp; more
                             </span>
                           </span>
                           <span className="pa-row-price">+₹{PRO_PRICE}</span>

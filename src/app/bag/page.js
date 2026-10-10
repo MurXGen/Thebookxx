@@ -579,15 +579,9 @@ function BagContent() {
     }
   }
 
-  // TheBookX Exclusive members: flat 20% off, applied best-of vs the cart tier
-  // (whichever saves more — never both).
-  if (proActive) {
-    const proDisc = Math.round(totalDiscounted * 0.2);
-    if (proDisc > offerDiscount) {
-      offerDiscount = proDisc;
-      offerLabel = "Member 20% OFF";
-    }
-  }
+  // NOTE: the TheBookX Exclusive "flat 20% off" member discount is disabled for
+  // now (members still get free delivery / no COD fee). Re-enable by restoring
+  // the best-of member-discount block here.
 
   // "The Art of Clarity" checkout add-on: ₹40 off, only while it's in the cart
   const ART_UPSELL_ID = "bk-002";
@@ -656,12 +650,10 @@ function BagContent() {
   const bundledQrTotal = hasBundledQr ? qrTotal : 0;
   const displayedFixedBarTotalWithQr = displayedFixedBarTotal + bundledQrTotal;
 
-  // Pro tab preview (non-members): show the price they'd pay AS a member (flat
-  // 20% off the books) so they see the value before tapping Upgrade.
-  const showProPreview = planTab === "pro" && !proActive;
-  const proPreviewTotal =
-    Math.max(0, totalDiscounted - Math.round(totalDiscounted * 0.2)) +
-    bundledQrTotal;
+  // Pro-tab member-price preview is disabled while the 20% member discount is
+  // turned off (no member discount to preview).
+  const showProPreview = false;
+  const proPreviewTotal = totalDiscounted + bundledQrTotal;
 
   // Returns the COD fee amount only when paymentType is COD
   const getCodFeeForPayment = (paymentType) =>
@@ -1336,7 +1328,6 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
             <div className="pro-marquee-track">
               {[0, 1].map((dup) =>
                 [
-                  { ic: "🏷️", t: "Flat 20% off" },
                   { ic: "🚚", t: "Free delivery over ₹400" },
                   { ic: "🛡️", t: "Zero COD fee" },
                   { ic: "🎁", t: "50% off packing" },
@@ -1484,7 +1475,6 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
                 <div className="pro-marquee-track">
                   {[0, 1].map((dup) =>
                     [
-                      { ic: "🏷️", t: "Flat 20% off" },
                       { ic: "🚚", t: "Free delivery over ₹400" },
                       { ic: "🛡️", t: "Zero COD fee" },
                       { ic: "🎁", t: "50% off packing" },
@@ -1556,7 +1546,7 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
 
                     {showProPreview ? (
                       <span className="font-14 green weight-600">
-                        Member 20% OFF · unlock to apply
+                        Member perks · unlock to avail
                       </span>
                     ) : (
                       appliedOffer && (

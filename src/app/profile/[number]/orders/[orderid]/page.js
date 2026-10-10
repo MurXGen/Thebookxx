@@ -2018,7 +2018,7 @@ export default function OrderDetailPage() {
                 ₹{bd.deliveryFee + bd.codFee}
               </b>{" "}
               in delivery{bd.codFee > 0 ? " + COD fee" : ""} on this order.
-              Members pay <b>₹0</b> — plus flat 20% off every book.
+              Members pay <b>₹0</b> on delivery &amp; packing fees.
             </p>
             <button
               type="button"

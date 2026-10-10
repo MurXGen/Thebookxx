@@ -53,10 +53,10 @@ function notifyProTelegram(phone) {
 }
 
 const BENEFITS = [
-  { icon: Tag, text: "Flat 20% off every order (best price applied)" },
   { icon: ShieldCheck, text: "Zero COD handling fee" },
   { icon: Truck, text: "Free delivery on orders above ₹400" },
   { icon: Zap, text: "50% off packing & care charges" },
+  { icon: Tag, text: "Extra free bookmarks & priority dispatch" },
 ];
 
 const norm = (p) => String(p || "").replace(/\D/g, "").slice(-10);

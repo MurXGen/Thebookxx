@@ -14218,7 +14218,14 @@ img[data-loaded="true"] {
   margin: 0 12px 10px;
 }
 .cos-social-row .cos-share svg {
-  color: #16a34a;
+  color: var(--foreground, #0a0a0a);
+}
+/* Community + share floating icons: black/white to match the CTA */
+.cos-social-row .community-icon-btn {
+  color: var(--foreground, #0a0a0a);
+}
+.cos-social-row .community-icon-btn svg {
+  color: var(--foreground, #0a0a0a);
 }
 .cos-social-pill {
   flex: 1;

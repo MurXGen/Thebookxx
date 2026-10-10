@@ -33108,11 +33108,16 @@ img[data-loaded="true"] {
 .rvw-row {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 12px;
-  border-radius: 12px;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 14px;
   border: 1px solid var(--dark-10, #e5e7eb);
   background: #fff;
+  box-shadow: var(--shadow-xs, 0 1px 2px rgba(10, 10, 10, 0.05));
+}
+.rvw-top {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--hairline, #ececec);
 }
 .rvw-row.approved {
   border-color: rgba(22, 163, 74, 0.4);
@@ -33183,22 +33188,56 @@ img[data-loaded="true"] {
   color: #fff;
 }
 .rvw-amt-input {
-  width: 64px;
-  height: 30px;
-  padding: 0 10px;
-  border-radius: 8px;
+  width: 92px;
+  height: 32px;
+  padding: 0 12px !important;
+  border-radius: 999px;
   border: 1px solid var(--dark-20, #d1d5db);
+  background: #fff;
+  color-scheme: light;
   font-size: 13px;
+  font-weight: 700;
   color: #0a0a0a;
 }
 .rvw-note-input {
   width: 100%;
-  height: 38px;
-  padding: 0 12px;
-  border-radius: 9px;
+  height: 42px;
+  padding: 0 14px !important;
+  border-radius: 10px;
   border: 1px solid var(--dark-20, #d1d5db);
+  background: #fff;
+  color-scheme: light;
   font-size: 13px;
   color: #0a0a0a;
+}
+.rvw-amt-input::placeholder,
+.rvw-note-input::placeholder {
+  color: #9ca3af;
+}
+.rvw-amt-input:focus,
+.rvw-note-input:focus {
+  outline: none;
+  border-color: var(--tertiary, #fb8500);
+  box-shadow: 0 0 0 3px rgba(251, 133, 0, 0.12);
+}
+/* Labeled field groups keep the editor tidy */
+.rvw-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.rvw-label {
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--dark-50, #6b7280);
+}
+.rvw-top-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
 }
 .rvw-save {
   align-self: flex-start;

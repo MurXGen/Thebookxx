@@ -10847,10 +10847,12 @@ export default function ManageOrdersPage() {
                     return (
                       <div className={`rvw-row ${d.status || s.status}`} key={s.subId}>
                         <div className="rvw-top">
-                          <span className="rvw-phone">{s.phone}</span>
-                          {s.platform && (
-                            <span className="rvw-plat">{s.platform}</span>
-                          )}
+                          <div className="rvw-top-left">
+                            <span className="rvw-phone">{s.phone}</span>
+                            {s.platform && (
+                              <span className="rvw-plat">{s.platform}</span>
+                            )}
+                          </div>
                           <a
                             className="rvw-link"
                             href={s.link}
@@ -10861,66 +10863,75 @@ export default function ManageOrdersPage() {
                           </a>
                         </div>
 
-                        {/* Status chips */}
-                        <div className="rvw-chips">
-                          {["pending", "approved", "rejected"].map((st) => (
-                            <button
-                              key={st}
-                              type="button"
-                              className={`rvw-chip st-${st}${(d.status || s.status) === st ? " on" : ""}`}
-                              onClick={() => setReviewDraft(s.subId, { status: st })}
-                            >
-                              {st}
-                            </button>
-                          ))}
+                        {/* Status */}
+                        <div className="rvw-field">
+                          <span className="rvw-label">Status</span>
+                          <div className="rvw-chips">
+                            {["pending", "approved", "rejected"].map((st) => (
+                              <button
+                                key={st}
+                                type="button"
+                                className={`rvw-chip st-${st}${(d.status || s.status) === st ? " on" : ""}`}
+                                onClick={() => setReviewDraft(s.subId, { status: st })}
+                              >
+                                {st}
+                              </button>
+                            ))}
+                          </div>
                         </div>
 
-                        {/* Amount chips + custom */}
-                        <div className="rvw-chips">
-                          {REVIEW_AMOUNTS.map((a) => (
-                            <button
-                              key={a}
-                              type="button"
-                              className={`rvw-chip amt${Number(d.amount) === a ? " on" : ""}`}
-                              onClick={() => setReviewDraft(s.subId, { amount: a })}
-                            >
-                              ₹{a}
-                            </button>
-                          ))}
+                        {/* Reward amount */}
+                        <div className="rvw-field">
+                          <span className="rvw-label">Reward amount</span>
+                          <div className="rvw-chips">
+                            {REVIEW_AMOUNTS.map((a) => (
+                              <button
+                                key={a}
+                                type="button"
+                                className={`rvw-chip amt${Number(d.amount) === a ? " on" : ""}`}
+                                onClick={() => setReviewDraft(s.subId, { amount: a })}
+                              >
+                                ₹{a}
+                              </button>
+                            ))}
+                            <input
+                              className="rvw-amt-input"
+                              inputMode="numeric"
+                              placeholder="Custom ₹"
+                              value={d.amount ?? ""}
+                              onChange={(e) =>
+                                setReviewDraft(s.subId, {
+                                  amount: e.target.value.replace(/[^\d]/g, ""),
+                                })
+                              }
+                            />
+                          </div>
+                        </div>
+
+                        {/* Reason / note */}
+                        <div className="rvw-field">
+                          <span className="rvw-label">Note / reason (shown to customer)</span>
+                          <div className="rvw-chips">
+                            {REVIEW_REASONS.map((rs) => (
+                              <button
+                                key={rs}
+                                type="button"
+                                className={`rvw-chip reason${d.note === rs ? " on" : ""}`}
+                                onClick={() => setReviewDraft(s.subId, { note: rs })}
+                              >
+                                {rs}
+                              </button>
+                            ))}
+                          </div>
                           <input
-                            className="rvw-amt-input"
-                            inputMode="numeric"
-                            placeholder="₹"
-                            value={d.amount ?? ""}
+                            className="rvw-note-input"
+                            placeholder="Type a custom note…"
+                            value={d.note ?? ""}
                             onChange={(e) =>
-                              setReviewDraft(s.subId, {
-                                amount: e.target.value.replace(/[^\d]/g, ""),
-                              })
+                              setReviewDraft(s.subId, { note: e.target.value })
                             }
                           />
                         </div>
-
-                        {/* Reason chips (for rejected) + note input */}
-                        <div className="rvw-chips">
-                          {REVIEW_REASONS.map((rs) => (
-                            <button
-                              key={rs}
-                              type="button"
-                              className={`rvw-chip reason${d.note === rs ? " on" : ""}`}
-                              onClick={() => setReviewDraft(s.subId, { note: rs })}
-                            >
-                              {rs}
-                            </button>
-                          ))}
-                        </div>
-                        <input
-                          className="rvw-note-input"
-                          placeholder="Note / reason (shown to the customer)"
-                          value={d.note ?? ""}
-                          onChange={(e) =>
-                            setReviewDraft(s.subId, { note: e.target.value })
-                          }
-                        />
 
                         <button
                           type="button"

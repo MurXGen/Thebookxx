@@ -191,7 +191,7 @@ export default function ReviewRewardCard({ orderId = "", phone: phoneProp = "" }
         </h3>
         <p className="rr-sub-txt">
           Share your books &amp; an honest review on Instagram/YouTube, send us
-          the link + screenshot, and we&apos;ll credit your wallet. 📚✨
+          the link + screenshot, and we&apos;ll credit your account. 📚✨
         </p>
         <div className="rr-steps">
           <span>
@@ -205,6 +205,60 @@ export default function ReviewRewardCard({ orderId = "", phone: phoneProp = "" }
           </span>
         </div>
       </div>
+
+      {/* How it works — the full flow, step by step */}
+      <details className="rr-how" open>
+        <summary className="rr-how-sum">
+          <span className="rr-how-sum-l">
+            <Sparkles size={14} /> How it works
+          </span>
+          <span className="rr-how-chev" aria-hidden="true">
+            ⌄
+          </span>
+        </summary>
+        <ol className="rr-how-steps">
+          <li>
+            <span className="rr-how-ic">
+              <Camera size={14} />
+            </span>
+            <span className="rr-how-txt">
+              <b>Record a reel or story</b> with your TheBookX books and share an
+              honest review on Instagram or YouTube. Tag or mention{" "}
+              <b>@thebookx</b> so we can find it.
+            </span>
+          </li>
+          <li>
+            <span className="rr-how-ic">
+              <Upload size={14} />
+            </span>
+            <span className="rr-how-txt">
+              <b>Submit it below</b> — paste the post link, upload a screenshot,
+              and add your number. Takes under a minute.
+            </span>
+          </li>
+          <li>
+            <span className="rr-how-ic">
+              <Clock size={14} />
+            </span>
+            <span className="rr-how-txt">
+              <b>We verify your post</b> — usually within 24 hours. You can track
+              the status right here on this card.
+            </span>
+          </li>
+          <li>
+            <span className="rr-how-ic">
+              <Check size={14} />
+            </span>
+            <span className="rr-how-txt">
+              <b>Get rewarded</b> — ₹50 to ₹{MAX_REWARD} (based on quality &amp;
+              reach) is credited straight to your TheBookX account.
+            </span>
+          </li>
+        </ol>
+        <p className="rr-how-note">
+          More genuine, higher-reach posts earn more. One reward per post.
+        </p>
+      </details>
 
       {/* Existing submissions / status */}
       {subs.length > 0 && (

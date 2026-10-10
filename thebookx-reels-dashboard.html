@@ -870,23 +870,24 @@ document.getElementById('safeBtn').addEventListener('click',function(){ var s=do
   function showScene(ctx,idx){ document.getElementById('rrScene').innerHTML=sceneHTML(ctx.t,ctx.scs[idx]); setSteps(idx); }
   function sampleScene(sc,lt){
     const S=document.getElementById('rrScene'); if(!S)return; const q=c=>S.querySelector(c);
-    if(sc.type==='hook'){ const dr=q('.rr-draw'),k=q('.rr-kick'),hb=q('.rr-hb'),hs=q('.rr-hs');
+    const set=(el,op,tf,org)=>{ if(!el)return; el.style.opacity=op; if(org)el.style.transformOrigin=org; if(tf!=null)el.style.transform=tf; };
+    if(sc.type==='hook'){
       const pd=seg(lt,0,0.4),pk=seg(lt,0.2,0.4),ph=seg(lt,0.35,0.5),ps=seg(lt,0.6,0.45);
-      if(dr){dr.style.opacity=pd;dr.style.transform='scale('+lerp(.7,1,pd)+')';dr.style.transformOrigin='left bottom';}
-      k.style.opacity=pk;k.style.transform='translateY('+lerp(-18,0,pk)+'px)';
-      hb.style.opacity=ph;hb.style.transform='scale('+lerp(.86,1,ph)+')';hb.style.transformOrigin='left center';
-      hs.style.opacity=ps;hs.style.transform='translateY('+lerp(26,0,ps)+'px)';
-    } else if(sc.type==='point'){ const row=q('.rr-numrow'),bar=q('.rr-numbar'),tx=q('.rr-ptext');
+      set(q('.rr-draw'),pd,'scale('+lerp(.7,1,pd)+')','left bottom');
+      set(q('.rr-kick'),pk,'translateY('+lerp(-18,0,pk)+'px)');
+      set(q('.rr-hb'),ph,'scale('+lerp(.86,1,ph)+')','left center');
+      set(q('.rr-hs'),ps,'translateY('+lerp(26,0,ps)+'px)');
+    } else if(sc.type==='point'){
       const pr=seg(lt,0,0.4),pb=seg(lt,0.2,0.5),pt=seg(lt,0.3,0.55);
-      row.style.opacity=pr;row.style.transform='translateX('+lerp(-44,0,pr)+'px)';
-      if(bar){bar.style.transform='scaleX('+pb+')';bar.style.transformOrigin='left center';}
-      tx.style.opacity=pt;tx.style.transform='translateY('+lerp(32,0,pt)+'px)';
-    } else { const cb=q('.rr-cb'),cs=q('.rr-cs'),ct=q('.rr-ct'),bd=q('.rr-badge');
+      set(q('.rr-numrow'),pr,'translateX('+lerp(-44,0,pr)+'px)','left center');
+      const bar=q('.rr-numbar'); if(bar){bar.style.transformOrigin='left center';bar.style.transform='scaleX('+pb+')';}
+      set(q('.rr-ptext'),pt,'translateY('+lerp(32,0,pt)+'px)');
+    } else {
       const pb=seg(lt,0,0.4),ps=seg(lt,0.2,0.45),pt=seg(lt,0.45,0.4),pd=seg(lt,0.6,0.4);
-      cb.style.opacity=pb;cb.style.transform='scale('+lerp(.88,1,pb)+')';cb.style.transformOrigin='left center';
-      cs.style.opacity=ps;cs.style.transform='translateY('+lerp(22,0,ps)+'px)';
-      ct.style.opacity=pt;
-      bd.style.opacity=pd;bd.style.transform='scale('+lerp(.8,1,pd)+')';bd.style.transformOrigin='left center';
+      set(q('.rr-cb'),pb,'scale('+lerp(.88,1,pb)+')','left center');
+      set(q('.rr-cs'),ps,'translateY('+lerp(22,0,ps)+'px)');
+      set(q('.rr-ct'),pt,null);
+      set(q('.rr-badge'),pd,'scale('+lerp(.8,1,pd)+')','left center');
     }
   }
   let ctx=mount(ci); showScene(ctx,0);
@@ -911,15 +912,21 @@ document.getElementById('safeBtn').addEventListener('click',function(){ var s=do
       let codec='avc1.640028';
       for(const c of ['avc1.640028','avc1.42E028','avc1.420028','avc1.42001f']){try{const s=await VideoEncoder.isConfigSupported({codec:c,width:W,height:H,bitrate:8e6,framerate:FPS});if(s&&s.supported){codec=c;break;}}catch(e){}}
       const enc=new VideoEncoder({output:(ch,m)=>muxer.addVideoChunk(ch,m),error:e=>console.error(e)});
-      enc.configure({codec,width:W,height:H,bitrate:8e6,framerate:FPS});
+      enc.configure({codec,width:W,height:H,bitrate:8e6,framerate:FPS,latencyMode:'realtime'}); // realtime = no B-frames, keeps scenes in order
       const host=document.getElementById('rrExportHost'); host.appendChild(frame); await document.fonts.ready; await raf2();
+      await new Promise(r=>{const im=new Image();im.onload=im.onerror=r;im.src=ARR;}); // preload arrow
+      function blankCv(){ const c=document.createElement('canvas'); c.width=W; c.height=H; const x=c.getContext('2d'); x.fillStyle='#ffffff'; x.fillRect(0,0,W,H); return c; }
       const totalF=Math.ceil(TOTAL*FPS); let lastCv=null, curIdx=-1;
       for(let f=0;f<=totalF;f++){
         const tm=Math.min(TOTAL-0.001,f/FPS);
         let item=list[0]; for(const it of list){ if(tm>=it.start) item=it; }
         const idx=list.indexOf(item); const lt=tm-item.start;
         let changed=false; if(idx!==curIdx){ showScene(ctx,idx); curIdx=idx; changed=true; }
-        if(changed || lt<=ENTR+0.05 || !lastCv){ sampleScene(item.sc,Math.min(lt,ENTR)); await raf2(); lastCv=await html2canvas(frame,{backgroundColor:'#ffffff',scale:1,logging:false,width:W,height:H,windowWidth:W,windowHeight:H}); }
+        if(changed || lt<=ENTR+0.05 || !lastCv){
+          sampleScene(item.sc,Math.min(lt,ENTR)); await raf2();
+          try{ lastCv=await html2canvas(frame,{backgroundColor:'#ffffff',scale:1,logging:false,width:W,height:H,windowWidth:W,windowHeight:H,useCORS:true}); }
+          catch(err){ console.warn('rr frame render skipped @',f,err); if(!lastCv) lastCv=blankCv(); }
+        }
         const vf=new VideoFrame(lastCv,{timestamp:Math.round(f*1e6/FPS),duration:Math.round(1e6/FPS)}); enc.encode(vf,{keyFrame:f%(FPS*2)===0}); vf.close();
         b.textContent='Encoding '+Math.round(f/totalF*100)+'%';
       }

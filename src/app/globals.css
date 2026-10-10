@@ -33263,6 +33263,107 @@ img[data-loaded="true"] {
   text-align: center;
 }
 
+/* How it works — step-by-step explainer inside the Share & Earn card */
+.rr-how {
+  margin: 0 16px 14px;
+  border: 1px solid var(--dark-10, #e5e7eb);
+  border-radius: 12px;
+  background: var(--surface-2, #faf9f7);
+  overflow: hidden;
+}
+.rr-how-sum {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 14px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--foreground, #0a0a0a);
+  cursor: pointer;
+  list-style: none;
+}
+.rr-how-sum::-webkit-details-marker {
+  display: none;
+}
+.rr-how-sum-l {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.rr-how-sum-l svg {
+  color: var(--tertiary, #fb8500);
+}
+.rr-how-chev {
+  font-size: 16px;
+  color: var(--dark-50, #6b7280);
+  transition: transform 0.2s ease;
+}
+.rr-how[open] .rr-how-chev {
+  transform: rotate(180deg);
+}
+.rr-how-steps {
+  list-style: none;
+  margin: 0;
+  padding: 2px 14px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  counter-reset: rrhow;
+}
+.rr-how-steps li {
+  position: relative;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding-left: 2px;
+}
+/* Vertical connector line between the step icons */
+.rr-how-steps li:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  left: 13px;
+  top: 28px;
+  bottom: -12px;
+  width: 2px;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(251, 133, 0, 0.35) 0 4px,
+    transparent 4px 8px
+  );
+}
+.rr-how-ic {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--tertiary, #fb8500);
+  background: rgba(251, 133, 0, 0.12);
+  border: 1px solid rgba(251, 133, 0, 0.25);
+  position: relative;
+  z-index: 1;
+}
+.rr-how-txt {
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--dark-60, #4b5563);
+  padding-top: 3px;
+}
+.rr-how-txt b {
+  color: var(--foreground, #0a0a0a);
+  font-weight: 700;
+}
+.rr-how-note {
+  margin: 0;
+  padding: 8px 14px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--dark-50, #6b7280);
+  border-top: 1px dashed var(--dark-10, #e5e7eb);
+}
+
 /* Compact navbar CTA → opens the share-&-earn modal */
 .rr-chip {
   display: inline-flex;

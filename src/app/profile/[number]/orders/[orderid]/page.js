@@ -48,7 +48,6 @@ import CommunityJoin from "@/components/CommunityJoin";
 import PwaInstallPromo from "@/components/PwaInstallPromo";
 import AddBeforePacking from "@/components/profile/AddBeforePacking";
 import BookCard from "@/components/BookCard";
-import ProUpgradeModal from "@/components/UI/ProUpgradeModal";
 import CartConfetti from "@/components/UI/Confetti";
 import ReviewRewardCard from "@/components/ReviewRewardCard";
 import {
@@ -56,7 +55,6 @@ import {
   fetchWalletBalance,
   creditWalletReward,
 } from "@/utils/googleFormOrder";
-import { cachedProStatus, fetchProStatus, PRO_PRICE } from "@/utils/proPlan";
 import { parseAddonsField } from "@/utils/addonsField";
 import { getDeliveryCharge } from "@/utils/cartOffers";
 import { books as ALL_BOOKS } from "@/utils/book";
@@ -227,22 +225,15 @@ export default function OrderDetailPage() {
 
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
-  // Sales nudges: membership status + wallet balance for this shopper.
-  const [proActive, setProActive] = useState(false);
+  // Sales nudge: wallet balance for this shopper.
   const [walletBal, setWalletBal] = useState(0);
   const [trkIdCopied, setTrkIdCopied] = useState(false);
-  const [showProModal, setShowProModal] = useState(false);
   // Loyalty celebration: 3+ real orders → confetti on their recent last 4.
   const [celebrate, setCelebrate] = useState(false);
   const [loyalN, setLoyalN] = useState(0);
   useEffect(() => {
     const digits = String(number || "").replace(/\D/g, "").slice(-10);
     if (digits.length !== 10) return;
-    const cached = cachedProStatus(digits);
-    if (cached) setProActive(!!cached.active);
-    fetchProStatus(digits)
-      .then((s) => setProActive(!!s.active))
-      .catch(() => {});
     fetchWalletBalance(digits)
       .then((b) => setWalletBal(Number(b) || 0))
       .catch(() => {});
@@ -1975,32 +1966,7 @@ export default function OrderDetailPage() {
           />
         )}
 
-      {/* Membership pitch — show the real fees paid vs ₹0 for members. */}
-      {order &&
-        !proActive &&
-        !cancelled &&
-        bd.deliveryFee + bd.codFee > 0 && (
-          <section className="od-pro-pitch">
-            <div className="od-pro-head">
-              <Zap size={16} /> TheBookX Exclusive
-            </div>
-            <p className="od-pro-line">
-              You paid{" "}
-              <b>
-                ₹{bd.deliveryFee + bd.codFee}
-              </b>{" "}
-              in delivery{bd.codFee > 0 ? " + COD fee" : ""} on this order.
-              Members pay <b>₹0</b> on delivery &amp; packing fees.
-            </p>
-            <button
-              type="button"
-              className="od-pro-cta"
-              onClick={() => setShowProModal(true)}
-            >
-              Unlock for ₹{PRO_PRICE}/mo →
-            </button>
-          </section>
-        )}
+      {/* TheBookX Exclusive membership pitch removed on request. */}
 
       {/* Wallet nudge — spendable balance to pull them back for a next order. */}
       {walletBal > 0 && !cancelled && (
@@ -2409,16 +2375,6 @@ export default function OrderDetailPage() {
         <span className="od-community-fab-label">Join community</span>
       </div>
       <PwaInstallPromo variant="bar" />
-
-      <ProUpgradeModal
-        open={showProModal}
-        onClose={() => setShowProModal(false)}
-        phone={String(order?.["Phone Number"] || number || "")}
-        onActivated={() => {
-          setProActive(true);
-          setShowProModal(false);
-        }}
-      />
     </main>
   );
 }

@@ -23,6 +23,7 @@ import {
   Share2,
 } from "lucide-react";
 import CommunityJoin from "@/components/CommunityJoin";
+import ReviewRewardModal from "@/components/ReviewRewardModal";
 import { showToast } from "@/context/ToastContext";
 
 const SITE_URL = "https://www.thebookx.in";
@@ -332,8 +333,9 @@ export default function CartBar({ tab = "books" }) {
       className={`cart-bar${barHidden ? " cart-bar-hidden" : ""}`}
       style={{ maxWidth: "680px", margin: "0 auto" }}
     >
-      {/* Community + share — icon-only, pinned to the right, always visible. */}
+      {/* Share-&-earn pill + community + share — always visible above the bar. */}
       <div className="cos-social-row">
+        <ReviewRewardModal variant="pill" />
         <CommunityJoin variant="icon" />
         <button
           type="button"

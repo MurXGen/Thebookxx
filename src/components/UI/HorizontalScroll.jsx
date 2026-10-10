@@ -44,11 +44,13 @@ export default function HorizontalScroll({
 
   return (
     <div className="h-scroll-wrapper">
-      {/* HEADER */}
-      <div className="h-scroll-header">
-        <h3>{title}</h3>
-        {/* <span className="scroll-hint">Scroll →</span> */}
-      </div>
+      {/* HEADER (skipped when no title — callers can render their own) */}
+      {title ? (
+        <div className="h-scroll-header">
+          <h3>{title}</h3>
+          {/* <span className="scroll-hint">Scroll →</span> */}
+        </div>
+      ) : null}
 
       {/* BODY */}
       <div className="h-scroll-container">

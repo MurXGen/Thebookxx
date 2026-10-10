@@ -17,12 +17,29 @@ import QuickReadsPromo from "@/components/QuickReadsPromo";
 import QuickReadsTeaser from "@/components/QuickReadsTeaser";
 import InvoiceParamModal from "@/components/InvoiceParamModal";
 import ReviewGallery from "@/components/ReviewGallery";
-import OneRupeeGrid from "@/components/OneRupeeGrid";
 import BundleDeals from "@/components/BundleDeals";
-import TrendingGrid from "@/components/TrendingGrid";
-import NewlyAddedGrid from "@/components/NewlyAddedGrid";
 import CategoryBrowse from "@/components/CategoryBrowse";
+import BookRail from "@/components/BookRail";
+import { books as ALL_BOOKS } from "@/utils/book";
+import { Sparkles, TrendingUp, Award, Tag } from "lucide-react";
 import { BooksSkeleton } from "@/components/UI/BookCardSkeleton";
+
+// Book lists for the homepage rails (real BookCard UI, like All Books).
+const RAIL_ONE_RUPEE = ALL_BOOKS.filter(
+  (b) => b.discountedPrice === 1 && b.image,
+);
+const RAIL_TRENDING = ALL_BOOKS.filter(
+  (b) => b.catalogue?.includes("trending") && b.image && b.discountedPrice !== 1,
+);
+const RAIL_BESTSELLERS = ALL_BOOKS.filter(
+  (b) =>
+    b.catalogue?.includes("bestseller") && b.image && b.discountedPrice !== 1,
+);
+const RAIL_NEW_ARRIVALS = [...ALL_BOOKS]
+  .slice(-50)
+  .reverse()
+  .filter((b) => b.image && b.discountedPrice !== 1)
+  .slice(0, 24);
 
 // Lazy load components with named exports
 const BestsellerStage = lazy(() => import("@/components/BestsellerStage"));
@@ -211,6 +228,61 @@ export default function HomePage() {
         </Suspense>
       </LazySection>
       */}
+
+      {/* BookCard rails (same UI as All Books) — above Recently viewed:
+          ₹1 store, Trending, Bestsellers, New arrivals. */}
+      <LazySection threshold={0.05}>
+        <SmoothAppear delay={0.1}>
+          <BookRail
+            id="rail-rupee"
+            icon={Tag}
+            badge="JUST ₹1"
+            title="Bestselling books from just ₹1"
+            subtitle="Hand-picked reads at an unbeatable price — one ₹1 book per order."
+            pill="Lowest price"
+            books={RAIL_ONE_RUPEE}
+          />
+        </SmoothAppear>
+      </LazySection>
+
+      <LazySection threshold={0.05}>
+        <SmoothAppear delay={0.1}>
+          <BookRail
+            id="rail-trending"
+            icon={TrendingUp}
+            badge="TRENDING NOW"
+            title="What everyone's reading"
+            subtitle="Loved by readers this week — grab yours before they're gone."
+            books={RAIL_TRENDING}
+          />
+        </SmoothAppear>
+      </LazySection>
+
+      <LazySection threshold={0.05}>
+        <SmoothAppear delay={0.1}>
+          <BookRail
+            id="rail-bestsellers"
+            icon={Award}
+            badge="BESTSELLERS"
+            title="Our most-loved books"
+            subtitle="Top picks readers keep coming back for."
+            books={RAIL_BESTSELLERS}
+          />
+        </SmoothAppear>
+      </LazySection>
+
+      <LazySection threshold={0.05}>
+        <SmoothAppear delay={0.1}>
+          <BookRail
+            id="rail-new"
+            icon={Sparkles}
+            badge="NEW ARRIVALS"
+            title="Fresh off the shelf"
+            subtitle="Just added — be the first to grab them."
+            books={RAIL_NEW_ARRIVALS}
+          />
+        </SmoothAppear>
+      </LazySection>
 
       <LazySection threshold={0.05}>
         <Suspense fallback={<LoadingFallback delay={0.8} />}>

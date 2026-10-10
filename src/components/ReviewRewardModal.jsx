@@ -194,7 +194,23 @@ export default function ReviewRewardModal({
   };
 
   const trigger =
-    variant === "chip" ? (
+    variant === "pill" ? (
+      <button
+        type="button"
+        className={`rr-cos-pill ${className}`}
+        onClick={() => setOpen(true)}
+        aria-label="Share a review and get up to ₹200 back"
+        title="Post a reel/story — get up to ₹200 back"
+      >
+        <span className="rr-cos-ic" aria-hidden="true">
+          <Gift size={16} />
+        </span>
+        <span className="rr-cos-txt">
+          <b>Post &amp; earn up to ₹{MAX_REWARD}</b>
+          <small>Share a reel/story — cashback to your wallet</small>
+        </span>
+      </button>
+    ) : variant === "chip" ? (
       <button
         type="button"
         className={`rr-chip ${className}`}

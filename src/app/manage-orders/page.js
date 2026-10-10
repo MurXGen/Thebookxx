@@ -1951,6 +1951,38 @@ function IndiaPostSheet({
   );
 }
 
+// Lazy-mounts heavy list rows: renders a reserved-height placeholder until the
+// row scrolls near the viewport, then mounts the real children. Keeps the DOM
+// light so clicks stay snappy even with hundreds of records below.
+function LazyMount({ children, className = "", minHeight = 160 }) {
+  const [shown, setShown] = useState(false);
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || shown) return;
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          setShown(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: "400px 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [shown]);
+  return (
+    <div
+      ref={ref}
+      className={className}
+      style={shown ? undefined : { minHeight }}
+    >
+      {shown ? children : null}
+    </div>
+  );
+}
+
 function Accordion({ id, title, icon, open, onToggle, right, children }) {
   return (
     <div className="acc" id={`acc-${id}`}>
@@ -11092,7 +11124,7 @@ export default function ManageOrdersPage() {
                   <div className="an2-bp-empty">No customers found.</div>
                 )}
                 {filteredUsers.slice(0, userVisible).map((u) => (
-                  <div className="um-row" key={u.phone}>
+                  <LazyMount key={u.phone} className="um-row" minHeight={168}>
                     <div className="um-row-top">
                     <div className="um-main">
                       <div className="um-name-row">
@@ -11168,7 +11200,7 @@ export default function ManageOrdersPage() {
                         <FaWhatsapp size={17} />
                       </button>
                     </div>
-                  </div>
+                  </LazyMount>
                 ))}
 
                 {filteredUsers.length > userVisible && (

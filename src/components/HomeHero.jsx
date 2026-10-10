@@ -153,7 +153,9 @@ export default function HomeHero() {
           item: {
             "@type": "Book",
             name: b.name,
-            ...(b.author ? { author: { "@type": "Person", name: b.author } } : {}),
+            ...(b.author
+              ? { author: { "@type": "Person", name: b.author } }
+              : {}),
             image: absUrl(b.image),
             url: bookUrl(b),
             offers: {
@@ -231,185 +233,185 @@ export default function HomeHero() {
       </div>
 
       <div className="hero-top">
-      <div className="home-hero-inner">
-        {/* Offers marquee — auto-scrolls; tap any chip to see all reward tiers */}
-        <div className="hero-offers-row" role="list">
-          <div className="hero-offers-track">
-            {[...offerChips, ...offerChips].map((c, i) => (
-              <button
-                key={`${c.label}-${i}`}
-                type="button"
-                className="hero-offer-chip"
-                onClick={() => setOffersOpen(true)}
+        <div className="home-hero-inner">
+          {/* Offers marquee — auto-scrolls; tap any chip to see all reward tiers */}
+          <div className="hero-offers-row" role="list">
+            <div className="hero-offers-track">
+              {[...offerChips, ...offerChips].map((c, i) => (
+                <button
+                  key={`${c.label}-${i}`}
+                  type="button"
+                  className="hero-offer-chip"
+                  onClick={() => setOffersOpen(true)}
+                >
+                  {c.freeShip ? (
+                    <Truck size={15} className="hero-offer-ic" />
+                  ) : (
+                    <BadgePercent size={15} className="hero-offer-ic" />
+                  )}
+                  {c.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <h1 className="home-hero-title">
+            Buy Books Online in India,{" "}
+            <span className="home-hero-accent">Starting at ₹1</span>
+          </h1>
+
+          <p className="home-hero-sub">
+            Hand-picked bestsellers, self-help &amp; fiction from just ₹1 — free
+            shipping, Cash on Delivery &amp; easy 7-day returns across India.
+          </p>
+
+          <div className="home-hero-stats">
+            {stats.map(({ icon: Icon, label, highlight }) => (
+              <div
+                key={label}
+                className={`home-hero-stat${highlight ? " highlight" : ""}`}
               >
-                {c.freeShip ? (
-                  <Truck size={15} className="hero-offer-ic" />
-                ) : (
-                  <BadgePercent size={15} className="hero-offer-ic" />
-                )}
-                {c.label}
-              </button>
+                <Icon size={15} className="home-hero-stat-icon" />
+                <span>{label}</span>
+              </div>
             ))}
           </div>
-        </div>
 
-        <h1 className="home-hero-title">
-          Buy Books Online in India,{" "}
-          <span className="home-hero-accent">Starting at ₹1</span>
-        </h1>
-
-        <p className="home-hero-sub">
-          Hand-picked bestsellers, self-help &amp; fiction from just ₹1 — free
-          shipping, Cash on Delivery &amp; easy 7-day returns across India.
-        </p>
-
-        <div className="home-hero-stats">
-          {stats.map(({ icon: Icon, label, highlight }) => (
-            <div
-              key={label}
-              className={`home-hero-stat${highlight ? " highlight" : ""}`}
+          {/* Primary actions — Search + Suggest */}
+          <div className="hero-actions">
+            <button
+              type="button"
+              className="hero-search-btn"
+              onClick={() => setSearchOpen(true)}
             >
-              <Icon size={15} className="home-hero-stat-icon" />
-              <span>{label}</span>
-            </div>
-          ))}
-        </div>
+              <Search size={18} /> Search book
+            </button>
+            <button
+              type="button"
+              className="hero-suggest-btn"
+              onClick={() => setSuggestOpen(true)}
+            >
+              <Sparkles size={18} /> Suggest me
+            </button>
+          </div>
 
-        {/* Primary actions — Search + Suggest */}
-        <div className="hero-actions">
+          {/* First-time helper — opens the book-suggestion flow */}
           <button
             type="button"
-            className="hero-search-btn"
-            onClick={() => setSearchOpen(true)}
-          >
-            <Search size={18} /> Search book
-          </button>
-          <button
-            type="button"
-            className="hero-suggest-btn"
+            className="hero-expert-cta"
             onClick={() => setSuggestOpen(true)}
           >
-            <Sparkles size={18} /> Suggest me
+            <span className="hero-expert-ic">
+              <FaWhatsapp size={18} />
+            </span>
+            <span className="hero-expert-txt">
+              <strong>First time here?</strong> Talk with an expert for support
+            </span>
+            <ChevronRight size={16} className="hero-expert-arrow" />
           </button>
+
+          {/* Live-order social-proof ticker */}
+          <LiveOrdersStrip />
         </div>
 
-        {/* First-time helper — opens the book-suggestion flow */}
-        <button
-          type="button"
-          className="hero-expert-cta"
-          onClick={() => setSuggestOpen(true)}
-        >
-          <span className="hero-expert-ic">
-            <FaWhatsapp size={18} />
-          </span>
-          <span className="hero-expert-txt">
-            <strong>First time here?</strong> Talk with an expert for support
-          </span>
-          <ChevronRight size={16} className="hero-expert-arrow" />
-        </button>
-
-        {/* Live-order social-proof ticker */}
-        <LiveOrdersStrip />
-      </div>
-
-      {/* Readers' top-3 picks — right on desktop, stacked below on mobile */}
-      {picks.length > 0 && (
-        <aside className="hero-picks">
-          {/* Winners' podium: #1 tallest in the centre, #2 right, #3 left.
+        {/* Readers' top-3 picks — right on desktop, stacked below on mobile */}
+        {picks.length > 0 && (
+          <aside className="hero-picks">
+            {/* Winners' podium: #1 tallest in the centre, #2 right, #3 left.
               Rises into place when scrolled into view, retracts when past. */}
-          <motion.div
-            className="hero-podium"
-            initial="hide"
-            whileInView="show"
-            viewport={{ once: false, amount: 0.35 }}
-          >
-            {/* tiny confetti */}
-            <motion.span
-              className="hpz-confetti"
-              aria-hidden="true"
-              variants={{ hide: { opacity: 0 }, show: { opacity: 1 } }}
-              transition={{ duration: 0.3, delay: 0.35 }}
+            <motion.div
+              className="hero-podium"
+              initial="hide"
+              whileInView="show"
+              viewport={{ once: false, amount: 0.35 }}
             >
-              {Array.from({ length: 10 }).map((_, i) => (
-                <span key={i} className={`hpz-cf hpz-cf-${i}`} />
-              ))}
-            </motion.span>
+              {/* tiny confetti */}
+              <motion.span
+                className="hpz-confetti"
+                aria-hidden="true"
+                variants={{ hide: { opacity: 0 }, show: { opacity: 1 } }}
+                transition={{ duration: 0.3, delay: 0.35 }}
+              >
+                {Array.from({ length: 10 }).map((_, i) => (
+                  <span key={i} className={`hpz-cf hpz-cf-${i}`} />
+                ))}
+              </motion.span>
 
-            {[
-              { b: picks[2], rank: 3 },
-              { b: picks[0], rank: 1 },
-              { b: picks[1], rank: 2 },
-            ]
-              .filter((x) => x.b)
-              .map(({ b, rank }, idx) => {
-                const url = `/books/${slugify(b.name)}`;
-                return (
-                  <motion.div
-                    className={`hpz hpz-r${rank}`}
-                    key={b.id}
-                    variants={{
-                      hide: { opacity: 0, y: 48 },
-                      show: { opacity: 1, y: 0 },
-                    }}
-                    transition={{
-                      duration: 0.5,
-                      ease: [0.22, 1, 0.36, 1],
-                      delay: idx * 0.1,
-                    }}
-                  >
-                    <button
-                      type="button"
-                      className="hpz-book"
-                      aria-label={`Add ${b.name} to bag`}
-                      onClick={() => {
-                        addToCart(b.id);
-                        showToast(
-                          `Added to your bag 🎉 “${b.name}”`,
-                          "success",
-                        );
+              {[
+                { b: picks[2], rank: 3 },
+                { b: picks[0], rank: 1 },
+                { b: picks[1], rank: 2 },
+              ]
+                .filter((x) => x.b)
+                .map(({ b, rank }, idx) => {
+                  const url = `/books/${slugify(b.name)}`;
+                  return (
+                    <motion.div
+                      className={`hpz hpz-r${rank}`}
+                      key={b.id}
+                      variants={{
+                        hide: { opacity: 0, y: 48 },
+                        show: { opacity: 1, y: 0 },
+                      }}
+                      transition={{
+                        duration: 0.5,
+                        ease: [0.22, 1, 0.36, 1],
+                        delay: idx * 0.1,
                       }}
                     >
-                      <span className="hpz-coverwrap">
-                        <span className="hpz-cover">
-                          <img
-                            src={b.image}
-                            alt={`${b.name}${b.author ? ` by ${b.author}` : ""} — buy online at ₹${b.discountedPrice} on TheBookX`}
-                            loading="lazy"
+                      <button
+                        type="button"
+                        className="hpz-book"
+                        aria-label={`Add ${b.name} to bag`}
+                        onClick={() => {
+                          addToCart(b.id);
+                          showToast(
+                            `Added to your bag 🎉 “${b.name}”`,
+                            "success",
+                          );
+                        }}
+                      >
+                        <span className="hpz-coverwrap">
+                          <span className="hpz-cover">
+                            <img
+                              src={b.image}
+                              alt={`${b.name}${b.author ? ` by ${b.author}` : ""} — buy online at ₹${b.discountedPrice} on TheBookX`}
+                              loading="lazy"
+                            />
+                          </span>
+                          <span
+                            className="hpz-bm hpz-bm-back"
+                            aria-hidden="true"
                           />
+                          <span
+                            className="hpz-bm hpz-bm-front"
+                            aria-hidden="true"
+                          >
+                            <span className="hpz-bm-txt">BOOKMARK</span>
+                          </span>
                         </span>
-                        <span
-                          className="hpz-bm hpz-bm-back"
-                          aria-hidden="true"
-                        />
-                        <span
-                          className="hpz-bm hpz-bm-front"
-                          aria-hidden="true"
-                        >
-                          <span className="hpz-bm-txt">BOOKMARK</span>
-                        </span>
-                      </span>
-                      <span className="hpz-title">{b.name}</span>
-                    </button>
-                    <div className="hpz-pillar">
-                      <span className="hpz-rank">{rank}</span>
-                    </div>
-                  </motion.div>
-                );
-              })}
-          </motion.div>
+                        <span className="hpz-title">{b.name}</span>
+                      </button>
+                      <div className="hpz-pillar">
+                        <span className="hpz-rank">{rank}</span>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+            </motion.div>
 
-          <button
-            type="button"
-            className="hero-picks-addall"
-            onClick={() => {
-              picks.forEach((b) => addToCart(b.id));
-              showToast("Added all 3 picks to your bag 🎉", "success");
-            }}
-          >
-            <Plus size={16} /> Add all 3 to bag
-          </button>
-        </aside>
-      )}
+            <button
+              type="button"
+              className="hero-picks-addall"
+              onClick={() => {
+                picks.forEach((b) => addToCart(b.id));
+                showToast("Added all 3 picks to your bag 🎉", "success");
+              }}
+            >
+              <Plus size={16} /> Add all 3 to bag
+            </button>
+          </aside>
+        )}
       </div>
 
       {/* Scratch & win band — reuses the homepage scratch flow (opens the
@@ -419,9 +421,7 @@ export default function HomeHero() {
         role="button"
         tabIndex={0}
         onClick={openScratch}
-        onKeyDown={(e) =>
-          (e.key === "Enter" || e.key === " ") && openScratch()
-        }
+        onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && openScratch()}
         aria-label="Scratch to win cashback"
       >
         <span className="hero-scratch-deco" aria-hidden="true" />

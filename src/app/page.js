@@ -29,7 +29,8 @@ const RAIL_ONE_RUPEE = ALL_BOOKS.filter(
   (b) => b.discountedPrice === 1 && b.image,
 );
 const RAIL_TRENDING = ALL_BOOKS.filter(
-  (b) => b.catalogue?.includes("trending") && b.image && b.discountedPrice !== 1,
+  (b) =>
+    b.catalogue?.includes("trending") && b.image && b.discountedPrice !== 1,
 );
 const RAIL_BESTSELLERS = ALL_BOOKS.filter(
   (b) =>
@@ -155,19 +156,13 @@ export default function HomePage() {
       {/* Static hero, provides the visible H1 + value prop above the carousel. */}
       <HomeHero />
 
+      {/* Review-photo trust gallery — replaces the Bestseller carousel */}
+      <ReviewGallery />
+
       <LazySection threshold={0.05}>
         <Suspense fallback={<BooksSkeleton />}>
           <SmoothAppear delay={0.2}>
             <CatalogueSection />
-          </SmoothAppear>
-        </Suspense>
-      </LazySection>
-
-      {/* Combo offers — curated multi-book bundles, above the ₹1 rail */}
-      <LazySection threshold={0.05}>
-        <Suspense fallback={<BooksSkeleton />}>
-          <SmoothAppear delay={0.28}>
-            <ComboDeals />
           </SmoothAppear>
         </Suspense>
       </LazySection>
@@ -195,9 +190,6 @@ export default function HomePage() {
       {/* <UnlockModal /> */}
       {/* Small QuickReads teaser right below the reviews / write-a-review CTA */}
       <QuickReadsTeaser />
-
-      {/* Review-photo trust gallery — replaces the Bestseller carousel */}
-      <ReviewGallery />
 
       {/* Floating ₹1 gift box temporarily removed */}
       {/* <OneRupeeHero /> */}

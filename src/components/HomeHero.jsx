@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useMemo } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -110,6 +110,32 @@ export default function HomeHero() {
     setTimeout(() => setBursts((b) => b.filter((z) => z.id !== id)), 750);
   };
 
+  // Festive confetti raining across the whole hero. Deterministic values keep
+  // SSR and client markup identical (no hydration mismatch).
+  const confetti = useMemo(() => {
+    const COLORS = [
+      "#fb8500",
+      "#ffb703",
+      "#ffd23f",
+      "#c0223b",
+      "#ff8c42",
+      "#4ade80",
+      "#60a5fa",
+      "#f472b6",
+      "#ffffff",
+    ];
+    return Array.from({ length: 30 }).map((_, i) => ({
+      i,
+      left: (i * 97) % 100,
+      delay: ((i * 53) % 60) / 10, // 0–6s
+      dur: 4.5 + (((i * 71) % 45) / 10), // 4.5–9s
+      size: 6 + (i % 4) * 2, // 6–12px
+      color: COLORS[i % COLORS.length],
+      rot: (i * 61) % 360,
+      round: i % 3 === 0, // some circles, some rectangles
+    }));
+  }, []);
+
   const stats = [
     { icon: Star, label: "4.4 rating" },
     { icon: BadgeCheck, label: `${titleCount}+ titles` },
@@ -209,6 +235,25 @@ export default function HomeHero() {
           </li>
         </ul>
       </div>
+      {/* Festive confetti raining down the whole hero (behind the content) */}
+      <div className="hero-confetti" aria-hidden="true">
+        {confetti.map((c) => (
+          <span
+            key={c.i}
+            className={`hero-cf${c.round ? " round" : ""}`}
+            style={{
+              left: `${c.left}%`,
+              width: c.size,
+              height: c.round ? c.size : c.size + 4,
+              background: c.color,
+              animationDelay: `${c.delay}s`,
+              animationDuration: `${c.dur}s`,
+              "--cf-rot": `${c.rot}deg`,
+            }}
+          />
+        ))}
+      </div>
+
       {/* Tap-anywhere firecracker sparkles */}
       <div className="hero-spark-layer" aria-hidden="true">
         {bursts.map((burst) =>
@@ -281,6 +326,19 @@ export default function HomeHero() {
             Buy Books Online in India,{" "}
             <span className="home-hero-accent">Starting at ₹1</span>
           </h1>
+
+          {/* Big festive discount headline */}
+          <div className="hero-bigsale" aria-label="Festive sale: up to 50% off">
+            <span className="hero-bigsale-top">
+              🎉 Festive Season Sale is live
+            </span>
+            <span className="hero-bigsale-main">
+              Up to <span className="hero-bigsale-pct">50%</span> OFF
+            </span>
+            <span className="hero-bigsale-note">
+              on every order • limited time only
+            </span>
+          </div>
 
           <p className="home-hero-sub">
             Hand-picked bestsellers, self-help &amp; fiction from just ₹1 — free

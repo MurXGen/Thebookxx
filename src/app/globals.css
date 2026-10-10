@@ -14583,6 +14583,92 @@ img[data-loaded="true"] {
   }
 }
 
+/* ── Section-wide festive confetti (rains across the whole hero) ── */
+.hero-confetti {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+.hero-cf {
+  position: absolute;
+  top: -24px;
+  border-radius: 2px;
+  opacity: 0;
+  will-change: transform, opacity;
+  animation-name: heroCfFall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+.hero-cf.round {
+  border-radius: 50%;
+}
+@keyframes heroCfFall {
+  0% {
+    transform: translateY(-24px) rotate(0deg);
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(860px) rotate(var(--cf-rot, 360deg));
+    opacity: 0;
+  }
+}
+/* Keep the hero content above the confetti */
+.home-hero > .hero-top,
+.home-hero > .hero-scratch-band {
+  position: relative;
+  z-index: 2;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-cf {
+    display: none;
+  }
+}
+
+/* ── Big festive discount headline ── */
+.hero-bigsale {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin: 6px auto 2px;
+  text-align: center;
+}
+.hero-bigsale-top {
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #c0223b;
+}
+.hero-bigsale-main {
+  font-size: clamp(40px, 11vw, 76px);
+  font-weight: 900;
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+  background: linear-gradient(100deg, #c0223b 0%, #fb8500 48%, #ffb703 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: #fb8500;
+  filter: drop-shadow(0 6px 18px rgba(251, 133, 0, 0.28));
+}
+.hero-bigsale-pct {
+  font-size: 1.12em;
+}
+.hero-bigsale-note {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--dark-50, #6b7280);
+  margin-top: 2px;
+}
+
 /* Tap-anywhere firecracker sparkle layer */
 .hero-spark-layer {
   position: absolute;

@@ -3688,6 +3688,7 @@ export default function ManageOrdersPage() {
   // Opens an editable preview built from ALL available (non-dismissed) cards of
   // the chosen product type; the admin tweaks weights/dims/COD then downloads.
   const [ipBulk, setIpBulk] = useState(null); // { product, rows }
+  const [ipScanRow, setIpScanRow] = useState(null); // row index being scanned
   const [ipSender, setIpSender] = useState(null);
   const [ipSenderOpen, setIpSenderOpen] = useState(false);
   const openIpImport = () => {
@@ -4012,8 +4013,23 @@ export default function ManageOrdersPage() {
           body: JSON.stringify({ action: "markUsed", ids: usedIds }),
         }).catch(() => {});
       }
+
+      // Push each row's barcode (tracking ID) to its order's Shipping ID so the
+      // customer + admin see the tracking number without a separate step.
+      let pushed = 0;
+      ipBulk.rows.forEach((r) => {
+        const tid = String(r.barcode || "").trim();
+        const oid = String(r.orderId || "").trim();
+        if (tid && oid) {
+          pushed += 1;
+          patchLocalOrder(oid, { "Shipping ID": tid, shippingId: tid });
+          updateOrderRow(oid, { "Shipping ID": tid }).catch(() => {});
+        }
+      });
+      if (pushed) setTimeout(fetchOrders, 1600);
+
       showToast(
-        `${ipBulk.rows.length}-parcel ${ipBulk.product} file downloaded ✓${usedIds.length ? ` · ${usedIds.length} ID(s) marked Used` : ""}`,
+        `${ipBulk.rows.length}-parcel ${ipBulk.product} file downloaded ✓${pushed ? ` · ${pushed} tracking ID(s) saved to orders` : ""}`,
         "success",
       );
       setIpFilledIds([]);
@@ -15733,6 +15749,18 @@ export default function ManageOrdersPage() {
         }}
       />
 
+      {/* India Post bulk — scan a barcode straight into a row's article field. */}
+      <BarcodeScanner
+        open={ipScanRow != null}
+        single
+        autoTorch
+        title="Scan article barcode"
+        onClose={() => setIpScanRow(null)}
+        onDetect={(code) => {
+          if (ipScanRow != null) updateIpRow(ipScanRow, "barcode", code);
+        }}
+      />
+
       {/* ===== Notes (chat-style, slide-up) ===== */}
       <AnimatePresence>
         {showNotes && (
@@ -16086,6 +16114,17 @@ export default function ManageOrdersPage() {
                                             updateIpRow(idx, c.k, e.target.value)
                                           }
                                         />
+                                        {c.k === "barcode" && (
+                                          <button
+                                            type="button"
+                                            className="ip-cell-scan"
+                                            title="Scan barcode"
+                                            aria-label="Scan barcode"
+                                            onClick={() => setIpScanRow(idx)}
+                                          >
+                                            <Camera size={15} />
+                                          </button>
+                                        )}
                                         {c.count && (
                                           <span
                                             className={`ip-cell-count${

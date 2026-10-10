@@ -19,6 +19,7 @@ export default function BarcodeScanner({
   ids = [],
   existing = [],
   single = false, // single-capture mode: grab one code, hand it back, close
+  autoTorch = false, // turn the flashlight on automatically when it opens
   title = "Scan barcode",
 }) {
   const videoRef = useRef(null);
@@ -199,6 +200,17 @@ export default function BarcodeScanner({
         video.srcObject = stream;
         await video.play().catch(() => {});
         setReady(true);
+
+        // Turn the flashlight on by default when requested (if supported).
+        if (autoTorch) {
+          try {
+            const track = stream.getVideoTracks?.()[0];
+            if (track && track.getCapabilities?.().torch) {
+              await track.applyConstraints({ advanced: [{ torch: true }] });
+              setTorchOn(true);
+            }
+          } catch {}
+        }
 
         // Decode loop over the cropped ROI (~7 fps).
         loopRef.current = setInterval(() => {

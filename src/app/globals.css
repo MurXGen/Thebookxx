@@ -19562,6 +19562,20 @@ img[data-loaded="true"] {
   position: relative;
   display: flex;
   align-items: center;
+  gap: 6px;
+}
+.ip-cell-scan {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--tertiary, #fb8500);
+  background: #fff7ed;
+  color: var(--tertiary, #fb8500);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
 .ip-cell-input {
   width: 100%;

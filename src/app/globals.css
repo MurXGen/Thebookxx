@@ -30190,6 +30190,25 @@ img[data-loaded="true"] {
 .book-rail-pill svg {
   color: var(--tertiary, #fb8500);
 }
+/* All Books header controls (count + filter/sort) sit at the right */
+.allbooks-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.allbooks-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--dark-50, #6b7280);
+  white-space: nowrap;
+}
+@media (max-width: 560px) {
+  .allbooks-controls {
+    align-items: flex-start;
+  }
+}
 /* The rail reuses HorizontalScroll — bordered container with card dividers */
 .book-rail .h-scroll-wrapper {
   margin: 0;

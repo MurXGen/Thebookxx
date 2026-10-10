@@ -3,7 +3,7 @@
 import BookCard from "@/components/BookCard";
 import { books } from "@/utils/book";
 import { getCatalogueData } from "@/utils/catalogueUtils";
-import { ArrowRight, X, SlidersHorizontal, ArrowUpDown, ChevronDown } from "lucide-react";
+import { ArrowRight, X, SlidersHorizontal, ArrowUpDown, ChevronDown, Library } from "lucide-react";
 import { useMemo, useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -178,14 +178,22 @@ export default function AllBooks() {
       className="catalogue-section-2 trending-section"
       style={{ marginTop: "24px" }}
     >
-      <div className="flex flex-row justify-between flex-center gap-16">
-        <div className="width100">
-          <div className="flex flex-row gap-4 items-center justify-between">
-            <h2 className="font-20 weight-500">All Books</h2>
-            <div className="flex flex-row gap-12 margin-tp-16px items-center">
-              <div className="margin-tp-12px font-12 dark-50">
-                {visibleBooks.length} of {filteredBooks.length} books
-              </div>
+      <div className="book-rail-head">
+        <div className="book-rail-head-left">
+          <span className="book-rail-badge">
+            <Library size={13} /> THE LIBRARY
+          </span>
+          <h2 className="book-rail-title">Browse every book</h2>
+          <p className="book-rail-sub">
+            {filteredBooks.length}+ titles across fiction, self-help, business &
+            more — filter to find your next read.
+          </p>
+        </div>
+        <div className="allbooks-controls">
+          <span className="allbooks-count">
+            {visibleBooks.length} of {filteredBooks.length}
+          </span>
+          <div className="flex flex-row gap-12 items-center">
               <button
                 className="sec-mid-btn flex flex-row gap-8 items-center"
                 onClick={openFiltersModal}
@@ -247,14 +255,7 @@ export default function AllBooks() {
               )}
             </div>
           </div>
-
-          <div className="flex flex-row justify-between flex-center gap-16">
-            <span className="font-14 dark-50">
-              Explore novels, self-help, business & more
-            </span>
-          </div>
         </div>
-      </div>
 
       <div className="grid-2 margin-tp-24px">
         {visibleBooks.map((book) => (

@@ -74,19 +74,24 @@ export default function RecentlyViewed() {
 
   return (
     <section
-      className="catalogue-section-2 trending-section"
-      style={{ marginTop: "24px" }}
+      className="book-rail section-1200 trending-section"
+      aria-labelledby="rail-recent-h"
     >
-      {/* Section Header */}
-      {/* <div className="label-divider">
-        <span className="label-text flex flex-row flex-center items-center gap-12 font-20 weight-500">
-          Recently Viewed
-        </span>
-        <div className="label-line" />
-      </div> */}
+      <div className="book-rail-head">
+        <div className="book-rail-head-left">
+          <span className="book-rail-badge">
+            <Eye size={13} /> RECENTLY VIEWED
+          </span>
+          <h2 id="rail-recent-h" className="book-rail-title">
+            Jump back in
+          </h2>
+          <p className="book-rail-sub">
+            The books you were just exploring — add them before you forget.
+          </p>
+        </div>
+      </div>
 
-      {/* Books Grid */}
-      <HorizontalScroll title="Recently viewed" className="margin-tp-24px">
+      <HorizontalScroll title="">
         {recentBooks.map((book) => (
           <BookCard key={book.id} book={book} />
         ))}

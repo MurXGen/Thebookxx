@@ -8,6 +8,7 @@ import { ArrowLeft, Package, ChevronRight, Clock, MessageCircle } from "lucide-r
 import { AnimatePresence } from "framer-motion";
 import { books as ALL_BOOKS } from "@/utils/book";
 import SupportSheet from "@/components/profile/SupportSheet";
+import ReviewRewardCard from "@/components/ReviewRewardCard";
 import PwaInstallPromo from "@/components/PwaInstallPromo";
 
 const SUPPORT_WHATSAPP = "917710892108";
@@ -202,6 +203,9 @@ export default function OrdersListPage() {
           Support
         </button>
       </header>
+
+      {/* Share & earn — post a review, get up to ₹200 back. */}
+      <ReviewRewardCard phone={number} />
 
       {loading ? (
         <div className="ord-groups" aria-busy="true" aria-label="Loading your orders">

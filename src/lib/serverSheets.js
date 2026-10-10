@@ -53,6 +53,13 @@ export const COUPONS_SHEET_NAME =
 // Last Activity. One row per unique source/medium/campaign combination.
 export const UTM_SHEET_NAME = process.env.UTM_SHEET_NAME || "utm";
 
+// Share-&-earn review rewards tab. Columns:
+// Sub ID | Timestamp | Phone Number | Order ID | Platform | Post Link |
+// Status (Pending/Approved/Rejected) | Amount | Note | Reviewed At.
+// Admin sets Amount + Status (+ Note) on review; wallet is credited manually.
+export const REVIEWS_SHEET_NAME =
+  process.env.REVIEWS_SHEET_NAME || "Reviews";
+
 export const REFERRER_REWARD = Number(process.env.REFERRER_REWARD || 50);
 export const REFEREE_REWARD = Number(process.env.REFEREE_REWARD || 30);
 
@@ -297,6 +304,45 @@ export function utmUpdate(key, data) {
     sheet: UTM_SHEET_NAME,
     matchColumn: "Key",
     matchValue: String(key),
+    data,
+  });
+}
+
+// ── Share-&-earn review rewards ───────────────────────────────────────────
+export async function reviewRewardRows(phone) {
+  const digits = String(phone || "").replace(/\D/g, "").slice(-10);
+  if (digits.length !== 10) return [];
+  try {
+    const meta = await gvizQuery({
+      sheet: REVIEWS_SHEET_NAME,
+      tq: "select * limit 0",
+    });
+    const phoneCol = findColumn(meta, "Phone Number");
+    const where = phoneCol
+      ? phoneCol.type === "number"
+        ? `where ${phoneCol.id} = ${digits}`
+        : `where ${phoneCol.id} = '${digits}'`
+      : "";
+    const table = await gvizQuery({
+      sheet: REVIEWS_SHEET_NAME,
+      tq: `select * ${where}`.trim(),
+    });
+    const rows = tableToObjects(table);
+    return phoneCol
+      ? rows
+      : rows.filter(
+          (r) =>
+            String(r["Phone Number"] ?? "").replace(/\D/g, "").slice(-10) ===
+            digits,
+        );
+  } catch {
+    return [];
+  }
+}
+export function reviewRewardAppend(data) {
+  return appscriptPost(APPSCRIPT_ORDER_URL, {
+    action: "append",
+    sheet: REVIEWS_SHEET_NAME,
     data,
   });
 }

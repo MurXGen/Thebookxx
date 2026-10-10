@@ -50,6 +50,7 @@ import AddBeforePacking from "@/components/profile/AddBeforePacking";
 import BookCard from "@/components/BookCard";
 import ProUpgradeModal from "@/components/UI/ProUpgradeModal";
 import CartConfetti from "@/components/UI/Confetti";
+import ReviewRewardCard from "@/components/ReviewRewardCard";
 import {
   updateOrderRow,
   fetchWalletBalance,
@@ -1593,6 +1594,9 @@ export default function OrderDetailPage() {
           <Gift size={15} /> Refer &amp; win ₹50
         </button>
       </div>
+
+      {/* Share & earn — post a review of this order, get up to ₹200 back. */}
+      <ReviewRewardCard phone={number} orderId={orderId} />
 
       {/* Faster-delivery upgrade — confirmation modal (benefits + air mode) */}
       <AnimatePresence>

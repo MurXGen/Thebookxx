@@ -65,6 +65,7 @@ import InstallAppBar from "@/components/InstallAppBar";
 import RecommendationModal from "@/components/RecommendationModal";
 import ReferralCodeField from "@/components/profile/ReferralCodeField";
 import ReferAndEarn from "@/components/profile/ReferAndEarn";
+import ReviewRewardCard from "@/components/ReviewRewardCard";
 import ProUpgradeModal from "@/components/UI/ProUpgradeModal";
 import {
   fetchProStatus,
@@ -1958,6 +1959,10 @@ Please cancel this order. Thank you `;
                 {/* Refer & Earn — minimal, tucked inside the profile card. */}
                 {!cardLoading && !booting && (
                   <ReferAndEarn phone={phoneNumber} minimal guide={refGuide} />
+                )}
+                {/* Share & earn — post a review, get up to ₹200 back. */}
+                {!cardLoading && !booting && (
+                  <ReviewRewardCard phone={phoneNumber} />
                 )}
               </>
             )}

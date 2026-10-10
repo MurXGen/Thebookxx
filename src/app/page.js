@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import AllBooks from "@/components/AllBooks";
 import CartBar from "@/components/CartBar";
 import Navbar from "@/components/Navbar";
+import ReviewRewardCard from "@/components/ReviewRewardCard";
 import PincodeModal from "@/components/UI/PincodeModal";
 import CountdownTimer from "@/components/UI/CountDownTimer";
 import LabelDivider from "@/components/UI/LineDivider";
@@ -140,6 +141,11 @@ export default function HomePage() {
 
       {/* Compact 2-row ₹1 books rail — above the review gallery. */}
       <OneRupeeGrid />
+
+      {/* Share & earn — post a review, get up to ₹200 back. */}
+      <div className="section-1200" style={{ padding: "0 12px" }}>
+        <ReviewRewardCard />
+      </div>
 
       {/* Frequently-bought-together 3D duo bundles — right below the ₹1 store. */}
       <BundleDeals />

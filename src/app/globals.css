@@ -30093,6 +30093,108 @@ img[data-loaded="true"] {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
+   BookRail — homepage BookCard rails (₹1 / Trending / Bestsellers / New)
+   ───────────────────────────────────────────────────────────────────────── */
+.book-rail {
+  margin: 26px auto;
+}
+.book-rail-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.book-rail-head-left {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.book-rail-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  padding: 4px 11px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #b45309;
+  background: linear-gradient(135deg, rgba(251, 133, 0, 0.16), rgba(255, 183, 3, 0.1));
+  border: 1px solid rgba(251, 133, 0, 0.22);
+}
+.book-rail-badge svg {
+  color: var(--tertiary, #fb8500);
+}
+.book-rail-title {
+  position: relative;
+  margin: 2px 0 0;
+  padding-left: 12px;
+  font-size: clamp(21px, 5.2vw, 28px);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.12;
+  color: var(--foreground, #0a0a0a);
+}
+/* Editorial accent bar on the title */
+.book-rail-title::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 4px;
+  bottom: 4px;
+  width: 4px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #fb8500, #ffb703);
+}
+.book-rail-sub {
+  margin: 0;
+  max-width: 62ch;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--dark-50, #6b7280);
+}
+.book-rail-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+  padding: 7px 13px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 800;
+  white-space: nowrap;
+  color: #b45309;
+  background: rgba(251, 133, 0, 0.12);
+  border: 1px solid rgba(251, 133, 0, 0.22);
+}
+.book-rail-pill svg {
+  color: var(--tertiary, #fb8500);
+}
+/* The rail reuses HorizontalScroll — tidy its spacing inside a BookRail */
+.book-rail .h-scroll-wrapper {
+  margin: 0;
+}
+.book-rail .h-scroll-track {
+  gap: 14px;
+  padding-bottom: 6px;
+}
+@media (max-width: 560px) {
+  .book-rail {
+    margin: 20px auto;
+  }
+  .book-rail-head {
+    align-items: flex-start;
+  }
+  .book-rail-sub {
+    font-size: 12.5px;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
    Most-awaited launch banner (LaunchPromo) — top of homepage
    ───────────────────────────────────────────────────────────────────────── */
 .launch-promo {

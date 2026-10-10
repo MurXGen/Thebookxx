@@ -32872,7 +32872,7 @@ img[data-loaded="true"] {
   overflow-y: auto;
 }
 .rr-modal-body {
-  padding: 4px 16px 8px;
+  padding: 4px 0 0;
 }
 .rr-modal-body .rr-sub-txt {
   color: var(--dark-60, #4b5563);

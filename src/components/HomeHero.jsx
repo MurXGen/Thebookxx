@@ -389,19 +389,6 @@ export default function HomeHero() {
             <span className="home-hero-accent">Starting at ₹1</span>
           </h1>
 
-          {/* Big festive discount headline */}
-          <div className="hero-bigsale" aria-label="Festive sale: up to 50% off">
-            <span className="hero-bigsale-top">
-              🎉 Festive Season Sale is live
-            </span>
-            <span className="hero-bigsale-main">
-              Up to <span className="hero-bigsale-pct">50%</span> OFF
-            </span>
-            <span className="hero-bigsale-note">
-              on every order • limited time only
-            </span>
-          </div>
-
           <p className="home-hero-sub">
             Hand-picked bestsellers, self-help &amp; fiction from just ₹1 — free
             shipping, Cash on Delivery &amp; easy 7-day returns across India.

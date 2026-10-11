@@ -3547,6 +3547,7 @@ export default function ManageOrdersPage() {
   const [walletBusy, setWalletBusy] = useState(false);
   // Monthly run-rate chart hover (day-of-month under the cursor).
   const [mrrTip, setMrrTip] = useState(null); // { day, x }
+  const [runRateMetric, setRunRateMetric] = useState("orders"); // orders | revenue
   const mrrRef = useRef(null);
 
   // Minimal hover tooltip for analytics charts (event-delegated so it never
@@ -7137,7 +7138,11 @@ export default function ManageOrdersPage() {
     const curMonth = now.getMonth();
     const curDay = now.getDate();
     // daily[m][day] = orders placed on that calendar day (day is 1-indexed).
+    // dailyRev[m][day] = revenue collected on that day.
     const daily = Array.from({ length: 12 }, (_, m) =>
+      new Array(new Date(y, m + 1, 0).getDate() + 1).fill(0),
+    );
+    const dailyRev = Array.from({ length: 12 }, (_, m) =>
       new Array(new Date(y, m + 1, 0).getDate() + 1).fill(0),
     );
     orders.forEach((o) => {
@@ -7145,6 +7150,7 @@ export default function ManageOrdersPage() {
       const d = getOrderDate(o);
       if (!d || d.getFullYear() !== y) return;
       daily[d.getMonth()][d.getDate()] += 1;
+      dailyRev[d.getMonth()][d.getDate()] += o.revenue || 0;
     });
     const months = daily
       .map((arr, m) => {
@@ -7152,10 +7158,12 @@ export default function ManageOrdersPage() {
         const lastDay =
           m < curMonth ? daysInMonth : m === curMonth ? curDay : 0;
         let run = 0;
+        let runRev = 0;
         const pts = [];
         for (let day = 1; day <= lastDay; day++) {
           run += arr[day] || 0;
-          pts.push({ day, value: run });
+          runRev += dailyRev[m][day] || 0;
+          pts.push({ day, value: run, rev: Math.round(runRev) });
         }
         return {
           month: m,
@@ -7163,12 +7171,14 @@ export default function ManageOrdersPage() {
           color: MONTH_COLORS[m],
           pts,
           total: run,
+          totalRev: Math.round(runRev),
           isCurrent: m === curMonth,
         };
       })
       .filter((mm) => mm.pts.length > 0 && mm.total > 0);
     const max = Math.max(1, ...months.map((mm) => mm.total));
-    return { year: y, curMonth, curDay, months, max };
+    const maxRev = Math.max(1, ...months.map((mm) => mm.totalRev));
+    return { year: y, curMonth, curDay, months, max, maxRev };
   }, [orders]);
 
   // ── Users / customer management ────────────────────────────────────────
@@ -9119,10 +9129,18 @@ export default function ManageOrdersPage() {
             {/* Monthly run rate — one line per month, plotted by day-of-month */}
             <An2Section
               title={`Monthly run rate · ${monthlyRunRate.year}`}
-              sub="Cumulative orders by day — one competing line per month"
+              sub={`Cumulative ${
+                runRateMetric === "revenue" ? "revenue" : "orders"
+              } by day — one competing line per month`}
             >
               {(() => {
-                const { months, max, year } = monthlyRunRate;
+                const { months, max, maxRev, year } = monthlyRunRate;
+                const isRev = runRateMetric === "revenue";
+                const maxV = isRev ? maxRev : max;
+                const valOf = (p) => (isRev ? p.rev : p.value);
+                const totOf = (m) => (isRev ? m.totalRev : m.total);
+                const fmtV = (v) =>
+                  isRev ? `₹${Number(v).toLocaleString("en-IN")}` : v;
                 const W = 700;
                 const H = 220;
                 const padL = 6;
@@ -9132,12 +9150,12 @@ export default function ManageOrdersPage() {
                 const iW = W - padL - padR;
                 const iH = H - padT - padB;
                 const xOf = (day) => padL + iW * ((day - 1) / 30);
-                const yOf = (v) => padT + iH - (v / max) * iH;
+                const yOf = (v) => padT + iH - (v / maxV) * iH;
                 const linePath = (pts) =>
                   pts
                     .map(
                       (p, i) =>
-                        `${i === 0 ? "M" : "L"}${xOf(p.day)},${yOf(p.value)}`,
+                        `${i === 0 ? "M" : "L"}${xOf(p.day)},${yOf(valOf(p))}`,
                     )
                     .join(" ");
                 const cur = months.find((m) => m.isCurrent);
@@ -9146,7 +9164,7 @@ export default function ManageOrdersPage() {
                   const last = cur.pts[cur.pts.length - 1];
                   blink = {
                     leftPct: (xOf(last.day) / W) * 100,
-                    topPct: (yOf(last.value) / H) * 100,
+                    topPct: (yOf(valOf(last)) / H) * 100,
                     color: cur.color,
                   };
                 }
@@ -9156,7 +9174,7 @@ export default function ManageOrdersPage() {
                       .map((m) => {
                         const p = m.pts.find((pt) => pt.day === hoverDay);
                         return p
-                          ? { label: m.label, color: m.color, value: p.value }
+                          ? { label: m.label, color: m.color, value: valOf(p) }
                           : null;
                       })
                       .filter(Boolean)
@@ -9168,6 +9186,26 @@ export default function ManageOrdersPage() {
                   );
                 return (
                   <>
+                    <div className="an2-mrr-tabs" role="tablist">
+                      <button
+                        type="button"
+                        role="tab"
+                        aria-selected={!isRev}
+                        className={`an2-mrr-tab${!isRev ? " on" : ""}`}
+                        onClick={() => setRunRateMetric("orders")}
+                      >
+                        Orders
+                      </button>
+                      <button
+                        type="button"
+                        role="tab"
+                        aria-selected={isRev}
+                        className={`an2-mrr-tab${isRev ? " on" : ""}`}
+                        onClick={() => setRunRateMetric("revenue")}
+                      >
+                        Revenue
+                      </button>
+                    </div>
                     <div
                       className="an2-mrr"
                       ref={mrrRef}
@@ -9238,7 +9276,9 @@ export default function ManageOrdersPage() {
                                 style={{ background: r.color }}
                               />
                               <span className="an2-mrr-tip-m">{r.label}</span>
-                              <span className="an2-mrr-tip-v">{r.value}</span>
+                              <span className="an2-mrr-tip-v">
+                                {fmtV(r.value)}
+                              </span>
                             </div>
                           ))}
                         </div>
@@ -9256,7 +9296,7 @@ export default function ManageOrdersPage() {
                         <span className="an2-mrr-leg" key={m.month}>
                           <i style={{ background: m.color }} />
                           {m.label}
-                          <b>{m.total}</b>
+                          <b>{fmtV(totOf(m))}</b>
                           {m.isCurrent && (
                             <span className="an2-mrr-leg-live">live</span>
                           )}

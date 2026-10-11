@@ -46126,6 +46126,38 @@ img[data-loaded="true"] {
 }
 
 /* Monthly run-rate — multi-line race chart */
+/* Orders / Revenue toggle for the monthly run-rate chart */
+.an2-mrr-tabs {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  margin-bottom: 12px;
+  border-radius: 999px;
+  background: var(--dark-4, #f3f4f6);
+  border: 1px solid var(--hairline, #ececec);
+}
+.an2-mrr-tab {
+  border: none;
+  background: none;
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--dark-50, #6b7280);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.an2-mrr-tab.on {
+  background: var(--foreground, #0a0a0a);
+  color: #fff;
+}
+.mo-dark .an2-mrr-tabs {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+.mo-dark .an2-mrr-tab.on {
+  background: var(--tertiary, #fb8500);
+}
 .an2-mrr {
   position: relative;
   width: 100%;

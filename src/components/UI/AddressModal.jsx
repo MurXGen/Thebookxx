@@ -57,7 +57,6 @@ import {
   updateOrderRow,
   debitWallet,
 } from "@/utils/googleFormOrder";
-import { PRO_PRICE, startProPayment } from "@/utils/proPlan";
 import ScratchRewardSheet from "./ScratchRewardSheet";
 import CartSupportSheet from "./CartSupportSheet";
 import { showToast } from "@/context/ToastContext";
@@ -228,7 +227,6 @@ export default function AddressModal({
   const [showPaySelect, setShowPaySelect] = useState(false);
   // Pro-membership add-on — default ON for non-members; adds ₹99 to the bill and
   // registers a pending membership when the order is placed.
-  const [proAddon, setProAddon] = useState(true);
   // Coupons — slide-up list + code entry; applied coupon discounts the order.
   const [showCouponSheet, setShowCouponSheet] = useState(false);
   const [coupons, setCoupons] = useState([]);
@@ -237,7 +235,6 @@ export default function AddressModal({
   const [couponApplying, setCouponApplying] = useState(false);
   const [appliedCoupon, setAppliedCoupon] = useState(null); // {code,title,discount}
   const couponRedeemedRef = useRef(false);
-  const proRegisteredRef = useRef(false);
   // Which method is currently highlighted on the "Choose payment method" sheet.
   // Defaults to none — the shopper must pick, then confirm with the button below.
   const [paySel, setPaySel] = useState("UPI"); // online selected by default
@@ -580,10 +577,9 @@ export default function AddressModal({
     walletEnabled && walletBalance > 0 ? maxWalletUsable : 0;
   // QuickReads add-on rides on the same bill (flat, no delivery/offer applied).
   const qrAddOn = quickReadTotal || 0;
-  // Pro-membership add-on (₹99) — only billable when the shopper isn't already a
-  // member and keeps the add-on toggled on.
-  const proAddonActive = !proActive && proAddon;
-  const proAddonCharge = proAddonActive ? PRO_PRICE : 0;
+  // Pro-membership add-on removed — no longer offered, so it never bills. Totals
+  // now match the bag exactly (no hidden +₹99).
+  const proAddonCharge = 0;
 
   // Coupon applies to the ENTIRE pre-coupon bill (items after offer + QuickReads
   // + Pro add-on + delivery + gift/bookmark add-ons), not just the item subtotal.
@@ -967,12 +963,6 @@ export default function AddressModal({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "redeem", code: appliedCoupon.code }),
       }).catch(() => {});
-    }
-
-    // Pro add-on: register a pending membership once, when the order is placed.
-    if (confirmed && proAddonActive && !proRegisteredRef.current) {
-      proRegisteredRef.current = true;
-      startProPayment(normalizePhone(phone)).catch(() => {});
     }
 
     // UPSERT: if a row for this checkout id was already written (a draft, or an
@@ -2320,32 +2310,7 @@ export default function AddressModal({
                         </span>
                       </div>
 
-                      {/* TheBookX Exclusive — default-on ₹99 add-on (hidden for
-                          existing members). */}
-                      {!proActive && (
-                        <button
-                          type="button"
-                          className={`pa-row${proAddon ? " on" : ""}`}
-                          onClick={() => setProAddon((v) => !v)}
-                        >
-                          <span className="pa-row-ic paid">
-                            <span className="pa-ripple" aria-hidden="true" />
-                            <Zap size={18} />
-                          </span>
-                          <span className="pa-row-main">
-                            <span className="pa-row-name">
-                              TheBookX Exclusive
-                            </span>
-                            <span className="pa-row-sub free">
-                              Free delivery, zero COD fee &amp; more
-                            </span>
-                          </span>
-                          <span className="pa-row-price">+₹{PRO_PRICE}</span>
-                          <span className={`pa-check${proAddon ? " on" : ""}`}>
-                            {proAddon && <Check size={12} strokeWidth={3} />}
-                          </span>
-                        </button>
-                      )}
+                      {/* TheBookX Exclusive add-on removed — no longer offered. */}
                     </div>
                   </div>
 

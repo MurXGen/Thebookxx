@@ -225,15 +225,18 @@
   .rr-draw{width:230px;height:auto;display:block;margin:0 0 14px 6px;}
   .rr-kick{font-family:'Poppins';font-weight:800;font-size:40px;letter-spacing:5px;text-transform:uppercase;color:#E8622A;margin-bottom:26px;}
   .rr-hb{font-family:'Anton';font-weight:400;font-size:162px;line-height:.9;letter-spacing:1px;text-transform:uppercase;color:#141414;}
-  .rr-hs{font-family:'Kaushan Script';font-size:164px;line-height:.9;color:#E8622A;margin-top:8px;}
+  .rr-hs{font-family:'Kaushan Script';font-size:164px;line-height:.9;color:#C2451A;margin-top:8px;-webkit-text-stroke:2px #C2451A;text-shadow:2px 0 #C2451A,-2px 0 #C2451A,0 2px #C2451A,0 -2px #C2451A,2px 2px #C2451A,-2px -2px #C2451A,2px -2px #C2451A,-2px 2px #C2451A;}
   .rr-numrow{display:flex;align-items:center;gap:34px;margin-bottom:56px;}
   .rr-num{font-family:'Anton';font-weight:400;font-size:160px;line-height:.78;color:#E8622A;}
   .rr-numbar{flex:1;height:12px;background:#141414;border-radius:8px;}
   .rr-ptext{font-family:'Lora';font-weight:600;font-size:82px;line-height:1.16;color:#141414;}
   .rr-cb{font-family:'Anton';font-weight:400;font-size:124px;line-height:.88;text-transform:uppercase;color:#141414;}
-  .rr-cs{font-family:'Kaushan Script';font-size:132px;line-height:.88;color:#E8622A;margin-top:4px;}
+  .rr-cs{font-family:'Kaushan Script';font-size:132px;line-height:.88;color:#C2451A;margin-top:4px;-webkit-text-stroke:2px #C2451A;text-shadow:2px 0 #C2451A,-2px 0 #C2451A,0 2px #C2451A,0 -2px #C2451A,2px 2px #C2451A,-2px -2px #C2451A,2px -2px #C2451A,-2px 2px #C2451A;}
   .rr-ct{font-family:'Poppins';font-weight:600;font-size:46px;line-height:1.35;color:#141414;margin-top:36px;max-width:820px;}
-  .rr-badge{align-self:flex-start;margin-top:44px;background:#E8622A;color:#fff;font-family:'Poppins';font-weight:800;font-size:46px;padding:20px 44px;border-radius:60px;letter-spacing:1px;}
+  .rr-badge{align-self:flex-start;margin-top:40px;background:#C2451A;color:#fff;font-family:'Poppins';font-weight:800;font-size:44px;padding:22px 40px;border-radius:14px;letter-spacing:.5px;}
+  .rr-thook{font-family:'Anton';font-weight:400;font-size:104px;line-height:1.02;letter-spacing:1px;text-transform:uppercase;color:#141414;}
+  .rr-thook .hot{color:#C2451A;}
+  .rr-tsub{font-family:'Poppins';font-weight:700;font-size:44px;color:#C2451A;margin-top:40px;letter-spacing:.5px;}
   .rrnav{position:absolute;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:50%;border:none;background:rgba(20,20,20,.72);color:#fff;cursor:pointer;z-index:4;font-size:16px;}
   .rrnav.rprev{left:8px;} .rrnav.rnext{right:8px;}
   .rrinfo{flex:1;min-width:280px;}
@@ -381,6 +384,7 @@
         <div class="controls" style="width:auto;justify-content:flex-start;margin-top:4px;">
           <button class="btn" id="rrplay" style="background:#2a2535;color:#fff;"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Play preview</button>
           <button class="btn mp4" id="rrmp4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v12H4zM8 20h8"/></svg>Download reel (30s MP4)</button>
+          <button class="btn png" id="rrthumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg>Download thumbnail</button>
           <button class="btn" id="rrcopy" style="background:#2a2535;color:#fff;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 9h10v10H9zM5 15H4V5h10v1"/></svg>Copy caption</button>
         </div>
         <textarea id="rrcap" class="rrcap" readonly></textarea>
@@ -832,27 +836,27 @@ document.getElementById('safeBtn').addEventListener('click',function(){ var s=do
 (function(){
   const ARR="data:image/png;base64,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";
   const HASH="#ReadMore #BookLovers #ReadingHabit #SelfImprovement #Discipline #TheBookX #Bookstagram #BookstagramIndia #ReadingCommunity #WhyRead #BookCommunity #BooksFrom1Rupee";
-  const CTA_B="Start", CTA_S="reading", CTA_T="Thousands of books on thebookx.in, from just ₹1. Follow @thebookx.in for a reason to read every day.";
+  const CTA_B="Start", CTA_S="reading", CTA_T="Free bookmarks, free shipping and up to 50% off, books from ₹1 on thebookx.in.";
   const TOPICS=[
-    {id:"leaders",kick:"The 1% habit",hb:"Leaders are",hs:"readers",hook:"The highest performers all share one quiet habit.",points:["The average CEO reads about 60 books a year.","Read one book, borrow a lifetime of lessons.","Every problem you face, someone already solved in a book.","One hour a day beats one degree a decade."]},
-    {id:"brain",kick:"Your brain on books",hb:"Reading",hs:"rewires you",hook:"What really happens to your mind when you read.",points:["Just 6 minutes of reading cuts stress by 68%.","It rebuilds focus in a world designed to distract you.","Vocabulary, memory and empathy all compound.","A calmer mind is a sharper mind."]},
-    {id:"lives",kick:"Why bother",hb:"Readers live",hs:"bigger",hook:"One habit lets you live a thousand lives.",points:["Live a hundred lifetimes before your own ends.","Travel centuries without leaving your chair.","Sit with the greatest minds who ever lived.","Boredom disappears when a book is near."]},
-    {id:"escape",kick:"Escape average",hb:"Books beat",hs:"scrolling",hook:"Trade the feed for something that compounds.",points:["Swap 20 minutes of scrolling for 20 pages.","Your inputs shape your outputs. Choose better.","In a shallow world, depth is a superpower.","A book is cheaper than a lifetime of regret."]},
-    {id:"mentor",kick:"Cheapest mentor",hb:"A book is a",hs:"mentor",hook:"The best mentor you'll ever meet costs almost nothing.",points:["Decades of a genius, for the price of a coffee.","Advice with no ego and no agenda.","Available at 2am, on repeat, forever.","You can't afford NOT to read."]},
-    {id:"raise",kick:"Start early",hb:"Raise a",hs:"reader",hook:"The habit that quietly builds future leaders.",points:["Kids who read become adults who lead.","20 minutes a day is 1.8 million words a year.","Screens entertain. Books build.","The best gift they'll keep fits on a shelf."]}
+    {id:"leaders",kick:"The 1% habit",hb:"Leaders are",hs:"readers",hook:"The highest performers all share one quiet habit.",thumb:"The reading habit behind every big salary",thumbHot:"big salary",points:["The average CEO reads about 60 books a year.","Read one book, borrow a lifetime of lessons.","Every problem you face, someone already solved in a book.","One hour a day beats one degree a decade."]},
+    {id:"brain",kick:"Your brain on books",hb:"Reading",hs:"rewires you",hook:"What really happens to your mind when you read.",thumb:"What reading does to your brain in 6 minutes",thumbHot:"6 minutes",points:["Just 6 minutes of reading cuts stress by 68%.","It rebuilds focus in a world designed to distract you.","Vocabulary, memory and empathy all compound.","A calmer mind is a sharper mind."]},
+    {id:"lives",kick:"Why bother",hb:"Readers live",hs:"bigger",hook:"One habit lets you live a thousand lives.",thumb:"How readers live a hundred lives in one",thumbHot:"hundred lives",points:["Live a hundred lifetimes before your own ends.","Travel centuries without leaving your chair.","Sit with the greatest minds who ever lived.","Boredom disappears when a book is near."]},
+    {id:"escape",kick:"Escape average",hb:"Books beat",hs:"scrolling",hook:"Trade the feed for something that compounds.",thumb:"Why top performers quit the scroll",thumbHot:"quit the scroll",points:["Swap 20 minutes of scrolling for 20 pages.","Your inputs shape your outputs. Choose better.","In a shallow world, depth is a superpower.","A book is cheaper than a lifetime of regret."]},
+    {id:"mentor",kick:"Cheapest mentor",hb:"A book is a",hs:"mentor",hook:"The best mentor you'll ever meet costs almost nothing.",thumb:"The ₹1 mentor the smartest people swear by",thumbHot:"₹1 mentor",points:["Decades of a genius, for the price of a coffee.","Advice with no ego and no agenda.","Available at 2am, on repeat, forever.","You can't afford NOT to read."]},
+    {id:"raise",kick:"Start early",hb:"Raise a",hs:"reader",hook:"The habit that quietly builds future leaders.",thumb:"The tiny habit that quietly builds leaders",thumbHot:"builds leaders",points:["Kids who read become adults who lead.","20 minutes a day is 1.8 million words a year.","Screens entertain. Books build.","The best gift they'll keep fits on a shelf."]}
   ];
   const frame=document.getElementById('rrframe'), scale=frame.parentNode;
   const dotsBox=document.getElementById('rrdots'), capBox=document.getElementById('rrcap');
   function esc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
   const CIRCLE='<div class="rr-circle"><svg viewBox="0 0 24 24"><path d="M3 10.3h10V6.3l8.6 5.7-8.6 5.7V13.7H3z" fill="#141414"/></svg></div>';
   let ci = Math.floor(Date.now()/864e5) % TOPICS.length;   // rotates by day
-  const ENTR=0.7, DUR={hook:3.8,point:4.3,cta:5.0};
+  const ENTR=1.1, DUR={hook:3.8,point:4.3,cta:5.0};
   function scenesFor(t){ const s=[{type:'hook'}]; t.points.forEach((p,i)=>s.push({type:'point',idx:i,text:p})); s.push({type:'cta'}); return s; }
   function schedule(scs){ let a=[],tt=0; scs.forEach(sc=>{const d=DUR[sc.type];a.push({sc,start:tt,dur:d});tt+=d;}); return {list:a,total:tt}; }
   function sceneHTML(t,sc){
     if(sc.type==='hook') return '<img class="rr-draw" src="'+ARR+'"><div class="rr-kick">'+esc(t.kick)+'</div><div class="rr-hb">'+esc(t.hb)+'</div><div class="rr-hs">'+esc(t.hs)+'</div>';
     if(sc.type==='point') return '<div class="rr-numrow"><div class="rr-num">'+('0'+(sc.idx+1)).slice(-2)+'</div><div class="rr-numbar"></div></div><div class="rr-ptext">'+esc(sc.text)+'</div>';
-    return '<div class="rr-cb">'+CTA_B+'</div><div class="rr-cs">'+CTA_S+'</div><div class="rr-ct">'+esc(CTA_T)+'</div><div class="rr-badge">Books from &#8377;1</div>';
+    return '<div class="rr-cb">'+CTA_B+'</div><div class="rr-cs">'+CTA_S+'</div><div class="rr-ct">'+esc(CTA_T)+'</div><div class="rr-badge">Visit thebookx.in now</div>';
   }
   function setSteps(n){ frame.querySelectorAll('.rr-steps i').forEach((e,k)=>e.classList.toggle('on',k<=n)); }
   function mount(i){
@@ -916,6 +920,9 @@ document.getElementById('safeBtn').addEventListener('click',function(){ var s=do
       const host=document.getElementById('rrExportHost'); host.appendChild(frame); await document.fonts.ready; await raf2();
       await new Promise(r=>{const im=new Image();im.onload=im.onerror=r;im.src=ARR;}); // preload arrow
       function blankCv(){ const c=document.createElement('canvas'); c.width=W; c.height=H; const x=c.getContext('2d'); x.fillStyle='#ffffff'; x.fillRect(0,0,W,H); return c; }
+      const oc=document.createElement('canvas'); oc.width=W; oc.height=H; const octx=oc.getContext('2d');
+      frame.style.background='transparent';
+      const parts=[]; for(let i=0;i<11;i++){ parts.push({x:Math.random()*W,y:Math.random()*H,r:28+Math.random()*95,sp:12+Math.random()*26,sw:18+Math.random()*44,ph:Math.random()*6.283,a:0.045+Math.random()*0.07}); }
       const totalF=Math.ceil(TOTAL*FPS); let lastCv=null, curIdx=-1;
       for(let f=0;f<=totalF;f++){
         const tm=Math.min(TOTAL-0.001,f/FPS);
@@ -924,17 +931,47 @@ document.getElementById('safeBtn').addEventListener('click',function(){ var s=do
         let changed=false; if(idx!==curIdx){ showScene(ctx,idx); curIdx=idx; changed=true; }
         if(changed || lt<=ENTR+0.05 || !lastCv){
           sampleScene(item.sc,Math.min(lt,ENTR)); await raf2();
-          try{ lastCv=await html2canvas(frame,{backgroundColor:'#ffffff',scale:1,logging:false,width:W,height:H,windowWidth:W,windowHeight:H,useCORS:true}); }
+          try{ lastCv=await html2canvas(frame,{backgroundColor:null,scale:1,logging:false,width:W,height:H,windowWidth:W,windowHeight:H,useCORS:true}); }
           catch(err){ console.warn('rr frame render skipped @',f,err); if(!lastCv) lastCv=blankCv(); }
         }
-        const vf=new VideoFrame(lastCv,{timestamp:Math.round(f*1e6/FPS),duration:Math.round(1e6/FPS)}); enc.encode(vf,{keyFrame:f%(FPS*2)===0}); vf.close();
+        // still frame + animated bokeh + grid shine BEHIND the content (no screen shake)
+        octx.setTransform(1,0,0,1,0,0); octx.fillStyle='#ffffff'; octx.fillRect(0,0,W,H);
+        const bandX=((tm*150)%(W+700))-350; const g=octx.createLinearGradient(bandX,0,bandX+340,H);
+        g.addColorStop(0,'rgba(232,98,42,0)'); g.addColorStop(.5,'rgba(232,98,42,0.07)'); g.addColorStop(1,'rgba(232,98,42,0)');
+        octx.fillStyle=g; octx.fillRect(0,0,W,H);
+        for(const p of parts){ let yy=((p.y-tm*p.sp)%(H+240)); if(yy<0)yy+=H+240; yy-=120; const xx=p.x+Math.sin(tm*0.55+p.ph)*p.sw;
+          octx.beginPath(); octx.fillStyle='rgba(232,98,42,'+p.a+')'; octx.arc(xx,yy,p.r,0,6.2832); octx.fill(); }
+        octx.drawImage(lastCv,0,0,W,H);
+        const vf=new VideoFrame(oc,{timestamp:Math.round(f*1e6/FPS),duration:Math.round(1e6/FPS)}); enc.encode(vf,{keyFrame:f%(FPS*2)===0}); vf.close();
         b.textContent='Encoding '+Math.round(f/totalF*100)+'%';
       }
       await enc.flush(); muxer.finalize();
       const blob=new Blob([muxer.target.buffer],{type:'video/mp4'});
       const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='thebookx-reading-'+TOPICS[ci].id+'-reel.mp4';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
     }catch(e){alert('MP4 export failed: '+e.message);console.error(e);}
-    scale.appendChild(frame); render(ci); b.disabled=false;b.innerHTML=o;
+    frame.style.background=''; scale.appendChild(frame); render(ci); b.disabled=false;b.innerHTML=o;
+  });
+  document.getElementById('rrthumb').addEventListener('click',async function(){
+    const b=this,o=b.innerHTML;b.disabled=true;b.textContent='Rendering…';
+    const W=1080,H=1920, t=TOPICS[ci];
+    const hot=(s,h)=>{ const i=h?s.indexOf(h):-1; return i<0?esc(s):esc(s.slice(0,i))+'<span class="hot">'+esc(h)+'</span>'+esc(s.slice(i+h.length)); };
+    try{
+      const host=document.getElementById('rrExportHost'); frame.style.background='transparent'; host.appendChild(frame);
+      // dedicated curiosity COVER (thumbnail only - the reel itself is unchanged)
+      frame.innerHTML='<div class="cgrid"></div><div class="rr-url">thebookx.in</div>'+
+        '<div class="rr-circle"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="#141414"/></svg></div>'+
+        '<div class="rr-scene"><div class="rr-kick">'+esc(t.kick)+'</div><div class="rr-thook">'+hot(t.thumb,t.thumbHot)+'</div><div class="rr-tsub">Tap to find out &rarr;</div></div>'+
+        '<div class="rr-foot">GET BOOKS FROM <b>thebookx.in</b><br>STARTING AT <b>&#8377;1</b></div>';
+      await document.fonts.ready; await raf2();
+      const scene=await html2canvas(frame,{backgroundColor:null,scale:2,logging:false,width:W,height:H,windowWidth:W,windowHeight:H,useCORS:true});
+      const oc=document.createElement('canvas'); oc.width=W*2; oc.height=H*2; const x=oc.getContext('2d');
+      x.fillStyle='#ffffff'; x.fillRect(0,0,oc.width,oc.height);
+      x.fillStyle='rgba(232,98,42,0.10)';
+      [[360,560,300],[1760,1000,360],[1520,2900,300],[420,2420,220],[1880,2200,180]].forEach(c=>{x.beginPath();x.arc(c[0],c[1],c[2],0,6.2832);x.fill();});
+      x.drawImage(scene,0,0);
+      await new Promise(res=>oc.toBlob(bl=>{const a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download='thebookx-reading-'+TOPICS[ci].id+'-thumbnail.png';a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);res();},500);},'image/png'));
+    }catch(e){alert('Thumbnail export failed: '+e.message);console.error(e);}
+    frame.style.background=''; scale.appendChild(frame); render(ci); b.disabled=false;b.innerHTML=o;
   });
   buildDots(); document.fonts.ready.then(()=>render(ci));
 })();

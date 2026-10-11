@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { motion } from "framer-motion";
 import { useTrackView } from "@/lib/trackingHooks";
 import { EVENTS } from "@/lib/trackingEvents";
@@ -61,6 +62,7 @@ export default function BillModal({
   }, [open]);
 
   if (!open) return null;
+  if (typeof document === "undefined") return null;
 
   const getDeliveryCharge = () => {
     if (isFasterDelivery) return fasterDeliveryCharge;
@@ -80,8 +82,12 @@ export default function BillModal({
         ? totalWithDelivery
         : finalPayable + deliveryCharge + gwCharge) + qrTotal;
 
-  return (
-    <div className="bill-modal-overlay" onClick={onClose}>
+  return createPortal(
+    <div
+      className="bill-modal-overlay"
+      style={{ zIndex: 2147483002 }}
+      onClick={onClose}
+    >
       <motion.div
         className="bill-modal"
         onClick={(e) => e.stopPropagation()}
@@ -217,6 +223,7 @@ export default function BillModal({
           <span className="weight-700 green font-20">₹{finalTotal}</span>
         </div>
       </motion.div>
-    </div>
+    </div>,
+    document.body,
   );
 }

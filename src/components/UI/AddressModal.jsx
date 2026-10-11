@@ -2135,6 +2135,15 @@ export default function AddressModal({
                   ₹{getTotalWithDelivery(fasterDelivery) + addOnsCharge}
                 </span>
               </div>
+              {onViewBill && (
+                <button
+                  type="button"
+                  className="ps-viewbill"
+                  onClick={onViewBill}
+                >
+                  View bill
+                </button>
+              )}
 
               {contactReady && (
                 <LoadingButton

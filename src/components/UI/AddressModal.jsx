@@ -2382,7 +2382,7 @@ export default function AddressModal({
                       className="ps-viewbill"
                       onClick={onViewBill}
                     >
-                      View full bill
+                      View bill
                     </button>
                   )}
                 </div>

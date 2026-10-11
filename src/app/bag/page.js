@@ -632,22 +632,10 @@ function BagContent() {
   };
 
   const totalWithStandardDelivery = finalPayable + standardDeliveryCharge;
-  const totalWithStandardDeliveryGift =
-    totalWithStandardDelivery + (giftWrap ? GIFT_WRAP_CHARGE : 0);
-
-  const displayedFixedBarTotal = needsShippingNudge
-    ? finalPayable + (giftWrap ? GIFT_WRAP_CHARGE : 0)
-    : totalWithStandardDeliveryGift;
 
   // QuickReads ride on the same physical-book bill (one combined checkout).
   const hasBundledQr = cartBooks.length > 0 && qrItems.length > 0;
   const bundledQrTotal = hasBundledQr ? qrTotal : 0;
-  const displayedFixedBarTotalWithQr = displayedFixedBarTotal + bundledQrTotal;
-
-  // Pro-tab member-price preview is disabled while the 20% member discount is
-  // turned off (no member discount to preview).
-  const showProPreview = false;
-  const proPreviewTotal = totalDiscounted + bundledQrTotal;
 
   // Returns the COD fee amount only when paymentType is COD
   const getCodFeeForPayment = (paymentType) =>
@@ -1436,43 +1424,25 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
             >
               <div className="flex flex-row justify-between width100 items-center">
                 <div className="bill-left">
-                  <span className="font-12 dark-50">
-                    {showProPreview ? "Member price" : "Total payable"}
-                  </span>
+                  <span className="font-12 dark-50">Total</span>
                   <div className="flex flex-col">
                     <div className="flex flex-row gap-8 items-center">
                       <span className="font-16 weight-600 discounted">
-                        ₹{showProPreview ? proPreviewTotal : displayedFixedBarTotalWithQr}
+                        ₹{finalPayable + bundledQrTotal}
                       </span>
-                      {(showProPreview || offerDiscount > 0) && (
+                      {offerDiscount > 0 && (
                         <span className="strike dark-50 original">
-                          ₹
-                          {showProPreview
-                            ? displayedFixedBarTotalWithQr
-                            : totalDiscounted + bundledQrTotal}
+                          ₹{totalDiscounted + bundledQrTotal}
                         </span>
                       )}
                     </div>
 
-                    {showProPreview ? (
+                    {appliedOffer && (
                       <span className="font-14 green weight-600">
-                        Member perks · unlock to avail
+                        {offerLabel}
                       </span>
-                    ) : (
-                      appliedOffer && (
-                        <span className="font-14 green weight-600">
-                          {offerLabel}
-                        </span>
-                      )
                     )}
                   </div>
-
-                  <span
-                    className="view-bill-text"
-                    onClick={() => setShowBill(true)}
-                  >
-                    View bill
-                  </span>
                 </div>
 
                 <div className="flex flex-row items-center gap-12">
@@ -1706,6 +1676,7 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
         quickReadItems={hasBundledQr ? qrItems : []}
         quickReadUnitPrice={QUICKREAD_PRICE}
         quickReadTotal={bundledQrTotal}
+        onViewBill={() => setShowBill(true)}
       />
 
       <BillModal

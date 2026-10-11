@@ -38943,6 +38943,18 @@ img[data-loaded="true"] {
 .ps-total > span {
   color: var(--foreground) !important;
 }
+.ps-viewbill {
+  align-self: flex-start;
+  margin-top: 6px;
+  padding: 0;
+  border: none;
+  background: none;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--tertiary, #fb8500);
+  text-decoration: underline;
+  cursor: pointer;
+}
 .pay-sel-coins {
   display: flex;
   align-items: center;

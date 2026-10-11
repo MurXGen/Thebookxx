@@ -158,6 +158,7 @@ export default function AddressModal({
   quickReadItems = [],
   quickReadUnitPrice = 0,
   quickReadTotal = 0,
+  onViewBill,
 }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -2366,6 +2367,15 @@ export default function AddressModal({
                       ₹{paySel === "COD" ? codTotalWithFee : upiTotalForFlow}
                     </span>
                   </div>
+                  {onViewBill && (
+                    <button
+                      type="button"
+                      className="ps-viewbill"
+                      onClick={onViewBill}
+                    >
+                      View full bill
+                    </button>
+                  )}
                 </div>
 
                 {/* Coins toggle (default off) */}

@@ -6699,6 +6699,7 @@ export const books = [
   {
     id: "bk-696",
     name: "Dog Man",
+    image: bookImages["dog-man"],
     description:
       "Buy Dog Man (Book 1) by Dav Pilkey in hardcover online at the lowest price on TheBookX.in. The hilarious, action-packed graphic novel that started it all — part dog, part cop, all hero. A premium hardcover delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Dav Pilkey",
@@ -6714,6 +6715,7 @@ export const books = [
   {
     id: "bk-697",
     name: "Dog Man Unleashed",
+    image: bookImages["dog-man-unleashed"],
     description:
       "Buy Dog Man Unleashed (Book 2) by Dav Pilkey in hardcover online at the lowest price on TheBookX.in. The laugh-out-loud #1 bestselling graphic novel series for kids. A premium hardcover delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Dav Pilkey",
@@ -6729,6 +6731,7 @@ export const books = [
   {
     id: "bk-698",
     name: "Dog Man: A Tale of Two Kitties",
+    image: bookImages["dog-man-a-tale-of-two-kitties"],
     description:
       "Buy Dog Man: A Tale of Two Kitties (Book 3) by Dav Pilkey in hardcover online at the lowest price on TheBookX.in. The #1 bestselling graphic novel series kids and parents love. A premium hardcover delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Dav Pilkey",
@@ -6744,6 +6747,7 @@ export const books = [
   {
     id: "bk-699",
     name: "Dog Man and Cat Kid",
+    image: bookImages["dog-man-and-cat-kid"],
     description:
       "Buy Dog Man and Cat Kid (Book 4) by Dav Pilkey in hardcover online at the lowest price on TheBookX.in. More supa-epic adventures from the #1 bestselling Dog Man series. A premium hardcover delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Dav Pilkey",
@@ -6759,6 +6763,7 @@ export const books = [
   {
     id: "bk-700",
     name: "Dog Man: Lord of the Fleas",
+    image: bookImages["dog-man-lord-of-the-fleas"],
     description:
       "Buy Dog Man: Lord of the Fleas (Book 5) by Dav Pilkey in hardcover online at the lowest price on TheBookX.in. A hilarious, heartfelt graphic novel from the #1 bestselling series. A premium hardcover delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Dav Pilkey",
@@ -6774,6 +6779,7 @@ export const books = [
   {
     id: "bk-701",
     name: "Dog Man: Brawl of the Wild",
+    image: bookImages["dog-man-brawl-of-the-wild"],
     description:
       "Buy Dog Man: Brawl of the Wild (Book 6) by Dav Pilkey in hardcover online at the lowest price on TheBookX.in. Another supa-epic entry in the #1 bestselling Dog Man series. A premium hardcover delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Dav Pilkey",
@@ -6789,6 +6795,7 @@ export const books = [
   {
     id: "bk-702",
     name: "Dog Man: For Whom the Ball Rolls",
+    image: bookImages["dog-man-for-whom-the-ball-rolls"],
     description:
       "Buy Dog Man: For Whom the Ball Rolls (Book 7) by Dav Pilkey in hardcover online at the lowest price on TheBookX.in. Fetching fun from the #1 bestselling graphic novel series. A premium hardcover delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Dav Pilkey",
@@ -6804,6 +6811,7 @@ export const books = [
   {
     id: "bk-703",
     name: "Dog Man: Fetch-22",
+    image: bookImages["dog-man-fetch-22"],
     description:
       "Buy Dog Man: Fetch-22 (Book 8) by Dav Pilkey in hardcover online at the lowest price on TheBookX.in. A paws-itively hilarious instalment of the #1 bestselling series. A premium hardcover delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Dav Pilkey",
@@ -6819,6 +6827,7 @@ export const books = [
   {
     id: "bk-704",
     name: "Dog Man: Grime and Punishment",
+    image: bookImages["dog-man-grime-and-punishment"],
     description:
       "Buy Dog Man: Grime and Punishment (Book 9) by Dav Pilkey in hardcover online at the lowest price on TheBookX.in. The #1 bestselling graphic novel series kids can't put down. A premium hardcover delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Dav Pilkey",
@@ -6834,6 +6843,7 @@ export const books = [
   {
     id: "bk-705",
     name: "Dog Man: Mothering Heights",
+    image: bookImages["dog-man-mothering-heights"],
     description:
       "Buy Dog Man: Mothering Heights (Book 10) by Dav Pilkey in hardcover online at the lowest price on TheBookX.in. A supa-emotional, supa-funny entry in the #1 bestselling series. A premium hardcover delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Dav Pilkey",
@@ -6849,6 +6859,7 @@ export const books = [
   {
     id: "bk-706",
     name: "Dog Man: Twenty Thousand Fleas Under the Sea",
+    image: bookImages["dog-man-twenty-thousand-fleas-under-the-sea"],
     description:
       "Buy Dog Man: Twenty Thousand Fleas Under the Sea (Book 11) by Dav Pilkey in hardcover online at the lowest price on TheBookX.in. A deep-sea dose of the #1 bestselling Dog Man series. A premium hardcover delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Dav Pilkey",
@@ -6864,6 +6875,7 @@ export const books = [
   {
     id: "bk-707",
     name: "Dog Man: The Scarlet Shedder",
+    image: bookImages["dog-man-the-scarlet-shedder"],
     description:
       "Buy Dog Man: The Scarlet Shedder (Book 12) by Dav Pilkey in hardcover online at the lowest price on TheBookX.in. The latest supa-epic laughs from the #1 bestselling series. A premium hardcover delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Dav Pilkey",
@@ -6879,6 +6891,7 @@ export const books = [
   {
     id: "bk-708",
     name: "Dog Man: Big Jim Begins",
+    image: bookImages["dog-man-big-jim-begins"],
     description:
       "Buy Dog Man: Big Jim Begins (Book 13) by Dav Pilkey in hardcover online at the lowest price on TheBookX.in. An origin-story adventure from the #1 bestselling Dog Man series. A premium hardcover delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Dav Pilkey",
@@ -6894,6 +6907,7 @@ export const books = [
   {
     id: "bk-709",
     name: "Dog Man: Big Jim Believes",
+    image: bookImages["dog-man-big-jim-believes"],
     description:
       "Buy Dog Man: Big Jim Believes (Book 14) by Dav Pilkey in hardcover online at the lowest price on TheBookX.in. More big-hearted, big-laugh adventures from the #1 bestselling series. A premium hardcover delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Dav Pilkey",
@@ -6909,6 +6923,7 @@ export const books = [
   {
     id: "bk-710",
     name: "Dog Man: A Sprinkle in Time",
+    image: bookImages["dog-man-a-sprinkle-in-time"],
     description:
       "Buy Dog Man: A Sprinkle in Time (Book 15) by Dav Pilkey in hardcover online at the lowest price on TheBookX.in. The newest supa-epic adventure in the #1 bestselling Dog Man series. A premium hardcover delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Dav Pilkey",
@@ -6924,6 +6939,7 @@ export const books = [
   {
     id: "bk-711",
     name: "Dog Man: Complete Hardcover Set (Books 1–15)",
+    image: bookImages["dog-man-complete-set"],
     description:
       "Buy the complete Dog Man hardcover set (Books 1–15) by Dav Pilkey online at the lowest price on TheBookX.in. All fifteen supa-epic graphic novels in premium hardcover — the perfect gift and the best value for every young reader. Save 10% versus buying the singles. Delivered securely via Delhivery and Indian Post, with Cash on Delivery, free shipping and easy 7-day returns across India.",
     author: "Dav Pilkey",

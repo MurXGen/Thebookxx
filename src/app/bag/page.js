@@ -92,6 +92,10 @@ function BagContent() {
   const [showQrCheckout, setShowQrCheckout] = useState(false);
   const [showBill, setShowBill] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
+  // Mirror the add-on choices made inside the Address modal so the shared
+  // Bill modal shows the same delivery + gift-wrap charges.
+  const [billFaster, setBillFaster] = useState(false);
+  const [billGiftWrap, setBillGiftWrap] = useState(false);
   const [successCtx, setSuccessCtx] = useState(null); // interactive success modal
   const [upsellAccepted, setUpsellAccepted] = useState(false);
   const [showRecommendationModal, setShowRecommendationModal] = useState(false);
@@ -1677,6 +1681,8 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
         quickReadUnitPrice={QUICKREAD_PRICE}
         quickReadTotal={bundledQrTotal}
         onViewBill={() => setShowBill(true)}
+        onDeliveryChoiceChange={setBillFaster}
+        onGiftWrapChange={setBillGiftWrap}
       />
 
       <BillModal
@@ -1693,9 +1699,9 @@ ${orderId ? `🆔 ${orderId}\n` : ""}🔗 Order: ${orderLink || "—"}${
         fasterUnavailable={fasterUnavailable}
         totalWithStandardDelivery={totalWithStandardDelivery}
         cartBooks={cartBooks}
-        isFasterDelivery={false}
+        isFasterDelivery={billFaster}
         giftWrapCharge={giftWrapChargeEff}
-        giftWrapSelected={false}
+        giftWrapSelected={billGiftWrap}
         hideDeliveryCharges={needsShippingNudge}
         quickReadItems={hasBundledQr ? qrItems : []}
         quickReadUnitPrice={QUICKREAD_PRICE}

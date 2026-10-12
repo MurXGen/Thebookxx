@@ -160,6 +160,9 @@ export default function AddressModal({
   quickReadUnitPrice = 0,
   quickReadTotal = 0,
   onViewBill,
+  // Lift add-on selections up so the shared Bill modal reflects them.
+  onDeliveryChoiceChange,
+  onGiftWrapChange,
 }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -355,6 +358,14 @@ export default function AddressModal({
   useEffect(() => {
     setGiftWrap(giftWrapSelected);
   }, [giftWrapSelected]);
+
+  // Keep the parent (and the shared Bill modal) in sync with add-on choices.
+  useEffect(() => {
+    if (onDeliveryChoiceChange) onDeliveryChoiceChange(fasterDelivery);
+  }, [fasterDelivery, onDeliveryChoiceChange]);
+  useEffect(() => {
+    if (onGiftWrapChange) onGiftWrapChange(giftWrap);
+  }, [giftWrap, onGiftWrapChange]);
 
   // Bookmark add-on: free up to a tier based on order value, then ₹9 each.
   //   below ₹500  → 2 free · ₹500–999 → 3 free · ₹1000+ → 4 free

@@ -166,7 +166,7 @@ export default function AddressModal({
   // Optional alternate contact number → saved to its own "Alternate number"
   // sheet column (revealed only when the shopper taps "Add alternate number").
   const [altPhone, setAltPhone] = useState("");
-  const [showAltPhone, setShowAltPhone] = useState(false);
+  const [altModalOpen, setAltModalOpen] = useState(false);
   // Optional email → saved to the order's "Email" column (tracking + comms).
   const [email, setEmail] = useState("");
   // Wallet balance (looked up by the phone entered below)
@@ -2056,57 +2056,35 @@ export default function AddressModal({
                         {phoneError && (
                           <span className="font-10 red mt-4">{phoneError}</span>
                         )}
-                        {/* Optional alternate number — hidden behind a link so
-                            the form stays short; saved to "Alternate number". */}
-                        {!showAltPhone ? (
+                        {/* Alternate number — opens a slide-up modal. */}
+                        {altPhone && altPhone.length === 10 ? (
+                          <button
+                            type="button"
+                            className="addr-altlink added"
+                            onClick={() => setAltModalOpen(true)}
+                          >
+                            <Check size={12} /> Alternate number added · Edit
+                          </button>
+                        ) : (
                           <button
                             type="button"
                             className="addr-altlink"
-                            onClick={() => setShowAltPhone(true)}
+                            onClick={() => setAltModalOpen(true)}
                           >
                             <Phone size={12} /> Add alternate number
                           </button>
-                        ) : (
-                          <div className="addr-alt-wrap">
-                            <input
-                              className="sec-mid-btn width100"
-                              placeholder="Alternate 10-digit number"
-                              value={altPhone}
-                              maxLength={15}
-                              inputMode="tel"
-                              onChange={(e) =>
-                                setAltPhone(normalizePhone(e.target.value))
-                              }
-                              onPaste={(e) => {
-                                e.preventDefault();
-                                setAltPhone(
-                                  normalizePhone(
-                                    e.clipboardData.getData("text"),
-                                  ),
-                                );
-                              }}
-                              autoFocus
-                            />
-                            <button
-                              type="button"
-                              className="addr-alt-remove"
-                              title="Remove alternate number"
-                              onClick={() => {
-                                setAltPhone("");
-                                setShowAltPhone(false);
-                              }}
-                            >
-                              <X size={14} />
-                            </button>
-                          </div>
                         )}
                       </div>
+                    </div>
 
-                      {/* Optional email — saved to the order's Email column. */}
-                      <div className="input-group">
+                    {/* Email — full width, below name/phone; shown only once the
+                        phone number is fully entered. Saved to the Email column. */}
+                    {normalizePhone(phone).length === 10 && (
+                      <div className="input-group" style={{ marginTop: 12 }}>
                         <label className="flex flex-row gap-4 flex-center items-center">
                           <Mail size={14} />
-                          Email <span className="font-10 gray-500">(optional)</span>
+                          Email{" "}
+                          <span className="font-10 gray-500">(optional)</span>
                         </label>
                         <input
                           className="sec-mid-btn width100"
@@ -2123,7 +2101,7 @@ export default function AddressModal({
                           only.
                         </span>
                       </div>
-                    </div>
+                    )}
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -2131,6 +2109,81 @@ export default function AddressModal({
               {/* Add-ons (delivery speed + gift wrap + bookmark) moved to the
                   Choose-payment step. */}
             </div>
+
+            {/* Alternate-number slide-up modal */}
+            <AnimatePresence>
+              {altModalOpen && (
+                <motion.div
+                  className="bill-modal-overlay"
+                  style={{ zIndex: 2147483001 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={() => setAltModalOpen(false)}
+                >
+                  <motion.div
+                    className="bill-modal"
+                    onClick={(e) => e.stopPropagation()}
+                    initial={{ y: "100%", opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: "100%", opacity: 0 }}
+                    transition={{ duration: 0.35, ease: "easeOut" }}
+                  >
+                    <div className="bill-header">
+                      <span className="weight-600 font-16 flex items-center gap-8">
+                        <Phone size={16} /> Alternate number
+                      </span>
+                      <span
+                        className="cursor-pointer"
+                        onClick={() => setAltModalOpen(false)}
+                      >
+                        <X size={18} />
+                      </span>
+                    </div>
+                    <div className="input-group" style={{ padding: "4px 0 2px" }}>
+                      <label className="font-12 gray-500">
+                        A second number we can reach for delivery (optional)
+                      </label>
+                      <input
+                        className="sec-mid-btn width100"
+                        placeholder="Alternate 10-digit number"
+                        value={altPhone}
+                        maxLength={15}
+                        inputMode="tel"
+                        autoFocus
+                        onChange={(e) => setAltPhone(normalizePhone(e.target.value))}
+                        onKeyDown={(e) =>
+                          e.key === "Enter" &&
+                          altPhone.length === 10 &&
+                          setAltModalOpen(false)
+                        }
+                      />
+                    </div>
+                    <div className="flex flex-row gap-12" style={{ marginTop: 12 }}>
+                      {altPhone && (
+                        <button
+                          type="button"
+                          className="sec-mid-btn width100"
+                          onClick={() => {
+                            setAltPhone("");
+                            setAltModalOpen(false);
+                          }}
+                        >
+                          Remove
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        className="pri-big-btn width100"
+                        onClick={() => setAltModalOpen(false)}
+                      >
+                        {altPhone && altPhone.length === 10 ? "Save" : "Done"}
+                      </button>
+                    </div>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Fixed footer — total + proceed stay pinned, form scrolls above */}
             <div className="addr-footer">
@@ -2157,18 +2210,26 @@ export default function AddressModal({
 
               <div className="bill-row total" style={{ marginBottom: 0 }}>
                 <span className="font-16 weight-600">Total Payable</span>
-                <span className="font-20 weight-700 green">
-                  ₹{getTotalWithDelivery(fasterDelivery) + addOnsCharge}
+                <span className="addr-total-right">
+                  <span className="font-20 weight-700 green">
+                    ₹{getTotalWithDelivery(fasterDelivery) + addOnsCharge}
+                  </span>
+                  {onViewBill && (
+                    <button
+                      type="button"
+                      className="ps-viewbill addr-viewbill-inline"
+                      onClick={onViewBill}
+                    >
+                      View bill
+                    </button>
+                  )}
                 </span>
               </div>
-              {onViewBill && (
-                <button
-                  type="button"
-                  className="ps-viewbill"
-                  onClick={onViewBill}
-                >
-                  View bill
-                </button>
+              {offerDiscount + couponDiscount > 0 && (
+                <div className="addr-saved-line">
+                  🎉 You&apos;ve saved ₹{offerDiscount + couponDiscount} on this
+                  order
+                </div>
               )}
 
               {contactReady && (
@@ -2398,18 +2459,24 @@ export default function AddressModal({
 
                   <div className="ps-row ps-total">
                     <span>Total payable</span>
-                    <span>
+                    <span className="addr-total-right">
                       ₹{paySel === "COD" ? codTotalWithFee : upiTotalForFlow}
+                      {onViewBill && (
+                        <button
+                          type="button"
+                          className="ps-viewbill addr-viewbill-inline"
+                          onClick={onViewBill}
+                        >
+                          View bill
+                        </button>
+                      )}
                     </span>
                   </div>
-                  {onViewBill && (
-                    <button
-                      type="button"
-                      className="ps-viewbill"
-                      onClick={onViewBill}
-                    >
-                      View bill
-                    </button>
+                  {offerDiscount + couponDiscount > 0 && (
+                    <div className="addr-saved-line">
+                      🎉 You&apos;ve saved ₹{offerDiscount + couponDiscount} on
+                      this order
+                    </div>
                   )}
                 </div>
 

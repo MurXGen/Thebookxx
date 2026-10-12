@@ -39003,6 +39003,32 @@ img[data-loaded="true"] {
   text-decoration: underline;
   cursor: pointer;
 }
+/* Total value + inline "View bill" sitting right next to the figure */
+.addr-total-right {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.addr-viewbill-inline {
+  align-self: center;
+  margin-top: 0;
+  font-size: 11.5px;
+}
+/* "You've saved ₹X" line under the total */
+.addr-saved-line {
+  margin-top: 6px;
+  text-align: right;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #0a8f0c;
+}
+/* Alternate-number link — added (confirmed) state */
+.addr-altlink.added {
+  color: #0a8f0c;
+}
+.addr-altlink.added svg {
+  color: #0a8f0c;
+}
 .pay-sel-coins {
   display: flex;
   align-items: center;
@@ -51688,12 +51714,13 @@ img[data-loaded="true"] {
 /* Light brand tint on the checkout summary cards — subtle contrast vs white bg.
    Selected/active states keep their own stronger highlight. The payment-method
    cards stay plain white (reverted on request). */
-.pay-sel-bill .pa-row,
 .pay-sel-coins,
 .resell-row {
   background: #fff8f0;
   border-color: rgba(251, 133, 0, 0.2);
 }
+/* Delivery-speed / add-on cards + payment cards: plain white (reverted). */
+.pay-sel-bill .pa-row,
 .pay-method {
   background: #fff;
 }

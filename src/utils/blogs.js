@@ -4,6 +4,190 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "anne-carson-nobel-prize-literature-2026-books-to-read-india": {
+    "id": "blog-075",
+    "title": "Anne Carson Wins the 2026 Nobel Prize in Literature: Who She Is and What to Read Next",
+    "slug": "anne-carson-nobel-prize-literature-2026-books-to-read-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-10-12",
+    "lastModified": "2026-10-12",
+    "excerpt": "Anne Carson has won the 2026 Nobel Prize in Literature. Where to start with her work and 15 books to read alongside, from ₹1 with free delivery in India.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "On Thursday, 8 October 2026, the Swedish Academy announced that the Nobel Prize in Literature goes to the Canadian poet and writer Anne Carson. The Academy cited her \"bold and inventive oeuvre that, in playful dialogue with the classical tradition,\" creates new forms in contemporary literature. She is 76, was born in Toronto, and the prize carries 12 million Swedish crowns, roughly $1.2 million."
+      },
+      {
+        "type": "paragraph",
+        "content": "Carson is not the easiest name to find on an Indian bookshelf, and that is exactly why this announcement sends readers searching. This guide explains who she is, where to begin, and which books you can order right now if you want to read in the same spirit. Books start from ₹1 on TheBookX, with free delivery and Cash on Delivery across India."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Who is Anne Carson?"
+      },
+      {
+        "type": "paragraph",
+        "content": "Carson is known for mixing poetry, prose, dialogue and translation until the categories stop mattering. She is a celebrated translator of classical Greek literature, and her work keeps returning to ancient figures and asking what they mean now. Two titles are most often mentioned: Autobiography of Red (1998), a verse novel that reimagines the myth of Geryon, and Norma Jeane Baker of Troy (2019), a performance piece that sets Helen of Troy beside the life of Marilyn Monroe."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "The 2026 announcement at a glance",
+        "content": "Announced 8 October 2026 by the Swedish Academy. Laureate: Anne Carson, Canada. Prize money: 12 million Swedish crowns. The 2025 prize went to the Hungarian writer László Krasznahorkai."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "How to start reading Anne Carson"
+      },
+      {
+        "type": "paragraph",
+        "content": "Start with Autobiography of Red if you like novels, because the story is a love story first and an experiment second. Move to Norma Jeane Baker of Troy if you enjoy theatre and myth. Read slowly and aloud; her lines reward a second pass. Because her own titles can sell out quickly after a Nobel win, many readers use the wait to read around her themes: myth, memory, desire and the way old stories keep speaking."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books in dialogue with the classical tradition"
+      },
+      {
+        "type": "paragraph",
+        "content": "Carson's great subject is the ancient story retold with modern urgency. These books on our shelves do something similar in their own way."
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<a href=\"/books/circe\" style=\"color:#fb8500;font-weight:600\">Circe</a> by Madeline Miller gives the witch of Greek myth a voice, a history and a temper. It is the closest popular companion to the way Carson hands the mic to mythic women.",
+          "<a href=\"/books/the-song-of-achilles\" style=\"color:#fb8500;font-weight:600\">The Song of Achilles</a> retells the Trojan War through love and loss, and pairs well with Carson's interest in Troy and Helen.",
+          "<a href=\"/books/the-palace-of-illusions\" style=\"color:#fb8500;font-weight:600\">The Palace of Illusions</a> by Chitra Banerjee Divakaruni retells the Mahabharata through Draupadi, an Indian answer to the same impulse.",
+          "<a href=\"/books/sita-an-illustrated-retelling-of-the-ramayana\" style=\"color:#fb8500;font-weight:600\">Sita: An Illustrated Retelling of the Ramayana</a> by Devdutt Pattanaik looks at an epic from a quieter, human angle.",
+          "<a href=\"/books/jaya-an-illustrated-retelling-of-the-mahabharata\" style=\"color:#fb8500;font-weight:600\">Jaya: An Illustrated Retelling of the Mahabharata</a> is a fast, readable way into the largest epic ever written."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Other Nobel voices worth your time"
+      },
+      {
+        "type": "paragraph",
+        "content": "A Nobel win is also an invitation to explore recent laureates. <a href=\"/books/the-vegetarian\" style=\"color:#fb8500;font-weight:600\">The Vegetarian</a> by Han Kang, the 2024 laureate, is short, strange and unforgettable. <a href=\"/books/klara-and-the-sun\" style=\"color:#fb8500;font-weight:600\">Klara and the Sun</a> and <a href=\"/books/never-let-me-go\" style=\"color:#fb8500;font-weight:600\">Never Let Me Go</a> by Kazuo Ishiguro, the 2017 laureate, are quiet novels that stay with you for years."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Modern fiction for readers who like language"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<a href=\"/books/the-god-of-small-things\" style=\"color:#fb8500;font-weight:600\">The God of Small Things</a> by Arundhati Roy treats sentences like poetry, which makes it a natural next read after Carson.",
+          "<a href=\"/books/kafka-on-the-shore\" style=\"color:#fb8500;font-weight:600\">Kafka on the Shore</a> by Haruki Murakami blends myth and the everyday in a dreamlike, Greek-tragedy-inflected plot.",
+          "<a href=\"/books/normal-people\" style=\"color:#fb8500;font-weight:600\">Normal People</a> by Sally Rooney is spare, precise and emotionally exact."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Non-fiction to read alongside"
+      },
+      {
+        "type": "paragraph",
+        "content": "Reading demanding literature is easier with a clear head. <a href=\"/books/man-s-search-for-meaning\" style=\"color:#fb8500;font-weight:600\">Man's Search for Meaning</a> by Viktor Frankl, <a href=\"/books/sapiens-a-brief-history-of-humankind\" style=\"color:#fb8500;font-weight:600\">Sapiens</a> by Yuval Noah Harari and <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear help you build the time and attention that deeper books ask for."
+      },
+      {
+        "type": "blockquote",
+        "content": "A Nobel announcement is not a verdict on who is best. It is a reminder that there is always a writer you have not met yet."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Make space to read poetry and difficult books"
+      },
+      {
+        "type": "paragraph",
+        "content": "Carson's work asks for attention, and attention is the scarce resource. <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar offers practical routines for cutting mental noise, so that thirty quiet minutes with a dense book feels possible rather than exhausting. Pair it with <a href=\"/books/the-alchemist\" style=\"color:#fb8500;font-weight:600\">The Alchemist</a> for a lighter, parable-style read between heavier ones."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "A simple three-week plan"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "Week one: read <a href=\"/books/circe\" style=\"color:#fb8500;font-weight:600\">Circe</a> or <a href=\"/books/the-palace-of-illusions\" style=\"color:#fb8500;font-weight:600\">The Palace of Illusions</a> to warm up on myth retold.",
+          "Week two: read <a href=\"/books/the-vegetarian\" style=\"color:#fb8500;font-weight:600\">The Vegetarian</a> and notice how a short book can feel enormous.",
+          "Week three: pick up Carson's Autobiography of Red when you find a copy, and read it aloud."
+        ]
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Buying tips",
+        "content": "Books from ₹1, free delivery and Cash on Delivery across India. Order a few titles together so your Nobel-season pile is ready before the post-announcement rush."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Frequently asked questions"
+      },
+      {
+        "type": "paragraph",
+        "content": "The most common questions about the 2026 Nobel and Anne Carson are answered below, and the same questions are marked up for search engines."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      }
+    ],
+    "coverImage": "/blogs/anne-carson-nobel-prize-literature-2026-books-to-read-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/anne-carson-nobel-prize-literature-2026-books-to-read-india.jpeg",
+        "alt": "A young woman reading a hardcover book of poetry on a sofa by a window with a cup of tea and a small stack of blank-covered books",
+        "caption": "A Nobel win is the perfect nudge to start reading poetry and myth.",
+        "category": "Awards"
+      }
+    ],
+    "keywords": [
+      "Anne Carson Nobel Prize 2026",
+      "Nobel Prize in Literature 2026 winner",
+      "Anne Carson books",
+      "Autobiography of Red",
+      "Norma Jeane Baker of Troy",
+      "Nobel laureate books India",
+      "myth retellings to read",
+      "buy books online India"
+    ],
+    "categories": [
+      "Awards",
+      "Book Recommendations",
+      "World Literature"
+    ],
+    "faqs": [
+      {
+        "question": "Who won the Nobel Prize in Literature 2026?",
+        "answer": "The Canadian poet and writer Anne Carson, announced by the Swedish Academy on 8 October 2026."
+      },
+      {
+        "question": "Where should I start with Anne Carson?",
+        "answer": "Most readers begin with Autobiography of Red, a verse novel from 1998, then try Norma Jeane Baker of Troy."
+      },
+      {
+        "question": "How much is the Nobel Prize in Literature worth?",
+        "answer": "The 2026 prize is 12 million Swedish crowns, about $1.2 million."
+      },
+      {
+        "question": "Can I buy books cheaply in India?",
+        "answer": "Yes. TheBookX offers books from ₹1, free delivery and Cash on Delivery across India."
+      }
+    ]
+  },
   "international-day-of-the-girl-2026-books-to-read-india": {
     "id": "blog-074",
     "title": "International Day of the Girl 2026 (11 October): Why Girls' Rights Need Investment, Plus 16 Books Worth Reading",

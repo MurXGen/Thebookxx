@@ -92,6 +92,13 @@ import { books as ALL_BOOKS } from "@/utils/book";
 import { bookImages } from "@/utils/bookImages";
 import { encodeProduct } from "@/utils/customBooks";
 import { parseAddonsField } from "@/utils/addonsField";
+import {
+  isGiftOrder,
+  cleanNote,
+  giftMessageFor,
+  giftLink,
+} from "@/utils/giftOrder";
+import GiftQR from "@/components/UI/GiftQR";
 import { getBookCost } from "@/data/bookCosts";
 import { creditWalletReward, appendWalletTx } from "@/utils/googleFormOrder";
 import { showToast } from "@/context/ToastContext";
@@ -1630,7 +1637,8 @@ function IndiaPostSheet({
             ? { tracking: "", at: "" }
             : { tracking: rawBooked.tracking || "", at: rawBooked.at || "" }
           : null;
-        const comment = orderNotes[oid] ?? (o["Comment"] || "");
+        const comment = cleanNote(orderNotes[oid] ?? (o["Comment"] || ""));
+        const custNote = cleanNote(o["Order Comment"]);
         const draft = trackDraft[oid] ?? "";
 
         return (
@@ -1689,12 +1697,12 @@ function IndiaPostSheet({
             )}
 
             {/* Customer's own note left at checkout (Order Comment column). */}
-            {o["Order Comment"] && (
+            {custNote && (
               <div className="ip-comment ip-comment-cust">
                 <span className="ip-comment-title">
                   <MessageCircle size={14} /> Customer note
                 </span>
-                <span className="ip-comment-text">{o["Order Comment"]}</span>
+                <span className="ip-comment-text">{custNote}</span>
               </div>
             )}
 
@@ -13480,12 +13488,48 @@ export default function ManageOrdersPage() {
                               );
                             })()}
 
-                            {/* Customer's own note left at checkout. */}
-                            {order["Order Comment"] && (
-                              <div className="mo-cust-note">
-                                <MessageCircle size={12} />
-                                <span>{order["Order Comment"]}</span>
+                            {/* Gift orders: celebratory banner + the note shown
+                                ONLY via a scannable QR (never printed as text).
+                                Non-gift orders: the note inline (reseller lines
+                                stripped out). */}
+                            {isGiftOrder(order) ? (
+                              <div className="mo-gift-block">
+                                <div className="mo-gift-banner">
+                                  <span className="mo-gift-banner-deco" aria-hidden="true" />
+                                  <span className="mo-gift-banner-emoji">🎁</span>
+                                  <span className="mo-gift-banner-txt">
+                                    <b>Gift order</b>
+                                    <small>Wrap it with love — QR holds the surprise note</small>
+                                  </span>
+                                  <span className="mo-gift-banner-spark" aria-hidden="true">✨</span>
+                                </div>
+                                <GiftQR
+                                  value={giftLink(
+                                    order,
+                                    "https://www.thebookx.in",
+                                    giftMessageFor(order, orderNotes[orderId]),
+                                  )}
+                                  caption={
+                                    giftMessageFor(order, orderNotes[orderId])
+                                      ? "Scan to reveal the gift message"
+                                      : "Scan to open the gift page"
+                                  }
+                                />
                               </div>
+                            ) : (
+                              cleanNote(
+                                orderNotes[orderId] || order["Order Comment"],
+                              ) && (
+                                <div className="mo-cust-note">
+                                  <MessageCircle size={12} />
+                                  <span>
+                                    {cleanNote(
+                                      orderNotes[orderId] ||
+                                        order["Order Comment"],
+                                    )}
+                                  </span>
+                                </div>
+                              )
                             )}
 
                             {/* Weight & sizes entry — feeds the India Post bulk

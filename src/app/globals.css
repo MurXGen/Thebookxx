@@ -39134,6 +39134,11 @@ img[data-loaded="true"] {
   overflow: hidden;
   padding: 0;
 }
+.ac-modal .bill-header {
+  flex: 0 0 auto;
+  padding: 4px 16px 12px;
+  margin-bottom: 0;
+}
 .ac-body {
   flex: 1;
   min-height: 0;

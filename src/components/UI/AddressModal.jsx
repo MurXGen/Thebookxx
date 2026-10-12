@@ -2025,7 +2025,7 @@ export default function AddressModal({
                     exit={{ opacity: 0, height: 0, y: -20 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <div className="flex flex-row justify-between gap-12">
+                    <div className="flex flex-row justify-between gap-12 addr-contact-row">
                       <div className="input-group">
                         <label className="flex flex-row gap-4 flex-center items-center">
                           <User size={14} />

@@ -48367,6 +48367,87 @@ img[data-loaded="true"] {
   color: var(--tertiary, #fb8500);
 }
 
+/* Gift order — festive surprise banner on the order detail page */
+.od-gift-surprise {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 10px 0 2px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  color: #fff8ec;
+  background: linear-gradient(100deg, #7a1020, #c0223b 45%, #fb8500);
+  box-shadow: 0 14px 30px -16px rgba(192, 34, 59, 0.85),
+    inset 0 0 0 1.5px rgba(255, 221, 128, 0.4);
+  position: relative;
+  z-index: 1;
+}
+.od-gift-surprise-emoji {
+  font-size: 28px;
+  flex: 0 0 auto;
+  animation: giftBob 1.8s ease-in-out infinite;
+}
+.od-gift-surprise-txt {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+}
+.od-gift-surprise-txt strong {
+  font-size: 14.5px;
+  font-weight: 900;
+}
+.od-gift-surprise-txt span {
+  font-size: 12px;
+  opacity: 0.92;
+}
+/* Flowing confetti down the whole order page (fixed, behind content) */
+.od-gift-confetti {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  overflow: hidden;
+  pointer-events: none;
+}
+.odgc {
+  position: absolute;
+  top: -20px;
+  width: 8px;
+  height: 12px;
+  border-radius: 2px;
+  opacity: 0;
+  animation: odgcFall linear infinite;
+}
+@keyframes odgcFall {
+  0% {
+    transform: translateY(-20px) rotate(0deg);
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.7;
+  }
+  90% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(104vh) rotate(460deg);
+    opacity: 0;
+  }
+}
+.odgc-0 { left: 5%;  background: #fb8500; animation-duration: 6.5s; animation-delay: 0s; }
+.odgc-1 { left: 14%; background: #ffd23f; animation-duration: 8s;   animation-delay: 1.1s; }
+.odgc-2 { left: 23%; background: #4ade80; animation-duration: 7s;   animation-delay: 2.2s; }
+.odgc-3 { left: 33%; background: #c0223b; animation-duration: 8.5s; animation-delay: .5s; }
+.odgc-4 { left: 44%; background: #60a5fa; animation-duration: 7.4s; animation-delay: 3s; }
+.odgc-5 { left: 55%; background: #f472b6; animation-duration: 6.8s; animation-delay: 1.6s; }
+.odgc-6 { left: 65%; background: #ffb703; animation-duration: 8.2s; animation-delay: .3s; }
+.odgc-7 { left: 75%; background: #fb8500; animation-duration: 7.1s; animation-delay: 2.6s; }
+.odgc-8 { left: 85%; background: #4ade80; animation-duration: 7.7s; animation-delay: 1.9s; }
+.odgc-9 { left: 94%; background: #c0223b; animation-duration: 6.3s; animation-delay: .9s; }
+@media (prefers-reduced-motion: reduce) {
+  .od-gift-confetti { display: none; }
+  .od-gift-surprise-emoji { animation: none; }
+}
+
 /* Email row on the order detail card */
 .od-email-row {
   display: flex;

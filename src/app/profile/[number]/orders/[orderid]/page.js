@@ -57,6 +57,7 @@ import {
   creditWalletReward,
 } from "@/utils/googleFormOrder";
 import { parseAddonsField } from "@/utils/addonsField";
+import { isGiftOrder } from "@/utils/giftOrder";
 import { getDeliveryCharge } from "@/utils/cartOffers";
 import { books as ALL_BOOKS } from "@/utils/book";
 
@@ -1028,6 +1029,9 @@ export default function OrderDetailPage() {
       city: String(order["City"] || ""),
       state: String(order["State"] || ""),
       pincode: String(order["Pincode"] || ""),
+      altPhone: String(order["Alternate number"] || "")
+        .replace(/\D/g, "")
+        .slice(-10),
     });
     setShowAddrEdit(true);
   };
@@ -1040,6 +1044,9 @@ export default function OrderDetailPage() {
       City: addrForm.city.trim(),
       State: addrForm.state.trim(),
       Pincode: addrForm.pincode.trim(),
+      "Alternate number": String(addrForm.altPhone || "")
+        .replace(/\D/g, "")
+        .slice(-10),
     };
     try {
       await updateOrderRow(orderId, fields);
@@ -1364,6 +1371,26 @@ export default function OrderDetailPage() {
           Help
         </button>
       </header>
+
+      {/* Gift order — festive surprise banner + flowing confetti down the page */}
+      {order && isGiftOrder(order) && (
+        <>
+          <span className="od-gift-confetti" aria-hidden="true">
+            {Array.from({ length: 16 }).map((_, i) => (
+              <span key={i} className={`odgc odgc-${i % 10}`} />
+            ))}
+          </span>
+          <div className="od-gift-surprise">
+            <span className="od-gift-surprise-emoji">🎁</span>
+            <div className="od-gift-surprise-txt">
+              <strong>This order is a gift — wrapped with love ✨</strong>
+              <span>
+                A little surprise is on its way. Enjoy every page! 🎉
+              </span>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Loyalty confetti + celebration banner (3+ orders, recent 4). */}
       <CartConfetti trigger={celebrate} />
@@ -2234,6 +2261,24 @@ export default function OrderDetailPage() {
                       setAddrForm((f) => ({
                         ...f,
                         pincode: e.target.value.replace(/\D/g, "").slice(0, 6),
+                      }))
+                    }
+                  />
+                </div>
+                <div>
+                  <label className="od-field-lbl">Alternate number</label>
+                  <input
+                    className="od-field-input"
+                    inputMode="tel"
+                    maxLength={10}
+                    placeholder="Optional"
+                    value={addrForm.altPhone || ""}
+                    onChange={(e) =>
+                      setAddrForm((f) => ({
+                        ...f,
+                        altPhone: e.target.value
+                          .replace(/\D/g, "")
+                          .slice(0, 10),
                       }))
                     }
                   />

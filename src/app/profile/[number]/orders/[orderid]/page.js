@@ -225,6 +225,19 @@ export default function OrderDetailPage() {
 
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
+  // Gift reveal — when the URL carries a ?gift=<message> (from a scanned gift QR),
+  // open a celebratory popup with confetti.
+  const [giftMsg, setGiftMsg] = useState("");
+  const [giftOpen, setGiftOpen] = useState(false);
+  useEffect(() => {
+    try {
+      const g = new URLSearchParams(window.location.search).get("gift");
+      if (g) {
+        setGiftMsg(g);
+        setGiftOpen(true);
+      }
+    } catch {}
+  }, []);
   // Sales nudge: wallet balance for this shopper.
   const [walletBal, setWalletBal] = useState(0);
   const [trkIdCopied, setTrkIdCopied] = useState(false);
@@ -2375,6 +2388,48 @@ export default function OrderDetailPage() {
         <span className="od-community-fab-label">Join community</span>
       </div>
       <PwaInstallPromo variant="bar" />
+
+      {/* Gift reveal — surprise message popup with confetti (from a scanned QR) */}
+      <AnimatePresence>
+        {giftOpen && (
+          <motion.div
+            className="gift-reveal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setGiftOpen(false)}
+          >
+            <span className="gift-reveal-confetti" aria-hidden="true">
+              {Array.from({ length: 36 }).map((_, i) => (
+                <span key={i} className={`grc grc-${i % 12}`} />
+              ))}
+            </span>
+            <motion.div
+              className="gift-reveal-card"
+              initial={{ scale: 0.8, y: 30, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.9, y: 20, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 220, damping: 20 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                type="button"
+                className="gift-reveal-x"
+                onClick={() => setGiftOpen(false)}
+                aria-label="Close"
+              >
+                <X size={18} />
+              </button>
+              <div className="gift-reveal-emoji">🎁</div>
+              <div className="gift-reveal-kicker">A surprise for you</div>
+              <p className="gift-reveal-msg">{giftMsg}</p>
+              <div className="gift-reveal-foot">
+                With love, from TheBookX 💛
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </main>
   );
 }

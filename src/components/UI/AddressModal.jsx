@@ -2309,7 +2309,12 @@ export default function AddressModal({
         {addrConfirmOpen && (
           <motion.div
             className="bill-modal-overlay"
-            style={{ zIndex: 2147483000, maxWidth: "980px", margin: "0 auto" }}
+            style={{
+              zIndex: 2147483000,
+              maxWidth: "980px",
+              margin: "0 auto",
+              background: "rgba(0, 0, 0, 0.55)",
+            }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}

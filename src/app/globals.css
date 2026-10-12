@@ -39129,6 +39129,7 @@ img[data-loaded="true"] {
 .ac-modal {
   display: flex;
   flex-direction: column;
+  height: 86vh;
   max-height: 92vh;
   overflow: hidden;
   padding: 0;

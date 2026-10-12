@@ -390,19 +390,15 @@ const waMessages = (order) => {
   ];
 };
 
-// Sender account used when composing order-update emails via Gmail.
-const SENDER_EMAIL = "uskillbook@gmail.com";
-
-// Open a Gmail compose window pre-filled with the recipient, subject and body,
-// from the SENDER_EMAIL account (opens the account picker on that address).
+// Open the device's default mail app (not the browser) with a compose window
+// pre-filled with the recipient, subject and body. Uses a mailto: link so the
+// native app handles it; the user sends from their signed-in account there.
 const openGmailCompose = (to, subject, body) => {
   const url =
-    `https://mail.google.com/mail/?view=cm&fs=1` +
-    `&to=${encodeURIComponent(to || "")}` +
-    `&su=${encodeURIComponent(subject || "")}` +
-    `&body=${encodeURIComponent(body || "")}` +
-    `&authuser=${encodeURIComponent(SENDER_EMAIL)}`;
-  window.open(url, "_blank", "noopener,noreferrer");
+    `mailto:${encodeURIComponent(to || "").replace(/%40/g, "@")}` +
+    `?subject=${encodeURIComponent(subject || "")}` +
+    `&body=${encodeURIComponent(body || "")}`;
+  window.location.href = url;
 };
 
 // Email counterparts to waMessages — each has a subject + a warm, useful body
@@ -15831,7 +15827,7 @@ export default function ManageOrdersPage() {
                   </span>
                   <p className="support-head-sub">
                     {waPickerChannel === "email"
-                      ? `${String(waPickerOrder["Email"] || "").trim() || "No email on file"} · pick a template, then send from ${SENDER_EMAIL}.`
+                      ? `${String(waPickerOrder["Email"] || "").trim() || "No email on file"} · pick a template, then send from your mail app.`
                       : `+91 ${waPickerOrder["Phone Number"]} · pick a message, then send on WhatsApp.`}
                   </p>
                 </div>

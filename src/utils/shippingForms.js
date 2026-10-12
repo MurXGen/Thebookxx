@@ -1703,64 +1703,67 @@ function drawGiftLabel(c, startY, data) {
   });
   y += cbH + 24;
 
-  // ===== FROM (sender) =====
+  // ===== FROM (sender) on the left  +  reserved Gift-QR box on the right =====
   hline(y - 6);
   y += 24;
-  arrow(innerX, y - 10, 10, "#8a3b1a");
-  c.text("FROM (SENDER)", innerX + 18, y, {
-    font: "bold 13px Poppins, sans-serif",
-    color: "#8a3b1a",
-  });
-  ctx.font = "bold 13px Poppins, sans-serif";
-  const fromLblW = ctx.measureText("FROM (SENDER)").width;
-  c.text(SENDER.name, innerX + 18 + fromLblW + 12, y, {
-    font: "bold 15px Poppins, sans-serif",
-    color: MAROON,
-  });
-  y += 22;
-  const sEnd = c.wrap(SENDER.addressLines.join(", "), innerX, y, innerW, 22, {
-    font: "bold 14px Poppins, sans-serif",
-    color: "#8a3b1a",
-  });
-  y = sEnd + 22;
-  c.text(`Mobile: ${SENDER.mobile}`, innerX, y, {
-    font: "bold 14px Poppins, sans-serif",
-    color: "#8a3b1a",
-  });
-  y += 20;
+  const rowTop = y;
 
-  // ===== Gift message — QR only (never printed as text) =====
-  hline(y - 4);
-  y += 20;
-  const qs = 150;
-  const boxH = qs + 24;
+  // Reserved QR box — its own separate space on the right side.
+  const qs = 148;
+  const qbW = 200;
+  const qbH = qs + 56;
+  const qbX = X + W - padX - qbW;
   ctx.save();
   ctx.fillStyle = "#ffffff";
-  rr(innerX, y, innerW, boxH, 14);
+  rr(qbX, rowTop - 8, qbW, qbH, 14);
   ctx.fill();
   ctx.strokeStyle = RED;
   ctx.lineWidth = 2;
   ctx.setLineDash([6, 5]);
-  rr(innerX, y, innerW, boxH, 14);
+  rr(qbX, rowTop - 8, qbW, qbH, 14);
   ctx.stroke();
   ctx.restore();
-  const qx = innerX + 14;
-  const qy = y + 12;
+  c.text("✨ Surprise inside", qbX + qbW / 2, rowTop + 12, {
+    font: "bold 14px Poppins, sans-serif",
+    color: MAROON,
+    align: "center",
+  });
+  const qx = qbX + (qbW - qs) / 2;
+  const qy = rowTop + 22;
   drawQrCode(ctx, data.giftQrUrl || "https://thebookx.in", qx, qy, qs);
-  const tx = qx + qs + 22;
-  c.text("✨ Surprise inside ✨", tx, qy + 34, {
-    font: "bold 20px Poppins, sans-serif",
+  c.text("Scan to reveal 🎁", qbX + qbW / 2, qy + qs + 22, {
+    font: "bold 13px Poppins, sans-serif",
+    color: "#7a1020",
+    align: "center",
+  });
+  const qrBoxEnd = rowTop - 8 + qbH;
+
+  // FROM column (left) — width capped so it never runs under the QR box.
+  const fromW = qbX - innerX - 26;
+  let fy = rowTop;
+  arrow(innerX, fy - 10, 10, "#8a3b1a");
+  c.text("FROM (SENDER)", innerX + 18, fy, {
+    font: "bold 13px Poppins, sans-serif",
+    color: "#8a3b1a",
+  });
+  fy += 26;
+  c.text(SENDER.name, innerX, fy, {
+    font: "bold 16px Poppins, sans-serif",
     color: MAROON,
   });
-  c.wrap(
-    "Scan this QR to reveal a personal message for the reader. 🎉",
-    tx,
-    qy + 66,
-    innerX + innerW - tx - 14,
-    26,
-    { font: "bold 16px Poppins, sans-serif", color: "#7a1020" },
-  );
-  y += boxH + 18;
+  fy += 26;
+  const sEnd = c.wrap(SENDER.addressLines.join(", "), innerX, fy, fromW, 22, {
+    font: "bold 14px Poppins, sans-serif",
+    color: "#8a3b1a",
+  });
+  fy = sEnd + 26;
+  c.wrap(`Mobile: ${SENDER.mobile}`, innerX, fy, fromW, 22, {
+    font: "bold 14px Poppins, sans-serif",
+    color: "#8a3b1a",
+  });
+  fy += 16;
+
+  y = Math.max(fy, qrBoxEnd) + 20;
 
   // Divider before footer.
   hline(y - 2);

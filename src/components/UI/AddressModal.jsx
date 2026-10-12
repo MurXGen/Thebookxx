@@ -229,6 +229,22 @@ export default function AddressModal({
   const [showFasterDeliveryModal, setShowFasterDeliveryModal] = useState(false);
   // Full-page payment selection sheet (UPI / COD / WhatsApp + coins toggle).
   const [showPaySelect, setShowPaySelect] = useState(false);
+  // Address review + confirm sheet — shown after "Choose payment method".
+  // A 3-second review lock keeps the confirm button disabled so the shopper
+  // actually checks their details before continuing.
+  const [addrConfirmOpen, setAddrConfirmOpen] = useState(false);
+  const [addrConfirmReady, setAddrConfirmReady] = useState(false);
+  const addrConfirmTimer = useRef(null);
+  const openAddrConfirm = () => {
+    setAddrConfirmReady(false);
+    setAddrConfirmOpen(true);
+    if (addrConfirmTimer.current) clearTimeout(addrConfirmTimer.current);
+    addrConfirmTimer.current = setTimeout(() => setAddrConfirmReady(true), 3000);
+  };
+  const closeAddrConfirm = () => {
+    if (addrConfirmTimer.current) clearTimeout(addrConfirmTimer.current);
+    setAddrConfirmOpen(false);
+  };
   // Pro-membership add-on — default ON for non-members; adds ₹99 to the bill and
   // registers a pending membership when the order is placed.
   // Coupons — slide-up list + code entry; applied coupon discounts the order.
@@ -1784,39 +1800,6 @@ export default function AddressModal({
             </div>
 
             <div className="address-form-content">
-              {/* Highlighted accuracy reminder — reduces failed deliveries */}
-              <div className="addr-notice">
-                <span className="addr-notice-ic">
-                  <AlertCircle size={16} />
-                </span>
-                <span className="addr-notice-text">
-                  Double-check your <b>address</b>, <b>pincode</b> &amp;{" "}
-                  <b>phone</b> for faster & successful delivery.
-                </span>
-              </div>
-
-              {/* Same stripe UI — Mumbai fast-delivery promise, shown only when
-                  the resolved city is Mumbai. */}
-              <AnimatePresence>
-                {pincodeReady && city.trim().toLowerCase() === "mumbai" && (
-                  <motion.div
-                    className="addr-notice addr-notice-mumbai"
-                    initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                    animate={{ opacity: 1, height: "auto", marginTop: 10 }}
-                    exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                    transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-                  >
-                    <span className="addr-notice-ic">
-                      <Zap size={16} />
-                    </span>
-                    <span className="addr-notice-text">
-                      <b>Orders within Mumbai</b> are delivered in{" "}
-                      <b>1–2 days</b>.
-                    </span>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
               {/* Location + address — grouped into one white card. */}
               <div className="af-card">
               {/* Pincode → City → State on one equal-width row. City & State
@@ -2268,12 +2251,14 @@ export default function AddressModal({
                 </div>
               )}
 
-              <div className="bill-row total" style={{ marginBottom: 0 }}>
+              <div
+                className={`bill-row total addr-total-row${
+                  offerDiscount + couponDiscount > 0 ? " has-saved" : ""
+                }`}
+                style={{ marginBottom: 0 }}
+              >
                 <span className="font-16 weight-600">Total Payable</span>
                 <span className="addr-total-right">
-                  <span className="font-20 weight-700 green">
-                    ₹{getTotalWithDelivery(fasterDelivery) + addOnsCharge}
-                  </span>
                   {onViewBill && (
                     <button
                       type="button"
@@ -2283,14 +2268,18 @@ export default function AddressModal({
                       View bill
                     </button>
                   )}
+                  <span className="addr-total-pricewrap">
+                    <span className="font-20 weight-700 green">
+                      ₹{getTotalWithDelivery(fasterDelivery) + addOnsCharge}
+                    </span>
+                    {offerDiscount + couponDiscount > 0 && (
+                      <span className="addr-saved-abs">
+                        🎉 Saved ₹{offerDiscount + couponDiscount}
+                      </span>
+                    )}
+                  </span>
                 </span>
               </div>
-              {offerDiscount + couponDiscount > 0 && (
-                <div className="addr-saved-line">
-                  🎉 You&apos;ve saved ₹{offerDiscount + couponDiscount} on this
-                  order
-                </div>
-              )}
 
               {contactReady && (
                 <LoadingButton
@@ -2301,11 +2290,11 @@ export default function AddressModal({
                       return;
                     }
                     setPaySel("UPI"); // online payment selected by default
-                    setShowPaySelect(true);
+                    openAddrConfirm();
                   }}
                 >
                   <span className="flex flex-row items-center justify-center gap-6">
-                    Proceed to payment
+                    Choose payment method
                     <ArrowRight size={18} strokeWidth={2.5} />
                   </span>
                 </LoadingButton>
@@ -2314,6 +2303,163 @@ export default function AddressModal({
           </motion.div>
         </motion.div>
       )}
+
+      {/* ========== Review & confirm address (slide-up) ========== */}
+      <AnimatePresence>
+        {addrConfirmOpen && (
+          <motion.div
+            className="bill-modal-overlay"
+            style={{ zIndex: 2147483000, maxWidth: "980px", margin: "0 auto" }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={closeAddrConfirm}
+          >
+            <motion.div
+              className="bill-modal ac-modal"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="bill-header">
+                <span className="flex items-center gap-8">
+                  <span className="weight-600 font-16">
+                    Review your details
+                  </span>
+                </span>
+                <span className="cursor-pointer" onClick={closeAddrConfirm}>
+                  <X size={16} />
+                </span>
+              </div>
+
+              <div className="ac-body">
+                <p className="ac-intro">
+                  Please double-check everything below — this is where your order
+                  will be delivered.
+                </p>
+
+                <div className="ac-card">
+                  <div className="ac-row">
+                    <span className="ac-row-ic">
+                      <User size={15} />
+                    </span>
+                    <span className="ac-row-main">
+                      <span className="ac-row-lbl">Name</span>
+                      <span className="ac-row-val">{name || "—"}</span>
+                    </span>
+                  </div>
+                  <div className="ac-row">
+                    <span className="ac-row-ic">
+                      <Phone size={15} />
+                    </span>
+                    <span className="ac-row-main">
+                      <span className="ac-row-lbl">Phone</span>
+                      <span className="ac-row-val">
+                        {phone}
+                        {altPhone && altPhone.length === 10
+                          ? ` · Alt ${altPhone}`
+                          : ""}
+                      </span>
+                    </span>
+                  </div>
+                  {email.trim() && (
+                    <div className="ac-row">
+                      <span className="ac-row-ic">
+                        <Mail size={15} />
+                      </span>
+                      <span className="ac-row-main">
+                        <span className="ac-row-lbl">Email</span>
+                        <span className="ac-row-val">{email.trim()}</span>
+                      </span>
+                    </div>
+                  )}
+                  <div className="ac-row">
+                    <span className="ac-row-ic">
+                      <MapPin size={15} />
+                    </span>
+                    <span className="ac-row-main">
+                      <span className="ac-row-lbl">Delivery address</span>
+                      <span className="ac-row-val">
+                        {address}
+                        {address ? ", " : ""}
+                        {city}
+                        {city ? ", " : ""}
+                        {state} — {pincode}
+                      </span>
+                    </span>
+                  </div>
+                  <div className="ac-row">
+                    <span className="ac-row-ic">
+                      {fasterDelivery ? (
+                        <Zap size={15} />
+                      ) : (
+                        <Truck size={15} />
+                      )}
+                    </span>
+                    <span className="ac-row-main">
+                      <span className="ac-row-lbl">Delivery speed</span>
+                      <span className="ac-row-val">
+                        {fasterDelivery
+                          ? "Faster delivery · 1–5 days"
+                          : "Standard delivery · 4–9 days"}
+                      </span>
+                    </span>
+                  </div>
+                  <div className="ac-row ac-row-total">
+                    <span className="ac-row-ic">
+                      <Tag size={15} />
+                    </span>
+                    <span className="ac-row-main">
+                      <span className="ac-row-lbl">Total payable</span>
+                      <span className="ac-row-val green weight-700">
+                        ₹{getTotalWithDelivery(fasterDelivery) + addOnsCharge}
+                      </span>
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  className="ac-edit-link"
+                  onClick={closeAddrConfirm}
+                >
+                  Need to change something? Edit details
+                </button>
+              </div>
+
+              <div className="ac-footer">
+                <button
+                  type="button"
+                  className={`pri-big-btn width100 ac-confirm-btn${
+                    addrConfirmReady ? "" : " loading"
+                  }`}
+                  disabled={!addrConfirmReady}
+                  onClick={() => {
+                    if (!addrConfirmReady) return;
+                    closeAddrConfirm();
+                    setPaySel("UPI");
+                    setShowPaySelect(true);
+                  }}
+                >
+                  {addrConfirmReady ? (
+                    <span className="flex flex-row items-center justify-center gap-6">
+                      Confirm &amp; choose payment
+                      <ArrowRight size={18} strokeWidth={2.5} />
+                    </span>
+                  ) : (
+                    <span className="flex flex-row items-center justify-center gap-8">
+                      <span className="ac-spinner" aria-hidden="true" />
+                      Reviewing your details…
+                    </span>
+                  )}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ========== Payment selection (full-page) ========== */}
       <AnimatePresence>
@@ -2469,10 +2615,13 @@ export default function AddressModal({
                     </div>
                   </div>
 
-                  <div className="ps-row ps-total">
+                  <div
+                    className={`ps-row ps-total addr-total-row${
+                      offerDiscount + couponDiscount > 0 ? " has-saved" : ""
+                    }`}
+                  >
                     <span>Total payable</span>
                     <span className="addr-total-right">
-                      ₹{paySel === "COD" ? codTotalWithFee : upiTotalForFlow}
                       {onViewBill && (
                         <button
                           type="button"
@@ -2482,14 +2631,18 @@ export default function AddressModal({
                           View bill
                         </button>
                       )}
+                      <span className="addr-total-pricewrap">
+                        <span>
+                          ₹{paySel === "COD" ? codTotalWithFee : upiTotalForFlow}
+                        </span>
+                        {offerDiscount + couponDiscount > 0 && (
+                          <span className="addr-saved-abs">
+                            🎉 Saved ₹{offerDiscount + couponDiscount}
+                          </span>
+                        )}
+                      </span>
                     </span>
                   </div>
-                  {offerDiscount + couponDiscount > 0 && (
-                    <div className="addr-saved-line">
-                      🎉 You&apos;ve saved ₹{offerDiscount + couponDiscount} on
-                      this order
-                    </div>
-                  )}
                 </div>
 
                 {/* Coins toggle (default off) */}

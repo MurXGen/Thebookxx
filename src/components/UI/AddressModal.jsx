@@ -1817,6 +1817,8 @@ export default function AddressModal({
                 )}
               </AnimatePresence>
 
+              {/* Location + address — grouped into one white card. */}
+              <div className="af-card">
               {/* Pincode → City → State on one equal-width row. City & State
                   stay collapsed until a valid 6-digit pincode, then glide in. */}
               <div className={`addr-loc-row${pincodeReady ? " ready" : ""}`}>
@@ -1951,6 +1953,8 @@ export default function AddressModal({
                 {locError && <span className="loc-pick-err">{locError}</span>}
               </div>
               )}
+              </div>
+              {/* /af-card — location + address */}
 
               {/* Slide-up consent sheet: ask before requesting geolocation.
                   Portaled to <body> so the parent sheet's transform doesn't
@@ -2019,7 +2023,7 @@ export default function AddressModal({
               <AnimatePresence>
                 {pincodeReady && (
                   <motion.div
-                    className="contact-fields-container"
+                    className="contact-fields-container af-card"
                     initial={{ opacity: 0, height: 0, y: -20 }}
                     animate={{ opacity: 1, height: "auto", y: 0 }}
                     exit={{ opacity: 0, height: 0, y: -20 }}
@@ -2106,8 +2110,64 @@ export default function AddressModal({
                 )}
               </AnimatePresence>
 
-              {/* Add-ons (delivery speed + gift wrap + bookmark) moved to the
-                  Choose-payment step. */}
+              {/* Delivery speed — revealed once the phone number is complete.
+                  Moved here from the Choose-payment step. */}
+              <AnimatePresence>
+                {contactReady && (
+                  <motion.div
+                    className="af-card af-deliv-card"
+                    initial={{ opacity: 0, height: 0, y: -12 }}
+                    animate={{ opacity: 1, height: "auto", y: 0 }}
+                    exit={{ opacity: 0, height: 0, y: -12 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <span className="deliv-addon-head">Delivery speed</span>
+                    <div className="pa-list">
+                      <button
+                        type="button"
+                        className={`pa-row${!fasterDelivery ? " on" : ""}`}
+                        onClick={() => setFasterDelivery(false)}
+                      >
+                        <span className="pa-row-ic">
+                          <Truck size={18} />
+                        </span>
+                        <span className="pa-row-main">
+                          <span className="pa-row-name">Standard delivery</span>
+                          <span className="pa-row-sub">4–9 days</span>
+                        </span>
+                        <span className="pa-row-price free">FREE</span>
+                        <span
+                          className={`pa-radio${!fasterDelivery ? " on" : ""}`}
+                        >
+                          {!fasterDelivery && <Check size={12} strokeWidth={3} />}
+                        </span>
+                      </button>
+                      <button
+                        type="button"
+                        className={`pa-row${fasterDelivery ? " on" : ""}`}
+                        onClick={() => setFasterDelivery(true)}
+                      >
+                        <span className="pa-row-ic paid">
+                          <span className="pa-ripple" aria-hidden="true" />
+                          <Zap size={18} />
+                        </span>
+                        <span className="pa-row-main">
+                          <span className="pa-row-name">Faster delivery</span>
+                          <span className="pa-row-sub">1–5 days</span>
+                        </span>
+                        <span className="pa-row-price">
+                          +₹{fasterDeliveryCharge}
+                        </span>
+                        <span
+                          className={`pa-radio${fasterDelivery ? " on" : ""}`}
+                        >
+                          {fasterDelivery && <Check size={12} strokeWidth={3} />}
+                        </span>
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             {/* Alternate-number slide-up modal */}
@@ -2292,54 +2352,6 @@ export default function AddressModal({
               <div className="pay-sel">
                 {/* Add-ons only — no book summary / address here. */}
                 <div className="pay-sel-bill">
-                  {/* Delivery speed — pick one (radio) */}
-                  <div className="pay-addon-block">
-                    <span className="deliv-addon-head">Delivery speed</span>
-                    <div className="pa-list">
-                      <button
-                        type="button"
-                        className={`pa-row${!fasterDelivery ? " on" : ""}`}
-                        onClick={() => setFasterDelivery(false)}
-                      >
-                        <span className="pa-row-ic">
-                          <Truck size={18} />
-                        </span>
-                        <span className="pa-row-main">
-                          <span className="pa-row-name">Standard delivery</span>
-                          <span className="pa-row-sub">4–9 days</span>
-                        </span>
-                        <span className="pa-row-price free">FREE</span>
-                        <span
-                          className={`pa-radio${!fasterDelivery ? " on" : ""}`}
-                        >
-                          {!fasterDelivery && <Check size={12} strokeWidth={3} />}
-                        </span>
-                      </button>
-                      <button
-                        type="button"
-                        className={`pa-row${fasterDelivery ? " on" : ""}`}
-                        onClick={() => setFasterDelivery(true)}
-                      >
-                        <span className="pa-row-ic paid">
-                          <span className="pa-ripple" aria-hidden="true" />
-                          <Zap size={18} />
-                        </span>
-                        <span className="pa-row-main">
-                          <span className="pa-row-name">Faster delivery</span>
-                          <span className="pa-row-sub">1–5 days</span>
-                        </span>
-                        <span className="pa-row-price">
-                          +₹{fasterDeliveryCharge}
-                        </span>
-                        <span
-                          className={`pa-radio${fasterDelivery ? " on" : ""}`}
-                        >
-                          {fasterDelivery && <Check size={12} strokeWidth={3} />}
-                        </span>
-                      </button>
-                    </div>
-                  </div>
-
                   {/* Add-ons — toggle (checkbox) */}
                   <div className="pay-addon-block">
                     <span className="deliv-addon-head">Add-ons</span>

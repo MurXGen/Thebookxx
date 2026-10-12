@@ -45857,7 +45857,37 @@ img[data-loaded="true"] {
   min-height: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding: 6px 16px 14px;
+  padding: 10px 14px 16px;
+  /* Grey canvas with white section cards — matches the Choose-payment step. */
+  background: var(--surface-2, #f4f5f7);
+}
+/* White section cards for Step 1. */
+.addr-modal .af-card {
+  background: #fff;
+  border: 1px solid var(--hairline, #ececec);
+  border-radius: 16px;
+  padding: 14px;
+  margin-top: 12px;
+  box-shadow: var(--shadow-xs, 0 1px 2px rgba(10, 10, 10, 0.05));
+}
+.addr-modal .af-card:first-of-type {
+  margin-top: 4px;
+}
+/* Dashed separator between stacked section cards. */
+.addr-modal .af-card + .af-card {
+  position: relative;
+}
+.addr-modal .af-card + .af-card::before {
+  content: "";
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  top: -13px;
+  border-top: 1.5px dashed var(--dark-20, #cbd5e1);
+}
+/* Delivery-speed card header spacing inside its white card. */
+.addr-modal .af-deliv-card .deliv-addon-head {
+  margin-bottom: 8px;
 }
 .addr-footer {
   position: relative;

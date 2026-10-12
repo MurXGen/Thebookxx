@@ -237,15 +237,29 @@ export default function AddressModal({
   // actually checks their details before continuing.
   const [addrConfirmOpen, setAddrConfirmOpen] = useState(false);
   const [addrConfirmReady, setAddrConfirmReady] = useState(false);
+  const [addrConfirmCount, setAddrConfirmCount] = useState(3);
   const addrConfirmTimer = useRef(null);
+  const addrConfirmTick = useRef(null);
   const openAddrConfirm = () => {
     setAddrConfirmReady(false);
+    setAddrConfirmCount(3);
     setAddrConfirmOpen(true);
     if (addrConfirmTimer.current) clearTimeout(addrConfirmTimer.current);
+    if (addrConfirmTick.current) clearInterval(addrConfirmTick.current);
+    addrConfirmTick.current = setInterval(() => {
+      setAddrConfirmCount((c) => {
+        if (c <= 1) {
+          clearInterval(addrConfirmTick.current);
+          return 0;
+        }
+        return c - 1;
+      });
+    }, 1000);
     addrConfirmTimer.current = setTimeout(() => setAddrConfirmReady(true), 3000);
   };
   const closeAddrConfirm = () => {
     if (addrConfirmTimer.current) clearTimeout(addrConfirmTimer.current);
+    if (addrConfirmTick.current) clearInterval(addrConfirmTick.current);
     setAddrConfirmOpen(false);
   };
   // Pro-membership add-on — default ON for non-members; adds ₹99 to the bill and
@@ -2466,7 +2480,9 @@ export default function AddressModal({
                     </span>
                   ) : (
                     <span className="flex flex-row items-center justify-center gap-8">
-                      <span className="ac-spinner" aria-hidden="true" />
+                      <span className="ac-countdown" aria-hidden="true">
+                        {addrConfirmCount}
+                      </span>
                       Reviewing your details…
                     </span>
                   )}

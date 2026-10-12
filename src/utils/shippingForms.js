@@ -1563,6 +1563,29 @@ function drawGiftLabel(c, startY, data) {
     ctx.arcTo(x, yy, x + w, yy, r);
     ctx.closePath();
   };
+  // Section divider — thin maroon rule across the inner width (grid structure).
+  const hline = (yy) => {
+    ctx.save();
+    ctx.strokeStyle = "rgba(122, 16, 32, 0.28)";
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    ctx.moveTo(innerX, yy);
+    ctx.lineTo(innerX + innerW, yy);
+    ctx.stroke();
+    ctx.restore();
+  };
+  const arrow = (x, yy, s, color) => {
+    ctx.save();
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(x, yy);
+    ctx.lineTo(x + s, yy + s / 2);
+    ctx.lineTo(x, yy + s);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  };
 
   // Cream background for the whole label area (extra is cropped by the builder).
   const grad = ctx.createLinearGradient(X, startY, X, startY + 900);
@@ -1619,17 +1642,20 @@ function drawGiftLabel(c, startY, data) {
     y += bh + 20;
   }
 
-  // DELIVER TO.
-  c.text("DELIVER TO", innerX, y, {
+  // ===== DELIVER TO =====
+  hline(y - 6);
+  y += 24;
+  arrow(innerX, y - 11, 11, RED);
+  c.text("DELIVER TO", innerX + 20, y, {
     font: "bold 15px Poppins, sans-serif",
     color: RED,
   });
-  y += 34;
+  y += 38;
   c.text(data.customerName || "", innerX, y, {
     font: "bold 30px Poppins, sans-serif",
     color: INK,
   });
-  y += 40;
+  y += 42;
   const cleanAddr = (data.customerAddress || "")
     .replace(/,?\s*Pinned location:\s*https?:\/\/\S+/gi, "")
     .replace(/\s{2,}/g, " ")
@@ -1647,22 +1673,74 @@ function drawGiftLabel(c, startY, data) {
       font: "bold 22px Poppins, sans-serif",
       color: INK,
     });
-    y += 14;
+    y += 22;
   }
-  y += 14;
-  c.text(`📞 +91 ${data.customerPhone || ""}`, innerX, y, {
-    font: "bold 20px Poppins, sans-serif",
-    color: INK,
-  });
-  y += 30;
 
-  // QR block — the message lives here (never printed as text).
+  // ===== CALL callout (kept same as the normal label) =====
+  const cbH = 70;
   ctx.save();
+  ctx.fillStyle = "#ffffff";
+  rr(innerX, y, innerW, cbH, 12);
+  ctx.fill();
+  ctx.strokeStyle = MAROON;
+  ctx.lineWidth = 2.4;
+  rr(innerX, y, innerW, cbH, 12);
+  ctx.stroke();
+  ctx.restore();
+  const midY = y + cbH / 2;
+  c.text("📞", innerX + 18, midY + 9, { font: "26px Poppins, sans-serif" });
+  c.text("CALL ON THIS NUMBER FOR DELIVERY:", innerX + 58, midY, {
+    font: "bold 16px Poppins, sans-serif",
+    color: INK,
+    baseline: "middle",
+  });
+  ctx.font = "bold 16px Poppins, sans-serif";
+  const callLblW = ctx.measureText("CALL ON THIS NUMBER FOR DELIVERY:").width;
+  c.text(`+91 ${data.customerPhone || ""}`, innerX + 58 + callLblW + 12, midY, {
+    font: "bold 24px Poppins, sans-serif",
+    color: INK,
+    baseline: "middle",
+  });
+  y += cbH + 24;
+
+  // ===== FROM (sender) =====
+  hline(y - 6);
+  y += 24;
+  arrow(innerX, y - 10, 10, "#8a3b1a");
+  c.text("FROM (SENDER)", innerX + 18, y, {
+    font: "bold 13px Poppins, sans-serif",
+    color: "#8a3b1a",
+  });
+  ctx.font = "bold 13px Poppins, sans-serif";
+  const fromLblW = ctx.measureText("FROM (SENDER)").width;
+  c.text(SENDER.name, innerX + 18 + fromLblW + 12, y, {
+    font: "bold 15px Poppins, sans-serif",
+    color: MAROON,
+  });
+  y += 22;
+  const sEnd = c.wrap(SENDER.addressLines.join(", "), innerX, y, innerW, 22, {
+    font: "bold 14px Poppins, sans-serif",
+    color: "#8a3b1a",
+  });
+  y = sEnd + 22;
+  c.text(`Mobile: ${SENDER.mobile}`, innerX, y, {
+    font: "bold 14px Poppins, sans-serif",
+    color: "#8a3b1a",
+  });
+  y += 20;
+
+  // ===== Gift message — QR only (never printed as text) =====
+  hline(y - 4);
+  y += 20;
+  const qs = 150;
+  const boxH = qs + 24;
+  ctx.save();
+  ctx.fillStyle = "#ffffff";
+  rr(innerX, y, innerW, boxH, 14);
+  ctx.fill();
   ctx.strokeStyle = RED;
   ctx.lineWidth = 2;
   ctx.setLineDash([6, 5]);
-  const qs = 150;
-  const boxH = qs + 24;
   rr(innerX, y, innerW, boxH, 14);
   ctx.stroke();
   ctx.restore();
@@ -1682,14 +1760,11 @@ function drawGiftLabel(c, startY, data) {
     26,
     { font: "bold 16px Poppins, sans-serif", color: "#7a1020" },
   );
-  y += boxH + 22;
+  y += boxH + 18;
 
-  // FROM (compact).
-  c.text(`FROM: ${SENDER.name} · ${SENDER.addressLines.join(", ")}`, innerX, y, {
-    font: "bold 12px Poppins, sans-serif",
-    color: "#8a3b1a",
-  });
-  y += 24;
+  // Divider before footer.
+  hline(y - 2);
+  y += 10;
 
   // Footer.
   c.text(`ORDER ID: ${data.orderId || ""}`, innerX, y, {

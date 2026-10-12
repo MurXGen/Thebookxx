@@ -46060,6 +46060,60 @@ img[data-loaded="true"] {
   }
 }
 
+/* ── Gift order card — flowing confetti decoration (no banner, no QR here) ── */
+.mo-card-gift {
+  position: relative;
+  z-index: 0;
+}
+.mo-card-gift-confetti {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+.mcg {
+  position: absolute;
+  top: -18px;
+  width: 7px;
+  height: 11px;
+  border-radius: 2px;
+  opacity: 0;
+  animation: mcgFlow linear infinite;
+}
+@keyframes mcgFlow {
+  0% {
+    transform: translateY(-18px) rotate(0deg);
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.9;
+  }
+  88% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(760px) rotate(420deg);
+    opacity: 0;
+  }
+}
+.mcg-0 { left: 5%;  background: #fb8500; animation-duration: 6s;   animation-delay: 0s; }
+.mcg-1 { left: 15%; background: #ffd23f; animation-duration: 7.5s; animation-delay: .9s; }
+.mcg-2 { left: 25%; background: #4ade80; animation-duration: 6.6s; animation-delay: 1.8s; }
+.mcg-3 { left: 35%; background: #c0223b; animation-duration: 8s;   animation-delay: .4s; }
+.mcg-4 { left: 46%; background: #60a5fa; animation-duration: 7s;   animation-delay: 2.4s; }
+.mcg-5 { left: 57%; background: #f472b6; animation-duration: 6.3s; animation-delay: 1.2s; }
+.mcg-6 { left: 68%; background: #ffb703; animation-duration: 7.8s; animation-delay: .2s; }
+.mcg-7 { left: 78%; background: #fb8500; animation-duration: 6.9s; animation-delay: 2s; }
+.mcg-8 { left: 88%; background: #4ade80; animation-duration: 7.3s; animation-delay: 1.5s; }
+.mcg-9 { left: 95%; background: #c0223b; animation-duration: 6.1s; animation-delay: .7s; }
+@media (prefers-reduced-motion: reduce) {
+  .mo-card-gift-confetti {
+    display: none;
+  }
+}
+
 /* ── Gift order — celebratory banner + scannable gift QR ── */
 .mo-gift-block {
   display: flex;

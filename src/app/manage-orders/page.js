@@ -13047,7 +13047,7 @@ export default function ManageOrdersPage() {
                               pendingTracking[orderId]
                                 ? " mo-card-pending-push"
                                 : ""
-                            }`}
+                            }${isGiftOrder(order) ? " mo-card-gift" : ""}`}
                             style={{
                               "--card-accent": isUrgentNoTrack
                                 ? "#dc2626"
@@ -13080,6 +13080,18 @@ export default function ManageOrdersPage() {
                               clearTimeout(lpTimer.current)
                             }
                           >
+                            {/* Gift order — flowing confetti decoration across
+                                the whole card (no banner, no QR here). */}
+                            {isGiftOrder(order) && (
+                              <span
+                                className="mo-card-gift-confetti"
+                                aria-hidden="true"
+                              >
+                                {Array.from({ length: 10 }).map((_, i) => (
+                                  <span key={i} className={`mcg mcg-${i}`} />
+                                ))}
+                              </span>
+                            )}
                             {/* Exception flag — amber reason chip at the top;
                                 red + pulsing when it's the urgent no-tracking
                                 case. */}
@@ -13580,19 +13592,10 @@ export default function ManageOrdersPage() {
                                 ONLY via a scannable QR (never printed as text).
                                 Non-gift orders: the note inline (reseller lines
                                 stripped out). */}
-                            {isGiftOrder(order) ? (
-                              <div className="mo-gift-block">
-                                <div className="mo-gift-banner">
-                                  <span className="mo-gift-banner-deco" aria-hidden="true" />
-                                  <span className="mo-gift-banner-emoji">🎁</span>
-                                  <span className="mo-gift-banner-txt">
-                                    <b>Gift order</b>
-                                    <small>Message is on the printed gift label (QR) — download the Gift cards PDF</small>
-                                  </span>
-                                  <span className="mo-gift-banner-spark" aria-hidden="true">✨</span>
-                                </div>
-                              </div>
-                            ) : (
+                            {/* Gift orders: note is hidden here (it lives on the
+                                printed gift label QR); the card shows flowing
+                                confetti instead. Non-gift: show the note. */}
+                            {!isGiftOrder(order) &&
                               cleanNote(
                                 orderNotes[orderId] || order["Order Comment"],
                               ) && (
@@ -13605,8 +13608,7 @@ export default function ManageOrdersPage() {
                                     )}
                                   </span>
                                 </div>
-                              )
-                            )}
+                              )}
 
                             {/* Weight & sizes entry — feeds the India Post bulk
                                 file (WT g + L×B×H). Shows saved values, else a

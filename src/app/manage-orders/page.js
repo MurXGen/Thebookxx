@@ -67,6 +67,7 @@ import {
   Wallet,
   Pin,
   Pencil,
+  Mail,
   MoreVertical,
   Calculator,
   Delete,
@@ -385,6 +386,153 @@ const waMessages = (order) => {
       key: "verify",
       label: "Ask details checkup",
       text: `🔎 *Please re-check your details*\n\n${hi}\nYour current address/number may not be enough for delivery. Reply with your *complete address, landmark, pincode & active phone number*.${linkBlock}`,
+    },
+  ];
+};
+
+// Sender account used when composing order-update emails via Gmail.
+const SENDER_EMAIL = "uskillbook@gmail.com";
+
+// Open a Gmail compose window pre-filled with the recipient, subject and body,
+// from the SENDER_EMAIL account (opens the account picker on that address).
+const openGmailCompose = (to, subject, body) => {
+  const url =
+    `https://mail.google.com/mail/?view=cm&fs=1` +
+    `&to=${encodeURIComponent(to || "")}` +
+    `&su=${encodeURIComponent(subject || "")}` +
+    `&body=${encodeURIComponent(body || "")}` +
+    `&authuser=${encodeURIComponent(SENDER_EMAIL)}`;
+  window.open(url, "_blank", "noopener,noreferrer");
+};
+
+// Email counterparts to waMessages — each has a subject + a warm, useful body
+// addressed by the customer's first name. Editable before sending.
+const emailMessages = (order) => {
+  const fullName = order?.["Customer Name"]
+    ? String(order["Customer Name"]).replace(/\s*\(unconfirmed\)\s*/i, "").trim()
+    : "";
+  const first = fullName ? fullName.split(" ")[0] : "there";
+  const orderId = order?.["Order ID"] || "";
+  const tracking = String(
+    order?.shippingId || order?.["Shipping ID"] || "",
+  ).trim();
+  const isFaster =
+    /faster|express/i.test(String(order?.["Delivery Type"] || "")) ||
+    /^e/i.test(tracking);
+  const etaWindow = isFaster ? "1–5 days" : "4–9 days";
+
+  const phone10 = String(order?.["Phone Number"] || "")
+    .replace(/\D/g, "")
+    .slice(-10);
+  const orderDetailUrl =
+    orderId && phone10
+      ? `https://www.thebookx.in/profile/${phone10}/orders/${encodeURIComponent(orderId)}`
+      : PROFILE_URL;
+
+  const parsedBooks = Array.isArray(order?.parsedBooks) ? order.parsedBooks : [];
+  const bookLines = parsedBooks
+    .map((b) => {
+      const qty = b.quantity > 1 ? ` x${b.quantity}` : "";
+      const lineTotal = b.total || b.price * (b.quantity || 1);
+      return `• ${b.name}${qty}${lineTotal ? ` — ₹${lineTotal}` : ""}`;
+    })
+    .join("\n");
+  const grandTotal =
+    Number(
+      String(order?.["Total Amount"] ?? order?.revenue ?? "").replace(
+        /[^\d.]/g,
+        "",
+      ),
+    ) ||
+    parsedBooks.reduce(
+      (s, b) => s + (b.total || b.price * (b.quantity || 1) || 0),
+      0,
+    );
+
+  const sign = `\n\nWarm regards,\nTeam TheBookX 📚\n${orderDetailUrl}`;
+  const footer = (orderId ? `\n\nOrder ID: ${orderId}` : "") + sign;
+
+  return [
+    {
+      key: "confirm",
+      label: "Confirm order",
+      subject: `Quick confirm for your TheBookX order${orderId ? ` #${orderId}` : ""} ✅`,
+      body:
+        `Hi ${first},\n\n` +
+        `Thanks so much for ordering with TheBookX! We're ready to pack your books.\n\n` +
+        `Just reply "YES" to this email (or confirm on your order page) and we'll ship them out right away.` +
+        footer,
+    },
+    {
+      key: "payonline",
+      label: "Pay online (prepaid)",
+      subject: `Complete your TheBookX order${orderId ? ` #${orderId}` : ""} with a quick payment 💳`,
+      body:
+        `Hi ${first},\n\n` +
+        `Your pick is a prepaid-only title, so a quick online payment confirms it and we'll dispatch the same day.\n\n` +
+        (bookLines ? `${bookLines}\n\n` : "") +
+        `Amount to pay: ₹${grandTotal}\n` +
+        `Pay securely here: ${orderDetailUrl}` +
+        footer,
+    },
+    {
+      key: "predelivery",
+      label: "Pre-delivery check-in",
+      subject: `One quick check before we ship your books 🙏`,
+      body:
+        `Hi ${first},\n\n` +
+        `Before your parcel leaves our shelf, two tiny checks:\n\n` +
+        `1. Will someone be available to receive it this week?\n` +
+        `2. Are your address and phone number correct?\n\n` +
+        `All good? Reply "YES". Need a change? Just reply here and we'll fix it.` +
+        footer,
+    },
+    {
+      key: "about",
+      label: "About to ship",
+      subject: `Your TheBookX order is packed and about to ship 📦`,
+      body:
+        `Hi ${first},\n\n` +
+        `Great news — your order is packed and heading out shortly. Your tracking details will follow in the next update.` +
+        footer,
+    },
+    {
+      key: "shipped",
+      label: "Shipped",
+      subject: `It's on the way! Your TheBookX order has shipped 🚚`,
+      body:
+        `Hi ${first},\n\n` +
+        `Your books are officially on the move and should reach you in ${etaWindow}${isFaster ? " (⚡ Faster delivery)" : ""}.` +
+        (tracking ? `\n\nTracking ID: ${tracking}` : "") +
+        footer,
+    },
+    {
+      key: "transit",
+      label: "In Transit",
+      subject: `Your books are in transit — arriving soon 🛣️`,
+      body:
+        `Hi ${first},\n\n` +
+        `Just a quick note that your order is in transit and expected in ${etaWindow}${isFaster ? " (⚡ Faster delivery)" : ""}. Thanks for your patience!` +
+        footer,
+    },
+    {
+      key: "ofd",
+      label: "Out for delivery",
+      subject: `Out for delivery today — keep your phone handy 🛵`,
+      body:
+        `Hi ${first},\n\n` +
+        `Your order is out for delivery today, anytime between 9 AM and 8 PM. Our delivery partner may call you, so please keep your phone reachable. 📞` +
+        footer,
+    },
+    {
+      key: "delivered",
+      label: "Delivered",
+      subject: `Enjoy your new books! A quick favour ⭐`,
+      body:
+        `Hi ${first},\n\n` +
+        `We hope your books arrived safely and that you love them! If you have a moment, a short review would mean the world to us and helps other readers discover great books.\n\n` +
+        `Leave a review: ${REVIEW_URL}` +
+        footer,
     },
   ];
 };
@@ -3250,9 +3398,17 @@ export default function ManageOrdersPage() {
   const [cancelChoiceOrder, setCancelChoiceOrder] = useState(null); // cancel modal
   const [cancelBusy, setCancelBusy] = useState(false);
   const [waSel, setWaSel] = useState(null); // selected message key in the picker
+  // Channel for the picker: WhatsApp or Email. Reset to WhatsApp on open.
+  const [waPickerChannel, setWaPickerChannel] = useState("wa");
+  // Editable email subject/body for the currently selected email template.
+  const [emailSubject, setEmailSubject] = useState("");
+  const [emailBody, setEmailBody] = useState("");
   // Reset the selection each time a different order's picker opens.
   useEffect(() => {
     setWaSel(null);
+    setWaPickerChannel("wa");
+    setEmailSubject("");
+    setEmailBody("");
   }, [waPickerOrder]);
   const [waCustomText, setWaCustomText] = useState(""); // custom WA message
   // Saved custom WhatsApp templates — { title, text }, persisted locally.
@@ -15666,12 +15822,17 @@ export default function ManageOrdersPage() {
               <div className="support-head">
                 <div className="support-head-titles">
                   <span className="support-head-title">
-                    <FaWhatsapp size={18} /> Message{" "}
-                    {waPickerOrder["Customer Name"] || "customer"}
+                    {waPickerChannel === "email" ? (
+                      <Mail size={18} />
+                    ) : (
+                      <FaWhatsapp size={18} />
+                    )}{" "}
+                    Message {waPickerOrder["Customer Name"] || "customer"}
                   </span>
                   <p className="support-head-sub">
-                    +91 {waPickerOrder["Phone Number"]} · pick a message, then
-                    send on WhatsApp.
+                    {waPickerChannel === "email"
+                      ? `${String(waPickerOrder["Email"] || "").trim() || "No email on file"} · pick a template, then send from ${SENDER_EMAIL}.`
+                      : `+91 ${waPickerOrder["Phone Number"]} · pick a message, then send on WhatsApp.`}
                   </p>
                 </div>
                 <button
@@ -15684,7 +15845,125 @@ export default function ManageOrdersPage() {
                 </button>
               </div>
 
-              {(() => {
+              {/* Channel toggle — WhatsApp or Email */}
+              <div className="wa-channel-tabs">
+                <button
+                  type="button"
+                  className={`wa-channel-tab${waPickerChannel === "wa" ? " on" : ""}`}
+                  onClick={() => {
+                    setWaPickerChannel("wa");
+                    setWaSel(null);
+                  }}
+                >
+                  <FaWhatsapp size={15} /> WhatsApp
+                </button>
+                <button
+                  type="button"
+                  className={`wa-channel-tab${waPickerChannel === "email" ? " on" : ""}`}
+                  onClick={() => {
+                    setWaPickerChannel("email");
+                    const em = emailMessages(waPickerOrder);
+                    setWaSel(em[0]?.key || null);
+                    setEmailSubject(em[0]?.subject || "");
+                    setEmailBody(em[0]?.body || "");
+                  }}
+                >
+                  <Mail size={15} /> Email
+                </button>
+              </div>
+
+              {/* ===== Email mode ===== */}
+              {waPickerChannel === "email" &&
+                (() => {
+                  const custEmail = String(waPickerOrder["Email"] || "").trim();
+                  const emOpts = emailMessages(waPickerOrder);
+                  const selKey = waSel || emOpts[0]?.key;
+                  return (
+                    <>
+                      <div className="support-reasons">
+                        {emOpts.map((o) => {
+                          const on = o.key === selKey;
+                          return (
+                            <div
+                              key={o.key}
+                              role="button"
+                              tabIndex={0}
+                              className={`support-reason${on ? " active" : ""}`}
+                              title={o.subject}
+                              onClick={() => {
+                                setWaSel(o.key);
+                                setEmailSubject(o.subject);
+                                setEmailBody(o.body);
+                              }}
+                              onKeyDown={(e) =>
+                                (e.key === "Enter" || e.key === " ") &&
+                                (setWaSel(o.key),
+                                setEmailSubject(o.subject),
+                                setEmailBody(o.body))
+                              }
+                            >
+                              <span
+                                className={`support-reason-radio${on ? " on" : ""}`}
+                              >
+                                {on && <Check size={12} strokeWidth={3} />}
+                              </span>
+                              <span className="wa-reason-label">{o.label}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* Editable subject + body for the picked template */}
+                      <div className="wa-custom wa-email-edit">
+                        <label className="wa-email-lbl">Subject</label>
+                        <input
+                          className="admin-input"
+                          placeholder="Email subject"
+                          value={emailSubject}
+                          onChange={(e) => setEmailSubject(e.target.value)}
+                        />
+                        <label className="wa-email-lbl">Body</label>
+                        <textarea
+                          className="admin-input wa-custom-input"
+                          rows={8}
+                          placeholder="Email body… (line breaks are kept)"
+                          value={emailBody}
+                          onChange={(e) => setEmailBody(e.target.value)}
+                        />
+                      </div>
+
+                      {!custEmail && (
+                        <p className="wa-email-missing">
+                          No email saved for this order — ask the customer to add
+                          one on their order page first.
+                        </p>
+                      )}
+
+                      <div className="support-actions">
+                        <button
+                          type="button"
+                          className="sec-big-btn support-wa"
+                          disabled={!custEmail || !emailBody.trim()}
+                          onClick={() => {
+                            if (!custEmail) return;
+                            openGmailCompose(
+                              custEmail,
+                              emailSubject,
+                              emailBody.replace(/\s+$/, ""),
+                            );
+                            setWaPickerOrder(null);
+                          }}
+                        >
+                          <Mail size={16} /> Send email
+                        </button>
+                      </div>
+                    </>
+                  );
+                })()}
+
+              {/* ===== WhatsApp mode ===== */}
+              {waPickerChannel === "wa" &&
+                (() => {
                 // One flat, selectable list (support-sheet style): stage
                 // messages, then a "Books unavailable" option when some titles
                 // aren't picked, then "Send order details", then saved templates.
@@ -15818,7 +16097,7 @@ export default function ManageOrdersPage() {
 
               {/* Custom message — type & send now, or save as a reusable
                   template (title becomes its button label). */}
-              {showWaTplForm && (
+              {waPickerChannel === "wa" && showWaTplForm && (
                 <div className="wa-custom">
                   <input
                     className="admin-input"

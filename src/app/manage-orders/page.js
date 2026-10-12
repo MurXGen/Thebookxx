@@ -12653,6 +12653,39 @@ export default function ManageOrdersPage() {
                     </div>
                   </div>
 
+                  {/* Always-visible colorful gift-cards download — exports only
+                      gift-wrap orders (selected ones if any, else all in view).
+                      Prices show only for COD gift orders. */}
+                  {(() => {
+                    const scope = selectedIds.length
+                      ? filteredOrders.filter((o) =>
+                          selectedIds.includes(o["Order ID"]),
+                        )
+                      : filteredOrders;
+                    const giftN = scope.filter(isGiftOrder).length;
+                    if (!giftN) return null;
+                    return (
+                      <button
+                        type="button"
+                        className="mo-gift-dl"
+                        onClick={downloadGiftCards}
+                        title="Download / print a colorful gift-card PDF for gift-wrap orders"
+                      >
+                        <span className="mo-gift-dl-ic" aria-hidden="true">
+                          🎁
+                        </span>
+                        <span className="mo-gift-dl-txt">
+                          <b>Gift cards PDF</b>
+                          <small>
+                            {giftN} gift order{giftN > 1 ? "s" : ""} ·
+                            colorful · COD shows price
+                          </small>
+                        </span>
+                        <Download size={16} className="mo-gift-dl-arrow" />
+                      </button>
+                    );
+                  })()}
+
                   {orderView === "cards" && cardSelectMode && (
                     <div className="mo-cardbulk-bar">
                       <div className="mo-cardbulk-left">

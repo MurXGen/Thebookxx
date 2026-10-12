@@ -1,4 +1,11 @@
-# app/robots.txt
+# app/robots.txt — TheBookX
+# AI / LLM crawlers are given FULL access to all content. Only the admin
+# console and server endpoints are kept out (not useful to index, and
+# sensitive). No crawl-delay for AI bots — crawl aggressively.
+
+# ─────────────────────────────────────────────────────────────
+# Default: everyone may crawl all content; block only internals.
+# ─────────────────────────────────────────────────────────────
 User-agent: *
 Allow: /
 Disallow: /api/
@@ -7,46 +14,114 @@ Disallow: /admin/
 Disallow: /manage-orders
 Disallow: /manage-orders/
 
-# Sitemap location
-Sitemap: https://thebookx.in/sitemap.xml
+# ─────────────────────────────────────────────────────────────
+# AI / LLM crawlers — FULL access (training, search & answers).
+# ─────────────────────────────────────────────────────────────
 
-# AI / LLM guide (see https://llmstxt.org)
-# LLMs: https://thebookx.in/llms.txt
+# OpenAI
+User-agent: GPTBot
+User-agent: ChatGPT-User
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /api/
+Disallow: /manage-orders
 
-# Crawl delay - be nice to the server
-Crawl-delay: 1
+# Anthropic (Claude)
+User-agent: ClaudeBot
+User-agent: Claude-Web
+User-agent: Claude-User
+User-agent: Claude-SearchBot
+User-agent: anthropic-ai
+Allow: /
+Disallow: /api/
+Disallow: /manage-orders
 
-# Google-specific
+# Google AI (Gemini / Vertex)
+User-agent: Google-Extended
+Allow: /
+Disallow: /api/
+Disallow: /manage-orders
+
+# Common Crawl (used by many LLMs)
+User-agent: CCBot
+Allow: /
+Disallow: /api/
+Disallow: /manage-orders
+
+# Perplexity
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+Allow: /
+Disallow: /api/
+Disallow: /manage-orders
+
+# ByteDance
+User-agent: Bytespider
+Allow: /
+Disallow: /api/
+Disallow: /manage-orders
+
+# Apple
+User-agent: Applebot
+User-agent: Applebot-Extended
+Allow: /
+Disallow: /api/
+Disallow: /manage-orders
+
+# Amazon
+User-agent: Amazonbot
+Allow: /
+Disallow: /api/
+Disallow: /manage-orders
+
+# Meta
+User-agent: Meta-ExternalAgent
+User-agent: Meta-ExternalFetcher
+User-agent: FacebookBot
+Allow: /
+Disallow: /api/
+Disallow: /manage-orders
+
+# Microsoft / Copilot
+User-agent: Bingbot
+Allow: /
+Disallow: /api/
+Disallow: /manage-orders
+
+# Other AI assistants & crawlers
+User-agent: cohere-ai
+User-agent: DuckAssistBot
+User-agent: YouBot
+User-agent: Diffbot
+User-agent: Timpibot
+User-agent: ImagesiftBot
+User-agent: Kangaroo Bot
+User-agent: AddSearchBot
+User-agent: Ai2Bot
+User-agent: Mistral-AI-User
+Allow: /
+Disallow: /api/
+Disallow: /manage-orders
+
+# ─────────────────────────────────────────────────────────────
+# Search engines
+# ─────────────────────────────────────────────────────────────
 User-agent: Googlebot
 Allow: /
+Disallow: /api/
 Disallow: /manage-orders
-Disallow: /manage-orders/
-Crawl-delay: 1
 
-# Image bots - allow all image folders with wildcards
+# Image bots — allow all image folders.
 User-agent: Googlebot-Image
 User-agent: Bingbot-Image
-User-agent: Yahoo Image Bot
 User-agent: DuckDuckBot-Image
-User-agent: Baiduspider-image
 User-agent: YandexImages
-Allow: /review/author/*.jpeg
-Allow: /review/author/*.jpg
-Allow: /review/author/*.png
-Allow: /review/author/*.webp
-Allow: /review/reviewers/*.jpeg
-Allow: /review/reviewers/*.jpg
-Allow: /review/reviewers/*.png
-Allow: /review/reviewers/*.webp
-Allow: /books/*.jpeg
-Allow: /books/*.jpg
-Allow: /books/*.png
-Allow: /books/*.webp
-
-# Brave Image bot
 User-agent: Bravebot-Image
-Allow: /review/author/*.jpeg
-Allow: /review/author/*.jpg
-Allow: /review/reviewers/*.jpeg
-Allow: /review/reviewers/*.jpg
-Allow: /books/*.jpeg
+Allow: /review/
+Allow: /books/
+Allow: /
+
+# ─────────────────────────────────────────────────────────────
+Sitemap: https://thebookx.in/sitemap.xml
+# AI / LLM guide (see https://llmstxt.org)
+# LLMs: https://thebookx.in/llms.txt

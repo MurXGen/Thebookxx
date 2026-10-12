@@ -5957,6 +5957,113 @@ export default function ManageOrdersPage() {
     );
   };
 
+  // Colorful gift-card PDF — only gift-wrap orders. One festive card per order
+  // with the recipient name, books and the surprise message. Prices are shown
+  // ONLY for COD orders (amount to collect); prepaid gift cards stay price-free.
+  const downloadGiftCards = () => {
+    const base = selectedIds.length
+      ? filteredOrders.filter((o) => selectedIds.includes(o["Order ID"]))
+      : filteredOrders;
+    const gifts = base.filter(isGiftOrder);
+    if (!gifts.length) {
+      showToast(
+        selectedIds.length
+          ? "No gift-wrap orders in your selection."
+          : "No gift-wrap orders to export.",
+        "info",
+      );
+      return;
+    }
+    const esc = (s) =>
+      String(s ?? "").replace(
+        /[&<>"]/g,
+        (c) =>
+          ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c],
+      );
+    const cards = gifts
+      .map((o) => {
+        const name = esc(o["Customer Name"] || "A dear reader");
+        const isCOD = /cash|cod/i.test(o["Payment Type"] || "");
+        const amount = o["Total Amount"] || o.revenue || "";
+        const msg = esc(
+          giftMessageFor(o, orderNotes[o["Order ID"]]) ||
+            "A little surprise is on its way to you — enjoy every page! 🎁",
+        );
+        const booksHtml = (o.parsedBooks || [])
+          .map(
+            (b) =>
+              `<li>${esc(b.name || b.title || "Book")}${
+                (b.quantity || 1) > 1 ? ` × ${b.quantity}` : ""
+              }</li>`,
+          )
+          .join("");
+        const pay =
+          isCOD && amount
+            ? `<div class="gc-pay">💵 Amount to pay on delivery: <b>₹${esc(
+                amount,
+              )}</b></div>`
+            : "";
+        return `
+        <section class="gc">
+          <div class="gc-ribbon">A GIFT FOR YOU</div>
+          <div class="gc-emoji">🎁</div>
+          <h1 class="gc-to">Dear ${name},</h1>
+          <p class="gc-msg">${msg}</p>
+          ${
+            booksHtml
+              ? `<div class="gc-books"><div class="gc-books-h">Inside your parcel</div><ul>${booksHtml}</ul></div>`
+              : ""
+          }
+          ${pay}
+          <div class="gc-foot">With love, from <b>TheBookX</b> 💛 · thebookx.in</div>
+        </section>`;
+      })
+      .join("");
+    const css = `
+      @page { size: A5; margin: 0; }
+      * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      body { margin: 0; font-family: Poppins, system-ui, Arial, sans-serif; }
+      .gc {
+        position: relative; width: 148mm; min-height: 210mm; padding: 26mm 18mm;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        text-align: center; page-break-after: always; overflow: hidden; color: #3a0a12;
+        background:
+          radial-gradient(60% 40% at 50% 0%, rgba(255,210,128,.6), transparent 70%),
+          linear-gradient(160deg, #fff7ed 0%, #ffe7d1 55%, #ffeef6 100%);
+      }
+      .gc::before, .gc::after {
+        content: ""; position: absolute; left: 0; right: 0; height: 14mm;
+        background: repeating-linear-gradient(45deg, #c0223b 0 8mm, #fb8500 8mm 16mm, #ffb703 16mm 24mm);
+      }
+      .gc::before { top: 0; } .gc::after { bottom: 0; }
+      .gc-ribbon { font-size: 11pt; font-weight: 800; letter-spacing: .18em; color: #c0223b; }
+      .gc-emoji { font-size: 48pt; margin: 6mm 0 2mm; }
+      .gc-to { font-size: 22pt; margin: 0 0 4mm; color: #7a1020; }
+      .gc-msg { font-size: 15pt; line-height: 1.5; font-weight: 600; max-width: 110mm; margin: 0 0 6mm; }
+      .gc-books { margin: 2mm 0 4mm; }
+      .gc-books-h { font-size: 9pt; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: #b45309; margin-bottom: 2mm; }
+      .gc-books ul { list-style: none; margin: 0; padding: 0; }
+      .gc-books li { font-size: 12pt; font-weight: 700; color: #3a0a12; }
+      .gc-pay { margin: 3mm 0; font-size: 12pt; background: #fff; border: 1.5px dashed #c0223b; border-radius: 10px; padding: 3mm 6mm; }
+      .gc-foot { margin-top: auto; font-size: 10pt; font-weight: 700; color: #7a1020; }
+    `;
+    const w = window.open("", "_blank");
+    if (!w) {
+      showToast("Allow pop-ups to download the gift PDF.", "error");
+      return;
+    }
+    w.document.write(
+      `<!doctype html><html><head><meta charset="utf-8"><title>Gift cards — TheBookX</title><style>${css}</style></head><body>${cards}</body></html>`,
+    );
+    w.document.close();
+    w.focus();
+    setTimeout(() => {
+      try {
+        w.print();
+      } catch {}
+    }, 350);
+  };
+
   // Whether every book in an order has been picked (touched).
   const isOrderFullyPicked = (o) => {
     const oid = o["Order ID"] || o._rowIndex;
@@ -12728,6 +12835,26 @@ export default function ManageOrdersPage() {
                             title="One address-label PNG per selected order"
                           >
                             PNG
+                          </button>
+                        </div>
+
+                        {/* Gift cards — colorful festive PDF, gift orders only.
+                            Prices appear only for COD orders. */}
+                        <div className="mo-dl-group mo-dl-gift">
+                          <span className="mo-dl-group-label">
+                            <span className="mo-dl-icon">🎁</span>
+                            <span className="mo-dl-text">
+                              Gift cards
+                              <em>Colorful, gift orders only · COD shows price</em>
+                            </span>
+                          </span>
+                          <button
+                            type="button"
+                            className="mo-form-btn mo-dl-pdf"
+                            onClick={downloadGiftCards}
+                            title="Download/print only gift-wrap orders as a colorful gift-card PDF"
+                          >
+                            PDF
                           </button>
                         </div>
                       </div>

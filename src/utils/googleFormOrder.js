@@ -15,6 +15,7 @@ const SHEET_HEADERS = {
   customerName: "Customer Name",
   phone: "Phone Number",
   altPhone: "Alternate number",
+  email: "Email",
   pincode: "Pincode",
   city: "City",
   state: "State",
@@ -402,6 +403,8 @@ export const trackOrderToGoogleForm = async (orderDetails) => {
     phone: addressData.phone || "",
     // Optional alternate contact → its own "Alternate number" column.
     ...(addressData.altPhone ? { altPhone: addressData.altPhone } : {}),
+    // Optional email → its own "Email" column (tracking & communications).
+    ...(addressData.email ? { email: String(addressData.email).trim() } : {}),
     pincode: addressData.pincode || "",
     city: addressData.city || "",
     state: addressData.state || "",

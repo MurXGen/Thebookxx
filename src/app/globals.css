@@ -48367,6 +48367,98 @@ img[data-loaded="true"] {
   color: var(--tertiary, #fb8500);
 }
 
+/* Email row on the order detail card */
+.od-email-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--hairline, #e5e7eb);
+  font-size: 13px;
+  color: var(--gray-500, #4b5563);
+}
+.od-email-row > svg {
+  flex: 0 0 auto;
+  color: var(--tertiary, #fb8500);
+}
+.od-email-val {
+  font-weight: 600;
+  color: var(--foreground, #0a0a0a);
+  word-break: break-all;
+}
+.od-email-edit {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid var(--hairline, #e5e7eb);
+  background: #fff;
+  color: var(--dark-60, #4b5563);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.od-email-add {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.od-email-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.od-email-field > svg {
+  flex: 0 0 auto;
+  color: var(--tertiary, #fb8500);
+}
+.od-email-field input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1.5px solid var(--dark-20, #d1d5db);
+  background: #fff;
+  font-size: 14px;
+  color: #0a0a0a;
+}
+.od-email-field input:focus {
+  outline: none;
+  border-color: var(--tertiary, #fb8500);
+  box-shadow: 0 0 0 3px rgba(251, 133, 0, 0.12);
+}
+.od-email-save {
+  flex: 0 0 auto;
+  height: 40px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 10px;
+  background: var(--foreground, #0a0a0a);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.od-email-save:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.od-email-err {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  color: #dc2626;
+}
+.od-email-hint {
+  display: block;
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--dark-50, #6b7280);
+}
+
 /* Ask + Download, one row inside the billing card. */
 .od-bill-actions {
   display: flex;

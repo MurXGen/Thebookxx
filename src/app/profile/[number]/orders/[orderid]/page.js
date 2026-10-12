@@ -12,6 +12,7 @@ import {
   Home,
   Store,
   MapPin,
+  Mail,
   Navigation,
   Package,
   Loader2,
@@ -238,6 +239,16 @@ export default function OrderDetailPage() {
       }
     } catch {}
   }, []);
+  // Email (optional) — add/edit on this order; saved to the "Email" column.
+  const [emailEditing, setEmailEditing] = useState(false);
+  const [emailDraft, setEmailDraft] = useState("");
+  const [emailBusy, setEmailBusy] = useState(false);
+  const [emailErr, setEmailErr] = useState("");
+  useEffect(() => {
+    setEmailDraft(String(order?.["Email"] || ""));
+    setEmailEditing(false);
+    setEmailErr("");
+  }, [order?.["Order ID"]]);
   // Sales nudge: wallet balance for this shopper.
   const [walletBal, setWalletBal] = useState(0);
   const [trkIdCopied, setTrkIdCopied] = useState(false);
@@ -1052,6 +1063,28 @@ export default function OrderDetailPage() {
     }
   };
 
+  // ── Email (optional) — stored in the order's "Email" column ──
+  const orderEmail = String(order["Email"] || "").trim();
+  const saveEmail = async () => {
+    const e = emailDraft.trim();
+    if (e && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) {
+      setEmailErr("Enter a valid email address");
+      return;
+    }
+    setEmailErr("");
+    setEmailBusy(true);
+    try {
+      await updateOrderRow(orderId, { Email: e });
+      setOrder((o) => ({ ...o, Email: e }));
+      setEmailEditing(false);
+    } catch (err) {
+      console.error("Email save failed", err);
+      setEmailErr("Couldn't save — please try again");
+    } finally {
+      setEmailBusy(false);
+    }
+  };
+
   const orderNote = String(order["Order Comment"] || "").trim();
   const saveNote = async () => {
     const t = noteDraft.trim();
@@ -1374,6 +1407,53 @@ export default function OrderDetailPage() {
               {order["Pincode"] ? ` - ${order["Pincode"]}` : ""}
             </span>
           </div>
+
+          {/* Email — show if added (with edit), else offer to add it. */}
+          <div className="od-email-row">
+            {orderEmail && !emailEditing ? (
+              <>
+                <Mail size={15} />
+                <span className="od-email-val">{orderEmail}</span>
+                <button
+                  type="button"
+                  className="od-email-edit"
+                  onClick={() => setEmailEditing(true)}
+                >
+                  <Pencil size={12} /> Edit
+                </button>
+              </>
+            ) : (
+              <div className="od-email-add">
+                <div className="od-email-field">
+                  <Mail size={15} />
+                  <input
+                    type="email"
+                    inputMode="email"
+                    autoCapitalize="off"
+                    autoCorrect="off"
+                    placeholder="Add your email (optional)"
+                    value={emailDraft}
+                    onChange={(e) => {
+                      setEmailDraft(e.target.value);
+                      if (emailErr) setEmailErr("");
+                    }}
+                  />
+                  <button
+                    type="button"
+                    className="od-email-save"
+                    onClick={saveEmail}
+                    disabled={emailBusy}
+                  >
+                    {emailBusy ? "Saving…" : "Save"}
+                  </button>
+                </div>
+                {emailErr && <span className="od-email-err">{emailErr}</span>}
+              </div>
+            )}
+          </div>
+          <span className="od-email-hint">
+            Used for order tracking &amp; further communications only.
+          </span>
         </section>
       )}
 

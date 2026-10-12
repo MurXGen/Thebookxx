@@ -32,6 +32,7 @@ import {
   QrCode,
   Headphones,
   Loader2,
+  Mail,
   Wallet,
   Check,
   MessageSquare,
@@ -166,6 +167,8 @@ export default function AddressModal({
   // sheet column (revealed only when the shopper taps "Add alternate number").
   const [altPhone, setAltPhone] = useState("");
   const [showAltPhone, setShowAltPhone] = useState(false);
+  // Optional email → saved to the order's "Email" column (tracking + comms).
+  const [email, setEmail] = useState("");
   // Wallet balance (looked up by the phone entered below)
   const [walletBalance, setWalletBalance] = useState(0);
   const [walletChecked, setWalletChecked] = useState(false);
@@ -1062,6 +1065,7 @@ export default function AddressModal({
           name: displayName,
           phone,
           altPhone: altPhone && altPhone.length === 10 ? altPhone : "",
+          email: email.trim(),
           pincode,
           city,
           state,
@@ -2096,6 +2100,28 @@ export default function AddressModal({
                             </button>
                           </div>
                         )}
+                      </div>
+
+                      {/* Optional email — saved to the order's Email column. */}
+                      <div className="input-group">
+                        <label className="flex flex-row gap-4 flex-center items-center">
+                          <Mail size={14} />
+                          Email <span className="font-10 gray-500">(optional)</span>
+                        </label>
+                        <input
+                          className="sec-mid-btn width100"
+                          type="email"
+                          placeholder="you@example.com"
+                          value={email}
+                          inputMode="email"
+                          autoCapitalize="off"
+                          autoCorrect="off"
+                          onChange={(e) => setEmail(e.target.value)}
+                        />
+                        <span className="font-10 gray-500 mt-4">
+                          Used for order tracking &amp; further communications
+                          only.
+                        </span>
                       </div>
                     </div>
                   </motion.div>

@@ -46045,6 +46045,20 @@ img[data-loaded="true"] {
   position: relative;
   z-index: 1;
 }
+@media (max-width: 640px) {
+  .mo-gift-dl {
+    padding: 11px 13px;
+    gap: 10px;
+    border-radius: 14px;
+  }
+  .mo-gift-dl-txt b {
+    font-size: 13px;
+  }
+  .mo-gift-dl-txt small {
+    font-size: 10.5px;
+    white-space: normal;
+  }
+}
 
 /* ── Gift order — celebratory banner + scannable gift QR ── */
 .mo-gift-block {

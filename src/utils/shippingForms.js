@@ -1315,8 +1315,27 @@ function drawBigAddressLabel(c, startY, data) {
   });
   y += 14;
 
-  // ===== Note (optional) =====
-  if (data.note && String(data.note).trim()) {
+  // ===== Note / Gift QR =====
+  // Gift orders never print the message as text — it lives behind a QR the
+  // recipient scans. Non-gift orders print the packer note as usual.
+  if (data.giftQrUrl) {
+    y += 14;
+    const qs = 118;
+    drawQrCode(ctx, data.giftQrUrl, innerX, y, qs);
+    c.text("🎁 GIFT ORDER", innerX + qs + 18, y + 26, {
+      font: "bold 16px Poppins, sans-serif",
+      color: "#c0223b",
+    });
+    c.wrap(
+      "Scan this code to reveal the surprise message for the reader.",
+      innerX + qs + 18,
+      y + 52,
+      innerW - qs - 18,
+      22,
+      { font: "bold 14px Poppins, sans-serif", color: "#7a1020" },
+    );
+    y += qs + 14;
+  } else if (data.note && String(data.note).trim()) {
     y += 14;
     c.text("NOTE:", innerX, y + 14, {
       font: "bold 13px Poppins, sans-serif",
@@ -1460,5 +1479,318 @@ export function downloadAddressLabelsPDF(dataArray, filename) {
   triggerDownload(
     blob,
     filename || `address_labels_${new Date().toISOString().slice(0, 10)}.pdf`,
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   GIFT LABELS — a colorful, festive variant of the address label with the
+   message hidden behind a QR, confetti decor and lit emojis. 3 per A4 page,
+   same layout footprint as the address-only PDF. Prices (COD) shown only for
+   cash orders. All drawing is synchronous (QR via drawQrCode).
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+// Diagonal candy-stripe band (maroon / orange / gold).
+function drawStripeBand(ctx, x, y, w, h) {
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(x, y, w, h);
+  ctx.clip();
+  const cols = ["#7a1020", "#c0223b", "#fb8500", "#ffb703"];
+  const sw = 26;
+  let i = 0;
+  for (let sx = x - h; sx < x + w + h; sx += sw) {
+    ctx.fillStyle = cols[i % cols.length];
+    ctx.beginPath();
+    ctx.moveTo(sx, y);
+    ctx.lineTo(sx + sw, y);
+    ctx.lineTo(sx + sw - h, y + h);
+    ctx.lineTo(sx - h, y + h);
+    ctx.closePath();
+    ctx.fill();
+    i += 1;
+  }
+  ctx.restore();
+}
+
+// Scattered confetti pieces inside a region (deterministic, seeded by index).
+function drawConfetti(ctx, x, y, w, h, n = 40) {
+  const cols = [
+    "#fb8500",
+    "#ffd23f",
+    "#4ade80",
+    "#c0223b",
+    "#60a5fa",
+    "#f472b6",
+    "#ffb703",
+  ];
+  let seed = 7;
+  const rnd = () => {
+    seed = (seed * 9301 + 49297) % 233280;
+    return seed / 233280;
+  };
+  ctx.save();
+  for (let i = 0; i < n; i++) {
+    const px = x + rnd() * w;
+    const py = y + rnd() * h;
+    ctx.save();
+    ctx.translate(px, py);
+    ctx.rotate(rnd() * Math.PI);
+    ctx.fillStyle = cols[i % cols.length];
+    ctx.globalAlpha = 0.85;
+    ctx.fillRect(-4, -6, 8, 12);
+    ctx.restore();
+  }
+  ctx.restore();
+}
+
+function drawGiftLabel(c, startY, data) {
+  const ctx = c.ctx;
+  const X = 34;
+  const W = c.W - X * 2;
+  const padX = 28;
+  const innerX = X + padX;
+  const innerW = W - padX * 2;
+  let y = startY;
+  const MAROON = "#7a1020";
+  const RED = "#c0223b";
+  const INK = "#3a0a12";
+  const rr = (x, yy, w, h, r) => {
+    ctx.beginPath();
+    ctx.moveTo(x + r, yy);
+    ctx.arcTo(x + w, yy, x + w, yy + h, r);
+    ctx.arcTo(x + w, yy + h, x, yy + h, r);
+    ctx.arcTo(x, yy + h, x, yy, r);
+    ctx.arcTo(x, yy, x + w, yy, r);
+    ctx.closePath();
+  };
+
+  // Cream background for the whole label area (extra is cropped by the builder).
+  const grad = ctx.createLinearGradient(X, startY, X, startY + 900);
+  grad.addColorStop(0, "#fff7ed");
+  grad.addColorStop(1, "#ffeef6");
+  ctx.fillStyle = grad;
+  ctx.fillRect(X, startY, W, c.H - startY);
+
+  // Top stripe band.
+  const bandH = 30;
+  drawStripeBand(ctx, X, startY, W, bandH);
+  y = startY + bandH + 30;
+
+  // Brand + GIFT pill.
+  c.text("🎁 TheBookX", innerX, y, {
+    font: "bold 30px Poppins, sans-serif",
+    color: MAROON,
+  });
+  ctx.save();
+  ctx.font = "bold 15px Poppins, sans-serif";
+  const pillTxt = data.isCOD ? "GIFT · COD" : "GIFT · PREPAID";
+  const pw = ctx.measureText(pillTxt).width + 26;
+  ctx.fillStyle = RED;
+  rr(X + W - padX - pw, y - 20, pw, 30, 15);
+  ctx.fill();
+  ctx.fillStyle = "#fff";
+  ctx.textAlign = "center";
+  ctx.fillText(pillTxt, X + W - padX - pw / 2, y);
+  ctx.restore();
+  y += 28;
+  c.text("A GIFT FOR YOU", innerX, y, {
+    font: "bold 13px Poppins, sans-serif",
+    color: RED,
+  });
+  y += 30;
+
+  // COD collect banner (only for COD).
+  if (data.isCOD && data.codAmount) {
+    const bh = 54;
+    ctx.save();
+    ctx.fillStyle = "#fff";
+    rr(innerX, y, innerW, bh, 12);
+    ctx.fill();
+    ctx.strokeStyle = RED;
+    ctx.lineWidth = 2;
+    ctx.setLineDash([7, 5]);
+    rr(innerX, y, innerW, bh, 12);
+    ctx.stroke();
+    ctx.restore();
+    c.text(`💵 COLLECT  Rs. ${data.codAmount} /-`, innerX + 18, y + bh / 2 + 10, {
+      font: "bold 26px Poppins, sans-serif",
+      color: MAROON,
+    });
+    y += bh + 20;
+  }
+
+  // DELIVER TO.
+  c.text("DELIVER TO", innerX, y, {
+    font: "bold 15px Poppins, sans-serif",
+    color: RED,
+  });
+  y += 34;
+  c.text(data.customerName || "", innerX, y, {
+    font: "bold 30px Poppins, sans-serif",
+    color: INK,
+  });
+  y += 40;
+  const cleanAddr = (data.customerAddress || "")
+    .replace(/,?\s*Pinned location:\s*https?:\/\/\S+/gi, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+  const aEnd = c.wrap(cleanAddr, innerX, y, innerW, 32, {
+    font: "bold 22px Poppins, sans-serif",
+    color: INK,
+  });
+  y = aEnd + 34;
+  const cityPin = [data.customerCity, data.customerPincode]
+    .filter(Boolean)
+    .join(" - ");
+  if (cityPin) {
+    c.text(cityPin, innerX, y, {
+      font: "bold 22px Poppins, sans-serif",
+      color: INK,
+    });
+    y += 14;
+  }
+  y += 14;
+  c.text(`📞 +91 ${data.customerPhone || ""}`, innerX, y, {
+    font: "bold 20px Poppins, sans-serif",
+    color: INK,
+  });
+  y += 30;
+
+  // QR block — the message lives here (never printed as text).
+  ctx.save();
+  ctx.strokeStyle = RED;
+  ctx.lineWidth = 2;
+  ctx.setLineDash([6, 5]);
+  const qs = 150;
+  const boxH = qs + 24;
+  rr(innerX, y, innerW, boxH, 14);
+  ctx.stroke();
+  ctx.restore();
+  const qx = innerX + 14;
+  const qy = y + 12;
+  drawQrCode(ctx, data.giftQrUrl || "https://thebookx.in", qx, qy, qs);
+  const tx = qx + qs + 22;
+  c.text("✨ Surprise inside ✨", tx, qy + 34, {
+    font: "bold 20px Poppins, sans-serif",
+    color: MAROON,
+  });
+  c.wrap(
+    "Scan this QR to reveal a personal message for the reader. 🎉",
+    tx,
+    qy + 66,
+    innerX + innerW - tx - 14,
+    26,
+    { font: "bold 16px Poppins, sans-serif", color: "#7a1020" },
+  );
+  y += boxH + 22;
+
+  // FROM (compact).
+  c.text(`FROM: ${SENDER.name} · ${SENDER.addressLines.join(", ")}`, innerX, y, {
+    font: "bold 12px Poppins, sans-serif",
+    color: "#8a3b1a",
+  });
+  y += 24;
+
+  // Footer.
+  c.text(`ORDER ID: ${data.orderId || ""}`, innerX, y, {
+    font: "bold 14px Poppins, sans-serif",
+    color: MAROON,
+  });
+  c.text("With love, TheBookX 💛", X + W - padX, y, {
+    font: "bold 14px Poppins, sans-serif",
+    align: "right",
+    color: MAROON,
+  });
+  y += 24;
+
+  // Bottom stripe band.
+  drawStripeBand(ctx, X, y, W, bandH);
+  y += bandH;
+
+  // Confetti in the side margins (behind nothing important).
+  drawConfetti(ctx, X + 2, startY + bandH, padX - 6, y - startY - bandH * 2, 18);
+  drawConfetti(
+    ctx,
+    X + W - padX + 4,
+    startY + bandH,
+    padX - 6,
+    y - startY - bandH * 2,
+    18,
+  );
+
+  // Outer festive border.
+  ctx.save();
+  ctx.strokeStyle = MAROON;
+  ctx.lineWidth = 3;
+  rr(X, startY, W, y - startY, 10);
+  ctx.stroke();
+  ctx.restore();
+
+  return y;
+}
+
+export function buildGiftLabelCanvas(data) {
+  const W = 1180;
+  const SAFE_H = 1500;
+  const topPad = 30;
+  const botPad = 30;
+  const c = buildCanvas(W, SAFE_H);
+  const endY = drawGiftLabel(c, topPad, data);
+  const finalH = Math.min(endY + botPad, SAFE_H);
+  const out = document.createElement("canvas");
+  out.width = W * 2;
+  out.height = finalH * 2;
+  out
+    .getContext("2d")
+    .drawImage(c.canvas, 0, 0, W * 2, finalH * 2, 0, 0, W * 2, finalH * 2);
+  return out;
+}
+
+export function buildGiftLabelSheetCanvas(group) {
+  const labels = group.map((d) => buildGiftLabelCanvas(d));
+  const GAP = 48;
+  const width = Math.max(...labels.map((l) => l.width));
+  const totalH =
+    labels.reduce((s, l) => s + l.height, 0) + GAP * (labels.length + 1);
+  const out = document.createElement("canvas");
+  out.width = width;
+  out.height = totalH;
+  const ctx = out.getContext("2d");
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(0, 0, out.width, out.height);
+  let y = GAP;
+  labels.forEach((l, i) => {
+    const x = (width - l.width) / 2;
+    ctx.drawImage(l, x, y);
+    y += l.height;
+    if (i < labels.length - 1) {
+      ctx.strokeStyle = "#e3b8c0";
+      ctx.setLineDash([14, 9]);
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(24, y + GAP / 2);
+      ctx.lineTo(width - 24, y + GAP / 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      y += GAP;
+    }
+  });
+  return out;
+}
+
+// Colorful gift labels → ONE PDF, three per page (same footprint as address PDF).
+export function downloadGiftLabelsPDF(dataArray, filename) {
+  if (!dataArray || !dataArray.length) return;
+  const pages = [];
+  for (let i = 0; i < dataArray.length; i += LABELS_PER_PAGE) {
+    const group = dataArray.slice(i, i + LABELS_PER_PAGE);
+    const cv = buildGiftLabelSheetCanvas(group);
+    const url = cv.toDataURL("image/jpeg", 0.92);
+    pages.push({ data: dataUrlToBytes(url), w: cv.width, h: cv.height });
+  }
+  const blob = jpegPagesToPdf(pages, 14);
+  triggerDownload(
+    blob,
+    filename || `gift_labels_${new Date().toISOString().slice(0, 10)}.pdf`,
   );
 }

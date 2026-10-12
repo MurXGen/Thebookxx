@@ -4,6 +4,165 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "nobel-economics-prize-2026-announcement-best-money-economics-books-india": {
+    "id": "blog-076",
+    "title": "Nobel Economics Prize 2026 Announced Today: 17 Money and Economics Books Every Indian Reader Should Own",
+    "slug": "nobel-economics-prize-2026-announcement-best-money-economics-books-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-10-12",
+    "lastModified": "2026-10-12",
+    "excerpt": "The 2026 Nobel economics prize is announced today. Here are 17 money, markets and economics books to read in India, from ₹1 with free delivery and COD.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "Today, Monday 12 October 2026, the Royal Swedish Academy of Sciences announces the Nobel Memorial Prize in Economic Sciences in Stockholm. The prize is worth 12 million Swedish kronor, about $1.2 million, whether it goes to one person, a small group or an organisation. Last year's laureates were Joel Mokyr, Philippe Aghion and Peter Howitt, honoured for explaining economic growth driven by innovation."
+      },
+      {
+        "type": "paragraph",
+        "content": "Economics prizes have a way of making ordinary readers curious. What makes nations rich? Why do smart people make poor money decisions? Why do markets swing the way they do? You do not need a degree to explore those questions. The books below are real, readable and available to order today. Books start from ₹1 on TheBookX, with free delivery and Cash on Delivery across India."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "The announcement at a glance",
+        "content": "Prize: Nobel Memorial Prize in Economic Sciences 2026. Announced: Monday 12 October 2026, Stockholm. Awarded by: the Royal Swedish Academy of Sciences. Prize money: 12 million Swedish kronor. Check the official Nobel Prize site for the laureates and citation."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Start with the big question: why are some countries rich?"
+      },
+      {
+        "type": "paragraph",
+        "content": "The 2024 economics prize went to Daron Acemoglu, Simon Johnson and James Robinson for their work on how institutions shape prosperity. Their ideas reach general readers through <a href=\"/books/why-nations-fail\" style=\"color:#fb8500;font-weight:600\">Why Nations Fail</a>, a sweeping tour of history that asks why neighbouring countries end up with such different fortunes. It is the single best entry point if the Nobel announcement has made you curious about development economics, and it is especially thought-provoking for readers in India."
+      },
+      {
+        "type": "paragraph",
+        "content": "If you prefer the human side of economics, <a href=\"/books/thinking-fast-and-slow\" style=\"color:#fb8500;font-weight:600\">Thinking, Fast and Slow</a> by Daniel Kahneman, himself a winner of the economics Nobel in 2002, explains how our quick intuitions mislead us when we spend, save and invest. It sits at the heart of behavioural economics."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Personal finance books that change habits"
+      },
+      {
+        "type": "paragraph",
+        "content": "Most people meet economics at home, in a monthly budget. These books turn big ideas into everyday behaviour:"
+      },
+      {
+        "type": "list",
+        "style": "unordered",
+        "items": [
+          "<a href=\"/books/the-psychology-of-money\" style=\"color:#fb8500;font-weight:600\">The Psychology of Money</a>: short stories on why behaviour matters more than intelligence when it comes to wealth.",
+          "<a href=\"/books/rich-dad-poor-dad\" style=\"color:#fb8500;font-weight:600\">Rich Dad Poor Dad</a>: the classic that gets many first-time readers thinking about assets versus liabilities.",
+          "<a href=\"/books/the-richest-man-in-babylon\" style=\"color:#fb8500;font-weight:600\">The Richest Man in Babylon</a>: timeless savings rules told as parables, easy to finish in a weekend.",
+          "<a href=\"/books/the-art-of-spending-money\" style=\"color:#fb8500;font-weight:600\">The Art of Spending Money</a>: a thoughtful look at spending well, not just saving more.",
+          "<a href=\"/books/the-5-types-of-wealth\" style=\"color:#fb8500;font-weight:600\">The 5 Types of Wealth</a>: a wider view of wealth that includes time, social, mental and physical health.",
+          "<a href=\"/books/your-money-your-brain\" style=\"color:#fb8500;font-weight:600\">Your Money & Your Brain</a>: how the neuroscience of decision-making affects your portfolio."
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Investing and markets"
+      },
+      {
+        "type": "paragraph",
+        "content": "For readers who want to understand markets, <a href=\"/books/the-intelligent-investor\" style=\"color:#fb8500;font-weight:600\">The Intelligent Investor</a> remains the foundation of value investing. <a href=\"/books/coffee-can-investing\" style=\"color:#fb8500;font-weight:600\">Coffee Can Investing</a> makes a patient, long-term case that suits Indian equity investors, and <a href=\"/books/market-wizards\" style=\"color:#fb8500;font-weight:600\">Market Wizards</a> collects conversations with traders about discipline and risk. Start with one, read slowly, and remember that none of this is personal financial advice; it is education to help you ask better questions."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Business, startups and ambition"
+      },
+      {
+        "type": "paragraph",
+        "content": "Economics is also the study of how people build things. <a href=\"/books/zero-to-one\" style=\"color:#fb8500;font-weight:600\">Zero to One</a> is a sharp guide to creating something genuinely new, <a href=\"/books/the-100-startup\" style=\"color:#fb8500;font-weight:600\">The $100 Startup</a> shows how small businesses begin with very little capital, and <a href=\"/books/hdfc-bank-2-0\" style=\"color:#fb8500;font-weight:600\">HDFC Bank 2.0</a> offers a close look at how a large Indian institution is run. For a mindset companion, <a href=\"/books/think-and-grow-rich\" style=\"color:#fb8500;font-weight:600\">Think and Grow Rich</a> is a perennial favourite."
+      },
+      {
+        "type": "blockquote",
+        "content": "You do not need to predict the prize to enjoy the ideas behind it. Pick one book, read ten pages a day, and let curiosity do the rest."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "A clear head makes better money decisions"
+      },
+      {
+        "type": "paragraph",
+        "content": "Behavioural economics keeps returning to one point: decisions improve when thinking is calm and uncluttered. <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar offers practical ways to cut through mental noise, which is exactly the skill that helps when you are weighing a purchase, a loan or an investment. Pair it with <a href=\"/books/sapiens-a-brief-history-of-humankind\" style=\"color:#fb8500;font-weight:600\">Sapiens: A Brief History of Humankind</a>, which explains how shared ideas like money and trade came to run the world."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "A simple 14-day economics reading plan"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "Days 1 to 4: read The Psychology of Money for behaviour and habits.",
+          "Days 5 to 8: read Why Nations Fail, a chapter a day, to see the big picture.",
+          "Days 9 to 11: read The Richest Man in Babylon for simple savings rules.",
+          "Days 12 to 14: read The Art of Clarity and write down one money decision you will make more calmly."
+        ]
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Order smart this festive season",
+        "content": "Books start from ₹1 with free delivery and Cash on Delivery across India. Diwali is close, and a money or economics book makes a thoughtful gift; add gift wrapping for just +₹25."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      }
+    ],
+    "coverImage": "/blogs/nobel-economics-prize-2026-announcement-best-money-economics-books-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/nobel-economics-prize-2026-announcement-best-money-economics-books-india.jpeg",
+        "alt": "A cheerful young woman reading a hardcover book at a wooden desk with a notebook, a cup of chai and a small stack of blank-covered books",
+        "caption": "Economics prize week is a good moment to pick up a money or markets book.",
+        "category": "Awards"
+      }
+    ],
+    "keywords": [
+      "Nobel Prize economics 2026",
+      "Nobel economics prize announcement",
+      "best economics books India",
+      "best money books India",
+      "personal finance books India",
+      "Why Nations Fail",
+      "The Psychology of Money",
+      "behavioural economics books",
+      "buy books online India"
+    ],
+    "categories": [
+      "Awards",
+      "Money and Finance",
+      "Book Recommendations"
+    ],
+    "faqs": [
+      {
+        "question": "When is the 2026 Nobel Prize in Economic Sciences announced?",
+        "answer": "It is announced on Monday 12 October 2026 by the Royal Swedish Academy of Sciences in Stockholm."
+      },
+      {
+        "question": "How much is the Nobel economics prize worth in 2026?",
+        "answer": "The prize is 12 million Swedish kronor, about $1.2 million, shared if there is more than one laureate."
+      },
+      {
+        "question": "Which economics book should a beginner read first?",
+        "answer": "The Psychology of Money and Why Nations Fail are easy starting points, one on personal behaviour and one on how countries grow."
+      },
+      {
+        "question": "Can I buy these books cheaply in India?",
+        "answer": "Yes. TheBookX offers books from ₹1, free delivery and Cash on Delivery across India, with gift wrapping available for +₹25."
+      }
+    ]
+  },
   "anne-carson-nobel-prize-literature-2026-books-to-read-india": {
     "id": "blog-075",
     "title": "Anne Carson Wins the 2026 Nobel Prize in Literature: Who She Is and What to Read Next",

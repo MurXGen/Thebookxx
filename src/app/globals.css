@@ -38755,8 +38755,7 @@ img[data-loaded="true"] {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   padding: 14px 14px 16px;
-  /* Soft brand-orange canvas so each white card stands out warmly. */
-  background: #fff6ec;
+  background: #fff;
   gap: 12px;
 }
 /* Payment options grouped first (top); delivery/add-ons/coupon below. */
@@ -39139,27 +39138,27 @@ img[data-loaded="true"] {
   min-height: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding: 12px 16px 16px;
-  background: #fff6ec;
+  padding: 16px 16px 20px;
+  background: #fff;
 }
 .ac-intro {
-  margin: 2px 2px 12px;
-  font-size: 12.5px;
-  line-height: 1.5;
+  margin: 0 2px 16px;
+  font-size: 13px;
+  line-height: 1.55;
   color: var(--dark-60, #4b5563);
 }
 .ac-card {
   background: #fff;
   border: 1px solid var(--hairline, #ececec);
   border-radius: 16px;
-  padding: 4px 14px;
+  padding: 2px 16px;
   box-shadow: var(--shadow-xs, 0 1px 2px rgba(10, 10, 10, 0.05));
 }
 .ac-row {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
-  padding: 12px 0;
+  gap: 13px;
+  padding: 14px 0;
 }
 .ac-row + .ac-row {
   border-top: 1px solid rgba(10, 10, 10, 0.07);
@@ -46000,9 +45999,7 @@ img[data-loaded="true"] {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   padding: 10px 14px 28px;
-  /* Soft brand-orange canvas so each white card stands out warmly —
-     matches the Choose-payment step. */
-  background: #fff6ec;
+  background: #fff;
 }
 /* White section cards for Step 1. */
 .addr-modal .af-card {

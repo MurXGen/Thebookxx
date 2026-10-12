@@ -240,16 +240,8 @@ export default function OrderDetailPage() {
       }
     } catch {}
   }, []);
-  // Email (optional) — add/edit on this order; saved to the "Email" column.
-  const [emailEditing, setEmailEditing] = useState(false);
-  const [emailDraft, setEmailDraft] = useState("");
-  const [emailBusy, setEmailBusy] = useState(false);
-  const [emailErr, setEmailErr] = useState("");
-  useEffect(() => {
-    setEmailDraft(String(order?.["Email"] || ""));
-    setEmailEditing(false);
-    setEmailErr("");
-  }, [order?.["Order ID"]]);
+  // Email (optional) — read-only here; edited via the address Edit sheet and
+  // saved to the "Email" column.
   // Sales nudge: wallet balance for this shopper.
   const [walletBal, setWalletBal] = useState(0);
   const [trkIdCopied, setTrkIdCopied] = useState(false);
@@ -1032,12 +1024,18 @@ export default function OrderDetailPage() {
       altPhone: String(order["Alternate number"] || "")
         .replace(/\D/g, "")
         .slice(-10),
+      email: String(order["Email"] || "").trim(),
     });
     setShowAddrEdit(true);
   };
 
   const saveAddr = async () => {
     if (!addrForm) return;
+    const em = String(addrForm.email || "").trim();
+    if (em && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) {
+      alert("Please enter a valid email address.");
+      return;
+    }
     setAddrSaving(true);
     const fields = {
       Address: addrForm.address.trim(),
@@ -1047,6 +1045,7 @@ export default function OrderDetailPage() {
       "Alternate number": String(addrForm.altPhone || "")
         .replace(/\D/g, "")
         .slice(-10),
+      Email: em,
     };
     try {
       await updateOrderRow(orderId, fields);
@@ -1072,25 +1071,6 @@ export default function OrderDetailPage() {
 
   // ── Email (optional) — stored in the order's "Email" column ──
   const orderEmail = String(order["Email"] || "").trim();
-  const saveEmail = async () => {
-    const e = emailDraft.trim();
-    if (e && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) {
-      setEmailErr("Enter a valid email address");
-      return;
-    }
-    setEmailErr("");
-    setEmailBusy(true);
-    try {
-      await updateOrderRow(orderId, { Email: e });
-      setOrder((o) => ({ ...o, Email: e }));
-      setEmailEditing(false);
-    } catch (err) {
-      console.error("Email save failed", err);
-      setEmailErr("Couldn't save — please try again");
-    } finally {
-      setEmailBusy(false);
-    }
-  };
 
   const orderNote = String(order["Order Comment"] || "").trim();
   const saveNote = async () => {
@@ -1372,24 +1352,13 @@ export default function OrderDetailPage() {
         </button>
       </header>
 
-      {/* Gift order — festive surprise banner + flowing confetti down the page */}
+      {/* Gift order — flowing confetti down the page (no banner card). */}
       {order && isGiftOrder(order) && (
-        <>
-          <span className="od-gift-confetti" aria-hidden="true">
-            {Array.from({ length: 16 }).map((_, i) => (
-              <span key={i} className={`odgc odgc-${i % 10}`} />
-            ))}
-          </span>
-          <div className="od-gift-surprise">
-            <span className="od-gift-surprise-emoji">🎁</span>
-            <div className="od-gift-surprise-txt">
-              <strong>This order is a gift — wrapped with love ✨</strong>
-              <span>
-                A little surprise is on its way. Enjoy every page! 🎉
-              </span>
-            </div>
-          </div>
-        </>
+        <span className="od-gift-confetti" aria-hidden="true">
+          {Array.from({ length: 16 }).map((_, i) => (
+            <span key={i} className={`odgc odgc-${i % 10}`} />
+          ))}
+        </span>
       )}
 
       {/* Loyalty confetti + celebration banner (3+ orders, recent 4). */}
@@ -1435,52 +1404,17 @@ export default function OrderDetailPage() {
             </span>
           </div>
 
-          {/* Email — show if added (with edit), else offer to add it. */}
-          <div className="od-email-row">
-            {orderEmail && !emailEditing ? (
-              <>
-                <Mail size={15} />
-                <span className="od-email-val">{orderEmail}</span>
-                <button
-                  type="button"
-                  className="od-email-edit"
-                  onClick={() => setEmailEditing(true)}
-                >
-                  <Pencil size={12} /> Edit
-                </button>
-              </>
+          {/* Email — read-only; edit via the Edit sheet (near name/address). */}
+          <div className="od-email-row od-email-readonly">
+            <Mail size={15} />
+            {orderEmail ? (
+              <span className="od-email-val">{orderEmail}</span>
             ) : (
-              <div className="od-email-add">
-                <div className="od-email-field">
-                  <Mail size={15} />
-                  <input
-                    type="email"
-                    inputMode="email"
-                    autoCapitalize="off"
-                    autoCorrect="off"
-                    placeholder="Add your email (optional)"
-                    value={emailDraft}
-                    onChange={(e) => {
-                      setEmailDraft(e.target.value);
-                      if (emailErr) setEmailErr("");
-                    }}
-                  />
-                  <button
-                    type="button"
-                    className="od-email-save"
-                    onClick={saveEmail}
-                    disabled={emailBusy}
-                  >
-                    {emailBusy ? "Saving…" : "Save"}
-                  </button>
-                </div>
-                {emailErr && <span className="od-email-err">{emailErr}</span>}
-              </div>
+              <span className="od-email-val od-email-missing">
+                Email: unavailable
+              </span>
             )}
           </div>
-          <span className="od-email-hint">
-            Used for order tracking &amp; further communications only.
-          </span>
         </section>
       )}
 
@@ -2282,6 +2216,24 @@ export default function OrderDetailPage() {
                       }))
                     }
                   />
+                </div>
+                <div className="od-field-full">
+                  <label className="od-field-lbl">Email</label>
+                  <input
+                    className="od-field-input"
+                    type="email"
+                    inputMode="email"
+                    autoCapitalize="off"
+                    autoCorrect="off"
+                    placeholder="you@example.com (optional)"
+                    value={addrForm.email || ""}
+                    onChange={(e) =>
+                      setAddrForm((f) => ({ ...f, email: e.target.value }))
+                    }
+                  />
+                  <span className="od-field-note">
+                    Used for order tracking &amp; further communications only.
+                  </span>
                 </div>
               </div>
 

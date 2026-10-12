@@ -2515,6 +2515,9 @@ export default function AddressModal({
 
                 {/* Payment methods — full-width selectable cards. */}
                 <div className="pay-methods">
+                  <span className="deliv-addon-head pay-methods-head">
+                    Payment method
+                  </span>
                   {/* Pay Online (recommended, selected by default) */}
                   <button
                     type="button"

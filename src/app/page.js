@@ -21,7 +21,7 @@ import BundleDeals from "@/components/BundleDeals";
 import CategoryBrowse from "@/components/CategoryBrowse";
 import BookRail from "@/components/BookRail";
 import { books as ALL_BOOKS } from "@/utils/book";
-import { Sparkles, TrendingUp, Award, Tag } from "lucide-react";
+import { Sparkles, TrendingUp, Award, Tag, Baby } from "lucide-react";
 import { BooksSkeleton } from "@/components/UI/BookCardSkeleton";
 
 // Book lists for the homepage rails (real BookCard UI, like All Books).
@@ -41,6 +41,13 @@ const RAIL_NEW_ARRIVALS = [...ALL_BOOKS]
   .reverse()
   .filter((b) => b.image && b.discountedPrice !== 1)
   .slice(0, 24);
+const RAIL_CHILDREN = ALL_BOOKS.filter(
+  (b) =>
+    (b.catalogue?.includes("children") ||
+      b.catalogue?.includes("kids") ||
+      b.catalogue?.includes("graphic-novel")) &&
+    b.image,
+);
 
 // Lazy load components with named exports
 const BestsellerStage = lazy(() => import("@/components/BestsellerStage"));
@@ -272,6 +279,19 @@ export default function HomePage() {
             title="Fresh off the shelf"
             subtitle="Just added — be the first to grab them."
             books={RAIL_NEW_ARRIVALS}
+          />
+        </SmoothAppear>
+      </LazySection>
+
+      <LazySection threshold={0.05}>
+        <SmoothAppear delay={0.1}>
+          <BookRail
+            id="rail-children"
+            icon={Baby}
+            badge="FOR KIDS"
+            title="Children's corner"
+            subtitle="Fun, colourful reads kids will love — comics, graphic novels & more."
+            books={RAIL_CHILDREN}
           />
         </SmoothAppear>
       </LazySection>

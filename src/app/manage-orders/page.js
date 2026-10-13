@@ -998,11 +998,12 @@ const SECTION_TABS = [
 
 // A full-screen shower of money emojis falling smoothly from the top. Remounted
 // (via a changing key) each time it's triggered, so the animation replays.
-function MoneyShower() {
+function MoneyShower({ seed = 1 }) {
   const EMOJIS = ["💰", "💵", "🤑", "💸", "🪙", "💴", "💶", "💷", "🎉", "🤑"];
   // Deterministic pseudo-random (pure — avoids Math.random during render).
+  // The seed makes each overlapping shower land in different spots.
   const rand = (n, mul) => {
-    const x = Math.sin(n * mul) * 10000;
+    const x = Math.sin((n + seed * 1.37) * mul) * 10000;
     return x - Math.floor(x);
   };
   const pieces = Array.from({ length: 34 }).map((_, i) => ({
@@ -4998,7 +4999,10 @@ export default function ManageOrdersPage() {
     } catch {}
   }, []);
   // Money-emoji shower (triggered from the Revenue card + Analytics tab).
-  const [moneyShower, setMoneyShower] = useState(0);
+  // Each trigger spawns an independent overlapping shower that removes itself
+  // after it finishes — a new trigger never resets one already falling.
+  const [showers, setShowers] = useState([]);
+  const showerIdRef = useRef(0);
   const triggerMoneyShower = (haptic = false) => {
     if (
       haptic &&
@@ -5007,7 +5011,9 @@ export default function ManageOrdersPage() {
     ) {
       navigator.vibrate([18, 40, 18]);
     }
-    setMoneyShower((n) => n + 1);
+    const id = ++showerIdRef.current;
+    setShowers((s) => [...s, id]);
+    setTimeout(() => setShowers((s) => s.filter((x) => x !== id)), 5200);
   };
   const goToTab = (key) => {
     setActiveTab(key);
@@ -15934,10 +15940,17 @@ export default function ManageOrdersPage() {
           })()}
       </AnimatePresence>
 
-      {/* Money-emoji shower overlay (Revenue card / Analytics tab) */}
+      {/* Money-emoji showers (Revenue card / Analytics tab) — overlap, no reset */}
       {typeof document !== "undefined" &&
-        moneyShower > 0 &&
-        createPortal(<MoneyShower key={moneyShower} />, document.body)}
+        showers.length > 0 &&
+        createPortal(
+          <>
+            {showers.map((id) => (
+              <MoneyShower key={id} seed={id} />
+            ))}
+          </>,
+          document.body,
+        )}
 
       {/* ===== WhatsApp message picker (per order) ===== */}
       <AnimatePresence>

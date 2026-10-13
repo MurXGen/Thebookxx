@@ -1622,7 +1622,7 @@ export default function OrderDetailPage() {
                 </button>
                 <a
                   className="od-trk-link"
-                  href="https://www.indiapost.gov.in/_layouts/15/dop.portal.tracking/trackconsignment.aspx"
+                  href="https://www.indiapost.gov.in"
                   target="_blank"
                   rel="noopener noreferrer"
                 >

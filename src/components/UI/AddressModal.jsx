@@ -336,13 +336,31 @@ export default function AddressModal({
   const [upiReassured, setUpiReassured] = useState(false);
   const processingMarkedRef = useRef(false);
 
-  // "Verify status" — re-check this same order's status with a 5s poll (loader
-  // shown inside the button); no optimistic placement, confirmation only comes
-  // from the sheet.
-  const handleVerifyStatus = () => {
+  // "Verify status" — a single manual check (loader in the button). It NEVER
+  // places/auto-verifies the order: it only reflects what our team has already
+  // confirmed on the sheet. If still pending, we just tell the shopper.
+  const handleVerifyStatus = async () => {
     if (upiPhase === "rechecking") return;
-    setVerifyCountdown(20);
     setUpiPhase("rechecking");
+    try {
+      let confirmed = false;
+      if (upiOrderRef) {
+        const r = await fetchOrderStatusById(upiOrderRef);
+        confirmed = !!r?.confirmed;
+      }
+      if (confirmed) {
+        finalizeUPISuccess();
+      } else {
+        showToast(
+          "Not confirmed yet — our team will verify your payment shortly.",
+          "info",
+        );
+        setUpiPhase("ready");
+      }
+    } catch {
+      showToast("Couldn't check right now — please try again.", "error");
+      setUpiPhase("ready");
+    }
   };
 
   const [giftWrap, setGiftWrap] = useState(giftWrapSelected);
@@ -831,38 +849,24 @@ export default function AddressModal({
   // sheet every 5s (for 30s) to see if the admin removed the "(unconfirmed)"
   // tag. Confirmed → success screen; otherwise we quietly return to idle so the
   // shopper can tap "Verify again" or "Verify via WhatsApp". No auto-verify.
+  // Initial 30s counter — purely a countdown, NO automatic status verification.
+  // When it reaches 0 we simply reveal the "Verify status" + WhatsApp buttons.
   useEffect(() => {
-    if (upiPhase !== "counting" && upiPhase !== "rechecking") return;
-    let cancelled = false;
-    const windowMs = upiPhase === "counting" ? 30500 : 20500;
-    const check = async () => {
-      if (!upiOrderRef) return;
-      const { confirmed } = await fetchOrderStatusById(upiOrderRef);
-      if (!cancelled && confirmed) finalizeUPISuccess();
-    };
+    if (upiPhase !== "counting") return;
     const tick = setInterval(() => {
       setVerifyCountdown((p) => (p <= 1 ? 0 : p - 1));
     }, 1000);
-    const poll = setInterval(check, 5000);
-    upiPollRef.current = { poll, tick };
-    check(); // immediate first check
+    upiPollRef.current = { poll: null, tick };
     const to = setTimeout(() => {
-      if (cancelled) return;
-      clearInterval(poll);
       clearInterval(tick);
-      // After either window ends, show (or re-show) the action buttons.
-      setUpiPhase((ph) =>
-        ph === "counting" || ph === "rechecking" ? "ready" : ph,
-      );
-    }, windowMs);
+      setUpiPhase((ph) => (ph === "counting" ? "ready" : ph));
+    }, 30500);
     return () => {
-      cancelled = true;
-      clearInterval(poll);
       clearInterval(tick);
       clearTimeout(to);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [upiPhase, upiOrderRef]);
+  }, [upiPhase]);
 
   // UPI modal: show a 2s "generating QR" loader (QR blurred), then reveal the
   // sharp QR and run a 30s counter (polling the sheet in case we confirm fast).
@@ -1674,13 +1678,12 @@ export default function AddressModal({
       "_blank",
       "noopener,noreferrer",
     );
-    // Do NOT change the order status — it stays "(unconfirmed)" until our team
-    // verifies the UPI payment and confirms it manually.
+    // ONLY send the message. Do NOT place / finalize the order or change its
+    // status — it stays "(unconfirmed)" until our team verifies it manually.
     showToast(
-      "Payment details sent — our team will verify and confirm your order shortly ✓",
+      "Payment details sent on WhatsApp — our team will verify your payment shortly.",
       "success",
     );
-    finalizeUPISuccess();
   };
 
   // Shopper taps the Verify button on the QR screen.
@@ -5068,8 +5071,7 @@ function UPIPaymentModal({
                 >
                   {upiPhase === "rechecking" ? (
                     <>
-                      <span className="upiv3-spin dark" /> Checking…{" "}
-                      {verifyCountdown}s
+                      <span className="upiv3-spin dark" /> Checking…
                     </>
                   ) : (
                     <>

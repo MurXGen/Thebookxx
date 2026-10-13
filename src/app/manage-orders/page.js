@@ -990,8 +990,7 @@ function WalletModal({ user, busy, onClose, onApply }) {
 const SECTION_TABS = [
   { key: "analytics", label: "Analytics", short: "Stats", Icon: LayoutDashboard },
   { key: "orders", label: "Orders", short: "Orders", Icon: ShoppingBag },
-  { key: "batch", label: "Batch labels", short: "Batch", Icon: Download },
-  { key: "book", label: "Book", short: "Book", Icon: Package },
+  { key: "book", label: "Dispatch", short: "Dispatch", Icon: Package },
   { key: "users", label: "Users", short: "Users", Icon: Users },
   { key: "track", label: "Track orders", short: "Track", Icon: Radar },
 ];
@@ -13433,21 +13432,6 @@ export default function ManageOrdersPage() {
                                 >
                                   <span className="mo2-badge mo2-badge-count">
                                     📚 {bookCount} book{bookCount === 1 ? "" : "s"}
-                                    <button
-                                      type="button"
-                                      className="mo2-badge-dl"
-                                      title="Download shipping label"
-                                      aria-label="Download shipping label"
-                                      onClick={() =>
-                                        downloadFormsFor(
-                                          [order],
-                                          "pdf",
-                                          `TheBookX-${orderId}`,
-                                        )
-                                      }
-                                    >
-                                      <Download size={12} />
-                                    </button>
                                   </span>
                                   <span className="mo2-badge mo2-badge-deliv">
                                     {fasterD

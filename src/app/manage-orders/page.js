@@ -13295,6 +13295,30 @@ export default function ManageOrdersPage() {
                                 ))}
                               </span>
                             )}
+                            {/* Faster / Express delivery — speed-streak graphic +
+                                a small animated "Express" badge. */}
+                            {(() => {
+                              const deliv = String(order["Delivery Type"] || "");
+                              const fasterD =
+                                /faster|express/i.test(deliv) ||
+                                /^e/i.test(String(order.shippingId || "").trim());
+                              if (!fasterD) return null;
+                              return (
+                                <>
+                                  <span className="mcf-badge">⚡ Express</span>
+                                  <span
+                                    className="mo-card-faster"
+                                    aria-hidden="true"
+                                  >
+                                    <span className="mcf-streak mcf-s0" />
+                                    <span className="mcf-streak mcf-s1" />
+                                    <span className="mcf-streak mcf-s2" />
+                                    <span className="mcf-streak mcf-s3" />
+                                    <span className="mcf-streak mcf-s4" />
+                                  </span>
+                                </>
+                              );
+                            })()}
                             {/* Exception flag — amber reason chip at the top;
                                 red + pulsing when it's the urgent no-tracking
                                 case. */}

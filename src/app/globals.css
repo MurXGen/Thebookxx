@@ -21248,11 +21248,12 @@ img[data-loaded="true"] {
   border: 1px solid var(--hairline);
   border-radius: 18px;
   box-shadow: var(--shadow-xs);
-  padding: 18px 19px;
+  padding: 20px 20px;
   display: flex;
   flex-direction: column;
   gap: 12px;
   margin-bottom: 0;
+  position: relative;
 }
 /* Clearer separation between consecutive cards */
 .admin-order-card + .admin-order-card {
@@ -27171,17 +27172,17 @@ img[data-loaded="true"] {
 /* ===== Manage-orders card: orange border, order-id highlight, pick badge,
    downloadable form buttons ===== */
 .admin-order-card.mo-card {
-  /* White card with a subtle, clearly-visible shadow; sections inside are
-     edge-to-edge rows with dashed dividers between them. */
+  /* White card with a subtle shadow; redesigned layout uses real inner
+     padding (not the old edge-to-edge rows). */
   border: none;
-  border-radius: 14px;
+  border-radius: 16px;
   background: #fff;
   box-shadow:
     0 1px 3px rgba(0, 0, 0, 0.08),
     0 6px 16px -8px rgba(0, 0, 0, 0.16);
-  padding: 0;
-  gap: 0;
-  overflow: hidden;
+  padding: 18px 18px;
+  gap: 12px;
+  overflow: visible;
   transition: background 0.2s ease, box-shadow 0.18s ease;
 }
 /* Neutral hairline all round + a 3px status-coloured left border (accent). */
@@ -29396,6 +29397,13 @@ img[data-loaded="true"] {
 }
 
 /* ============ Redesigned order card (mockup layout) ============ */
+/* Force real inner padding on the redesigned card (overrides the old
+   edge-to-edge padding:0 rule, whatever the cascade). */
+.admin-orders-grid .admin-order-card.mo-card {
+  padding: 18px !important;
+  gap: 12px !important;
+  overflow: visible !important;
+}
 .mo2-head {
   display: flex;
   align-items: flex-start;
@@ -29409,10 +29417,10 @@ img[data-loaded="true"] {
   min-width: 0;
 }
 .mo2-name {
-  font-size: 16px;
-  font-weight: 600;
-  color: #000;
-  line-height: 1.25;
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--foreground, #0a0a0a);
+  line-height: 1.2;
   word-break: break-word;
 }
 .mo2-phone {
@@ -29420,9 +29428,8 @@ img[data-loaded="true"] {
   background: none;
   padding: 0;
   text-align: left;
-  font-size: 12px;
-  font-weight: 500;
-  color: #000;
+  font-size: 13px;
+  color: var(--dark-50, #6b7280);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -29445,9 +29452,9 @@ img[data-loaded="true"] {
   appearance: none;
   border: none;
   background: none;
-  padding: 0 16px 0 0;
-  font-size: 12px;
-  font-weight: 500;
+  padding: 0 18px 0 0;
+  font-size: 14px;
+  font-weight: 700;
   color: var(--st-color, #008f0c);
   cursor: pointer;
   text-align: right;
@@ -29469,7 +29476,7 @@ img[data-loaded="true"] {
 }
 .mo2-div {
   border-top: 1.5px dashed var(--hairline-2, #e5e7eb);
-  margin: 12px 0;
+  margin: 0;
 }
 /* Covers row */
 .mo2-covers {
@@ -29504,17 +29511,17 @@ img[data-loaded="true"] {
   object-fit: cover;
 }
 .mo2-cover-name {
-  font-size: 11px;
-  font-weight: 600;
-  color: #000;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--foreground, #0a0a0a);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .mo2-cover-price {
-  font-size: 11px;
-  font-weight: 500;
-  color: #000;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--dark-60, #4b5563);
 }
 /* Info grid */
 .mo2-grid {
@@ -29533,13 +29540,13 @@ img[data-loaded="true"] {
   text-align: right;
 }
 .mo2-cell-k {
-  font-size: 11px;
-  color: #000;
+  font-size: 12.5px;
+  color: var(--dark-50, #6b7280);
 }
 .mo2-cell-v {
-  font-size: 11px;
-  font-weight: 500;
-  color: #000;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--foreground, #0a0a0a);
   word-break: break-word;
 }
 .mo2-v-blue {
@@ -29566,13 +29573,14 @@ img[data-loaded="true"] {
 /* Note */
 .mo2-note {
   display: flex;
-  gap: 4px;
-  font-size: 11px;
-  color: #000;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--dark-60, #4b5563);
   min-width: 0;
 }
 .mo2-note-k {
   flex: 0 0 auto;
+  font-weight: 700;
 }
 .mo2-note-v {
   white-space: nowrap;
@@ -29586,18 +29594,18 @@ img[data-loaded="true"] {
   justify-content: space-between;
 }
 .mo2-total-k {
-  font-size: 13px;
-  font-weight: 500;
-  color: #000;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--foreground, #0a0a0a);
 }
 .mo2-total-v {
   border: none;
   background: none;
   padding: 0;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 700;
-  color: #000;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--foreground, #0a0a0a);
 }
 /* Bottom action bar */
 .mo2-actions {
@@ -46831,6 +46839,78 @@ img[data-loaded="true"] {
 @media (prefers-reduced-motion: reduce) {
   .mo-card-gift-confetti {
     display: none;
+  }
+}
+
+/* ── Faster / Express order — corner badge + animated speed streaks ── */
+.admin-order-card:has(.mo-card-faster) {
+  position: relative;
+  z-index: 0;
+}
+.mcf-badge {
+  position: absolute;
+  top: -11px;
+  left: 16px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #fff;
+  background: linear-gradient(90deg, #fb8500, #ffb703);
+  box-shadow: 0 3px 8px -2px rgba(251, 133, 0, 0.55);
+}
+.mo-card-faster {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+.mcf-streak {
+  position: absolute;
+  height: 3px;
+  width: 42%;
+  border-radius: 3px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(251, 133, 0, 0.32),
+    transparent
+  );
+  transform: skewX(-20deg);
+  animation: mcfZoom linear infinite;
+}
+@keyframes mcfZoom {
+  0% {
+    transform: translateX(-70%) skewX(-20deg);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(270%) skewX(-20deg);
+    opacity: 0;
+  }
+}
+.mcf-s0 { top: 14%; animation-duration: 2.6s; animation-delay: 0s; }
+.mcf-s1 { top: 33%; animation-duration: 3.1s; animation-delay: 0.5s; }
+.mcf-s2 { top: 52%; animation-duration: 2.8s; animation-delay: 1s; }
+.mcf-s3 { top: 70%; animation-duration: 3.3s; animation-delay: 0.3s; }
+.mcf-s4 { top: 86%; animation-duration: 2.9s; animation-delay: 1.3s; }
+@media (prefers-reduced-motion: reduce) {
+  .mcf-streak {
+    animation: none;
+    opacity: 0.4;
   }
 }
 

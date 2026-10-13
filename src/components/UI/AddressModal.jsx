@@ -336,12 +336,13 @@ export default function AddressModal({
   const [upiReassured, setUpiReassured] = useState(false);
   const processingMarkedRef = useRef(false);
 
-  // "Verify again" — re-check this same order's status with a 5s poll (no
-  // optimistic placement; confirmation only comes from the sheet).
+  // "Verify status" — re-check this same order's status with a 5s poll (loader
+  // shown inside the button); no optimistic placement, confirmation only comes
+  // from the sheet.
   const handleVerifyStatus = () => {
-    if (upiPhase === "verifying") return;
-    setVerifyCountdown(30);
-    setUpiPhase("verifying");
+    if (upiPhase === "rechecking") return;
+    setVerifyCountdown(20);
+    setUpiPhase("rechecking");
   };
 
   const [giftWrap, setGiftWrap] = useState(giftWrapSelected);
@@ -811,8 +812,9 @@ export default function AddressModal({
   // tag. Confirmed → success screen; otherwise we quietly return to idle so the
   // shopper can tap "Verify again" or "Verify via WhatsApp". No auto-verify.
   useEffect(() => {
-    if (upiPhase !== "verifying") return;
+    if (upiPhase !== "counting" && upiPhase !== "rechecking") return;
     let cancelled = false;
+    const windowMs = upiPhase === "counting" ? 30500 : 20500;
     const check = async () => {
       if (!upiOrderRef) return;
       const { confirmed } = await fetchOrderStatusById(upiOrderRef);
@@ -828,8 +830,11 @@ export default function AddressModal({
       if (cancelled) return;
       clearInterval(poll);
       clearInterval(tick);
-      setUpiPhase((ph) => (ph === "verifying" ? "idle" : ph));
-    }, 30500);
+      // After either window ends, show (or re-show) the action buttons.
+      setUpiPhase((ph) =>
+        ph === "counting" || ph === "rechecking" ? "ready" : ph,
+      );
+    }, windowMs);
     return () => {
       cancelled = true;
       clearInterval(poll);
@@ -840,8 +845,9 @@ export default function AddressModal({
   }, [upiPhase, upiOrderRef]);
 
   // UPI modal: show a 2s "generating QR" loader (QR blurred), then reveal the
-  // sharp QR and sit idle — we DON'T auto-verify. The shopper pays, then taps
-  // "Verify again" (5s poll) or "Verify via WhatsApp" to notify us.
+  // sharp QR and run a 30s counter (polling the sheet in case we confirm fast).
+  // Only AFTER the counter do we show the "Verify status" + WhatsApp buttons.
+  // No status is ever auto-changed — confirmation comes from our team.
   useEffect(() => {
     if (!showUPIPayment) return;
     setQrUnlocked(false);
@@ -850,7 +856,8 @@ export default function AddressModal({
     processingMarkedRef.current = false;
     const t = setTimeout(() => {
       setQrUnlocked(true);
-      setUpiPhase("idle");
+      setVerifyCountdown(30);
+      setUpiPhase("counting");
       trackPurchase({
         cartItems: cartBooks,
         totalAmount: netPayable,
@@ -861,10 +868,11 @@ export default function AddressModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showUPIPayment]);
 
-  // "Verify again" — manually re-check the order status (5s poll for 30s).
+  // "Verify status" — manually re-check this order's status (5s poll for 20s),
+  // showing a loader inside the button while the WhatsApp option stays visible.
   const handleCheckUPIStatus = () => {
-    setVerifyCountdown(30);
-    setUpiPhase("verifying");
+    setVerifyCountdown(20);
+    setUpiPhase("rechecking");
   };
 
   useEffect(() => {
@@ -5018,19 +5026,32 @@ function UPIPaymentModal({
           </div>
 
           <div className="upiv3-actions-row">
-            {upiPhase === "verifying" ? (
+            {upiPhase === "counting" ? (
+              // Initial 30s counter — no buttons yet.
               <span className="sec-big-btn width100 is-loading flex flex-row items-center justify-center gap-6">
-                <span className="upiv3-spin dark" /> Checking status…{" "}
+                <span className="upiv3-spin dark" /> Verifying payment…{" "}
                 {verifyCountdown}s
               </span>
             ) : (
+              // After the counter: "Verify status" + WhatsApp, always both shown.
+              // While re-checking, the loader sits inside the Verify button.
               <div className="upiv3-verify-btns">
                 <button
                   type="button"
                   className="sec-big-btn flex flex-row items-center justify-center gap-6"
                   onClick={onVerifyStatus}
+                  disabled={upiPhase === "rechecking"}
                 >
-                  <ShieldCheck size={16} /> Verify again
+                  {upiPhase === "rechecking" ? (
+                    <>
+                      <span className="upiv3-spin dark" /> Checking…{" "}
+                      {verifyCountdown}s
+                    </>
+                  ) : (
+                    <>
+                      <ShieldCheck size={16} /> Verify status
+                    </>
+                  )}
                 </button>
                 <button
                   type="button"

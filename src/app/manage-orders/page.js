@@ -3399,12 +3399,23 @@ export default function ManageOrdersPage() {
   // Editable email subject/body for the currently selected email template.
   const [emailSubject, setEmailSubject] = useState("");
   const [emailBody, setEmailBody] = useState("");
+  // Which channel to open the picker on next (set by the card's WA/email icons).
+  const pendingPickerChannel = useRef("wa");
   // Reset the selection each time a different order's picker opens.
   useEffect(() => {
+    const ch = pendingPickerChannel.current || "wa";
     setWaSel(null);
-    setWaPickerChannel("wa");
-    setEmailSubject("");
-    setEmailBody("");
+    setWaPickerChannel(ch);
+    if (ch === "email" && waPickerOrder) {
+      const em = emailMessages(waPickerOrder);
+      setWaSel(em[0]?.key || null);
+      setEmailSubject(em[0]?.subject || "");
+      setEmailBody(em[0]?.body || "");
+    } else {
+      setEmailSubject("");
+      setEmailBody("");
+    }
+    pendingPickerChannel.current = "wa";
   }, [waPickerOrder]);
   const [waCustomText, setWaCustomText] = useState(""); // custom WA message
   // Saved custom WhatsApp templates — { title, text }, persisted locally.
@@ -13559,6 +13570,7 @@ export default function ManageOrdersPage() {
                                 type="button"
                                 className="mo-frame-ic mo-frame-wa"
                                 onClick={() => {
+                                  pendingPickerChannel.current = "wa";
                                   setWaCustomText("");
                                   setWaPickerOrder(order);
                                 }}
@@ -13567,6 +13579,21 @@ export default function ManageOrdersPage() {
                               >
                                 <FaWhatsapp size={17} />
                               </button>
+                              {String(order["Email"] || "").trim() && (
+                                <button
+                                  type="button"
+                                  className="mo-frame-ic mo-frame-email"
+                                  onClick={() => {
+                                    pendingPickerChannel.current = "email";
+                                    setWaCustomText("");
+                                    setWaPickerOrder(order);
+                                  }}
+                                  title="Email the customer"
+                                  aria-label="Email the customer"
+                                >
+                                  <Mail size={15} />
+                                </button>
+                              )}
                               {orderId && (
                                 <a
                                   className="mo-frame-ic"

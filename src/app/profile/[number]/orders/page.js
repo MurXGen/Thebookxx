@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, Package, ChevronRight, Clock, MessageCircle } from "lucide-react";
+import { ArrowLeft, Package, ChevronRight, Clock, MessageCircle, AlertCircle } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 import { books as ALL_BOOKS } from "@/utils/book";
 import SupportSheet from "@/components/profile/SupportSheet";
@@ -112,14 +112,11 @@ export default function OrdersListPage() {
         const all = Array.isArray(json.orders) ? json.orders : [];
         const real = all
           .filter((o) => {
-            // Hide raw WhatsApp leads (not yet a real order) AND unconfirmed
-            // orders (drafts / payment-pending) — customers only see confirmed
-            // orders in their history.
+            // Hide raw WhatsApp leads (not yet a real order). Unconfirmed
+            // orders (payment-pending / needs attention) ARE shown now, with a
+            // clear status + a contact-support prompt.
             const wa = /whatsapp/i.test(o["Payment Type"] || "");
-            const unconfirmed =
-              /unconfirmed/i.test(o["Order Status"] || "") ||
-              /\(unconfirmed\)/i.test(o["Customer Name"] || "");
-            return !wa && !unconfirmed;
+            return !wa;
           })
           .map((o) => {
             const rawStatus = String(o["Order Status"] || "");
@@ -133,6 +130,7 @@ export default function OrdersListPage() {
                 o["Timestamp (D)"] || o["Timestamp"] || o["Timestamp(D)"],
               ),
               _status: isUnconfirmed ? "Unconfirmed" : rawStatus || "Processing",
+              _isUnconfirmed: isUnconfirmed,
             };
           })
           // Keep only real orders — a row must have items or a non-zero total.
@@ -264,7 +262,7 @@ export default function OrdersListPage() {
                   <Link
                     key={oid || i}
                     href={`/profile/${number}/orders/${encodeURIComponent(oid)}`}
-                    className="ord-card"
+                    className={`ord-card${o._isUnconfirmed ? " ord-card-unconfirmed" : ""}`}
                   >
                     <div className="ord-card-row">
                       <div className="ord-card-covers">
@@ -299,6 +297,16 @@ export default function OrdersListPage() {
                         {o._status}
                       </span>
                     </div>
+                    {o._isUnconfirmed && (
+                      <div className="ord-unconf-note">
+                        <AlertCircle size={13} />
+                        <span>
+                          Not confirmed yet — we may be waiting for your payment
+                          or there&apos;s an issue with this order. Tap to view
+                          &amp; contact support.
+                        </span>
+                      </div>
+                    )}
                     <div className="ord-card-foot">
                       <div className="ord-card-foot-left">
                         {total ? (

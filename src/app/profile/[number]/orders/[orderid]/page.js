@@ -33,6 +33,7 @@ import {
   Check,
   Star,
   Copy,
+  AlertCircle,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import {
@@ -368,13 +369,9 @@ export default function OrderDetailPage() {
           .replace(/\D/g, "")
           .slice(-10);
         const owned = row && (!/^\d{10}$/.test(number) || rowPhone === number);
-        // Unconfirmed orders (drafts / payment-pending) aren't real orders yet —
-        // show the "not found" state rather than a detail page for them.
-        const unconfirmed =
-          row &&
-          (/unconfirmed/i.test(row["Order Status"] || "") ||
-            /\(unconfirmed\)/i.test(row["Customer Name"] || ""));
-        if (!ignore) setOrder(owned && !unconfirmed ? row : null);
+        // Unconfirmed orders (payment-pending / needs attention) ARE shown now,
+        // with a clear banner + a contact-support link.
+        if (!ignore) setOrder(owned ? row : null);
       } catch {
         if (!ignore) setOrder(null);
       } finally {
@@ -1375,6 +1372,32 @@ export default function OrderDetailPage() {
           </div>
         </div>
       )}
+
+      {/* Unconfirmed order — payment-pending / needs attention. */}
+      {order &&
+        (/unconfirmed|pending/i.test(order["Order Status"] || "") ||
+          /\(unconfirmed\)/i.test(order["Customer Name"] || "")) && (
+          <div className="od-unconf-banner">
+            <span className="od-unconf-ic">
+              <AlertCircle size={18} />
+            </span>
+            <div className="od-unconf-txt">
+              <strong>This order isn&apos;t confirmed yet</strong>
+              <span>
+                We may be waiting for your payment, or there could be an issue
+                with this order. Please contact us and we&apos;ll sort it out
+                right away.
+              </span>
+              <button
+                type="button"
+                className="od-unconf-btn"
+                onClick={contactSupport}
+              >
+                <FaWhatsapp size={15} /> Contact support
+              </button>
+            </div>
+          </div>
+        )}
 
       {/* User profile — bold name, number, address. */}
       {order && (

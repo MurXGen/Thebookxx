@@ -29390,6 +29390,84 @@ img[data-loaded="true"] {
 .mo-frame-wa {
   color: #25d366;
 }
+.mo-frame-email {
+  color: #2563eb;
+}
+/* Unconfirmed order — list card note + detail banner */
+.ord-card-unconfirmed {
+  border-color: rgba(217, 119, 6, 0.35);
+}
+.ord-unconf-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  margin-top: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(245, 158, 11, 0.1);
+  color: #92400e;
+  font-size: 11.5px;
+  line-height: 1.45;
+}
+.ord-unconf-note > svg {
+  flex: 0 0 auto;
+  margin-top: 1px;
+  color: #d97706;
+}
+.od-unconf-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 12px 0;
+  padding: 14px;
+  border: 1px solid rgba(217, 119, 6, 0.35);
+  border-radius: 16px;
+  background: rgba(245, 158, 11, 0.08);
+}
+.od-unconf-ic {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #d97706;
+  background: rgba(217, 119, 6, 0.14);
+}
+.od-unconf-txt {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.od-unconf-txt strong {
+  font-size: 14px;
+  color: var(--foreground, #0a0a0a);
+}
+.od-unconf-txt > span {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--dark-60, #4b5563);
+}
+.od-unconf-btn {
+  align-self: flex-start;
+  margin-top: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 16px;
+  border: none;
+  border-radius: 10px;
+  background: #25d366;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.od-unconf-btn:hover {
+  background: #1fb957;
+}
 .mo-frame-book.done {
   color: var(--success, #0a8f0c);
   border-color: rgba(10, 143, 12, 0.4);

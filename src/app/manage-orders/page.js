@@ -996,6 +996,47 @@ const SECTION_TABS = [
   { key: "track", label: "Track orders", short: "Track", Icon: Radar },
 ];
 
+// A full-screen shower of money emojis falling smoothly from the top. Remounted
+// (via a changing key) each time it's triggered, so the animation replays.
+function MoneyShower() {
+  const EMOJIS = ["💰", "💵", "🤑", "💸", "🪙", "💴", "💶", "💷", "🎉", "🤑"];
+  // Deterministic pseudo-random (pure — avoids Math.random during render).
+  const rand = (n, mul) => {
+    const x = Math.sin(n * mul) * 10000;
+    return x - Math.floor(x);
+  };
+  const pieces = Array.from({ length: 34 }).map((_, i) => ({
+    i,
+    left: rand(i, 12.9898) * 100,
+    delay: rand(i, 7.233) * 0.55,
+    dur: 2.4 + rand(i, 3.111) * 1.8,
+    drift: (rand(i, 19.19) * 2 - 1) * 70,
+    rot: (rand(i, 4.57) * 2 - 1) * 160,
+    size: 18 + rand(i, 9.73) * 22,
+    e: EMOJIS[Math.floor(rand(i, 2.17) * EMOJIS.length)],
+  }));
+  return (
+    <div className="money-shower" aria-hidden="true">
+      {pieces.map((p) => (
+        <span
+          key={p.i}
+          className="money-piece"
+          style={{
+            left: `${p.left}%`,
+            fontSize: `${p.size}px`,
+            "--delay": `${p.delay}s`,
+            "--dur": `${p.dur}s`,
+            "--drift": `${p.drift}px`,
+            "--rot": `${p.rot}deg`,
+          }}
+        >
+          {p.e}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 /* Motion presets — one place to tune the whole dashboard's feel. */
 const EASE_OUT = [0.22, 1, 0.36, 1];
 
@@ -4956,12 +4997,25 @@ export default function ManageOrdersPage() {
       if (t) setActiveTab(t);
     } catch {}
   }, []);
+  // Money-emoji shower (triggered from the Revenue card + Analytics tab).
+  const [moneyShower, setMoneyShower] = useState(0);
+  const triggerMoneyShower = (haptic = false) => {
+    if (
+      haptic &&
+      typeof navigator !== "undefined" &&
+      typeof navigator.vibrate === "function"
+    ) {
+      navigator.vibrate([18, 40, 18]);
+    }
+    setMoneyShower((n) => n + 1);
+  };
   const goToTab = (key) => {
     setActiveTab(key);
     try {
       localStorage.setItem("mo_active_tab", key);
     } catch {}
     setAccOpen((p) => ({ ...p, [key]: true }));
+    if (key === "analytics") triggerMoneyShower(false);
   };
   // Orders calendar now lives in a modal opened from the tab row.
   const [showCalModal, setShowCalModal] = useState(false);
@@ -6191,15 +6245,20 @@ export default function ManageOrdersPage() {
 
   // Global single-frame PNG grid of every un-picked book cover (dense grid,
   // fits many covers per sheet). Async: waits for images to load.
-  const downloadCoversPNG = async (mode = "unpicked") => {
+  const downloadCoversPNG = async (mode = "unpicked", orderList = null) => {
     const wantPicked = mode === "picked";
     const items = [];
-    filteredOrders.forEach((o) => {
+    // When an explicit order list is passed (e.g. the Dispatch queue), export
+    // EVERY cover in those orders, ignoring the pick state.
+    const src0 = orderList || filteredOrders;
+    src0.forEach((o) => {
       const oid = o["Order ID"] || o._rowIndex;
       (o.parsedBooks || []).forEach((b, i) => {
-        const isPicked = !!pickChecked[bookKey(oid, i)];
-        // unpicked mode → skip picked; picked mode → skip unpicked.
-        if (wantPicked ? !isPicked : isPicked) return;
+        if (!orderList) {
+          const isPicked = !!pickChecked[bookKey(oid, i)];
+          // unpicked mode → skip picked; picked mode → skip unpicked.
+          if (wantPicked ? !isPicked : isPicked) return;
+        }
         const qty = Math.max(1, b.quantity || 1);
         const src = getBookImage(b.name);
         for (let k = 0; k < qty; k++) items.push({ src, name: b.name });
@@ -9125,7 +9184,17 @@ export default function ManageOrdersPage() {
                   </span>
                 </div>
               </div>
-              <div className="an2-stat s-rev">
+              <div
+                className="an2-stat s-rev an2-stat-click"
+                role="button"
+                tabIndex={0}
+                title="💰"
+                onClick={() => triggerMoneyShower(true)}
+                onKeyDown={(e) =>
+                  (e.key === "Enter" || e.key === " ") &&
+                  triggerMoneyShower(true)
+                }
+              >
                 <div className="an2-stat-ic">
                   <IndianRupee size={16} />
                 </div>
@@ -10696,10 +10765,8 @@ export default function ManageOrdersPage() {
             <div className="mo-book-subtabs" role="tablist">
               {[
                 { k: "queue", label: "Dispatch queue" },
-                { k: "scan", label: "Scan IDs" },
                 { k: "product", label: "Create product" },
                 { k: "utm", label: "UTM links" },
-                { k: "paste", label: "Book / Print" },
               ].map((t) => (
                 <button key={t.k} type="button"
                   className={`mo-book-subtab${bookSubTab === t.k ? " on" : ""}`}
@@ -10783,6 +10850,22 @@ export default function ManageOrdersPage() {
                             (s, b) => s + (Number(b.quantity) || 1),
                             0,
                           );
+                          const amt = Number(o.revenue || 0);
+                          const advPaid = /^\s*yes/i.test(
+                            String(o["Advance Paid"] || ""),
+                          );
+                          const ptRaw = String(o["Payment Type"] || "");
+                          const payLabel = advPaid
+                            ? "₹99 Advance"
+                            : /online|upi|prepaid|paid/i.test(ptRaw) &&
+                                !/cod|cash/i.test(ptRaw)
+                              ? "Online"
+                              : "COD";
+                          const fasterD =
+                            /faster|express/i.test(
+                              String(o["Delivery Type"] || ""),
+                            ) ||
+                            /^e/i.test(String(o.shippingId || "").trim());
                           return (
                             <label className="mo-dispatch-row" key={oid}>
                               <input
@@ -10799,9 +10882,15 @@ export default function ManageOrdersPage() {
                               <span className="mo-dispatch-main">
                                 <span className="mo-dispatch-name">
                                   {o["Customer Name"] || "—"}
+                                  {fasterD && (
+                                    <span className="mo-dispatch-faster">
+                                      ⚡ Express
+                                    </span>
+                                  )}
                                 </span>
                                 <span className="mo-dispatch-meta">
-                                  {bc} book{bc === 1 ? "" : "s"} ·{" "}
+                                  {bc} book{bc === 1 ? "" : "s"} · ₹
+                                  {amt.toLocaleString("en-IN")} · {payLabel} ·{" "}
                                   {o.status || "Processing"}
                                   {o["Pincode"] ? ` · ${o["Pincode"]}` : ""}
                                 </span>
@@ -10830,6 +10919,22 @@ export default function ManageOrdersPage() {
                           print {dispatchSel.length ? "(selected)" : "(all)"}
                         </span>
                         <div className="mo-dispatch-dl">
+                          <button
+                            type="button"
+                            className="mo-dispatch-btn covers"
+                            onClick={() => {
+                              if (!scope.length) {
+                                showToast(
+                                  "No orders in the dispatch queue.",
+                                  "error",
+                                );
+                                return;
+                              }
+                              downloadCoversPNG("all", scope);
+                            }}
+                          >
+                            📚 Download covers
+                          </button>
                           <button
                             type="button"
                             className="mo-dispatch-btn color"
@@ -15828,6 +15933,11 @@ export default function ManageOrdersPage() {
             );
           })()}
       </AnimatePresence>
+
+      {/* Money-emoji shower overlay (Revenue card / Analytics tab) */}
+      {typeof document !== "undefined" &&
+        moneyShower > 0 &&
+        createPortal(<MoneyShower key={moneyShower} />, document.body)}
 
       {/* ===== WhatsApp message picker (per order) ===== */}
       <AnimatePresence>

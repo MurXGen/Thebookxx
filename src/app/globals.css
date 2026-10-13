@@ -29523,6 +29523,73 @@ img[data-loaded="true"] {
   font-weight: 600;
   color: var(--dark-60, #4b5563);
 }
+/* Badges — horizontally scrollable row */
+.mo2-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 2px 0;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.mo2-badges::-webkit-scrollbar {
+  display: none;
+}
+.mo2-badge {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  border: 1px solid var(--hairline, #e5e7eb);
+  background: #fff;
+  color: var(--dark-70, #374151);
+}
+.mo2-badge-count {
+  background: var(--surface-2, #f3f4f6);
+  border-color: transparent;
+}
+.mo2-badge-deliv {
+  background: rgba(251, 133, 0, 0.1);
+  border-color: rgba(251, 133, 0, 0.28);
+  color: #b45309;
+}
+.mo2-badge-gift {
+  background: rgba(192, 34, 59, 0.08);
+  border-color: rgba(192, 34, 59, 0.25);
+  color: #b21e3a;
+}
+.mo2-badge-bm {
+  background: rgba(13, 107, 245, 0.08);
+  border-color: rgba(13, 107, 245, 0.25);
+  color: #0d6bf5;
+}
+.mo2-badge-dl {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin-left: 1px;
+  border: none;
+  border-radius: 6px;
+  background: var(--tertiary, #fb8500);
+  color: #fff;
+  cursor: pointer;
+}
+/* Card background tint by payment type (subtle but visible). */
+.admin-order-card.mo-card.mo-card-cod {
+  background: #eff5ff; /* very light blue — Cash on Delivery */
+}
+.admin-order-card.mo-card.mo-card-online,
+.admin-order-card.mo-card.mo-card-prepaid {
+  background: #eefbf1; /* very light green — Online / Advance paid */
+}
 /* Info grid */
 .mo2-grid {
   display: grid;

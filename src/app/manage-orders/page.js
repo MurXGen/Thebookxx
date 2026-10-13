@@ -13304,31 +13304,18 @@ export default function ManageOrdersPage() {
                                 /^e/i.test(String(order.shippingId || "").trim());
                               if (!fasterD) return null;
                               return (
-                                <>
-                                  <span className="mcf-badge">⚡ Express</span>
-                                  <span
-                                    className="mo-card-faster"
-                                    aria-hidden="true"
-                                  >
-                                    <span className="mcf-streak mcf-s0" />
-                                    <span className="mcf-streak mcf-s1" />
-                                    <span className="mcf-streak mcf-s2" />
-                                    <span className="mcf-streak mcf-s3" />
-                                    <span className="mcf-streak mcf-s4" />
-                                  </span>
-                                </>
+                                <span
+                                  className="mo-card-faster"
+                                  aria-hidden="true"
+                                >
+                                  <span className="mcf-streak mcf-s0" />
+                                  <span className="mcf-streak mcf-s1" />
+                                  <span className="mcf-streak mcf-s2" />
+                                  <span className="mcf-streak mcf-s3" />
+                                  <span className="mcf-streak mcf-s4" />
+                                </span>
                               );
                             })()}
-                            {/* Exception flag — amber reason chip at the top;
-                                red + pulsing when it's the urgent no-tracking
-                                case. */}
-                            {isException && (
-                              <div
-                                className={`mo-exception-chip${isUrgentNoTrack ? " urgent" : ""}`}
-                              >
-                                <AlertCircle size={12} /> {exReason}
-                              </div>
-                            )}
                             {/* Header — name + phone (left); status + date (right) */}
                             <div className="mo2-head" onClick={(e) => e.stopPropagation()}>
                               <div className="mo2-head-l">
@@ -13421,6 +13408,65 @@ export default function ManageOrdersPage() {
                                 })}
                               </div>
                             )}
+
+                            {/* Badges — horizontally scrollable. Book count (always,
+                                with a download) + delivery type + gift wrap +
+                                bookmark; each shown only when it has a value. */}
+                            {(() => {
+                              const deliv = String(order["Delivery Type"] || "");
+                              const fasterD =
+                                /faster|express/i.test(deliv) ||
+                                /^e/i.test(String(order.shippingId || "").trim());
+                              const addonsB = parseAddonsField(
+                                String(order["Gift Wrap"] || ""),
+                              );
+                              const giftOn = addonsB.giftOn;
+                              const bmQty = addonsB.bookmarkQty;
+                              const bookCount = books.reduce(
+                                (s, b) => s + (Number(b.quantity) || 1),
+                                0,
+                              );
+                              return (
+                                <div
+                                  className="mo2-badges"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <span className="mo2-badge mo2-badge-count">
+                                    📚 {bookCount} book{bookCount === 1 ? "" : "s"}
+                                    <button
+                                      type="button"
+                                      className="mo2-badge-dl"
+                                      title="Download shipping label"
+                                      aria-label="Download shipping label"
+                                      onClick={() =>
+                                        downloadFormsFor(
+                                          [order],
+                                          "pdf",
+                                          `TheBookX-${orderId}`,
+                                        )
+                                      }
+                                    >
+                                      <Download size={12} />
+                                    </button>
+                                  </span>
+                                  <span className="mo2-badge mo2-badge-deliv">
+                                    {fasterD
+                                      ? "⚡ Express delivery"
+                                      : "🚚 Standard delivery"}
+                                  </span>
+                                  {giftOn && (
+                                    <span className="mo2-badge mo2-badge-gift">
+                                      🎁 Gift wrap
+                                    </span>
+                                  )}
+                                  {bmQty > 0 && (
+                                    <span className="mo2-badge mo2-badge-bm">
+                                      🔖 Bookmark {bmQty}
+                                    </span>
+                                  )}
+                                </div>
+                              );
+                            })()}
 
                             <div className="mo2-div" />
 

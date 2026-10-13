@@ -29559,6 +29559,11 @@ img[data-loaded="true"] {
   border-color: rgba(251, 133, 0, 0.28);
   color: #b45309;
 }
+.mo2-badge-std {
+  background: var(--surface-2, #f3f4f6);
+  border-color: var(--hairline, #e5e7eb);
+  color: var(--dark-60, #4b5563);
+}
 .mo2-badge-gift {
   background: rgba(192, 34, 59, 0.08);
   border-color: rgba(192, 34, 59, 0.25);

@@ -13433,7 +13433,9 @@ export default function ManageOrdersPage() {
                                   <span className="mo2-badge mo2-badge-count">
                                     📚 {bookCount} book{bookCount === 1 ? "" : "s"}
                                   </span>
-                                  <span className="mo2-badge mo2-badge-deliv">
+                                  <span
+                                    className={`mo2-badge ${fasterD ? "mo2-badge-deliv" : "mo2-badge-std"}`}
+                                  >
                                     {fasterD
                                       ? "⚡ Express delivery"
                                       : "🚚 Standard delivery"}

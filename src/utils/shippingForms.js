@@ -1381,7 +1381,71 @@ function drawBigAddressLabel(c, startY, data) {
   return y;
 }
 
-export function buildAddressLabelCanvas(data) {
+// Festive decor drawn ONLY in the outer margins/corners of a label so the
+// label footprint (and 3-per-page layout) is unchanged. Confetti in the top/
+// bottom bands + side strips, flower emojis in the four corners.
+function drawLabelDecor(ctx, W, H) {
+  const colors = [
+    "#fb8500",
+    "#ffb703",
+    "#c0223b",
+    "#2a9d8f",
+    "#4361ee",
+    "#e76f51",
+    "#06d6a0",
+    "#ef476f",
+  ];
+  const flowers = ["🌸", "🌼", "🌺", "✨", "🎉", "🌷", "💐", "⭐"];
+  let seed = 7;
+  const rnd = () => {
+    seed = (seed * 9301 + 49297) % 233280;
+    return seed / 233280;
+  };
+  ctx.save();
+  const bands = [
+    { x0: 2, x1: W - 2, y0: 2, y1: 28 }, // top
+    { x0: 2, x1: W - 2, y0: H - 28, y1: H - 2 }, // bottom
+    { x0: 2, x1: 30, y0: 30, y1: H - 30 }, // left
+    { x0: W - 30, x1: W - 2, y0: 30, y1: H - 30 }, // right
+  ];
+  ctx.globalAlpha = 0.9;
+  bands.forEach((b) => {
+    const n = Math.max(
+      6,
+      Math.round(((b.x1 - b.x0) * (b.y1 - b.y0)) / 1500),
+    );
+    for (let i = 0; i < n; i++) {
+      const x = b.x0 + rnd() * (b.x1 - b.x0);
+      const y = b.y0 + rnd() * (b.y1 - b.y0);
+      ctx.fillStyle = colors[Math.floor(rnd() * colors.length)];
+      const s = 3 + rnd() * 4;
+      if (rnd() < 0.5) {
+        ctx.fillRect(x, y, s, s * 1.6);
+      } else {
+        ctx.beginPath();
+        ctx.arc(x, y, s / 1.3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+  });
+  ctx.globalAlpha = 1;
+  ctx.font = "19px serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  const corners = [
+    [17, 16],
+    [W - 17, 16],
+    [17, H - 16],
+    [W - 17, H - 16],
+  ];
+  corners.forEach((cnr, i) =>
+    ctx.fillText(flowers[i % flowers.length], cnr[0], cnr[1]),
+  );
+  ctx.restore();
+}
+
+export function buildAddressLabelCanvas(data, opts = {}) {
+  const { decor = false, mono = false } = opts;
   const isCOD = !!data.isCOD;
   // Label width — kept moderate so a single label doesn't blow up to fill the
   // whole page, while a 3-up stack still fills most of the A4 width.
@@ -1403,12 +1467,21 @@ export function buildAddressLabelCanvas(data) {
     note: data.note,
   });
   const finalH = Math.min(endY + botPad, SAFE_H);
+  if (decor) drawLabelDecor(c.ctx, W, finalH);
   const out = document.createElement("canvas");
   out.width = W * 2;
   out.height = finalH * 2;
-  out
-    .getContext("2d")
-    .drawImage(c.canvas, 0, 0, W * 2, finalH * 2, 0, 0, W * 2, finalH * 2);
+  const octx = out.getContext("2d");
+  octx.drawImage(c.canvas, 0, 0, W * 2, finalH * 2, 0, 0, W * 2, finalH * 2);
+  if (mono) {
+    const img = octx.getImageData(0, 0, out.width, out.height);
+    const d = img.data;
+    for (let i = 0; i < d.length; i += 4) {
+      const g = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
+      d[i] = d[i + 1] = d[i + 2] = g;
+    }
+    octx.putImageData(img, 0, 0);
+  }
   return out;
 }
 
@@ -1431,8 +1504,8 @@ export function downloadAddressLabelsPNGs(dataArray) {
 // trim along. Labels are centered horizontally and share the widest width.
 const LABELS_PER_PAGE = 3;
 
-export function buildAddressLabelSheetCanvas(group) {
-  const labels = group.map((d) => buildAddressLabelCanvas(d));
+export function buildAddressLabelSheetCanvas(group, opts = {}) {
+  const labels = group.map((d) => buildAddressLabelCanvas(d, opts));
   const GAP = 48; // vertical space between/around labels (2x px)
   const width = Math.max(...labels.map((l) => l.width));
   const totalH =
@@ -1467,11 +1540,11 @@ export function buildAddressLabelSheetCanvas(group) {
 }
 
 // Many address labels → ONE ordered PDF, three labels per page, no CDF.
-export function downloadAddressLabelsPDF(dataArray, filename) {
+export function downloadAddressLabelsPDF(dataArray, filename, opts = {}) {
   const pages = [];
   for (let i = 0; i < dataArray.length; i += LABELS_PER_PAGE) {
     const group = dataArray.slice(i, i + LABELS_PER_PAGE);
-    const cv = buildAddressLabelSheetCanvas(group);
+    const cv = buildAddressLabelSheetCanvas(group, opts);
     const url = cv.toDataURL("image/jpeg", 0.92);
     pages.push({ data: dataUrlToBytes(url), w: cv.width, h: cv.height });
   }
@@ -1479,6 +1552,21 @@ export function downloadAddressLabelsPDF(dataArray, filename) {
   triggerDownload(
     blob,
     filename || `address_labels_${new Date().toISOString().slice(0, 10)}.pdf`,
+  );
+}
+
+// Decorated (confetti + flowers) address-label PDF — same 3-per-page layout,
+// identical label size. `mono:true` renders black & white.
+export function downloadDecoratedAddressLabelsPDF(
+  dataArray,
+  filename,
+  { mono = false } = {},
+) {
+  downloadAddressLabelsPDF(
+    dataArray,
+    filename ||
+      `labels_${mono ? "bw" : "color"}_${new Date().toISOString().slice(0, 10)}.pdf`,
+    { decor: true, mono },
   );
 }
 

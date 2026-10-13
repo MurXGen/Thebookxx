@@ -16,6 +16,7 @@ import {
   downloadCombinedFormsPDF,
   downloadAddressLabelsPNGs,
   downloadAddressLabelsPDF,
+  downloadDecoratedAddressLabelsPDF,
   downloadGiftLabelsPDF,
 } from "@/utils/shippingForms";
 import {
@@ -3353,6 +3354,31 @@ export default function ManageOrdersPage() {
 
   // ── Book-picking (fulfilment) state ──
   const [pickChecked, setPickChecked] = useState({}); // { "orderId::idx": true }
+  // Dispatch queue — order IDs the operator has moved to the Dispatch tab for
+  // label printing (any status). Persisted locally. `dispatchSel` = chosen rows
+  // on the Dispatch page for the label download.
+  const [dispatchIds, setDispatchIds] = useState([]);
+  const [dispatchSel, setDispatchSel] = useState([]);
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("mo_dispatch_ids");
+      if (raw) setDispatchIds(JSON.parse(raw));
+    } catch (_) {}
+  }, []);
+  const persistDispatch = (list) => {
+    setDispatchIds(list);
+    try {
+      localStorage.setItem("mo_dispatch_ids", JSON.stringify(list));
+    } catch (_) {}
+  };
+  const toggleDispatch = (oid) => {
+    if (!oid) return;
+    persistDispatch(
+      dispatchIds.includes(oid)
+        ? dispatchIds.filter((x) => x !== oid)
+        : [...dispatchIds, oid],
+    );
+  };
   const [coversModalOpen, setCoversModalOpen] = useState(false); // covers picker
   const [pickFilter, setPickFilter] = useState("all"); // all | pending | done
   const [showPicking, setShowPicking] = useState(true);
@@ -3934,6 +3960,8 @@ export default function ManageOrdersPage() {
   // extract the article numbers (2 letters + 9 digits + "IN") → editable
   // preview → push to the tracking_ids sheet (status "Not Used").
   const [scanOpen, setScanOpen] = useState(false);
+  // Dispatch page sub-tabs (Queue / Scan / Create product / UTM / Book).
+  const [bookSubTab, setBookSubTab] = useState("queue");
   const [scanBusy, setScanBusy] = useState(false);
   const [scanProgress, setScanProgress] = useState(0);
   const [scanIds, setScanIds] = useState([]); // array of strings
@@ -10665,8 +10693,168 @@ export default function ManageOrdersPage() {
         {/* ===== Book (paste order IDs → inline India Post booking) ===== */}
         {activeTab === "book" && (
           <div className="mo-book-tab">
+            <div className="mo-book-subtabs" role="tablist">
+              {[
+                { k: "queue", label: "Dispatch queue" },
+                { k: "scan", label: "Scan IDs" },
+                { k: "product", label: "Create product" },
+                { k: "utm", label: "UTM links" },
+                { k: "paste", label: "Book / Print" },
+              ].map((t) => (
+                <button key={t.k} type="button"
+                  className={`mo-book-subtab${bookSubTab === t.k ? " on" : ""}`}
+                  onClick={() => setBookSubTab(t.k)}>
+                  {t.label}
+                </button>
+              ))}
+            </div>
+            {/* Dispatch queue — orders moved here from the Orders cards (any
+                status). Select rows, then download decorated address labels
+                (colored or B&W), 3 per page, same label size. */}
+            {bookSubTab === "queue" && (() => {
+              const dOrders = orders.filter((o) =>
+                dispatchIds.includes(o["Order ID"]),
+              );
+              const scope = dispatchSel.length
+                ? dOrders.filter((o) => dispatchSel.includes(o["Order ID"]))
+                : dOrders;
+              const dl = (mono) => {
+                if (!scope.length) {
+                  showToast("No orders in the dispatch queue.", "error");
+                  return;
+                }
+                downloadDecoratedAddressLabelsPDF(
+                  scope.map(orderFormData),
+                  `dispatch_labels_${mono ? "bw" : "color"}.pdf`,
+                  { mono },
+                );
+              };
+              const allSel =
+                dOrders.length > 0 && dispatchSel.length === dOrders.length;
+              return (
+                <div className="mo-dispatch">
+                  <div className="mo-dispatch-head">
+                    <span className="mo-dispatch-title">
+                      <Send size={16} /> Dispatch queue
+                      <b>{dOrders.length}</b>
+                    </span>
+                    {dOrders.length > 0 && (
+                      <div className="mo-dispatch-head-r">
+                        <button
+                          type="button"
+                          className="mo-dispatch-mini"
+                          onClick={() =>
+                            setDispatchSel(
+                              allSel
+                                ? []
+                                : dOrders.map((o) => o["Order ID"]),
+                            )
+                          }
+                        >
+                          {allSel ? "Clear selection" : "Select all"}
+                        </button>
+                        <button
+                          type="button"
+                          className="mo-dispatch-mini danger"
+                          onClick={() => {
+                            persistDispatch([]);
+                            setDispatchSel([]);
+                          }}
+                        >
+                          Empty queue
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {dOrders.length === 0 ? (
+                    <p className="mo-dispatch-empty">
+                      No orders queued yet. On any order card, tap the{" "}
+                      <Send size={12} /> icon to move it here for label
+                      printing — regardless of its status.
+                    </p>
+                  ) : (
+                    <>
+                      <div className="mo-dispatch-list">
+                        {dOrders.map((o) => {
+                          const oid = o["Order ID"];
+                          const on = dispatchSel.includes(oid);
+                          const bc = (o.parsedBooks || []).reduce(
+                            (s, b) => s + (Number(b.quantity) || 1),
+                            0,
+                          );
+                          return (
+                            <label className="mo-dispatch-row" key={oid}>
+                              <input
+                                type="checkbox"
+                                checked={on}
+                                onChange={() =>
+                                  setDispatchSel((p) =>
+                                    p.includes(oid)
+                                      ? p.filter((x) => x !== oid)
+                                      : [...p, oid],
+                                  )
+                                }
+                              />
+                              <span className="mo-dispatch-main">
+                                <span className="mo-dispatch-name">
+                                  {o["Customer Name"] || "—"}
+                                </span>
+                                <span className="mo-dispatch-meta">
+                                  {bc} book{bc === 1 ? "" : "s"} ·{" "}
+                                  {o.status || "Processing"}
+                                  {o["Pincode"] ? ` · ${o["Pincode"]}` : ""}
+                                </span>
+                              </span>
+                              <button
+                                type="button"
+                                className="mo-dispatch-x"
+                                title="Remove from queue"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  toggleDispatch(oid);
+                                  setDispatchSel((p) =>
+                                    p.filter((x) => x !== oid),
+                                  );
+                                }}
+                              >
+                                <X size={14} />
+                              </button>
+                            </label>
+                          );
+                        })}
+                      </div>
+                      <div className="mo-dispatch-foot">
+                        <span className="mo-dispatch-count">
+                          {scope.length} label{scope.length === 1 ? "" : "s"} to
+                          print {dispatchSel.length ? "(selected)" : "(all)"}
+                        </span>
+                        <div className="mo-dispatch-dl">
+                          <button
+                            type="button"
+                            className="mo-dispatch-btn color"
+                            onClick={() => dl(false)}
+                          >
+                            🎨 Colored labels PDF
+                          </button>
+                          <button
+                            type="button"
+                            className="mo-dispatch-btn bw"
+                            onClick={() => dl(true)}
+                          >
+                            🖨️ B&amp;W labels PDF
+                          </button>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              );
+            })()}
+
             {/* Scan physical-copy tracking IDs from a label photo → OCR →
                 editable preview → push to the tracking_ids sheet. */}
+            {bookSubTab === "scan" && (
             <div className="mo-scan">
               <div
                 className="mo-cp-head mo-acc-head"
@@ -10778,6 +10966,7 @@ export default function ManageOrdersPage() {
                 </div>
               )}
             </div>
+            )}
 
             <BarcodeScanner
               open={scannerOpen}
@@ -10790,6 +10979,7 @@ export default function ManageOrdersPage() {
             />
 
             {/* Create a custom product to share with a customer. */}
+            {bookSubTab === "product" && (
             <div className="mo-cp">
               <div
                 className="mo-cp-head mo-acc-head"
@@ -10892,8 +11082,10 @@ export default function ManageOrdersPage() {
               </div>
               )}
             </div>
+            )}
 
             {/* UTM link generator — build trackable campaign/influencer links. */}
+            {bookSubTab === "utm" && (
             <div className="mo-cp mo-utm">
               <div
                 className="mo-cp-head mo-acc-head"
@@ -11048,7 +11240,10 @@ export default function ManageOrdersPage() {
                 </div>
               )}
             </div>
+            )}
 
+            {bookSubTab === "paste" && (
+              <>
             <div className="mo-book-head">
               <label className="mo-book-label" htmlFor="mo-book-ids">
                 Paste order IDs to book
@@ -11160,6 +11355,8 @@ export default function ManageOrdersPage() {
                 bookKey={bookKey}
                 weightByOrderId={bookWeights}
               />
+            )}
+              </>
             )}
           </div>
         )}
@@ -13433,13 +13630,11 @@ export default function ManageOrdersPage() {
                                   <span className="mo2-badge mo2-badge-count">
                                     📚 {bookCount} book{bookCount === 1 ? "" : "s"}
                                   </span>
-                                  <span
-                                    className={`mo2-badge ${fasterD ? "mo2-badge-deliv" : "mo2-badge-std"}`}
-                                  >
-                                    {fasterD
-                                      ? "⚡ Express delivery"
-                                      : "🚚 Standard delivery"}
-                                  </span>
+                                  {fasterD && (
+                                    <span className="mo2-badge mo2-badge-deliv">
+                                      ⚡ Express delivery
+                                    </span>
+                                  )}
                                   {giftOn && (
                                     <span className="mo2-badge mo2-badge-gift">
                                       🎁 Gift wrap
@@ -13606,6 +13801,23 @@ export default function ManageOrdersPage() {
                                     <CheckCircle size={15} />
                                   ) : (
                                     <Truck size={15} />
+                                  )}
+                                </button>
+                                <button
+                                  type="button"
+                                  className={`mo-frame-ic mo-frame-dispatch${dispatchIds.includes(orderId) ? " on" : ""}`}
+                                  onClick={() => toggleDispatch(orderId)}
+                                  title={
+                                    dispatchIds.includes(orderId)
+                                      ? "In dispatch queue — tap to remove"
+                                      : "Move to Dispatch for label printing"
+                                  }
+                                  aria-label="Move to Dispatch"
+                                >
+                                  {dispatchIds.includes(orderId) ? (
+                                    <CheckCircle size={15} />
+                                  ) : (
+                                    <Send size={15} />
                                   )}
                                 </button>
                               </div>

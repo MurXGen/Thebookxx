@@ -12768,29 +12768,6 @@ export default function ManageOrdersPage() {
                     </div>
                   )}
 
-                  <div className="orders-toolbar">
-                    <div className="mo-view-toggle">
-                      {[
-                        { k: "all", label: "All" },
-                        { k: "pending", label: "Not picked" },
-                        { k: "picked", label: "Picked" },
-                        {
-                          k: "noted",
-                          label: `Noted${notedOrdersCount > 0 ? ` (${notedOrdersCount})` : ""}`,
-                        },
-                      ].map((f) => (
-                        <button
-                          key={f.k}
-                          type="button"
-                          className={`mo-view-btn${orderPickFilter === f.k ? " active" : ""}`}
-                          onClick={() => setOrderPickFilter(f.k)}
-                        >
-                          {f.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
                   {/* Always-visible colorful gift-cards download — exports only
                       gift-wrap orders (selected ones if any, else all in view).
                       Prices show only for COD gift orders. */}

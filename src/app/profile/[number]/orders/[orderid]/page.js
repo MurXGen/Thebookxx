@@ -1599,38 +1599,47 @@ export default function OrderDetailPage() {
             );
           })()}
 
-          {shippingId && (
-            <div className="od-trk-id">
-              <div className="od-trk-id-l">
-                <span className="od-trk-lbl">Tracking ID</span>
-                <span className="od-trk-val">{shippingId}</span>
-              </div>
-              <div className="od-trk-id-r">
-                <button
-                  type="button"
-                  className="od-trk-copy"
-                  onClick={() => {
-                    try {
-                      navigator.clipboard.writeText(String(shippingId));
-                      setTrkIdCopied(true);
-                      setTimeout(() => setTrkIdCopied(false), 1500);
-                    } catch {}
-                  }}
-                >
-                  {trkIdCopied ? <Check size={14} /> : <Copy size={14} />}
-                  {trkIdCopied ? "Copied" : "Copy"}
-                </button>
-                <a
-                  className="od-trk-link"
-                  href="https://www.indiapost.gov.in"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Track on India Post ↗
-                </a>
-              </div>
-            </div>
-          )}
+          {shippingId &&
+            (() => {
+              // Only real India Post consignment IDs (ordinary "C…" / speed
+              // post "E…") are copiable + link to tracking. Anything else is
+              // shown plainly, with no copy button and no India Post link.
+              const isPostId = /^[ce]/i.test(String(shippingId).trim());
+              return (
+                <div className="od-trk-id">
+                  <div className="od-trk-id-l">
+                    <span className="od-trk-lbl">Tracking ID</span>
+                    <span className="od-trk-val">{shippingId}</span>
+                  </div>
+                  {isPostId && (
+                    <div className="od-trk-id-r">
+                      <button
+                        type="button"
+                        className="od-trk-copy"
+                        onClick={() => {
+                          try {
+                            navigator.clipboard.writeText(String(shippingId));
+                            setTrkIdCopied(true);
+                            setTimeout(() => setTrkIdCopied(false), 1500);
+                          } catch {}
+                        }}
+                      >
+                        {trkIdCopied ? <Check size={14} /> : <Copy size={14} />}
+                        {trkIdCopied ? "Copied" : "Copy"}
+                      </button>
+                      <a
+                        className="od-trk-link"
+                        href="https://www.indiapost.gov.in"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Track on India Post ↗
+                      </a>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
         </section>
       )}
 

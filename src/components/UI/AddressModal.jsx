@@ -588,10 +588,22 @@ export default function AddressModal({
   // ₹300–500 up to ₹30
   // > ₹500 full available balance
   // (always capped by the actual balance and the goods total.)
+  // Special coupon: "100% Use of wallet" unlocks the FULL wallet balance (the
+  // normal cap is 50% for balances above ₹100). Detected by its title/code so
+  // it never acts as an order discount — it only lifts the wallet cap.
+  const isWalletCoupon =
+    !!appliedCoupon &&
+    (/wallet/i.test(appliedCoupon.title || "") ||
+      /full\s*use/i.test(appliedCoupon.code || ""));
+
   // Coins redemption: if the wallet balance is above ₹100 they can redeem up
-  // to 50% of it; ₹100 or below can be used in full.
-  const walletCapForOrder =
-    walletBalance > 100 ? Math.floor(walletBalance * 0.5) : walletBalance;
+  // to 50% of it; ₹100 or below can be used in full. The wallet coupon lifts
+  // this to 100% of the balance.
+  const walletCapForOrder = isWalletCoupon
+    ? walletBalance
+    : walletBalance > 100
+      ? Math.floor(walletBalance * 0.5)
+      : walletBalance;
   const maxWalletUsable = Math.min(
     walletBalance,
     walletCapForOrder,
@@ -624,6 +636,8 @@ export default function AddressModal({
     _netNoCoupon + _delivForCoupon + _addOnsForCoupon;
   const couponDiscount = (() => {
     if (!appliedCoupon) return 0;
+    // Wallet-unlock coupon isn't a price discount — it only lifts the cap.
+    if (isWalletCoupon) return 0;
     const base = Math.max(0, couponBaseTotal);
     let d =
       appliedCoupon.type === "flat"
@@ -638,6 +652,12 @@ export default function AddressModal({
     Math.max(0, finalPayable - walletApplied - couponDiscount) +
     qrAddOn +
     proAddonCharge;
+
+  // Applying the wallet-unlock coupon turns the wallet on automatically so the
+  // full balance is deducted and only the remainder shows as payable.
+  useEffect(() => {
+    if (isWalletCoupon && walletBalance > 0) setWalletEnabled(true);
+  }, [isWalletCoupon, walletBalance]);
 
   // ── Coupons ──────────────────────────────────────────────────────────────
   const loadCoupons = async () => {
@@ -2626,7 +2646,9 @@ export default function AddressModal({
                               {appliedCoupon.code} applied
                             </span>
                             <span className="pa-row-sub free">
-                              You saved ₹{couponDiscount}
+                              {isWalletCoupon
+                                ? `Full wallet unlocked · ₹${walletApplied} applied`
+                                : `You saved ₹${couponDiscount}`}
                             </span>
                           </span>
                           <button
@@ -2699,9 +2721,11 @@ export default function AddressModal({
                         Use wallet balance · ₹{walletBalance}
                       </span>
                       <span className="wc-apply-note">
-                        {walletEnabled
-                          ? `Applying ₹${walletApplied} to this order`
-                          : `You can use up to ₹${maxWalletUsable} on this order`}
+                        {isWalletCoupon
+                          ? `Full wallet unlocked — applying ₹${walletApplied}, rest payable`
+                          : walletEnabled
+                            ? `Applying ₹${walletApplied} to this order`
+                            : `You can use up to ₹${maxWalletUsable} on this order`}
                       </span>
                     </span>
                     <span

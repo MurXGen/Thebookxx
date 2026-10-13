@@ -2074,13 +2074,19 @@ export default function OrderDetailPage() {
         </section>
       )}
 
-      {/* Scratch-card reward — below the bill breakdown (skeleton → 3D → reveal) */}
-      <OrderScratchCard
-        phone={String(order["Phone Number"] || number)}
-        orderId={orderId}
-        orderValue={bd.grand}
-        cancelled={cancelled}
-      />
+      {/* Scratch-card reward — below the bill breakdown (skeleton → 3D → reveal).
+          Hidden for unconfirmed orders (payment-pending / needs attention). */}
+      {!(
+        /unconfirmed|pending/i.test(order["Order Status"] || "") ||
+        /\(unconfirmed\)/i.test(order["Customer Name"] || "")
+      ) && (
+        <OrderScratchCard
+          phone={String(order["Phone Number"] || number)}
+          orderId={orderId}
+          orderValue={bd.grand}
+          cancelled={cancelled}
+        />
+      )}
 
       {/* Add more before packing — at the bottom, only while still packable. */}
       {order &&

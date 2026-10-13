@@ -21248,7 +21248,7 @@ img[data-loaded="true"] {
   border: 1px solid var(--hairline);
   border-radius: 18px;
   box-shadow: var(--shadow-xs);
-  padding: 14px 16px;
+  padding: 18px 19px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -25165,7 +25165,8 @@ img[data-loaded="true"] {
 .admin-orders-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 16px;
+  gap: 20px;
+  padding: 4px 2px 8px;
   align-items: stretch; /* equal-height tiles per row */
 }
 @media (max-width: 640px) {
@@ -29408,10 +29409,10 @@ img[data-loaded="true"] {
   min-width: 0;
 }
 .mo2-name {
-  font-size: 17px;
-  font-weight: 800;
-  color: var(--foreground, #0a0a0a);
-  line-height: 1.2;
+  font-size: 16px;
+  font-weight: 600;
+  color: #000;
+  line-height: 1.25;
   word-break: break-word;
 }
 .mo2-phone {
@@ -29419,8 +29420,9 @@ img[data-loaded="true"] {
   background: none;
   padding: 0;
   text-align: left;
-  font-size: 13px;
-  color: var(--dark-50, #6b7280);
+  font-size: 12px;
+  font-weight: 500;
+  color: #000;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -29443,10 +29445,10 @@ img[data-loaded="true"] {
   appearance: none;
   border: none;
   background: none;
-  padding: 0 18px 0 0;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--st-color, #16a34a);
+  padding: 0 16px 0 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--st-color, #008f0c);
   cursor: pointer;
   text-align: right;
   direction: rtl;
@@ -29483,18 +29485,18 @@ img[data-loaded="true"] {
 }
 .mo2-cover-item {
   flex: 0 0 auto;
-  width: 84px;
+  width: 78px;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 4px;
 }
 .mo2-cover {
   position: relative;
-  width: 84px;
-  height: 84px;
-  border-radius: 12px;
+  width: 78px;
+  height: 110px;
+  border-radius: 8px;
   overflow: hidden;
-  background: var(--surface-2, #eef0f2);
+  background: #d9d9d9;
 }
 .mo2-cover img {
   width: 100%;
@@ -29502,17 +29504,17 @@ img[data-loaded="true"] {
   object-fit: cover;
 }
 .mo2-cover-name {
-  font-size: 12.5px;
-  font-weight: 700;
-  color: var(--foreground, #0a0a0a);
+  font-size: 11px;
+  font-weight: 600;
+  color: #000;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .mo2-cover-price {
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--dark-60, #4b5563);
+  font-size: 11px;
+  font-weight: 500;
+  color: #000;
 }
 /* Info grid */
 .mo2-grid {
@@ -29531,20 +29533,20 @@ img[data-loaded="true"] {
   text-align: right;
 }
 .mo2-cell-k {
-  font-size: 12.5px;
-  color: var(--dark-50, #6b7280);
+  font-size: 11px;
+  color: #000;
 }
 .mo2-cell-v {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--foreground, #0a0a0a);
+  font-size: 11px;
+  font-weight: 500;
+  color: #000;
   word-break: break-word;
 }
 .mo2-v-blue {
-  color: #2563eb;
+  color: #0d6bf5;
 }
 .mo2-v-green {
-  color: #16a34a;
+  color: #008f0c;
 }
 .mo2-v-ul {
   text-decoration: underline;
@@ -29564,15 +29566,13 @@ img[data-loaded="true"] {
 /* Note */
 .mo2-note {
   display: flex;
-  gap: 6px;
-  margin-top: 14px;
-  font-size: 13px;
-  color: var(--dark-60, #4b5563);
+  gap: 4px;
+  font-size: 11px;
+  color: #000;
   min-width: 0;
 }
 .mo2-note-k {
   flex: 0 0 auto;
-  font-weight: 700;
 }
 .mo2-note-v {
   white-space: nowrap;
@@ -29586,18 +29586,18 @@ img[data-loaded="true"] {
   justify-content: space-between;
 }
 .mo2-total-k {
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--foreground, #0a0a0a);
+  font-size: 13px;
+  font-weight: 500;
+  color: #000;
 }
 .mo2-total-v {
   border: none;
   background: none;
   padding: 0;
   cursor: pointer;
-  font-size: 18px;
-  font-weight: 800;
-  color: var(--foreground, #0a0a0a);
+  font-size: 14px;
+  font-weight: 700;
+  color: #000;
 }
 /* Bottom action bar */
 .mo2-actions {
@@ -29608,7 +29608,32 @@ img[data-loaded="true"] {
 .mo2-actions-l {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+}
+/* Compact, consistent icon buttons in the card's bottom bar (incl. 3-dot). */
+.mo2-actions .mo-frame-ic,
+.mo2-actions .mo-kebab-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid var(--hairline, #e5e7eb);
+  background: #fff;
+  color: var(--dark-50, #6b7280);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+  cursor: pointer;
+}
+.mo2-actions .mo-frame-ic.mo-frame-wa {
+  color: #25d366;
+}
+.mo2-actions .mo-frame-ic.mo-frame-email {
+  color: #2563eb;
+}
+.mo2-actions .mo-frame-ic:hover,
+.mo2-actions .mo-kebab-btn:hover {
+  background: var(--surface-2, #f5f6f7);
 }
 /* Kebab menu that opens upward (card bottom bar) */
 .mo-kebab-menu.mo-kebab-menu-up {

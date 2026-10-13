@@ -7360,19 +7360,49 @@ export default function ManageOrdersPage() {
           runRev += dailyRev[m][day] || 0;
           pts.push({ day, value: run, rev: Math.round(runRev) });
         }
+        // Forecast the rest of the CURRENT month: continue from today at the
+        // recent daily run-rate (average of the last up-to-7 days). Dashed line.
+        let predicted = null;
+        if (m === curMonth && curDay >= 1 && curDay < daysInMonth) {
+          const win = Math.min(7, curDay);
+          let sumO = 0;
+          let sumR = 0;
+          for (let day = curDay - win + 1; day <= curDay; day++) {
+            sumO += arr[day] || 0;
+            sumR += dailyRev[m][day] || 0;
+          }
+          const rateO = sumO / win;
+          const rateR = sumR / win;
+          let pv = run;
+          let pr = runRev;
+          predicted = [{ day: curDay, value: run, rev: Math.round(runRev) }];
+          for (let day = curDay + 1; day <= daysInMonth; day++) {
+            pv += rateO;
+            pr += rateR;
+            predicted.push({
+              day,
+              value: Math.round(pv),
+              rev: Math.round(pr),
+            });
+          }
+        }
+        const projEnd = predicted ? predicted[predicted.length - 1] : null;
         return {
           month: m,
           label: MONTH_LABELS[m],
           color: MONTH_COLORS[m],
           pts,
+          predicted,
           total: run,
           totalRev: Math.round(runRev),
+          projTotal: projEnd ? projEnd.value : run,
+          projTotalRev: projEnd ? projEnd.rev : Math.round(runRev),
           isCurrent: m === curMonth,
         };
       })
       .filter((mm) => mm.pts.length > 0 && mm.total > 0);
-    const max = Math.max(1, ...months.map((mm) => mm.total));
-    const maxRev = Math.max(1, ...months.map((mm) => mm.totalRev));
+    const max = Math.max(1, ...months.map((mm) => mm.projTotal));
+    const maxRev = Math.max(1, ...months.map((mm) => mm.projTotalRev));
     return { year: y, curMonth, curDay, months, max, maxRev };
   }, [orders]);
 
@@ -9326,7 +9356,7 @@ export default function ManageOrdersPage() {
               title={`Monthly run rate · ${monthlyRunRate.year}`}
               sub={`Cumulative ${
                 runRateMetric === "revenue" ? "revenue" : "orders"
-              } by day — one competing line per month`}
+              } by day — one line per month · dashed = forecast for the rest of this month`}
             >
               {(() => {
                 const { months, max, maxRev, year } = monthlyRunRate;
@@ -9445,6 +9475,23 @@ export default function ManageOrdersPage() {
                             }
                           />
                         ))}
+                        {/* Dashed forecast for the rest of the current month */}
+                        {months
+                          .filter((m) => m.predicted && m.predicted.length > 1)
+                          .map((m) => (
+                            <path
+                              key={`pred-${m.month}`}
+                              d={linePath(m.predicted)}
+                              fill="none"
+                              stroke={m.color}
+                              strokeWidth="2"
+                              strokeDasharray="5 5"
+                              vectorEffect="non-scaling-stroke"
+                              strokeLinejoin="round"
+                              strokeLinecap="round"
+                              opacity={hoverDay ? 0.25 : 0.55}
+                            />
+                          ))}
                       </svg>
 
                       {blink && (

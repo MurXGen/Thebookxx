@@ -335,17 +335,6 @@ export default function AddressModal({
   // no fear of a lost payment). Guarded so we only write once.
   const [upiReassured, setUpiReassured] = useState(false);
   const processingMarkedRef = useRef(false);
-  const markOrderProcessing = async () => {
-    const oid = upiOrderRef;
-    setUpiReassured(true);
-    if (!oid || processingMarkedRef.current) return;
-    processingMarkedRef.current = true;
-    try {
-      await updateOrderRow(oid, { "Order Status": "Processing" });
-    } catch (e) {
-      console.error("Mark Processing failed:", e);
-    }
-  };
 
   // "Verify again" — re-check this same order's status with a 5s poll (no
   // optimistic placement; confirmation only comes from the sheet).
@@ -1657,9 +1646,10 @@ export default function AddressModal({
       "_blank",
       "noopener,noreferrer",
     );
-    await markOrderProcessing();
+    // Do NOT change the order status — it stays "(unconfirmed)" until our team
+    // verifies the UPI payment and confirms it manually.
     showToast(
-      "Payment details sent — your order is confirmed and being processed ✓",
+      "Payment details sent — our team will verify and confirm your order shortly ✓",
       "success",
     );
     finalizeUPISuccess();

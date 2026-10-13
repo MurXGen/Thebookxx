@@ -4,6 +4,169 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "nobel-peace-prize-2026-navi-pillay-books-on-justice-human-rights-india": {
+    "id": "blog-077",
+    "title": "Nobel Peace Prize 2026 Goes to Navi Pillay: 15 Books on Justice, Human Rights and Courage to Read in India",
+    "slug": "nobel-peace-prize-2026-navi-pillay-books-on-justice-human-rights-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-10-13",
+    "lastModified": "2026-10-13",
+    "excerpt": "Navi Pillay, of Indian Tamil descent, won the 2026 Nobel Peace Prize. 15 books on justice, rights and courage to read, from ₹1 with free delivery and COD.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "On Friday, 9 October 2026, the Norwegian Nobel Committee in Oslo announced that the Nobel Peace Prize for 2026 goes to Navanethem \"Navi\" Pillay, the South African jurist. Press reports say the committee honoured her efforts to promote peace and international law, and spoke of a firm moral compass that has run through her long career. The prize is worth 12 million Swedish kronor, and the award ceremony is scheduled for 10 December 2026 in Oslo."
+      },
+      {
+        "type": "paragraph",
+        "content": "For Indian readers the news carries an extra pull. Pillay was born in Durban into a family of Indian, Tamil-origin descent, and she grew up under apartheid, a system that told her where she could live, study and work. She went on to build a career in law and in international justice. That life story is a reminder that peace is not only a matter of treaties. It is also built from courtrooms, testimony, patient institutions and ordinary people who refuse to look away."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "The announcement at a glance",
+        "content": "Prize: Nobel Peace Prize 2026. Laureate: Navanethem (Navi) Pillay, South African jurist of Indian Tamil descent. Announced: Friday 9 October 2026 by the Norwegian Nobel Committee, Oslo. Reported reason: efforts to promote peace and international law. Prize money: 12 million Swedish kronor. Ceremony: 10 December 2026, Oslo. Check the official Nobel Prize site for the full citation."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Why a Peace Prize for a jurist matters"
+      },
+      {
+        "type": "paragraph",
+        "content": "Peace prizes often go to leaders or activists, so a prize centred on international law invites a useful question: what actually keeps the peace once the cameras leave? The honest answer from history is rules, courts and institutions that people trust enough to use instead of violence. The books below approach that idea from different angles, some through memoir, some through fiction and some through big-picture history. You do not need a law degree to read any of them."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Start with young voices who would not be silenced"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/i-am-malala\" style=\"color:#fb8500;font-weight:600\">I Am Malala</a> is the most direct companion to this week's news. Malala Yousafzai was herself a Nobel Peace laureate, sharing the 2014 prize, and her memoir of a girl who insisted on going to school is written in a plain, warm voice that suits teenagers and adults alike. Read it alongside <a href=\"/books/the-diary-of-a-young-girl\" style=\"color:#fb8500;font-weight:600\">The Diary of a Young Girl</a>, Anne Frank's wartime diary, which shows what rights look like when they are taken away from one ordinary family in one small annex."
+      },
+      {
+        "type": "paragraph",
+        "content": "For older students, <a href=\"/books/the-kite-runner\" style=\"color:#fb8500;font-weight:600\">The Kite Runner</a> by Khaled Hosseini is a novel about guilt, friendship and a country torn apart by conflict. It is not a legal text, but it explains why displaced people and broken communities matter in a way no statute can."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Novels that put justice on trial"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/to-kill-a-mockingbird\" style=\"color:#fb8500;font-weight:600\">To Kill a Mockingbird</a> by Harper Lee is the classic courtroom novel about a lawyer who defends a man the town has already condemned. It is a gentle read on the surface and a sharp one underneath, and it pairs naturally with any conversation about equal treatment before the law. <a href=\"/books/animal-farm\" style=\"color:#fb8500;font-weight:600\">Animal Farm</a> and <a href=\"/books/1984\" style=\"color:#fb8500;font-weight:600\">1984</a>, both by George Orwell, show how language and power can be bent until rights quietly disappear. They are short, and both are easy to finish in a weekend."
+      },
+      {
+        "type": "blockquote",
+        "content": "A prize for international law is a prize for patience: the slow work of making rules that bind the powerful as well as the weak."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Non-fiction on why some societies hold together"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/why-nations-fail\" style=\"color:#fb8500;font-weight:600\">Why Nations Fail</a> argues that open, accountable institutions decide whether societies prosper or decay, which links neatly to Pillay's field. <a href=\"/books/sapiens-a-brief-history-of-humankind\" style=\"color:#fb8500;font-weight:600\">Sapiens: A Brief History of Humankind</a> by Yuval Noah Harari zooms out even further and asks how humans came to cooperate in huge numbers through shared stories such as law, money and human rights. For a more personal angle, <a href=\"/books/man-s-search-for-meaning\" style=\"color:#fb8500;font-weight:600\">Man's Search for Meaning</a> by Viktor Frankl is a short, searing account of finding purpose in the worst imaginable circumstances."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Books from India and for India"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/the-bhagavad-gita\" style=\"color:#fb8500;font-weight:600\">The Bhagavad Gita</a> sits at the centre of the Indian conversation about duty, conflict and conscience, and has been read for generations by people facing hard moral choices. <a href=\"/books/wings-of-fire\" style=\"color:#fb8500;font-weight:600\">Wings of Fire</a> by A.P.J. Abdul Kalam tells the story of a small-town boy who built a life of service, and it remains one of the most gifted books for Indian teenagers. For a long, rich novel about war and its aftermath, <a href=\"/books/war-and-peace\" style=\"color:#fb8500;font-weight:600\">War and Peace</a> by Leo Tolstoy rewards the reader who sets aside a few quiet weeks."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Courage in everyday life"
+      },
+      {
+        "type": "paragraph",
+        "content": "Peace also begins in small, private decisions. <a href=\"/books/the-courage-to-be-disliked\" style=\"color:#fb8500;font-weight:600\">The Courage to Be Disliked</a> is a conversational book about freeing yourself from other people's expectations, which is a first step towards standing up for what you believe. <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar is a practical guide to thinking, speaking and deciding with more focus, and it is a useful companion for anyone who wants to argue a point calmly rather than loudly. <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear is the dependable pick for turning a good intention, such as reading about justice for fifteen minutes a day, into something that lasts."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "A simple four-week reading plan"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "Week one: read I Am Malala or The Diary of a Young Girl, one short and human book to set the tone.",
+          "Week two: read To Kill a Mockingbird, or Animal Farm if you want something shorter.",
+          "Week three: read Why Nations Fail or Man's Search for Meaning, one big idea about how societies and people endure.",
+          "Week four: finish with The Bhagavad Gita or Wings of Fire, and write down one thing you will do differently."
+        ]
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Build the shelf without overspending",
+        "content": "Every book above is available at TheBookX. Books start from ₹1, with free delivery and Cash on Delivery across India. These titles also make thoughtful gifts for students and teachers; gift wrapping is available for +₹25 per book."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      },
+      {
+        "type": "paragraph",
+        "content": "Nobel announcements fade from the headlines within days. A good book on the same theme can stay with you for years, and 10 December, the day of the ceremony, gives you a comfortable target to finish at least one of them."
+      }
+    ],
+    "coverImage": "/blogs/nobel-peace-prize-2026-navi-pillay-books-on-justice-human-rights-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/nobel-peace-prize-2026-navi-pillay-books-on-justice-human-rights-india.jpeg",
+        "alt": "A young Indian woman reading a plain unmarked paperback by a sunlit window with a stack of blank-covered books and a cup of tea beside her",
+        "caption": "Nobel Peace Prize 2026 winner Navi Pillay's story invites a reading list on justice, rights and courage",
+        "category": "Reading Lists"
+      }
+    ],
+    "keywords": [
+      "nobel peace prize 2026",
+      "navi pillay nobel peace prize",
+      "navanethem pillay",
+      "nobel peace prize 2026 winner",
+      "books on human rights",
+      "books on justice",
+      "books on peace",
+      "indian origin nobel laureate",
+      "books to read after nobel prize",
+      "buy books online india free delivery",
+      "books from rs 1 india",
+      "TheBookX"
+    ],
+    "categories": [
+      "Reading Lists",
+      "Current Affairs",
+      "Reading Culture"
+    ],
+    "faqs": [
+      {
+        "question": "Who won the Nobel Peace Prize 2026?",
+        "answer": "The 2026 Nobel Peace Prize was awarded to Navanethem (Navi) Pillay, a South African jurist of Indian Tamil descent, announced by the Norwegian Nobel Committee in Oslo on 9 October 2026. Press reports say it recognises her efforts to promote peace and international law. See the official Nobel Prize website for the full citation."
+      },
+      {
+        "question": "When is the Nobel Peace Prize 2026 ceremony?",
+        "answer": "The award ceremony is scheduled for 10 December 2026 in Oslo. The prize amount is 12 million Swedish kronor."
+      },
+      {
+        "question": "Which books should I read about justice and human rights?",
+        "answer": "Good starting points are I Am Malala, The Diary of a Young Girl, To Kill a Mockingbird, Animal Farm, Why Nations Fail and Man's Search for Meaning. All are available on TheBookX from ₹1 with free delivery and Cash on Delivery across India."
+      },
+      {
+        "question": "Are these books suitable as gifts for students?",
+        "answer": "Yes. I Am Malala, Wings of Fire and Animal Farm are popular picks for school and college students. TheBookX offers gift wrapping for +₹25 per book, along with free delivery and Cash on Delivery across India."
+      }
+    ]
+  },
   "nobel-economics-prize-2026-announcement-best-money-economics-books-india": {
     "id": "blog-076",
     "title": "Nobel Economics Prize 2026 Announced Today: 17 Money and Economics Books Every Indian Reader Should Own",

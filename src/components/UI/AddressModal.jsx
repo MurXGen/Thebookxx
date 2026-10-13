@@ -347,23 +347,12 @@ export default function AddressModal({
     }
   };
 
-  // After the verify countdown ends, the shopper taps "Verify status": we show a
-  // loader on the button, push the order to Processing, confirm it's placed &
-  // under review, then run the normal success flow ("Placing your order…").
-  const [verifyStatusBusy, setVerifyStatusBusy] = useState(false);
-  const handleVerifyStatus = async () => {
-    if (verifyStatusBusy) return;
-    setVerifyStatusBusy(true);
-    try {
-      await markOrderProcessing();
-      showToast(
-        "Order placed successfully — it's under review by our team for further processing ✓",
-        "success",
-      );
-      finalizeUPISuccess();
-    } finally {
-      setVerifyStatusBusy(false);
-    }
+  // "Verify again" — re-check this same order's status with a 5s poll (no
+  // optimistic placement; confirmation only comes from the sheet).
+  const handleVerifyStatus = () => {
+    if (upiPhase === "verifying") return;
+    setVerifyCountdown(30);
+    setUpiPhase("verifying");
   };
 
   const [giftWrap, setGiftWrap] = useState(giftWrapSelected);
@@ -828,9 +817,10 @@ export default function AddressModal({
     else setShowContactFields(false);
   }, [address, city]);
 
-  // UPI verification: once the shopper taps Verify we poll the sheet every 10s
-  // for 30s to see if the admin removed the "(unconfirmed)" tag. Confirmed
-  // success screen; otherwise timeout (WhatsApp fallback offered).
+  // UPI verification: ONLY when the shopper taps "Verify again" do we poll the
+  // sheet every 5s (for 30s) to see if the admin removed the "(unconfirmed)"
+  // tag. Confirmed → success screen; otherwise we quietly return to idle so the
+  // shopper can tap "Verify again" or "Verify via WhatsApp". No auto-verify.
   useEffect(() => {
     if (upiPhase !== "verifying") return;
     let cancelled = false;
@@ -842,14 +832,14 @@ export default function AddressModal({
     const tick = setInterval(() => {
       setVerifyCountdown((p) => (p <= 1 ? 0 : p - 1));
     }, 1000);
-    const poll = setInterval(check, 10000);
+    const poll = setInterval(check, 5000);
     upiPollRef.current = { poll, tick };
     check(); // immediate first check
     const to = setTimeout(() => {
       if (cancelled) return;
       clearInterval(poll);
       clearInterval(tick);
-      setUpiPhase((ph) => (ph === "verifying" ? "timeout" : ph));
+      setUpiPhase((ph) => (ph === "verifying" ? "idle" : ph));
     }, 30500);
     return () => {
       cancelled = true;
@@ -861,19 +851,17 @@ export default function AddressModal({
   }, [upiPhase, upiOrderRef]);
 
   // UPI modal: show a 2s "generating QR" loader (QR blurred), then reveal the
-  // sharp QR and automatically begin the 30s waiting/verification — no manual
-  // "Reveal QR" or "Verify" tap needed.
+  // sharp QR and sit idle — we DON'T auto-verify. The shopper pays, then taps
+  // "Verify again" (5s poll) or "Verify via WhatsApp" to notify us.
   useEffect(() => {
     if (!showUPIPayment) return;
     setQrUnlocked(false);
     setUpiPhase("await");
     setUpiReassured(false);
-    setVerifyStatusBusy(false);
     processingMarkedRef.current = false;
     const t = setTimeout(() => {
       setQrUnlocked(true);
-      setVerifyCountdown(30);
-      setUpiPhase("verifying");
+      setUpiPhase("idle");
       trackPurchase({
         cartItems: cartBooks,
         totalAmount: netPayable,
@@ -884,10 +872,8 @@ export default function AddressModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showUPIPayment]);
 
-  // "Check payment status" — re-run the 30s verification poll AND optimistically
-  // mark the order Processing so the shopper sees it's confirmed.
+  // "Verify again" — manually re-check the order status (5s poll for 30s).
   const handleCheckUPIStatus = () => {
-    markOrderProcessing();
     setVerifyCountdown(30);
     setUpiPhase("verifying");
   };
@@ -1643,13 +1629,40 @@ export default function AddressModal({
   const handleUPIWhatsAppVerify = async () => {
     trackFunnelEvent(EVENTS.UPI_PAYMENT_VERIFIED, {
       amount: finalPayable,
-      via: "mark_processing",
+      via: "whatsapp_verify",
     });
+    // Build a details-rich message to TheBookX so the team can verify the UPI
+    // payment: order id, customer, amount paid, and the full item list.
+    const oid = upiOrderRef || "";
+    const amountPaid = advanceMode
+      ? codAdvanceAmount
+      : getTotalWithDelivery(fasterDelivery) + addOnsCharge;
+    const itemsList = (cartBooks || [])
+      .map((b, i) => {
+        const qty = b.qty || b.quantity || 1;
+        const unit = b.discountedPrice || b.price || 0;
+        return `${i + 1}. ${b.name} × ${qty} = ₹${unit * qty}`;
+      })
+      .join("\n");
+    const msg =
+      `Hi TheBookX 👋\n\nI've *paid via UPI* — please verify my payment:\n\n` +
+      (oid ? `📦 *Order ID:* ${oid}\n` : "") +
+      `👤 *Name:* ${name}\n📱 *Phone:* ${phone}\n` +
+      `💳 *Paid:* ₹${amountPaid} (UPI${advanceMode ? " advance" : ""})\n` +
+      `🚚 *Delivery:* ${fasterDelivery ? "Faster" : "Standard"}\n\n` +
+      `*Items:*\n${itemsList}\n\n` +
+      `Please confirm once verified. Thank you! 🙏`;
+    window.open(
+      `https://wa.me/917710892108?text=${encodeURIComponent(msg)}`,
+      "_blank",
+      "noopener,noreferrer",
+    );
     await markOrderProcessing();
     showToast(
-      "Payment noted — your order is confirmed and being processed ✓",
+      "Payment details sent — your order is confirmed and being processed ✓",
       "success",
     );
+    finalizeUPISuccess();
   };
 
   // Shopper taps the Verify button on the QR screen.
@@ -3642,7 +3655,6 @@ export default function AddressModal({
             upiPhase={upiPhase}
             verifyCountdown={verifyCountdown}
             reassured={upiReassured}
-            verifyStatusBusy={verifyStatusBusy}
             onVerifyStatus={handleVerifyStatus}
             upiId={UPI_ID}
             onRevealQR={handleUPIPaymentClick}
@@ -4859,7 +4871,6 @@ function UPIPaymentModal({
   upiPhase = "await",
   verifyCountdown = 30,
   reassured = false,
-  verifyStatusBusy = false,
   onVerifyStatus,
   upiId,
   onRevealQR,
@@ -5017,28 +5028,28 @@ function UPIPaymentModal({
           </div>
 
           <div className="upiv3-actions-row">
-            {upiPhase === "timeout" ? (
-              <button
-                type="button"
-                className="sec-big-btn width100 flex flex-row items-center justify-center gap-6"
-                onClick={onVerifyStatus}
-                disabled={verifyStatusBusy}
-              >
-                {verifyStatusBusy ? (
-                  <>
-                    <span className="upiv3-spin dark" /> Placing your order…
-                  </>
-                ) : (
-                  <>
-                    <ShieldCheck size={16} /> Verify status
-                  </>
-                )}
-              </button>
-            ) : (
+            {upiPhase === "verifying" ? (
               <span className="sec-big-btn width100 is-loading flex flex-row items-center justify-center gap-6">
-                <span className="upiv3-spin dark" /> Verifying…{" "}
+                <span className="upiv3-spin dark" /> Checking status…{" "}
                 {verifyCountdown}s
               </span>
+            ) : (
+              <div className="upiv3-verify-btns">
+                <button
+                  type="button"
+                  className="sec-big-btn flex flex-row items-center justify-center gap-6"
+                  onClick={onVerifyStatus}
+                >
+                  <ShieldCheck size={16} /> Verify again
+                </button>
+                <button
+                  type="button"
+                  className="pri-big-btn upiv3-wa-verify flex flex-row items-center justify-center gap-6"
+                  onClick={onWhatsAppFallback}
+                >
+                  <FaWhatsapp size={16} /> Verify via WhatsApp
+                </button>
+              </div>
             )}
           </div>
 

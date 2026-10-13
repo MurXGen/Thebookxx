@@ -7757,6 +7757,16 @@ export default function ManageOrdersPage() {
     setWsH(h || "");
   };
   const closeWeightSize = () => setWsOrder(null);
+  // Open the shipment-details sheet (weight/sizes + tracking id, with scanner).
+  // Seeds the tracking draft from the order's current Shipping ID.
+  const openShipEdit = (order) => {
+    openWeightSize(order);
+    const oid = order["Order ID"];
+    setTrackDrafts((p) => ({
+      ...p,
+      [oid]: String(order.shippingId || order["Shipping ID"] || "").trim(),
+    }));
+  };
   const saveWeightSize = async () => {
     if (!wsOrder) return;
     const oid = wsOrder["Order ID"];
@@ -7764,11 +7774,17 @@ export default function ManageOrdersPage() {
     const dims = [wsL, wsB, wsH].map((s) => String(s).replace(/[^\d]/g, ""));
     // Only store sizes when all three dimensions are present.
     const sizes = dims.every((d) => d) ? dims.join("x") : "";
+    // Tracking id entered/scanned on this same sheet (queued for push).
+    const trk = String(trackDrafts[oid] || "").trim();
+    const curTrk = String(
+      wsOrder.shippingId || wsOrder["Shipping ID"] || "",
+    ).trim();
     setWsSaving(true);
     patchLocalOrder(oid, { "Weight(gm)": w, "Sizes(Lxbxh)": sizes });
     try {
       await updateOrderRow(oid, { "Weight(gm)": w, "Sizes(Lxbxh)": sizes });
-      showToast("Weight & sizes saved ✓", "success");
+      if (trk && trk !== curTrk) queueTracking(wsOrder, trk);
+      showToast("Shipment details saved ✓", "success");
       setWsOrder(null);
     } catch (e) {
       console.error("Weight/sizes save failed:", e);
@@ -13289,403 +13305,77 @@ export default function ManageOrdersPage() {
                                 <AlertCircle size={12} /> {exReason}
                               </div>
                             )}
-                            {/* Top — serial · name · payment pill. */}
-                            <div
-                              className="mo-card-top mo-card-top-toggle"
-                              onClick={() => {
-                                if (longPressRef.current) {
-                                  longPressRef.current = false;
-                                  return;
-                                }
-                                cardSelectMode
-                                  ? toggleCardSelect()
-                                  : setBillOrderId(orderId);
-                              }}
-                              title={
-                                cardSelectMode
-                                  ? isSelected
-                                    ? "Deselect"
-                                    : "Select"
-                                  : "Open order bill"
-                              }
-                            >
-                              <div className="mo-card-id">
-                                <div className="mo-name-row">
-                                  {cardSelectMode && (
-                                    <button
-                                      type="button"
-                                      className={`mo-card-checkbox${isSelected ? " on" : ""}`}
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        toggleCardSelect();
-                                      }}
-                                      aria-pressed={isSelected}
-                                      title={isSelected ? "Deselect" : "Select"}
-                                    >
-                                      {isSelected && <Check size={14} />}
-                                    </button>
-                                  )}
-                                  <span className="mo-srno">{idx + 1}</span>
-                                  <span className="mo-name">
-                                    {order["Customer Name"] || "—"}
-                                  </span>
-                                  <div className="mo-name-right">
-                                    {agoLabel && (
-                                      <span
-                                        className="mo-age-pill"
-                                        title={
-                                          orderDate
-                                            ? orderDate.toLocaleString("en-IN")
-                                            : ""
-                                        }
-                                      >
-                                        {agoLabel}
-                                      </span>
-                                    )}
-                                    <span
-                                      className={`mo-pay-pill ${
-                                        isPrepaid
-                                          ? "prepaid"
-                                          : isCOD
-                                            ? "cod"
-                                            : "upi"
-                                      }`}
-                                    >
-                                      {isPrepaid
-                                        ? "₹99 paid"
-                                        : isCOD
-                                          ? "COD"
-                                          : "UPI"}
-                                    </span>
-                                    <div className="mo-kebab-wrap">
-                                      <button
-                                        type="button"
-                                        className="mo-kebab-btn"
-                                        title="More actions"
-                                        aria-label="More actions"
-                                        aria-haspopup="menu"
-                                        aria-expanded={cardMenuId === orderId}
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          setCardMenuId((p) =>
-                                            p === orderId ? null : orderId,
-                                          );
-                                        }}
-                                      >
-                                        <MoreVertical size={15} />
-                                      </button>
-                                      {cardMenuId === orderId && (
-                                        <>
-                                          <div
-                                            className="mo-kebab-backdrop"
-                                            onClick={(e) => {
-                                              e.stopPropagation();
-                                              setCardMenuId(null);
-                                            }}
-                                          />
-                                          <div
-                                            className="mo-kebab-menu"
-                                            role="menu"
-                                            onClick={(e) => e.stopPropagation()}
-                                          >
-                                            <button
-                                              type="button"
-                                              role="menuitem"
-                                              className="mo-kebab-item"
-                                              onClick={() => {
-                                                setCancelChoiceOrder(order);
-                                                setCardMenuId(null);
-                                              }}
-                                            >
-                                              <X size={14} /> Cancel order
-                                            </button>
-                                            <button
-                                              type="button"
-                                              role="menuitem"
-                                              className="mo-kebab-item"
-                                              onClick={() => {
-                                                openReplaceBook(order);
-                                                setCardMenuId(null);
-                                              }}
-                                            >
-                                              <RefreshCw size={14} /> Replace a
-                                              book
-                                            </button>
-                                            <div className="mo-kebab-group">
-                                              Advanced
-                                            </div>
-                                            <button
-                                              type="button"
-                                              role="menuitem"
-                                              className="mo-kebab-item"
-                                              onClick={() => {
-                                                copyToClipboard(
-                                                  buildIpAutofillJson(
-                                                    order,
-                                                    books,
-                                                    isCOD,
-                                                  ),
-                                                  `cardjson-${orderId}`,
-                                                );
-                                                setCardMenuId(null);
-                                              }}
-                                            >
-                                              <Copy size={14} /> Copy JSON
-                                            </button>
-                                            <div className="mo-kebab-sep" />
-                                            <button
-                                              type="button"
-                                              role="menuitem"
-                                              className="mo-kebab-item danger"
-                                              onClick={() =>
-                                                confirmDeleteOrder(order)
-                                              }
-                                            >
-                                              <Trash2 size={14} /> Delete
-                                              permanently
-                                            </button>
-                                          </div>
-                                        </>
-                                      )}
-                                    </div>
-                                    <button
-                                      type="button"
-                                      className="mo-card-dismiss"
-                                      title="Hide this card for now"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        dismissCard(orderId);
-                                      }}
-                                      aria-label="Hide this card"
-                                    >
-                                      <X size={14} />
-                                    </button>
-                                  </div>
-                                </div>
-                                <div className="mo-idline">
-                                  <button
-                                    type="button"
-                                    className="mo-phone-btn"
-                                    title="Tap to copy number"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      copyToClipboard(
-                                        String(order["Phone Number"] || ""),
-                                        `phone-${idx}`,
-                                      );
-                                    }}
-                                  >
-                                    +91 {order["Phone Number"]}
-                                    {copiedId === `phone-${idx}` && (
-                                      <span className="mo-phone-copied">
-                                        <Check size={12} /> Copied
-                                      </span>
-                                    )}
-                                  </button>
-                                  {/* Date + time, right-aligned. */}
-                                  <span
-                                    className="mo-idline-when"
-                                    title={
-                                      orderDate
-                                        ? orderDate.toLocaleString("en-IN")
-                                        : ""
-                                    }
-                                  >
-                                    <Calendar size={12} />
-                                    {orderDate
-                                      ? orderDate.toLocaleDateString("en-IN", {
-                                          day: "numeric",
-                                          month: "short",
-                                          year: "numeric",
-                                        })
-                                      : "—"}
-                                    {orderDate && (
-                                      <span className="mo-idline-time">
-                                        {orderDate.toLocaleTimeString("en-IN", {
-                                          hour: "numeric",
-                                          minute: "2-digit",
-                                          hour12: true,
-                                        })}
-                                      </span>
-                                    )}
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Terminal (Delivered / Cancelled) → compact
-                                2-line summary. */}
-                            {isTerminal && (
-                              <div className="mo-terminal-row">
-                                <span className="mo-terminal-amt">
-                                  ₹
-                                  {Number(order.revenue || 0).toLocaleString()}
-                                </span>
-                                <span
-                                  className={`mo-terminal-status ${
-                                    /cancel/i.test(order.status || "")
-                                      ? "cancelled"
-                                      : "delivered"
-                                  }`}
-                                >
-                                  {order.status}
-                                </span>
-                              </div>
-                            )}
-
-                            {!isTerminal && (
-                              <>
-                            {/* Panel — price on the left, status badge +
-                                WhatsApp + redirect grouped on the right. */}
-                            <div
-                              className="mo-panel"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <div className="mo-panel-row">
-                              <div className="mo-panel-actions">
-                              <button
-                                type="button"
-                                className="mo-frame-ic mo-frame-wa"
-                                onClick={() => {
-                                  pendingPickerChannel.current = "wa";
-                                  setWaCustomText("");
-                                  setWaPickerOrder(order);
-                                }}
-                                title="WhatsApp the customer"
-                                aria-label="WhatsApp the customer"
-                              >
-                                <FaWhatsapp size={17} />
-                              </button>
-                              {String(order["Email"] || "").trim() && (
+                            {/* Header — name + phone (left); status + date (right) */}
+                            <div className="mo2-head" onClick={(e) => e.stopPropagation()}>
+                              <div className="mo2-head-l">
+                                <span className="mo2-name">{order["Customer Name"] || "—"}</span>
                                 <button
                                   type="button"
-                                  className="mo-frame-ic mo-frame-email"
-                                  onClick={() => {
-                                    pendingPickerChannel.current = "email";
-                                    setWaCustomText("");
-                                    setWaPickerOrder(order);
-                                  }}
-                                  title="Email the customer"
-                                  aria-label="Email the customer"
+                                  className="mo2-phone"
+                                  title="Tap to copy number"
+                                  onClick={() =>
+                                    copyToClipboard(String(order["Phone Number"] || ""), `phone-${idx}`)
+                                  }
                                 >
-                                  <Mail size={15} />
+                                  {order["Phone Number"] || "—"}
+                                  {copiedId === `phone-${idx}` && (
+                                    <span className="mo-phone-copied">
+                                      <Check size={11} /> Copied
+                                    </span>
+                                  )}
                                 </button>
-                              )}
-                              {orderId && (
-                                <a
-                                  className="mo-frame-ic"
-                                  href={`/profile/${String(
-                                    order["Phone Number"] || "",
-                                  )
-                                    .replace(/\D/g, "")
-                                    .slice(-10)}/orders/${encodeURIComponent(orderId)}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  title="Open customer order page"
-                                  aria-label="Open customer order page"
+                              </div>
+                              <div className="mo2-head-r">
+                                <div
+                                  className="mo2-status-wrap"
+                                  style={{ "--st-color": moStatusColor(order.status) }}
                                 >
-                                  <ExternalLink size={15} />
-                                </a>
-                              )}
-                              <button
-                                type="button"
-                                className={`mo-frame-ic mo-frame-book${bookedOrders[orderId] ? " done" : ""}`}
-                                onClick={() => setBookOrder(order)}
-                                title={
-                                  bookedOrders[orderId]
-                                    ? "Booked with India Post"
-                                    : "Book online with India Post"
-                                }
-                                aria-label="Book online with India Post"
-                              >
-                                {bookedOrders[orderId] ? (
-                                  <CheckCircle size={15} />
-                                ) : (
-                                  <Truck size={15} />
-                                )}
-                              </button>
-                              </div>
-
-                              {/* Book total + benefit badges (add-ons / savings). */}
-                              <div className="mo-panel-left">
-                              {(() => {
-                                // Big number = what the customer pays (order
-                                // total). One coloured line below = margin
-                                // (profit), sign-driven. Operational detail
-                                // (COD collect, India Post fee) is in the title
-                                // and the bill modal.
-                                const rev = Number(order.revenue) || 0;
-                                const pnl = Number(order.pnl) || 0;
-                                const pct = rev > 0 ? (pnl / rev) * 100 : 0;
-                                const advancePaid = /^\s*yes/i.test(
-                                  String(order["Advance Paid"] || ""),
-                                );
-                                const codBase =
-                                  isCOD && advancePaid
-                                    ? Math.max(0, rev - 99)
-                                    : rev;
-                                const fee = isCOD
-                                  ? Math.round(codBase * 0.015)
-                                  : 0;
-                                const sign = pnl >= 0 ? "+" : "−";
-                                return (
-                                  <button
-                                    type="button"
-                                    className="mo-amount"
-                                    onClick={() => setBillOrderId(orderId)}
-                                    title={
-                                      isCOD
-                                        ? `Collect ₹${codBase.toLocaleString()} COD${advancePaid ? " (₹99 paid online)" : ""} · India Post fee −₹${fee} · tap for bill`
-                                        : `Prepaid ₹${rev.toLocaleString()} · tap for bill`
-                                    }
+                                  <select
+                                    className={`mo2-status${pendingStatus[orderId] ? " dirty" : ""}`}
+                                    value={order.status || "Processing"}
+                                    title="Change status (queued — push to save)"
+                                    onChange={(e) => {
+                                      const val = e.target.value;
+                                      patchLocalOrder(orderId, { "Order Status": val, status: val });
+                                      setPendingStatus((prev) => ({ ...prev, [orderId]: val }));
+                                    }}
                                   >
-                                    <span className="mo-amount-num">
-                                      ₹{rev.toLocaleString()}
-                                    </span>
-                                    <span
-                                      className={`mo-margin ${pnl >= 0 ? "pos" : "neg"}`}
-                                    >
-                                      Margin {sign}₹
-                                      {Math.abs(
-                                        Math.round(pnl),
-                                      ).toLocaleString()}{" "}
-                                      · {Math.abs(pct).toFixed(1)}%
-                                    </span>
-                                  </button>
-                                );
-                              })()}
-                              </div>
+                                    {TRACK_STATUS_OPTIONS.map((s) => (
+                                      <option key={s} value={s}>
+                                        {s}
+                                      </option>
+                                    ))}
+                                  </select>
+                                  <ChevronDown size={14} className="mo2-status-chev" />
+                                </div>
+                                <span className="mo2-date">
+                                  {orderDate
+                                    ? `${orderDate.toLocaleDateString("en-IN", {
+                                        day: "numeric",
+                                        month: "short",
+                                        year: "numeric",
+                                      })} | ${orderDate.toLocaleTimeString("en-IN", {
+                                        hour: "numeric",
+                                        minute: "2-digit",
+                                        hour12: true,
+                                      })}`
+                                    : "—"}
+                                </span>
                               </div>
                             </div>
 
-                            {/* Book covers — scrollable row with name + price,
-                            tap the cover to mark it picked. */}
+                            <div className="mo2-div" />
+
+                            {/* Covers — horizontal row with title + price */}
                             {books.length > 0 && (
-                              <div
-                                className="mo-covers"
-                                onClick={(e) => e.stopPropagation()}
-                              >
+                              <div className="mo2-covers" onClick={(e) => e.stopPropagation()}>
                                 {books.map((b, ci) => {
                                   const img = getBookImage(b.name);
-                                  const checked =
-                                    !!pickChecked[bookKey(orderId, ci)];
                                   const price =
-                                    b.total > 0
-                                      ? b.total
-                                      : b.price > 0
-                                        ? b.price
-                                        : 0;
+                                    b.total > 0 ? b.total : b.price > 0 ? b.price : 0;
                                   return (
-                                    <div className="mo-cover-item" key={ci}>
-                                      <button
-                                        type="button"
-                                        className={`mo-cover${checked ? " checked" : ""}`}
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          toggleBook(orderId, ci);
-                                        }}
-                                        title={b.name}
-                                      >
+                                    <div className="mo2-cover-item" key={ci}>
+                                      <div className="mo2-cover">
                                         <BookCoverImg
                                           src={img}
                                           name={b.name}
@@ -13693,21 +13383,13 @@ export default function ManageOrdersPage() {
                                           loading="lazy"
                                         />
                                         {b.quantity > 1 && (
-                                          <span className="mo-cover-qty">
-                                            ×{b.quantity}
-                                          </span>
+                                          <span className="mo-cover-qty">×{b.quantity}</span>
                                         )}
-                                        <span className="mo-cover-check">
-                                          <Check size={16} />
-                                        </span>
-                                      </button>
-                                      <span
-                                        className="mo-cover-name"
-                                        title={b.name}
-                                      >
+                                      </div>
+                                      <span className="mo2-cover-name" title={b.name}>
                                         {b.name}
                                       </span>
-                                      <span className="mo-cover-price">
+                                      <span className="mo2-cover-price">
                                         {price > 0 ? `₹${price}` : "—"}
                                       </span>
                                     </div>
@@ -13716,235 +13398,241 @@ export default function ManageOrdersPage() {
                               </div>
                             )}
 
-                            {/* Add-on / benefit chips — shown at the end of the
-                                card (kept out of the one-row price section). */}
+                            <div className="mo2-div" />
+
+                            {/* Info grid — order/payment type + weight & tracking (edit via sheet) */}
                             {(() => {
-                              const deliv = String(order["Delivery Type"] || "");
-                              const gwRaw = String(order["Gift Wrap"] || "");
-                              const fasterD =
-                                /faster|express/i.test(deliv) ||
-                                /^e/i.test(String(order.shippingId || "").trim());
-                              const freeD = /free/i.test(deliv);
-                              // Gift wrap + bookmark split are both encoded in the
-                              // Gift Wrap column (e.g. "Yes-Bookmark 4-2").
-                              const addonsB = parseAddonsField(gwRaw);
-                              const giftOn = addonsB.giftOn;
-                              const bookmarkOn = addonsB.bookmarkQty > 0;
-                              const bookmarkFeeB = addonsB.bookmarkCharge;
-                              const subB = books.reduce(
-                                (s, b) =>
-                                  s + (b.total || b.price * (b.quantity || 1) || 0),
-                                0,
-                              );
-                              const grandB =
-                                parseFloat(order["Total Amount"]) ||
-                                Number(order.revenue) ||
-                                subB;
-                              const delFeeB =
-                                parseFloat(order["Delivery Charge"]) || 0;
-                              const giftFeeB = giftOn
-                                ? parseFloat(order["Gift Wrap Charge"]) || 0
-                                : 0;
-                              const discB =
-                                grandB - subB - delFeeB - giftFeeB - bookmarkFeeB <
-                                0
-                                  ? subB +
-                                    delFeeB +
-                                    giftFeeB +
-                                    bookmarkFeeB -
-                                    grandB
-                                  : 0;
                               const advancePaid = /^\s*yes/i.test(
                                 String(order["Advance Paid"] || ""),
                               );
-                              const badges = [];
-                              if (advancePaid)
-                                badges.push({
-                                  e: "💸",
-                                  t: "₹99 advance paid",
-                                  cls: "adv",
-                                });
-                              if (fasterD) badges.push({ e: "⚡", t: "Faster" });
-                              if (freeD)
-                                badges.push({ e: "🚚", t: "Free delivery" });
-                              if (giftOn) badges.push({ e: "🎁", t: "Gift wrap" });
-                              if (bookmarkOn)
-                                badges.push({
-                                  e: "🔖",
-                                  t: `Bookmark ${addonsB.bookmarkQty}`,
-                                });
-                              // "Saved ₹X" chip removed — that's the customer's
-                              // discount, not an operator concern (one money rule).
-                              if (!badges.length) return null;
+                              const orderType = isCOD
+                                ? "Cash on delivery"
+                                : isPrepaid
+                                  ? "Prepaid"
+                                  : "Online (UPI)";
+                              const payType = advancePaid
+                                ? "₹99-Advance paid"
+                                : isCOD
+                                  ? "Cash on delivery"
+                                  : "Paid online";
+                              const w = String(order["Weight(gm)"] || "").replace(/[^\d]/g, "");
+                              const sz = String(order["Sizes(Lxbxh)"] || "")
+                                .trim()
+                                .replace(/[xX×*]/g, "x");
+                              const wsText =
+                                w || sz
+                                  ? `${w ? w + "gm" : ""}${w && sz ? " | " : ""}${sz}`
+                                  : "Add weight & size";
+                              const trk = String(
+                                order.shippingId || order["Shipping ID"] || "",
+                              ).trim();
                               return (
-                                <div className="mo-card-chips">
-                                  {badges.map((b, bi) => (
-                                    <span
-                                      className={`mo-addon-badge${b.cls ? " mo-addon-" + b.cls : ""}`}
-                                      key={bi}
-                                    >
-                                      <span className="mo-addon-emoji">{b.e}</span>
-                                      {b.t}
+                                <div className="mo2-grid" onClick={(e) => e.stopPropagation()}>
+                                  <div className="mo2-cell">
+                                    <span className="mo2-cell-k">Order type</span>
+                                    <span className="mo2-cell-v mo2-v-blue">{orderType}</span>
+                                  </div>
+                                  <div className="mo2-cell mo2-cell-r">
+                                    <span className="mo2-cell-k">Payment type</span>
+                                    <span className={`mo2-cell-v${advancePaid ? " mo2-v-green" : ""}`}>
+                                      {payType}
                                     </span>
-                                  ))}
+                                  </div>
+                                  <div className="mo2-cell">
+                                    <span className="mo2-cell-k">Weight &amp; Size</span>
+                                    <button
+                                      type="button"
+                                      className="mo2-cell-v mo2-cell-edit mo2-v-ul"
+                                      onClick={() => openShipEdit(order)}
+                                    >
+                                      {wsText} <Pencil size={12} />
+                                    </button>
+                                  </div>
+                                  <div className="mo2-cell mo2-cell-r">
+                                    <span className="mo2-cell-k">Tracking id</span>
+                                    <button
+                                      type="button"
+                                      className={`mo2-cell-v mo2-cell-edit${trk ? " mo2-v-green" : ""}`}
+                                      onClick={() => openShipEdit(order)}
+                                    >
+                                      {trk || "Add"} <Pencil size={12} />
+                                    </button>
+                                  </div>
                                 </div>
                               );
                             })()}
 
-                            {/* Gift orders: celebratory banner + the note shown
-                                ONLY via a scannable QR (never printed as text).
-                                Non-gift orders: the note inline (reseller lines
-                                stripped out). */}
-                            {/* Gift orders: note is hidden here (it lives on the
-                                printed gift label QR); the card shows flowing
-                                confetti instead. Non-gift: show the note. */}
+                            {/* Note (non-gift) */}
                             {!isGiftOrder(order) &&
-                              cleanNote(
-                                orderNotes[orderId] || order["Order Comment"],
-                              ) && (
-                                <div className="mo-cust-note">
-                                  <MessageCircle size={12} />
-                                  <span>
-                                    {cleanNote(
-                                      orderNotes[orderId] ||
-                                        order["Order Comment"],
-                                    )}
+                              cleanNote(orderNotes[orderId] || order["Order Comment"]) && (
+                                <div className="mo2-note">
+                                  <span className="mo2-note-k">Note :</span>
+                                  <span className="mo2-note-v">
+                                    {cleanNote(orderNotes[orderId] || order["Order Comment"])}
                                   </span>
                                 </div>
                               )}
 
-                            {/* Weight & sizes entry — feeds the India Post bulk
-                                file (WT g + L×B×H). Shows saved values, else a
-                                prompt to add them. */}
-                            {!isTerminal && (
+                            <div className="mo2-div" />
+
+                            {/* Total order value */}
+                            <div className="mo2-total" onClick={(e) => e.stopPropagation()}>
+                              <span className="mo2-total-k">Total order value</span>
                               <button
                                 type="button"
-                                className={`mo-ws-btn${
-                                  String(order["Weight(gm)"] || "").trim() ||
-                                  String(order["Sizes(Lxbxh)"] || "").trim()
-                                    ? " filled"
-                                    : ""
-                                }`}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  openWeightSize(order);
-                                }}
+                                className="mo2-total-v"
+                                onClick={() => setBillOrderId(orderId)}
+                                title="Tap for bill"
                               >
-                                <Package size={14} />
-                                <span className="mo-ws-btn-txt">
-                                  {(() => {
-                                    const w = String(
-                                      order["Weight(gm)"] || "",
-                                    ).replace(/[^\d]/g, "");
-                                    const sz = String(order["Sizes(Lxbxh)"] || "")
-                                      .trim()
-                                      .replace(/[xX×*]/g, "×");
-                                    if (w || sz)
-                                      return `${w ? w + " g" : ""}${w && sz ? " · " : ""}${sz}`;
-                                    return "Add weight & sizes";
-                                  })()}
-                                </span>
-                                <Pencil size={12} className="mo-ws-edit" />
+                                ₹{Number(order.revenue || 0).toLocaleString("en-IN")}
                               </button>
-                            )}
+                            </div>
 
-                            {/* Bottom row: status + ONE state-driven action.
-                                • no tracking  → tracking input + Save
-                                • has tracking → Track shipment            */}
-                            <div
-                              className="mo-card-foot"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <div
-                                className="mo-status-badge-wrap"
-                                style={{
-                                  "--st-color": moStatusColor(order.status),
-                                }}
-                              >
-                                <select
-                                  className={`mo-status-badge${pendingStatus[orderId] ? " dirty" : ""}`}
-                                  value={order.status || "Processing"}
-                                  title="Change status (queued — push to save)"
-                                  onChange={(e) => {
-                                    const val = e.target.value;
-                                    patchLocalOrder(orderId, {
-                                      "Order Status": val,
-                                      status: val,
-                                    });
-                                    setPendingStatus((prev) => ({
-                                      ...prev,
-                                      [orderId]: val,
-                                    }));
+                            <div className="mo2-div" />
+
+                            {/* Bottom bar — contact icons (left) + 3-dot options (right) */}
+                            <div className="mo2-actions" onClick={(e) => e.stopPropagation()}>
+                              <div className="mo2-actions-l">
+                                <button
+                                  type="button"
+                                  className="mo-frame-ic mo-frame-wa"
+                                  onClick={() => {
+                                    pendingPickerChannel.current = "wa";
+                                    setWaCustomText("");
+                                    setWaPickerOrder(order);
+                                  }}
+                                  title="WhatsApp the customer"
+                                  aria-label="WhatsApp the customer"
+                                >
+                                  <FaWhatsapp size={17} />
+                                </button>
+                                {String(order["Email"] || "").trim() && (
+                                  <button
+                                    type="button"
+                                    className="mo-frame-ic mo-frame-email"
+                                    onClick={() => {
+                                      pendingPickerChannel.current = "email";
+                                      setWaCustomText("");
+                                      setWaPickerOrder(order);
+                                    }}
+                                    title="Email the customer"
+                                    aria-label="Email the customer"
+                                  >
+                                    <Mail size={15} />
+                                  </button>
+                                )}
+                                {orderId && (
+                                  <a
+                                    className="mo-frame-ic"
+                                    href={`/profile/${String(order["Phone Number"] || "")
+                                      .replace(/\D/g, "")
+                                      .slice(-10)}/orders/${encodeURIComponent(orderId)}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    title="Open customer order page"
+                                    aria-label="Open customer order page"
+                                  >
+                                    <ExternalLink size={15} />
+                                  </a>
+                                )}
+                                <button
+                                  type="button"
+                                  className={`mo-frame-ic mo-frame-book${bookedOrders[orderId] ? " done" : ""}`}
+                                  onClick={() => setBookOrder(order)}
+                                  title={
+                                    bookedOrders[orderId]
+                                      ? "Booked with India Post"
+                                      : "Book online with India Post"
+                                  }
+                                  aria-label="Book online with India Post"
+                                >
+                                  {bookedOrders[orderId] ? (
+                                    <CheckCircle size={15} />
+                                  ) : (
+                                    <Truck size={15} />
+                                  )}
+                                </button>
+                              </div>
+                              <div className="mo-kebab-wrap">
+                                <button
+                                  type="button"
+                                  className="mo-kebab-btn"
+                                  title="More actions"
+                                  aria-label="More actions"
+                                  aria-haspopup="menu"
+                                  aria-expanded={cardMenuId === orderId}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setCardMenuId((p) => (p === orderId ? null : orderId));
                                   }}
                                 >
-                                  {TRACK_STATUS_OPTIONS.map((s) => (
-                                    <option key={s} value={s}>
-                                      {s}
-                                    </option>
-                                  ))}
-                                </select>
-                                <ChevronDown
-                                  size={15}
-                                  className="mo-status-chev"
-                                />
+                                  <MoreVertical size={16} />
+                                </button>
+                                {cardMenuId === orderId && (
+                                  <>
+                                    <div
+                                      className="mo-kebab-backdrop"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setCardMenuId(null);
+                                      }}
+                                    />
+                                    <div
+                                      className="mo-kebab-menu mo-kebab-menu-up"
+                                      role="menu"
+                                      onClick={(e) => e.stopPropagation()}
+                                    >
+                                      <button
+                                        type="button"
+                                        role="menuitem"
+                                        className="mo-kebab-item"
+                                        onClick={() => {
+                                          setCancelChoiceOrder(order);
+                                          setCardMenuId(null);
+                                        }}
+                                      >
+                                        <X size={14} /> Cancel order
+                                      </button>
+                                      <button
+                                        type="button"
+                                        role="menuitem"
+                                        className="mo-kebab-item"
+                                        onClick={() => {
+                                          openReplaceBook(order);
+                                          setCardMenuId(null);
+                                        }}
+                                      >
+                                        <RefreshCw size={14} /> Replace a book
+                                      </button>
+                                      <div className="mo-kebab-group">Advanced</div>
+                                      <button
+                                        type="button"
+                                        role="menuitem"
+                                        className="mo-kebab-item"
+                                        onClick={() => {
+                                          copyToClipboard(
+                                            buildIpAutofillJson(order, books, isCOD),
+                                            `cardjson-${orderId}`,
+                                          );
+                                          setCardMenuId(null);
+                                        }}
+                                      >
+                                        <Copy size={14} /> Copy JSON
+                                      </button>
+                                      <div className="mo-kebab-sep" />
+                                      <button
+                                        type="button"
+                                        role="menuitem"
+                                        className="mo-kebab-item danger"
+                                        onClick={() => confirmDeleteOrder(order)}
+                                      >
+                                        <Trash2 size={14} /> Delete permanently
+                                      </button>
+                                    </div>
+                                  </>
+                                )}
                               </div>
-                              {!hasTracking ? (
-                                <div className="mo-track-inline">
-                                  <input
-                                    className="mo-card-track-input"
-                                    placeholder="Add tracking ID (e.g. CX…IN)"
-                                    aria-label="Tracking ID"
-                                    value={trackDrafts[orderId] ?? ""}
-                                    onChange={(e) =>
-                                      setTrackDrafts((p) => ({
-                                        ...p,
-                                        [orderId]: e.target.value,
-                                      }))
-                                    }
-                                    onKeyDown={(e) => {
-                                      if (e.key === "Enter")
-                                        queueTracking(
-                                          order,
-                                          trackDrafts[orderId],
-                                        );
-                                    }}
-                                  />
-                                  <button
-                                    type="button"
-                                    className="mo-card-track-scan"
-                                    title="Scan tracking barcode"
-                                    aria-label="Scan tracking barcode"
-                                    onClick={() => setTrackScanFor(orderId)}
-                                  >
-                                    <Camera size={16} />
-                                  </button>
-                                  <button
-                                    type="button"
-                                    className="mo-card-track-save"
-                                    disabled={
-                                      !String(trackDrafts[orderId] || "").trim()
-                                    }
-                                    onClick={() =>
-                                      queueTracking(order, trackDrafts[orderId])
-                                    }
-                                  >
-                                    <Check size={14} /> Save
-                                  </button>
-                                </div>
-                              ) : (
-                                <a
-                                  className="mo-primary-btn"
-                                  href={INDIA_POST_URL}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  title={`Track ${String(order.shippingId).trim()} on India Post`}
-                                >
-                                  <Truck size={15} /> Track shipment
-                                </a>
-                              )}
                             </div>
-                              </>
-                            )}
 
                             {/* Cancel / Delete / Copy JSON demoted into the
                                 header kebab (⋯) — see .mo-card-menu. */}
@@ -15103,7 +14791,7 @@ export default function ManageOrdersPage() {
                     <div className="mo-ws-head">
                       <div className="mo-ws-head-txt">
                         <span className="mo-ws-title">
-                          <Package size={16} /> Weight &amp; sizes
+                          <Package size={16} /> Shipment details
                         </span>
                         <span className="mo-ws-sub">
                           {wsOrder["Customer Name"] || wsOrder["Order ID"]}
@@ -15164,10 +14852,35 @@ export default function ManageOrdersPage() {
                           />
                         </div>
                       </div>
+                      <div className="mo-ws-field">
+                        <span className="mo-ws-label">Tracking ID</span>
+                        <div className="mo-ws-trk">
+                          <input
+                            className="mo-ws-input"
+                            placeholder="e.g. CX123456789IN"
+                            value={trackDrafts[wsOrder["Order ID"]] ?? ""}
+                            onChange={(e) =>
+                              setTrackDrafts((p) => ({
+                                ...p,
+                                [wsOrder["Order ID"]]: e.target.value,
+                              }))
+                            }
+                          />
+                          <button
+                            type="button"
+                            className="mo-ws-scan"
+                            title="Scan tracking barcode"
+                            aria-label="Scan tracking barcode"
+                            onClick={() => setTrackScanFor(wsOrder["Order ID"])}
+                          >
+                            <Camera size={16} />
+                          </button>
+                        </div>
+                      </div>
                       <p className="mo-ws-note">
                         Saved to the order and auto-filled into the India Post
-                        bulk file. Weight is stored in grams; sizes as{" "}
-                        <b>L×B×H</b>.
+                        bulk file. Weight in grams, sizes as <b>L×B×H</b>; the
+                        tracking ID is queued for push.
                       </p>
                     </div>
 

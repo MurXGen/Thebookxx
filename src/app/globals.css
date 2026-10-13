@@ -29393,6 +29393,251 @@ img[data-loaded="true"] {
 .mo-frame-email {
   color: #2563eb;
 }
+
+/* ============ Redesigned order card (mockup layout) ============ */
+.mo2-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.mo2-head-l {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.mo2-name {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--foreground, #0a0a0a);
+  line-height: 1.2;
+  word-break: break-word;
+}
+.mo2-phone {
+  border: none;
+  background: none;
+  padding: 0;
+  text-align: left;
+  font-size: 13px;
+  color: var(--dark-50, #6b7280);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.mo2-head-r {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+  flex: 0 0 auto;
+}
+.mo2-status-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+.mo2-status {
+  -webkit-appearance: none;
+  appearance: none;
+  border: none;
+  background: none;
+  padding: 0 18px 0 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--st-color, #16a34a);
+  cursor: pointer;
+  text-align: right;
+  direction: rtl;
+}
+.mo2-status.dirty {
+  text-decoration: underline;
+}
+.mo2-status-chev {
+  position: absolute;
+  right: 0;
+  color: var(--st-color, #16a34a);
+  pointer-events: none;
+}
+.mo2-date {
+  font-size: 12px;
+  color: var(--dark-50, #6b7280);
+  white-space: nowrap;
+}
+.mo2-div {
+  border-top: 1.5px dashed var(--hairline-2, #e5e7eb);
+  margin: 12px 0;
+}
+/* Covers row */
+.mo2-covers {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.mo2-covers::-webkit-scrollbar {
+  display: none;
+}
+.mo2-cover-item {
+  flex: 0 0 auto;
+  width: 84px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.mo2-cover {
+  position: relative;
+  width: 84px;
+  height: 84px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--surface-2, #eef0f2);
+}
+.mo2-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.mo2-cover-name {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--foreground, #0a0a0a);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mo2-cover-price {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--dark-60, #4b5563);
+}
+/* Info grid */
+.mo2-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 12px;
+}
+.mo2-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.mo2-cell-r {
+  align-items: flex-end;
+  text-align: right;
+}
+.mo2-cell-k {
+  font-size: 12.5px;
+  color: var(--dark-50, #6b7280);
+}
+.mo2-cell-v {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--foreground, #0a0a0a);
+  word-break: break-word;
+}
+.mo2-v-blue {
+  color: #2563eb;
+}
+.mo2-v-green {
+  color: #16a34a;
+}
+.mo2-v-ul {
+  text-decoration: underline;
+}
+.mo2-cell-edit {
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.mo2-cell-edit svg {
+  color: var(--dark-50, #6b7280);
+}
+/* Note */
+.mo2-note {
+  display: flex;
+  gap: 6px;
+  margin-top: 14px;
+  font-size: 13px;
+  color: var(--dark-60, #4b5563);
+  min-width: 0;
+}
+.mo2-note-k {
+  flex: 0 0 auto;
+  font-weight: 700;
+}
+.mo2-note-v {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* Total */
+.mo2-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.mo2-total-k {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--foreground, #0a0a0a);
+}
+.mo2-total-v {
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--foreground, #0a0a0a);
+}
+/* Bottom action bar */
+.mo2-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.mo2-actions-l {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+/* Kebab menu that opens upward (card bottom bar) */
+.mo-kebab-menu.mo-kebab-menu-up {
+  top: auto;
+  bottom: calc(100% + 6px);
+}
+/* Shipment sheet — tracking id + scan */
+.mo-ws-trk {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.mo-ws-trk .mo-ws-input {
+  flex: 1;
+  min-width: 0;
+}
+.mo-ws-scan {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid var(--hairline, #ececec);
+  border-radius: 11px;
+  background: #fff;
+  color: var(--tertiary, #fb8500);
+  cursor: pointer;
+}
 /* Unconfirmed order — list card note + detail banner */
 .ord-card-unconfirmed {
   border-color: rgba(217, 119, 6, 0.35);

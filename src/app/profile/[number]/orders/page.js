@@ -123,14 +123,20 @@ export default function OrdersListPage() {
             const isUnconfirmed =
               /unconfirmed|pending/i.test(rawStatus) ||
               /\(unconfirmed\)/i.test(o["Customer Name"] || "");
+            // Live India Post status (when uploaded) overrides the shown status.
+            const trackDetail = String(o["Tracking detail"] || "")
+              .split("||")[0]
+              .trim();
             return {
               ...o,
               _books: parseBooks(o["Books List"]),
               _date: parseSheetDate(
                 o["Timestamp (D)"] || o["Timestamp"] || o["Timestamp(D)"],
               ),
-              _status: isUnconfirmed ? "Unconfirmed" : rawStatus || "Processing",
-              _isUnconfirmed: isUnconfirmed,
+              _status:
+                trackDetail ||
+                (isUnconfirmed ? "Unconfirmed" : rawStatus || "Processing"),
+              _isUnconfirmed: isUnconfirmed && !trackDetail,
             };
           })
           // Keep only real orders — a row must have items or a non-zero total.
@@ -201,9 +207,6 @@ export default function OrdersListPage() {
           Support
         </button>
       </header>
-
-      {/* Share & earn — post a review, get up to ₹200 back. */}
-      <ReviewRewardCard phone={number} />
 
       {loading ? (
         <div className="ord-groups" aria-busy="true" aria-label="Loading your orders">
@@ -330,6 +333,9 @@ export default function OrdersListPage() {
           ))}
         </div>
       )}
+
+      {/* Share & earn — below the orders (not at the top). */}
+      {!loading && <ReviewRewardCard phone={number} />}
 
       <AnimatePresence>
         {showSupport && (

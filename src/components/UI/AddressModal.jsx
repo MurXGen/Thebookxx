@@ -317,6 +317,10 @@ export default function AddressModal({
   const [giftCode, setGiftCode] = useState("");
   const [successPaymentLabel, setSuccessPaymentLabel] = useState("");
   const [showCODFeeModal, setShowCODFeeModal] = useState(false); // NEW
+  // COD review+confirm sheet — the order is written as "(unconfirmed)" when it
+  // opens, then flipped to Processing only when the shopper confirms here.
+  const [showCodConfirm, setShowCodConfirm] = useState(false);
+  const codConfirmRef = useRef({ oid: "", isFaster: false });
   const [qrUnlocked, setQrUnlocked] = useState(false);
   const [upiCopied, setUpiCopied] = useState(false);
 
@@ -1379,18 +1383,29 @@ export default function AddressModal({
       setGiftCode("");
       setShowPayMethod(true);
     } else if (method === "COD") {
-      // The ₹29 fee is already disclosed on the Summary & Pay sheet, so place
-      // the COD order directly (no second fee-confirmation modal).
+      // Write the order as "(unconfirmed)" now so we always have a record of
+      // the intent, then show the COD review + instructions sheet. The order
+      // is only flipped to Processing (confirmed) when the shopper confirms.
       const oid = ensureCheckoutOid();
-      trackPurchase({
-        cartItems: cartBooks,
-        totalAmount: netPayable,
-        paymentId: `COD-${Date.now()}`,
-      });
-      submitToGoogleForm("COD", isFaster, true, oid);
-      notifyCODToTelegram(isFaster);
-      triggerCODSuccess(isFaster, oid);
+      submitToGoogleForm("COD", isFaster, false, oid);
+      codConfirmRef.current = { oid, isFaster };
+      setShowCodConfirm(true);
     }
+  };
+
+  // Shopper confirmed the COD order on the review sheet → flip to Processing
+  // (confirmed), notify, and run the success flow.
+  const handleConfirmCodOrder = () => {
+    const { oid, isFaster } = codConfirmRef.current;
+    setShowCodConfirm(false);
+    trackPurchase({
+      cartItems: cartBooks,
+      totalAmount: netPayable,
+      paymentId: `COD-${Date.now()}`,
+    });
+    submitToGoogleForm("COD", isFaster, true, oid);
+    notifyCODToTelegram(isFaster);
+    triggerCODSuccess(isFaster, oid);
   };
 
   // Chose a specific UPI app (Paytm / PhonePe / GPay / Other) → log the order
@@ -3187,6 +3202,157 @@ export default function AddressModal({
                   onClick={declineUpsell}
                 >
                   Not now, continue to payment
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ===== COD review + confirm (slide-up) ===== */}
+      <AnimatePresence>
+        {showCodConfirm && (
+          <motion.div
+            className="bill-modal-overlay"
+            style={{
+              zIndex: 2147483000,
+              maxWidth: "980px",
+              margin: "0 auto",
+              background: "rgba(0, 0, 0, 0.55)",
+            }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowCodConfirm(false)}
+          >
+            <motion.div
+              className="bill-modal ac-modal"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="bill-header">
+                <span className="weight-600 font-16">
+                  Confirm Cash on Delivery
+                </span>
+                <span
+                  className="cursor-pointer"
+                  onClick={() => setShowCodConfirm(false)}
+                >
+                  <X size={16} />
+                </span>
+              </div>
+
+              <div className="ac-body">
+                {/* Books */}
+                <div className="codc-books">
+                  <span className="codc-sec-t">
+                    Your books ({(cartBooks || []).length})
+                  </span>
+                  {(cartBooks || []).map((b, i) => (
+                    <div className="codc-book" key={i}>
+                      <span className="codc-book-name">{b.name}</span>
+                      <span className="codc-book-qty">×{b.qty || 1}</span>
+                      <span className="codc-book-price">
+                        ₹{(b.discountedPrice || b.price || 0) * (b.qty || 1)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Delivery details */}
+                <div className="ac-card">
+                  <div className="ac-row">
+                    <span className="ac-row-ic">
+                      <User size={15} />
+                    </span>
+                    <span className="ac-row-main">
+                      <span className="ac-row-lbl">Name</span>
+                      <span className="ac-row-val">{name || "—"}</span>
+                    </span>
+                  </div>
+                  <div className="ac-row">
+                    <span className="ac-row-ic">
+                      <Phone size={15} />
+                    </span>
+                    <span className="ac-row-main">
+                      <span className="ac-row-lbl">Phone</span>
+                      <span className="ac-row-val">
+                        {phone}
+                        {altPhone && altPhone.length === 10
+                          ? ` · Alt ${altPhone}`
+                          : ""}
+                      </span>
+                    </span>
+                  </div>
+                  <div className="ac-row">
+                    <span className="ac-row-ic">
+                      <MapPin size={15} />
+                    </span>
+                    <span className="ac-row-main">
+                      <span className="ac-row-lbl">Delivery address</span>
+                      <span className="ac-row-val">
+                        {address}
+                        {address ? ", " : ""}
+                        {city}
+                        {city ? ", " : ""}
+                        {state} — {pincode}
+                      </span>
+                    </span>
+                  </div>
+                  <div className="ac-row ac-row-total">
+                    <span className="ac-row-ic">
+                      <Tag size={15} />
+                    </span>
+                    <span className="ac-row-main">
+                      <span className="ac-row-lbl">Pay on delivery</span>
+                      <span className="ac-row-val green weight-700">
+                        ₹
+                        {getTotalWithDelivery(codConfirmRef.current.isFaster) +
+                          addOnsCharge}
+                      </span>
+                    </span>
+                  </div>
+                </div>
+
+                {/* Instructions */}
+                <div className="codc-inst">
+                  <span className="codc-inst-t">📦 Before you confirm</span>
+                  <ul className="codc-inst-list">
+                    <li>
+                      🗓️ Please be available within{" "}
+                      <b>
+                        {codConfirmRef.current.isFaster
+                          ? "1–5 days"
+                          : "4–12 days"}
+                      </b>{" "}
+                      for delivery.
+                    </li>
+                    <li>
+                      💳 Pay at delivery — <b>online UPI or cash</b>, whichever
+                      you prefer.
+                    </li>
+                    <li>
+                      🏠 If you&apos;re not available, ask a{" "}
+                      <b>neighbour or family member</b> to collect on your
+                      behalf so the order isn&apos;t cancelled.
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="ac-footer">
+                <button
+                  type="button"
+                  className="pri-big-btn width100"
+                  onClick={handleConfirmCodOrder}
+                >
+                  <span className="flex flex-row items-center justify-center gap-6">
+                    <Check size={18} strokeWidth={2.5} /> Confirm Cash on
+                    Delivery order
+                  </span>
                 </button>
               </div>
             </motion.div>

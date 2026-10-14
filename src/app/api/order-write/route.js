@@ -29,7 +29,7 @@ export async function POST(request) {
   }
 
   const { action, orderId, data, target } = payload || {};
-  if (action !== "append" && action !== "update") {
+  if (action !== "append" && action !== "update" && action !== "bulkUpdate") {
     return Response.json(
       { success: false, error: "invalid action" },
       { status: 400 },
@@ -40,6 +40,41 @@ export async function POST(request) {
       { success: false, error: "orderId required for update" },
       { status: 400 },
     );
+  }
+
+  // Bulk update: ONE client request → the server fans out each row update to the
+  // Apps Script (in small concurrent batches). Keeps the client under the
+  // per-IP rate limit and avoids N round-trips from the browser.
+  if (action === "bulkUpdate") {
+    const updates = Array.isArray(payload.updates) ? payload.updates : [];
+    if (!updates.length) return Response.json({ success: true, updated: 0 });
+    const url = target === "edit" ? APPSCRIPT_EDIT_URL : APPSCRIPT_ORDER_URL;
+    const doOne = async (u) => {
+      if (!u || !u.orderId) return false;
+      const b = new URLSearchParams();
+      b.set("action", "update");
+      b.set("orderId", String(u.orderId));
+      b.set("data", JSON.stringify(u.data || {}));
+      if (target !== "edit") b.set("sheet", ORDERS_SHEET_NAME);
+      try {
+        await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: b,
+        });
+        return true;
+      } catch {
+        return false;
+      }
+    };
+    let updated = 0;
+    const CH = 12;
+    for (let i = 0; i < updates.length; i += CH) {
+      // eslint-disable-next-line no-await-in-loop
+      const res = await Promise.all(updates.slice(i, i + CH).map(doOne));
+      updated += res.filter(Boolean).length;
+    }
+    return Response.json({ success: true, updated });
   }
 
   // Wallet transactions: prefer the dedicated wallet web app (always writes to

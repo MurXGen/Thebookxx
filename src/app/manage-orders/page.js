@@ -5429,8 +5429,8 @@ export default function ManageOrdersPage() {
       const rows = await parseBookingReportFile(file);
       const now = new Date().toISOString();
       const seen = new Set();
-      let updated = 0;
       let unmatched = 0;
+      const pending = [];
       for (const r of rows) {
         let o =
           r.orderId &&
@@ -5451,18 +5451,30 @@ export default function ManageOrdersPage() {
         // Status + upload time encoded into the single "Tracking detail" column
         // ("<status>||<ISO time>") so only one new sheet column is needed.
         const fields = { "Tracking detail": `${r.status}||${now}` };
-        patchLocalOrder(oid, fields);
-        // eslint-disable-next-line no-await-in-loop
-        await updateOrderRow(oid, fields).catch((err) =>
-          console.error("Tracking detail update failed for", oid, err),
-        );
-        updated += 1;
+        patchLocalOrder(oid, fields); // instant UI update
+        pending.push({ oid, fields });
       }
+      const updated = pending.length;
+      // Show the result immediately (local state is already patched), then push
+      // all rows to the sheet in parallel batches instead of one-by-one.
       setLiveResult({ total: rows.length, updated, unmatched });
       showToast(
         `Live tracking pushed to ${updated} order(s)${unmatched ? ` · ${unmatched} unmatched` : ""} ✓`,
         "success",
       );
+      const CH = 12;
+      for (let i = 0; i < pending.length; i += CH) {
+        // eslint-disable-next-line no-await-in-loop
+        await Promise.all(
+          pending
+            .slice(i, i + CH)
+            .map((u) =>
+              updateOrderRow(u.oid, u.fields).catch((err) =>
+                console.error("Tracking detail update failed for", u.oid, err),
+              ),
+            ),
+        );
+      }
       setTimeout(fetchOrders, 1300);
     } catch (err) {
       console.error("Live status update failed:", err);

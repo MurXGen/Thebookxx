@@ -108,6 +108,26 @@ export const updateOrderRow = async (orderId, fields) => {
   }
 };
 
+// Update many order rows in ONE request. `updates` = [{ orderId, data }]. The
+// server fans out the per-row writes to the Apps Script, so the browser makes a
+// single call (no per-IP rate-limit issues, no N round-trips).
+export const bulkUpdateOrderRows = async (updates) => {
+  const list = (updates || []).filter((u) => u && u.orderId);
+  if (!list.length) return { success: true, updated: 0 };
+  try {
+    const res = await fetch("/api/order-write", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "bulkUpdate", updates: list }),
+    });
+    const j = await res.json().catch(() => ({}));
+    return { success: !!j.success, updated: j.updated || 0 };
+  } catch (error) {
+    console.error("bulkUpdateOrderRows failed:", error);
+    return { success: false, updated: 0, error };
+  }
+};
+
 // Submit a new order by APPENDING a row via the Apps Script web app. This
 // replaces the Google Form POST, which rejects the whole submission whenever a
 // form question is toggled Required (State, Wallet, etc.) and was silently

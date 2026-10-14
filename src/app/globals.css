@@ -29797,6 +29797,53 @@ img[data-loaded="true"] {
   color: var(--dark-70, #374151);
   border: 1px solid var(--hairline, #e5e7eb);
 }
+/* India Post bulk (.xlsx) row inside the dispatch queue */
+.mo-dispatch-ip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+  padding: 12px;
+  border: 1px dashed var(--dark-20, #cbd5e1);
+  border-radius: 12px;
+  background: rgba(251, 133, 0, 0.04);
+}
+.mo-dispatch-ip-lbl {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--dark-60, #4b5563);
+}
+.mo-dispatch-ip-btns {
+  display: flex;
+  gap: 8px;
+}
+.mo-dispatch-ip-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 9px;
+  border: 1px solid transparent;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.mo-dispatch-ip-btn.speed {
+  background: rgba(251, 133, 0, 0.12);
+  border-color: rgba(251, 133, 0, 0.3);
+  color: #b45309;
+}
+.mo-dispatch-ip-btn.contract {
+  background: rgba(13, 107, 245, 0.1);
+  border-color: rgba(13, 107, 245, 0.28);
+  color: #0d6bf5;
+}
+.mo-dispatch-ip-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
 /* Money-emoji shower */
 .money-shower {
   position: fixed;

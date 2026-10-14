@@ -4169,6 +4169,22 @@ export default function ManageOrdersPage() {
     setIpPushResult(null);
     setIpBulk({ product, rows });
   };
+  // India Post bulk export for an explicit order list (e.g. the Dispatch
+  // queue). Only orders with weight & sizes entered qualify — same rule as
+  // the Orders page; opens the same preview/edit modal before download.
+  const openIpBulkForOrders = (product, pool0) => {
+    const pool = (pool0 || []).filter(ipHasWeightSizes);
+    if (pool.length === 0) {
+      showToast(
+        `No ${product} orders with weight & sizes to export.`,
+        "error",
+      );
+      return;
+    }
+    const rows = pool.map((o, i) => buildPreviewRow(o, i + 1));
+    setIpPushResult(null);
+    setIpBulk({ product, rows });
+  };
   const updateIpRow = (idx, key, value) => {
     setIpBulk((prev) => {
       if (!prev) return prev;
@@ -10922,6 +10938,39 @@ export default function ManageOrdersPage() {
                           );
                         })}
                       </div>
+                      {(() => {
+                        const ipReady = scope.filter(ipHasWeightSizes).length;
+                        return (
+                          <div className="mo-dispatch-ip">
+                            <span className="mo-dispatch-ip-lbl">
+                              India Post bulk (.xlsx) · {ipReady} with weight &amp;
+                              size
+                            </span>
+                            <div className="mo-dispatch-ip-btns">
+                              <button
+                                type="button"
+                                className="mo-dispatch-ip-btn speed"
+                                disabled={!ipReady}
+                                onClick={() =>
+                                  openIpBulkForOrders("speed", scope)
+                                }
+                              >
+                                🚚 Speed (.xlsx)
+                              </button>
+                              <button
+                                type="button"
+                                className="mo-dispatch-ip-btn contract"
+                                disabled={!ipReady}
+                                onClick={() =>
+                                  openIpBulkForOrders("contractual", scope)
+                                }
+                              >
+                                📦 Contractual (.xlsx)
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })()}
                       <div className="mo-dispatch-foot">
                         <span className="mo-dispatch-count">
                           {scope.length} label{scope.length === 1 ? "" : "s"} to

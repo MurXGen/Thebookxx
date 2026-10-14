@@ -34090,6 +34090,67 @@ img[data-loaded="true"] {
 }
 
 /* How it works — step-by-step explainer inside the Share & Earn card */
+/* Compact "How it works" link + modal (keeps the reward card short) */
+.rr-how-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 2px 16px 12px;
+  padding: 7px 12px;
+  border: 1px solid var(--dark-10, #e5e7eb);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--tertiary, #fb8500);
+  cursor: pointer;
+}
+.rr-how-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483500;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+}
+.rr-how-modal {
+  width: 100%;
+  max-width: 440px;
+  max-height: 88vh;
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 20px 60px -16px rgba(0, 0, 0, 0.4);
+}
+.rr-how-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 16px 10px;
+  border-bottom: 1px solid var(--hairline, #ececec);
+}
+.rr-how-modal-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--foreground, #0a0a0a);
+}
+.rr-how-x {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 9px;
+  background: var(--surface-2, #f3f4f6);
+  color: var(--dark-60, #4b5563);
+  cursor: pointer;
+}
 .rr-how {
   margin: 0 16px 14px;
   border: 1px solid var(--dark-10, #e5e7eb);

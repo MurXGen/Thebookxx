@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   Gift,
   Upload,
@@ -9,6 +10,7 @@ import {
   XCircle,
   Sparkles,
   Camera,
+  X,
 } from "lucide-react";
 import { getSavedPhone } from "@/utils/userPhone";
 import { showToast } from "@/context/ToastContext";
@@ -60,6 +62,7 @@ export default function ReviewRewardCard({ orderId = "", phone: phoneProp = "" }
   const [busy, setBusy] = useState(false);
   const [subs, setSubs] = useState([]);
   const [open, setOpen] = useState(false); // form expanded
+  const [howOpen, setHowOpen] = useState(false); // "How it works" modal
   const fileRef = useRef(null);
 
   // Prefill from the prop if it arrives after mount (e.g. profile loads async).
@@ -206,59 +209,87 @@ export default function ReviewRewardCard({ orderId = "", phone: phoneProp = "" }
         </div>
       </div>
 
-      {/* How it works — the full flow, step by step */}
-      <details className="rr-how" open>
-        <summary className="rr-how-sum">
-          <span className="rr-how-sum-l">
-            <Sparkles size={14} /> How it works
-          </span>
-          <span className="rr-how-chev" aria-hidden="true">
-            ⌄
-          </span>
-        </summary>
-        <ol className="rr-how-steps">
-          <li>
-            <span className="rr-how-ic">
-              <Camera size={14} />
-            </span>
-            <span className="rr-how-txt">
-              <b>Record a reel or story</b> with your TheBookX books and share an
-              honest review on Instagram or YouTube. Tag or mention{" "}
-              <b>@thebookx</b> so we can find it.
-            </span>
-          </li>
-          <li>
-            <span className="rr-how-ic">
-              <Upload size={14} />
-            </span>
-            <span className="rr-how-txt">
-              <b>Submit it below</b> — paste the post link, upload a screenshot,
-              and add your number. Takes under a minute.
-            </span>
-          </li>
-          <li>
-            <span className="rr-how-ic">
-              <Clock size={14} />
-            </span>
-            <span className="rr-how-txt">
-              <b>We verify your post</b> — usually within 24 hours. You can track
-              the status right here on this card.
-            </span>
-          </li>
-          <li>
-            <span className="rr-how-ic">
-              <Check size={14} />
-            </span>
-            <span className="rr-how-txt">
-              <b>Get rewarded</b> — ₹50 to ₹{MAX_REWARD} (based on quality &amp;
-              reach) is credited straight to your TheBookX account.
-            </span>
-          </li>
-        </ol>
-        <p className="rr-how-note">
-          More genuine, higher-reach posts earn more. One reward per post.
-        </p>
-      </details>
+      {/* How it works — compact link that opens a modal (keeps the card short) */}
+      <button
+        type="button"
+        className="rr-how-link"
+        onClick={() => setHowOpen(true)}
+      >
+        <Sparkles size={14} /> How it works
+      </button>
+
+      {howOpen &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <div
+            className="rr-how-overlay"
+            onClick={() => setHowOpen(false)}
+            role="dialog"
+            aria-modal="true"
+          >
+            <div
+              className="rr-how-modal"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="rr-how-modal-head">
+                <span className="rr-how-modal-title">
+                  <Sparkles size={16} /> How it works
+                </span>
+                <button
+                  type="button"
+                  className="rr-how-x"
+                  onClick={() => setHowOpen(false)}
+                  aria-label="Close"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+              <ol className="rr-how-steps">
+                <li>
+                  <span className="rr-how-ic">
+                    <Camera size={14} />
+                  </span>
+                  <span className="rr-how-txt">
+                    <b>Record a reel or story</b> with your TheBookX books and
+                    share an honest review on Instagram or YouTube. Tag or
+                    mention <b>@thebookx</b> so we can find it.
+                  </span>
+                </li>
+                <li>
+                  <span className="rr-how-ic">
+                    <Upload size={14} />
+                  </span>
+                  <span className="rr-how-txt">
+                    <b>Submit it below</b> — paste the post link, upload a
+                    screenshot, and add your number. Takes under a minute.
+                  </span>
+                </li>
+                <li>
+                  <span className="rr-how-ic">
+                    <Clock size={14} />
+                  </span>
+                  <span className="rr-how-txt">
+                    <b>We verify your post</b> — usually within 24 hours. You
+                    can track the status right here on this card.
+                  </span>
+                </li>
+                <li>
+                  <span className="rr-how-ic">
+                    <Check size={14} />
+                  </span>
+                  <span className="rr-how-txt">
+                    <b>Get rewarded</b> — ₹50 to ₹{MAX_REWARD} (based on quality
+                    &amp; reach) is credited straight to your TheBookX account.
+                  </span>
+                </li>
+              </ol>
+              <p className="rr-how-note">
+                More genuine, higher-reach posts earn more. One reward per post.
+              </p>
+            </div>
+          </div>,
+          document.body,
+        )}
 
       {/* Existing submissions / status */}
       {subs.length > 0 && (

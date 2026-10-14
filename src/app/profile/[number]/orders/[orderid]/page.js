@@ -157,8 +157,37 @@ function isExpressOrder(order) {
   return /^e/i.test(sid) || /faster|express/i.test(order["Delivery Type"] || "");
 }
 
+// Map a live India Post status (event-description) to our 5-step timeline
+// (0 Placed · 1 Packed · 2 Shipped · 3 Out for delivery · 4 Delivered) and a
+// map progress 0..1. Returns null when there's no recognisable live status.
+function trackingToStage(detail) {
+  const t = String(detail || "")
+    .split("||")[0]
+    .trim()
+    .toLowerCase();
+  if (!t) return null;
+  if (/return(?:ed)?\s*to\s*sender/.test(t))
+    return { idx: 2, progress: 0.5, returned: true };
+  if (/deliver/.test(t) && !/not\s*deliver|un\s*deliver|out\s*for/.test(t))
+    return { idx: 4, progress: 1 };
+  if (/out\s*for\s*delivery|item\s*out/.test(t))
+    return { idx: 3, progress: 0.96 };
+  if (/received\s*at\s*destination|reached|arrived|at\s*delivery/.test(t))
+    return { idx: 3, progress: 0.9 };
+  if (/hold|kept\s*on\s*hold|undeliver|not\s*deliver/.test(t))
+    return { idx: 2, progress: 0.82, hold: true };
+  if (/dispatch|transit|bagged|received\s*at|forwarded|departed/.test(t))
+    return { idx: 2, progress: 0.62 };
+  if (/pickup|booked|accepted|item\s*booked/.test(t))
+    return { idx: 1, progress: 0.28 };
+  return { idx: 2, progress: 0.55 };
+}
+
 // Journey progress 0..1 from status (primary) + days elapsed (secondary).
 function computeProgress(order) {
+  // Live India Post status (when uploaded) drives the map precisely.
+  const liveStage = trackingToStage(order["Tracking detail"]);
+  if (liveStage) return liveStage.progress;
   const st = String(order["Order Status"] || order.status || "").toLowerCase();
   // Delivered / out for delivery → route fulfilled (parcel at destination).
   if (/delivered|money received/.test(st)) return 1;
@@ -992,6 +1021,7 @@ export default function OrderDetailPage() {
     order["Tracking detail"] || "",
   ).split("||");
   const trackDetail = (trackDetailRaw || "").trim();
+  const trackStage = trackingToStage(order["Tracking detail"]);
   const trackUpdatedAt = trackUpdatedIso
     ? new Date(trackUpdatedIso.trim())
     : null;
@@ -1467,7 +1497,7 @@ export default function OrderDetailPage() {
         <div className="od-map-eta od-eta-standalone">
           <div className="od-map-eta-row">
             <span
-              className={`od-map-eta-dot${delivered ? " done" : cancelled ? " off" : ""}`}
+              className={`od-map-eta-dot${delivered || trackStage?.idx === 4 ? " done" : cancelled ? " off" : ""}`}
             />
             <div className="od-map-eta-txt">
               <strong>{trackDetail || stLabel.title}</strong>
@@ -1604,17 +1634,22 @@ export default function OrderDetailPage() {
               { k: "Out for delivery", Icon: Navigation },
               { k: "Delivered", Icon: Home },
             ];
-            const idx = delivered
-              ? 4
-              : outForDelivery
-                ? 3
-                : inTransit || (shipped && shippingId)
-                  ? 2
-                  : /processing|getting shipped|packed/i.test(
-                        order["Order Status"] || "",
-                      )
-                    ? 1
-                    : 0;
+            // When a live India Post status is present, it drives the step so
+            // the timeline matches reality (e.g. Delivered / Out for delivery).
+            const liveStage = trackingToStage(order["Tracking detail"]);
+            const idx = liveStage
+              ? liveStage.idx
+              : delivered
+                ? 4
+                : outForDelivery
+                  ? 3
+                  : inTransit || (shipped && shippingId)
+                    ? 2
+                    : /processing|getting shipped|packed/i.test(
+                          order["Order Status"] || "",
+                        )
+                      ? 1
+                      : 0;
             return (
               <ol className="od-timeline">
                 {steps.map((s, i) => {

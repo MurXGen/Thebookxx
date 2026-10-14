@@ -4004,6 +4004,9 @@ export default function ManageOrdersPage() {
   const [scanOpen, setScanOpen] = useState(false);
   // Dispatch page sub-tabs (Queue / Scan / Create product / UTM / Book).
   const [bookSubTab, setBookSubTab] = useState("queue");
+  // Users + Track pages — sub-tabs for their stacked sections.
+  const [userSubTab, setUserSubTab] = useState("customers");
+  const [trackSubTab, setTrackSubTab] = useState("copy");
   const [scanBusy, setScanBusy] = useState(false);
   const [scanProgress, setScanProgress] = useState(0);
   const [scanIds, setScanIds] = useState([]); // array of strings
@@ -5098,9 +5101,9 @@ export default function ManageOrdersPage() {
   const [cbSkipped, setCbSkipped] = useState({ unmatched: 0, already: 0 });
   // Track-orders tab sections are collapsible accordions (default closed).
   const [trackAcc, setTrackAcc] = useState({
-    tid: false,
-    codbill: false,
-    deliv: false,
+    tid: true,
+    codbill: true,
+    deliv: true,
   });
   const toggleTrackAcc = (k) =>
     setTrackAcc((p) => ({ ...p, [k]: !p[k] }));
@@ -11475,7 +11478,21 @@ export default function ManageOrdersPage() {
         {/* ===== Users (customer management) ===== */}
         {activeTab === "users" && (
           <div className="an2 um">
+            <div className="mo-book-subtabs" role="tablist">
+              {[
+                { k: "customers", label: "All customers" },
+                { k: "stats", label: "Customer stats" },
+                { k: "reviews", label: "Review rewards" },
+              ].map((t) => (
+                <button key={t.k} type="button"
+                  className={`mo-book-subtab${userSubTab === t.k ? " on" : ""}`}
+                  onClick={() => setUserSubTab(t.k)}>
+                  {t.label}
+                </button>
+              ))}
+            </div>
             {/* Review-reward submissions — approve + set amount (credits wallet) */}
+            {userSubTab === "reviews" && (
             <details className="admin-stats rvw-acc" open>
               <summary className="admin-stats-summary">
                 <Gift size={14} /> Review rewards
@@ -11599,8 +11616,10 @@ export default function ManageOrdersPage() {
                 )}
               </div>
             </details>
+            )}
 
-            <details className="admin-stats um-stats-acc">
+            {userSubTab === "stats" && (
+            <details className="admin-stats um-stats-acc" open>
               <summary className="admin-stats-summary">
                 <BarChart3 size={14} />
                 Customer stats
@@ -11667,11 +11686,13 @@ export default function ManageOrdersPage() {
               </div>
             </div>
             </details>
+            )}
 
+            {userSubTab === "customers" && (
             <Accordion
               id="users"
               title="All customers"
-              open={accOpen.users}
+              open={true}
               onToggle={toggleAcc}
               right={<span className="acc-count">{filteredUsers.length}</span>}
             >
@@ -11830,6 +11851,7 @@ export default function ManageOrdersPage() {
                 )}
               </div>
             </Accordion>
+            )}
 
             {walletModal && (
               <WalletModal
@@ -11845,7 +11867,22 @@ export default function ManageOrdersPage() {
         {/* ===== Track orders ===== */}
         {activeTab === "track" && (
           <div className="mo-track-notify mo-track-plain">
+            <div className="mo-book-subtabs" role="tablist">
+              {[
+                { k: "copy", label: "Copy IDs" },
+                { k: "paid", label: "Mark paid" },
+                { k: "deliv", label: "Mark delivered" },
+                { k: "paste", label: "Paste & match" },
+              ].map((t) => (
+                <button key={t.k} type="button"
+                  className={`mo-book-subtab${trackSubTab === t.k ? " on" : ""}`}
+                  onClick={() => setTrackSubTab(t.k)}>
+                  {t.label}
+                </button>
+              ))}
+            </div>
             {/* Tracking-ID export — all tracking IDs by status + date range */}
+            {trackSubTab === "copy" && (
             <div className="mo-tid">
               <div
                 className="mo-tid-head mo-acc-head"
@@ -12007,8 +12044,10 @@ export default function ManageOrdersPage() {
               </>
               )}
             </div>
+            )}
 
             {/* Paid COD bill(s) — upload Articles_Bill_COD*.xlsx (multiple ok) */}
+            {trackSubTab === "paid" && (
             <div className="mo-deliv">
               <div
                 className="mo-deliv-head mo-acc-head"
@@ -12166,8 +12205,10 @@ export default function ManageOrdersPage() {
               </>
               )}
             </div>
+            )}
 
             {/* Delivered reconcile — upload India Post bulk-tracking file */}
+            {trackSubTab === "deliv" && (
             <div className="mo-deliv">
               <div
                 className="mo-deliv-head mo-acc-head"
@@ -12478,7 +12519,10 @@ export default function ManageOrdersPage() {
               </>
               )}
             </div>
+            )}
 
+            {trackSubTab === "paste" && (
+              <>
             <div className="mo-track-paste">
               <textarea
                 className="admin-input mo-track-textarea"
@@ -12867,6 +12911,8 @@ export default function ManageOrdersPage() {
                   </div>
                 );
               })()}
+              </>
+            )}
           </div>
         )}
 

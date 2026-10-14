@@ -203,8 +203,10 @@ export default function ReviewRewardCard({ orderId = "", phone: phoneProp = "" }
           <b>earn up to ₹{MAX_REWARD}</b> back to your wallet
         </p>
         <div className="rr-ach">
-          <div className="rr-ach-bar">
-            <span className="rr-ach-fill" />
+          <div className="rr-ach-track">
+            <span className="rr-ach-dot" style={{ left: "0%" }} />
+            <span className="rr-ach-dot" style={{ left: "50%" }} />
+            <span className="rr-ach-dot rr-ach-dot-end" style={{ left: "100%" }} />
           </div>
           <div className="rr-ach-scale">
             <span>₹50</span>

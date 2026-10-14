@@ -184,39 +184,42 @@ export default function ReviewRewardCard({ orderId = "", phone: phoneProp = "" }
 
   return (
     <section className="rr-card">
-      <div className="rr-head">
-        <span className="rr-badge">
-          <Gift size={14} /> SHARE &amp; EARN
-        </span>
-        <h3 className="rr-title">
-          Post a reel or story — get up to{" "}
-          <span className="rr-amt">₹{MAX_REWARD}</span> back
-        </h3>
-        <p className="rr-sub-txt">
-          Share your books &amp; an honest review on Instagram/YouTube, send us
-          the link + screenshot, and we&apos;ll credit your account. 📚✨
-        </p>
-        <div className="rr-steps">
-          <span>
-            <b>1</b> Post with your books
+      {/* Compact achievement header — one line + reward progress bar + Claim */}
+      <div className="rr-compact">
+        <div className="rr-compact-top">
+          <span className="rr-badge">
+            <Gift size={13} /> SHARE &amp; EARN
           </span>
-          <span>
-            <b>2</b> Upload screenshot + link
-          </span>
-          <span>
-            <b>3</b> Get up to ₹{MAX_REWARD}
-          </span>
+          <button
+            type="button"
+            className="rr-how-link"
+            onClick={() => setHowOpen(true)}
+          >
+            <Sparkles size={13} /> How it works
+          </button>
         </div>
+        <p className="rr-compact-line">
+          Post a reel &amp; honest review —{" "}
+          <b>earn up to ₹{MAX_REWARD}</b> back to your wallet
+        </p>
+        <div className="rr-ach">
+          <div className="rr-ach-bar">
+            <span className="rr-ach-fill" />
+          </div>
+          <div className="rr-ach-scale">
+            <span>₹50</span>
+            <span>₹100</span>
+            <span>₹{MAX_REWARD}</span>
+          </div>
+        </div>
+        <button
+          type="button"
+          className="rr-claim"
+          onClick={() => setOpen(true)}
+        >
+          <Sparkles size={15} /> Claim up to ₹{MAX_REWARD}
+        </button>
       </div>
-
-      {/* How it works — compact link that opens a modal (keeps the card short) */}
-      <button
-        type="button"
-        className="rr-how-link"
-        onClick={() => setHowOpen(true)}
-      >
-        <Sparkles size={14} /> How it works
-      </button>
 
       {howOpen &&
         typeof document !== "undefined" &&
@@ -300,88 +303,109 @@ export default function ReviewRewardCard({ orderId = "", phone: phoneProp = "" }
         </div>
       )}
 
-      {!open ? (
-        <button
-          type="button"
-          className="rr-cta"
-          onClick={() => setOpen(true)}
-        >
-          <Sparkles size={16} /> Submit your post &amp; earn
-        </button>
-      ) : (
-        <div className="rr-form">
-          {/* Screenshot */}
-          <button type="button" className="rr-upload" onClick={pickFile}>
-            {shot ? (
-              /* eslint-disable-next-line @next/next/no-img-element */
-              <img src={shot} alt="screenshot" className="rr-upload-img" />
-            ) : (
-              <span className="rr-upload-ph">
-                <Camera size={20} />
-                <span>Upload screenshot of your post</span>
-              </span>
-            )}
-          </button>
-          <input
-            ref={fileRef}
-            type="file"
-            accept="image/*"
-            onChange={onFile}
-            style={{ display: "none" }}
-          />
-
-          {/* Platform */}
-          <div className="rr-plats">
-            {PLATFORMS.map((p) => (
-              <button
-                key={p}
-                type="button"
-                className={`rr-plat${platform === p ? " on" : ""}`}
-                onClick={() => setPlatform(p)}
-              >
-                {p}
-              </button>
-            ))}
-          </div>
-
-          {/* Link */}
-          <input
-            className="rr-input"
-            placeholder="Paste the post/reel/story link"
-            value={link}
-            onChange={(e) => setLink(e.target.value)}
-          />
-
-          {/* Phone */}
-          <input
-            className="rr-input"
-            inputMode="numeric"
-            maxLength={10}
-            placeholder="Your 10-digit mobile number"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
-          />
-
-          <button
-            type="button"
-            className="rr-cta"
-            onClick={submit}
-            disabled={busy}
+      {/* Claim / submit form — opens as a modal */}
+      {open &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <div
+            className="rr-how-overlay"
+            onClick={() => setOpen(false)}
+            role="dialog"
+            aria-modal="true"
           >
-            {busy ? (
-              "Submitting…"
-            ) : (
-              <>
-                <Upload size={16} /> Submit for review
-              </>
-            )}
-          </button>
-          <p className="rr-fine">
-            Reward amount is confirmed after we verify your post. Paid to your
-            TheBookX wallet.
-          </p>
-        </div>
-      )}
+            <div
+              className="rr-how-modal rr-claim-modal"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="rr-how-modal-head">
+                <span className="rr-how-modal-title">
+                  <Gift size={16} /> Claim up to ₹{MAX_REWARD}
+                </span>
+                <button
+                  type="button"
+                  className="rr-how-x"
+                  onClick={() => setOpen(false)}
+                  aria-label="Close"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+              <div className="rr-form">
+                {/* Screenshot */}
+                <button type="button" className="rr-upload" onClick={pickFile}>
+                  {shot ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img src={shot} alt="screenshot" className="rr-upload-img" />
+                  ) : (
+                    <span className="rr-upload-ph">
+                      <Camera size={20} />
+                      <span>Upload screenshot of your post</span>
+                    </span>
+                  )}
+                </button>
+                <input
+                  ref={fileRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={onFile}
+                  style={{ display: "none" }}
+                />
+
+                {/* Platform */}
+                <div className="rr-plats">
+                  {PLATFORMS.map((p) => (
+                    <button
+                      key={p}
+                      type="button"
+                      className={`rr-plat${platform === p ? " on" : ""}`}
+                      onClick={() => setPlatform(p)}
+                    >
+                      {p}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Link */}
+                <input
+                  className="rr-input"
+                  placeholder="Paste the post/reel/story link"
+                  value={link}
+                  onChange={(e) => setLink(e.target.value)}
+                />
+
+                {/* Phone */}
+                <input
+                  className="rr-input"
+                  inputMode="numeric"
+                  maxLength={10}
+                  placeholder="Your 10-digit mobile number"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
+                />
+
+                <button
+                  type="button"
+                  className="rr-cta"
+                  onClick={submit}
+                  disabled={busy}
+                >
+                  {busy ? (
+                    "Submitting…"
+                  ) : (
+                    <>
+                      <Upload size={16} /> Submit for review
+                    </>
+                  )}
+                </button>
+                <p className="rr-fine">
+                  Reward amount is confirmed after we verify your post. Paid to
+                  your TheBookX wallet.
+                </p>
+              </div>
+            </div>
+          </div>,
+          document.body,
+        )}
     </section>
   );
 }

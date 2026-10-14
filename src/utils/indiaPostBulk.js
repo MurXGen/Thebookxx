@@ -739,6 +739,55 @@ export async function parseTrackingStatusFile(file) {
   return out;
 }
 
+// Parse the India Post "Customer Self-service → Booking report" export
+// (exported_data*.xlsx). Returns one row per article with our order id (from
+// "customer-bulk-reference"), the article number, and the live status (from
+// "event-description"). Used to push the live tracking status onto each order.
+export async function parseBookingReportFile(file) {
+  const XLSX = await import("xlsx");
+  const wb = XLSX.read(await file.arrayBuffer(), { type: "array" });
+  const ws = wb.Sheets[wb.SheetNames[0]];
+  if (!ws) throw new Error("No sheet found in the file.");
+  const aoa = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
+  const header = (aoa[0] || []).map((h) =>
+    String(h).trim().toLowerCase().replace(/[\s_]+/g, "-"),
+  );
+  const idx = (...names) =>
+    header.findIndex((h) => names.some((n) => h === n));
+  const iOrder = idx(
+    "customer-bulk-reference",
+    "bulk-reference",
+    "reference",
+  );
+  const iArt = idx("article-number", "article-no", "article", "tracking-id");
+  const iStat = idx("event-description", "status", "current-status");
+  const iRcv = idx("receiver-name", "receiver");
+  if (iArt < 0 && iOrder < 0)
+    throw new Error(
+      "File needs an 'article-number' or 'customer-bulk-reference' column (India Post booking report export).",
+    );
+  if (iStat < 0)
+    throw new Error(
+      "File needs an 'event-description' column (India Post booking report export).",
+    );
+  const out = [];
+  for (let r = 1; r < aoa.length; r++) {
+    const row = aoa[r] || [];
+    const orderId = iOrder >= 0 ? String(row[iOrder] ?? "").trim() : "";
+    const article =
+      iArt >= 0 ? String(row[iArt] ?? "").trim().toUpperCase() : "";
+    const status = String(row[iStat] ?? "").trim();
+    if ((!orderId && !article) || !status) continue;
+    out.push({
+      orderId,
+      article,
+      status,
+      receiver: iRcv >= 0 ? String(row[iRcv] ?? "").trim() : "",
+    });
+  }
+  return out;
+}
+
 // Parse a BOOKED India Post bulk file (the one you download after allocating
 // barcodes on the portal) into { orderId: trackingId } pairs. Reads the
 // ArticleDetails sheet's "BULK REFERENCE" (our Order ID) + "BARCODE NO"

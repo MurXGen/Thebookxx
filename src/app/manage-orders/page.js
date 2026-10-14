@@ -113,6 +113,7 @@ import {
   parseIpWorkbookFile,
   parseTrackingStatusFile,
   parseBookedTrackingFile,
+  parseBookingReportFile,
   parseCodBillFile,
   parseWeightsFile,
   loadSender,
@@ -5410,6 +5411,67 @@ export default function ManageOrdersPage() {
   // COD delivered → Money Received; online-paid delivered → Delivered.
   const targetDeliveredStatus = (o) =>
     isCodOrder(o) ? "Money Received" : "Delivered";
+
+  // ── Live tracking status (India Post booking-report export) ──
+  // Pushes each article's live status (event-description) onto the matching
+  // order's "Tracking detail" column + a "Tracking Updated" timestamp. Shown to
+  // customers instead of our manual status when present.
+  const [liveBusy, setLiveBusy] = useState(false);
+  const [liveResult, setLiveResult] = useState(null);
+  const liveInputRef = useRef(null);
+  const handleLiveStatusFile = async (e) => {
+    const file = e?.target?.files?.[0];
+    if (!file) return;
+    if (e.target) e.target.value = "";
+    setLiveBusy(true);
+    setLiveResult(null);
+    try {
+      const rows = await parseBookingReportFile(file);
+      const now = new Date().toISOString();
+      const seen = new Set();
+      let updated = 0;
+      let unmatched = 0;
+      for (const r of rows) {
+        let o =
+          r.orderId &&
+          orders.find(
+            (ord) => String(ord["Order ID"] || "").trim() === r.orderId,
+          );
+        if (!o && r.article)
+          o = orders.find(
+            (ord) => sidUp(ord["Shipping ID"]) === sidUp(r.article),
+          );
+        if (!o) {
+          unmatched += 1;
+          continue;
+        }
+        const oid = o["Order ID"];
+        if (!oid || seen.has(oid)) continue;
+        seen.add(oid);
+        // Status + upload time encoded into the single "Tracking detail" column
+        // ("<status>||<ISO time>") so only one new sheet column is needed.
+        const fields = { "Tracking detail": `${r.status}||${now}` };
+        patchLocalOrder(oid, fields);
+        // eslint-disable-next-line no-await-in-loop
+        await updateOrderRow(oid, fields).catch((err) =>
+          console.error("Tracking detail update failed for", oid, err),
+        );
+        updated += 1;
+      }
+      setLiveResult({ total: rows.length, updated, unmatched });
+      showToast(
+        `Live tracking pushed to ${updated} order(s)${unmatched ? ` · ${unmatched} unmatched` : ""} ✓`,
+        "success",
+      );
+      setTimeout(fetchOrders, 1300);
+    } catch (err) {
+      console.error("Live status update failed:", err);
+      showToast(err.message || "Couldn't read that file.", "error");
+    } finally {
+      setLiveBusy(false);
+    }
+  };
+
   const handleDelivFile = async (e) => {
     const file = e?.target?.files?.[0];
     if (!file) return;
@@ -11919,6 +11981,7 @@ export default function ManageOrdersPage() {
             <div className="mo-book-subtabs" role="tablist">
               {[
                 { k: "copy", label: "Copy IDs" },
+                { k: "live", label: "Live status" },
                 { k: "paid", label: "Mark paid" },
                 { k: "deliv", label: "Mark delivered" },
                 { k: "paste", label: "Paste & match" },
@@ -11931,6 +11994,62 @@ export default function ManageOrdersPage() {
               ))}
             </div>
             {/* Tracking-ID export — all tracking IDs by status + date range */}
+            {trackSubTab === "live" && (
+              <div className="mo-tid">
+                <div className="mo-tid-head">
+                  <div className="mo-tid-head-txt">
+                    <span className="mo-tid-title">
+                      <Radar size={16} /> Push live tracking status
+                    </span>
+                    <span className="mo-tid-sub">
+                      Upload the India Post <b>Booking report</b> export
+                      (exported_data…xlsx). Each parcel&apos;s live status is
+                      matched to its order and saved to the{" "}
+                      <b>Tracking detail</b> column — customers then see that
+                      live status (with a &ldquo;last updated&rdquo; time) on
+                      their order page instead of our default status.
+                    </span>
+                  </div>
+                </div>
+                <div className="mo-live-body">
+                  <input
+                    ref={liveInputRef}
+                    type="file"
+                    accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    onChange={handleLiveStatusFile}
+                    style={{ display: "none" }}
+                  />
+                  <button
+                    type="button"
+                    className="mo-live-upload"
+                    disabled={liveBusy}
+                    onClick={() => liveInputRef.current?.click()}
+                  >
+                    {liveBusy ? (
+                      <>
+                        <Loader2 size={16} className="mo-spin" /> Reading &amp;
+                        updating…
+                      </>
+                    ) : (
+                      <>
+                        <UploadCloud size={16} /> Upload booking report (.xlsx)
+                      </>
+                    )}
+                  </button>
+                  {liveResult && (
+                    <p className="mo-live-result">
+                      ✓ Updated <b>{liveResult.updated}</b> order(s) from{" "}
+                      {liveResult.total} rows
+                      {liveResult.unmatched
+                        ? ` · ${liveResult.unmatched} unmatched`
+                        : ""}
+                      .
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+
             {trackSubTab === "copy" && (
             <div className="mo-tid">
               <div
@@ -13836,6 +13955,21 @@ export default function ManageOrdersPage() {
                                   <span className="mo2-badge mo2-badge-count">
                                     📚 {bookCount} book{bookCount === 1 ? "" : "s"}
                                   </span>
+                                  {String(order["Tracking detail"] || "")
+                                    .split("||")[0]
+                                    .trim() && (
+                                    <span
+                                      className="mo2-badge mo2-badge-track"
+                                      title="Live India Post status"
+                                    >
+                                      📍{" "}
+                                      {
+                                        String(order["Tracking detail"]).split(
+                                          "||",
+                                        )[0]
+                                      }
+                                    </span>
+                                  )}
                                   {fasterD && (
                                     <span className="mo2-badge mo2-badge-deliv">
                                       ⚡ Express delivery

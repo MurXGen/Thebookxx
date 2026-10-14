@@ -985,6 +985,26 @@ export default function OrderDetailPage() {
     .filter(Boolean)
     .join(", ");
   const stLabel = statusLabel(order);
+  // Live India Post tracking status (pushed from the booking-report upload).
+  // Stored as "<status>||<ISO time>" in the single "Tracking detail" column.
+  // When present it overrides our manual status label on this page.
+  const [trackDetailRaw, trackUpdatedIso] = String(
+    order["Tracking detail"] || "",
+  ).split("||");
+  const trackDetail = (trackDetailRaw || "").trim();
+  const trackUpdatedAt = trackUpdatedIso
+    ? new Date(trackUpdatedIso.trim())
+    : null;
+  const trackUpdatedTxt =
+    trackUpdatedAt && !isNaN(trackUpdatedAt.getTime())
+      ? trackUpdatedAt.toLocaleString("en-IN", {
+          day: "numeric",
+          month: "short",
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true,
+        })
+      : "";
   const isFaster = isExpressOrder(order);
   const inTransit = /in\s*transit/i.test(order["Order Status"] || "");
   const outForDelivery = /out\s*for\s*delivery/i.test(order["Order Status"] || "");
@@ -1450,17 +1470,29 @@ export default function OrderDetailPage() {
               className={`od-map-eta-dot${delivered ? " done" : cancelled ? " off" : ""}`}
             />
             <div className="od-map-eta-txt">
-              <strong>{stLabel.title}</strong>
+              <strong>{trackDetail || stLabel.title}</strong>
               <span>
-                {cancelled
-                  ? "This order was cancelled"
-                  : onHold
-                    ? "There is some issue in packaging this item"
-                    : delivered
-                      ? "Your books have arrived — enjoy!"
-                      : outForDelivery
-                        ? "Arriving today — keep your phone handy"
-                        : `Reaching you in ${etaMin}–${etaMax} days`}
+                {trackDetail ? (
+                  <>
+                    📍 Live India Post status
+                    {trackUpdatedTxt ? (
+                      <span className="od-track-upd">
+                        {" "}
+                        · last updated {trackUpdatedTxt}
+                      </span>
+                    ) : null}
+                  </>
+                ) : cancelled ? (
+                  "This order was cancelled"
+                ) : onHold ? (
+                  "There is some issue in packaging this item"
+                ) : delivered ? (
+                  "Your books have arrived — enjoy!"
+                ) : outForDelivery ? (
+                  "Arriving today — keep your phone handy"
+                ) : (
+                  `Reaching you in ${etaMin}–${etaMax} days`
+                )}
               </span>
             </div>
             <span

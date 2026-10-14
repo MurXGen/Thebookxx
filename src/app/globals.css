@@ -29574,6 +29574,15 @@ img[data-loaded="true"] {
   border-color: rgba(13, 107, 245, 0.25);
   color: #0d6bf5;
 }
+.mo2-badge-track {
+  background: rgba(10, 143, 12, 0.1);
+  border-color: rgba(10, 143, 12, 0.28);
+  color: #0a8f0c;
+}
+.od-track-upd {
+  color: var(--dark-50, #9ca3af);
+  font-size: 0.92em;
+}
 .mo2-badge-dl {
   display: inline-flex;
   align-items: center;
@@ -29796,6 +29805,32 @@ img[data-loaded="true"] {
   background: #fff;
   color: var(--dark-70, #374151);
   border: 1px solid var(--hairline, #e5e7eb);
+}
+/* Live tracking status upload (Track orders → Live status) */
+.mo-live-body {
+  padding: 4px 2px 2px;
+}
+.mo-live-upload {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 18px;
+  border: 1px solid rgba(251, 133, 0, 0.3);
+  border-radius: 11px;
+  background: rgba(251, 133, 0, 0.1);
+  color: #b45309;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.mo-live-upload:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+.mo-live-result {
+  margin: 10px 2px 0;
+  font-size: 12.5px;
+  color: var(--success, #0a8f0c);
 }
 /* India Post bulk (.xlsx) row inside the dispatch queue */
 .mo-dispatch-ip {

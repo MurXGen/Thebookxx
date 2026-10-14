@@ -165,20 +165,21 @@ function computeProgress(order) {
   if (/out for delivery/.test(st)) return 1;
   // Only once it's actually in transit do we move the vehicle along the route.
   if (/in\s*transit/.test(st)) {
-    const win = isExpressOrder(order) ? 5 : 12;
+    // Spread the whole journey over a fixed window — 14 days for standard
+    // post (6 for express). The parcel advances CONTINUOUSLY and LINEARLY:
+    // each day covers ~1/win of the route, so it never jumps near the
+    // destination early and never appears stuck at the customer's location.
+    // (India Post often shows the last scan for days; this keeps the visual
+    // journey moving smoothly until it's actually marked Delivered.)
+    const win = isExpressOrder(order) ? 6 : 14;
     const od = parseSheetDate(
       order["Timestamp (D)"] || order["Timestamp"] || order["Timestamp(D)"],
     );
     const days = od ? (Date.now() - od.getTime()) / 86400000 : 0;
-    // After 3 days the parcel is shown at least halfway (feels "nearer"), then
-    // it keeps progressing from that point; before that it ramps up to ~50%.
-    let p;
-    if (days >= 3) {
-      p = 0.5 + Math.min(0.4, ((days - 3) / win) * 0.9);
-    } else {
-      p = Math.max(0.3, (days / 3) * 0.5);
-    }
-    return Math.min(0.92, p);
+    // Start a touch off the origin (0.05) so it reads as "moving", and cap at
+    // 0.97 so it only reaches the doorstep once the status flips to Delivered.
+    const p = days / win;
+    return Math.max(0.05, Math.min(0.97, p));
   }
   // Confirmed / getting shipped / anything else → still at the source.
   return 0;
@@ -1494,13 +1495,15 @@ export default function OrderDetailPage() {
               >
                 <Star size={12} /> Review us
               </button>
-            ) : inTransit && shippingId ? (
+            ) : inTransit &&
+              shippingId &&
+              /^[ce]/i.test(String(shippingId).trim()) ? (
               <button
                 type="button"
                 className="od-map-eta-btn"
                 onClick={() => setShowTrack(true)}
               >
-                Track ↗
+                <Navigation size={12} /> Track
               </button>
             ) : upgradeExtra != null &&
               !shippingId &&

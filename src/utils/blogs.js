@@ -4,6 +4,167 @@ import { listicleBlogs } from "./blogsListicles";
 
 // Blog content in structured JSON format
 export const blogsData = {
+  "world-food-day-2026-books-about-food-hunger-and-mindful-eating-india": {
+    "id": "blog-078",
+    "title": "World Food Day 2026 (16 October): 15 Books About Food, Hunger and Mindful Eating to Read in India",
+    "slug": "world-food-day-2026-books-about-food-hunger-and-mindful-eating-india",
+    "author": "TheBookX Editorial",
+    "authorSlug": "murthy-thevar",
+    "publishDate": "2026-10-14",
+    "lastModified": "2026-10-14",
+    "excerpt": "World Food Day falls on 16 October 2026. Here are 15 books on food, hunger, eating habits and nourishment, from ₹1 with free delivery and COD across India.",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": "World Food Day is observed every year on 16 October, the date in 1945 when the Food and Agriculture Organization of the United Nations (FAO) was founded. In 2026 it falls on a Friday, and this year's observance, as described by organisers, is about helping agrifood systems become more stable, more inclusive and more resilient. It is a day for governments and farmers, but it is also a quiet invitation to ordinary readers: think about what is on your plate, where it came from, and who had to work for it to get there."
+      },
+      {
+        "type": "paragraph",
+        "content": "Reading is one of the gentlest ways to do that. A novel can make you taste a meal you will never eat, a memoir can show how complicated our relationship with food really is, and a book on data can correct what we assume about hunger in the world. Below is a reading list built around food, hunger and nourishment, mixing fiction, non-fiction and a few stories for children. Every title is available at TheBookX, with books from ₹1, free delivery and Cash on Delivery across India."
+      },
+      {
+        "type": "callout",
+        "style": "info",
+        "title": "Quick facts for World Food Day 2026",
+        "content": "Date: Friday, 16 October 2026. Origin: the founding of the FAO on 16 October 1945. Easy ways to mark it at home: cook one meal from scratch, waste less, and read one book about food this week."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Novels where food is the main character"
+      },
+      {
+        "type": "paragraph",
+        "content": "In <a href=\"/books/butter\" style=\"color:#fb8500;font-weight:600\">Butter</a>, Asako Yuzuki's novel set in Tokyo, a journalist becomes fascinated by a woman convicted in a murder case who talks about cooking with unsettling passion. It is a dark, absorbing read about appetite, desire and how society judges women who enjoy food. For something warmer, <a href=\"/books/lessons-in-chemistry\" style=\"color:#fb8500;font-weight:600\">Lessons in Chemistry</a> follows Elizabeth Zott, a chemist who ends up hosting a television cooking show and treats a recipe like an experiment. It is funny, sharp and quietly angry about the barriers she faces."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/the-vegetarian\" style=\"color:#fb8500;font-weight:600\">The Vegetarian</a> by Han Kang begins with a simple decision, to stop eating meat, and unfolds into a haunting story about family, control and the body. It is not an easy book, but it shows how deeply food choices are tied to identity. At the gentler end of the shelf, <a href=\"/books/before-the-coffee-gets-cold\" style=\"color:#fb8500;font-weight:600\">Before the Coffee Gets Cold</a> is set in a tiny Tokyo café where a cup of coffee must be finished before it cools, a perfect small-world story for a rainy evening. And <a href=\"/books/a-gentleman-in-moscow\" style=\"color:#fb8500;font-weight:600\">A Gentleman in Moscow</a> spends much of its time inside a grand hotel, where meals, menus and the people who serve them become a way of understanding an entire era."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Non-fiction on hunger, health and the world we feed"
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books/factfulness\" style=\"color:#fb8500;font-weight:600\">Factfulness</a> by Hans Rosling is not a food book as such, but it is one of the best tools for thinking clearly about global development, including poverty and hunger. Rosling argues that we hold outdated, dramatic views of the world and that the data tells a more nuanced story. Pair it with <a href=\"/books/outlive\" style=\"color:#fb8500;font-weight:600\">Outlive</a>, which looks at long-term health, where nutrition is one pillar among several, to move from the global picture to your own kitchen table."
+      },
+      {
+        "type": "paragraph",
+        "content": "If you want to understand why eating habits are so hard to change, <a href=\"/books/atomic-habits\" style=\"color:#fb8500;font-weight:600\">Atomic Habits</a> by James Clear is a practical place to start. Small cues, such as where you keep fruit or how you plan the week's meals, shape what you eat far more than willpower does. <a href=\"/books/ikigai\" style=\"color:#fb8500;font-weight:600\">Ikigai</a> adds a cultural angle with its reflections on long, purposeful lives in Japan, where eating without overfilling is a recurring theme."
+      },
+      {
+        "type": "paragraph",
+        "content": "The Korean memoir <a href=\"/books/i-want-to-die-but-i-want-to-eat-tteokbokki\" style=\"color:#fb8500;font-weight:600\">I Want to Die but I Want to Eat Tteokbokki</a> is a candid conversation-style book about low moods and everyday desires, with a snack at the centre of its title. It is a reminder that food is not only fuel, it is comfort and a small reason to keep going. If that theme resonates, read it gently and at your own pace."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Stories for children and families"
+      },
+      {
+        "type": "paragraph",
+        "content": "World Food Day is a good moment to talk to children about where food comes from. <a href=\"/books/how-the-mango-got-its-magic\" style=\"color:#fb8500;font-weight:600\">How the Mango Got Its Magic</a> and <a href=\"/books/how-the-onion-got-its-layers\" style=\"color:#fb8500;font-weight:600\">How the Onion Got Its Layers</a> are playful origin tales that turn everyday ingredients into stories, easy to read aloud at bedtime. For older readers, <a href=\"/books/the-day-i-stopped-drinking-milk\" style=\"color:#fb8500;font-weight:600\">The Day I Stopped Drinking Milk</a> by Sudha Murty gathers warm, observant true stories from ordinary life, many of which revolve around families, kindness and what we share."
+      },
+      {
+        "type": "paragraph",
+        "content": "Teenagers may enjoy <a href=\"/books/the-hunger-games-trilogy-set\" style=\"color:#fb8500;font-weight:600\">The Hunger Games Trilogy Set</a>, a fast-paced dystopian series in which scarcity and control of food shape a whole society. It sparks real conversations about fairness and who gets to eat."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Mindful eating starts with a clearer mind"
+      },
+      {
+        "type": "paragraph",
+        "content": "Most of us eat while scrolling, working or worrying. Slowing down, noticing flavours and deciding what actually deserves your attention is a clarity skill as much as a food habit. In <a href=\"/books/the-art-of-clarity\" style=\"color:#fb8500;font-weight:600\">The Art of Clarity</a> by Murthy Thevar, the focus is on cutting through mental noise so you can make better choices, whether that means a decision at work or what to put on your plate tonight. A simple experiment: pick one meal a day, put your phone away and eat it with full attention for ten minutes."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "content": "Five simple ways to mark World Food Day 2026"
+      },
+      {
+        "type": "list",
+        "style": "ordered",
+        "items": [
+          "Cook one meal from scratch and sit down to eat it together.",
+          "Plan your week's meals so that less food is thrown away.",
+          "Buy something local and seasonal, and learn where it grew.",
+          "Share a meal or groceries with someone who may need them.",
+          "Read one of the books above and pass it on when you finish."
+        ]
+      },
+      {
+        "type": "blockquote",
+        "content": "What we choose to read shapes what we notice, and what we notice shapes what we do. A day about food is a good day to start noticing."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "content": "Buy these books at TheBookX"
+      },
+      {
+        "type": "paragraph",
+        "content": "You can find every title above on TheBookX with books from ₹1, free delivery and Cash on Delivery across India. If you are gifting a book to a food lover or a new reader, gift wrapping is available at +₹25 per book."
+      },
+      {
+        "type": "callout",
+        "style": "success",
+        "title": "Why shop at TheBookX",
+        "content": "Books from ₹1, free delivery and Cash on Delivery across India. Add gift wrapping for +₹25 when you are buying for someone else."
+      },
+      {
+        "type": "paragraph",
+        "content": "<a href=\"/books\" style=\"display:inline-block;background:#fb8500;color:#ffffff;padding:13px 26px;border-radius:11px;font-weight:700;text-decoration:none;font-size:15px\">Explore all books →</a>"
+      }
+    ],
+    "coverImage": "/blogs/world-food-day-2026-books-about-food-hunger-and-mindful-eating-india.jpeg",
+    "images": [
+      {
+        "url": "/blogs/world-food-day-2026-books-about-food-hunger-and-mindful-eating-india.jpeg",
+        "alt": "A cheerful young woman reading a paperback at a kitchen table with a bowl of fresh fruit and a cup of tea in warm morning light",
+        "caption": "World Food Day is a good excuse to slow down, eat well and read something nourishing.",
+        "category": "Reading"
+      }
+    ],
+    "keywords": [
+      "World Food Day 2026",
+      "World Food Day 16 October",
+      "books about food",
+      "books on hunger",
+      "food novels India",
+      "mindful eating books",
+      "FAO World Food Day",
+      "Lessons in Chemistry",
+      "Butter Asako Yuzuki",
+      "buy books online India"
+    ],
+    "categories": [
+      "Awareness Days",
+      "Book Recommendations",
+      "Food & Wellbeing"
+    ],
+    "faqs": [
+      {
+        "question": "When is World Food Day 2026?",
+        "answer": "World Food Day is observed on 16 October every year. In 2026 it falls on a Friday. The date marks the founding of the Food and Agriculture Organization (FAO) of the United Nations in 1945."
+      },
+      {
+        "question": "Which books are good to read for World Food Day?",
+        "answer": "Try Butter and Lessons in Chemistry for fiction about food, Factfulness for a data-led view of the world, Atomic Habits for building better eating habits, and How the Mango Got Its Magic for children."
+      },
+      {
+        "question": "Is The Art of Clarity related to mindful eating?",
+        "answer": "It is a book about clear thinking and better decisions by Murthy Thevar. The habits it describes, such as paying full attention and cutting distractions, apply to everyday choices including how and what you eat."
+      },
+      {
+        "question": "Does TheBookX offer free delivery and Cash on Delivery?",
+        "answer": "Yes. TheBookX offers books from ₹1, free delivery and Cash on Delivery across India, and gift wrapping at +₹25 per book."
+      }
+    ]
+  },
   "nobel-peace-prize-2026-navi-pillay-books-on-justice-human-rights-india": {
     "id": "blog-077",
     "title": "Nobel Peace Prize 2026 Goes to Navi Pillay: 15 Books on Justice, Human Rights and Courage to Read in India",

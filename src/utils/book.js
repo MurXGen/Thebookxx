@@ -8007,6 +8007,23 @@ export const books = [
     weight: 250,
   },
   {
+    id: "bk-712",
+    name: "12 Years: My Messed-Up Love Story",
+    image: bookImages["12-years-messed-up-love-story"],
+    description:
+      "Buy 12 Years: My Messed-Up Love Story by Chetan Bhagat online at the lowest price on TheBookX.in. Chetan Bhagat's twelfth book is a warm, funny and bittersweet return to the middle-class romance that made him India's favourite storyteller. It follows Saket, a thirty-three-year-old stand-up comedian piecing his life back together after a divorce, and Payal, a twenty-one-year-old finance prodigy fresh out of Stanford. Across Mumbai and Dubai, a twelve-year age gap and two very different worlds put one question to the test — how do you know if someone is 'the one', especially when everything says they're not? A sharp, modern love story for the age of situationships. An authentic, high-quality copy delivered securely via Delhivery and Indian Post. Cash on Delivery and free shipping across India — your trusted book partner.",
+    author: "Chetan Bhagat",
+    authorSlug: "chetan-bhagat",
+    pages: "200-230",
+    language: "English",
+    size: "Paperback",
+    stock: 25,
+    catalogue: ["fiction", "bestseller"],
+    originalPrice: calculateOriginalPrice(249),
+    discountedPrice: 249,
+    weight: 250,
+  },
+  {
     id: "bk-530",
     name: "2 States",
     image: bookImages["2-states"],

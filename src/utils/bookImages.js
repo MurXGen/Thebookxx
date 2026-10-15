@@ -535,6 +535,7 @@ export const bookImages = {
   "the-power-of-your-subconscious-mind": `${BOOK_IMAGE_BASE_PATH}/the-power-of-your-subconscious-mind.png`,
   "where-the-crawdads-sing": `${BOOK_IMAGE_BASE_PATH}/where-the-crawdads-sing.png`,
   "five-point-someone": `${BOOK_IMAGE_BASE_PATH}/five-point-someone.png`,
+  "12-years-messed-up-love-story": `${BOOK_IMAGE_BASE_PATH}/12-years-messed-up-love-story.jpeg`,
   "2-states": `${BOOK_IMAGE_BASE_PATH}/2-states.png`,
   "the-3-mistakes-of-my-life": `${BOOK_IMAGE_BASE_PATH}/the-3-mistakes-of-my-life.png`,
   "half-girlfriend": `${BOOK_IMAGE_BASE_PATH}/half-girlfriend.png`,
